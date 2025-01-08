@@ -41,7 +41,7 @@ def fetch_comments():
     
     data = response.json()
     # 为每条评论添加格式化的时间
-    for entry in data['entries']:
+    for entry in data['entries'][::-1]:
         entry['formatted_time'] = format_time(entry['created_at'])
         # 添加原始LA时间
         la_time = parser.parse(entry['created_at']).strftime('%I:%M %p LA')
