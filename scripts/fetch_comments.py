@@ -1,7 +1,8 @@
 import requests
 import json
 from datetime import datetime
-from jinja2 import Template, Markup
+from jinja2 import Template
+from markupsafe import Markup
 import os
 from dateutil import parser
 import pytz
