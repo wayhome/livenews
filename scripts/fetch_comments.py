@@ -1,10 +1,11 @@
 import requests
 import json
 from datetime import datetime
-from jinja2 import Template
+from jinja2 import Template, Markup
 import os
 from dateutil import parser
 import pytz
+import re
 
 def format_time(time_str):
     # 解析时间字符串
@@ -13,6 +14,13 @@ def format_time(time_str):
     beijing_tz = pytz.timezone('Asia/Shanghai')
     dt_beijing = dt.astimezone(beijing_tz)
     return dt_beijing.strftime('%Y-%m-%d %H:%M')
+
+def process_links(text):
+    # 匹配URL模式
+    url_pattern = r'(https?://[^\s]+)'
+    # 将URL替换为HTML链接
+    processed_text = re.sub(url_pattern, r'<a href="\1" target="_blank">\1</a>', text)
+    return Markup(processed_text)
 
 def fetch_comments():
     url = 'https://notes.services.box.com/get_file_comments'
@@ -46,6 +54,8 @@ def fetch_comments():
         # 添加原始LA时间
         la_time = parser.parse(entry['created_at']).strftime('%I:%M %p LA')
         entry['la_time'] = la_time
+        # 处理评论中的链接
+        entry['formatted_message'] = process_links(entry['message'])
     
     return data
 
