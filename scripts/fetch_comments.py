@@ -49,8 +49,10 @@ def fetch_comments():
         raise Exception(f"Failed to fetch comments: {response.status_code} - {response.text}")
     
     data = response.json()
+    # 首先反转评论列表，使最新的评论在前面
+    data['entries'] = data['entries'][::-1]
     # 为每条评论添加格式化的时间
-    for entry in data['entries'][::-1]:
+    for entry in data['entries']:
         entry['formatted_time'] = format_time(entry['created_at'])
         # 添加原始LA时间
         la_time = parser.parse(entry['created_at']).strftime('%I:%M %p LA')
