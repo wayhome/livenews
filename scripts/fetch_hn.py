@@ -84,6 +84,10 @@ def get_article_content(url):
         # 清理文本
         lines = [line.strip() for line in text.splitlines() if line.strip()]
         text = '\n'.join(lines)
+
+        if len(text) < 50:
+            print(f"跳过内容过短的文章: {url}")
+            return None
         
         return text[:5000]  # 增加长度限制到8000字符
         
@@ -110,6 +114,7 @@ def get_summary(text, prompt="请用中文简明扼要地总结以下内容，�
     for attempt in range(max_retries):
         try:
             print(f"正在生成摘要，第 {attempt + 1} 次尝试...")
+            
             response = client.chat.completions.create(
                 model=OPENAI_MODEL,
                 messages=[
@@ -121,15 +126,35 @@ def get_summary(text, prompt="请用中文简明扼要地总结以下内容，�
                 timeout=30  # 设置超时时间
             )
             return response.choices[0].message.content
+            
+        except ValueError as e:
+            print(f"配置错误: {e}")
+            return "摘要生成失败（配置错误）"
+            
+        except requests.exceptions.ConnectionError as e:
+            print(f"连接错误 (尝试 {attempt + 1}/{max_retries}):")
+            print(f"  - 错误详情: {str(e)}")
+            
+        except requests.exceptions.Timeout as e:
+            print(f"请求超时 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            
+        except requests.exceptions.RequestException as e:
+            print(f"请求错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            
         except Exception as e:
-            print(f"第 {attempt + 1} 次生成摘要失败: {e}")
-            if attempt < max_retries - 1:
-                sleep_time = (attempt + 1) * 5  # 递增等待时间
-                print(f"等待 {sleep_time} 秒后重试...")
-                time.sleep(sleep_time)
-            else:
-                print("已达到最大重试次数")
-                return "摘要生成失败（网络错误）"
+            print(f"未预期的错误 (尝试 {attempt + 1}/{max_retries}):")
+            print(f"  - 错误类型: {type(e).__name__}")
+            print(f"  - 错误详情: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            
+        if attempt < max_retries - 1:
+            sleep_time = (attempt + 1) * 5  # 递增等待时间
+            print(f"等待 {sleep_time} 秒后重试...")
+            time.sleep(sleep_time)
+        else:
+            print("已达到最大重试次数")
+            return "摘要生成失败（网络错误）"
 
 def fetch_hn_item(item_id):
     """获取 HN 单个项目的详细信息"""
@@ -160,6 +185,15 @@ def clean_html_text(html_text):
 def fetch_top_stories():
     """获取 HN 热门故事"""
     try:
+        print("\n=== 环境信息 ===")
+        print(f"OpenAI API Base: {OPENAI_API_BASE}")
+        print(f"OpenAI Model: {OPENAI_MODEL}")
+        print(f"API Key 已设置: {'是' if OPENAI_API_KEY else '否'}")
+        print("================\n")
+        
+        if not OPENAI_API_KEY:
+            raise ValueError("未设置 OPENAI_API_KEY")
+        
         print("开始获取热门故事...")
         response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
         response.raise_for_status()
