@@ -34,6 +34,44 @@ except Exception as e:
     print(f"初始化 OpenAI 客户端时出错: {e}")
     raise
 
+def _process_html_content(response):
+    """处理 HTML 响应内容"""
+    content_type = response.headers.get('content-type', '').lower()
+    if 'text/html' not in content_type:
+        print(f"跳过非HTML内容: (Content-Type: {content_type})")
+        return None
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # 移除不需要的元素
+    for element in soup(['script', 'style', 'nav', 'header', 'footer', 'iframe', 'noscript']):
+        element.decompose()
+    
+    # 尝试找到主要内容
+    main_content = None
+    content_candidates = soup.select('article, main, .article-content, .post-content, .entry-content')
+    if content_candidates:
+        main_content = content_candidates[0]
+    
+    if not main_content:
+        main_content = soup.find('body')
+    
+    if not main_content:
+        main_content = soup
+    
+    # 获取文本
+    text = main_content.get_text(separator='\n', strip=True)
+    
+    # 清理文本
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    text = '\n'.join(lines)
+
+    if len(text) < 50:
+        print("跳过内容过短的文章")
+        return None
+    
+    return text[:5000]
+
 def get_article_content(url):
     """获取文章内容"""
     try:
@@ -58,52 +96,14 @@ def get_article_content(url):
             allow_redirects=True
         )
         response.raise_for_status()
-        
-        # 检测内容类型
-        content_type = response.headers.get('content-type', '').lower()
-        if 'text/html' not in content_type:
-            print(f"跳过非HTML内容: {url} (Content-Type: {content_type})")
-            return None
-
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # 移除不需要的元素
-        for element in soup(['script', 'style', 'nav', 'header', 'footer', 'iframe', 'noscript']):
-            element.decompose()
-        
-        # 尝试找到主要内容
-        main_content = None
-        
-        # 常见的内容容器
-        content_candidates = soup.select('article, main, .article-content, .post-content, .entry-content')
-        if content_candidates:
-            main_content = content_candidates[0]
-        
-        # 如果找不到特定容器，使用整个 body
-        if not main_content:
-            main_content = soup.find('body')
-        
-        if not main_content:
-            main_content = soup
-        
-        # 获取文本
-        text = main_content.get_text(separator='\n', strip=True)
-        
-        # 清理文本
-        lines = [line.strip() for line in text.splitlines() if line.strip()]
-        text = '\n'.join(lines)
-
-        if len(text) < 50:
-            print(f"跳过内容过短的文章: {url}")
-            return None
-        
-        return text[:5000]  # 增加长度限制到8000字符
+        return _process_html_content(response)
         
     except requests.exceptions.SSLError:
         print(f"SSL错误，尝试不验证证书: {url}")
         try:
             response = requests.get(url, headers=headers, timeout=10, verify=False)
-            # ... 重复上面的处理逻辑 ...
+            response.raise_for_status()
+            return _process_html_content(response)
         except Exception as e:
             print(f"二次尝试仍然失败: {e}")
             return None
