@@ -130,7 +130,7 @@ def get_summary(text, prompt="请用中文简明扼要地总结以下内容，�
                     {"role": "user", "content": text}
                 ],
                 temperature=0.7,
-                max_tokens=2000,
+                max_tokens=3000,
                 timeout=30  # 设置超时时间
             )
             return response.choices[0].message.content
@@ -245,7 +245,7 @@ def fetch_top_stories():
                 print(f"获取评论内容...")
                 comments_texts = []
                 if 'kids' in story:
-                    for comment_id in story['kids'][:20]:  # 增加到前20条评论
+                    for comment_id in story['kids'][:15]:  # 增加到前15条评论
                         comment = fetch_hn_item(comment_id)
                         if comment and not comment.get('deleted') and not comment.get('dead'):
                             clean_text = clean_html_text(comment.get('text', ''))
