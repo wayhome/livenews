@@ -1,8 +1,8 @@
-name: Fetch Box Comments
+name: Fetch HackerNews Stories
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # 每5分钟运行一次
+    - cron: '0 */6 * * *'  # 每6小时运行一次
   workflow_dispatch:  # 允许手动触发
 
 jobs:
@@ -25,10 +25,12 @@ jobs:
     - name: Create public directory
       run: mkdir -p public
     
-    - name: Fetch comments and generate HTML
+    - name: Fetch stories and generate HTML
       env:
-        EXPRESS_SID: ${{ secrets.EXPRESS_SID }}
-      run: python scripts/fetch_comments.py
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+        OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+      run: python scripts/fetch_hn.py
     
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
@@ -36,4 +38,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./public
         publish_branch: gh-pages
-        keep_files: false  # 不保留旧文件，每次都是最新的 
+        keep_files: false 

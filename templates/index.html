@@ -3,71 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Box Comments</title>
+    <title>HackerNews 热门故事摘要</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .comment-card {
+        .story-card {
+            margin-bottom: 2rem;
+            border-left: 4px solid #ff6600;
+        }
+        .story-meta {
+            color: #6c757d;
+            font-size: 0.9rem;
             margin-bottom: 1rem;
-            border-left: 4px solid #007bff;
         }
-        .update-time {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        .meeting-link {
-            word-break: break-all;
-        }
-        .total-count {
+        .summary-section {
             background-color: #f8f9fa;
-            padding: 10px;
+            padding: 1rem;
             border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .author-info {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-        .time-info {
-            display: flex;
-            gap: 10px;
-        }
-        .meeting-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .meeting-link a:hover {
-            text-decoration: underline;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
     <div class="container py-5">
-        <h1 class="mb-4">课程评论列表</h1>
-        <div class="total-count">
-            总计: {{ total_count }} 条评论
-            <br>
-            <span class="update-time">最后更新时间: {{ update_time }} (北京时间)</span>
+        <h1 class="mb-4">HackerNews 热门故事摘要</h1>
+        <div class="text-muted mb-4">
+            最后更新时间: {{ update_time }} (北京时间)
         </div>
         
-        <div class="comments mt-4">
-            {% for comment in comments %}
-            <div class="card comment-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h5 class="card-title">{{ comment.created_by.name }}</h5>
-                        <div class="time-info">
-                            <span class="badge bg-primary">{{ comment.formatted_time }} (北京)</span>
-                            <span class="badge bg-secondary">{{ comment.la_time }}</span>
-                        </div>
-                    </div>
-                    <div class="author-info mb-2">
-                        {{ comment.created_by.login }}
-                    </div>
-                    <p class="card-text meeting-link">{{ comment.formatted_message }}</p>
+        {% for story in stories %}
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="{{ story.url }}" target="_blank">{{ story.title }}</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: {{ story.author }}</span> |
+                    <span>评分: {{ story.score }}</span> |
+                    <span>评论数: {{ story.comments_count }}</span> |
+                    <span>发布时间: {{ story.time.strftime('%Y-%m-%d %H:%M') }}</span>
+                </div>
+                
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>{{ story.article_summary }}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <p>{{ story.comments_summary }}</p>
                 </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
 </body>
 </html> 
