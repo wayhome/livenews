@@ -102,24 +102,34 @@ def get_article_content(url):
         print(f"处理文章内容时出错: {e}")
         return None
 
-def get_summary(text, prompt="请用中文简明扼要地总结以下内容，限制在100字以内。"):
+def get_summary(text, prompt="请用中文简明扼要地总结以下内容，限制在100字以内。", max_retries=3):
     """使用 OpenAI 生成摘要"""
     if not text or not text.strip():
         return "暂无内容"
-    try:
-        response = client.chat.completions.create(
-            model=OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": text}
-            ],
-            temperature=0.7,
-            max_tokens=150
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"生成摘要时出错: {e}")
-        return "摘要生成失败"
+
+    for attempt in range(max_retries):
+        try:
+            print(f"正在生成摘要，第 {attempt + 1} 次尝试...")
+            response = client.chat.completions.create(
+                model=OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": prompt},
+                    {"role": "user", "content": text}
+                ],
+                temperature=0.7,
+                max_tokens=2000,
+                timeout=30  # 设置超时时间
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"第 {attempt + 1} 次生成摘要失败: {e}")
+            if attempt < max_retries - 1:
+                sleep_time = (attempt + 1) * 5  # 递增等待时间
+                print(f"等待 {sleep_time} 秒后重试...")
+                time.sleep(sleep_time)
+            else:
+                print("已达到最大重试次数")
+                return "摘要生成失败（网络错误）"
 
 def fetch_hn_item(item_id):
     """获取 HN 单个项目的详细信息"""
@@ -158,43 +168,58 @@ def fetch_top_stories():
         
         stories = []
         for i, story_id in enumerate(story_ids, 1):
-            print(f"正在处理第 {i}/10 个故事 (ID: {story_id})...")
-            story = fetch_hn_item(story_id)
-            if not story:
-                continue
-            
-            # 获取文章内容并生成摘要
-            article_content = None
-            if 'url' in story:
-                print(f"获取文章内容: {story['url']}")
-                article_content = get_article_content(story['url'])
-            
-            # 获取评论文本
-            print(f"获取评论内容...")
-            comments_texts = []
-            if 'kids' in story:
-                for comment_id in story['kids'][:10]:
-                    comment = fetch_hn_item(comment_id)
-                    if comment and not comment.get('deleted') and not comment.get('dead'):
-                        # 清理评论中的HTML标签
-                        clean_text = clean_html_text(comment.get('text', ''))
-                        if clean_text:
-                            comments_texts.append(clean_text)
-            
-            # 合并评论文本，添加分隔符
-            comments_text = "\n---\n".join(comments_texts)
-            
-            stories.append({
-                'title': story.get('title', '无标题'),
-                'url': story.get('url', f"https://news.ycombinator.com/item?id={story_id}"),
-                'author': story.get('by', '匿名'),
-                'score': story.get('score', 0),
-                'time': datetime.fromtimestamp(story.get('time', 0)),
-                'comments_count': len(story.get('kids', [])),
-                'article_summary': get_summary(article_content, "请用中文简明扼要地总结这篇文章的主要内容，限制在200字以内。") if article_content else "无法获取文章内容",
-                'comments_summary': get_summary(comments_text, "请用中文总结这些评论的主要观点，限制在200字以内。") if comments_text else "暂无评论"
-            })
-            time.sleep(1)  # 避免请求过快
+            try:
+                print(f"正在处理第 {i}/10 个故事 (ID: {story_id})...")
+                story = fetch_hn_item(story_id)
+                if not story:
+                    continue
+        
+                # 获取文章内容并生成摘要
+                article_content = None
+                article_summary = "无法获取文章内容"
+                if 'url' in story:
+                    print(f"获取文章内容: {story['url']}")
+                    article_content = get_article_content(story['url'])
+                    if article_content:
+                        article_summary = get_summary(
+                            article_content, 
+                            "请用中文简明扼要地总结这篇文章的主要内容，限制在200字以内。"
+                        )
+                
+                # 获取评论文本
+                print(f"获取评论内容...")
+                comments_texts = []
+                if 'kids' in story:
+                    for comment_id in story['kids'][:10]:
+                        comment = fetch_hn_item(comment_id)
+                        if comment and not comment.get('deleted') and not comment.get('dead'):
+                            clean_text = clean_html_text(comment.get('text', ''))
+                            if clean_text:
+                                comments_texts.append(clean_text)
+                
+                # 合并评论文本，添加分隔符
+                comments_text = "\n---\n".join(comments_texts)
+                comments_summary = "暂无评论"
+                if comments_text:
+                    comments_summary = get_summary(
+                        comments_text, 
+                        "请用中文总结这些评论的主要观点，限制在200字以内。"
+                    )
+                
+                stories.append({
+                    'title': story.get('title', '无标题'),
+                    'url': story.get('url', f"https://news.ycombinator.com/item?id={story_id}"),
+                    'author': story.get('by', '匿名'),
+                    'score': story.get('score', 0),
+                    'time': datetime.fromtimestamp(story.get('time', 0)),
+                    'comments_count': len(story.get('kids', [])),
+                    'article_summary': article_summary,
+                    'comments_summary': comments_summary
+                })
+                time.sleep(1)  # 避免请求过快
+            except Exception as e:
+                print(f"处理故事 {story_id} 时出错: {e}")
+                continue  # 跳过这个故事，继续处理下一个
         
         return stories
     except Exception as e:
