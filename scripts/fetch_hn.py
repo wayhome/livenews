@@ -20,11 +20,19 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 OPENAI_API_BASE = os.getenv('OPENAI_API_BASE', 'https://api.openai.com/v1')
 OPENAI_MODEL = os.getenv('OPENAI_MODEL', 'gpt-3.5-turbo')
 
+# 确保 API 基础 URL 格式正确
+if OPENAI_API_BASE and not (OPENAI_API_BASE.startswith('http://') or OPENAI_API_BASE.startswith('https://')):
+    OPENAI_API_BASE = 'https://' + OPENAI_API_BASE
+
 # 初始化 OpenAI 客户端
-client = OpenAI(
-    api_key=OPENAI_API_KEY,
-    base_url=OPENAI_API_BASE
-)
+try:
+    client = OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url=OPENAI_API_BASE
+    )
+except Exception as e:
+    print(f"初始化 OpenAI 客户端时出错: {e}")
+    raise
 
 def get_article_content(url):
     """获取文章内容"""
@@ -188,11 +196,24 @@ def fetch_top_stories():
         print("\n=== 环境信息 ===")
         print(f"OpenAI API Base: {OPENAI_API_BASE}")
         print(f"OpenAI Model: {OPENAI_MODEL}")
-        print(f"API Key 已设置: {'是' if OPENAI_API_KEY else '否'}")
+        print(f"API Key 长度: {len(OPENAI_API_KEY) if OPENAI_API_KEY else 0}")
         print("================\n")
         
         if not OPENAI_API_KEY:
             raise ValueError("未设置 OPENAI_API_KEY")
+            
+        # 验证 API 配置
+        try:
+            # 测试 API 连接
+            response = client.chat.completions.create(
+                model=OPENAI_MODEL,
+                messages=[{"role": "user", "content": "测试连接"}],
+                max_tokens=5
+            )
+            print("API 连接测试成功")
+        except Exception as e:
+            print(f"API 连接测试失败: {e}")
+            raise
         
         print("开始获取热门故事...")
         response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
