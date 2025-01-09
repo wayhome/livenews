@@ -245,7 +245,7 @@ def fetch_top_stories():
                 print(f"获取评论内容...")
                 comments_texts = []
                 if 'kids' in story:
-                    for comment_id in story['kids'][:15]:  # 增加到前15条评论
+                    for comment_id in story['kids'][:20]:  # 增加到前20条评论
                         comment = fetch_hn_item(comment_id)
                         if comment and not comment.get('deleted') and not comment.get('dead'):
                             clean_text = clean_html_text(comment.get('text', ''))
@@ -263,7 +263,7 @@ def fetch_top_stories():
 2. 保留重要的论据和例子
 3. 注意捕捉评论之间的讨论关系
 4. 如果有争议，请指出争议的焦点
-5. 用中文输出，限制在300字以内
+5. 用中文输出，限制在500字以内
 6. 分点列出不同观点，使用"•"作为列表符号
 
 格式示例：
@@ -286,7 +286,8 @@ def fetch_top_stories():
                     'time': datetime.fromtimestamp(story.get('time', 0)),
                     'comments_count': len(story.get('kids', [])),
                     'article_summary': article_summary,
-                    'comments_summary': comments_summary
+                    'comments_summary': comments_summary,
+                    'comments_url': f"https://news.ycombinator.com/item?id={story_id}"
                 })
                 time.sleep(1)  # 避免请求过快
                 
