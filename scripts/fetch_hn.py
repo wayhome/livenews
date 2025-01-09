@@ -245,21 +245,38 @@ def fetch_top_stories():
                 print(f"获取评论内容...")
                 comments_texts = []
                 if 'kids' in story:
-                    for comment_id in story['kids'][:10]:
+                    for comment_id in story['kids'][:15]:  # 增加到前15条评论
                         comment = fetch_hn_item(comment_id)
                         if comment and not comment.get('deleted') and not comment.get('dead'):
                             clean_text = clean_html_text(comment.get('text', ''))
                             if clean_text:
-                                comments_texts.append(clean_text)
+                                author = comment.get('by', '匿名')
+                                comments_texts.append(f"[{author}]: {clean_text}")  # 添加作者信息
                 
                 # 合并评论文本，添加分隔符
-                comments_text = "\n---\n".join(comments_texts)
+                comments_text = "\n\n---\n\n".join(comments_texts)
                 comments_summary = "暂无评论"
                 if comments_text:
-                    comments_summary = get_summary(
-                        comments_text, 
-                        "请用中文总结这些评论的主要观点，限制在200字以内。"
-                    )
+                    comments_prompt = """请分析以下评论，总结出主要的不同观点和讨论要点。
+要求：
+1. 识别并区分不同的观点立场
+2. 保留重要的论据和例子
+3. 注意捕捉评论之间的讨论关系
+4. 如果有争议，请指出争议的焦点
+5. 用中文输出，限制在300字以内
+6. 分点列出不同观点，使用"•"作为列表符号
+
+格式示例：
+主要讨论点：[概括讨论的核心主题]
+
+不同观点：
+• [第一种观点]
+• [第二种观点]
+• [其他重要观点]
+
+补充讨论：[其他值得注意的讨论点]"""
+                    
+                    comments_summary = get_summary(comments_text, comments_prompt)
                 
                 stories.append({
                     'title': story.get('title', '无标题'),
@@ -272,9 +289,10 @@ def fetch_top_stories():
                     'comments_summary': comments_summary
                 })
                 time.sleep(1)  # 避免请求过快
+                
             except Exception as e:
                 print(f"处理故事 {story_id} 时出错: {e}")
-                continue  # 跳过这个故事，继续处理下一个
+                continue
         
         return stories
     except Exception as e:
