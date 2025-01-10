@@ -218,7 +218,7 @@ def fetch_top_stories():
         print("开始获取热门故事...")
         response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
         response.raise_for_status()
-        story_ids = response.json()[:10]  # 只取前10个
+        story_ids = response.json()[:15]  # 只取前15个
         print(f"成功获取到 {len(story_ids)} 个故事ID")
         
         stories = []
@@ -331,4 +331,4 @@ def main():
         print("未获取到任何故事，请检查网络连接和API状态")
 
 if __name__ == '__main__':
-    main() 
+    main()

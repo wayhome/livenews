@@ -5,8 +5,8 @@
 ## 功能
 
 - 每 6 小时自动抓取一次 HackerNews 热门内容
-- 获取 Top 10 热门故事
-- 收集每个故事的前 10 条评论
+- 获取 Top 15 热门故事
+- 收集每个故事的前 15 条评论
 - 使用 OpenAI API 生成评论摘要
 - 生成静态 HTML 页面展示
 - 通过 GitHub Pages 发布
@@ -70,4 +70,4 @@ python scripts/fetch_hn.py
 
 ## 许可
 
-MIT License 
+MIT License
