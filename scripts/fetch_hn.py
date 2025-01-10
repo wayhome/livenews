@@ -224,7 +224,7 @@ def fetch_top_stories():
         stories = []
         for i, story_id in enumerate(story_ids, 1):
             try:
-                print(f"正在处理第 {i}/10 个故事 (ID: {story_id})...")
+                print(f"正在处理第 {i}/15 个故事 (ID: {story_id})...")
                 story = fetch_hn_item(story_id)
                 if not story:
                     continue
