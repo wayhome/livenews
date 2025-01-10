@@ -4,6 +4,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# 在导入模块前先模拟环境变量
+os.environ["OPENAI_API_KEY"] = "test_key"
+os.environ["OPENAI_API_BASE"] = "https://api.test.com/v1"
+os.environ["OPENAI_MODEL"] = "test-model"
+
 # 导入要测试的模块
 from scripts.fetch_hn import (
     StoryCache,
@@ -41,6 +46,20 @@ def cache():
     # 清理测试文件
     if os.path.exists(cache_file):
         os.remove(cache_file)
+
+
+@pytest.fixture(autouse=True)
+def mock_env():
+    """自动设置测试环境变量"""
+    with patch.dict(
+        os.environ,
+        {
+            "OPENAI_API_KEY": "test_key",
+            "OPENAI_API_BASE": "https://api.test.com/v1",
+            "OPENAI_MODEL": "test-model",
+        },
+    ):
+        yield
 
 
 def test_story_cache_init(cache):
