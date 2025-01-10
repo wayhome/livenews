@@ -1,5 +1,7 @@
 # HackerNews 热门故事摘要
 
+[![Tests](https://github.com/wayhome/livenews/actions/workflows/test.yml/badge.svg)](https://github.com/wayhome/livenews/actions/workflows/test.yml)
+
 这是一个自动抓取 HackerNews 热门故事及其评论的项目，使用 OpenAI 生成评论摘要，并通过 GitHub Pages 展示。
 
 ## 功能
@@ -49,11 +51,11 @@ python scripts/fetch_hn.py
 
 ## 环境变量说明
 
-| 变量名 | 必填 | 默认值 | 说明 |
-|--------|------|--------|------|
-| OPENAI_API_KEY | 是 | - | OpenAI API 密钥 |
-| OPENAI_API_BASE | 否 | https://api.openai.com/v1 | OpenAI API 地址 |
-| OPENAI_MODEL | 否 | gpt-3.5-turbo | 使用的模型名称 |
+| 变量名          | 必填 | 默认值                    | 说明            |
+| --------------- | ---- | ------------------------- | --------------- |
+| OPENAI_API_KEY  | 是   | -                         | OpenAI API 密钥 |
+| OPENAI_API_BASE | 否   | https://api.openai.com/v1 | OpenAI API 地址 |
+| OPENAI_MODEL    | 否   | gpt-3.5-turbo             | 使用的模型名称  |
 
 ## 技术栈
 
