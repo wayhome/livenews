@@ -39,7 +39,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-03-10 17:25 (北京时间)
+            最后更新时间: 2025-03-10 21:33 (北京时间)
         </div>
         
         
@@ -50,52 +50,181 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: signa11</span> |
-                    <span>评分: 132</span> |
-                    <span>评论数: 10</span> |
+                    <span>评分: 285</span> |
+                    <span>评论数: 17</span> |
                     <span>发布时间: 2025-03-10 06:44</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了CPython项目在合并新的字节码解释器实现策略后，最初报告的性能提升了10-15%，但这些提升主要是因为无意中绕过了LLVM 19中的一个回退（regression）。当与更稳定的基线（如GCC、clang-18或带有特定调优标志的LLVM 19）对比时，性能提升降至1-5%。作者通过多周的编译、基准测试和反汇编分析，发现尾调用解释器确实带来了性能改进，但效果不如最初报告的显著。文章最后反思了基准测试和性能工程中的挑战，并强调这种混淆在软件工程中很常见。尽管存在LLVM回退问题，尾调用解释器仍是一个更为稳健的方案。</p>
+                    <p>文章主要讨论了CPython项目中字节码解释器的新实现策略，最初报告显示其性能提高了10-15%。然而，进一步研究发现，这一提升主要是因为无意中绕过了LLVM 19中的一个性能回退问题。当使用更好的基准（如GCC、clang-18或带有特定调优标志的LLVM 19）进行测试时，性能提升实际只有1-5%。作者通过大量编译、基准测试和反汇编不同Python二进制文件，分析了这一现象。尽管如此，尾调用解释器仍是一个不错的改进，提供了实际的速度提升，并且可能比旧解释器更稳健。文章最后还反思了基准测试和性能工程中的挑战，强调这种困惑在软件工程中很常见。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Python 3.14尾调用解释器的性能提升及其相关的 benchmarking 问题
+                    <div class="comments-summary">主要讨论点：CPython尾调用解释器的性能问题及其引发的更广泛的 benchmarking 和编译器优化讨论
 
 不同观点：
-• **支持与肯定观点**：
-   - jeeybee 认为 Python 3.14 的尾调用解释器尽管只有较小的性能提升，但这次事件提供了关于 benchmarking 严谨性和跨环境测试重要性的宝贵经验，并帮助发现了编译器bug。他提出对其他类似性能声明的质疑，以及如何更好地防范这些陷阱。
-   - 该评论还引发了对其他“X%更快”结果是否真实可靠的思考，提示可能存在 benchmarking 假象或未发现的回退。
-
-• **benchmarking 困难的观点**：
-   - MattPalmer1086 强调了 benchmarking 的复杂性，指出许多因素可能导致误导，例如代码和内存布局问题。他分享了自己遇到的情况，即未执行的代码加速了原始代码，强调了验证代码改进有效性的难度。
-   - 他还提到 Casey Muratori 的一系列相关文章，提供了进一步了解的资源。
-
-• **C语言与编译器优化观点**：
-   - kryptiskt 认为 C 语言并不是“接近机器”或“可移植汇编”，现代优化器会在不影响可观察效果的前提下对逻辑进行大幅度更改。他引用了文章中的例子，说明了编译器如何在无意中改变了优化的实际效果。
-
-• **环境变量影响的质疑**：
-   - thrdbndndn 对 benchmark 环境提出了质疑，指出在过载的 M2 MacBook Pro 上运行 benchmark 可能导致结果不可靠，并强调了在高度受控环境中进行 benchmark 的重要性。
-
-• **汇编与编译器特性的观点**：
-   - vkazanov 认为编译器对循环组织的调整是导致尾调用解释器效果不佳的原因，指出 CPU 架构和编译器版本对性能的重大影响。他还提到某些偏执的解释器实现会直接用汇编编写，例如 luajit，并分享了自己的文章和测试资源。
-
-• **未完全理解的情况与回归问题**：
-   - albertzeyer 对当前情况不完全理解提出了疑问，特别是 clang19 中是否存在其他回退，以及 clang18 和 clang19 的尾调用解释器性能对比。
-
-• **构建优化影响的观点**：
-   - tempay 提到评估 Python 构建性能的困难，指出不同的构建技巧可能导致性能差异，例如 conda-forge 构建的显著更快性能，并建议研究尾调用解释器与其他构建优化的结合效果。
+• [kenjin4096] 作为CPython尾调用解释器的作者，承认在代码中出现了严重的疏忽，并为此道歉。他指出，编译器中的bug导致了性能问题，并表示CPython团队没有预料到基准编译器会有这样的错误。
+• [MattPalmer1086] 强调了benchmarking的复杂性和容易被误导的特点。他通过个人经验说明，某些性能提升可能并非来自代码本身的优化，而是由于代码布局等其他因素带来的偶然结果。
+• [jeeybee] 认为尽管尾调用解释器没有带来预期的15%性能提升，但仍然是一个有价值的改进。更重要的是，这次事件提供了关于benchmarking严谨性和跨环境测试重要性的宝贵教训。
+• [kryptiskt] 指出C语言不再是“接近机器”的语言，现代优化编译器会对代码逻辑进行重大更改。他还提到C语言的抽象层次不够低，无法准确表达开发者的意图，导致代码对编译器的特性和版本非常敏感。
+• [vkazanov] 认为C语言并不适合处理现代CPU架构的指令调度优化，建议回到汇编语言来实现高效的解释器。他还分享了自己关于解释器循环实现方法的文章。
+• [Retr0id] 表示C语言已经不再“接近底层”，优化编译器虽然有用，但会让开发者感到难以控制代码的生成方式。
+• [tempay] 提到Python构建的性能评估非常困难，因为存在许多可以影响性能的构建技巧，并引用了一个关于conda-forge构建的例子。
+• [thrdbndndn] 对在过载的计算机上进行benchmarking表示困惑，认为这会导致结果不可靠，应该在高度可控的环境中进行测试。
+• [motbus3] 提出了Python 3.12和3.13比3.11慢的问题，并询问其他人是否也遇到了同样的问题。
+• [bjourne] 对跳转表的实现如何影响栈帧的创建表示疑问，认为这两者不应该相关。
+• [albertzeyer] 对clang19编译器中的回归问题和不同版本clang之间的性能比较表示关注，并提出了一些具体的测试建议。
+• [cb321] 强调了benchmarking中的复杂性和潜在的误导性，指出编译器优化和CPU架构的复杂交互可能导致非常惊人的结果。他还提到，对于小幅度的性能差异，应该使用带有误差范围的科学测量方法。
 
 补充讨论：
-• IshKebab 对 2% 和 9% 性能提升的差异表示疑惑，暗示可能存在其他未解释的因素。
-• 相关讨论链接提供了更多背景资料和社区讨论。
+• 争议的焦点之一是benchmarking的可靠性和编译器优化带来的偶然性结果。例如，MattPalmer1086和cb321都提到了benchmarking中可能出现的误导性结果。
+• 另一个值得注意的讨论点是C语言是否仍然适合作为“接近机器”的语言。kryptiskt和vkazanov都认为C语言在现代优化编译器下已经不再“底层”，并建议使用汇编语言来实现某些高效的解释器。
+• 尾调用解释器的性能提升幅度也引发了讨论，部分评论者如jeeybee认为即便是较小的性能提升也是有价值的，而IshKebab则对不同测试结果之间的差异表示关注。
 
-争议焦点：
-• 主要集中在 benchmarking 的可靠性和编译器优化的意外影响上，特别是如何准确评估和解释性能提升。</div>
+总结：评论主要围绕CPython尾调用解释器的性能问题展开，涉及benchmarking的复杂性、编译器优化的偶然性、C语言的局限性以及具体的测试方法和结果比较。这些讨论揭示了在现代计算环境中进行性能优化的多重挑战和潜在的误区。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43317592" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2502.05244" target="_blank">Probabilistic Artificial Intelligence</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pavanto</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-03-10 09:50</span>
+                </div>
+                
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了概率人工智能（Probabilistic Artificial Intelligence）的理论与应用，重点在于如何在人工智能系统中处理和利用不确定性。文章分为两部分：第一部分介绍概率机器学习方法，区分了由于数据缺乏导致的“认知不确定性”和由于噪声引起的“任意不确定性”，并讨论了概率推理及高效的近似推理方法。第二部分关注在序列决策任务中考虑不确定性，包括主动学习、贝叶斯优化以及利用神经网络的深度强化学习方法，特别是基于模型的强化学习如何利用不确定性进行探索和安全考量。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕Laplace Approximation及其应用的讨论，以及对Gaussian Processes相关研究的提及。
+
+不同观点：
+• thisisauserid认为Gemini 2.0 Experimental 02-05能够有效处理多达107K tokens，并提到Laplace Approximation是一种将复杂概率分布简化为高斯分布的快速方法。他指出该方法速度快且简单，但在真实分布不像高斯分布时可能不准确且过于自信。
+
+• abhgh引用了Andreas Krause在Gaussian Processes和Bandits方面的研究，表明他对该领域有深入的兴趣和研究，可能暗示Laplace Approximation在这些研究中具有潜在应用价值。
+
+• brador对噪声输入、噪声处理和噪声链之间的区别表示兴趣，虽然没有深入讨论具体方法，但显示出对不同类型噪声的关注。
+
+• jacob019则关注实际应用，询问该内容是否可以作为印刷书籍获取，显示出对将技术内容离线可读性的需求。
+
+补充讨论：
+• Laplace Approximation的优缺点是讨论的核心，尤其是其在处理复杂概率分布时的效率和潜在的不准确性。
+• 对Gaussian Processes相关学术研究的引用为讨论提供了更深层次的学术背景。
+• 不同参与者关注的角度各异，从技术实现、学术研究到实际应用和可读性，体现了多方面的兴趣。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43318624" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://exclusivearchitecture.com/03-technical-articles-CLT-12-autofocus-systems.html" target="_blank">Canon EF and RF Lenses – All Autofocus Motors</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ExAr</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-03-10 13:12</span>
+                </div>
+                
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>佳能自动对焦镜头技术自1981年推出以来，显著提升了拍摄移动对象的可靠性和准确性，使摄影更加大众化。佳能开发了七种不同的自动对焦马达技术，包括Arc-Form Drive（弧形驱动）、Ring-Type USM（环形超声波马达）、DC Micro Motor（直流微型马达）、Micro USM、Stepper Motor（步进马达）、Nano USM和Voice Coil Motor（音圈马达）。
+
+这些技术可以分为旋转驱动系统和线性驱动系统。早期的马达如Arc-Form Drive和Ring-Type USM采用旋转运动，而后来的Nano USM和Voice Coil Motor则采用直接的线性驱动。其中，Ring-Type USM率先支持全时手动对焦覆盖。最新的马达技术如Stepper Motor、Nano USM和Voice Coil Motor采用电控对焦，而非机械连接。
+
+不同马达类型的首次使用时间各异，早期如Arc-Form Drive已停产，但多数仍在使用。了解这些技术差异有助于选择合适的镜头。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于ExAr撰写的电子书，内容涵盖过去40年中佳能EF和RF镜头使用的所有自动对焦马达类型。
+
+不同观点：
+• 一些读者对这本书表示强烈兴趣，特别是因为他们希望深入了解佳能镜头中不同自动对焦马达类型之间的技术差异。例如，有读者特别提到想要了解微型超声波马达（Micro USM）和步进马达（Stepping Motor）的区别。
+
+• 另一部分读者则对书中是否涵盖佳能RF新镜头的技术细节表示关注，尤其是RF镜头自动对焦技术的最新进展，比如其在视频自动对焦中的表现和优势。
+
+• 还有读者提出了对价格的敏感性，他们希望了解这本书的定价和具体内容量是否匹配，特别是与网络上免费资源的对比，认为如果内容不够深入或者独家，可能会选择不购买。
+
+• 一位读者指出，希望书中能包含对不同马达类型在实际拍摄中的表现对比，而不仅仅是技术参数的罗列，这样更有助于理解哪种马达更适合特定的拍摄需求。
+
+补充讨论：
+• 一些读者关心电子书的更新频率，尤其是在佳能不断发布新镜头和新技术的背景下，担心购买后内容会很快过时。
+
+• 讨论中还涉及到对具体例子的需求，比如不同马达在低光环境下的对焦速度和精度对比，这被认为是实际使用中非常关键的考量因素。
+
+• 最后，有读者询问ExAr的背景和专业性，以判断这本书的可信度和权威性，特别是相对于其他已有的技术文献和测评文章。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43320230" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.ecosia.org/trees-not-profits/" target="_blank">Trees not profits: we're giving up our right to ever sell Ecosia (2018)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: erlend_sh</span> |
+                    <span>评分: 110</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-03-10 07:42</span>
+                </div>
+                
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Ecosia创始人Christian Kroll回顾了创立公司的初衷：不为赚钱，而是为了改善环境。他做出了两项承诺：永不出售公司和永不分红。如今，Ecosia已发展成全球最大的环保运动之一，每月种植数百万棵树。为加强承诺，Kroll决定将公司转变为"管理自有公司"（steward-owned company）， legally确保公司股份不能被出售或外部分红，利润全部用于种树。这种模式与传统商业追求利润最大化不同，Ecosia旨在最大化植树数量。Kroll希望更多企业效仿，以更有意义的目标驱动商业发展。他还感谢了早期投资人Tim的支持。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Ecosia作为非盈利公司及其运营模式的有效性和透明度
+
+不同观点：
+• [dwedge] 对非盈利公司（如Ecosia）的商业模式表示怀疑，尤其是高工资支出和创始人获利可能性。他认为，如果公司每月有稳定收入，创始人不需要通过出售公司获利。
+• [jksflkjl3jk3] 对Ecosia将非盈利树种植与搜索引擎结合的模式感到困惑，质疑两者结合的合理性和必要性。
+• [aswerty] 对Ecosia和"Steward Owned companies"的理念表示赞赏，但个人因使用广告屏蔽工具和付费服务而不使用Ecosia，并认为很多技术社区的人可能有相似情况。
+• [stakhanov] 对"Steward Owned company"的法律结构感兴趣，希望了解更多相关信息，尤其是德国的具体法律背景。
+• [conaclos] 询问其他人对Ecosia日常使用的体验，并将其与DuckDuckGo和Qwant进行比较，关注用户体验。
+• [mapt] 强调现有的法律结构可以确保非盈利组织的透明度，不需要仅凭公司自己的声明来相信其非盈利性质。
+• [jasoncartwright] 提出对Ecosia种植树木的实际效果和其绿色再投资模式与传统盈利公司（如Google）环境影响的独立验证需求。
+• [reify] 分享个人使用Ecosia的体验，认为其功能与其他搜索引擎类似，通过广告收入种植树木的模式值得支持。
+• [hoseja] 对种植树木的必要性提出质疑，认为树木更需要安全的生长环境，而非简单地种植。
+• [goodpoint] 对"Steward Owned company"是否为工人合作社性质提出疑问，并质疑为何不直接称之为合作社。
+
+补充讨论：
+• Ecosia的非盈利性质及其透明度是讨论的核心，部分评论者对其高工资支出和创始人获利可能性表示关注。
+• 用户对Ecosia结合树种植与搜索引擎功能的合理性存在疑问，部分用户对其日常使用体验感兴趣。
+• 对"Steward Owned company"法律结构的兴趣和定义的讨论，反映出对新型企业模式的理解需求。
+• 对种植树木生态效果的科学性讨论，提出种植树木是否为最佳环保策略的争议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43317887" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,40 +239,39 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: walrus01</span> |
-                    <span>评分: 243</span> |
+                    <span>评分: 260</span> |
                     <span>评论数: 27</span> |
                     <span>发布时间: 2025-03-10 00:16</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了美国国家射电天文台（NRAO）在格林班克园区使用的特殊车辆和一些望远镜的教育与科研功能。NRAO的车辆为了避免产生射频干扰（RFI），选择了老旧的无芯片柴油车，这些车不会干扰射电望远镜的观测。由于新车中的电子设备会产生RFI，园区内只允许使用这些老旧但可靠的蓝色柴油车。此外，园区内有一台简易的网状碟形望远镜用于教学，接待来访的学生并教授射电天文学知识。每年暑期，附近的全国青少年科学营会派教师到NRAO参加密集课程，学习如何使用40英尺教学望远镜。文章还提到一个重新启用的极轴望远镜，用于与MIT合作的大气研究项目。NRAO的大型望远镜，如GBT，则被谨慎保护以避免损坏。</p>
+                    <p>这篇文章介绍了美国国家射电天文台（NRAO）在格林班克使用的特殊车辆和部分望远镜的用途。由于汽油车会产生射频干扰（RFI），NRAO使用没有电子芯片的老旧柴油车以避免干扰研究。这些车虽然外观老旧，但能有效避免对射电望远镜的干扰，并在寒冷天气中通过持续通电保持可随时启动。此外，NRAO还参与教育项目，使用简单的网状碟形天线望远镜教导学生射电天文学知识。每年夏季，全国青年科学营的教师们会在NRAO进行为期两周的密集课程，之后可带学生使用40英尺教学望远镜。文章还提到一个1950年代建造的极轴望远镜，因计算能力限制采用银河坐标系，现与MIT合作进行大气研究。NRAO还提到不希望大型望远镜如GBT频繁移动，以保护设备。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：电磁干扰（RFI）、车辆与设备的技术历史、射电静区（Radio Quiet Zone）的相关技术和故事
+                    <div class="comments-summary">主要讨论点：围绕无线电干扰（RFI）、柴油发动机车辆、以及射电望远镜观测区的技术和历史讨论。
 
 不同观点：
-• TrackerFF强调了军用雷达和未知电磁干扰对家庭录音室设备的干扰问题，并提到曾尝试多种方法解决但无果，表达了对RFI影响的沮丧。
-• mobilene回忆了20世纪70年代的UHF电视市场，分享了对Blonder-Tongue品牌的怀旧情感，该设备是为了解决当时电视接收问题而设计的。
-• frompdx讨论了早期汽车引擎（6.2L Detroit Diesel）的技术特点和改装潜力，强调了这种引擎的简单性和可靠性，尽管动力不强但效率高。
-• defrost介绍了Murchison Radio Quiet Zone内SKA-Low望远镜项目中的SMART盒子技术，并分享了相关资源链接，强调了射电天文学中对"无线电静音"的高标准要求。
-• watersb建议NRAO发起一个无电子设备的全尺寸柴油车的众筹项目，以测试市场需求，并提到对新Hilux车型的不满。
-• laurencerowe引用了NRAO员工Sizemore将新道奇卡车改装为RFI车辆的故事，并提供了存档链接。
-• CobaltFire作为业余无线电爱好者，分享了在城市电磁频谱混乱中操作低功率设备的挑战，并提到曾参观Sugar Grove Station的经历。
-• iancmceachern讲述了老式Perkins柴油引擎的独特操作体验，尤其是其物理停机机制。
-• gooseyard分享了自己在西弗吉尼亚州射电天文台附近的成长经历，并提到当地科学社区与农村环境的独特结合。
-• dhosek开玩笑地建议在射电天文台使用马车或铺设铁路运输，以减少电磁干扰。
-• rootbear回忆了一次偶然参加NRAO 50周年开放日的经历，并提到朋友姓Blonder，与Blonder-Tongue品牌创始人的关系。
-• johnklos表示拥有100%机械引擎的1981年柴油Chevette具有可靠性、效率和易维修的优势。
-• floatrock讨论了在射电静区处理电磁干扰问题的实例，强调了人际网络在协调和解决问题中的重要性。
+• [mobilene] 提到20世纪70年代UHF接收器（如Blonder-Tongue产品）在电视信号接收中的应用，并表达了对家乡 nostalgia 的情感。
+• [TrackerFF] 分享了自己因军事雷达和不明RFI噪音对家庭录音设备的困扰，强调了电磁干扰对精密设备的影响，并提到曾试图通过多种方法解决未果。
+• [frompdx] 讨论了早期柴油发动机（如6.2L Detroit Diesel）在老式车辆中的改装和使用，强调了这些发动机的简约和可靠性，而非高性能。
+• [defrost] 介绍了澳大利亚Murchison Radio-astronomy Observatory中使用的射电望远镜相关技术（如SMART boxes），并提供了关于无线电静区的相关资料链接。
+• [laurencerowe] 提到了NRAO的RFI车辆项目以及Green Bank Telescope（GBT）的设计和其对RFI的敏感性，还分享了与射电望远镜相关的历史故事。
+• [silisili] 建议NRAO通过众筹生产无电子设备的柴油车，以回应市场对简约车辆的需求，并指出某些卡车车型在市场上的受欢迎程度。
+• [CobaltFire] 分享了自己作为HAM无线电爱好者的经历，讨论了在城市电磁环境中操作低功率设备的挑战，并对参观射电望远镜站表示兴趣。
+• [floatrock] 强调了在射电望远镜保护区中执行RFI规定的人际网络的重要性，并分享了关于FCC执法和个人关系的实例。
+• [gooseyard] 描述了自己在West Virginia的成长经历，以及当地农村中科学家社区和射电望远镜阵列的独特存在，还提到了附近的一些旅游景点。
+• [iancmceachern] 分享了关于老式Perkins柴油发动机的独特操作体验，强调了机械设备与现代电子设备的区别。
+• [rkagerer] 提到了现代车辆电磁噪音对敏感设备的影响，并分享了自己在船上处理电磁干扰问题的经验。
+• [dhosek] 以幽默的方式建议在射电望远镜观测区使用马车或缆车来减少电磁干扰。
+• [rootbear] 分享了自己参观NRAO的经历，并提到与Blonder-Tongue创始人的家族关系，提供了历史背景。
 
 补充讨论：
-• 争议焦点：TrackerFF所提到的电磁干扰问题，尤其是在录音设备中无法消除的干扰，成为讨论中的一个痛点。不同用户分享了各自在类似情况下尝试过的解决方案，但未有明确的技术解答。
-• 技术历史：mobilene和rootbear的评论提到了老式电视接收设备和卡车改装的历史，这为讨论增加了怀旧和技术演进的历史维度。
-• 射电天文学的技术要求：defrost和floatrock的评论深入探讨了射电天文台对电磁干扰控制的严格要求，并提供了相关技术资源和实例，突显了技术协调中人际网络的重要性。
-• 车辆技术：frompdx和johnklos的评论侧重于老式柴油引擎的技术特点，尤其是其简单性、可靠性和改装潜力，展现了对老式机械设备的欣赏。</div>
+• 争议焦点：[TrackerFF] 提到的电磁干扰问题在不同地点和设备中的广泛影响与其他评论中对老式机械设备（如柴油车和机械发动机）的推崇形成对比，显示出现代技术与传统技术之间的矛盾。
+• 有趣的论据：[silisili] 提出的关于市场对无电子设备车辆需求的想法引发了对现代技术复杂性与传统简约性的讨论，并得到了其他评论者的共鸣。
+• 技术细节：多个评论中提到了具体的技术细节，如UHF接收器、柴油发动机设计、射电望远镜的RFI问题和具体解决方案，提供了对主题的深入理解。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43315406" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -160,51 +288,49 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: todsacerdoti</span> |
-                    <span>评分: 286</span> |
-                    <span>评论数: 14</span> |
+                    <span>评分: 339</span> |
+                    <span>评论数: 19</span> |
                     <span>发布时间: 2025-03-09 22:38</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了操作系统内核的安全问题，特别是单体式内核设计带来的漏洞风险。单体式内核具有对整个系统的无限制访问权限，一旦软件漏洞被利用，可能导致整个系统被攻破。文章对比了微内核设计，后者通过将大部分操作移出内核来提高安全性，但可能导致性能和复杂性问题。
+                    <p>文章讨论了操作系统内核的安全问题，特别是单体式内核设计易产生安全漏洞的缺点，因为所有系统功能都集中在一个内核中，一旦被利用可能导致整个系统崩溃。尽管微内核设计通过将功能移出内核来提高安全性，但其性能和复杂性问题使得单体式内核依然普遍使用。
 
-文章还介绍了苹果操作系统（iOS、macOS等）使用的XNU内核，尽管基于微内核Mach，但实际运作更像单体式内核，因此也面临类似的安全问题。为此，苹果采取了多种隔离措施，包括2013年推出的Secure Enclave，利用独立硬件和微内核操作系统（SepOS）保护敏感数据；2017年的页面保护层（PPL）和2021-2023年推出的安全页表监控器（SPTM），进一步加强内存管理的安全性，减少内核漏洞的潜在影响。
+苹果的XNU内核虽然基于微内核Mach，但实际上作为单体式内核运行，存在类似漏洞问题。为解决此问题，苹果采取了多种隔离措施：
 
-总的来说，文章探讨了操作系统内核设计的安全挑战以及苹果为缓解这些问题所做的努力。</p>
+1. **2013年 - 安全飞地（Secure Enclave）**：在iPhone 5s中引入，使用独立的硬件和微内核（SepOS）保护敏感数据，如加密密钥和生物识别信息。
+2. **2017年 - 页面保护层（PPL）**：在iPhone 8和X中引入，通过隔离内核部分功能来保护内存页表。
+3. **2021-2023年 - 安全页表监控器（SPTM）**：在iPhone 13中引入，进一步隔离内核组件并增强内存保护。
+
+这些措施旨在减少单体内核的漏洞影响，提升系统安全性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Apple平台安全架构、虚拟化技术及其影响
+                    <div class="comments-summary">主要讨论点：Apple设备中使用安全区域（exclave）技术控制摄像头LED等安全机制的合理性及其更广泛的安全架构讨论
 
 不同观点：
-• **技术实现细节及未来发展**：
-   - [transpute] 认为Apple通过增加处理器特权级别和虚拟化扩展来支持SK（Secure Kernel），并提到未来Apple Platform Security指南可能会涵盖SK exclaves及基带缓解措施。同时指出XNU内核正在向微内核架构重构，并通过SPTM和TXM进行安全操作。
-   - [akyuu] 则对macOS的安全性表示关注，指出根据Apple文档，SPTM并未被使用，并质疑未来exclaves在macOS上的应用。
-
-• **Apple的安全责任及用户隐私**：
-   - [neom] 提到Steve Jobs对用户隐私的重视，认为Apple有责任保护用户数据，并表达对现任CEO Tim Cook的信任。
-   - [hello_computer] 质疑Apple保护用户隐私的动机，提出“the last geohot”的可能性，暗示Apple可能对用户进行控制。
-
-• **技术评价及应用前景**：
-   - [yalogin] 对原帖作者的技术水平表示赞赏，并表明自己对exclaves有研究，认为原帖内容详实。
-   - [teknologist] 关注exclaves技术是否能被应用开发者使用，批评Apple在发明新技术后对开发者不开放，导致安全应用无法广泛使用。
-
-• **技术风险及安全隐患**：
-   - [markus_zhang] 对enclave技术的硬件实现提出疑问，担心其可能导致权限提升攻击，并将其比作协处理器。
-   - [kazinator] 认为如果用户关心的内容大部分在“Insecure World”中，那么整个安全架构可能只是为平台提供商服务，用户利益被忽视。
+• **lambdaone的观点**：认为使用安全区域来控制摄像头LED是过度工程化（overengineering）。他建议通过简单的硬件逻辑电路实现这一功能，并提到类似的设计也可以应用于麦克风。他强调物理LED的重要性，而不是仅依赖软件控制。
+• **transpute的观点**：解释Apple采用这些复杂机制的背景，提到Apple在处理器特权级别、虚拟化扩展和嵌套虚拟化方面的技术进展。他进一步讨论了Apple在安全方面的其他措施，如SPTM和TrustZone技术，并提供了相关参考链接。
+• **neom的观点**：从情感层面怀念Steve Jobs，认为Apple目前仍坚持Jobs时代对用户隐私和安全的承诺。
+• **kennysoona的观点**：将Apple的虚拟化安全机制与Linux的虚拟化安全（VBS）进行比较，指出两者在使用硬件虚拟化和隔离环境上的相似性。
+• **talkingtab的观点**：提到历史上的Mach内核，通过IPC（进程间通信）代替陷阱机制，暗示对现代安全机制的某种历史背景理解。
+• **markus_zhang的观点**：对安全区域技术的细节不熟悉，但提出是否可以通过攻击enclave来提升权限，并猜测这种硬件是否类似于协处理器。
+• **akyuu的观点**：质疑安全区域技术对macOS安全的适用性，指出Apple文档中未使用SPTM，并认为现有机制对MacBooks已经足够，但未来可能会有变化。
+• **hello_computer的观点**：对Apple的安全保护机制提出质疑，认为保护用户隐私的同时，也需要防止Apple自身可能的侵犯。
+• **teknologist的观点**：希望Apple能够开放安全区域技术给开发者使用，而不是仅限于内部使用，让其他应用如银行、安全消息等也能受益。
 
 补充讨论：
-• **幽默与轻松评论**：
-   - [totetsu] 以幽默方式解读原文，将其误读为“breakfast of eggs”，表达对技术细节的调侃。
-   - [ZebraDude] 仅表示对讨论内容的兴趣，没有深入评论。
+• **yalogin的观点**：赞赏作者的专业水平，表示对exclave技术有深入跟踪，认可文章的质量。
+• **totetsu的观点**：以幽默方式解读原文，误读出一幅系统安全崩溃的画面，增加了一些轻松的元素。
+• **ZebraDude的观点**：简单表示对讨论内容的兴趣，没有具体立场。
+• **saagarjha的观点**：简要提到Apple可能因为没有TrustZone而采用SPTM管理安全与非安全世界之间的转换。
 
 争议焦点：
-• Apple安全架构的实际效果及其对用户隐私的保护程度。
-• 新技术是否应向开发者开放以及如何平衡平台安全与用户自由。
-
-整体来看，讨论围绕Apple的安全技术细节、用户隐私保护、新技术应用前景及潜在风险等方面展开，展现了参与者对技术实现和应用的深入思考及不同观点。</div>
+• 使用安全区域技术是否过度复杂，是否可以通过更简单的硬件逻辑实现同样的功能（lambdaone与transpute的观点对立）。
+• Apple是否应该将新的安全技术开放给开发者，以提升整体生态系统的安全性（teknologist的观点）。
+• 对Apple自身在用户隐私保护方面的信任问题（hello_computer的观点）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43314657" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -217,41 +343,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.openapk.net" target="_blank">OpenAPK – open-source Apps for Android, updated weekly</a>
+                    <a href="https://physics.aps.org/articles/v18/53" target="_blank">Quantum Milestones, 1964: John Stewart Bell Rings in New Era of Quantum Theory (2022)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: CHEF-KOCH</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-03-09 09:13</span>
+                    <span>作者: sohkamyung</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-03-10 12:29</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个提供免费和开源（FOSS）Android应用的资源库——OpenAPK，确保用户可以下载到最新、安全可靠的APK文件。文章列举了多个热门开源应用，如WeatherMaster、Binary Eye、Gramophone和Signal等，涵盖天气、工具、音乐、游戏等多个类别。此外，文章还强调了使用开源应用的优势，包括更高的透明度、增强的隐私保护、更大的定制化空间以及社区支持，这些特点使开源应用相比闭源软件更安全、可控，且通常无广告干扰。</p>
+                    <p>1964年，约翰·斯图尔特·贝尔通过其著名论文提出了贝尔定理，展示了量子物理预测的关联性违反了某些不等式。这表明量子力学与局域性不兼容，即便存在量子理论未考虑的“隐变量”。贝尔的工作挑战了哥本哈根解释的主导地位，后者主张不对量子现象做哲学探讨。贝尔受到大卫·博姆的隐变量理论启发，但并未全盘接受，而是深入思考爱因斯坦-波多尔斯基-罗森佯谬，提出自己的理论。尽管初期未受关注，贝尔的理论最终引发了对量子力学基础的重新审视，并在2022年诺贝尔物理学奖中得到认可。贝尔的贡献开启了量子理论的新时代，强调了现实本质的深层次问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源Android应用的构建与分发，特别是在工具链和APK获取方式上的争议。
-
-不同观点：
-• **[silverliver]的观点**：对构建APK仍需同意EULA和使用专有软件表示不满。他认为，尽管开源Android应用的努力增加，但被迫使用受限的工具进行开发和构建让人感到不适。
-
-• **[fulafel]的观点**：提出使用F-Droid作为替代方案，认为这是一个现成的开源应用商店，可以避免使用专有工具链的问题。
-
-• **[PhilippGille]的观点**：提到Obtainium作为一个类似的解决方案，提供了一种获取开源应用的途径，并附上了相关链接以供参考。
-
-• **[naranyala]的观点**：推荐使用APKMirror作为获取APK的来源，表明这是一个可靠的选择。
-
-• **[kopirgan]的观点**：指出使用来自未知来源的APK可能需要关闭一些保护措施，这可能会导致某些银行应用程序无法正常工作。因此，这种方法仅适用于不涉及关键工作的备用手机。
-
-补充讨论：
-• **争议的焦点**：构建和分发开源Android应用时，是否必须依赖专有工具链以及如何在便利性和安全性之间取得平衡。
-• **解决方案的推荐**：不同用户提出了不同的解决方案，如F-Droid、Obtainium和APKMirror，各自有其优缺点。
-• **安全性考虑**：关闭保护机制以安装未知来源APK所带来的安全风险，尤其是在涉及敏感应用如银行应用程序时。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43307489" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43319875" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -262,47 +372,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.karl.berlin/stacktraces.html" target="_blank">Stack Traces Are Underrated</a>
+                    <a href="https://www.abortretry.fail/p/so-powerful-its-kind-of-ridiculous" target="_blank">3dfx, So powerful, it's kind of ridiculous (2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zoidb</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-03-10 07:01</span>
+                    <span>作者: kristianp</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-03-07 04:07</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了栈追踪（stack traces）在调试中的重要性及其在现代编程中的局限。作者通过一个Python程序的错误示例展示了栈追踪如何提供有价值的信息，如错误位置、调用栈和文件路径，从而帮助快速定位和解决问题。然而，并非所有语言都提供栈追踪，如C、Go和Rust常使用特殊返回值处理错误，导致缺乏详细的栈信息。虽然Rust提供了`backtrace`模块来捕获栈追踪，但仍需手动添加。此外，微服务和容器化等现代架构也使栈追踪更难实现。作者认为，栈追踪的性能成本是值得的，对调试非常有帮助，并质疑为何少有人抱怨其缺失。</p>
+                    <p>这篇文章简要介绍了3dfx Interactive的历史及其创始成员的背景。文章提到1988年Silicon Graphics（SGI）开发了基于MIPS CPU和IRIS图形系统的工作站，其中的IRIS GL API后来演变为OpenGL。SGI试图将IrisVision显卡推向PC市场，但未获成功，最终该项目独立为Pellucid公司。
+
+文章还介绍了3dfx的四位核心成员：Gary Tarolli、Scott Sellers、Ross Smith和Gordon Campbell。他们分别在SGI和其他公司积累了丰富的芯片设计和图形技术经验。受3D游戏市场发展的启发，他们意识到消费级3D加速的潜力，并开始探索更经济的3D图形解决方案。
+
+最终，Pellucid被Media Vision收购，但后者因法律和财务问题破产。随后，这些创始成员继续他们的旅程，为日后3dfx的成立奠定了基础。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：栈追踪（stack traces）在不同编程语言和环境中的使用、优缺点以及替代方案。
+                    <div class="comments-summary">主要讨论点：将游戏《Rogue Squadron 3D》从3dfx Glide移植到Vulkan的讨论
 
 不同观点：
-• **Rust中的栈追踪**：the_mitsuhiko指出，Rust通过backtrace模块可以实现栈追踪，但需要手动添加到每个错误中，且该功能尚未稳定。此外，随着异步编程的普及，栈追踪在某些情况下变得不可靠，导致开发者对它的信任度降低。
-
-• **栈追踪的价值**：montebicyclelo认为栈追踪在生产环境中的问题排查非常有效，不应轻易关闭，除非性能优化需要。
-
-• **Lisp SBCL栈追踪的优势**：anonzzzies赞赏Lisp SBCL的栈追踪，即便在复杂项目中也能有效帮助识别和解决问题。
-
-• **调试器的重要性**：TinkersW认为，虽然栈追踪有用，但进入调试器查看局部变量和程序状态往往更有效。
-
-• **错误处理方式的比较**：Chilinot支持Rust和Go的错误处理方式，即通过返回值处理错误，而非异常流，这迫使开发者正视错误处理。
-
-• **回溯调试器的记忆**：berkes回忆起一种可以回溯栈帧的调试器，但不确定是否记错，希望找到类似的工具。
-
-• **AI在调试中的应用**：logicallee建议利用AI（如ChatGPT）来分析栈追踪，可以更深入地理解问题，并找到解决方案。
-
-• **异步编程的挑战**：cyberax指出在进行异步编程（如React）时，传统线性栈追踪的优势会变得明显。
+• Petermcneeley认为这是一个相关的讨论，并分享了自己关于如何将《Rogue Squadron 3D》从3dfx Glide移植到Vulkan的详细演示，提供了一个YouTube视频链接。他可能认为这种技术移植具有实际意义，并且愿意展示具体操作步骤和结果。
+• 其他用户可能会关注此评论以获取技术细节，尤其是关于如何处理不同图形API之间的兼容性问题。视频链接暗示了实际操作中的技术挑战和解决方案，可能对有类似需求的人提供参考价值。
 
 补充讨论：
-• 争议的焦点之一是栈追踪的可靠性和必要性。随着异步编程和复杂依赖的增加，栈追踪在某些环境下的有效性受到质疑。
-• 不同开发者对栈追踪、调试器和AI在调试中的角色有不同的偏好和实践经验。
-• 对于错误处理方式，存在两种主要观点：一种是通过返回值处理错误（如Rust和Go），另一种是通过异常流处理错误（如Java和Python）。</div>
+• 评论中未出现直接的争议或反对意见，但可能存在潜在的技术讨论点，比如从Glide到Vulkan移植过程中遇到的困难、性能优化问题以及对原游戏体验的保留程度。
+• 视频链接可能包含更多技术细节和实际操作示例，这些可以作为进一步讨论的基础，尤其是对于有兴趣在老游戏上应用现代图形技术的开发者或爱好者。
+• 该评论也可能引发关于其他老游戏移植到现代图形API的可行性和价值讨论，涉及到技术怀旧和游戏保存等更广泛的主题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43317678" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43287327" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -313,36 +414,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.science.org/doi/10.1126/scitranslmed.adq5720" target="_blank">Stanford researchers develop dual-antibody treatment for ALL SARS-CoV-2 variants</a>
+                    <a href="https://www.ycombinator.com/companies/furtherai/jobs" target="_blank">FurtherAI (YC W24) Is Hiring</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ohjeez</span> |
-                    <span>评分: 223</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-03-10 00:46</span>
+                    <span>作者: sgondala_ycapp</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-03-10 12:00</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>FurtherAI 正在打造一个由AI驱动的团队，专注于自动化保险行业的工作流程，包括处理非结构化文档、数据输入和电话沟通等任务。公司核心目标是让AI像新员工一样可靠、自适应并持续学习。FurtherAI 已获得包括Y Combinator在内的顶级投资者的 pre-seed 轮融资，公司由两位创始人于2023年成立，目前正在招聘多个职位，如前端工程师、软件工程师、产品设计师、应用研究工程师、社交媒体与内容营销专员、以及销售开发代表，薪酬范围从$40K到$200K不等，并提供股权激励。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于双特异性抗体在对抗SARS-CoV-2变异株中的效用及其目前应用的可能性
-
-不同观点：
-• [kens] 认为该双特异性抗体仅在感染前有效，感染后的治疗效果有限，因此不能算作治疗手段。同时指出，该研究目前仅在老鼠身上进行，尚未在人类中应用，所以其实际应用可能是未来的事情，而非当下可使用的解决方案。
-• [mkoryak] 提出了该抗体是否意味着一种更好的疫苗的疑问，表明对该研究在疫苗开发方面的潜力感兴趣。
-• [tomrod] 表达了对该抗体的积极态度，简单表示愿意尝试。
-• [petesergeant] 强调研究仅在老鼠身上进行，建议在讨论中明确标注“在老鼠中”以避免误导，暗示不应过早将此研究结果应用于人类。
-
-补充讨论：
-• 争议焦点在于该研究的当前实用性，尤其是在人类中的有效性和应用前景。
-• 有人关注该抗体是否能发展成更好的疫苗，显示出对该研究在疫苗领域的潜在应用的期望。
-• 强调实验仅在动物模型中进行，提醒读者不应过早乐观或误解其实际应用价值。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43315634" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43319611" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -353,102 +443,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pippinbarr.com/it-is-as-if-you-were-on-your-phone/info/" target="_blank">It is as if you were on your phone</a>
+                    <a href="https://www.noemamag.com/how-to-build-a-thousand-year-old-tree/" target="_blank">How to Build a Thousand-Year-Old Tree</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 657</span> |
-                    <span>评论数: 41</span> |
-                    <span>发布时间: 2025-03-09 13:40</span>
+                    <span>作者: matthewjpo</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-03-07 14:36</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《It is as if you were on your phone》是一款针对手机的游戏，探讨了现代人面临的矛盾：既被迫不断使用手机，又被这种持续的使用所累。玩家假装在使用手机，以显得合群，但实际上什么也没做，只需跟随提示即可。这款游戏由Iwan Morris开发，利用p5和Hammer.js制作，旨在引发人们对手机依赖的反思。游戏获得了Pocket Gamer和Kottke.org等媒体的关注，并在特定许可下发布。</p>
+                    <p>文章主要介绍了英国著名的古老橡树——梅杰奥克（The Major Oak），它位于舍伍德森林，已有约800年历史，尽管部分腐朽，但仍通过各种保护措施维持生命。文章探讨了如何通过实验技术和方法，如扫描树木结构、注射微生物、人工制造树干等，试图在短时间内 recreate 这些古老树木的特征，以应对生物多样性丧失的危机。英国的橡树不仅是国家骄傲的象征，也是森林生态的重要组成部分，支持着大量物种的生存。面对自然环境的恶化，科学家和环保人士正推动立法，将国家公园视为活生态系统，而不仅仅是供人类休闲的绿地。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对一个手机应用的评价和讨论，该应用模拟了人们在公共场合使用手机的行为，并引发了关于现代人手机使用习惯的反思和艺术效果的争议。
+                    <div class="comments-summary">主要讨论点：网站被流量冲击及其引发的讨论
 
 不同观点：
-• [正面评价] 
-  - flanbiscuit: 认为该应用让人会心一笑，并引发对智能手机前时代的思考，联想到以前读书的时光。
-  - Willingham: 喜欢应用中的细节（如提示挠耳朵），认为非常有趣。
-  - furyofantares: 认为该应用有类似冥想的效果，并表示喜欢。
-  - bmcahren: 认为该应用适合AI机器人用来在公共场合中融入人群。
-  
-• [功能与改进建议] 
-  - svennidal: 感谢该应用，认为能在尴尬场合中派上用场，避免自己与周围低头族格格不入。
-  - knowknow: 认为应用在尴尬过渡时刻有用，比如在公交车上可以避免尴尬。
-  - arjonagelhout: 喜欢概念，但认为与实际使用手机方式不符，建议加入社交媒体操作或更多互动指令（如微笑或注视他人）。
-  - praptak: 建议将该应用移植到非手机设备上，如机械装置，通过纸带展示指令。
-  
-• [技术问题] 
-  - dnzm: 提到在安卓设备上"Swipe right"功能无效。
-
-• [负面评价] 
-  - getnormality: 认为该应用让人很快感到厌烦，但也承认这可能是其艺术目的的一部分。
-
-• [创意延伸] 
-  - DecentShoes: 建议加快指令速度并加入音乐，将其变成类似《Elite Beat Agents》的节奏游戏。
-  - nakedneuron: 建议加入“闭上眼睛”指令，使应用变成一种即时的冥想应用。
+• RunningDroid认为该网站可能因为被Hacker News推荐而导致流量激增，并提供了一个存档链接以帮助其他人访问。
+• HenryBemis以半开玩笑的方式提出了一种简化的生活哲学，建议去意大利、希腊或西班牙等国家购买一小块土地，种植橄榄树，并等待一千年，以获得一棵千年古树。这个观点更多是出于幽默和理想化的生活方式，而非实际解决方案。
 
 补充讨论：
-- 该应用引发了关于手机使用行为的反思，尤其是在公共场合如何利用手机避免尴尬或融入人群。
-- 不同用户对应用的艺术效果和实际用途有不同看法，有些人认为它让人反思现代行为，而另一些人则认为它只是无聊或不切实际。
-- 一些评论探讨了该应用可能的改进方向，如更贴近实际手机使用、加入更多互动或移植到其他设备等。</div>
+• HenryBemis的评论中隐含了对慢生活和自然经济的一种向往，使用"1000年"的时间跨度来夸张地表达一种对现代快速生活节奏的反思。
+• 两者之间没有直接争议，RunningDroid更关注网站的技术问题，而HenryBemis则借题发挥讨论生活哲学。
+• 评论中的幽默和夸张手法提供了一种轻松的讨论氛围，而非严肃的解决方案辩论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43308994" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://leandromoreira.com/2019/08/02/linux-ffmpeg-source-internals-a-good-software-design/" target="_blank">Exploring Polymorphism in C: Lessons from Linux and FFmpeg's Code Design (2019)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dreampeppers99</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-03-06 14:23</span>
-                </div>
-                
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章简要探讨了Linux和FFmpeg的代码库如何通过良好设计实现可扩展性和类似“多态”的行为。Linux通过“一切皆文件”的理念实现抽象，而FFmpeg则通过简单的接口快速支持新格式和编解码器。文章强调了软件设计中抽象和弱耦合的重要性，展示了如何用Ruby、Go和C语言实现类似编解码器的框架，以保持代码易于扩展和维护。Ruby利用动态类型语言特性，Go使用接口类型，而C则通过函数指针结构实现相同行为。这些设计原则帮助开发者管理复杂软件项目。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：FFmpeg的设计模式、抽象与模块化，以及不同编程语言中接口与实现的关系。
-
-不同观点：
-• **对FFmpeg设计模式的赞赏**：[social_quotient] 认为FFmpeg在保持代码模块化和抽象方面做得非常出色，尤其是通过类似多态性的技巧来管理复杂的媒体处理管道。他以FFmpeg的filtergraph为例，展示了其如何通过C语言实现复杂的音频处理，并强调了随着项目的老化和扩展，保持接口的一致性需要极大的投入。同时，他还推荐加入FFmpeg的邮件列表以更好地了解项目动态。
-
-• **关于虚拟方法表（vtable）的补充**：[cbarrick] 指出FFmpeg使用的设计模式实际上是虚拟方法表（vtable），并对于文章未提及此术语表示惊讶。他认为C++程序员会通过`virtual`关键字熟悉这一模式。
-
-• **Lua语言的比较**：[sitkack] 提出Lua语言（约20kloc的C代码）在面向对象编程方面也能提供强大的功能，使用者可以根据需求实现不同程度的面向对象设计。
-
-• **关于代码片段编译的建议**：[glouwbug] 对作者提出的FFmpeg代码示例给出了技术性建议，指出可以使用`int (*encode)(*int)`这样的函数指针，并建议作者尝试编译代码片段。
-
-• **Golang与Java接口的比较**：[KerrAvon] 对文章中将Golang的接口与Java的接口进行对比表示困惑，认为Java的`interface`与Objective-C的`@protocol`类似，都是定义没有实现的接口，与Golang接口的定义和实现完全分离的特性相比，并没有本质区别。
-
-• **对Golang的评论**：[pjmlp] 纠正了[KerrAvon]对Golang的称谓，指出应称为Go语言。同时，他指出在C++和Objective-C中，接口与实现的分离是自动处理的，而在Go中需要手动实现。
-
-补充讨论：
-• **对FFmpeg接口维护的讨论**：[social_quotient] 强调了FFmpeg在长期维护过程中保持接口一致性和可扩展性的挑战，表明这是一个需要持续投入的过程。
-
-• **关于不同编程语言特性的比较**：讨论中涉及了C、C++、Lua、Golang和Java等多种编程语言的特性比较，特别是关于接口与实现分离的设计模式，以及各自语言在处理这些方面的自动化与手动操作的不同。
-
-争议焦点：Golang与Java在接口实现上的区别是否如文章所述那样显著，[KerrAvon] 和 [pjmlp] 对此有不同看法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43280517" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43290498" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -463,44 +485,40 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: amarcheschi</span> |
-                    <span>评分: 247</span> |
-                    <span>评论数: 14</span> |
+                    <span>评分: 363</span> |
+                    <span>评论数: 16</span> |
                     <span>发布时间: 2025-03-09 17:40</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了欧洲公司在科技自主和数字主权方面的新举措。Ecosia和Qwant合作建立"欧洲搜索视角"项目，目标是创建一个独立于Google和Bing的搜索索引数据库。该搜索索引将于2025年开始提供法语和德语搜索结果，旨在为新兴AI技术提供透明、安全的数据基础，同时强调隐私保护和开放性。此举旨在推动更公平、竞争和民主的科技环境，并增强Ecosia在绿色科技领域的影响力，助力环保事业。</p>
+                    <p>文章主要介绍了Ecosia和Qwant合作建立欧洲自主搜索索引（European Search Perspective）的计划。该项目旨在提升技术公平性、竞争性和民主性，推动欧洲数字主权，并为新兴AI技术提供透明、安全的数据池。目前，搜索结果依赖于Google和Bing，但到2025年，新的搜索索引将开始为法语和德语用户提供服务。该索引将注重隐私保护，并开放给其他平台使用，以促进技术自主和绿色科技的发展。Ecosia认为，这将有助于实现其环保目标。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：欧洲非美国科技公司提供的搜索引擎替代方案及其隐私、数据处理、技术前景等问题
+                    <div class="comments-summary">主要讨论点：欧洲隐私友好型搜索引擎的选择与评价
 
 不同观点：
-• weinzierl认为Qwant接受Axel Springer的大量投资，未来可能会因为投资方利益而妥协用户隐私，他提到类似情况曾发生在Cliqz身上。他还对Ecosia的盈利模式表示怀疑，担心其资金来源不明。
-• layer8建议使用德国开发的GOOD搜索引擎，它基于Brave的独立搜索索引，可能是一个更好的选择。
-• crossroadsguy看好开放或半开放的搜索引擎联合，提供免费的搜索体验，并建议DuckDuckGo（DDG）和Brave加入。他认为像Kagi这样的定制搜索引擎虽然优秀但过于昂贵，不适合大众市场。
-• GuestFAUniverse支持欧洲的联合项目，希望这些项目能在各方面取得进展。
-• user876询问是否存在专门为IPv6网络设计的搜索引擎，因为当前的引擎在IPv6网络上返回大量不可达的结果。
-• 1oooqooq对欧洲在技术创新上的迟缓表示不满，认为在搜索技术已经发生变革的今天，投入过时技术是浪费资源。
-• palata比较Ecosia/Qwant与Kagi，表示自己多年来一直是Kagi的忠实用户，但愿意支持非美国的替代方案。
-• nickpsecurity主张建立一个开放的搜索索引，允许小玩家和研究人员共享和使用，以创建本地存储，并提出了一种基于组织规模的商业定价模型。
-• PartiallyTyped愿意为一个欧洲自主的搜索引擎付费，就像他为Kagi付费一样。
-• dismalaf表示因为近期事件，正在尽量减少对美国技术的依赖。
-• submeta讽刺欧洲在2025年才开始建设经典搜索引擎，而世界已经转向基于大型语言模型的搜索技术。
-• Pooge对法国和德国的隐私友好服务持怀疑态度，引用了多篇关于法国和德国加密和隐私政策问题的文章。
+• weinzierl 对 Qwant 持谨慎态度，认为其接受了 Axel Springer 的投资，未来可能会在隐私问题上做出妥协，类似于 Cliqz 的先例。同时对 Ecosia 持初步肯定态度，但对其盈利模式表示怀疑。
+• layer8 推荐了德国搜索引擎 GOOD，认为其使用了 Brave 的独立搜索索引，可能是一个不错的选择。
+• crossroadsguy 认为开放或半开放的搜索引擎联合提供免费搜索体验是未来的趋势，并建议 DuckDuckGo (DDG) 和 Brave 参与其中。同时，认为 Kagi 可能过于昂贵和小众。
+• GuestFAUniverse 对欧洲联合项目表示支持，并希望其在各个方面都能有所发展。
+• Pooge 对法国和德国的隐私友好服务持不信任态度，引用了多个关于加密和隐私问题的文章作为论据。
+• user876 关注在 IPv6 网络上使用的搜索引擎问题，指出当前的搜索引擎在 IPv6 网络上返回大量不可达结果。
+• palata 询问 Ecosia 和 Qwant 与 Kagi 的比较，表示愿意支持非美国替代方案。
+• slevis 对 Ecosia 种植树木的实际影响表示怀疑，认为有其他更好的帮助气候的方式。
+• PartiallyTyped 表示愿意为欧洲主权替代方案付费，目前使用 Kagi 并对其满意。
+• nickpsecurity 主张建立开放的搜索索引，允许小玩家和研究人员重新抓取以建立自己的本地存储，并提出了商业产品定价和法律防御的建议。
+• dismalaf 表示正在尽量脱离美国科技，对欧洲替代方案表示支持。
+• nottorp 对法德搜索引擎结果表示质疑，认为英语内容在欧盟网络中占主导地位，分离语言可能会导致问题。
 
 补充讨论：
-• 关于Qwant和Ecosia的隐私和资金来源问题引发了较多讨论，特别是对德国和法国在隐私保护上的历史和政策的怀疑。
-• 对开放搜索索引和开放搜索引擎联合的兴趣，反映了社区对打破大型科技公司垄断的期望。
-• 对Kagi等定制搜索引擎的讨论，显示了对高品质但高成本服务的不同看法，以及对大众市场适用性的关注。
-• 对欧洲技术创新速度的批评，体现了对欧洲在技术领域竞争力的担忧。
-
-争议焦点：
-• 欧洲搜索引擎是否能够在隐私保护和数据处理上真正做到独立和透明。
-• 是否应该建立开放的搜索索引，让小玩家和研究人员能够共享和使用。
-• 欧洲在搜索技术上的创新能力和竞争力。</div>
+• 争议焦点在于对欧洲隐私友好型搜索引擎的信任和其盈利模式的透明度。
+• 关于开放搜索索引和联合搜索引擎的讨论，提出了对小玩家和研究人员的支持以及版权问题的考虑。
+• 对不同搜索引擎的具体功能和语言支持的讨论，特别是对 IPv6 网络的支持和法德搜索结果的实用性。
+• 对隐私保护和气候行动的实际效果和信任度的讨论。
+• 对脱离美国科技和支持欧洲替代方案的总体态度和动机。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43311573" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -513,38 +531,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cnn.com/2025/03/01/science/leonardo-da-vinci-sforza-castle-tunnels/index.html" target="_blank">Mysterious tunnels sketched by Leonardo may have been found</a>
+                    <a href="https://www.bbc.com/news/articles/cq6yg204pvmo" target="_blank">Planes are having their GPS hacked. Could new clocks keep them safe?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: simonebrunozzi</span> |
-                    <span>评分: 85</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-03-07 12:55</span>
+                    <span>作者: justin66</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-03-07 13:31</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>意大利米兰的斯福尔扎城堡建于15世纪，由卢多维科·斯福尔扎公爵建造，他委托莱昂纳多·达·芬奇设计艺术作品以及防御结构和武器。最近，米兰理工大学的研究团队使用地面穿透雷达和激光扫描等无损方法，发现了城堡地下隐藏的秘密通道，这些通道可能是供士兵在城堡防御被突破时使用的。这一发现验证了历史文献中对莱昂纳多草图的猜测，并凸显了他在文艺复兴时期对军事建筑的影响。研究还揭示了其他砖砌隧道和地下房间，表明城堡地下仍有许多未解之谜。这些发现提醒我们历史深植于城市之中，保护文化遗产至关重要。</p>
+                    <p>文章主要讨论了GPS信号被干扰对航班安全的威胁，尤其是对飞机着陆的影响。例如，一架从伦敦飞往维尔纽斯的航班因GPS干扰被迫 divert。类似事件在波罗的海国家频发，被认为与俄罗斯的干扰技术有关。GPS不仅影响航空，还支撑着金融、电力、通信等关键系统。英国科学家正研究利用新型原子钟开发更安全的定位系统，以替代易被干扰的GPS。这一挑战类似于18世纪约翰·哈里森发明航海钟解决经度问题，可能带来深远的技术变革。政府已启动研究计划，但将原型转化为实用设备仍需时日。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：达·芬奇素描标题的适当性及其实际对应性
+                    <div class="comments-summary">主要讨论点：GPS信号干扰及其对航空导航的影响，以及可能的替代或增强方案
 
 不同观点：
-• [ahmedfromtunis] 认为标题中使用“by da Vinci”更合适，暗示作品与达·芬奇直接相关，可能强调了作品的归属和命名准确性。
-• [ComputerGuru] 指出评论中缺乏素描图片，可能对仅通过文字描述来判断作品归属和真实性表示怀疑，强调视觉证据的重要性。
-• [kristopolous] 提出质疑，询问素描是否必须与现实对应，暗示可能存在艺术创作与现实不一致的情况，质疑将素描直接归属于现实对象的逻辑。
+• **bArray**：认为GPS系统非常脆弱，容易受到干扰，提出使用机载量子钟等技术来避免依赖外部GPS信号，但同时也指出这些技术目前成本高昂，且至少需要10年才能变得可行。
+• **KaiserPro**：解释了GPS的工作原理，包括使用卫星信号进行三角测量，并指出如果拥有更准确的时钟源，可以增强信号的认证和防欺骗能力。
+• **Iolaum**：提出可以使用类似于军用飞机的惯性导航系统作为民航飞机的备用导航系统，直到接近地面无线电信标台为止。
+• **PinguTS**：质疑对GPS的过度依赖，指出还有其他全球导航卫星系统（GNSS）如Galileo、GLONASS和BAIDU可以使用，并认为这些系统在某些应用中可能优于GPS。
+• **thesh4d0w**：质疑在GPS信号被干扰的情况下，机载原子钟的作用，认为仍需要准确的时间信号进行测量。
+• **ElectRabbit**：指出Galileo系统提供了可选的加密签名功能，可以解决信号认证问题，并提供相关链接以支持其观点。
+• **anovikov**：认为现有的抗干扰技术（如信号相移技术）已经足够强大，可以对抗大多数GPS干扰，指出在空中通常可以看到足够多的GPS卫星。
+• **looofooo0**：提出光学鼠标技术最初为飞机导航开发，可以作为一种廉价的备用导航系统。
+• **harha_**：指出GPS干扰的危险性，特别提到RNAV GPS进近的常见性，并暗指俄罗斯在进行此类干扰活动。
+• **InDubioProRubio**：质疑为什么需要GPS，提出使用激光陀螺仪等先进技术进行导航。
+• **h1fra**：批评对俄罗斯的指责，而没有提到以色列在战争中进行的类似干扰活动。
 
 补充讨论：
-• 争议的焦点在于作品的命名准确性以及其与现实的对应关系。
-• [ahmedfromtunis] 关注标题的适当性，潜在地认为标题应明确反映作品的创作者。
-• [ComputerGuru] 则关注实际的视觉证据，认为在缺乏图片的情况下难以判断。
-• [kristopolous] 更深入地质疑素描与现实的关系，提出了对艺术作品解读的反思。
-
-整体来看，讨论围绕着艺术作品的命名、归属及其实际对应性展开，反映了不同评论者对艺术作品真实性和解读方式的关注。</div>
+• 争议的焦点在于GPS的脆弱性和抗干扰能力，以及是否需要更先进和昂贵的技术（如量子钟和激光陀螺仪）来增强导航系统的可靠性。
+• 讨论中提到了多种替代方案，包括惯性导航系统、其他GNSS系统和光学导航技术，但每种方案都有其优缺点。
+• 还涉及了政治因素，如对不同国家干扰行为的指责和批评。
+• 成本和技术可行性是另一个重要的讨论点，特别是先进技术在民航应用中的实际可行性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43289774" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43289994" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -555,41 +579,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://contrachrome.com" target="_blank">Contra Chrome: How Google's browser became a threat to privacy and democracy</a>
+                    <a href="https://leandromoreira.com/2019/08/02/linux-ffmpeg-source-internals-a-good-software-design/" target="_blank">Exploring Polymorphism in C: Lessons from Linux and FFmpeg's Code Design (2019)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: OuterVale</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-03-10 07:01</span>
+                    <span>作者: dreampeppers99</span> |
+                    <span>评分: 147</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-03-06 14:23</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了斯科特·麦克劳德（Scott McCloud）的《Contra Chrome》漫画系列，包含多个语言版本（英语、德语、法语、意大利语、西班牙语、捷克语、中文）。页面列出了漫画的最新章节和收藏，时间从2022年2月1日到2月10日，并提供了章节概览，从介绍到结论共五部分。此外，文章提供了漫画的在线版本链接和作者的咨询页面，还允许用户免费下载完整漫画（33页，22MB）作为PDF，并包含所有链接和注释。文章最后附有法律声明和隐私政策链接。</p>
+                    <p>文章主要讨论了Linux和FFmpeg的代码库如何通过良好的软件设计实现可扩展性和类似“多态”的行为。Linux的“一切皆文件”理念和FFmpeg对新格式与编解码器的快速支持，均体现了这种设计思想。文章强调通过抽象和弱耦合的组件来实现易于扩展和维护的软件架构。作者使用Ruby和Go语言展示了如何通过接口和抽象类实现这种设计，并在C语言中通过结构体和函数指针模拟类似行为。最终，这种设计模式允许开发者轻松添加新功能，同时保持代码的低耦合和高内聚。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：浏览器选择及其功能，尤其是信用卡信息自动填充、隐私和安全问题，以及对民主的影响。
+                    <div class="comments-summary">主要讨论点：C语言中的抽象和面向对象编程模式，特别是虚拟方法表（vtable）的应用及不同语言之间的比较。
 
 不同观点：
-• Tistron认为Firefox在信用卡信息自动填充功能上不如Chrome方便，特别是在移动端无法通过about:config进行调整，导致他选择继续使用Chrome。他对Firefox无法为所有地区提供同等功能表示失望，并指出在欧盟有严格的2FA要求，浏览器需要支持这些安全措施。他还质疑是否有其他在技术和伦理上都良好的浏览器选项。
-
-• Lima没有直接参与主要讨论，而是指出阅读体验不佳，评论需要大量滚动。这反映了用户对界面和可读性方面的关注。
-
-• Rob74将讨论引向更广泛的社会问题，认为虽然Chrome对隐私构成威胁，但它对民主的威胁不如不受监管的社交网络大。他暗示Chrome的存在和使用并不直接威胁民主，而更多是隐私问题。
+• inopinatus认为C语言中通过结构体和函数指针实现的虚拟方法表是一种优秀的设计模式，并以Dovecot邮件服务器中的LDAP模块为例，展示了如何在不了解具体实现的情况下配置使用服务。
+• social_quotient以FFmpeg为例，强调了该项目在模块化设计中通过抽象实现多态的优雅，并指出随着代码库的增长和老化，保持接口的整洁和一致性需要付出很大努力。
+• cbarrick指出虚拟方法表设计模式在C++中是通过`virtual`关键字实现的，并对文章未提及该术语表示惊讶。
+• sitkack认为在C语言中，当代码量达到2万行时，Lua可以提供面向对象编程的能力，帮助实现更高层次的结构。
+• glouwbug对代码片段的编译提出建议，提醒作者注意代码的实际可运行性。
+• high_na_euv以讽刺的语气指出面向对象编程（OOP）的实用性，暗示可能对OOP的价值存在质疑。
+• pjmlp提到Go语言，认为Go的接口类型比Java的接口更加强大，因为其定义与实现完全分离，并指出C语言手动实现C++和Objective-C自动完成的事情。
+• KerrAvon对Golang接口和Java接口的比较提出疑问，认为Java的接口和Objective-C的协议（@protocol）功能相似，都是定义接口而不涉及实现，质疑Golang接口的所谓“更强大”。
 
 补充讨论：
-• Tistron对浏览器存储信用卡信息的安全性表示信任，认为浏览器在此方面的安全性足够，并与密码存储进行对比。
-• 对于浏览器选项，Tistron寻求技术与伦理兼顾的替代品，但未具体指出哪些浏览器符合这些标准。
-• Rob74扩展了讨论范围，将技术问题与社会、政治问题联系起来，尽管未深入探讨Chrome对隐私的具体影响。
-
-争议焦点：
-• 浏览器功能（如信用卡自动填充）的便捷性与安全性之间的权衡。
-• Chrome在隐私问题上的影响，以及其是否对民主构成威胁。</div>
+• 讨论中涉及了多个项目和语言，如Dovecot、FFmpeg、Lua、Go和Java，展示了不同语言在实现抽象和模块化设计中的不同做法和优劣。
+• 争议的焦点在于Golang接口和Java接口的比较，特别是它们在定义和实现分离方面的差异，以及Golang接口是否真的比Java接口更强大。
+• 另一个值得注意的点是对虚拟方法表设计模式的不同语言实现的理解和命名差异，特别是在C语言和C++之间的实现差异。
+• 讨论还涉及了实际代码编写中的细节问题，如glouwbug对代码片段编译的提醒，展示了讨论中对实际编码实践的关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43317677" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43280517" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -600,32 +624,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://maskray.me/blog/2025-03-09-compiling-c++-with-clang-api" target="_blank">Compiling C++ with the Clang API</a>
+                    <a href="https://pippinbarr.com/it-is-as-if-you-were-on-your-phone/info/" target="_blank">It is as if you were on your phone</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 43</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-03-09 11:51</span>
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 717</span> |
+                    <span>评论数: 44</span> |
+                    <span>发布时间: 2025-03-09 13:40</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了如何使用Clang API将单个C++源文件编译为目标文件。代码模拟了一个简化的Clang可执行文件，处理`-c`和`-S`选项。主要步骤包括设置虚拟文件系统、处理诊断信息、构建编译实例、执行编译动作（生成目标文件或汇编文件）。文章还提供了配套的CMakeLists.txt文件，用于链接必要的Clang和LLVM库，确保正确配置和构建项目。关键是需要一个包含必要CMake配置文件的LLVM和Clang安装环境。</p>
+                    <p>《It is as if you were on your phone》是一款针对手机的实验性游戏，背景设定在一个人们既被迫 constantly 使用手机、又被这种行为消耗的近未来。玩家假装在使用手机，以显得合群，但实际上并不真正操作手机，只需根据提示行动，从而获得一种自由感。该游戏由p5和Hammer.js开发，旨在通过模拟手机使用行为，反思现代人对手机的依赖和疲惫感。游戏于2025年发布，并以创意共享许可证授权。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：某个新事物的潜在应用场景
+                    <div class="comments-summary">主要讨论点：对一个互动艺术作品的评价和使用体验
 
 不同观点：
-• [fooblaster] 认为该事物很酷，但对其实际应用场景表示疑问，希望了解具体的使用案例。
+• [积极评价] 
+   - [flanbiscuit] 喜欢这个作品，认为它像是在模仿和研究人类行为，并引发了对智能手机前时代行为的思考。
+   - [Willingham] 觉得作品有趣，特别是它给出的一些指令（如“挠耳朵”），认为这解决了日常困惑。
+   - [furyofantares] 认为这个作品有冥想效果，对它表示感谢和喜爱。
+
+• [实用性讨论]
+   - [svennidal] 认为这个作品满足了在公共场合使用手机以避免尴尬的需求，能够在等待时提供一种“正当”的手机使用方式。
+   - [knowknow] 指出该作品在尴尬过渡时刻可能有用，例如在公交车上可以用来假装忙碌以融入环境。
+   - [bmcahren] 提到这个作品可以用于AI机器人，帮助它们在公共场合更好地融入人类环境。
+
+• [功能问题和建议]
+   - [dnzm] 提到在安卓设备上某些功能（如“滑动右滑”）无法正常工作。
+   - [rullelito] 不理解作品的性质，并询问其功能。
+   - [arjonagelhout] 喜欢这个概念，但认为作品没有准确反映他们使用手机的方式，建议加入更多社交媒体使用场景。
+
+• [负面评价]
+   - [getnormality] 表示不喜欢这个体验，认为在几秒钟内就感到厌恶，但也承认这可能正是作品的艺术目的。
 
 补充讨论：
-• 该评论引发了对该事物实际用途的关注，表明虽然事物本身有吸引力，但其实用性尚未清晰。
-• 目前还没有其他人提供具体的使用案例或回应，讨论处于初期阶段。</div>
+• 一些用户如[logikblok]分享了同一创作者的其他相关作品，提供了扩展体验的链接。
+• [praptak] 建议将该作品移植到非手机设备上，例如通过机械装置展示指令，以增加其实体体验感。
+• [scottmcdot] 提到自己喜欢观察人，并指出这个作品提供了一种不让他人感到不适的手机使用方式。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43308259" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43308994" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -640,142 +681,38 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: lil_csom</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2025-03-09 10:05</span>
                 </div>
                 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章详细列出了Neovim编辑器中的各种操作命令，包括光标移动、文本编辑、可视模式、插件快捷键等。主要内容涵盖：
-
-1. **光标移动**：如 `h`, `j`, `k`, `l` 基本移动，以及按词、行、屏幕、页面跳转。
-2. **文本操作**：包括删除（`x`, `dd`, `dw`）、复制（`yy`, `y`）、粘贴（`p`）等。
-3. **命令模式**：如保存（`:w`）、退出（`:q`）、替换文本（`:%s/foo/bar/g`）。
-4. **插入模式**：通过 `i`, `a`, `o` 等进入插入模式。
-5. **可视模式**：选择文本（`v`）、操作选区（`d`, `y`）。
-6. **插件快捷键**：特别是针对Neovim的文件管理器插件`nvim-tree`的各种操作，如节点导航、重命名、删除、复制等。
-
-文章还包含了一些自定义快捷键（remaps）和命令行操作。这些命令旨在提高Neovim中的编辑效率。</p>
+                    <p>本文详细列出了Neovim编辑器的各种快捷键和命令，包括光标移动、文本编辑、可视模式操作、搜索与替换、文件操作、代码导航和插件（如nvim-tree）相关命令。主要涵盖了基本的移动和编辑操作（如h、j、k、l移动光标，i、a插入文本，dd删除行等），以及更高级的功能如代码跳转、重构、诊断信息导航和文件管理。这些快捷键和命令旨在提高文本编辑效率，尤其适用于程序员在代码编写和文件管理中的使用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[围绕从 IntelliJ IDEA 转向 NeoVim 的讨论，以及构建开源作弊表应用的决策过程和未来计划]
+                    <div class="comments-summary">主要讨论点：围绕Vim（及NeoVim）使用和学习的讨论，包括其难度、学习曲线以及社区贡献。
 
 不同观点：
-• 一位用户（lil_csom）提到，由于学校资助的 GitHub 教育包即将到期，他不得不放弃使用 IntelliJ IDE，并决定尝试使用 NeoVim。这表明他从一个功能齐全的 IDE 转向一个更依赖键盘命令和自定义配置的编辑器，显示出对新工具的开放态度，但同时也承认 NeoVim 的学习曲线陡峭，操作困难。
+• [0xFEE1DEAD] 对Vim受到经验较少的开发者关注感到高兴，并赞赏原帖（OP）不追求罗列所有命令，而是根据个人使用经验逐步扩展。他还提到通过某些操作可以推测出一个人的Vim使用经验，例如使用ggVG命令，并进一步提到高级用户会使用ex命令（如:%d、:%y）。
 
-• 该用户提到在使用 NeoVim 过程中遇到了困难，容易忘记操作方法，这反映了一些新手在转向类似工具时常遇到的挑战。他决定通过创建一个个人作弊表来解决这个问题，表明他倾向于通过实践和自建工具来学习和掌握新技能。
-
-• 用户决定将该作弊表应用开源，并已经实现了一些基本功能，如关键词搜索、分类和收藏功能。这显示出他不仅关注个人学习，还希望通过社区协作来丰富和完善这个项目，反映了一种开源精神。
-
-• 用户计划在未来添加更多功能，如流行的键位映射和命令解析，以帮助其他用户更好地理解和使用 NeoVim。这表明他意识到该工具的复杂性，并有意通过增加指导性内容来降低入门门槛。
+• [lil_csom] 分享了自己从IntelliJ IDEA转向NeoVim的经历，承认NeoVim的学习难度，并表示自己通过创建个人项目和作弊表（cheat sheet）来克服困难。他还提到计划开源这个作弊表，让社区共同贡献，并计划增加更多功能和指南。
 
 补充讨论：
-• 用户提到他正在配置 JavaScript 的 LSP（语言服务器协议），这表明他在深入定制和优化 NeoVim 环境以适应特定编程语言的需求，进一步显示出从 IDE 向 NeoVim 过渡过程中自定义配置的重要性。
+• [0xFEE1DEAD] 提到通过观察某些命令（如ggVG）的使用，可以推断出用户的经验水平，并暗示随着时间推移，用户会逐渐学习到更高级的命令（如ex命令）。
 
-• 评论中还隐含了一个更广泛的讨论点，即从功能齐全的 IDE 转向更轻量级、自定义性更强的编辑器（如 NeoVim）的利弊。用户的选择和计划反映出对工具灵活性和开源协作的重视。
+• [lil_csom] 具体描述了自己如何应对NeoVim的学习挑战，包括开发一个可搜索、可收藏的作弊表，并计划增加更多高级功能和社区贡献。他还提到实际操作中的配置任务（如配置LSP for JavaScript），显示出对实际开发需求的关注。
 
 争议焦点：
-• 目前评论中没有明确的争议，但潜在的讨论可能涉及 NeoVim 的学习难度和其相对于传统 IDE 的优劣。一些用户可能认为 IDE 提供的集成工具和图形界面更易于使用，而另一些用户则可能更看重 NeoVim 的轻量化和可定制性。</div>
+• 对于NeoVim的难度和学习曲线有不同体验。一方面，[0xFEE1DEAD] 提到通过经验积累可以掌握高级操作，而 [lil_csom] 则强调了初学时的困难，并通过开发工具来帮助学习和适应。
+
+• 对命令的使用和熟悉程度存在不同视角。[0xFEE1DEAD] 关注通过特定操作推断用户经验，而 [lil_csom] 则通过开发工具帮助新手更好地掌握这些操作。
+
+总体来看，讨论围绕Vim/NeoVim的学习难度、命令使用经验以及社区工具开发展开，展示了不同用户对同一工具的不同体验和应对策略。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43307745" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.phoronix.com/review/nvidia-rtx5090-llama-cpp" target="_blank">Llama.cpp AI Performance with the GeForce RTX 5090 Review</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kristianp</span> |
-                    <span>评分: 45</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-03-10 06:01</span>
-                </div>
-                
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了NVIDIA GeForce RTX 5090在Llama.cpp AI性能测试中的表现。作者Michael Larabel在Linux系统下使用NVIDIA 570.86.10驱动和Ubuntu 24.10环境对RTX 5090及之前的RTX 40和RTX 30系列显卡进行了测试。测试显卡包括RTX 3090、RTX 4070、RTX 4070 SUPER、RTX 4080、RTX 4080 SUPER、RTX 4090和RTX 5090。使用Llama.cpp与Llama 3.1和Mistral 7B模型进行文本生成和提示处理的初步测试结果显示了RTX 5090的性能。如果读者感兴趣，未来将提供更多RTX 50系列的Llama.cpp基准测试结果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同硬件平台和显卡在运行GenAI模型（特别是大型语言模型LLM）时的性能和性价比分析
-
-不同观点：
-• **Tepix的观点**：以前，本地运行GenAI时，显卡的VRAM每美元容量是关键因素，NVidia RTX 3090因其24GB VRAM和相对合理的价格（600€-800€）成为热门选择。然而，Apple推出的Mac拥有128GB及以上的统一内存和高达800GB/s的速度，可以加载70GB的大型模型。虽然M1 Ultra未能充分利用内存速度，但M2和M3在改善。不过，M3 Ultra的价格较高（5000€或更高）。此外，使用EPYC 9005系统和DDR5-6000 RAM的组合也能提供高内存带宽，但RTX 3090等系统可能因新的大型推理模型需要更长的响应时间而失宠。如果RTX 5090价格保持在3500€，它们可能对DIY爱好者没有吸引力。可能AMD RDNA4 RX 9070卡会以1000€的价格夺冠，但这可能是奢望。
-
-• **benob的观点**：当前的基准测试只涉及8B级别的模型和8位量化的测试，如果测试更大模型、不同量化和上下文长度的情况可能会更有趣。
-
-• **chakintosh的观点**：质疑作者是否检查了显卡是否存在缺少ROPs的问题，暗示硬件完整性可能影响性能。
-
-• **3np的观点**：认为效率提升较小，可能表明硬件性能提升遇到物理极限。此外，赞扬了Mr Larabel@Phoronix的报道工作，并指出在当前AI报道质量下降的背景下，这种报道尤为重要。
-
-• **wewewedxfgdf的观点**：希望看到Apple M4、AMD Halo Strix和其他AMD卡的基准测试对比，以更全面了解性能。
-
-• **littlestymaar的观点**：总结认为性能不算差，但在每瓦性能方面不如4080或4090，在某些情况下甚至明显低于4090。
-
-补充讨论：
-• 争议的焦点之一是不同硬件平台（如Nvidia、Apple Silicon、AMD）在处理大型语言模型时的性能和性价比。
-• 另一个值得注意的点是对未来硬件发展的期待和猜测，例如AMD RDNA4 RX 9070卡是否能以更优的价格性能比胜出。
-• 讨论中还提到了当前硬件在面对更大模型和更复杂推理任务时的局限性，特别是响应时间问题。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43317406" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=3YIR39KeJMk" target="_blank">Walt Disney's MultiPlane Camera (Filmed Feb. 13, 1957) [video]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kristiandupont</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-03-07 19:06</span>
-                </div>
-                
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文简要列出了与YouTube及相关服务有关的各类信息和资源。内容包括关于YouTube的介绍、新闻发布、版权声明、联系方式、创作者信息、广告、开发者支持、使用条款、隐私政策、安全政策、新功能测试、NFL Sunday Ticket等服务，以及版权归属为2025年的Google LLC。文章提供了YouTube平台的全面概览及其相关服务链接。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：迪士尼多平面摄像技术的历史、影响及其现代相关性
-
-不同观点：
-• [对技术历史的认可] dtagames指出，沃尔特是多平面摄像机的发明者之一，这一技术对现代的Photoshop图层和CSS堆叠上下文等概念有直接影响。
-• [对实际参观的介绍] spaceguillotine和cpeterso提到，可以在迪士尼家族博物馆看到多平面摄像机，并且不需要门票就能在礼品店看到部分展品。
-• [对技术失传的惋惜] aweiland对迪士尼不再制作此类影片表示遗憾，并提到与孩子一起观看相关纪录片的体验。
-
-补充讨论：
-• [现代技术的回响] dTal分享了一个现代技术的链接，暗示旧技术在新时代的复兴。
-• [寻找更多资料] cududa提到这个片段似乎是一个更长展示的一部分，并询问是否有更长版本的来源。
-• [对技术复杂性的赞叹] niteshpant感叹1957年的技术能够制作出如此精致的动画，并对制作过程的耗时和需要耐心表示钦佩。
-• [对迪士尼技术了解的缺乏] duxup表示自己在成长过程中对迪士尼并不熟悉，后来才了解到沃尔特及迪士尼相关技术的惊人之处。
-• [对旧技术的欣赏] onemoresoop喜欢观看旧的技术指导纪录片，认为即使技术已经过时，旧技术概念更容易理解。
-• [对迪士尼创新精神的怀念] lordfrito怀念迪士尼过去在技术创新和冒险方面的辉煌，感叹如今的迪士尼已大不如前。
-• [对历史合作的想象] ggm幽默地表示希望能够见证迪士尼与达利合作的场景。
-• [技术区分] tedunangst提醒不要将多平面摄像机与黄色棱镜摄像机混淆，并提供了一个相关视频链接。
-
-争议焦点：无明显争议，但有对迪士尼创新精神衰退的感慨和不同技术之间混淆的澄清。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43293192" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
