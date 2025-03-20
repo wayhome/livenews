@@ -321,7 +321,7 @@ def fetch_top_stories():
         print("开始获取热门故事...")
         response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
         response.raise_for_status()
-        story_ids = response.json()[:15]
+        story_ids = response.json()[:100]  # 获取前100条热门故事
         print(f"成功获取到 {len(story_ids)} 个故事ID")
 
         comments_prompt = """请分析以下评论，总结出主要的不同观点和讨论要点。
@@ -346,7 +346,7 @@ def fetch_top_stories():
         stories = []
         for i, story_id in enumerate(story_ids, 1):
             try:
-                print(f"正在处理第 {i}/15 个故事 (ID: {story_id})...")
+                print(f"正在处理第 {i}/100 个故事 (ID: {story_id})...")
 
                 # 检查缓存
                 cached_data = cache.get(story_id)
@@ -438,14 +438,54 @@ def generate_html(stories):
         with open("templates/index.html") as f:
             template = Template(f.read())
 
+        # 计算页数，每页10条故事
+        stories_per_page = 10
+        total_pages = (
+            len(stories) + stories_per_page - 1
+        ) // stories_per_page  # 向上取整
+
         beijing_tz = pytz.timezone("Asia/Shanghai")
         current_time = datetime.now(beijing_tz).strftime("%Y-%m-%d %H:%M")
 
-        html_content = template.render(stories=stories, update_time=current_time)
-
+        # 创建输出目录
         os.makedirs("public", exist_ok=True)
+
+        # 生成首页 (第1页)
+        first_page_stories = stories[:stories_per_page]
+        html_content = template.render(
+            stories=first_page_stories,
+            update_time=current_time,
+            current_page=1,
+            total_pages=total_pages,
+            has_next=total_pages > 1,
+            has_prev=False,
+            is_index=True,  # 标记这是首页
+        )
         with open("public/index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
+
+        # 生成其他页面
+        for page in range(2, total_pages + 1):
+            start_idx = (page - 1) * stories_per_page
+            end_idx = min(page * stories_per_page, len(stories))
+            page_stories = stories[start_idx:end_idx]
+
+            html_content = template.render(
+                stories=page_stories,
+                update_time=current_time,
+                current_page=page,
+                total_pages=total_pages,
+                has_next=page < total_pages,
+                has_prev=True,
+                is_index=False,  # 标记这不是首页
+            )
+
+            # 创建页面子目录
+            os.makedirs("public/page", exist_ok=True)
+            with open(f"public/page/{page}.html", "w", encoding="utf-8") as f:
+                f.write(html_content)
+
+        print(f"成功生成 {total_pages} 个页面")
     except Exception as e:
         print(f"生成HTML时出错: {e}")
 

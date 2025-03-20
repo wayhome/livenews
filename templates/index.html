@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HackerNews 热门故事摘要</title>
+    <title>HackerNews 热门故事摘要 - 第{{ current_page }}页</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .story-card {
@@ -33,6 +33,16 @@
             position: absolute;
             left: -1em;
         }
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .page-info {
+            margin-bottom: 0.5rem;
+            text-align: center;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +51,12 @@
         <div class="text-muted mb-4">
             最后更新时间: {{ update_time }} (北京时间)
         </div>
-        
+
+        <!-- 分页信息 -->
+        <div class="page-info">
+            第 {{ current_page }}/{{ total_pages }} 页，共 {{ stories | length }} 条
+        </div>
+
         {% for story in stories %}
         <div class="card story-card">
             <div class="card-body">
@@ -54,7 +69,7 @@
                     <span>评论数: {{ story.comments_count }}</span> |
                     <span>发布时间: {{ story.time.strftime('%Y-%m-%d %H:%M') }}</span>
                 </div>
-                
+
                 <div class="summary-section">
                     <h5>文章摘要</h5>
                     <p>{{ story.article_summary }}</p>
@@ -72,6 +87,79 @@
             </div>
         </div>
         {% endfor %}
+
+        <!-- 分页导航 -->
+        <div class="pagination-container">
+            <nav aria-label="分页导航">
+                <ul class="pagination">
+                    {% if has_prev %}
+                    <li class="page-item">
+                        {% if current_page == 2 %}
+                        {% if is_index %}
+                        <a class="page-link" href="index.html" aria-label="上一页">
+                        {% else %}
+                        <a class="page-link" href="../index.html" aria-label="上一页">
+                        {% endif %}
+                        {% else %}
+                        {% if is_index %}
+                        <a class="page-link" href="page/{{ current_page - 1 }}.html" aria-label="上一页">
+                        {% else %}
+                        <a class="page-link" href="{{ current_page - 1 }}.html" aria-label="上一页">
+                        {% endif %}
+                        {% endif %}
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">上一页</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="上一页">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">上一页</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in range(1, total_pages + 1) %}
+                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                        {% if page_num == 1 %}
+                        {% if is_index %}
+                        <a class="page-link" href="index.html">1</a>
+                        {% else %}
+                        <a class="page-link" href="../index.html">1</a>
+                        {% endif %}
+                        {% else %}
+                        {% if is_index %}
+                        <a class="page-link" href="page/{{ page_num }}.html">{{ page_num }}</a>
+                        {% else %}
+                        <a class="page-link" href="{{ page_num }}.html">{{ page_num }}</a>
+                        {% endif %}
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+
+                    {% if has_next %}
+                    <li class="page-item">
+                        {% if is_index %}
+                        <a class="page-link" href="page/{{ current_page + 1 }}.html" aria-label="下一页">
+                        {% else %}
+                        <a class="page-link" href="{{ current_page + 1 }}.html" aria-label="下一页">
+                        {% endif %}
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">下一页</span>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" aria-label="下一页">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">下一页</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
     </div>
 </body>
-</html> 
+</html>

@@ -28,6 +28,28 @@ jobs:
       - name: Create public directory
         run: mkdir -p public
 
+      # 恢复缓存的步骤
+      - name: Restore cache
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: cache/story_cache.json
+          key: story-cache-${{ github.run_id }}
+          restore-keys: |
+            story-cache-
+
+      # 如果缓存存在则复制到工作目录
+      - name: Setup cache file
+        run: |
+          mkdir -p cache
+          if [ -f cache/story_cache.json ]; then
+            echo "找到缓存文件，复制到工作目录"
+            mkdir -p public
+            cp cache/story_cache.json public/
+          else
+            echo "未找到缓存文件，将创建新的缓存"
+          fi
+
       - name: Fetch stories and generate HTML
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -53,6 +75,14 @@ jobs:
 
           echo "================"
           python scripts/fetch_hn.py
+
+      # 保存缓存文件
+      - name: Save cache file
+        run: |
+          if [ -f public/story_cache.json ]; then
+            echo "保存缓存文件到缓存目录"
+            cp public/story_cache.json cache/
+          fi
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3.9.3
