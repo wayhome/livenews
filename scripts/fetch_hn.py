@@ -249,7 +249,7 @@ class StoryCache:
             print(f"保存缓存文件失败: {e}")
 
     def get(self, story_id):
-        """获取缓存的故事"""
+        """获取缓存的故事，如果评论数量增加且原数量小于20，返回需要更新摘要的标志"""
         if str(story_id) not in self.cache:
             return None
 
@@ -265,6 +265,10 @@ class StoryCache:
         # 转换时间格式
         if "data" in story:
             story["data"]["time"] = datetime.fromisoformat(story["data"]["time"])
+
+        # 添加一个标志，表示是否需要更新评论摘要
+        story["needs_comment_update"] = False
+
         return story
 
     def set(
@@ -274,6 +278,7 @@ class StoryCache:
         article_content=None,
         article_summary=None,
         comments_summary=None,
+        comments_count=0,  # 新增参数：评论数量
     ):
         """缓存故事数据"""
         # 设置新数据前先清理过期缓存
@@ -285,6 +290,7 @@ class StoryCache:
             "article_content": article_content,
             "article_summary": article_summary,
             "comments_summary": comments_summary,
+            "comments_count": comments_count,  # 保存评论数量
             "cache_time": datetime.now().isoformat(),
         }
         self._save_cache()
@@ -348,22 +354,48 @@ def fetch_top_stories():
             try:
                 print(f"正在处理第 {i}/100 个故事 (ID: {story_id})...")
 
-                # 检查缓存
-                cached_data = cache.get(story_id)
-                if cached_data:
-                    print(f"使用缓存的故事数据 (ID: {story_id})")
-                    stories.append(cached_data["data"])
-                    continue
-
-                # 如果没有缓存，获取新数据
+                # 获取故事数据（无论是否缓存）
                 story = fetch_hn_item(story_id)
                 if not story:
                     continue
 
+                # 获取当前评论数量
+                current_comments_count = len(story.get("kids", []))
+
+                # 检查缓存
+                cached_data = cache.get(story_id)
+
+                # 判断是否需要更新评论摘要
+                need_update_comments = False
+
+                if cached_data:
+                    # 检查评论数量是否增加且原数量小于20
+                    cached_comments_count = cached_data.get("comments_count", 0)
+                    if (
+                        cached_comments_count < 20
+                        and current_comments_count > cached_comments_count
+                    ):
+                        print(
+                            f"评论数量从 {cached_comments_count} 增加到 {current_comments_count}，将重新生成摘要"
+                        )
+                        need_update_comments = True
+                    else:
+                        print(f"使用缓存的故事数据 (ID: {story_id})")
+                        stories.append(cached_data["data"])
+                        continue
+
                 # 获取文章内容并生成摘要
                 article_content = None
                 article_summary = "无法获取文章内容"
-                if "url" in story:
+
+                # 如果有缓存且只需更新评论，复用文章内容和摘要
+                if cached_data and need_update_comments:
+                    article_content = cached_data.get("article_content")
+                    article_summary = cached_data["data"].get(
+                        "article_summary", "无法获取文章内容"
+                    )
+                # 否则获取新的文章内容和摘要
+                elif "url" in story:
                     print(f"获取文章内容: {story['url']}")
                     article_content = get_article_content(story["url"])
                     if article_content:
@@ -372,26 +404,32 @@ def fetch_top_stories():
                             "请用中文简明扼要地总结这篇文章的主要内容，限制在200字以内。",
                         )
 
-                # 获取评论文本
-                print(f"获取评论内容...")
-                comments_texts = []
-                if "kids" in story:
-                    for comment_id in story["kids"][:15]:
-                        comment = fetch_hn_item(comment_id)
-                        if (
-                            comment
-                            and not comment.get("deleted")
-                            and not comment.get("dead")
-                        ):
-                            clean_text = clean_html_text(comment.get("text", ""))
-                            if clean_text:
-                                author = comment.get("by", "匿名")
-                                comments_texts.append(f"[{author}]: {clean_text}")
-
-                comments_text = "\n\n---\n\n".join(comments_texts)
+                # 获取评论文本 - 如果缓存需要更新或无缓存
                 comments_summary = "暂无评论"
-                if comments_text:
-                    comments_summary = get_summary(comments_text, comments_prompt)
+                if need_update_comments or not cached_data:
+                    print(f"获取评论内容...")
+                    comments_texts = []
+                    if "kids" in story:
+                        for comment_id in story["kids"][:15]:
+                            comment = fetch_hn_item(comment_id)
+                            if (
+                                comment
+                                and not comment.get("deleted")
+                                and not comment.get("dead")
+                            ):
+                                clean_text = clean_html_text(comment.get("text", ""))
+                                if clean_text:
+                                    author = comment.get("by", "匿名")
+                                    comments_texts.append(f"[{author}]: {clean_text}")
+
+                    comments_text = "\n\n---\n\n".join(comments_texts)
+                    if comments_text:
+                        comments_summary = get_summary(comments_text, comments_prompt)
+                else:
+                    # 使用缓存的评论摘要
+                    comments_summary = cached_data["data"].get(
+                        "comments_summary", "暂无评论"
+                    )
 
                 story_data = {
                     "title": story.get("title", "无标题"),
@@ -401,7 +439,7 @@ def fetch_top_stories():
                     "author": story.get("by", "匿名"),
                     "score": story.get("score", 0),
                     "time": datetime.fromtimestamp(story.get("time", 0)).isoformat(),
-                    "comments_count": len(story.get("kids", [])),
+                    "comments_count": current_comments_count,
                     "article_summary": article_summary,
                     "comments_summary": comments_summary,
                     "comments_url": f"https://news.ycombinator.com/item?id={story_id}",
@@ -414,6 +452,7 @@ def fetch_top_stories():
                     article_content=article_content,
                     article_summary=article_summary,
                     comments_summary=comments_summary,
+                    comments_count=current_comments_count,  # 保存当前评论数量
                 )
 
                 # 转换时间格式以适应模板
