@@ -35,6 +35,14 @@ except Exception as e:
     raise
 
 
+# 创建一个自定义的JSON编码器来处理datetime对象
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+
 def _process_html_content(response):
     """处理 HTML 响应内容"""
     content_type = response.headers.get("content-type", "").lower()
@@ -233,7 +241,17 @@ class StoryCache:
         try:
             if os.path.exists(self.cache_file):
                 with open(self.cache_file, "r", encoding="utf-8") as f:
-                    return json.load(f)
+                    try:
+                        return json.load(f)
+                    except json.JSONDecodeError as e:
+                        print(f"缓存文件格式错误: {e}，将创建新缓存")
+                        # 备份损坏的缓存文件
+                        backup_file = f"{self.cache_file}.bak"
+                        try:
+                            os.rename(self.cache_file, backup_file)
+                            print(f"已将损坏的缓存文件备份为: {backup_file}")
+                        except Exception as rename_err:
+                            print(f"备份损坏的缓存文件失败: {rename_err}")
             return {}
         except Exception as e:
             print(f"加载缓存文件失败: {e}")
@@ -244,7 +262,9 @@ class StoryCache:
         try:
             os.makedirs(os.path.dirname(self.cache_file), exist_ok=True)
             with open(self.cache_file, "w", encoding="utf-8") as f:
-                json.dump(self.cache, f, ensure_ascii=False, indent=2)
+                json.dump(
+                    self.cache, f, ensure_ascii=False, indent=2, cls=DateTimeEncoder
+                )
         except Exception as e:
             print(f"保存缓存文件失败: {e}")
 
@@ -254,22 +274,26 @@ class StoryCache:
             return None
 
         story = self.cache[str(story_id)]
-        cache_time = datetime.fromisoformat(story["cache_time"])
+        try:
+            cache_time = datetime.fromisoformat(story["cache_time"])
 
-        # 检查缓存是否过期
-        if datetime.now() - cache_time > timedelta(hours=self.max_age_hours):
-            del self.cache[str(story_id)]
-            self._save_cache()
+            # 检查缓存是否过期
+            if datetime.now() - cache_time > timedelta(hours=self.max_age_hours):
+                del self.cache[str(story_id)]
+                self._save_cache()
+                return None
+
+            # 转换时间格式
+            if "data" in story and isinstance(story["data"].get("time"), str):
+                story["data"]["time"] = datetime.fromisoformat(story["data"]["time"])
+
+            # 添加一个标志，表示是否需要更新评论摘要
+            story["needs_comment_update"] = False
+
+            return story
+        except Exception as e:
+            print(f"处理缓存数据出错: {e}")
             return None
-
-        # 转换时间格式
-        if "data" in story:
-            story["data"]["time"] = datetime.fromisoformat(story["data"]["time"])
-
-        # 添加一个标志，表示是否需要更新评论摘要
-        story["needs_comment_update"] = False
-
-        return story
 
     def set(
         self,
@@ -284,6 +308,10 @@ class StoryCache:
         # 设置新数据前先清理过期缓存
         if len(self.cache) > 100:  # 如果缓存条目过多，触发清理
             self._clean_expired()
+
+        # 确保story_data中的时间是字符串格式
+        if isinstance(story_data.get("time"), datetime):
+            story_data["time"] = story_data["time"].isoformat()
 
         self.cache[str(story_id)] = {
             "data": story_data,
@@ -381,7 +409,13 @@ def fetch_top_stories():
                         need_update_comments = True
                     else:
                         print(f"使用缓存的故事数据 (ID: {story_id})")
-                        stories.append(cached_data["data"])
+                        # 确保缓存中取出的数据格式正确
+                        story_data = cached_data["data"]
+                        if isinstance(story_data.get("time"), str):
+                            story_data["time"] = datetime.fromisoformat(
+                                story_data["time"]
+                            )
+                        stories.append(story_data)
                         continue
 
                 # 获取文章内容并生成摘要
@@ -407,7 +441,7 @@ def fetch_top_stories():
                 # 获取评论文本 - 如果缓存需要更新或无缓存
                 comments_summary = "暂无评论"
                 if need_update_comments or not cached_data:
-                    print(f"获取评论内容...")
+                    print("获取评论内容...")
                     comments_texts = []
                     if "kids" in story:
                         for comment_id in story["kids"][:15]:
