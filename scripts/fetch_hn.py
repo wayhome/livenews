@@ -1,16 +1,15 @@
+import concurrent.futures
 import json
 import os
-import re
 import time
 from datetime import datetime, timedelta
+from threading import Lock
 
 import pytz
 import requests
 from bs4 import BeautifulSoup
-from dateutil import parser
 from dotenv import load_dotenv
 from jinja2 import Template
-from markupsafe import Markup
 from openai import OpenAI
 
 # 加载环境变量
@@ -125,15 +124,21 @@ def get_article_content(url):
 
 
 def get_summary(
-    text, prompt="请用中文简明扼要地总结以下内容，限制在100字以内。", max_retries=3
+    text,
+    prompt="请用中文简明扼要地总结以下内容，限制在100字以内。",
+    max_retries=3,
+    story_id=None,
+    index=None,
 ):
     """使用 OpenAI 生成摘要"""
     if not text or not text.strip():
         return "暂无内容"
 
+    story_info = f"[故事 {index}/{story_id}] " if story_id and index else ""
+
     for attempt in range(max_retries):
         try:
-            print(f"正在生成摘要，第 {attempt + 1} 次尝试...")
+            print(f"{story_info}正在生成摘要，第 {attempt + 1} 次尝试...")
 
             response = client.chat.completions.create(
                 model=OPENAI_MODEL,
@@ -148,21 +153,21 @@ def get_summary(
             return response.choices[0].message.content
 
         except ValueError as e:
-            print(f"配置错误: {e}")
+            print(f"{story_info}配置错误: {e}")
             return "摘要生成失败（配置错误）"
 
         except requests.exceptions.ConnectionError as e:
-            print(f"连接错误 (尝试 {attempt + 1}/{max_retries}):")
+            print(f"{story_info}连接错误 (尝试 {attempt + 1}/{max_retries}):")
             print(f"  - 错误详情: {str(e)}")
 
         except requests.exceptions.Timeout as e:
-            print(f"请求超时 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            print(f"{story_info}请求超时 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
 
         except requests.exceptions.RequestException as e:
-            print(f"请求错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
+            print(f"{story_info}请求错误 (尝试 {attempt + 1}/{max_retries}): {str(e)}")
 
         except Exception as e:
-            print(f"未预期的错误 (尝试 {attempt + 1}/{max_retries}):")
+            print(f"{story_info}未预期的错误 (尝试 {attempt + 1}/{max_retries}):")
             print(f"  - 错误类型: {type(e).__name__}")
             print(f"  - 错误详情: {str(e)}")
             import traceback
@@ -171,10 +176,10 @@ def get_summary(
 
         if attempt < max_retries - 1:
             sleep_time = (attempt + 1) * 5  # 递增等待时间
-            print(f"等待 {sleep_time} 秒后重试...")
+            print(f"{story_info}等待 {sleep_time} 秒后重试...")
             time.sleep(sleep_time)
         else:
-            print("已达到最大重试次数")
+            print(f"{story_info}已达到最大重试次数")
             return "摘要生成失败（网络错误）"
 
 
@@ -377,15 +382,19 @@ def fetch_top_stories():
 
 补充讨论：[其他值得注意的讨论点]"""
 
+        # 使用并发处理提高效率
         stories = []
-        for i, story_id in enumerate(story_ids, 1):
+        story_lock = Lock()  # 用于保护stories列表的线程锁
+
+        # 定义处理单个故事的函数
+        def process_story(story_id, index):
             try:
-                print(f"正在处理第 {i}/100 个故事 (ID: {story_id})...")
+                print(f"正在处理第 {index}/100 个故事 (ID: {story_id})...")
 
                 # 获取故事数据（无论是否缓存）
                 story = fetch_hn_item(story_id)
                 if not story:
-                    continue
+                    return None
 
                 # 获取当前评论数量
                 current_comments_count = len(story.get("kids", []))
@@ -415,8 +424,7 @@ def fetch_top_stories():
                             story_data["time"] = datetime.fromisoformat(
                                 story_data["time"]
                             )
-                        stories.append(story_data)
-                        continue
+                        return story_data
 
                 # 获取文章内容并生成摘要
                 article_content = None
@@ -430,18 +438,20 @@ def fetch_top_stories():
                     )
                 # 否则获取新的文章内容和摘要
                 elif "url" in story:
-                    print(f"获取文章内容: {story['url']}")
+                    print(f"[故事 {index}/{story_id}] 获取文章内容: {story['url']}")
                     article_content = get_article_content(story["url"])
                     if article_content:
                         article_summary = get_summary(
                             article_content,
                             "请用中文简明扼要地总结这篇文章的主要内容，限制在200字以内。",
+                            story_id=story_id,
+                            index=index,
                         )
 
                 # 获取评论文本 - 如果缓存需要更新或无缓存
                 comments_summary = "暂无评论"
                 if need_update_comments or not cached_data:
-                    print("获取评论内容...")
+                    print(f"[故事 {index}/{story_id}] 获取评论内容...")
                     comments_texts = []
                     if "kids" in story:
                         for comment_id in story["kids"][:15]:
@@ -458,7 +468,12 @@ def fetch_top_stories():
 
                     comments_text = "\n\n---\n\n".join(comments_texts)
                     if comments_text:
-                        comments_summary = get_summary(comments_text, comments_prompt)
+                        comments_summary = get_summary(
+                            comments_text,
+                            comments_prompt,
+                            story_id=story_id,
+                            index=index,
+                        )
                 else:
                     # 使用缓存的评论摘要
                     comments_summary = cached_data["data"].get(
@@ -491,13 +506,36 @@ def fetch_top_stories():
 
                 # 转换时间格式以适应模板
                 story_data["time"] = datetime.fromisoformat(story_data["time"])
-                stories.append(story_data)
-
-                time.sleep(1)  # 避免请求过快
+                return story_data
 
             except Exception as e:
                 print(f"处理故事 {story_id} 时出错: {e}")
-                continue
+                return None
+
+        # 使用线程池并发处理故事
+        max_workers = 5  # 最大并发数
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # 提交所有任务
+            future_to_story = {
+                executor.submit(process_story, story_id, i + 1): (story_id, i + 1)
+                for i, story_id in enumerate(story_ids)
+            }
+
+            # 处理结果
+            for future in concurrent.futures.as_completed(future_to_story):
+                story_id, index = future_to_story[future]
+                try:
+                    story_data = future.result()
+                    if story_data:
+                        with story_lock:
+                            stories.append(story_data)
+                except Exception as e:
+                    print(f"获取故事 {story_id} 的结果时出错: {e}")
+
+        # 按原始顺序排序故事
+        stories.sort(
+            key=lambda x: story_ids.index(int(x["comments_url"].split("=")[-1]))
+        )
 
         return stories
     except Exception as e:
