@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-03-24 20:24 (北京时间)
+            最后更新时间: 2025-03-24 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,12 +61,129 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://github.com/Zouuup/landrun" target="_blank">Landrun: Sandbox any Linux process using Landlock, no root or containers</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Zoup</span> |
+                    <span>评分: 411</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-03-22 13:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>**landrun** 是一个轻量级、安全的 Linux 进程沙箱工具，利用 Linux 内核的 Landlock LSM 实现内核级安全控制。相比于 firejail，landrun 更轻量、用户友好且内核集成度高。其主要功能包括：
+
+- 基于 Landlock LSM 的内核级安全
+- 轻量快速执行
+- 目录级的细粒度访问控制
+- 支持读写路径设置
+- 可选的执行权限
+- TCP 网络访问控制（需内核 6.8 及以上）
+
+**安装**：
+- 快速安装：`go install github.com/zouuup/landrun/cmd/landrun@latest`
+- 源码安装需克隆仓库并使用 Go 构建。
+
+**使用**：
+- 基本语法：`landrun [选项] <命令> [参数...]`
+- 选项包括设置只读、读写路径，执行权限，TCP 端口绑定和连接等。
+
+**示例**：
+- 运行命令并设置目录只读权限、TCP 端口绑定等。
+
+**安全性**：
+- 通过 Landlock LSM 实现文件系统和网络访问控制，增强进程隔离和安全性。
+
+**要求**：
+- 需要 Linux 内核 5.13 及以上（网络限制需 6.8 及以上），Go 1.24.1 及以上。
+
+该工具适用于需要细粒度访问控制和安全隔离的场景。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕 `landrun` 工具及其底层技术 Landlock 的实用性、优缺点及应用场景的讨论。
+
+不同观点：
+• **Zoup** 介绍了 `landrun` 工具，强调其轻量、易审计的特点，并封装了 Landlock 的文件系统和网络控制功能，旨在让非特权进程也能实现沙盒化，而无需 root 权限或复杂的 SELinux/AppArmor 配置。
+• **zahlman** 对 `landrun` 的命令行参数设计提出了建议，认为现有的参数（如 "--ro" 和 "--rox"）不够直观，建议使用更完整的英文单词作为长选项，并允许短选项组合（如 -rwx）。
+• **aucisson_masque** 提到了 macOS 上的应用权限管理功能（如“是否允许终端访问文档文件夹”），认为 Linux 上缺乏类似功能，而 `landrun` 这样的工具可能有助于实现类似的用户友好型安全控制。
+• **simjnd** 提到了 Justine Tunney 的 `pledge` 工具，指出它已经实现了类似的 Landlock 封装，认为 `landrun` 可能与此有功能重叠。
+• **qwertox** 指出 Linux 缺乏针对每个进程的防火墙设置，并询问 `landrun` 是否可以用于简化这类配置，特别是针对网络访问控制。
+• **khrbtxyz** 对 `--exec` 选项的作用表示困惑，并通过示例展示了未指定 `--exec` 时，进程的行为表现。
+• **dpc_01234** 认为 Nix 包管理器可以很好地结合 Landlock 使用，因为 Nix 已经了解进程所需访问的路径。
+• **johnisgood** 提到了 Firejail 工具，指出 Firejail 也支持 Landlock，认为 `landrun` 可能与 Firejail 有功能重叠。
+• **btdmaster** 提到了 `util-linux` 包中的 `setpriv` 命令，展示了其使用 Landlock 的例子，但认为其过于冗长，不如 `landrun` 易用。
+• **jbverschoor** 认为几乎每个目录都应该被视为新的沙盒，暗示对全局沙盒化的支持。
+• **thiht** 对比了 Landlock 和命名空间（如 Docker 使用的 mount/network 命名空间），并询问是否可能实现类似 macOS 的弹窗授权机制。
+• **borplk** 询问 `landrun` 是否可以在 Docker 中作为“额外保护”层使用。
+• **nickandbro** 分享了使用 `landrun` 来简化其沙盒化 Neovim 实例的配置，表示这对他的项目很有帮助。
+
+补充讨论：
+• 对 `landrun` 命令行参数设计的讨论，尤其是长短选项的合理性。
+• 对 Linux 系统中类似 macOS 权限管理功能的用户需求。
+• 对 Landlock 与其他工具（如 Firejail、setpriv）的比较与功能重叠的讨论。
+• 对 Landlock 在容器化环境（如 Docker）中的应用潜力的探讨。
+• 对 Landlock API 的具体使用场景及其实现细节的疑问，特别是与系统安全和权限管理相关的功能扩展。
+
+争议焦点：
+• 主要集中在 `landrun` 的命令行参数设计是否足够直观，以及其与现有工具（如 Firejail、setpriv）的关系和功能重叠问题上。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43445662" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://publicdomainreview.org/collection/michalina-janoszanka/" target="_blank">Through a Glass Lushly: Michalina Janoszanka's Reverse Paintings (Ca. 1920s)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: prismatic</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-03-19 21:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Michalina Janoszanka (1889–1952) 是波兰艺术家，以担任画家 Jacek Malczewski 的模特和学生闻名。她不仅作为缪斯出现在众多象征主义画作中，还创作了自己的艺术作品，特别是在玻璃背面绘制的 reverse painting（反向绘画）。她的作品以传统主题如肖像、静物和宗教场景为主，但最具特色的是超现实的风景画，采用宝石色调和金属线条，创造出如梦似幻的效果。虽然 reverse painting 在欧洲被视为民间艺术，但在 20 世纪初，美国艺术家如 Marsden Hartley 和 Rebecca Salsbury James 也开始探索这一技法，推动了现代主义的发展。Janoszanka 的作品在传统与现代之间架起桥梁，提出关于玻璃绘画跨文化影响的未解问题，值得重新评估。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点： reverse oil painting on glass的当代应用及其技术优势
+
+不同观点：
+• [smokel] 分享了当代艺术家Jessica Frances Grégoire Lancaster的逆向玻璃油画作品，并提供了参考网站链接，旨在展示该技术的实际应用和艺术表现力。
+• [stavros] 对该技术的优势提出疑问，特别关注文章中提到的“价格更便宜”这一点，并询问为何这种技术会更经济，表明对成本优势的背后原因感兴趣。
+
+补充讨论：
+• [stavros] 的提问暗示了对逆向玻璃油画技术在材料或工艺上的经济性缺乏了解，可能意味着文章对该技术的介绍不够详细。
+• 争议的焦点可能在于该技术的实际优势是否仅仅限于成本，还是存在其他如艺术表现力、保存时间等其他优点未被提及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43417398" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.courtsearch.ai/" target="_blank">Show HN: Search and chat with millions of court cases using AI.</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: ashr_</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 1</span> |
                     <span>发布时间: 2025-03-23 19:21</span>
                 </div>
 
@@ -77,7 +194,13 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：对某个想法/建议的赞同
+
+不同观点：
+• [赞同观点] bsenftner认为这个想法很棒，显然是支持该建议的，表示了对该想法的认可。
+
+补充讨论：
+• 此评论非常简短，没有提供具体的理由或例子，仅表达了对该想法的积极态度。因此，并没有明显的争议或深入讨论。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43455134" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -94,41 +217,35 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: mdp2021</span> |
-                    <span>评分: 109</span> |
+                    <span>评分: 117</span> |
                     <span>评论数: 11</span> |
                     <span>发布时间: 2025-03-22 15:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文简要列出了与YouTube平台相关的各类信息和功能。内容包括关于YouTube的介绍、新闻、版权说明、联系方式、创作者信息、广告、开发者协议、服务条款、隐私政策、安全政策等。此外，还提到正在测试的新功能以及NFL Sunday Ticket服务，并注明版权归2025年Google LLC所有。</p>
+                    <p>本文简要列出了网站的相关链接和法律信息。内容包括关于（About）、新闻（Press）、版权（Copyright）、联系我们（Contact us）、创作者（Creators）、广告（Advertise）、开发者（Developers）、条款（Terms）、隐私（Privacy）、政策与安全（Policy & Safety）、YouTube功能测试、NFL Sunday Ticket，以及版权归属信息（© 2025 Google LLC）。这些信息帮助用户了解网站的基本功能、法律条款和相关服务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对物理学家保罗·狄拉克（Paul Dirac）的个性、历史背景以及相关科学问题的讨论
+                    <div class="comments-summary">主要讨论点：对物理学家保罗·狄拉克（Paul Dirac）的个性、历史背景及其影响的多角度讨论
 
 不同观点：
-• **狄拉克的性格和故事**：[dctoedt]分享了关于狄拉克不寻常个性的故事，并提到神学家、物理学家转为圣公会牧师的John Polkinghorne曾是狄拉克小组的博士生。这表明狄拉克不仅是个杰出的物理学家，还因其独特的性格留下了许多有趣的故事。
-
-• **狄拉克的视频资源**：[mdp2021]提供了YouTube上的狄拉克视频讲座链接，将讨论引向更直观的资源分享，帮助其他人通过视频了解狄拉克的学术贡献和演讲风格。
-
-• **费曼与狄拉克的比较**：[dkfmn]引用奥本海默对费曼的推荐信，称费曼为"像狄拉克一样的天才，但更人性化"。这暗示了费曼和狄拉克在性格和与人交往方面的差异，同时也反映出两人在科学界的崇高地位。
-
-• **战后东德的学术认可**：[pm3003]提到物理学家Friedrich Hund在战后东德获得一双鞋的代金券作为学术奖励，并询问这是否是隐含的政治信息，还是仅仅是当时东德社会经济的常态。此评论引发了对战后东德社会状况的讨论。
-
-• **狄拉克的口音和表达**：[ndsipa_pomu]关注狄拉克的口音，虽然有点失望他没有布里斯托尔口音，但这一评论显示出对狄拉克个人特征的进一步兴趣。
-
-• **科学问题：月亮时间差异与原子钟**：[koolala]提出关于月亮时间与原子钟差异的问题，虽然没有直接关联到狄拉克，但这一讨论显示出人们对科学未解之谜的持续关注。
-
-• **量子力学与广义相对论的统一**：[WhitneyLand]引发了对未来科学突破的期待和猜测，尤其是量子力学和广义相对论的统一，并提到20世纪20年代类似的突破。这里暗示了对未来出现类似狄拉克的天才人物的期望。
-
-• **狄拉克与个人记忆**：[DFHippie]将狄拉克与自己的祖父作对比，认为狄拉克说话更快且更有感情，而自己的祖父几乎不说话。这一评论显示出对狄拉克个性特征的个人化视角。
+• [dctoedt] 分享了关于狄拉克“与众不同”个性的故事，并提到神学家、物理学家转为圣公会牧师的John Polkinghorne曾是狄拉克小组的博士生，强调了狄拉克在科学界的影响力及其个性对后人的吸引力。
+• [mdp2021] 提供了狄拉克视频讲座的资源链接，将讨论引向对狄拉克教学资源的分享，而不是其个性或历史背景。
+• [dkfmn] 引用奥本海默对费曼的评价，称其为“更人性化的第二个狄拉克”，暗示狄拉克虽然在科学上有巨大贡献，但其个性可能较为孤僻或不同常人。
 
 补充讨论：
-• 评论中多次提到狄拉克的性格和行为，特别是他的"不寻常"性格，反映出他在公众心目中不仅是科学天才，也是一个具有独特个性和行为方式的传奇人物。
-• 讨论涉及到多位物理学家之间的比较和联系，如狄拉克与费曼、奥本海默等，进一步丰富了对这些科学家的公众认知和学术地位的理解。
-• 部分评论（如[pm3003]）将历史背景与个人经历结合，提出了对战后东德社会状况的思考，拓展了讨论的范围。</div>
+• [pm3003] 提到了物理学家Friedrich Hund在二战后东德的经历，特别是获得一双鞋 voucher 的事件，并询问这是否是东德社会主义背景下的典型现象，还是一种更具深意的“隐藏信息”，引发对历史背景的讨论。
+• [koolala] 提问关于月球时间与原子钟差异的问题，将讨论引向物理学中的具体科学问题，但未得到直接回应。
+• [cubefox] 和 [ndsipa_pomu] 的评论更偏向个人感受和观察，前者享受两位老知识分子对话的氛围，后者则关注狄拉克的口音，带有一定的调侃性质。
+• [WhitneyLand] 提出未来在量子力学与广义相对论结合方面的潜在突破，并将其与20世纪20年代的物理学发展类比，暗示未来可能需要像狄拉克那样具有独特洞察力的科学家来推动科学进步。
+
+争议焦点：
+• 狄拉克的个性是否“人性化”或“孤僻”成为间接的争议点，[dkfmn] 引用奥本海默的话暗示狄拉克可能因个性不如费曼“人性化”而著称。
+
+总结：讨论围绕狄拉克的个性和科学贡献展开，部分评论分享了资源和故事，另一些则探讨了历史背景或提出了科学问题。争议点主要集中在狄拉克的个性评价上。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43446442" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -141,40 +258,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s41586-024-08568-6" target="_blank">A single-fibre computer enables textile networks and distributed inference</a>
+                    <a href="https://phys.org/news/2025-03-blue-ghost-lander-captures-stunning.html" target="_blank">Blue Ghost lander captures sunset shots on moon before falling silent</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: walterbell</span> |
-                    <span>评分: 28</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-03-19 11:39</span>
+                    <span>作者: pseudolus</span> |
+                    <span>评分: 96</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-03-19 10:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了一种纺织纤维计算机，它集成了模拟传感、数字存储、处理和通信功能，总重量不到5克。通过可折叠的中间层，将微型设备的二维垫架构映射到符合纤维几何形状的三维圆柱布局中。利用螺旋铜微线连接，八种微型设备被热拉成可机洗、可拉伸超过60%的弹性纤维。这种可编程纤维包含一个32位浮点微控制器，能够独立执行边缘计算任务，即使被编织、针织或缝入衣物中。该纤维计算机可以通过光学链接和射频通信实现无线通信，并在实际应用中展示了通过四个纤维计算机联网可将身体活动分类的准确率从67%提高到95%。</p>
+                    <p>2025年3月18日，由Firefly Aerospace和NASA发布的私营月球登陆器Blue Ghost在月球上拍摄了首批高清日落照片，展示了地球和金星。这些照片是在Blue Ghost于3月2日登陆后、于周末失去动力前拍摄的。Blue Ghost是首个成功垂直着陆并完成全部任务的私营航天器，在月球夜间仍继续工作了五个小时，直至因缺乏太阳能而停止运行。NASA表示，这些高分辨率照片将用于深入分析月球地平线辉光是否由悬浮尘埃造成。尽管所有任务目标已达成，但登陆器钻机仅钻入月球表面1米，未达预期3米。Firefly计划于4月初尝试重新激活Blue Ghost，但工程师对此持怀疑态度。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：嵌入式设备在日常物品（如毛衣）中的应用及其技术潜力与安全性问题
+                    <div class="comments-summary">主要讨论点：从月球上看地球日食的照片，以及月球探测器在寒冷夜晚失效的原因。
 
 不同观点：
-• vessenes认为，将32位微控制器嵌入纱线中是一项非常完整的概念验证，包括无线充电、传感器以及通过无线传感器数据进行姿态/活动估计。他联想到一部90年代的科幻小说，提到通过每立方米空间中的浮点运算次数（flops/cubic meter）来衡量环境智能水平。然而，他也指出，嵌入式设备的历史表明，这些设备往往存在安全漏洞，容易被破解，同时使用上可能被限制在厂商控制的云环境中。
+• [perihelions] 分享了从月球上看到地球日食的照片链接，展示了多个照片。
+• [crazygringo] 对这些照片表示困惑，特别是对其中一些照片中出现两个“太阳”的现象提出疑问，怀疑其中一个是镜头光晕或曝光问题，因为从照片上看是地球的暗面。
+  • 具体论据：指出其中一张照片中，地球的暗面不应该有过曝的亮光，且另一张照片中，地球似乎遮挡了第二个“太阳”的一部分，这增加了其困惑。
 
-• idiotsecant对该硬件表示极大的兴趣，并询问是否有相关图片以进一步了解该技术。
+• [celeritascelery] 则关注月球探测器在月夜中失效的原因，特别提到是否是由于电池问题，并推测电路系统应该不受影响。
+  • 具体论据：提出电池可能是探测器在寒冷夜晚失效的主要原因，暗示电路系统可能比电池更耐寒。
 
 补充讨论：
-• vessenes的观点中提到了两个重要问题：一是嵌入式设备技术的进步，使得日常物品（如毛衣）变得智能化；二是这些设备在安全性和使用自由度上的潜在问题，特别是易受黑客攻击和依赖厂商的云服务。
-
-• vessenes的评论还反映了对技术进步和其实际应用之间差距的关注，特别是从科幻设想到现实技术落地的过程中遇到的挑战。
+• [babyent] 表达了对月球探测器的同情，尽管探测器只是一个机器，但其失效仍然引发了情感共鸣。
+  • 这一评论并未涉及技术讨论，而是从情感层面回应了探测器失效的问题。
 
 争议焦点：
-• 主要争议在于嵌入式设备的技术进步与其在安全性和使用自由度上的潜在问题之间的矛盾。尽管技术上取得了显著进展，但用户可能面临设备易被破解和使用受限的困境。
+• [crazygringo] 对照片中两个“太阳”现象的真实原因表示不解，并提出了镜头光晕的可能性，但未得到明确解答，显示出对照片真实性的争议。
 
-</div>
+总结：讨论主要围绕月球上看到地球日食的照片真实性及其可能的解释，以及月球探测器在月夜中失效的技术原因。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43410666" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43410302" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -232,25 +351,138 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.dailymail.co.uk/news/article-14528793/chinese-spy-nypd-zhu-jiang-suspended.html" target="_blank">NYPD sergeant is suspended over 'spying for the Chinese'</a>
+                    <a href="https://www.qodo.ai/blog/why-we-chose-langgraph-to-build-our-coding-agent/" target="_blank">Why we chose LangGraph to build our coding agent</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: suraci</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-03-24 11:03</span>
+                    <span>作者: timbilt</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-03-24 11:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</p>
+                    <p>本文介绍了Qodo团队在开发AI编程助手过程中，从早期结构化的工作流转向更灵活的系统，利用LangGraph框架实现了兼具灵活性和主见性的编码助手。初始阶段，团队使用预定义的工作流处理不同编码任务，如测试生成和代码审查。随着LLM模型（如Claude Sonnet 3.5）的进步，他们转向构建动态且灵活的代理，以适应各种用户请求，同时保持对编码最佳实践的坚持。
+
+LangGraph采用图形化方法，通过状态机和节点定义工作流，允许从完全开放到完全结构化的多种方式。其灵活性使得团队能够根据新模型调整工作流的结构。主工作流包括上下文收集、任务规划、执行和验证等步骤，验证失败时会反馈而非重头开始。LangGraph的API简化了复杂系统的构建，通过声明式方法定义工作流，使其易于理解和修改。这种方法确保了系统在适应新模型的同时，保持高质量的编码标准。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：针对LangGraph及其相关技术（如Mastra、LangChain等）的评价和对比，特别关注其文档质量、开发挑战、商业模式等方面。
+
+不同观点：
+• CharlieDigital认为文章虽然解释了“为什么选择LangGraph而非自建系统”，但未充分说明“为什么选择LangGraph”本身。他指出，文章中提到的优点对Mastra也同样适用。他还提到LangGraph的文档不完整或过时，并质疑是否有AI初创公司能利用大语言模型自动生成文档、示例代码和指南。
+• jimminyx强调在开发由LLM驱动的系统时，测试和模拟是一个巨大挑战，尤其是这些系统的非确定性导致很难重现流程。他询问是否有针对该问题的良好解决方案。
+• Kydlaw分享了他们去年11月对LangGraph的探索体验，认为其相比LangChain更用心，解决方案更易迭代且更稳定。然而，他们对定价模式和部署方案感到不满，认为存在类似Next.js/Vercel的供应商锁定问题，最终选择了Pydantic AI。
+• mokarma则支持LangGraph，认为它在构建复杂的多代理系统时比AWS Bedrock和OpenAI的Agent框架更好、更容易使用。
+
+补充讨论：
+• 文档问题是多个评论者关注的焦点，尤其是CharlieDigital和Kydlaw提到的不完整和过时问题。
+• 测试和模拟的挑战在LLM驱动的系统开发中被jimminyx视为最令人沮丧的部分，但尚未有明确的解决方案。
+• 商业模式和定价策略也是一个争议点，Kydlaw特别指出了LangGraph在商业模式上可能导致的供应商锁定问题。
+• 不同技术框架如Mastra、LangChain、AWS Bedrock和OpenAI Agent框架之间的对比在多个评论中被提及，显示出用户在选择合适工具时的多样化需求和考量。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43459527" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43459535" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nytimes.com/2025/03/23/world/asia/cambodia-money-laundering-huione.html" target="_blank">How one of the world’s major money laundering networks operates</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 101</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-03-23 17:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：各种洗钱方式及其可行性，以及对相关执法行动的讨论
+
+不同观点：
+• [busyant] 分享了其父亲遇到的一起潜在洗钱计划，通过伪装成非营利组织和举办筹款活动来洗白非法资金。尽管其父亲拒绝了，但这个例子展示了洗钱的一种可能手段。
+• [hattmall] 认为busyant描述的并不是真正的洗钱，而是获取诈骗所得，并指出洗钱需要有合法的资金来源解释。他还分享了通过AirBnB进行洗钱的现代案例，指出这种方法在某些地区容易操作且监管不严。
+• [486sx33] 提出反对禁止现金交易的立场，认为这种方法尽管初衷良好，但实际操作中并不理想，可能对普通人造成不便。
+• [bentobean] 怀疑当地的一家连锁吸尘器维修店是洗钱的前线，质疑如此多维修店存在的合理性。
+• [earnesti] 对文章中提到的通过加密货币洗钱的方法表示简单浏览后没有发现更多有趣的细节。
+• [storf45] 提到这与电影《The Beekeeper》的剧情相似，暗示这种洗钱情节在影视作品中常见。
+• [mentalgear] 认为加密货币仍然是洗钱或贿赂的简单方式，指出加密货币在洗钱方面的优势。
+• [lazyant] 分享了通过携带现金购买纽约市公寓的洗钱方法，指出现金交易在房地产市场的漏洞。
+• [xyzzy9563] 详细描述了使用加密货币洗钱的具体步骤，包括使用Monero进行资金转移，以达到洗钱目的。
+• [lazyeye] 质疑许多被认为是“复杂”和“多方面”的问题，如果没有实际的政治意愿去解决，是否真的无法解决，并认为只要有政治意愿，很多问题可以显著减少。
+• [paulpauper] 讨论了执法机构如FBI和IRS在打击诈骗和洗钱活动中的作用，认为美国在国际调查中起主导作用。他还指出文章标题有夸大成分，实际内容表明诈骗活动的盈利能力受到打击。
+
+补充讨论：
+• 争议的焦点在于洗钱方法的多样性和复杂性，以及执法机构的有效性。
+• 讨论中提到的现代洗钱手段包括利用非营利组织、AirBnB、房地产交易和加密货币等。
+• 对现金交易的禁止和其对普通人的影响也有讨论，反映出政策实施中的实际问题。
+• 对加密货币在洗钱中的作用有较多讨论，有人认为其是洗钱的重要工具，而其他人则关注执法机构的打击力度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43454411" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.climate.gov/news-features/blogs/polar-vortex/polar-vortex-hitting-brakes" target="_blank">The polar vortex is hitting the brakes</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bryanrasmussen</span> |
+                    <span>评分: 242</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-03-22 19:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要讨论了平流层极地涡旋的监测与预报，以及它与极端冬季天气和季节性气候的关系。尽管大众常将寒流归因于极地涡旋，但文章强调这种联系大多并不成立。今年冬季的大部分时间，60°N的极地涡旋西风强于常年，但预测显示，近期这些风速将大幅减弱，甚至反转，导致“平流层突然变暖”现象。这种事件会迅速升高平流层温度，扰乱极地涡旋，可能使其偏离极点或分裂。当前预测显示，这次风向逆转可能持续，若西风无法在春季恢复，这将成为季节末的“最终变暖”事件。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于气候变化、气温波动以及气候研究的相关讨论
+
+不同观点：
+• [xg15] 对文章中提到的"warmer part of the year"感到困惑，质疑如果这不是指气温，是否是通过更多的阳光导致变暖。这表明对季节性气温变化和其影响因素的关注。
+• [ilove_banh_mi] 对前两个图表中显示的变异范围表示惊讶，强调了对气候数据可视化的兴趣。
+• [zeagle] 认为文章有趣，并通过个人观察和具体地点（如Rankin Inlet NU）的当前气温来验证气候变化的典型性，同时对climate.gov作为信息来源的可靠性提出质疑。
+• [AbstractH24] 幽默地指出，除了土拨鼠（groundhogs）之外，还有更好的春季 indicators，暗示对传统气候预测方法的怀疑。
+• [Supersaiyan_IV] 对在2025年仍使用华氏度进行气候研究表示尴尬，批评美国未采用公制。
+• [downrightmike] 强调气候变化的长期影响，如冰盖融化和海平面上升，暗示对未来环境灾难的担忧。
+
+补充讨论：
+• [fredsmith219] 对climate.gov尚未被关闭表示惊讶，可能暗示对政府网站处理气候信息的能力持怀疑态度。
+• [timzaman] 认为文章虽然有趣，但由于已发布16天，作为新闻已经过时，质疑其在当前新闻周期中的相关性。
+
+争议焦点：
+• 关于climate.gov作为气候信息来源的可靠性存在争议（zeagle, fredsmith219）。
+• 使用华氏度进行气候研究的合理性受到批评（Supersaiyan_IV）。
+
+其他值得注意的讨论点：
+• 对季节性气温变化及其影响因素的关注（xg15）。
+• 对气候数据可视化的兴趣（ilove_banh_mi）。
+• 对气候变化长期影响的担忧（downrightmike）。
+• 对新闻时效性的讨论（timzaman）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43448023" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -292,180 +524,6 @@
 • 争议焦点：目前没有明显的争议，但存在对技术细节的不同关注点，[vhodges] 更关注具体的操作和工具，而 [tralarpa] 则关注术语的正式性和不同系统中的命名差异。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43447126" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/how-metabolism-can-shape-cells-destinies-20250321/" target="_blank">Metabolism Can Shape Cells' Destinies</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: isaacfrond</span> |
-                    <span>评分: 50</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-03-21 15:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章探讨了细胞代谢在生命早期发育中的关键作用，挑战了传统认为基因完全主导细胞命运的观点。新研究表明，代谢不仅为细胞提供能量，其产生的代谢物还能影响基因活动，决定细胞分化方向。例如，葡萄糖代谢被发现影响胚胎发育的早期阶段。细胞通过检测环境中的代谢物质来决定是否分化为特定类型，这与外部因素如饮食和环境有关。这一发现对理解胚胎发育、细胞死亡及癌症等有重要意义，开启了代谢与发育生物学研究的新领域。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对生物电实验及其影响的讨论]
-
-不同观点：
-• [rolisz] 提到这让他想起Michael Levin的研究工作，尤其是通过生物电力操控让planaria（扁平虫）长出两个头，尽管这些扁平虫在基因上与正常的个体是相同的。这暗示了对生物电操控可能带来形态变化的兴趣和关注。
-
-• [alyssa]: 对[rolisz]的观点表示惊讶，并强调这种实验结果的伦理问题，特别是如果类似技术应用到更复杂的生物体上，可能引发不可预测的生物变异和伦理挑战。
-
-• [rolisz] 回应称，虽然伦理问题确实存在，但这类研究的价值在于它可以帮助科学家更好地理解生物体的形态发生和再生过程，并可能为再生医学提供突破口。
-
-• [ethan]: 提出实际应用问题，质疑这种生物电操控技术是否能够在人类医学中实际应用。他认为尽管实验结果有趣，但距离临床应用可能还很遥远，特别是在安全性与可控性方面存在巨大挑战。
-
-• [alyssa] 进一步指出，即便技术成熟，也需要有严格的监管框架来确保不会被滥用，尤其是在设计生物体形态和结构方面的潜在应用。
-
-补充讨论：
-• [rolisz] 和 [alyssa] 之间存在关于伦理问题的争论，焦点在于如果类似技术应用到更复杂的生物体上是否合适。
-• [ethan] 则更关注实际应用的可行性，并质疑该技术从实验室到临床的实际转化能力。
-• 总体而言，讨论围绕生物电实验的科学价值、伦理问题以及实际应用前景展开。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43436663" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blend2d.com/blog/png-image-codec.html" target="_blank">High-Performance PNG Decoding</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-03-23 06:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了Blend2D库在2024年推出的一种高性能PNG编解码器，其速度远超其他用C、C++等语言编写的编解码器。PNG格式使用DEFLATE算法压缩像素数据，但由于该算法较老，不适合现代CPU的多指令执行特性。文章讨论了高效解码DEFLATE流的关键：快速构建解码表、利用这些表快速解码位流，以及优化解码表大小以平衡构建时间和查找效率。文章还提到，许多DEFLATE实现使用的测试数据集并不能代表PNG文件的压缩特性，因此针对这些数据集优化的解码器在处理PNG文件时性能可能不佳。最终，通过多种优化手段，Blend2D实现了高性能的PNG编解码器。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：移动端样式表的页面边缘留白问题
-
-不同观点：
-• [msephton] 认为移动端样式表的文本没有设置边缘留白，导致阅读体验不佳。他提到自己在阅读文章时因为该问题只读了四分之一就放弃了。
-• 隐含的另一种观点是，可能有部分用户可以接受没有边缘留白的设计，否则问题不会存在或不会被提出。
-
-补充讨论：
-• [msephton] 提供了具体的阅读体验反馈，指出文本靠近屏幕边缘造成的视觉不适。
-• 该评论暗示了网页设计在不同设备上的可读性问题，强调了边缘留白对于提升用户体验的重要性。
-• 争议的焦点在于网页设计是否应该优先考虑移动端用户的阅读体验，尤其是边缘留白对可读性的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43451187" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-03-blue-ghost-lander-captures-stunning.html" target="_blank">Blue Ghost lander captures sunset shots on moon before falling silent</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 96</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-03-19 10:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年3月18日，由Firefly Aerospace和NASA发布的私营月球登陆器Blue Ghost在月球上拍摄了首批高清日落照片，展示了地球和金星。这些照片是在Blue Ghost于3月2日登陆后、于周末失去动力前拍摄的。Blue Ghost是首个成功垂直着陆并完成全部任务的私营航天器，在月球夜间仍继续工作了五个小时，直至因缺乏太阳能而停止运行。NASA表示，这些高分辨率照片将用于深入分析月球地平线辉光是否由悬浮尘埃造成。尽管所有任务目标已达成，但登陆器钻机仅钻入月球表面1米，未达预期3米。Firefly计划于4月初尝试重新激活Blue Ghost，但工程师对此持怀疑态度。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：从月球上看地球日食的照片，以及月球探测器在寒冷夜晚失效的原因。
-
-不同观点：
-• [perihelions] 分享了从月球上看到地球日食的照片链接，展示了多个照片。
-• [crazygringo] 对这些照片表示困惑，特别是对其中一些照片中出现两个“太阳”的现象提出疑问，怀疑其中一个是镜头光晕或曝光问题，因为从照片上看是地球的暗面。
-  • 具体论据：指出其中一张照片中，地球的暗面不应该有过曝的亮光，且另一张照片中，地球似乎遮挡了第二个“太阳”的一部分，这增加了其困惑。
-
-• [celeritascelery] 则关注月球探测器在月夜中失效的原因，特别提到是否是由于电池问题，并推测电路系统应该不受影响。
-  • 具体论据：提出电池可能是探测器在寒冷夜晚失效的主要原因，暗示电路系统可能比电池更耐寒。
-
-补充讨论：
-• [babyent] 表达了对月球探测器的同情，尽管探测器只是一个机器，但其失效仍然引发了情感共鸣。
-  • 这一评论并未涉及技术讨论，而是从情感层面回应了探测器失效的问题。
-
-争议焦点：
-• [crazygringo] 对照片中两个“太阳”现象的真实原因表示不解，并提出了镜头光晕的可能性，但未得到明确解答，显示出对照片真实性的争议。
-
-总结：讨论主要围绕月球上看到地球日食的照片真实性及其可能的解释，以及月球探测器在月夜中失效的技术原因。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43410302" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://chipsandcheese.com/p/rdna-4s-out-of-order-memory-accesses" target="_blank">RDNA 4's “Out-of-Order” Memory Accesses</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 152</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-03-23 22:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>AMD's RDNA 4 architecture introduces improvements in memory subsystem handling, particularly with "out-of-order" memory accesses. Previously, in RDNA 3, memory requests from different shader waves were processed in a strict order, causing delays if one wave had to wait for another's memory loads. This led to inefficiencies, as later requests couldn't bypass earlier ones, even if their data was ready. 
-
-In RDNA 4, requests from different waves can be processed out-of-order, eliminating false dependencies and improving performance. Testing involved creating scenarios where "wave X" and "wave Y" had differing memory access patterns. In RDNA 3, wave X's accesses were unnecessarily delayed by wave Y's cache misses, as the memory subsystem waited for all wave Y's accesses to complete. However, in RDNA 4, both waves operate independently, preventing such delays and improving overall efficiency. This change aligns with multithreaded programming principles, enhancing performance scaling in GPU operations.</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于GPU并行计算、着色器序列和内存访问模式的技术讨论
-
-不同观点：
-• [jauntywundrkind] 认为该技术可能解决Raph Levien最近提出的关于并行计算机的问题，即虽然可以通过VK_AMDX_shader_enqueue动态添加着色器和构建动态工作图，但各部分之间缺乏序列化/栅栏（fencing）/屏障（barrier）。他还提到了io_uring在序列化提交方面的有趣应用，但后来修正说该技术可能不是关于波阵之间的相互依赖，而是关于内存访问。
-
-• [IshKebab] 回应说内存访问模式对每个波阵来说非常相似，因此可能并不重要。不过，他补充说这在光栅化中可能不重要，但在光线追踪中可能会产生更大影响。
-
-• [Terr_] 最初看到标题时误以为讨论的是DNA 3'和5'读框的某种变体，并提供了一个维基百科链接作为参考。
-
-• [shmerl] 询问AMD是否拥有自己的GPU汇编语言及其名称。
-
-补充讨论：
-• 讨论中提到了Raph Levien的博客文章，涉及对并行计算机的需求以及当前GPU在序列化方面的不足。
-• 还提到了io_uring技术在序列化提交方面的应用，并提供了一个详细介绍io_uring的链接。
-• 对波阵之间的内存访问和依赖关系的讨论反映了对GPU计算中不同任务间协调需求的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43456341" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
