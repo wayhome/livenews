@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-03-27 08:56 (北京时间)
+            最后更新时间: 2025-03-27 11:29 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,35 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.computerenhance.com/p/an-interview-with-zen-chief-architect" target="_blank">An Interview with Zen Chief Architect Mike Clark</a>
+                    <a href="https://pgdog.dev/blog/sharding-pgvector" target="_blank">Sharding Pgvector</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Smaug123</span> |
-                    <span>评分: 101</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-03-24 19:05</span>
+                    <span>作者: levkk</span> |
+                    <span>评分: 49</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-03-26 17:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章是Casey Muratori对Zen架构首席设计师Mike Clark的采访总结。Zen架构是x86生态系统中极为重要的微架构，帮助AMD在CPU市场份额上从10%提升至25%。采访中，Mike Clark讨论了x64指令集架构（ISA）在低功耗设计中的表现，指出x64和ARM在功耗和性能上并无根本差异，主要是市场需求不同导致优化方向不同。对于x64的4k页大小限制问题，Clark表示更大页尺寸有助于提高TLB效率，但4k到2mb的直接跳跃过大，可能需要中间尺寸。整体而言，Clark强调微架构中的各种差异更多是设计上的取舍，而非根本性问题。</p>
+                    <p>本文讨论了如何对pgvector进行分片以处理大规模向量数据。当数据量达到百万级别时，构建索引变得耗时，尤其对于HNSW和IVFFlat两种索引类型。HNSW索引搜索快但构建慢，IVFFlat构建快但搜索慢。为解决此问题，作者提出通过分片向量索引来提升性能，主要使用IVFFlat索引，它通过K-means将向量空间分组，天然适合分片。作者使用HuggingFace的Cohere/wikipedia数据集进行实验，通过scikit-learn计算出中心点（centroids），并根据欧几里得距离分配数据到不同分片。查询时，通过计算向量与中心点的距离确定最接近的分片。最终，通过PgDog实现分片支持，并优化查询性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：x86和ARM架构在指令密度、性能及内存顺序上的对比
+                    <div class="comments-summary">主要讨论点：SQLite-vec 向量数据库中分区键和分片的实现及其优缺点
 
 不同观点：
-• IshKebab认为x86指令集通过更小的指令提高了整体密度，使得二进制文件更紧凑，从而提升性能。他引用了一个外部链接来支持x86在代码密度上优于ARM的观点。
-• 针对上述观点，IshKebab自己提出质疑，表示通常认为ARM的核密度比x86更好，并对x86是否真的在指令密度上占优表示怀疑。
-• IshKebab进一步讨论了x86和ARM在内存顺序上的区别，认为尽管x86需要在微架构上做更多工作来处理更强的内存顺序，但ARM方面的软件也需要考虑弱内存顺序的问题。他指出这两种架构各有取舍。
-• IshKebab还提到，软件本身通常需要同步机制，因此不认为软件会特别依赖x86的强内存顺序特性（TSO），并暗示许多软件中的bug可能因此被掩盖。
+• alexgarcia-xyz 认为分区键在 SQLite-vec 中的实现提供了一种有效的方式来处理向量数据库中的分组查询问题。通过使用分区键，可以在查询时只搜索相关分组的数据，提高了查询效率，尤其适用于具有自然分组的应用场景（如按用户、语言或时间段搜索）。他还解释了分区键在内部如何存储以及与向量索引的关系。
+
+• jeffchuber 提出反对意见，认为当数据发生变化时，这种方法可能会导致质心退化，从而导致召回率下降。如果未监控召回率，可能无法及时发现问题，这可能会成为潜在的隐患。
+
+• charliereese 对 alexgarcia-xyz 的分享表示感谢，但没有提出具体观点或讨论技术细节。
+
+• redskyluan 则从更广泛的角度反对分片（sharding）作为向量数据库的解决方案，认为手动分片不是一个好主意，并引用了 Milvus 博客中的一篇文章来支持其观点。
 
 补充讨论：
-• adgjlsfhk1对采访本身表示赞赏，认为这类技术性强的访谈很有价值，并表达了希望看到更多类似内容 published。
-• 争议的焦点在于x86和ARM在指令密度和内存顺序上的优劣对比，特别是IshKebab对x86指令密度的优越性提出质疑，并讨论了软件同步和架构内存模型对实际性能的影响。</div>
+- alexgarcia-xyz 强调了分区键在实际应用中的常见场景，如按用户或时间段搜索，并提供了 SQL 示例以展示如何使用分区键进行查询。
+- jeffchuber 指出了一个潜在的技术问题，即数据变化对质心和召回率的影响，提醒用户注意监控。
+- redskyluan 的观点更具普遍性，认为分片在向量数据库中普遍存在问题，提供了外部资源进一步讨论。
+
+争议焦点：分区键和分片在向量数据库中的有效性和适用性。alexgarcia-xyz 认为分区键提供了实际应用中的好处，而 jeffchuber 和 redskyluan 则分别指出了技术上的潜在问题和管理上的困难。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43464362" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43484399" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -100,48 +106,153 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ruthtillman.com/post/all-clothing-is-handmade/" target="_blank">All Clothing Is Handmade (2022)</a>
+                    <a href="https://www.eff.org/deeplinks/2025/03/how-delete-your-23andme-data" target="_blank">How to Delete Your 23andMe Data</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: panic</span> |
-                    <span>评分: 115</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-03-23 02:43</span>
+                    <span>作者: hn_acker</span> |
+                    <span>评分: 171</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-03-26 19:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了手工制作服装的特殊价值以及对成衣质量的误解。作者讲述了自己制作被子和衣服的经历，强调了定制服装的情感联系。文章指出，所有服装本质上都是手工制作的，无论是在家中自制还是工厂生产。作者批评了人们对廉价成衣质量的偏见，尤其是对来自某些国家的服装。文章解释，成衣质量的好坏取决于品牌在材料选择、剪裁、设计和生产速度等方面的决策，而非生产地工人的技能。文章最后质疑了对东亚国家服装生产能力的刻板印象，呼吁重新思考我们对成衣质量和生产者的评价方式。</p>
+                    <p>23andMe已申请破产，其收集的数百万用户的基因数据可能被出售。由于数据去向不明，存在安全和隐私风险，用户应考虑删除数据。在删除前，用户可下载自己的基因数据，包括 ancestry、traits 和 raw DNA 信息。删除步骤包括：登录账户，进入设置，选择永久删除数据，并通过邮件确认。删除请求也涵盖销毁DNA样本。此次事件凸显了基因数据保护的重要性，用户应有权决定数据是否被转移，公司应确保买家做出隐私保护承诺。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：服装质量、生产外包、自动化与手工制作的比较，以及服装行业的经济与社会影响。
+                    <div class="comments-summary">主要讨论点：23andMe等公司对用户DNA数据的隐私、删除请求的有效性及实际操作中的问题
 
 不同观点：
-• alabastervlog认为，现代服装质量下降，尤其是与20世纪中期的服装相比，现代商品的耐用性大打折扣，质疑官方通胀指标的准确性，怀疑所谓的经济进步只是商品变差的结果。
-• andrewvc指出，手工制作的皮具等商品可以通过使用优质材料达到比大多数奢侈品牌更高的质量，但工业化生产通过机器大规模生产，虽然质量略低，但成本更可控。奢侈品牌可能故意让商品不那么耐用，以促进重复购买。
-• squeedles分享了自制服装的经验，强调自制衣物虽然质量高且独特，但耗时长，难以规模化生产。同时指出现代工业化生产通过压缩成本牺牲了服装质量。
-• fificon以男性内衣为例，指出现代商品设计似乎有意降低耐用性，怀疑是企业为了促进重复消费而做出的优化。
-• tialaramex和aeneasmackenzie讨论了服装生产中的自动化与人工参与，指出虽然一些步骤已经机械化，但人工仍然在服装制造的多个环节中不可或缺。
-• zombot提到，大规模生产的服装无法满足其合身需求，如果经济条件允许，会选择量身定制。
-• blululu补充了20世纪70到90年代外包生产对服装质量的影响，指出外包虽然提高了企业利润，但牺牲了工人利益，并导致质量下降。同时批评了对第一世界工人的忽视。
-• cratermoon将服装质量问题类比到商业软件，认为质量好坏取决于决策者的选择，而非生产方式本身。
-• achenet通过自制衣服的失败经历，质疑了“努力工作带来成功”的说法，指出全球化生产体系中，不同技能的价值差异巨大，服装工人的劳动被严重低估。
-• 1970-1-1批评了服装行业中的虚假宣传问题，如在美国可以将丙烯酸纤维宣传为“丝绸”。
-• AStonesThrow表达了对现代服装质量的失望，指出新衣服的质量差且难以修复，认为现代消费品设计上存在促使快速更换的倾向。
+• [数据无法彻底删除] ahmedfromtunis指出，所谓的“删除请求”并不保证数据会从硬盘上物理删除，只是逻辑上的删除。
+• [数据复制与分享的普遍性] tonymet认为，虽然用户可以请求删除数据，但由于公司通常会有多个数据副本，并且可能已与多个第三方共享，因此完全删除几乎不可能。
+• [对数据分享后果的长期警告] biker142541表示，多年前就预见到将DNA数据发送给公司可能带来的隐私问题，认为这个问题早已可以预见。
+• [亲属数据分享带来的间接暴露] YooLi提到，即使自己不提供DNA数据，亲属的分享也可能间接泄露自己的DNA信息，类似于在社交媒体上分享联系人信息。
+• [数据备份和不可逆性] randomNumber7和tonymet都暗示数据已经被备份，删除请求无法逆转数据的扩散，类似于“打开的枕头无法把羽毛装回去”。
+• [数据范围的澄清] brian-armstrong指出，23andMe只记录特定基因位置，而不是整个基因组，试图澄清数据范围的误解。
+• [对用户行为的批评] johnnyballgame批评那些将DNA数据上传到网络公司的用户，认为这是对隐私的不负责任。
+• [亲属数据关联问题] nickjj关心如果亲属上传了DNA数据，是否存在未注册用户的“幽灵”账户，并询问是否可以在不创建账户的情况下删除这些数据。
+• [法律和监管限制] drdaeman提到，由于CLIA等法规要求，部分基因数据和个人信息可能不会被删除，提供了相关法律链接。
+• [数据商业化] rglover认为，用户的DNA数据可能已经被出售给第三方，删除请求并不能挽回已造成的损害，提供了相关报道链接。
 
 补充讨论：
-• 外包和全球化生产对服装质量的影响是多个评论者关注的焦点，特别是第一世界和第三世界工人的待遇和技能比较。
-• 奢侈品牌是否故意降低产品耐用性以增加销售是另一个争议点，部分评论者认为这是企业策略的一部分。
-• 服装生产的自动化与手工制作之间的质量和成本差异被详细讨论，特别是手工制作在现代消费文化中的位置。
-• 评论中还提到了消费者在购买和维护高质量服装时面临的实际困难和经济压力。
+• [技术问题] TuringNYC和windsignaling提到实际操作中的技术问题，例如无法登录账户和下载数据困难，这影响了用户在请求删除数据前的操作。
+• [幽默与讽刺] Boogie_Man和ineedasername用幽默和夸张的方式表达了对隐私问题和AI技术发展的看法，虽然不构成严肃讨论，但反映了部分用户的调侃态度。
 
 争议焦点：
-• 现代商品质量下降的原因是通胀计算不准确还是生产商故意降低质量以增加利润。
-• 外包生产对工人和商品质量的影响，以及全球化生产中的道德问题。</div>
+• 数据删除的实际可行性：用户对数据是否能够真正被删除持怀疑态度，尤其是考虑到数据副本和第三方共享的情况。
+• 用户责任与公司责任：部分用户批评那些分享DNA数据的人，而其他人则强调公司和第三方在数据保护和使用上的责任。
+• 法律和监管的限制：讨论中提到了法律要求对数据删除的限制，这使得完全删除数据变得更加复杂。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43450515" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43486236" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.pewresearch.org/decoded/2025/03/21/how-a-glitch-in-an-online-survey-replaced-the-word-yes-with-forks/" target="_blank">A glitch in an online survey replaced the word 'yes' with 'forks'</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: cpeterso</span> |
+                    <span>评分: 131</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-03-21 23:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讲述了Pew Research Center在2024年在线调查中遇到的一个技术故障：一些受访者的“yes”选项被错误显示为“forks”。多个受访者反馈了此问题，随后调查团队展开调查。他们发现，故障源于一种“lightbox弹窗”设计特性，导致某些浏览器误以为页面是西班牙语，并自动触发翻译功能。而Google翻译的一个错误将“yes”翻译成了“forks”。此外，问题还导致其他翻译错误，如将“lean”误译为“read”。调查团队确认代码中并无“forks”字样，且之前测试未发现此问题。最终，团队确认该故障不会影响调查数据的可靠性，并解决了问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕翻译工具（如Google Translate）和其他软件中的翻译错误和异常现象的讨论。
+
+不同观点：
+• **wat10000**分享了Google Translate在处理"amistad"一词时出现的奇怪错误，特别是在使用不同数量的感叹号时会产生不同的翻译结果，如"friendship!!!"变成"murder!"，揭示了早期翻译工具中存在的奇怪bug。
+
+• **kgeist**描述了一个客户在平台上遇到的文档损坏问题，其中莫名其妙地出现了足球明星的名字（如"Messi"和"Zidane"）。这被归因于一个损坏的浏览器扩展，类似于Google Translate的错误，表明翻译工具可能在特定情况下引发不可预见的问题。
+
+• **miki123211**指出了在软件翻译中常见的歧义问题，特别是单一词汇在不同上下文中的多种翻译方式，例如"branch"可以指分支机构或树的分支，"book"可以指预订或书籍。这些错误对屏幕阅读器用户更为明显，因为它们隐藏在可访问性标签中。
+
+• **once_inc**分享了一个由于Excel翻译荷兰姓氏而引发的趣事，其中"van"被翻译成"Busje"，导致客户名称出错，但在被市场部门发现后引发了笑声。
+
+• **Dylan16807**表达了对技术句子理解的困惑，特别是涉及网页文本翻译和自动弹出窗口的修复，显示了对技术细节的不确定性。
+
+• **frnx**质疑Google Translate近年来质量下降的原因，指出其在简单翻译中出现疯狂循环和重复句子的现象，质疑是否有足够的质量检查。
+
+• **ineedasername**提到在使用[forks]和[spoons]作为代理变量时的策略性操作，揭示了在数据分析和结果操控中的潜在问题。
+
+• **withinrafael**分享了Windows在英式英语用户菜单中出现的奇怪翻译"Compress to postcode"。
+
+• **epistasis**对复杂bug和实际结果表示赞赏，表现出对技术异常的积极接受。
+
+• **rkunde**指出Chrome在遇到"403 Forbidden"页面时会错误地提示“翻译自丹麦语”。
+
+• **yuliyp**提到在一次知识竞赛中，由于浏览器自动翻译导致问题变得更容易，影响了比赛的公平性。
+
+• **perching_aix**提到OpenAI的ChatGPT界面使用机器翻译，也出现了类似的错误，但没有明确的报告途径。
+
+• **banqjls**和**FabHK**澄清了"forks"并不对应于西班牙语中的"yes"，并对Google Translate近期的更新问题表示不满。
+
+补充讨论：
+• 翻译工具在处理单一词汇和特定符号时由于缺乏上下文而导致的错误。
+• 翻译错误在不同软件和平台中的普遍性及其引发的实际问题和趣事。
+• 对翻译工具质量和更新过程的质疑，特别是在错误明显增加的情况下。
+• 翻译错误对不同用户群体（如屏幕阅读器用户）的潜在影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43441880" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.kilocode.ai/p/kilo-code-speedrunning-open-source-coding-ai" target="_blank">Kilo Code: Speedrunning open source coding AI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ofou</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-03-26 16:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Kilo Code 是一个由 JP Posma 领导的快速发展的开源 AI 编程代理项目，旨在实现“人人编程”的梦想，让所有人都能轻松塑造数字世界。受先前火山灰中复原古图书馆项目的成功启发，团队强调极速推进和社区协作。团队在两周内迅速组建并发布了初期版本，改进了多个功能，如无需创建外部账户、支持多种模型、优化用户体验等。他们计划通过快速迭代，从简单项目入手，逐步支持更复杂的编程任务。Kilo Code 的目标是构建最用户友好的 AI 编程代理，并通过开放源代码与社区分享最佳实践，以推动整个 AI 编码领域的发展。团队正在积极招聘，并提供免费使用额度以吸引用户反馈。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI编码代理的未来发展及其实际应用
+
+不同观点：
+• **乐观且行动导向的观点**（adamgordonbell, janpaul123）：认为编码代理是未来，关键在于快速执行的小团队。JP（janpaul123）特别提到了一系列产品改进想法，并邀请社区参与讨论，显示出对项目前景的信心。
+• **完全自动化与人类参与的讨论**（realharo, yapyap）：realharo提出是否应该完全去除人类参与，让AI自行运作。yapyap则反驳，认为编程本质上需要投入精力，AI只是工具，类似于翻译工具。
+• **产品差异化与市场竞争的质疑**（xnx, cpldcpu, rounce）：xnx认为Gemini 2.5目前是领先的AI编码工具，但cpldcpu质疑该项目如何在竞争激烈的市场中做出差异化。rounce进一步质疑该项目是否真正开放源代码，还是仅为吸引用户。
+• **商业模式的质疑**（bluelightning2k, quikoa）：bluelightning2k怀疑项目只是为了吸引风投资金，而quikoa则关心项目的盈利模式，特别是当他们声称不从代币中抽成时。
+• **AI代理的实际应用价值**（tristor）：tristor认为目前的生成式AI工具尚不能替代人类工程师，但可以在文档检查和代码路径测试上提供帮助，显示出对AI代理在辅助角色上的期望。
+
+补充讨论：
+• **对快速行动社区的评价**（suddenlybananas, handfuloflight）：suddenlybananas认为快速行动的社区成就不过是陈词滥调，handfuloflight则以讽刺的语气评论了项目方不注重网站外观而专注软件改进的声明。
+• **对硅谷现状的批评**（ilrwbwrkhv）：ilrwbwrkhv批评硅谷失去了黑客精神的初衷，陷入了群体思维和货物崇拜。
+
+争议焦点：
+• 该项目的实际创新性和差异化。
+• 项目是否真正开放源代码，还是存在隐性付费内容。
+• AI代理能否真正替代人类编程工作，或只是作为辅助工具。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43483802" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -226,52 +337,92 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.wired.com/story/google-openai-gemini-chatgpt-artificial-intelligence/" target="_blank">Google’s two-year frenzy to catch up with OpenAI</a>
+                    <a href="https://ruthtillman.com/post/all-clothing-is-handmade/" target="_blank">All Clothing Is Handmade (2022)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: totaldude87</span> |
-                    <span>评分: 148</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-03-21 15:44</span>
+                    <span>作者: panic</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-03-23 02:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2022年底，谷歌高管Sissie Hsiao受命在100天内打造出能与ChatGPT抗衡的产品。此时，ChatGPT已吸引逾百万人使用，甚至被视为谷歌搜索的潜在替代品，令公司感到危机。尽管谷歌拥有与ChatGPT能力相当的语言模型LaMDA，但其使用受到严格限制。面对华尔街的不安和公司内部的动荡，谷歌决定加速AI战略调整，合并DeepMind和Google Brain两大研究团队，启动代号为Bard的项目。Hsiao从各团队中挑选约100人全力推进，尽管过程中面临诸多挑战和压力，Bard项目最终取得进展。经过两年努力，Alphabet股价创下新高，投资者对其AI进展持乐观态度。这一变革被视为谷歌历史上最紧张而具文化重塑性的时期之一。</p>
+                    <p>这篇文章讨论了手工制作服装的特殊价值以及对成衣质量的误解。作者讲述了自己制作被子和衣服的经历，强调了定制服装的情感联系。文章指出，所有服装本质上都是手工制作的，无论是在家中自制还是工厂生产。作者批评了人们对廉价成衣质量的偏见，尤其是对来自某些国家的服装。文章解释，成衣质量的好坏取决于品牌在材料选择、剪裁、设计和生产速度等方面的决策，而非生产地工人的技能。文章最后质疑了对东亚国家服装生产能力的刻板印象，呼吁重新思考我们对成衣质量和生产者的评价方式。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google在AI领域的表现及其与OpenAI的竞争
+                    <div class="comments-summary">主要讨论点：服装质量、生产外包、自动化与手工制作的比较，以及服装行业的经济与社会影响。
 
 不同观点：
-• **Google在AI领域表现出色，逐渐追赶OpenAI**：
-   - [dsabanin] 认为Google的Gemini和Flash模型表现出色，尤其在深度研究和上下文窗口方面领先。Google利用其现有的产品组合和云基础设施，在整合搜索、Gmail、Google Office等服务上具有优势。此外，Google在获取训练数据方面比Apple更有优势。
-   - [whyenot] 也认为Gemini非常优秀，尤其在与其其他服务（如Gmail、Docs等）的整合上表现出色。
-
-• **Google的轻量级模型影响用户体验，导致负面印象**：
-   - [Workaccount2] 指出Google在所有产品中使用轻量级模型的策略导致了用户对其AI的负面印象，尤其是在搜索结果和回答质量方面。尽管如此，Google的SOTA模型（如Gemini 2.5）表现强劲，可能已经超越OpenAI。
-   - [the_clarence] 也有类似观点，认为尽管Gemini速度快且拥有较大的上下文窗口，但其答案质量较差，无法用于严肃任务。
-
-• **Google在产品化和市场竞争中面临挑战**：
-   - [janalsncm] 认为Google在transformer解码器的产品化方面表现不佳，类似于Google Meet与Zoom的竞争。OpenAI尽管不盈利且非上市公司，但在市场竞争中表现更好。
-   - [tzury] 指出Google内部多个团队开发相似产品导致资源分散和焦点不集中，这是Google面临的主要问题之一。
-
-• **Google的品牌认知和市场策略问题**：
-   - [totaldude87] 认为Google面临的更大问题是普通用户将AI视为与Google搜索不同的产品，Google在用户认知战中处于劣势。即使提供更多免费服务，也难以改变这一现状。
-   - [lysace] 从投资者的角度指出，Google需要一位更合适的CEO，并建议投资那些提供令人信服服务的公司。
-
-• **对Google高层决策和历史策略的质疑**：
-   - [senderista] 质疑Jeff Dean在神经网络领域的长期贡献，认为他在分布式系统研究方面更为著名。
-   - [czhu12] 认为Google在竞争中烧钱过多，建议等待OpenAI放缓步伐后再进入竞争，并关注API方面的盈利机会。
-   - [svilen_dobrev] 引用Eric Schmidt多年前的言论，质疑Google为何未能在AI助理领域取得突破，反而在其他不重要的领域（如邮箱）上浪费时间。
+• alabastervlog认为，现代服装质量下降，尤其是与20世纪中期的服装相比，现代商品的耐用性大打折扣，质疑官方通胀指标的准确性，怀疑所谓的经济进步只是商品变差的结果。
+• andrewvc指出，手工制作的皮具等商品可以通过使用优质材料达到比大多数奢侈品牌更高的质量，但工业化生产通过机器大规模生产，虽然质量略低，但成本更可控。奢侈品牌可能故意让商品不那么耐用，以促进重复购买。
+• squeedles分享了自制服装的经验，强调自制衣物虽然质量高且独特，但耗时长，难以规模化生产。同时指出现代工业化生产通过压缩成本牺牲了服装质量。
+• fificon以男性内衣为例，指出现代商品设计似乎有意降低耐用性，怀疑是企业为了促进重复消费而做出的优化。
+• tialaramex和aeneasmackenzie讨论了服装生产中的自动化与人工参与，指出虽然一些步骤已经机械化，但人工仍然在服装制造的多个环节中不可或缺。
+• zombot提到，大规模生产的服装无法满足其合身需求，如果经济条件允许，会选择量身定制。
+• blululu补充了20世纪70到90年代外包生产对服装质量的影响，指出外包虽然提高了企业利润，但牺牲了工人利益，并导致质量下降。同时批评了对第一世界工人的忽视。
+• cratermoon将服装质量问题类比到商业软件，认为质量好坏取决于决策者的选择，而非生产方式本身。
+• achenet通过自制衣服的失败经历，质疑了“努力工作带来成功”的说法，指出全球化生产体系中，不同技能的价值差异巨大，服装工人的劳动被严重低估。
+• 1970-1-1批评了服装行业中的虚假宣传问题，如在美国可以将丙烯酸纤维宣传为“丝绸”。
+• AStonesThrow表达了对现代服装质量的失望，指出新衣服的质量差且难以修复，认为现代消费品设计上存在促使快速更换的倾向。
 
 补充讨论：
-• Google的AI产品在整合自身服务方面具有优势，但在用户认知和市场策略上存在不足。
-• 内部资源分散和高层决策被认为是Google在AI竞争中的主要障碍之一。
-• 用户对Google AI产品的负面印象主要源于轻量级模型的使用和答案质量问题。</div>
+• 外包和全球化生产对服装质量的影响是多个评论者关注的焦点，特别是第一世界和第三世界工人的待遇和技能比较。
+• 奢侈品牌是否故意降低产品耐用性以增加销售是另一个争议点，部分评论者认为这是企业策略的一部分。
+• 服装生产的自动化与手工制作之间的质量和成本差异被详细讨论，特别是手工制作在现代消费文化中的位置。
+• 评论中还提到了消费者在购买和维护高质量服装时面临的实际困难和经济压力。
+
+争议焦点：
+• 现代商品质量下降的原因是通胀计算不准确还是生产商故意降低质量以增加利润。
+• 外包生产对工人和商品质量的影响，以及全球化生产中的道德问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43437028" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43450515" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.computerenhance.com/p/an-interview-with-zen-chief-architect" target="_blank">An Interview with Zen Chief Architect Mike Clark</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Smaug123</span> |
+                    <span>评分: 127</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-03-24 19:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是Casey Muratori对Zen架构首席设计师Mike Clark的采访总结。Zen架构是x86生态系统中极为重要的微架构，帮助AMD在CPU市场份额上从10%提升至25%。采访中，Mike Clark讨论了x64指令集架构（ISA）在低功耗设计中的表现，指出x64和ARM在功耗和性能上并无根本差异，主要是市场需求不同导致优化方向不同。对于x64的4k页大小限制问题，Clark表示更大页尺寸有助于提高TLB效率，但4k到2mb的直接跳跃过大，可能需要中间尺寸。整体而言，Clark强调微架构中的各种差异更多是设计上的取舍，而非根本性问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：x86与ARM架构在指令密度、性能以及内存顺序方面的比较
+
+不同观点：
+• IshKebab认为x86指令密度更高，可以通过更小的指令和更密集的二进制文件来提升性能。然而，IshKebab也提到有人认为ARM的核心密度更好，并引用了一个外部来源支持这一观点。
+• IshKebab进一步指出，虽然x86可能需要更多的微架构工作来处理内存顺序问题，但软件本身无论如何都需要同步。同时，IshKebab质疑是否真的有大量软件依赖x86的总序模型（TSO）。
+
+补充讨论：
+• adgjlsfhk1对采访表示赞赏，并表达了对更多类似技术采访的期望。
+• levodelellis也对采访表示欢迎，并提出了两个技术问题：1) 关于什么因素影响分支预测器，具体提到return语句和cmov的区别；2) 为什么没有条件异常来替代传统的条件判断和陷阱机制。
+
+争议焦点：
+• x86和ARM在指令密度和性能上的优劣对比是讨论的主要争议点，尤其是在引用外部来源后仍存在不同看法。
+• 关于内存顺序和同步在x86与ARM上的实现和影响也是争议的一个方面，特别是软件在不同架构上的依赖和处理方式。
+
+总结：
+评论中主要围绕x86和ARM架构在指令密度和性能上的比较展开，涉及到内存顺序和软件同步的问题，并引发了对分支预测器影响因素及条件异常的附加技术讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43464362" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -286,8 +437,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: pseudolus</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 2</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 7</span> |
                     <span>发布时间: 2025-03-27 00:29</span>
                 </div>
 
@@ -298,17 +449,21 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：小麦及谷类食品对消化问题的影响，以及相关健康信息的可靠性
+                    <div class="comments-summary">主要讨论点：对谷蛋白（gluten）敏感性及无 celiac 病情况下避免谷蛋白的讨论
 
 不同观点：
-• [amanaplanacanal] 提到其伴侣有消化问题，不能吃小麦，但吃大麦没有问题。这表明不同谷物对不同人的消化系统有不同的影响，可能暗示了对食物不耐受的个体差异。
-
-• [luqtas] 是一位有十年病史的乳糜泻患者，认为一些医生和“健康导向”的人群在社交媒体（如Instagram）上挑选小型研究结果，并将所有问题归咎于“有几千年历史的传统主食”（指小麦）。这暗示了对这些健康信息的科学性和可靠性的质疑，认为存在误导性。
+• exabrial 认为，许多含有谷蛋白的食物都是高度加工的垃圾食品，避免谷蛋白的建议可能不是因为谷蛋白本身，而是因为这些食品不健康。
+• beecasthurlbow 提出，研究样本量较小（16名参与者和20名对照），可能忽略了对谷蛋白有反应的亚群体。其身边有人吃谷蛋白会引发偏头痛，但没有celiac病。这需要更多研究来验证。
+• daotoad 认为，许多人自我诊断为对谷蛋白敏感，但他们缺乏基本的信息，经常误解食物成分。虽然这些人可能是错误的自我诊断，但因为市场需求增加，无谷蛋白食品的质量和种类得到了提升。其担心如果人们停止购买这些替代食品，市场选择会减少，对真正需要的人不利。
+• technothrasher 指出，研究无法证明非celiac病的谷蛋白敏感性不存在，因为无法提供“不存在”的证据。其认为无celiac病的人选择无谷蛋白饮食可能只是为了避免交叉污染，并且这种饮食方式还能促使他们尝试新的食材。
+• vidro3 对“肠道定向催眠疗法”表示强烈怀疑和反对。
+• luqtas 是一位有十年celiac病史的患者，批评某些“健康导向”群体和Instagram上的医生片面解读小规模研究，将千年传统主食污名化。
+• amanaplanacanal 分享了一个个例：其伴侣吃小麦会有消化问题，但吃大麦没有问题。
 
 补充讨论：
-• [luqtas] 提出了对某些健康信息的怀疑，特别是那些基于小型研究或个别医生观点的信息，认为它们可能对公众产生误导作用。
-• [luqtas] 强调了历史悠久的传统食物不应轻易被指责为现代健康问题的主要原因，指出了信息传播中的偏见和选择性引用问题。
-• 争议的焦点在于，一些人认为现代健康信息不准确或夸大其词，尤其是当这些信息挑战传统饮食习惯时，而另一些人则基于个人经历支持这些信息。</div>
+- 争议焦点在于非celiac病患者是否真的存在谷蛋白敏感性，以及相关研究的样本量和结论的可信度。
+- 一些人担心市场变化会影响无谷蛋白替代食品的供应，对真正需要这些食品的消费者产生负面影响。
+- 讨论中提到了自我诊断和健康影响者（health influencers）对公众认知的误导作用。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43489118" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -321,68 +476,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.databricks.com/blog/tao-using-test-time-compute-train-efficient-llms-without-labeled-data" target="_blank">Tao: Using test-time compute to train efficient LLMs without labeled data</a>
+                    <a href="https://github.com/michidk/rost" target="_blank">Rost – Rust Programming in German</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: chriskanan</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-03-26 19:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>TAO（Test-time Adaptive Optimization）是一种新方法，可以在无需标注数据的情况下提升大型语言模型（LLM）的任务表现。通过利用测试时计算和强化学习，TAO能在模型调优过程中自动改进模型，使其在企业任务（如文档问答和SQL生成）上表现优于传统微调，甚至能媲美昂贵的专有模型如GPT-4o。TAO仅需使用现有的LLM使用数据，无需人工标注，且通过增加调优时的计算预算可进一步提升模型质量，而推理成本保持不变。该方法已被应用于Databricks产品中，供客户预览和使用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：使用强化学习（RL）与监督微调（SFT）在大型语言模型（LLM）训练中的比较
-
-不同观点：
-• Rahimnathwani 提到了一种正在使用的训练方法，该方法基于LLaMA模型，并使用强化学习（RL）而不是监督微调（SFT）来优化模型。具体来说，在最后阶段采用RL方法更新LLM，以引导模型生成与先前步骤中确定的高分回答“紧密对齐”的输出。
-  
-• 对于RL方法中“紧密对齐”的定义存在疑问。Rahimnathwani 提出第一个问题：如何确定“紧密对齐”？这表明对RL训练中对齐标准的透明度和明确性存在关注。
-
-• Rahimnathwani 还提出了第二个问题，即RL方法的性能如何与使用相同基础模型和数据集的SFT方法进行比较。这暗示了一种比较的兴趣，即在相同条件下，哪种微调方法能够产生更好的模型表现。
-
-补充讨论：
-• 评论中隐含的争议焦点在于RL和SFT两种方法的有效性对比。尽管RL方法被认为可以通过适应性学习过程提高输出质量，但尚不清楚其相对于传统SFT方法的优势和具体表现如何。
-
-• 另一个值得注意的点是，Rahimnathwani 对RL训练过程中的“紧密对齐”定义提出了质疑，这可能暗示了对RL方法在实际应用中效果和可解释性的潜在担忧。
-
-• 总的来说，讨论围绕着RL和SFT在LLM微调中的应用和效果比较展开，重点在于如何评估模型的对齐程度以及两种方法的相对性能。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43486199" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://adamtooze.substack.com/p/carbon-notes-5-green-hydrogen-the" target="_blank">Is Green hydrogen the "gas of the future"? (2023)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: simonebrunozzi</span> |
-                    <span>评分: 4</span> |
+                    <span>作者: miniBill</span> |
+                    <span>评分: 8</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-03-26 22:12</span>
+                    <span>发布时间: 2025-03-26 23:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>"Rost" 是一个允许使用德语关键字和语法编写 Rust 程序的项目。它兼容传统的英文 Rust，开发者可以混合使用。项目示例展示了如何用德语定义结构体和方法，例如使用 "Konvention und Umsetzung"（对应 trait 和 impl），以及德语命名变量和函数。虽然这是一个带有幽默色彩的项目，但它确实可以运行。贡献者可以将新标识符添加到项目中，初始翻译由 Shemnei 和 michidk 完成。项目采用 WTFPL 许可证，但图片有单独的授权。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43488036" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43488490" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -393,145 +505,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/03/26/us/ice-tufts-student-detained-rumeysa-ozturk.html" target="_blank">Federal Government Detains International Student at Tufts</a>
+                    <a href="https://arstechnica.com/gadgets/2025/03/google-makes-android-development-private-will-continue-open-source-releases/" target="_blank">Google makes Android development private, will continue open source releases</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: breadwinner</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-03-26 23:56</span>
+                    <span>作者: coloneltcb</span> |
+                    <span>评分: 137</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-03-26 19:21</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>Google is shifting Android development to internal branches, moving away from public-facing channels. While Android remains open source, the development process will be less transparent. This change aims to simplify development and address synchronization issues between public and private branches. Although new Android versions will eventually be published in AOSP, the shift may limit early insights into upcoming changes. Components currently developed in the open, like Bluetooth and the kernel, will also move to internal development. This change, aimed at streamlining releases, could impact open-source projects like LineageOS and reduce opportunities for developers and users to provide feedback before Google implements changes.</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一名土耳其留学生因被指支持哈马斯而被撤销签证并逮捕，评论中围绕言论自由、移民权利以及政府干预的合法性和机制展开了讨论。
+                    <div class="comments-summary">主要讨论点：Android的开放源代码性质及其影响
 
 不同观点：
-• [breadwinner] 认为这名学生的行为属于表达意见的范畴，应受第一修正案的保护。该评论指出，这名学生因撰写并发表一篇批评校方处理巴勒斯坦问题态度的文章而被捕，实际上是因其言论自由受到打压。文章中没有发现对哈马斯的直接支持，因此逮捕行动被视为不合理。
+• bitsandboots认为，Android长期以来只是表面上开放源代码，实际上是"只能看不能动"的源代码。其庞大的代码库需要大量资源来构建，且服务于谷歌的利益。Android平台已经处于"生命支持"状态，谷歌通过其权威控制应用行为，甚至第三方商店也受其规则限制。用户几乎没有希望运行5年前的程序或回滚糟糕的更新。
 
-• [官方立场] 根据美国国土安全部（DHS）的声明，该学生的签证是特权而非权利，支持外国恐怖组织（如哈马斯）并 glorifying 其行为，构成了撤销签证的正当理由。官方认为，这种支持恐怖组织的行为对国家安全构成威胁，撤销其签证是出于常识性的安全考虑。
+• BeefySwain指出，Android在加入Google Play服务后实际上已经不再是"开放源代码"。现在在AOSP上运行任何东西都非常困难。
 
-• [ggm] 对联邦政府干预的具体机制表示好奇，并提出了一系列问题。该评论质疑是否存在特定的举报机制或技术工具，用于监控并优先处理涉及移民身份的言论或行为。评论还隐含了对政府可能利用技术手段进行监控和信息处理的担忧，并将其与历史上信息处理的负面例子相比较。
+• charcircuit认为文章标题是哗众取宠。AOSP中的许多代码库早已如此，称其为私有是不正确的，因为仍然可以向它们贡献代码。
 
-补充讨论：
-• 争议焦点在于言论自由与国家安全之间的平衡。一部分评论认为，学生的言论属于学术和政治意见的表达，应受宪法保护；而官方则强调，支持被认定为恐怖组织的团体对国家安全构成威胁，必须采取行动。
+• surgical_fire好奇这对GrapheneOS或LineageOS等项目的影响，希望它们仍能正常运作。
 
-• [breadwinner] 还提到该学生似乎是在没有预警的情况下被逮捕，这引发了对执法过程是否公正和透明的质疑。
+• bayindirh将此比作Android的"Oracle Solaris"时刻，但未改变所有权。认为Android虽然长期不开放源代码，但至少现在不再"表面开放"。
 
-• [ggm] 的评论引出了对政府干预的具体操作流程和技术手段的关注，反映出公众对政府监控和信息处理机制的潜在担忧。
+• hnlurker22暗示谷歌不想让AI学会如何与其竞争。
 
-总结：讨论围绕言论自由、移民权利和国家安全展开，主要争议在于表达政治意见是否构成对国家安全的威胁，以及政府在处理此类问题时的机制和合法性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43488916" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://101-things.readthedocs.io/en/latest/radio_receiver.html" target="_blank">Pi Pico Rx – A crystal radio for the digital age?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nolist_policy</span> |
-                    <span>评分: 117</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-03-23 12:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了**Pi Pico Rx**，一款基于Raspberry Pi Pico的简易软件定义无线电（SDR）接收器。它能够接收长波（LW）、中波（MW）和短波（SW）频段，支持CW/SSB/AM/FM等多种模式，并具有OLED显示和简单的频谱显示功能。该设备使用一个模拟开关和一个运算放大器，通过Raspberry Pi Pico的PIO功能生成正交振荡器，无需外部振荡器，功耗低，可使用3节AAA电池供电。
-
-文章还提到，Pi Pico Rx的设计灵感来自经典的水晶收音机，旨在以现代技术重现那种简单的奇迹。尽管比传统水晶收音机复杂，但它展示了如何利用现代微控制器和少量组件构建功能强大的SDR接收器。文章还讨论了其他类似的SDR设计，并详细介绍了Pi Pico Rx在硬件和软件上的创新，特别是通过交替采样I和Q信号来恢复带宽为250kHz的复杂信号。
-
-总的来说，Pi Pico Rx是一款适合电子爱好者的简易SDR接收器，结合了经典与现代技术。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：RP2350项目及相关技术细节，尤其是其在软件定义无线电（SDR）和晶体收音机方面的应用和潜力。
-
-不同观点：
-• [nyrikki] 认为RP2350具有强大的功能，例如平方根计算、添加16MB PSRAM的能力以及PIO块的额外功能，使其在处理闪存写入问题和输出设备选择上具有优势。他还提到RP2350系列的DMA/SIO/PIO功能非常强大，相较于ESP32和STM32更具灵活性。
-
-• [Animats] 指出该项目虽然很出色，但并不是晶体收音机，而是一个直接采样接收器。他解释了直接采样和传统超外差接收机的区别，并提到随着A/D设备和处理技术的进步，直接转换接收机的频率上限已经提高。他还提到低成本的直接转换接收机需要使用FPGA来处理大部分工作。
-
-• [boznz] 表示作为一个62岁的人，他觉得这个项目很有趣，但怀疑自己7岁时能否完成这个项目。
-
-• [dchristian] 对项目能在AAA电池上运行表示惊讶，并对软件定义无线电（SDR）的介绍表示感谢。
-
-• [bonyt] 回忆起自己小时候玩类似电子套件的经历，尤其是短路烧到手指的记忆，让他对晶体收音机套件感到畏惧。
-
-• [oakwhiz] 提到交错正交采样技巧在其他科学领域如解薛定谔方程和光学中的应用。
-
-• [nine_k] 认为这个项目非常简单，适合初学者，并强调RP2040 PIO的实用性，指出如果没有PIO，RF相关电路将不得不使用比特撞击或一堆小型分立元件。
-
-• [sertyasert] 认为只要AM广播存在，晶体收音机就仍然是晶体收音机。
-
-• [hypercube33] 提到几年前研究过的数字FM芯片，特别是能够接收电台广播的数字文本信息，认为这个项目很酷，尤其是在使用碱性电池运行方面。
-
-• [amelius] 提到最近研究Meshtastic用于灾难情况下的基本通信，并寻求设备推荐。
+• mrtksn质疑我们离让AI制作iOS克隆并包含Android优点的时候还有多远，认为如果AI公司承诺的内容属实，Android和iOS等软件可能很快变得 irrelevant。
 
 补充讨论：
-• 争议焦点：该项目是否应被视为晶体收音机。Animats认为它实际上是一个直接采样接收器，而不是传统意义上的晶体收音机。
-• 项目功能和潜力：讨论中多次提到RP2350的强大功能和灵活性，尤其是在处理RF信号和SDR应用方面。
-• 个人经历和情感：一些评论者分享了自己小时候玩电子套件的经历，以及对项目实用性的看法。
-
-这些观点展示了该项目在技术社区中引发的广泛讨论，从技术细节到个人经历，再到实际应用场景。</div>
+• 链接提供进一步讨论和相关信息来源（WalterSobchak, ChrisArchitect）。
+• 讨论中涉及对开放源代码定义的不同理解和实际操作中的困难。
+• 提到了AI对软件开发未来的潜在影响，可能改变当前移动操作系统格局。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43452420" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blend2d.com/blog/png-image-codec.html" target="_blank">High-Performance PNG Decoding</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-03-23 06:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了Blend2D库中新推出的高性能PNG编解码器。PNG格式虽历史悠久，但其编解码性能仍有提升空间，尤其是DEFLATE压缩算法成为性能瓶颈。新编解码器通过优化DEFLATE解码表的构建和快速解码位流，实现了超越其他C、C++等语言编写的编解码器的速度。文章指出，DEFLATE算法由于其标量性质和不适合现代CPU的并行处理特性，性能提升存在上限。优化关键在于快速构建解码表和避免大表带来的性能开销，同时强调针对PNG文件的特定数据集进行调优的重要性。最终，Blend2D的新PNG编解码器在解码速度上取得了显著提升。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对技术优化的不同看法，以及对内容呈现方式的反馈。
-
-不同观点：
-• Snickerbockers 认为对 zlib 压缩的优化（尤其是在 PNG 加载中的应用）并不是一个值得优化的重点。他分享了自己九年前编写 PNG 加载器的经历，采用了简单的逐字节解压方式，并且在没有进行性能测试的情况下，认为其实现已经足够快速。他提到自己使用的是 AMD FX 8120 "Bulldozer" CPU，尽管该处理器在性能上不及 Intel，但应付 PNG 加载依然绰绰有余。他还提出了利用 Adam7 交错模式提前显示图像的可能性，认为只要有可能，延迟工作或显示子采样图像是可接受的。
-
-• Adzm 关注的是 Blend2D 库中使用 AsmJit 技术在运行时生成平台特定的汇编代码，暗示这种优化方法值得注意和讨论。
-
-• Msephton 没有参与技术优化的讨论，而是对文章的排版提出了意见，认为移动端样式表缺乏页边距，导致阅读体验不佳，并表示自己因此没有读完文章。
-
-补充讨论：
-• Snickerbockers 和 Adzm 的评论涉及到对代码性能优化的不同看法。前者认为某些优化（如 zlib 压缩优化）在现代硬件上显得不必要，而后者则关注更底层的汇编代码生成优化。
-• Snickerbockers 提到了 Adam7 交错模式，这是一个在 PNG 标准中的特性，可以用于提前显示部分图像，这在某些应用场景下可能提高用户体验。
-• Msephton 的反馈提醒了技术文章在内容排版和用户体验方面的重要性，尽管与技术优化无直接关系，但也是文章可读性的重要一环。
-
-争议焦点：是否需要对某些技术（如 zlib 压缩）进行深度优化。Snickerbockers 认为现代硬件能力足以应付常见任务，而其他开发者可能有不同看法，特别是在特定应用场景下，性能优化依然具有价值。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43451187" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43485950" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
