@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-03-30 17:11 (北京时间)
+            最后更新时间: 2025-03-30 20:20 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,58 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://seclists.org/oss-sec/2025/q1/253" target="_blank">OSS-SEC: Three bypasses of Ubuntu's unprivileged user namespace restrictions</a>
+                    <a href="https://github.com/Overv/vramfs" target="_blank">Vramfs: Vram Based Filesystem for Linux</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 44</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-03-29 19:07</span>
+                    <span>作者: signa11</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-03-29 17:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Qualys 安全咨询报告披露了 Ubuntu 未授权用户命名空间限制的三个绕过方法。Ubuntu 23.10 引入了这些限制，并在 24.04 版本中默认启用，旨在减少内核攻击面。然而，研究人员发现了三种绕过方法，使本地攻击者可以在命名空间内获得管理员权限，从而利用内核漏洞：
+                    <p>**vramfs** 是一个基于 Linux 的文件系统工具，利用 FUSE 库将文件系统创建于显卡的显存（VRAM）中，类似于内存盘（ramdisk），但使用的是显卡的显存。该工具并非为严肃场景设计，但在消费级 GPU（显存 4GB 以上）上表现良好。读写性能分别约为 2.4 GB/s 和 2.0 GB/s，约为内存盘的三分之一。
 
-1. 通过 `aa-exec` 工具切换到允许创建命名空间的 AppArmor 配置文件。
-2. 通过执行默认安装的 `busybox` shell，利用其配置文件的权限。
-3. 通过 `LD_PRELOAD` 预加载到一个允许创建命名空间的程序中。
+**要求**：
+- Linux 内核 2.6+
+- FUSE 开发文件
+- 支持 OpenCL 1.2 的显卡
 
-这些绕过方法仅在命名空间内有效，不会影响主机系统。Ubuntu 已发布相关信息，进一步说明可参考其官方讨论帖。</p>
+**构建**：
+安装 OpenCL 驱动并确认显卡被识别，安装 `libfuse3-dev` 及其他必要文件，运行 `make` 构建。
+
+**挂载**：
+使用 `bin/vramfs <mountdir> <size>` 挂载，建议大小不超过 VRAM 的 50% 以避免不稳定。
+
+**实现**：
+vramfs 通过 FUSE 库实现用户空间文件系统，使用 OpenCL 分配显存，支持异步写入和同步读取，文件系统结构为树状目录。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux系统中与安全相关的功能（如AppArmor和用户命名空间）是否导致安全漏洞，以及如何应对这些潜在问题。
+                    <div class="comments-summary">主要讨论点：利用GPU的VRAM实现文件系统或数据存储的技术方案及其优缺点
 
 不同观点：
-• **o11c的观点**：当前讨论的情况本身不算一个直接的漏洞，仍然需要内核中的`CAP_SYS_ADMIN`权限才能进行恶意操作。他还提到，很多安全工具在处理多进程解释器时考虑不周，但若已经处于受限的AppArmor配置文件中，不太容易切换到限制较少的配置。
-
-• **mjevans的观点**：质疑AppArmor配置文件是否允许从特权环境逃逸。他认为如果没有AppArmor的额外"许可"，标准的Linux权限或容器组应该可以防止这种情况发生。
-
-• **quotemstr的观点**：反对将无特权的用户命名空间视为安全漏洞。他认为Ubuntu禁用这些命名空间的决策是短视的，反而会降低系统整体的安全性。禁用这些功能会让无特权程序更难设置用户空间沙箱。他主张修复内核漏洞，而不是随意禁用有用的功能。
-
-• **j45的观点**：关注该问题是否仅存在于Ubuntu系统，还是也可能影响Debian等其他Linux发行版。
+• devit认为应该通过编写Linux内核模块，使用DRM来保留GPU内存并创建ramdisks，而不是通过OpenCL在用户空间实现文件系统。这样可以实现更好的缓存、直接的mmap支持以及并发文件系统的可靠性。
+• dcanelhas提供了一个与数据存储相关的项目链接，但没有直接评论当前方案。
+• harha_支持利用RAM和VRAM作为文件系统的做法，认为在某些情况下不需要完全使用纯RAM/VRAM。
+• shadowpho认为2 GB/s的速度不理想，虚拟磁盘应该至少达到6 GB/s，特别是在使用DDR5的情况下。
+• finnjohnsen2以幽默的方式表达了对使用宝贵VRAM存储文件的看法，但对其实现表示赞赏。
+• 12destroyer21质疑FUSE文件系统相对于内核实现的开销，并询问是否可以使用eBPF来创建更快的FUSE-like文件系统驱动。
+• hinkley提出了使用旧显卡还是PCIE NVME多路复用器的选择问题，以利用相同的通道。
+• Dwedit指出使用这种方案会使GPU持续供电而无法自行关闭。
+• ggm提到了树莓派的图形处理器作为引导加载器的功能，但与主要讨论点关系不大。
+• knome建议将VRAM用作交换文件的存储，类似于zram的用法。
+• dheera反对使用GPU VRAM，认为CPU和GPU之间的复制速度不理想，并提到自己使用大量CPU VRAM的经历。
 
 补充讨论：
-• 争议的焦点在于无特权的用户命名空间是否构成安全漏洞，以及禁用这些功能是否能真正提高系统安全性。
-• 讨论还涉及到安全工具在处理多进程解释器时的不足，以及如何更好地通过权限配置防止潜在的恶意操作。
-• 不同发行版（如Ubuntu和Debian）如何处理这些安全功能也是一个值得注意的讨论点。</div>
+• 讨论中涉及了速度、性能和实现方式的技术细节。
+• 不同用户对技术实现的实用性和效率有不同的看法，特别是关于GPU VRAM的使用。
+• 争议的焦点在于使用GPU VRAM是否合理以及如何实现更高效的文件系统。
+• 还讨论了能耗问题以及替代方案（如zram和NVME多路复用器）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43517734" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43517234" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,40 +123,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://sharktastica.co.uk/wip/timeline" target="_blank">A timeline of IBM keyboard history</a>
+                    <a href="https://www.ycombinator.com/companies/spark/jobs/kDeJlPK-software-engineer-full-stack" target="_blank">Spark AI (YC W24) Is Hiring a Full-Stack Engineer in San Francisco</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tart-lemonade</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-03-30 01:15</span>
+                    <span>作者: tk90</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-03-29 21:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章预览了Admiral Shark's Keyboards即将发布的内容，概述了IBM及其相关公司（如Lexmark、Unicomp、Lenovo和Toshiba Global Commerce Solutions）的键盘发展历史。时间线记录了重要键盘产品的发布与停产、公司历史（如成立、资产剥离和OEM变更）以及专利等事件。涉及的设备包括个人电脑、终端、控制台和打字机等。文章列举了多个历史节点，如1896年Herman Hollerith创立制表机公司，1911年成立CTR公司（后更名为IBM），以及之后多个型号打字机和键盘的推出，如IBM 001机械卡片打孔机、Model A/B/C电动打字机系列和IBM 024/026卡片打孔机等。多个工厂在全球设立，生产键盘及相关设备。</p>
+                    <p>Spark是一家由Tae Kim和Julia Wu于2023年创立的人工智能初创公司，总部位于旧金山，得到了AI Grant等顶级投资者的支持。公司开发AI工具，帮助能源开发商更快地建设太阳能农场和电池工厂，解决本地法规导航等挑战。行业巨头如Colliers Engineering & Design等都是其客户。现招聘全栈软件工程师，年薪15万至20万美元，要求3年以上经验，负责核心API、AI基础设施和数据管道的设计与开发。工作包括从前端到后端编码、与创始人紧密合作、构建产品路线图以及与客户沟通。公司注重速度和实际影响，适合希望在业务和技术上都有所发展的候选人。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：IBM PC及其周边设备（尤其是键盘）的发展和使用体验
-
-不同观点：
-• [wpollock] 认为IBM PC最初的键盘质量较差，导致后来被替换。他还提到IBM在使用标准组件时，内部团队在键盘设计上存在分歧，最终达成了妥协方案。不过他表明自己记忆模糊，希望得到证实或反驳。
-
-• [os2warpman] 对IBM的键盘（尤其是Model M）有着高度评价，认为IBM早在半个世纪前就解决了文本输入问题。他通过个人经历（使用Selectrics和Model M键盘）证明IBM键盘的优越性，并表示这些设备让他能快速打字。
-
-• [chasil] 分享了使用IBM设备的历史，包括在高中使用IBM打孔机编写COBOL程序，以及后来使用Datamaster和Model M键盘的经历。他补充了对打孔机和Selectric打字机的记忆，提供了IBM设备在不同年代的使用背景。
-
-• [neilv] 提到了一个被忽略的键盘型号SK-8855，并提供了一个链接以补充相关信息。他的评论更多是关于完善讨论中缺失的时间线和型号信息。
-
-补充讨论：
-• 对IBM键盘质量的评价存在分歧，[wpollock]认为初期键盘不佳并被替换，[os2warpman]和[chasil]则对IBM键盘（尤其是后期型号）给予了高度评价。
-• 讨论中涉及了多个历史设备，如Selectric打字机、Model M键盘和打孔机，提供了IBM设备演变的历史背景。
-• 争议的焦点集中在IBM PC键盘的初期质量和设计妥协上，[wpollock]希望获得更多证实或反驳。
-• [neilv]的补充为讨论添加了更多技术细节和型号信息，完善了讨论的时间线。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43520297" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43518695" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -202,31 +200,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://epoch.ai/gate" target="_blank">Gate: AI and Automation Scenario Explorer</a>
+                    <a href="https://seclists.org/oss-sec/2025/q1/253" target="_blank">OSS-SEC: Three bypasses of Ubuntu's unprivileged user namespace restrictions</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-03-26 12:44</span>
+                    <span>作者: birdculture</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-03-29 19:07</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了Epoch AI开发的集成评估模型——GATE（Growth and AI Transition Endogenous）模型，旨在分析人工智能（AI）发展对经济的潜在影响。GATE模型的核心是一个自动化反馈循环，投资推动计算能力的提升，从而增强AI系统的能力，逐渐替代人类任务，提高产出，再进一步推动AI投资。该模型包含三个模块，并提供了一个交互式的GATE Playground，用户可以调整参数以观察不同情境下模型的表现。
+                    <p>Qualys 安全咨询报告披露了 Ubuntu 未授权用户命名空间限制的三个绕过方法。Ubuntu 23.10 引入了这些限制，并在 24.04 版本中默认启用，旨在减少内核攻击面。然而，研究人员发现了三种绕过方法，使本地攻击者可以在命名空间内获得管理员权限，从而利用内核漏洞：
 
-本文强调，GATE模型的预测是条件性的，依赖于多种假设，主要用于分析AI自动化的宏观经济动态趋势，而非精确预测。由于模型复杂，部分参数范围可能导致预测不可靠，需通过微调参数进行验证。
+1. 通过 `aa-exec` 工具切换到允许创建命名空间的 AppArmor 配置文件。
+2. 通过执行默认安装的 `busybox` shell，利用其配置文件的权限。
+3. 通过 `LD_PRELOAD` 预加载到一个允许创建命名空间的程序中。
 
-模型参数分为三大类：AI与计算、技术和研发、一般经济参数，并考虑了投资者不确定性、劳动力再分配和研发正外部性等因素。
-
-如对模型有疑问或反馈，可联系info@epoch.ai。</p>
+这些绕过方法仅在命名空间内有效，不会影响主机系统。Ubuntu 已发布相关信息，进一步说明可参考其官方讨论帖。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：Linux安全机制中的AppArmor配置文件和用户命名空间是否构成安全漏洞
+
+不同观点：
+• [o11c] 认为这并不是一个直接的漏洞，需要已经拥有内核`CAP_SYS_ADMIN`权限才能执行恶意操作。同时指出，许多安全工具在处理多进程解释器时表现不佳，但未详细展开。
+
+• [eqvinox] 认为这是安全层面的失败，即使这个漏洞本身不太大，但仍然不理想。特别是如果用户依赖这些安全特性，而出现这种漏洞会破坏这种信任。尽管承认问题不大，但仍然认为这种安全断裂不可忽视。
+
+• [mjevans] 提出疑问，认为如果没有AppArmor的额外"祝福"，标准的Linux权限和容器组是否足以防止这种特权环境逃逸。这暗示了对AppArmor有效性的质疑，并关注标准Linux安全机制的作用。
+
+• [quotemstr] 强烈反对将未授权的用户命名空间视作安全漏洞，批评Ubuntu禁用这些命名空间的决定是短视的。认为移除这些功能会让良好行为的程序更难设置用户空间沙箱，主张修复内核漏洞而不是随意破坏有用特性。
+
+• [j45] 关注该问题的影响范围，询问这到底是仅限于Ubuntu的问题，还是Debian等其他Linux发行版也可能受到影响，显示出对问题普遍性的关注。
+
+补充讨论：
+• 争议的焦点在于未授权的用户命名空间和AppArmor配置文件是否构成安全漏洞，以及Ubuntu禁用用户命名空间的决定是否合理。
+• 讨论还涉及标准Linux权限和容器技术在防止特权环境逃逸中的作用，以及内核漏洞与安全机制之间的关系。
+• 不同评论者对安全断裂的容忍度和对安全工具的期望也存在分歧，部分认为这是小问题，部分则认为影响较大。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43481607" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43517734" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -237,41 +251,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ploum.net/2025-03-28-geeks-naivety.html" target="_blank">The Candid Naivety of Geeks</a>
+                    <a href="https://sharktastica.co.uk/wip/timeline" target="_blank">A timeline of IBM keyboard history</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: SlackingOff123</span> |
-                    <span>评分: 106</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-03-29 19:45</span>
+                    <span>作者: tart-lemonade</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-03-30 01:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章《极客的天真》讨论了人们对亚马逊Alexa隐私设置变化的过度惊讶，指出这种惊讶源于天真的期望。作者认为，亚马逊从一开始就在收集用户数据，购买Alexa的人不应期待隐私得到保护。文章批评了对科技公司如苹果在隐私保护方面的盲目信任，强调营销本质上常包含谎言。大公司往往为了商业利益而忽视隐私，用户应意识到工具的潜在用途最终都会被利用。文章还提到，技术社区中存在对品牌的盲目忠诚，这是一种被“驯化”的表现，用户应更加警觉，而不是期待公司自我约束。最后，作者指出，技术无法解决因谎言带来的问题，用户需自我保护。</p>
+                    <p>这篇文章预览了Admiral Shark's Keyboards即将发布的内容，概述了IBM及其相关公司（如Lexmark、Unicomp、Lenovo和Toshiba Global Commerce Solutions）的键盘发展历史。时间线记录了重要键盘产品的发布与停产、公司历史（如成立、资产剥离和OEM变更）以及专利等事件。涉及的设备包括个人电脑、终端、控制台和打字机等。文章列举了多个历史节点，如1896年Herman Hollerith创立制表机公司，1911年成立CTR公司（后更名为IBM），以及之后多个型号打字机和键盘的推出，如IBM 001机械卡片打孔机、Model A/B/C电动打字机系列和IBM 024/026卡片打孔机等。多个工厂在全球设立，生产键盘及相关设备。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：隐私问题及对科技公司和隐私保护工具的信任
+                    <div class="comments-summary">主要讨论点：IBM的键盘设计及其历史演变，包括早期PC键盘、终端键盘以及其他相关输入设备（如打字机和键盘穿孔机）的使用体验。
 
 不同观点：
-• 观点1：对隐私问题持悲观态度，认为用户无法保护自己的隐私。举例说明NSA的监控和消费级路由器、CPU的后门，强调用户在网上没有隐私可言。
-• 观点2：科技公司如Apple和Amazon为了改进产品会妥协用户隐私，且没有额外动机去保护隐私，因为相关产品不直接盈利（Siri和Alexa是亏损的）。相比之下，Signal和Protonmail的隐私保护措施更值得探讨，尤其是两者在面对法律要求时的不同反应。
-• 观点3：认为大科技公司不会轻易泄露用户数据，因为这样做会损害他们的声誉和用户信任。举例Google和Facebook长期以来未泄露用户搜索记录和私人信息。
-• 观点4：强调证据的重要性，认为对公司行为的实际证据比单纯猜测更有用。对公司天真的信任可能会导致误判。
-• 观点5：对Signal作为非营利组织的隐私保护承诺持怀疑态度，指出缺乏透明度的问题，并引用WordPress基金会的争议作为例子。
-• 观点6：指出技术社区中存在的“元天真”现象，即对某些项目的盲目信任和对其他项目的贬低，认为这种态度容易导致误导和自大。
-• 观点7：从技术员工的角度出发，认为大公司强调用户信任，且因内部严格的测试和员工的道德标准，隐私保护措施相对可靠。
-• 观点8：对Apple持批评态度，认为其在隐私问题上的表现像一个“邪教”，用户对其隐私承诺的信任缺乏实际依据。
+• **wpollock**：回忆IBM PC开发期间，最初的键盘由于质量不佳被更换。wpollock提到IBM决定使用标准组件，但键盘是一个例外，并且开发团队内部存在分歧，最终导致了一种妥协设计。wpollock对自己的记忆不太确定，希望得到证实或反驳。
+
+• **YeGoblynQueenne**：提到IBM 3161和3163 ASCII显示终端，这些终端配备了IBM增强型键盘，具有额外的按键和独特的线条绘制符号。YeGoblynQueenne还提及了这些键盘在玩Rogue等游戏时的使用体验，暗示了这些键盘的特定应用场景。
+
+• **os2warpman**：强调IBM在打字输入方面的成就，提到在学校使用Selectric打字机和Model M键盘的经历，认为IBM在五十多年前就解决了文本输入问题。os2warpman对IBM的输入设备表示高度赞赏。
+
+• **chasil**：回忆了1985年使用IBM键盘穿孔机编写COBOL程序的经历，并提到高中使用Selectric打字机和Datamaster的经历。chasil补充了对键盘穿孔机的详细描述，并提供了相关维基链接。
+
+• **neilv**：指出SK-8855键盘在时间线中被遗漏，并提供了相关维基页面链接，补充了原文未提及的键盘型号。
+
+• **walrus01**：对文章中包含Thinkpad蝶形键盘表示满意，但没有进一步展开讨论。
 
 补充讨论：
-• 讨论了不同隐私工具（如Signal和Protonmail）在法律要求下的透明度和隐私保护能力的比较，并提供了相关链接以供参考。
-• 提到了开源项目的信任问题，认为即使是开源项目，用户也需要对代码进行审查和验证，否则仍可能被误导。
-• 强调了在现实生活中，欺骗和不诚实行为可能影响合作策略，特别是在公司与用户之间的互动中。
-• 指出了技术社区在讨论隐私问题时常带有情绪和高调的断言，但缺乏实质性证据和建设性建议。</div>
+• 争议焦点在于IBM PC早期键盘的设计和质量问题。wpollock提到键盘最初设计不佳，导致更换，并且开发团队内部存在分歧。这一说法尚未得到其他评论者的完全证实或反驳。
+
+• 讨论中提到了多种IBM键盘和相关设备，包括Model M、终端键盘、Selectric打字机、键盘穿孔机和Thinkpad蝶形键盘，显示了IBM在不同历史时期的多样化键盘设计。
+
+• 评论中还涉及了IBM键盘在实际使用中的体验和应用场景，如在学校教学、编程和游戏中的使用，提供了多角度的用户反馈。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43518087" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43520297" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -376,46 +394,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.ctvnews.ca/canada/article/where-have-all-the-snowbirds-gone-canadians-cold-on-us-travel/" target="_blank">'Catastrophic': Canadian bookings for U.S. travel drop sharply</a>
+                    <a href="https://ploum.net/2025-03-28-geeks-naivety.html" target="_blank">The Candid Naivety of Geeks</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mgh2</span> |
-                    <span>评分: 45</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-03-30 04:06</span>
+                    <span>作者: SlackingOff123</span> |
+                    <span>评分: 106</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-03-29 19:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章《极客的天真》讨论了人们对亚马逊Alexa隐私设置变化的过度惊讶，指出这种惊讶源于天真的期望。作者认为，亚马逊从一开始就在收集用户数据，购买Alexa的人不应期待隐私得到保护。文章批评了对科技公司如苹果在隐私保护方面的盲目信任，强调营销本质上常包含谎言。大公司往往为了商业利益而忽视隐私，用户应意识到工具的潜在用途最终都会被利用。文章还提到，技术社区中存在对品牌的盲目忠诚，这是一种被“驯化”的表现，用户应更加警觉，而不是期待公司自我约束。最后，作者指出，技术无法解决因谎言带来的问题，用户需自我保护。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国与其他国家（尤其是欧洲国家）之间的贸易争端、旅行限制及其经济与社会影响
+                    <div class="comments-summary">主要讨论点：隐私问题及对科技公司和隐私保护工具的信任
 
 不同观点：
-• **zeagle的观点**：认为美国对其他国家（如格陵兰、巴拿马等）的威胁性行为以及对边境问题的处理不当，构成了贸易争端的一部分。同时指出美国国内对这些行为仍有支持，这令人担忧。
-
-• **theGeatZhopa的观点**：作为德国人，他表示会选择抵制美国产品，并提到欧洲即将通过极其严厉的数字商品关税（"terror-ifs"）进行监管，以此回应美国的政策。
-
-• **ggm的观点**：引用数据说明加美旅行减少将对美国经济产生显著影响，尤其是就业和消费支出的损失。不过，这种影响可能不会被视为最紧迫的问题，且可能通过国内旅游部分抵消。
-
-• **gbraad的观点**：指出欧洲人不愿前往美国旅行，部分原因是边境和签证问题，甚至一些国家（如德国和英国）使馆也发出了谨慎前往美国的警告。
-
-• **buyucu的观点**：以个人经历说明，由于美国边境无故扣留人的问题，已经取消了赴美商务旅行，改为了线上会议。
-
-• **shortrounddev2的观点**：表示如果不是本身就在美国，不会选择现在前往，暗示对美国当前的旅行环境不满。
-
-• **fulafel的观点**：提出更广泛的背景，即为了应对气候变化，减少化石燃料驱动的航空旅行是必要的，暗示当前的旅行限制可能在无意中对环境有积极影响。
+• 观点1：对隐私问题持悲观态度，认为用户无法保护自己的隐私。举例说明NSA的监控和消费级路由器、CPU的后门，强调用户在网上没有隐私可言。
+• 观点2：科技公司如Apple和Amazon为了改进产品会妥协用户隐私，且没有额外动机去保护隐私，因为相关产品不直接盈利（Siri和Alexa是亏损的）。相比之下，Signal和Protonmail的隐私保护措施更值得探讨，尤其是两者在面对法律要求时的不同反应。
+• 观点3：认为大科技公司不会轻易泄露用户数据，因为这样做会损害他们的声誉和用户信任。举例Google和Facebook长期以来未泄露用户搜索记录和私人信息。
+• 观点4：强调证据的重要性，认为对公司行为的实际证据比单纯猜测更有用。对公司天真的信任可能会导致误判。
+• 观点5：对Signal作为非营利组织的隐私保护承诺持怀疑态度，指出缺乏透明度的问题，并引用WordPress基金会的争议作为例子。
+• 观点6：指出技术社区中存在的“元天真”现象，即对某些项目的盲目信任和对其他项目的贬低，认为这种态度容易导致误导和自大。
+• 观点7：从技术员工的角度出发，认为大公司强调用户信任，且因内部严格的测试和员工的道德标准，隐私保护措施相对可靠。
+• 观点8：对Apple持批评态度，认为其在隐私问题上的表现像一个“邪教”，用户对其隐私承诺的信任缺乏实际依据。
 
 补充讨论：
-• **争议焦点**：美国边境和签证政策导致的旅行限制和人员扣留问题成为多个评论者关注的焦点，尤其是其对国际旅行和经济的影响。
-• **经济影响**：有评论引用了具体数据说明旅行减少对经济的潜在影响，但也有观点认为这种影响可能不会被直接感受到或能被其他因素抵消。
-• **欧洲的反应**：部分评论提到了欧洲可能通过严厉的关税政策（如数字商品关税）来回应美国的行动，显示出贸易争端可能进一步升级。
-• **环境因素**：有评论提到了减少航空旅行的环境好处，将讨论扩展到了气候变化的更广泛背景。</div>
+• 讨论了不同隐私工具（如Signal和Protonmail）在法律要求下的透明度和隐私保护能力的比较，并提供了相关链接以供参考。
+• 提到了开源项目的信任问题，认为即使是开源项目，用户也需要对代码进行审查和验证，否则仍可能被误导。
+• 强调了在现实生活中，欺骗和不诚实行为可能影响合作策略，特别是在公司与用户之间的互动中。
+• 指出了技术社区在讨论隐私问题时常带有情绪和高调的断言，但缺乏实质性证据和建设性建议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43521244" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43518087" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -430,8 +443,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: AnthonBerg</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 2</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 3</span> |
                     <span>发布时间: 2025-03-29 18:10</span>
                 </div>
 
@@ -442,24 +455,17 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否应在内容中排除对Twitter/X平台的引用
+                    <div class="comments-summary">主要讨论点：对内容中涉及Twitter/X平台的看法
 
 不同观点：
-• 支持排除Twitter/X引用：
-  - 论据：由于Twitter/X平台目前所表达的政治立场，一些用户（如talkingtab）因道德和伦理原因，拒绝使用该平台。
-  - 例子：talkingtab提到自己支持民主，无法诚心使用Twitter/X。
-  - 论据：该用户认为在当前世界局势下，忽视某些全球性问题是不可接受的，因此选择不参与任何与Twitter/X相关的讨论或引用。
+• [sim7c00] 对探索性图像表示赞赏，专注于视觉效果和可玩性，未涉及其他话题。
 
-• 反对或不关心排除Twitter/X引用：
-  - 论据：作者提到其他人可以自由使用Twitter/X，并且指出Hackernews可能不喜欢此类评论。
-  - 例子：作者表示这些意见可能会被忽略或甚至遭到反对（如被down vote）。
+• [talkingtab] 反对在内容中包含Twitter/X的引用，理由是对该平台当前政治立场的不满，尤其是其与民主价值观的冲突。虽然承认其他人可能不会同意这个观点，但认为在当前社会环境下，忽视某些世界性议题是不道德和不负责任的。同时表示尽管个人对SDF（可能是某种技术或话题）很感兴趣，但由于上述原因，选择不参与相关讨论。
 
 补充讨论：
-• 个人立场和平台选择：talkingtab强调个人对全球民主问题的关注，并说明这是其拒绝使用Twitter/X的背景原因。
-• 社区反应：提到Hackernews社区可能对此类评论的反应，暗示该话题在社区中可能存在争议或不受欢迎。
-• 自由选择和表达：作者承认每个人有自由选择使用平台的权利，同时尊重自己不引用Twitter/X的个人决定。
-
-争议焦点：是否应基于道德和政治立场排除特定平台的引用，尤其是在涉及到全球性问题和个人价值观时。</div>
+- [talkingtab] 强调该评论可能会被 downvote（反对），并表示理解其他人可能选择继续使用Twitter/X，同时声明自己尊重他人的选择。
+- 争议的焦点在于Twitter/X平台当前的政治立场是否应影响个人或社区对其的使用和引用。
+- [talkingtab] 的评论带有个人政治立场，并引发了对平台使用与道德责任的讨论，而 [sim7c00] 则并未触及此话题，专注于内容本身的视觉和娱乐价值。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43517365" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -472,50 +478,31 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://support.vizio.com/s/article/Ambient-or-Scenic-Mode-showing-on-my-TV?language=en_US" target="_blank">My TV started playing a video in full screen by itself. What happened?</a>
+                    <a href="https://epoch.ai/gate" target="_blank">Gate: AI and Automation Scenario Explorer</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: decimalenough</span> |
-                    <span>评分: 219</span> |
-                    <span>评论数: 37</span> |
-                    <span>发布时间: 2025-03-30 00:41</span>
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-03-26 12:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文介绍了Epoch AI开发的集成评估模型——GATE（Growth and AI Transition Endogenous）模型，旨在分析人工智能（AI）发展对经济的潜在影响。GATE模型的核心是一个自动化反馈循环，投资推动计算能力的提升，从而增强AI系统的能力，逐渐替代人类任务，提高产出，再进一步推动AI投资。该模型包含三个模块，并提供了一个交互式的GATE Playground，用户可以调整参数以观察不同情境下模型的表现。
+
+本文强调，GATE模型的预测是条件性的，依赖于多种假设，主要用于分析AI自动化的宏观经济动态趋势，而非精确预测。由于模型复杂，部分参数范围可能导致预测不可靠，需通过微调参数进行验证。
+
+模型参数分为三大类：AI与计算、技术和研发、一般经济参数，并考虑了投资者不确定性、劳动力再分配和研发正外部性等因素。
+
+如对模型有疑问或反馈，可联系info@epoch.ai。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Vizio智能电视的广告和数据监控问题
-
-不同观点：
-• **反对Vizio广告政策的观点**：
-  - [pmags] 提到Vizio因为过去监控用户观看习惯的行为已经被列入不购买名单，而现在出现的Scenic Mode广告问题似乎是同样的做法。
-  - [reactordev] 表示坚决不买任何“智能电视”，宁愿使用显示器和Linux设备，以避免广告和数据监控。
-  - [jmward01] 认为现代设备普遍存在监控和广告问题，让人感到不安，并质疑是否可以通过技术手段干扰设备回传数据。
-  - [gennarro] 认为智能电视非常糟糕，批评Vizio的FAQ用词不当，称其为“真正糟糕的FAQ”。
-
-• **技术解决方案和替代方案**：
-  - [jasinjames] 建议通过拆卸电视的无线模块来避免联网，并分享了自己对Sony Bravia电视的操作经验。
-  - [ortusdux] 希望有消费者组织能创建一个“非智能”（DUMB）认证，确保电视不会上传用户数据。
-  - [paradite] 指出Vizio的FAQ表述不清，实际上用户可以通过设置完全关闭Scenic Mode广告。
-  - [neilv] 提到通过取消PS5上的流媒体服务来解决类似问题，并对Netflix的控制行为表示不满。
-  - [ctippett] 感谢webOS Homebrew社区提供了对LG电视的root访问权限，从而获得完全控制。
-  - [tzs] 通过调整Xfinity Flex盒子的更新时间解决了电视意外开启的问题。
-  - [sxp] 选择不将智能电视连接到WiFi，而是通过PC和Google TV实现功能，以减少广告影响。
-
-• **对智能电视隐私问题的担忧**：
-  - [spl757] 提醒用户，当观看广告时，广告也在“观看”用户，任何通过互联网连接的智能电视活动都可能被收集和出售。
-  - [donatj] 描述了自家三星电视在半夜自动播放内容的诡异经历，增加了对智能设备行为的不安。
-
-补充讨论：
-• 争议的焦点在于用户是否能够完全控制和关闭智能电视上的广告功能，尤其是Vizio的Scenic Mode广告。用户对广告不可关闭以及设备监控行为的反感是主要的情绪驱动因素。
-• 一些用户提出技术性解决方案，如拆卸无线模块、使用非智能设备或通过社区支持获得设备控制权，以减少隐私风险。
-• 对智能电视的普遍不信任和对广告侵入性的强烈反感是评论中反复出现的主题。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43520074" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43481607" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
