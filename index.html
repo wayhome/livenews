@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-01 05:13 (北京时间)
+            最后更新时间: 2025-04-01 09:04 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,12 +61,12 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://openjdk.org/jeps/8349536" target="_blank">JEP Draft: Prepare to Make Final Mean Final</a>
+                    <a href="https://openjdk.org/jeps/8349536" target="_blank">JEP draft: Prepare to make final mean final</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: mfiguiere</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 10</span> |
+                    <span>评分: 149</span> |
+                    <span>评论数: 19</span> |
                     <span>发布时间: 2025-03-31 19:35</span>
                 </div>
 
@@ -77,27 +77,201 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Java中关于通过反射修改`final`字段的提案及其潜在影响
+                    <div class="comments-summary">主要讨论点：Java中关于允许通过反射修改`final`字段的提议及其相关争议
 
 不同观点：
-• [支持观点] cogman10建议引入一种机制（如注解`@FinalMutableByReflection`），允许开发者明确指定哪些类允许通过反射修改`final`字段。他认为这样可以在序列化等场景中提供更大的灵活性，同时保持其他代码中的不可变性。magicalhippo和elric也认为这是一个合理的提议，特别是在需要进行测试或处理库的情况下。
+• **支持该提议，认为可以通过注解等方式明确指明某些类允许反射修改`final`字段**：
+  - cogman10建议引入类似`@FinalMutatableByReflection`的注解，使开发者能够明确标记哪些类允许通过反射修改`final`字段，特别是在序列化场景中。这种方法可以让`final`在其他代码中保持不可变，同时满足特定需求。
+  - exabrial也支持该提议，认为可以让序列化工作更顺利，且不影响正常代码逻辑。
 
-• [C++对比视角] jjmarr从C++开发者的角度提出，Java引入这种机制类似于C++中的`const_cast`，虽然可能有助于改进语言，但也可能破坏语言的完整性。
+• **对该提议持怀疑态度，认为可能带来更多兼容性问题**：
+  - bironran认为，许多流行库（如gson、jaxb、junit等）大量使用反射，这会导致开发者为了兼容这些库而不得不增加额外的JVM参数（如`--add-opens`）。最终可能让库开发者无法依赖这些特性，回到老问题。
+  - mberning担心这种变更会像包可见性变更一样，导致为了支持遗留应用，JVM参数列表迅速膨胀。
 
-• [反对/担忧观点] bironran担心这种机制可能会像其他Java特性（如"checked exception"或"module system"）一样，在实际应用中需要频繁使用额外的命令行选项（如"--add-opens"），从而导致库开发者难以依赖这种机制，最终回到原点。
+• **认为该提议本质上是一种反模式**：
+  - TOGoS认为，如果一个字段需要被修改，那就不应该标记为`final`。通过反射修改`final`字段是一种反模式，特别是在一些第三方框架中滥用这种做法。
+  - GauntletWizard分享了一个实际案例，Facebook的照片团队通过深反射操作HDFS内部结构，构建自己的文件系统。虽然效果不错，但这种做法在工程上是不合理的，违反了字段不可变的初衷。
 
-• [其他意见] aardvark179对该提案表示欢迎。Traubenfuchs则希望看到实际的性能提升示例和具体数据。keybored关注如何在第三方代码中强制实现硬性错误。stickfigure提出更激进的建议，希望`final`成为所有字段、变量和参数的默认设置，以减少可变性。
+• **从其他语言角度支持Java这种改进**：
+  - jjmarr作为C++开发者，提到C++中`const_cast`同样破坏了不可变性，Java的这种改进虽然复杂，但有助于语言优化。
+
+• **对实际性能提升效果的疑问**：
+  - nightpool和Traubenfuchs都对该优化是否真的能带来显著性能提升表示怀疑，并希望看到更具体的场景和数据支持。
 
 补充讨论：
-• Almondsetat的简短评论"final ly"表达了对`final`关键字能够真正实现不可变性的期望。
-
-争议焦点：
-• 该提案是否会像Java历史上的其他特性一样，在实践中遇到广泛的兼容性问题和使用限制。
-• 是否应该引入一种机制，允许开发者明确指定哪些类允许通过反射修改`final`字段，以及这种机制对代码维护和性能的实际影响。
-
-总结：讨论主要围绕Java中通过反射修改`final`字段的提案展开，支持者认为这可以提供更大的灵活性，而反对者则担心其实际效果和兼容性问题。同时，也有开发者提出了更广泛的语法和语言设计建议。</div>
+• **对Java中不可变性和反射操作的权衡**：
+  - magicalhippo指出，虽然不是Java开发者，但认为该提议在精神上合理，因为它警告了使用深反射修改`final`字段的问题。
+  
+• **其他评论**：
+  - 一些评论（如user和aardvark179）对讨论内容持简单态度，要么认为某个评论无意义，要么表示支持。
+  - 还有评论（如xxs）调侃该变更来得太晚。
+  
+争议的焦点：
+• 是否应该通过注解或其他方式允许反射修改`final`字段，以兼顾序列化等场景，同时保持代码的其他部分不可变。
+• 这种变更是否会带来大量的兼容性问题和额外的JVM参数配置，从而影响开发者体验和库的稳定性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43538919" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://goperf.dev/" target="_blank">Go Optimization Guide</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jedeusus</span> |
+                    <span>评分: 121</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-03-31 20:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Go应用性能优化系列》是一组技术文章，旨在帮助开发者编写更快速、高效的Go应用。该系列提供实用模式、真实案例及底层性能洞察，涵盖高吞吐量API、微服务和分布式系统的优化。虽然Go的性能调优选项不如C++或Rust多，但仍有许多方法能显著提升应用性能，包括内存重用、分配控制、高效网络及并发模式。
+
+目前文章涵盖的性能模式包括：
+1. 有效使用`sync.Pool`
+2. 避免不必要的内存分配
+3. 结构布局与内存对齐
+4. 高效错误处理
+5. 零成本抽象的接口
+6. 就地排序与切片重用
+
+后续将深入探讨高性能网络，包括`net/http`和`net.Conn`的高效使用、并发连接管理、性能调优及负载测试技术。该系列适合后端工程师、对延迟敏感系统的开发者及迁移到Go的团队。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Go语言中垃圾回收（GC）性能优化及相关内存管理问题
+
+不同观点：
+• [nopurpose] 认为，为了减少GC时间，重点应放在避免“长期存活”的分配，而非所有分配。短周期的分配几乎不会影响GC时间，因为GC标记阶段可能不会触及这些对象。虽然任何分配都会促使GC更早触发，但在实际应用中，几乎不可能完全避免GC。
+• [jrockway] 强调了GOMEMLIMIT的作用，特别是在容器化生产环境和CI环境中，通过设置内存限制避免过多的GC，保证程序顺利完成。GOMEMLIMIT帮助解决了某些场景下内存不足的问题。
+• [jensneuse] 提出了对使用`sync.Pool`的警示，认为虽然`sync.Pool`在基准测试中表现良好，但实际内存使用可能会大幅上升。因此，应该关注实际性能收益，而不仅仅是合成基准测试的结果。
+• [kevmo314] 认为零拷贝（zero-copy）技术被低估了，虽然通过Go的接口可以相对容易地实现零拷贝代码，但需要精心设计。优化内存分配和传输可以带来显著的性能提升。
+• [parhamn] 关注了Go标准库中是否会引入类似`sync`包的泛型版本，暗示对更灵活的并发原语的需求。
+• [ljm] 认为过度优化违背了Go语言设计初衷，即提供简单而强大的网络服务接口。过度关注性能优化可能偏离了Go的核心优势。
+
+补充讨论：
+• [roundup] 提到了对工具支持的需求，例如希望有模型上下文协议（MCP）工具连接到IDE，以便在不同语言项目之间切换时更容易记住重要信息。同时引用了Go优化指南和Uber的Go语言指南作为参考。
+
+争议焦点：
+• 优化的重点和方法存在分歧。例如，[nopurpose] 和 [jensneuse] 对分配类型和优化工具（如`sync.Pool`）的效果有不同看法。[ljm] 则质疑过度优化是否符合Go语言的设计哲学。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43539585" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.goto80.com/the-demoscene-as-a-unesco-heritage-in-sweden" target="_blank">The demoscene as a UNESCO heritage in Sweden</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: robin_reala</span> |
+                    <span>评分: 515</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-03-31 10:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>瑞典的demoscene被列入联合国教科文组织文化遗产。这一成就源于去年Ziphoid和作者共同提交的申请，也是国际“编程艺术”倡议的一部分，旨在将demoscene列入全球文化遗产。Demoscene作为最古老的数字亚文化，在技术和社会经济变革中保持了独特的价值观和传统。尽管其核心是利用特定硬件进行创作竞争，但不同群体和个人的兴趣各异，有的专注于制作另类内容，有的则通过组织活动或保存软件来维持demoscene的活力。Demoscene兼具保守和开放的特点，包容了来自不同背景和动机的人，这种多样性和独特性使其值得被视为无形文化遗产。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：瑞典将 demoscene 列入联合国教科文组织非物质文化遗产名录引发的讨论
+
+不同观点：
+• chaosprint 认为，瑞典对 demoscene 的认可对于数字文化及其遗产非常重要，并以此反思挪威在支持数字艺术方面的路径。他指出，挪威的学术环境虽然支持，但公共艺术资助结构对新兴数字艺术形式不太友好，尤其是对那些不在长期建立的网络中的人。
+• bane 对 demoscene 获得认可感到兴奋，并希望看到更多关于该场景的学术研究，特别是在艺术、技术和人类学交汇处的研究。他认为，外部观察者的研究能够更好地解释 demoscene 的独特性和核心元素，因为场景内的人往往难以向外界解释清楚。
+• skrebbel 对 demoscene 获得认可感到高兴，但也认为联合国教科文组织的国家分界遗产列表方式不适合互联网时代的全球文化。他质疑是否需要每个国家逐一认定 demoscene 为其文化遗产，并指出这种认定对实际爱好没有实质好处。
+• huseyinkilic 持反对态度，认为 demoscene 不需要外界的认可。
+• jolmg 对联合国教科文组织将非物质文化列入名录的做法感到困惑，质疑是否整个瑞典都被列为遗址。
+• ChrisArchitect 认为，将 demoscene 列入名录是合理的，因为瑞典的 FastTracker 软件对该场景有重要贡献。
+
+补充讨论：
+• velo_aprx 提供了瑞典官方公告的链接。
+• tobr 提到 goto80 的音乐作品，这与 demoscene 相关，并勾起了一些老用户的回忆。
+• barcoder 强调了 demoscene 通过极少代码实现视觉和声音的惊人能力，并指出 demoscene 的艺术风格通常很容易辨认。
+• idispatch 分享了 1990 年代经典 demoscene 作品 SecondReality 的代码链接。
+• 多个评论提到了 demoscene 在其他国家（如芬兰、德国、荷兰）已被认定为联合国教科文组织文化遗产，并提供了相关链接。
+
+争议焦点：
+• 对联合国教科文组织按国家分界认定全球化数字文化为遗产的方式感到不适和质疑，认为文化不应受国家边界限制。
+• 对 demoscene 是否需要外界认可存在分歧，一部分人感到自豪和鼓舞，另一部分人则认为不需要外界 validation。
+
+总体而言，讨论围绕 demoscene 获得瑞典联合国教科文组织非物质文化遗产认可的意义、对全球化文化的适应性以及外界认可的必要性展开。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43533362" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nymag.com/intelligencer/article/how-the-guardian-us-flourishes-without-a-paywall.html" target="_blank">The Guardian flourishes without a paywall</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 139</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-03-29 00:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《卫报》美国分部通过读者捐款支持其无付费墙的新闻模式，近年来取得了显著成功。在许多媒体因亿万富翁所有者的影响而面临编辑独立性问题时，《卫报》强调其没有受富人或企业压力的优势，专注于公正和准确的报道。自特朗普时代以来，《卫报》的筹款呼吁变得更加紧迫，尤其在《华盛顿邮报》和《洛杉矶时报》对卡玛拉·哈里斯撤回预期背书后，其捐款大幅增加。2024年总统选举周成为其美国读者收入历史上的最高峰。目前，《卫报》美国分部的读者捐款占总收入的60%以上，预计今年将达4400万美元，比去年增长33%。尽管曾面临亏损和重组，但在疫情期间及之后，其读者群显著增长，月访问量达4000万至5000万，甚至超过了《华尔街日报》在美国的受众规模。这种无付费墙模式的成功引发了业界对新闻商业模式创新的新思考。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕《The Guardian》的所有权模式、广告与追踪策略、付费模式及读者体验的讨论
+
+不同观点：
+• **关于所有权模式**：
+  ◦ [yen223] 认为《The Guardian》通过信托基金所有，确保没有商业利益干预，这一模式很有趣且值得深入了解。
+  ◦ [rahimnathwani] 提到斯科特信托（《The Guardian》的所有者）在某年度盈利2500万英镑，而前一年亏损6000万英镑，质疑该模式的实际效果。
+
+• **关于广告与追踪**：
+  ◦ [neilv] 指出《The Guardian》使用Google的DoubleClick进行广告，但相比其他美国新闻机构要少，认为这在广告追踪方面表现较好。
+  ◦ [rozab] 提到自己被迫同意所有广告cookies才能阅读内容，质疑其广告策略对用户体验的影响。
+  ◦ [Havoc] 认为《The Guardian》的“Ad-lite”选项（即付费后仍显示非个性化广告）是令人反感的做法。
+
+• **关于付费模式与读者体验**：
+  ◦ [sitkack] 每月捐款3美元，但通过技术手段绕过捐款提示，表明对捐款提示的不满。
+  ◦ [zem] 则认为《The Guardian》的订阅模式有价值，因为订阅帮助保持内容免费，符合其期望。
+  ◦ [xp84] 提到文章有限时免费，并幽默地指出期望更多内容被付费墙阻挡以增加讽刺效果。
+  ◦ [ggm] 批评文章关于付费墙的讨论本身被付费墙阻挡，具有讽刺意味。
+
+• **关于内容质量与商业模式**：
+  ◦ [puttycat] 和 [beardyw] 都认为《The Guardian》因为其优秀的内容和作家而成为伟大的报纸，暗示内容质量是其成功的关键。
+  ◦ [Analemma_] 认为《The Guardian》有时会发布“极端化的激怒性内容”（ragebait）以保持高参与度，质疑其商业模式是否适用于严肃新闻，并认为人们可能不愿意为优质新闻付费。
+
+• **关于技术与访问方式**：
+  ◦ [ziofill] 提到iOS用户可以通过TestFlight使用无广告的测试版应用，认为这是对应用开发的贡献机会。
+
+补充讨论：
+• 争议焦点之一是《The Guardian》的所有权模式是否真正实现了不受商业利益干预的目标，以及其广告策略是否影响读者体验。
+• 另一个讨论点是《The Guardian》的付费模式是否合理，尤其是其有限时免费的文章策略和“Ad-lite”选项的设置。
+• 内容质量被认为是《The Guardian》成功的关键因素之一，但也有人质疑其是否依赖“ragebait”来维持高参与度。
+• 技术手段（如绕过捐款提示和使用测试版应用）被读者用来改善其访问体验，这也反映了读者对网站策略的应对方式。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43511529" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -147,206 +321,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.goto80.com/the-demoscene-as-a-unesco-heritage-in-sweden" target="_blank">The demoscene as a UNESCO heritage in Sweden</a>
+                    <a href="https://www.captrice.io/" target="_blank">A deliberate practice app for guitar players who want to level up</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: robin_reala</span> |
-                    <span>评分: 456</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-03-31 10:39</span>
+                    <span>作者: adityaathalye</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-03-29 03:27</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>瑞典的demoscene被列入联合国教科文组织文化遗产。这一成就源于去年Ziphoid和作者共同提交的申请，也是国际“编程艺术”倡议的一部分，旨在将demoscene列入全球文化遗产。Demoscene作为最古老的数字亚文化，在技术和社会经济变革中保持了独特的价值观和传统。尽管其核心是利用特定硬件进行创作竞争，但不同群体和个人的兴趣各异，有的专注于制作另类内容，有的则通过组织活动或保存软件来维持demoscene的活力。Demoscene兼具保守和开放的特点，包容了来自不同背景和动机的人，这种多样性和独特性使其值得被视为无形文化遗产。</p>
+                    <p>Captrice是一款专为吉他玩家设计的练习应用，通过智能节拍器捕捉数据并提供可操作的练习建议，专注于速度、耐力、准确性和适应性。它无需音乐理论知识，提供练习库或自定义练习功能，免费使用，无广告和注册。应用可在任何浏览器上运行，数据存储在用户设备上，支持离线模式。主要功能包括节拍器、练习构建器、 tablature/乐谱嵌入、练习库、进度洞察和分享功能。Captrice旨在帮助用户每天有效练习，提升速度，针对弱点进行训练，适合各水平玩家。该应用由软件工程师兼吉他爱好者Vineet Naik开发，未来计划推出高级功能，但基础版将始终免费。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：瑞典将demoscene（演示场景）列入联合国教科文组织（UNESCO）非物质文化遗产名录引发的多角度讨论
+                    <div class="comments-summary">主要讨论点：用户对一个结合节拍器和乐谱记录功能的应用的看法
 
 不同观点：
-• [积极支持] chaosprint认为瑞典对demoscene的认可对数字文化及其遗产具有重要意义，并从中受到启发，反思挪威在支持新兴数字艺术形式方面的路径，尤其是在公共艺术资助结构中的挑战。他提到学术环境支持较强，但更广泛的资助结构可能较为复杂。
+• [i_am_a_squirrel] 认为该应用的功能不够直观，花费了约5分钟才理解其用途。他认为如果应用仅仅是节拍器加上会话标签功能会更简洁实用，尤其对那些练习时不依赖视频的用户来说，不需要复杂的多余功能。
 
-• [质疑国家界限] skrebbel认为联合国教科文组织的文化遗产名单按国家划分是不合理的，尤其是在全球通信网络发达的今天。他指出demoscene已经被芬兰和德国认可，但这种国家界限没有实际意义，因为文化不应局限于国家 borders。
+• [NullHypothesist] 对该应用表示赞赏，认为这是一个很酷的项目，并表示会尝试使用。他没有提出具体改进建议，显示出对该应用的积极态度。
 
-• [对UNESCO概念的困惑] jolmg和kilpikaarna对UNESCO名录的适用范围表示困惑。jolmg质疑UNESCO名录是否应该包括像demoscene这样分散的文化，而kilpikaarna对特定软件在demoscene中的必要性提出疑问。
+• [JamesCoyne] 对类似功能的Android应用感兴趣，他的关注点不在于该应用本身，而是寻找其他类似的应用推荐。
 
-• [对UNESCO认可泛滥的担忧] BurningFrog认为UNESCO过多的“ exceptional heritage”认定降低了其特殊性，质疑其不断扩展认定范围的做法。
-
-• [技术与艺术结合的欣赏] barcoder和ChrisArchitect从技术与艺术结合的角度欣赏demoscene，认为其艺术风格和历史贡献（如FastTracker）值得认可。
-
-• [技术创新的未来] nubb和larodi探讨了demoscene在现代技术环境中的未来发展。nubb提到以太坊生态系统可能为demoscene带来复兴，而larodi则认为demoscene正在向生成艺术和NFT场景转变。
+• [LoFiSamurai] 对该应用表示喜爱，并明确表示会使用。他没有任何负面评价或改进建议，显示出完全的认可。
 
 补充讨论：
-• velo_aprx提供了瑞典官方公告的链接，为讨论提供了信息基础。
-• ChrisArchitect引用了其他国家将demoscene列入UNESCO名录的相关新闻，为讨论提供了背景信息。
-• jansan欢迎瑞典加入认可demoscene为文化遗产的行列，并提到其他已认可的国家，如芬兰、德国、波兰和荷兰。
-
-争议焦点：
-• 联合国教科文组织按国家划分文化遗产名单的合理性，尤其是在全球化文化现象中的适用性（skrebbel的观点）。
-• UNESCO不断扩展其“ exceptional heritage”认定范围是否降低了这些认定的特殊性和价值（BurningFrog的观点）。
-
-总结：讨论围绕demoscene被列入UNESCO名录的意义、国家界限的合理性、UNESCO认定的泛滥问题以及demoscene在现代技术环境中的未来发展等多方面展开。</div>
+• i_am_a_squirrel 提出的关于应用功能简化的建议，特别是针对不需要视频辅助的用户，可能引发对应用目标用户群体的进一步讨论。
+• 不同用户对应用复杂度的看法存在分歧，部分用户如 NullHypothesist 和 LoFiSamurai 对应用的现有功能表示满意，而 i_am_a_squirrel 则倾向于更简化的设计。
+• JamesCoyne 的评论将讨论引向其他类似应用的推荐，显示出用户可能在不同平台和应用之间进行选择的需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43533362" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://9to5google.com/2025/03/31/honey-extension-users-dropped-chrome-march-2025/" target="_blank">Honey has now lost 4M Chrome users after shady tactics were revealed</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tantalor</span> |
-                    <span>评分: 181</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-03-31 18:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Honey，这款由PayPal拥有的Chrome扩展程序，因被曝光使用不当手段而失去了约400万用户。2024年12月，YouTube频道MegaLag揭露Honey通过 affiliate 代码获利，在未告知用户的情况下替换其他推荐人的代码，并操控展示的优惠码。该视频获得超过1700万观看，导致Honey用户数从巅峰期的2000万下降至1600万。随后，Google新的Chrome政策限制了此类行为，Honey更新了其扩展程序说明，不当行为已得到修正。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Honey浏览器扩展的相关争议与观点
-
-不同观点：
-• [magicalhippo] 认为Honey的功能被过度宣传，暗示其效果可能并不如宣传所言，并提出“如果一件事看起来好得不像真的，那很可能就不是真的”的观点。
-
-• [Dwedit] 提到了Capital One扩展也进行了类似的操作，暗示对Honey的批评可能应同样适用于其他类似的扩展。
-
-• [ryandrake] 认为整个联盟营销和潜在客户生成行业都是不可靠的，充满了中间商，导致商品价格上升，对Honey及其相关操作没有表现出太多同情。
-
-• [jabroni_salad] 引用了Honey联合创始人在Reddit上的AMA，详细解释了Honey与PayPal之间的技术细节，指出某视频中对Honey的指控可能是基于误解，并质疑视频制作者是否在做出指控前进行了充分调查。
-
-• [is_true] 简单表达了对PayPal的不信任，暗示对Honey与PayPal合作的不满。
-
-• [Larrikin] 询问是否有开源且由社区维护的替代方案，表现出对Honey的不信任，并希望找到更透明和可靠的替代品。
-
-• [dvh] 指出Honey在Chrome网上商店仍然拥有“推荐”标志和高评分，暗示尽管存在争议，Honey仍然受到用户欢迎。
-
-• [cyb_] 提到Honey的用户数量已经从高峰期的2000万下降，暗示该扩展的影响力可能在减弱。
-
-• [0rzech] 讽刺YouTube和其他“影响者”是Honey扩展的最大受害者，暗示这些影响者因为金钱利益而盲目推广Honey，最终可能自食其果。
-
-补充讨论：
-• 争议焦点之一是Honey的联盟营销策略及其技术实现，尤其是与PayPal的合作以及对“last click”和“first click”cookie的处理，引发了对透明度和公平性的质疑。
-
-• 另一个讨论点是用户和影响者对Honey的信任问题，部分用户对Honey和PayPal的合作持不信任态度，并寻求开源替代方案。
-
-• 影响者在推广Honey过程中可能因经济利益而忽视了对产品真实性的审查，这种行为引发了批评和讽刺。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43538113" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://turso.tech/blog/turso-offline-sync-public-beta" target="_blank">Turso SQLite Offline Sync Public Beta</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: charlieirish</span> |
-                    <span>评分: 125</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-03-31 15:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Turso宣布推出公共测试版的离线同步功能。该功能允许应用程序在无网络连接时继续运行，本地数据库操作正常进行，恢复连接后自动同步数据。利用嵌入式副本技术，本地和云端数据库保持同步，解决了过去只能在线写入和速度慢的问题。该功能适用于移动应用、销售终端系统、现场数据采集和物联网应用等场景。
-
-公共测试版提供双向同步、远程写入支持、WAL同步检查点和冲突检测等功能。目前支持TypeScript和Rust语言。开发者可以通过设置实现离线模式，确保数据在无网络时也能保存并在恢复连接后同步至云端。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Turso（及相关技术）的功能、安全性、冲突解决、开源性以及性能表现
-
-不同观点：
-• ezekg认为帖子应该更深入地解释冲突解决机制，因为这是该技术的难点和主要卖点。
-• billconan关注数据完整性和安全性，特别是客户端直接与数据库交互时如何保证安全性，比如特定用户权限和防止黑客攻击的问题。
-• 0x6c6f6l回应其他评论，指出关于写操作和安全问题的讨论多为猜测，官方正在开发冲突解决等功能。
-• srameshc赞赏Turso的潜力，认为如果实现预期功能，可以提高性能并节省成本，类似于Electric SQL。
-• kmetan表示对midas.dll满意，未表现出对Turso的强烈兴趣。
-• DaveMcMartin关注大数据库（3-5 GB）同步时的表现，并询问是否可以跟踪同步进度。
-• klabb3关心Turso的实时性和响应性支持，询问是否无需轮询即可自动更新。
-• cheema33询问Turso与Electric SQL的区别。
-• anovick关心Turso和libSQL是否开源。
-
-补充讨论：
-• 关于冲突解决机制的讨论是核心问题之一，ezekg和0x6c6f6l提到官方正在解决这一问题。
-• 数据安全和权限控制是另一个焦点，billconan提出了具体的场景和潜在风险。
-• 性能表现（特别是大数据同步）和实时性是用户关注的技术细节，DaveMcMartin和klabb3分别提出同步进度跟踪和实时更新问题。
-• 开源性问题也被提及，anovick关心Turso和libSQL的开放性。
-• 技术比较（如与Electric SQL和midas.dll）也是用户关注的方面，srameshc和cheema33提到了类似技术的优劣对比。
-
-争议焦点：
-• 冲突解决机制的实现细节和效果仍是未知数，引起用户猜测和期待。
-• 数据安全和权限控制的具体实现方式存在潜在风险，需要官方进一步澄清和保障。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43535943" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=43537505" target="_blank">Launch HN: Augento (YC W25) – Fine-tune your agents with reinforcement learning</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lmeierhoefer</span> |
-                    <span>评分: 45</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-03-31 17:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个作为OpenAI API代理的服务，其功能、市场前景、技术实现及潜在问题。
-
-不同观点：
-• **zoogeny**：认为该服务可以通过记录API请求并结合强化学习（RL）生成更好的开源模型，最终可能比OpenAI的基础模型表现更好。优点包括无需自建RL基础设施，适合已有RL实验能力的用户。但也提出质疑，RL训练是否能跟上基础模型的发展，以及用户是否愿意替换现有OpenAI模型。
-
-• **mogili**：对该服务闭源表示担忧，并指出其仅适用于单代理工作流，可能限制使用场景。
-
-• **serjester**：担心市场接受度，因为用户可能不愿意将此类数据/控制权交给没有巨型企业背书的服务。
-
-• **filipeisho**：希望能够自由托管模型，并对该服务在多步任务和ReAct代理上的表现表示疑虑，同时对产品演示的吸引力不足提出意见。
-
-• **brap**：祝贺服务发布，但质疑当前先进的专有模型已经提供API微调功能，RL based API可能很快也会出现。
-
-• **codingwagie**：认为该服务只是围绕开源微调库的DevOps包装，缺乏新意。
-
-• **az226** 和 **esafak**：关心训练后模型的导出和下载问题。
-
-补充讨论：
-• 强化学习（RL）的有效性及是否能持续优于基础模型是争议焦点。
-• 用户对数据控制权、模型托管自由的关注。
-• 市场对该服务的需求及竞争格局，特别是与OpenAI等大公司的潜在竞争。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43537505" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43512470" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -411,45 +418,60 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.thephcheese.com/theres-white-stuff-growing-on-your-cheese-that-isnt-mold" target="_blank">It’s not mold, it’s calcium lactate (2018)</a>
+                    <a href="https://9to5google.com/2025/03/31/honey-extension-users-dropped-chrome-march-2025/" target="_blank">Honey has now lost 4M Chrome users after shady tactics were revealed</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ilikepi</span> |
-                    <span>评分: 273</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-03-31 14:49</span>
+                    <span>作者: tantalor</span> |
+                    <span>评分: 410</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-03-31 18:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要讨论了奶酪中出现的晶体，尤其是陈年奶酪中常见的钙乳酸盐晶体。作者解释说，这些晶体常常被误认为是霉菌，但实际上是无味无嗅的，且对奶酪的风味没有直接影响。文章区分了两类晶体："无机晶体"和"有机晶体"。无机晶体由矿物质形成，如磷酸钙、Ikaite和Struvite，而有机晶体则由蛋白质分解过程中产生的氨基酸形成，如酪氨酸晶体和亮氨酸晶体。钙乳酸盐晶体通常出现在无外皮的陈年切达奶酪上，是奶酪熟成良好的标志。这些晶体提供了不同的感官体验，如咬合时的脆感或粗糙感，是奶酪爱好者寻找的风味标志。</p>
+                    <p>Honey，这款由PayPal拥有的Chrome扩展程序，因被曝光使用不当手段而失去了约400万用户。2024年12月，YouTube频道MegaLag揭露Honey通过 affiliate 代码获利，在未告知用户的情况下替换其他推荐人的代码，并操控展示的优惠码。该视频获得超过1700万观看，导致Honey用户数从巅峰期的2000万下降至1600万。随后，Google新的Chrome政策限制了此类行为，Honey更新了其扩展程序说明，不当行为已得到修正。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于奶酪中的晶体、奶酪制作与保存、以及与奶酪相关的科学和实践问题。
+                    <div class="comments-summary">主要讨论点：Honey扩展程序的商业模式、法律争议、技术细节及公众信任问题
 
 不同观点：
-• [Tade0] 分享了在瑞士超市发现的一个专门卖奶酪的区域，称为“奶酪王国”，并提到那里的奶酪有晶体，且品质较高，顾客会再次光顾。
-• [WillPostForFood] 表达了对含有晶体的优质高达奶酪的喜爱，并提到对晶体（酪氨酸）科学细节的兴趣。
-• [geetee] 质疑奶酪制造商可能会人为添加晶体以伪装高质量，而不注重实际质量。
-• [borski] 分享了在荷兰豪达的经历，并认为那里的奶酪是吃过最好的。
-• [shrubble] 提到Costco出售的一种具有类似晶体的奶酪（Coastal cheddar）。
-• [dekhn] 讨论了奶酪晶体的鲜味特性，尤其是谷氨酸晶体，并好奇其他氨基酸晶体是否也有类似风味。
-• [karaterobot] 提供了关于不同类型奶酪晶体（如乳酸钙、酪氨酸、亮氨酸晶体）形成位置的科学信息。
-• [7speter] 分享了自己提前一年购买并储存奶酪用于节日的成功经验。
-• [niemandhier] 推荐了一本关于奶酪科学的书《The Science of Cheese》，认为这本书深入且充满热情。
-• [stevenwoo] 表示后悔曾因白斑而丢掉实际上仍然良好的奶酪。
-• [talkingtab] 提出市面上很多所谓的“奶酪”并不是传统意义上的奶酪，并分享了自己制作奶酪的经验，包括温度和湿度控制等技术细节。
-• [xattt] 提到在碎奶酪包装中发现抗真菌剂纳他霉素，并表达了对长期低水平摄入这种化学物质的潜在健康影响的担忧。
+• **商业模式的争议**：
+  - [elamje] 指出Honey的商业模式依赖于在用户转换过程中将自己定位为最后的点击归属方，即使他们并没有实际促成转换。这种做法可能不会长久，因为最终会有人识破。
+  - [dpbriggs] 质疑零售商为何容忍Honey的存在，认为其在归属盗用的情况下不应获得报酬。
+
+• **技术细节与指控**：
+  - [jabroni_salad] 引用了Honey联合创始人在AMA中对有关技术细节的解释，指出某些指控是基于对技术细节的误解。特别提到“NV_MC_LC”和“NV_MC_FC”cookie的不同作用。
+
+• **公众信任与品牌形象**：
+  - [is_true] 简单直接地表示不信任PayPal，暗示对Honey被PayPal收购后的不信任。
+  - [ryandrake] 认为整个联盟营销和潜在客户生成行业存在问题，认为中间商使得一切变得更加昂贵。
+  - [0rzech] 提到YouTube等影响者曾无脑推广Honey，现在这些影响者可能成为最大的受害者。
+
+• **法律与监管问题**：
+  - [magicalhippo] 提到YouTubers推广Honey时，让其对Honey的功能产生误解，认为“如果看起来太好以至不真实，那很可能确实不真实”。
+  - [Dwedit] 提到Capital One扩展程序也曾做过类似的事情，暗示Honey并非个例。
+  - [Amazon says...] 链接中提到Amazon认为Honey是安全风险，特别是在PayPal收购之后。
+
+• **替代方案与社区反应**：
+  - [Larrikin] 询问是否存在开源的替代方案，表现出对社区主导的替代品的兴趣。
+
+• **Honey的现状与未来**：
+  - [daft_pink] 和 [cyb_] 关注Honey用户数量的下降，对其未来表示疑问。
+  - [Havoc] 表示惊讶Honey没有被关闭，认为其已成为公关负担。
 
 补充讨论：
-• 评论中涉及了奶酪晶体的科学原理（如晶体的种类和形成位置）、奶酪的保存方法（如温度和湿度控制）、以及对市售奶酪质量和添加剂的质疑。
-• 争议焦点在于奶酪晶体的自然形成与人为添加以提升外观质量的做法之间的潜在冲突，以及对食品添加剂（如纳他霉素）长期影响的担忧。
+• **Honey扩展程序的市场表现**：
+  - [pentagrama] 提到Honey的Chrome用户数从2000万下降到1600万，指出了其市场份额的缩减。
+  - [dvh] 提到尽管有争议，Honey仍然拥有“精选”标志和4.6星的高评分。
 
-</div>
+争议焦点：
+• Honey扩展程序的商业模式是否道德，特别是其在用户转换归属中的角色和是否误导了零售商和影响者。
+• 技术细节上的误解与指控的真实性，特别是关于cookie的争论。
+• 公众对Honey及其母公司PayPal的信任问题，以及Honey在市场上的持续存在是否合理。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43535688" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43538113" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -460,52 +482,50 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://help.kagi.com/kagi/plans/family-plan.html#kidslogin" target="_blank">Kagi for Kids</a>
+                    <a href="https://turso.tech/blog/turso-offline-sync-public-beta" target="_blank">Turso SQLite Offline Sync Public Beta</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ryanjamurphy</span> |
-                    <span>评分: 104</span> |
+                    <span>作者: charlieirish</span> |
+                    <span>评分: 161</span> |
                     <span>评论数: 14</span> |
-                    <span>发布时间: 2025-03-31 18:47</span>
+                    <span>发布时间: 2025-03-31 15:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Kagi的Family Plan旨在为家庭和孩子提供更安全、无广告的搜索体验。该计划强调学习而非消费，尊重家庭隐私，并提供多种功能如家长控制、快速答案和个性化搜索结果。家长可以通过“Lenses”功能限制孩子访问的网站，并可屏蔽或推荐多达1000个网站。此外，Kagi提供简单易用的界面和新的插图，甚至包括一个有趣的“便便头像”，以帮助孩子学习身份、隐私和在线安全。家长可以通过邮件邀请家庭成员，孩子只需用户名即可登录，确保浏览安全。</p>
+                    <p>Turso宣布推出公共测试版的离线同步功能。该功能允许应用程序在无网络连接时继续运行，本地数据库操作正常进行，恢复连接后自动同步数据。利用嵌入式副本技术，本地和云端数据库保持同步，解决了过去只能在线写入和速度慢的问题。该功能适用于移动应用、销售终端系统、现场数据采集和物联网应用等场景。
+
+公共测试版提供双向同步、远程写入支持、WAL同步检查点和冲突检测等功能。目前支持TypeScript和Rust语言。开发者可以通过设置实现离线模式，确保数据在无网络时也能保存并在恢复连接后同步至云端。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对儿童安全上网的工具及过滤系统的讨论，特别是对Kagi公司及类似产品的评价。
+                    <div class="comments-summary">主要讨论点：Turso数据库在实时应用、数据完整性、安全性、开源性以及与其他技术对比方面的功能和潜力。
 
 不同观点：
-• [Roritharr] 认为现有的YouTube Kids不够安全，自己的孩子通过Minecraft influencer的视频接触到了宗教内容，担忧其他不良内容也会通过平台进入孩子的视野。他希望有一种工具可以自然语言描述规则，并自行测试过滤内容，但目前没有这样的产品。
-
-• [viraptor] 对过滤系统的实际效果持怀疑态度，指出即使通过过滤搜索结果，用户也很容易在点击后接触到不良内容。不过，他认可Kagi在过滤上的努力，认为这可能是目前最好的解决方案。
-
-• [jmathai] 对Kagi公司表示兴趣，但目前对NextDNS更满意。他认为孩子的网络使用管理是 parenting 的一部分，暗示家长的监督不可或缺。
-
-• [yzydserd] 对Kagi的Family Plan描述有疑问，指出其文案中提到两种计划但实际只看到一种，并对文案的清晰度提出批评，尽管他本人是Kagi的订阅用户。
-
-• [facile3232] 认为针对儿童的内容应该围绕家长的价值观和期望来设计，对全自动过滤系统持悲观态度，强调家长的参与和手动过滤的重要性。
-
-• [dcchambers] 作为Kagi的付费用户，对Kagi的产品表示支持，并希望公司能够在财务上成功。他分享了自己作为家长的担忧，认为目前的“儿童友好”内容（如YouTube Kids）仍然不够安全，赞赏Kagi在这一领域的投入。
-
-• [ryoshu] 误读为“Kaggle for Kids”，并认为这是一个不错的想法，尽管这并非实际讨论的主题。
-
-• [skyyler] 关注Kagi的Quick Answer功能是否容易被禁用，显示出对个性化设置的兴趣。
-
-• [an_aparallel] 以怀旧的角度看待互联网，认为90年代的互联网因其“野蛮西部”特质而有趣，暗示当代互联网对孩子来说少了探索的乐趣，但同时承认家长不知情的风险。
-
-• [ilrwbwrkhv] 强烈希望Kagi能为孩子提供可靠的上网环境，并质疑是否能保证不良网站不会出现在搜索结果中，反映出对安全上网环境的迫切需求。
+• [brikym] 关心Turso是否支持用于实时应用的流查询功能。
+• [joelkoen] 对Turso能否在无网络连接情况下处理交易表示怀疑，特别提到POS系统的例子。
+• [ezekg] 认为冲突解决机制是Turso的核心卖点，但希望看到更详细的解释。
+• [billconan] 关注数据完整性与安全问题，特别是客户端直接与数据库交互时的权限控制问题。
+• [benwilber0] 持怀疑态度，认为将SQLite用于服务器数据库的尝试往往得不偿失，并分享了一篇博文来支持其观点。
+• [0x6c6f6c] 指出关于写入和安全问题的讨论多为推测，建议参考Turso官方正在进行的工作。
+• [shanth] 提出使用gun.js与sqlite3存储适配器的替代方案。
+• [srameshc] 对Turso的离线同步功能表示赞赏，认为这可以提升前端性能并节省成本。
+• [DaveMcMartin] 希望测试Turso在处理大型数据库（如3-5 GB）同步时的表现，并关注同步进度追踪问题。
+• [klabb3] 关心Turso的实时性和反应性支持，是否无需轮询即可自动传播更新。
+• [anovick] 询问Turso和libSQL是否开源。
+• [kmetan] 对Turso表示满意但认为自己使用的midas.dll已经足够。
+• [cheema33] 希望了解Turso与Electric SQL的区别。
+• [senderista] 对Turso尚未实现冲突解决机制表示嘲讽。
 
 补充讨论：
-• 部分用户（如[koakuma-chan], [mvieira38], [jasonpeacock]）的评论偏离了主要讨论点，转而对文章中的“Poop Avatar”部分发表幽默评论，属于非实质性讨论。
-
-争议焦点：
-• 争议的核心在于现有儿童上网保护工具（如YouTube Kids和Kagi）的有效性，以及是否能够真正防止儿童接触到不良内容。家长在保护孩子上网安全中的角色和工具的自动化程度也是讨论的焦点。</div>
+• 关于Turso的流查询支持及其在实时应用中的潜力存在期待和疑问。
+• 数据完整性和安全性是用户关注的重要问题，特别是权限控制和离线数据库被篡改的风险。
+• 用户对Turso的冲突解决机制、开源性以及与其他类似技术（如Electric SQL）的区别有较多关注。
+• 对Turso处理大型数据库的能力和同步进度的可追踪性存在实际使用中的需求。
+• 部分用户对Turso的整体实用性持怀疑态度，并提出了替代方案和不同意见。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43538338" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43535943" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -516,52 +536,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.sergey.fyi/articles/reliability-vs-capability" target="_blank">AI Agents: Less Capability, More Reliability, Please</a>
+                    <a href="https://news.ycombinator.com/item?id=43537505" target="_blank">Launch HN: Augento (YC W25) – Fine-tune your agents with reinforcement learning</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: serjester</span> |
-                    <span>评分: 168</span> |
-                    <span>评论数: 34</span> |
-                    <span>发布时间: 2025-03-31 14:45</span>
+                    <span>作者: lmeierhoefer</span> |
+                    <span>评分: 58</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-03-31 17:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章是一个博客订阅邀请和反馈请求。作者邀请读者通过邮件订阅博客以获取最新内容，并鼓励读者提供反馈或提问以增进互动。文章提供了订阅链接和联系方式，旨在建立与读者的长期联系并获取意见。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI代理工具的现状、可靠性、适用场景及局限性
+                    <div class="comments-summary">主要讨论点：针对一款新服务的功能、市场前景、技术实现及开放性的不同观点和讨论
 
 不同观点：
-• **Simonw**：认为文章低估了让AI代理完成单一任务的难度。他指出，人类语言输入存在无限变体，无法针对所有可能的情况进行测试，且人类不善于准确表达需求，这使得任务执行容易出错。
-• **Wiradikusuma**：表示连人类助理都难以完成他的航班预订任务，因为涉及复杂的比价和决策过程，AI更难以胜任。
-• **Danso**：引用了Reddit上的讨论，表达了对依赖AI编程的新工程师缺乏基础编程知识的担忧，但也认为这为自己这样的传统工程师提供了职业安全感。
-• **Joshdavham**：强调在使用AI生成代码时，必须能够理解代码，不能像一些“凭感觉编程”的开发者那样依赖AI生成自己不理解的代码。
-• **Piokoch**：批评了Cursor项目缺乏版本控制的功能，认为像Aider这样的免费工具在版本控制方面做得更好。
-• **Narmiouh**：认为不应责怪AI工具在版本控制问题上的表现，因为这是用户技能不足所致，且有一些SAAS应用更适合这些新手用户。
-• **Andreash**：提到正在开发更具确定性的代理，并推荐阅读关于代理定义的文章，暗示未来对代理的需求会增加。
-• **Bhu8**：支持工作流自动化优于代理自动化，认为当前代理不可靠，工作流自动化可以提供更高的精度和可诊断性。
-• **Ankit219**：指出代理在低信任环境中有用，但在高信任环境中的错误成本太高，代理的错误可能会导致严重后果。
-• **Twotwotwo**：基于自己的经验，认为可靠性比速度更重要，AI工具在成熟代码库中的表现不如预期，需要更多的前期工作来减少问题。
-• **SkyPuncher**：认为Cursor的例子不恰当，因为其主要用户群是初级程序员，他们面临的问题不完全代表工具本身的问题。同时指出，许多AI助手在广告中宣称的功能在实际使用中无法实现。
-• **Hirako2000**：批评AI代理的“黑盒”性质和不可靠性，认为 stochastic machines 不具备真正的智能和推理能力，对相关文章回避这一核心问题感到厌烦。
-• **_cs2017_**：对AI代理的实际应用场景持怀疑态度，认为现有AI工具如代码助手已经很好，但在其他如邮件和旅行预订等高成本任务中不可信任。
-• **Dfxm12**：认为Google Flights等传统工具在用户体验上已经做得很好，AI代理在可靠性上还无法与之相比。
-• **Shireboy**：强调用户缺乏版本控制知识是问题的核心，认为AI工具应该帮助用户设置版本控制以避免问题。
+• [thebeardisred] 对服务的用户计费方式表示不满，特别是关于Slack用户组织和频道的选择，以及管理员审核权限的设置。
+• [HyprMusic] 对服务表示了总体肯定，但提出了两个问题：一是关于无服务器架构的冷启动时间，二是推理成本。同时，重申了导出模型权重的功能吸引力，并提到该功能已在计划中。
+• [zoogeny] 详细解释了服务的技术流程，认为该服务可以作为OpenAI模型的代理，并记录API请求，用于后续选择和训练。同时指出该服务的市场定位及潜在客户群体，并讨论了强化学习（RL）的有效性对服务成功与否的关键影响。
+• [mogili] 认为该服务解决了一个实际问题，但因为闭源性质而不适合其使用，并提到服务目前只支持单代理工作流。
+• [filipeisho] 希望能够自由选择模型的托管平台，并对服务在复杂用例（如多步任务或ReAct代理）上的表现表示担忧。此外，还对产品演示的效果提出了改进建议。
+• [serjester] 担心大型公司（如OpenAI）可能会推出类似服务，从而对该服务的市场竞争力产生影响，因为用户可能更倾向于选择大品牌。
+• [brap] 对服务的独特性提出质疑，认为当前顶尖的专有模型已经提供了API用于微调，强化学习API的推出只是时间问题。
+• [codingwagie] 认为该服务只是围绕开源微调库的DevOps包装。
+• [esafak] 和 [az226] 都关注模型的导出和下载问题，即用户是否能够下载经过微调的模型。
+• [abc-1] 对服务表示肯定，并建议开发针对特定模型（如deepseek）的微调平台，进一步扩展到模型的托管服务。
 
 补充讨论：
-• **AI工具的可靠性和适用性**：讨论中多次提到AI工具在实际应用中的不可靠性和错误成本，特别是在高信任环境中的应用。
-• **用户技能和工具的关系**：强调用户的基础知识和技能对AI工具使用效果的影响，如版本控制和代码理解能力。
-• **未来发展方向**：一些讨论者提到工作流自动化可能优于代理自动化，并提到未来对更具确定性代理的需求。
-• **现有工具的比较**：一些讨论者将AI工具与传统工具进行比较，认为传统工具在某些任务上更可靠。
-
-争议焦点：
-• **AI工具的可靠性和适用场景**：一部分人认为AI工具在某些任务上不可靠，另一部分人则认为这只是用户技能不足所致。
-• **代理 vs 工作流**：讨论中存在对代理和工作流自动化哪一个更优的争论。</div>
+• 强化学习（RL）的有效性是市场成功与否的关键，讨论中提到两种可能：一是RL非常成功，从而推动服务发展；二是RL无法跟上基础模型的发展，导致用户更愿意等待大公司的解决方案。
+• 服务的开放性（如是否允许用户导出模型）是用户关注的重点之一，多个评论提到了模型导出功能的重要性。
+• 用户对服务在复杂用例上的表现存在疑虑，特别是多步任务或ReAct代理的处理能力。
+• 服务的技术实现（如是否仅仅是开源项目的包装）以及与其他大公司类似服务的竞争也是讨论的焦点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43535653" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43537505" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
