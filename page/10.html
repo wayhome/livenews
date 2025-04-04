@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-04 08:56 (北京时间)
+            最后更新时间: 2025-04-04 11:28 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,59 +61,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://sqlsync.dev/posts/stop-syncing-everything/" target="_blank">Stop syncing everything</a>
+                    <a href="https://tailscale.com/blog/plan9-port" target="_blank">Porting Tailscale to Plan 9</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: neilk</span> |
-                    <span>评分: 630</span> |
-                    <span>评论数: 33</span> |
-                    <span>发布时间: 2025-03-31 17:07</span>
+                    <span>作者: adriangrigore</span> |
+                    <span>评分: 353</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-04-02 15:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Carl Sverre 发表于2025年3月，文章介绍了名为 **Graft** 的开源事务存储引擎，旨在解决数据同步中的效率和一致性问题。传统方法中，逻辑复制追踪每个变化，复杂且难以保持强一致性；而物理复制则会同步所有变化，包括无效变化。Graft 结合了两者的优点，支持懒惰式、部分复制，同时保证强一致性、水平扩展性和对象存储的持久性。
-
-Graft 的设计目标包括：
-1. 离线优先和移动应用开发简化。
-2. 跨平台无缝同步，避免供应商锁定。
-3. 无状态多写入副本，支持无服务器和嵌入式环境。
-4. 支持任意数据类型的复制。
-
-Graft 采用“卷”（Volume）和“快照”（Snapshot）的概念，通过事务性API让客户端按需同步，只获取必要的数据变化，避免全量同步。这种懒惰、部分复制的机制特别适用于边缘设备和不可靠网络环境，确保高效和一致性。
-
-目前，Graft 提供托管版本，感兴趣的开发者可以加入等待列表获取早期访问权限。</p>
+                    <p>本文介绍了Tailscale团队在2025年4月1日愚人节宣布将Tailscale移植到Plan 9操作系统的背后故事。最初，团队认为只需简单调整构建标签和路径即可完成移植，但在实际操作中发现Go编译器对Plan 9的支持已经退化，导致运行时崩溃。经过多番努力，包括修复Go编译器中的Plan 9特殊情况以及解决SSE指令和内存管理问题，最终在2025年3月完成了实际可运行的Plan 9移植版本。团队特别感谢前Go团队成员Russ Cox的帮助，他解决了Plan 9内核中保存和恢复SSE寄存器的问题，使得移植得以成功。最终，Tailscale现在确实能够在Plan 9上运行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Graft一致性模型及其在分布式数据同步中的应用
+                    <div class="comments-summary">主要讨论点：围绕Plan 9操作系统及其相关技术玩笑的讨论
 
 不同观点：
-• [kiitos] 认为Graft的"commit"模型存在问题。他指出，客户端本地提交成功后，异步的远程提交可能会失败，但API没有提供明确的方式让客户端发现这种失败并回滚。这与传统的"commit"语义不符，传统的"commit"应该保证事务的有效性。
-• [chacham15] 指出Graft的冲突检测机制不充分，仅通过页面变化来检测冲突是不够的，因为冲突可能由于读取冲突而发生。他建议需要跟踪事务中读取的页面，但这可能导致需要扫描整个表。
-• [0xbadcafebee] 认为分布式数据解决方案有其固有的缺陷，应该根据具体的使用场景选择最合适的方案。他质疑Graft在网络不稳定的情况下是否能有效工作，并指出分布式关系型数据库在ACID特性上的实现困难。
-• [snickell] 对Graft的通用性和低层级设计表示赞赏，认为这可能在SQLite之外有广泛应用。但他同时指出，低层级通用解决方案需要具体经验的指导。
-• [stavros] 认为Graft解决了一个重要的同步问题，并希望有一个无需开发者额外工作的同步层，从而避免订阅费用。
-• [wim] 分享了他们处理冲突的方案，通过回滚和重新播放最新快照来解决冲突，并询问Graft如何定义这些快照。
-• [krick] 表示对Graft的理解有困难，认为文档和说明不够清晰，特别是对于冲突解决的机制。
+• 支持并欣赏Plan 9技术：
+  - [mfro] 认为Russ Cox提交这个笑话很传奇。
+  - [packetlost] 真心希望有一个企业版的Plan 9，并提到自己用`rc`编写脚本，体验很好。
+  - [breckinloggins] 表达了对Plan 9的热爱，甚至计划在退休后做一个类似项目。
+  - [fultonb] 表示Plan 9是COVID隔离期间的美好回忆，可能会重新启动9front虚拟机。
+
+• 对技术复杂性的反思和批评：
+  - [0xbadcafebee] 起初觉得玩笑有趣，但随后感到沮丧，因为联想到现实中网络隧道等技术带来的复杂性和问题。
+
+• 对技术实现细节的关注：
+  - [raggi] 提供了在v86图像中运行Tailscale的详细方法，并给出了操作步骤。
+  - [kanwisher] 对补丁Plan 9内核以实现某些功能表示意外和关注。
+
+• 对April Fools玩笑的进一步调侃：
+  - [mcdow] 调侃Rob Pike对这次“背叛”感到崩溃。
+  - [calvinmorrison] 分享了9fans邮件列表中的另一个April Fools玩笑，提到只关注power64和itanium架构。
+
+• 其他操作系统建议：
+  - [chaz6] 请求考虑RISC OS。
 
 补充讨论：
-• [conradev] 比较了Graft和Cloud-Backed SQLite的差异，指出Graft需要服务器计算，而Cloud-Backed SQLite不需要。
-• [vladstudio] 提供了一系列类似的工具链接，希望有人能总结这些工具的比较。
-• [presentation] 提供了另一个相关项目的链接。
-• [wg0] 表示对Graft的兴趣，并计划在面临不确定连接的React Native应用中尝试。
-• [londons_explore] 提出了在慢速连接下同步大数据量的挑战，建议采用混合方案，检测慢速同步并直接发送查询到服务器。
-• [carlsverre] 作为Graft的作者，感谢社区的支持，并提供了一个深入了解Graft的视频链接。
-• [giancarlostoro] 对双重许可（Apache和MIT）的选择提出了疑问，不明白为何不直接使用MIT许可。
+• [adriangrigore] 提供了另一个相关Webinar的链接。
+• [chrsw] 提到在受控浏览器中无法访问某些URL，先是证书错误，后来被直接屏蔽。
 
 争议焦点：
-• Graft的"commit"模型是否合理，尤其是异步提交失败的处理和传统"commit"语义的差异。
-• Graft的冲突检测机制是否足够，特别是对于读取冲突的处理。
-• 分布式关系型数据库在ACID特性上的实现困难以及Graft是否适合这样的场景。
-• 文档和说明的清晰度问题，特别是对于不熟悉分布式同步概念的开发者。</div>
+• 对Plan 9及其相关技术玩笑的态度分歧，一些人欣赏其技术价值，另一些人则对技术复杂性和现实问题感到不满。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43537272" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43557790" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -128,41 +122,46 @@ Graft 采用“卷”（Volume）和“快照”（Snapshot）的概念，通过
                 </h3>
                 <div class="story-meta">
                     <span>作者: darajava</span> |
-                    <span>评分: 102</span> |
+                    <span>评分: 123</span> |
                     <span>评论数: 18</span> |
                     <span>发布时间: 2025-04-01 11:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>ReelControl是一款浏览器扩展，旨在为Instagram、YouTube Shorts和Facebook Reels添加进度条和播放控制。它解决了这些平台隐藏原生进度条的问题，让用户能够在观看前了解视频时长、快退、快进以及无需重头开始播放。该扩展通过恢复视频控制功能，帮助用户减少无意识的刷视频时间。ReelControl是开源的，用户可以提交改进建议。此外，开发者还提供了另一个应用AudioDiary，是一个语音日记工具。</p>
+                    <p>ReelControl 是一个浏览器扩展，旨在为 YouTube Shorts、Instagram 和 Facebook Reels 添加进度条和播放控制功能。它解决了社交媒体平台隐藏原生进度条的问题，让用户能够：
+
+1. 提前了解视频时长。
+2. 快退以重新观看错过的内容。
+3. 快进或返回，无需重新开始。
+
+该扩展在 Instagram 上仅添加原生视频控制；在 YouTube Shorts 上提供去除杂乱界面的选项；在 Facebook Reels 上移除杂乱并添加进度条。扩展是开源的，欢迎提交问题和贡献代码。
+
+开发者为 Soliloquy Apps，并提供了其他工具如 AudioDiary。ReelControl 不会收集或使用用户数据，并提供支持服务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户针对网页视频控制功能被限制的问题，分享各种解决方案和工具，并讨论这些工具的有效性和潜在影响。
+                    <div class="comments-summary">主要讨论点：通过技术手段恢复网页视频控制的必要性和方法
 
 不同观点：
-• varenc：分享了一个书签工具（bookmarklet），可以重新启用网页上所有视频元素的控制功能，如显示控制条、允许画中画等，但需要对新出现的视频元素重新运行脚本。
-• NelsonMinar：认为网页需要通过浏览器 hack 来恢复被网站禁用的用户界面是一种糟糕的情况，表达了对当前网页设计的失望。
-• omoikane：提到在YouTube Shorts中，可以通过将URL中的"shorts"替换为"watch"来获取常规界面，并指出最近YouTube Shorts已经提供了进度条。
-• uptown：对varenc的解决方案表示感谢，认为这是他期待已久的功能。
-• Aissen：分享了为TikTok编写的一组uBo规则，以实现类似的功能，但指出在移动设备上效果不稳定。
-• Zak：希望看到适用于Firefox的版本。
-• haberdasher：提供了针对TikTok和Instagram的浏览器扩展，用于视频控制和快进功能。
-• ensignavenger：对发布表示感谢，并建议添加改变播放速度的功能，同时询问是否会推出Firefox版本。
-• 4jck：询问是否有办法保存Instagram/YouTube的音量设置，因为感觉这些平台的音量被提升到了200%。
-• robgibbons：表示自己一直想解决视频控制被限制的问题，很高兴看到有人发布了这样的工具。
-• megadata：尚未尝试，但认为如果这个工具有效，将是极大的帮助。
-• xnx：询问这个工具是否比"Show Video Controls by Default"扩展功能更多。
-• umvi：担心添加进度条会导致用户跳过部分内容，可能不符合内容创作者和广告商的最佳利益。
-• devmtk：对分享表示感谢，认为这个工具非常有帮助。
-• joshdavham：对分享表示感谢，并建议在GitHub仓库中添加许可证。
+• varenc分享了一个简单的书签工具，可以重新启用所有`<video>`元素的控制功能，并通过z-index将它们置于顶部。这个工具在Instagram上有效，但需要对新视频元素重新运行。
+• omoikane指出在YouTube Shorts中，可以通过将URL中的"shorts"替换为"watch"来获取常规界面，并提到最近YouTube Shorts似乎已经提供了进度条功能。
+• NelsonMinar批评当前网页需要通过浏览器 hack 来恢复被网站去除的用户界面，认为这是一种不好的趋势。
+• Aissen提到他们编写了一组uBo规则来在TikTok上实现类似功能，但移动端效果不稳定。
+• Zak和ensignavenger希望这种功能能在Firefox上实现，并建议未来增加改变播放速度的功能。
+• haberdasher提供了他们在TikTok和Instagram上制作的扩展链接，支持视频控制。
+• robgibbons表示他一直想构建这样的工具，很高兴看到有人实现了。
+• 4jck询问是否有办法在Instagram/YouTube上保存音量设置，认为这些平台的音量被不正常地提升了。
+• megadata表示如果这个工具有效，将是他们见过最有价值的工具之一。
+• xnx质疑这个工具是否比"Show Video Controls by Default"扩展功能更多。
+• umvi担心恢复进度条可能会导致观众跳过部分内容，不利于内容创作者和广告商的利益。
+• joshdavham感谢分享，并请求在GitHub仓库中添加许可证。
 
 补充讨论：
-- 用户对如何恢复和增强网页视频控制功能有强烈需求，并通过各种技术手段（书签工具、浏览器扩展、uBo规则等）来解决这一问题。
-- 争议的焦点在于恢复视频控制功能是否符合内容创作者和广告商的利益，特别是添加进度条是否会导致用户跳过内容。
-- 用户对工具的跨浏览器支持（如Firefox版本）和功能扩展（如改变播放速度、保存音量设置）有进一步的需求和建议。</div>
+• 讨论中涉及多个平台，包括Instagram、YouTube、TikTok等，反映了这一问题的普遍性。
+• 技术实现方式多样，包括书签工具、uBo规则、浏览器扩展等，展示了用户在应对网站限制方面的创造力。
+• 争议焦点在于恢复视频控制是否符合内容创作者和广告商的利益，反映了用户体验和商业利益之间的矛盾。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43545641" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -218,36 +217,191 @@ Graft 采用“卷”（Volume）和“快照”（Snapshot）的概念，通过
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-03-efficient-meta-optics-conventional-lenses.html" target="_blank">Efficient light control: Meta-optics replace conventional lenses</a>
+                    <a href="https://supabase.com/blog/declarative-schemas" target="_blank">Declarative Schemas for simpler database management</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-03-30 15:07</span>
+                    <span>作者: kiwicopple</span> |
+                    <span>评分: 57</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-04-03 17:02</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了卡尔斯鲁厄理工学院（KIT）开发的元光学（meta-optics）技术，该技术使用超构表面（metasurfaces）替代传统曲面透镜，实现更高效的光控制。元表面由微小的 meta-原子组成，能够精准调控光的相位、振幅和偏振，从而在更小的体积内实现多项光学功能。该技术可用于制造光学衍射元光栅，其效率是传统光栅的四倍，特别适用于光谱学、电信和激光系统等领域。此外，元光学在相机、传感器、增强现实显示、材料分选、医疗成像和自动驾驶等应用中也展现出广阔前景。该技术利用半导体行业的先进光刻和蚀刻技术，具备可扩展生产潜力。</p>
+                    <p>本文介绍了声明式 schema 如何简化复杂数据库的管理。声明式 schema 将数据库的最终期望状态存储在 `.sql` 文件中，便于集中管理和版本控制。相比直接修改数据库 schema，声明式 schema 具有以下优势：单一管理界面，减少冗余和错误；版本化迁移，确保不同环境中的一致性；简明的代码审查，无需重复复杂迁移脚本。
+
+随着数据库 schema 复杂性增加，传统迁移方法难以维护，因为缺乏单一的整体视图。例如，在 Supabase 中，复杂的 `projects` 表涉及私有表、RLS（行级安全）、视图和触发器，修改时需多步操作，容易导致冲突。
+
+声明式 schema 通过集中管理 schema，简化了开发流程，提高了开发效率。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Meta-optics技术的创新性及其在实际应用中的现状
+                    <div class="comments-summary">主要讨论点：数据库迁移和声明式 schema 管理的优缺点
 
 不同观点：
-• [积极支持] abidhusain认为，Meta-optics是一项突破性创新，能够以传统镜头无法实现的方式控制光，为增强现实/虚拟现实（AR/VR）和光学计算等领域带来了新的机会。
-• [怀疑态度] CyberDildonics对Meta-optics的影响持怀疑态度，指出这些“Meta光学”、“Meta表面”和“Meta光栅”尚未取代任何现有技术。
-• [现实验证] ipsum2进一步指出，尽管Meta-lenses技术已经存在超过10年，但目前仍未见到任何使用该技术的消费级商业产品。
+• [支持声明式 schema，但反对自动生成迁移]：xyzzy_plugh 认为声明式 schema 是有必要的，但不应自动生成迁移，因为这可能带来问题。他建议手动编写迁移并测试，以确保 schema 变更符合预期。
+• [有限支持声明式 API]：webster451 认为声明式 API 在某些场景下非常强大，但并不适用于所有情况。他认为程序员对变更的控制能带来更好的结果，并指出 Kubernetes 等工具虽然提供声明式基础设施，但实现非常复杂且容易出错。
+• [支持自动生成迁移]：bartvk 总结了一种新方法，即通过修改 CREATE TABLE 语句并自动生成差异迁移。他认为这种方法简化了数据库变更的管理。
+• [Rails 的做法更好]：neutralino1 认为 Rails 已经实现了更好的方案，通过保持迁移和 schema.sql 文件的同步，方便测试和数据库重建。
+• [需要 IDE 支持的声明式管理]：Guillaume86 希望有一个类似微软 SSDT 的工具，用于 Postgres，提供声明式 schema 管理、错误检查和更好的开发体验。
+• [自动生成迁移可能导致问题]：joshAg 认为自动生成迁移可能导致一些复杂的变更（如 enum 变更、数据迁移）难以处理，建议手动编写迁移以确保灵活性。
+• [关注手动编辑自动生成迁移的能力]：ucarion 关心是否可以手动编辑自动生成的迁移，以实现更复杂的操作，如并发创建索引。
+• [结合 IDE 工具提升开发体验]：kiwicopple 提到结合 Postgres Language Server，可以在 IDE 中直接执行 SQL 语句，提高开发效率。
+• [自动生成迁移的风险]：geocar 警告自动生成迁移可能在团队中引入严重错误，导致长期问题。
+• [其他工具]：xaas 提到使用 ZenStack 并指出其未来版本将不再依赖 Supabase。
+• [质疑新方法的价值]：mylons 质疑新方法相比原始 SQL 的优势，认为差别不大。
+• [提供相关参考资料]：wmanley 提供了关于 SQLite 声明式迁移的文章链接，并披露自己是该文章的合著者。
 
 补充讨论：
-- 争议的焦点在于Meta-optics是否真正具有市场影响力和实际应用价值。
-- abidhusain强调了Meta-optics在未来技术发展中的潜力，尤其是在新兴领域如AR/VR和光学计算。
-- CyberDildonics和ipsum2则从现实角度出发，质疑Meta-optics的实际应用和市场普及程度。
-- ipsum2特别指出了时间因素，认为经过十多年的发展仍无消费级产品，这可能反映出该技术的实际应用面临挑战。</div>
+• 争议的焦点在于自动生成迁移的可靠性和灵活性，以及声明式 schema 管理的优缺点。
+• 不同开发者对声明式和命令式方法的偏好，以及对工具支持和开发体验的需求各不相同。
+• 实际应用中，如何平衡自动化和手动控制的比例，以及如何确保数据库迁移的安全性和可维护性，是重要的讨论点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43524772" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43572544" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://potter-yachters.org/stories/teplow_to_hawaii.htm" target="_blank">Sailing from Berkeley to Hawaii in a 19ft Sailboat</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: protonbob</span> |
+                    <span>评分: 135</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-04-02 15:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Chubby Commutes to Hawaii: 技术讨论》由Bill Teplow撰写，文章讲述了作者作为地质顾问，利用休假时间准备了一次从加州伯克利到夏威夷的航行。他的船是West Wight Potter 19 "Chubby"。在出发前，他进行了大量准备工作，包括增加两个额外的排水口以防浪淹，并在舱口安装防水门以提高安全性。作者还安装了jack lines以便在甲板工作时保持安全。航行距离为2142海里，历时24天，整个过程顺利无重大事故。作者强调，尽管Chubby顺利完成了跨洋航行，但它设计上是沿海巡航艇，不建议作为远洋巡航船使用。此次航行体验愉快，船体和设备均无损坏，抵达夏威夷时状态良好。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于单人航行冒险及其准备工作的讨论
+
+不同观点：
+• LeifCarrotson认为该网站非常有趣，尤其是关于其妻子的信件以及航行中的电力管理。他指出，现代技术如太阳能板可以更有效地解决电力问题，而174瓦时的日常电力需求在今天可以通过简单的太阳能方案满足。
+• _cormorant指出可能有一个与故事中描述的船只相同的船正在出售，并提供了一个出售链接。
+• smithclay推荐了一本相关的书《Sailing Alone: A Surprising History of Isolation and Survival at Sea》，供对单人航行历史感兴趣的人阅读。
+• medion分享了个人类似的航行经历，从Berkeley出发到Honolulu，虽然时间比预期长且遇到了一些危险，但总体顺利。
+• _whiteCaps_推荐了Paul Lutus的航行书和Vic Maui比赛，为有兴趣参与航行比赛的人提供了参考。
+• goleary对原文中不使用SSB接收机获取天气报告的做法表示惊讶。
+• rkhassen9对原文中提到的罐头防锈措施提出疑问，不确定是否过于谨慎。
+• for1nner推荐了一个YouTube频道，其中包含关于单人航行旅程的视频，认为这些视频对航行准备有帮助。
+• BXLE_1-1-BitIs1分享了自己在Lake Superior和一些河流系统中的独木舟航行经验，使用了不同的食物和装备。
+• protonbob喜欢该网站的复古设计和探索体验。
+• zbowling感叹现代网站设计中失去了一些旧技术，如iso-8859-1编码。
+• TuringNYC担心原文中缺乏备用电源，建议至少使用太阳能板作为备用，并引用了科幻电影《星球大战》中的冗余设计作对比。
+• frainfreeze提到了Evi Nemeth，一位从IT领域退休后开始航海冒险的女性，推荐了她的书和航行经历。
+• code_kate08对故事中的勇气和创造力表示钦佩，认为这是人类冒险精神的体现。
+• nataz推荐了Robin Lee Graham的故事，一个16岁开始单人环球航行的年轻人，写了书并被拍成电影。
+
+补充讨论：
+- 争议焦点在于原文中对罐头防锈措施的必要性，rkhassen9认为可能过于谨慎，但尚未有明确结论。
+- 不同用户分享了各自的航行经验和推荐资源，提供了丰富的视角和实用建议。
+- 对现代技术如太阳能板的讨论显示出技术进步对传统航行方式的影响和改进可能性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43558077" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.esa.int/Space_Safety/Space_Debris" target="_blank">Space Debris: Is It a Crisis?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: defrost</span> |
+                    <span>评分: 57</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-04-03 10:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章围绕太空碎片问题以及欧洲空间局的相关努力展开。内容涵盖了关于太空碎片的各种报道、视频和图片，介绍了太空垃圾的现状、影响及应对措施。此外，文章还包括多个专题聚焦和推荐内容，涉及保护地球等环境问题。页面还提供了常见问题解答、联系方式、条款与条件、隐私声明，以及欧洲空间局的职业机会和订阅信息。整体强调了对太空环境和地球保护的重视。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：太空垃圾（空间碎片）问题及其潜在影响和解决方案
+
+不同观点：
+• **genedan** 推荐了一部名为《Planetes》的动漫，通过娱乐内容引起人们对太空垃圾问题的关注。
+• **fredzel** 表达了对Kessler综合症的担忧，认为它可能阻碍人类进行太空探索，且普通人无法应对这一问题。
+• **matthewdgreen** 提出了关于SpaceX的Starship项目经济可行性和其对Kessler综合症风险影响的疑问。他担心Starship的大规模发射会增加太空垃圾风险，并询问是否有人对此进行过建模分析。
+• **asix66** 提到了Steve Wozniak的Privateer公司，其最初目标是清理太空垃圾，但现在转向通过更好的跟踪技术来预防碰撞事故，并提供了一个互动式太空物体追踪链接。
+• **Towaway69** 以讽刺口吻指出，人类面临气候危机、贸易危机和太空危机等多重危机，似乎进入了“危机危机”时代。
+• **sebg** 分享了一个名为“What’s in Space”的网站链接，提供实时的地球轨道物体3D地图可视化。
+• **aziaziazi** 纠正了sebg的链接，提供了正确的视频链接。
+• **dang** 确认了aziaziazi提供的视频链接，并澄清了链接内容。
+• **aeinbu** 以幽默方式提问，如果人类被Kessler综合症“锁住”，那么外星生命是否也无法“访问”地球。
+• **pandemic_region** 提出了类似于“海洋清理”项目的太空垃圾清理方案，认为如果能够有效发现太空垃圾，或许可以开发一种设备将其推向外太空。
+• **cies** 提到了StarLink卫星在失效后会重新进入大气层，并对地球生命造成影响，批评这是一种将成本外部化而利润内部化的行为，并提供了一篇相关文章的链接。
+
+补充讨论：
+• Kessler综合症作为太空垃圾问题的核心，引发了关于其对未来太空探索和商业发射项目影响的讨论。
+• SpaceX的Starship项目被视为可能增加太空垃圾风险的一个因素，但具体影响尚不明确，需要进一步的建模和分析。
+• 提出了Privateer公司和“What’s in Space”网站等技术解决方案，通过跟踪和可视化技术来预防太空碰撞事故。
+• 有讨论者以幽默或讽刺的方式表达了对多重危机的无奈和对太空垃圾问题的关注。
+• 有人提出了类似于海洋清理项目的太空垃圾清理方案，但其实际可行性尚待验证。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43567591" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://tenstorrent.com/vision/tenstorrent-launches-blackhole-developer-products-at-tenstorrent-dev-day" target="_blank">Tenstorrent Launches Blackhole Developer Products at Tenstorrent Dev Day</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: fidotron</span> |
+                    <span>评分: 56</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-03 18:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Tenstorrent在旧金山Dev Day活动中发布了新一代Blackhole™芯片系列，专为高效处理大规模AI工作负载设计，具备无限扩展能力。新产品包括：Blackhole™ p100（999美元）、Blackhole™ p150（1,299美元）以及TT-Quietbox液冷工作站（11,999美元）。这些产品采用6nm制程，具备更快的片上网络（NoC）和更高的内存密度，并增加了RiscV核心。Tenstorrent还推出了Developer Hub，为开发者提供模型支持、教程和资源。所有Blackhole™产品均支持开源软件栈，可在Tenstorrent官网和GitHub上获取。此外，Tenstorrent还宣布与ECOBLOX和UnsungFields达成战略合作，推动中东、非洲及AI云平台的扩展。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Tenstorrent硬件平台的技术规格、应用场景及其市场竞争力
+
+不同观点：
+• [rasengan0] 认为Tenstorrent开发者支持的模型过滤功能不错，但建议增加对Blackhole RISCV p100a p150型号的支持，并根据内存规格推测其性能可与n300型号媲美。
+• [wincy] 对Tenstorrent的技术感到困惑，不确定是否值得关注，并询问是否可以运行Deepseek R1模型，显示出对实际应用场景的关注。
+• [jauntywundrkind] 用幽默的方式将数据处理比喻为AI发出霍金辐射，虽未深入技术讨论，但表现出对AI处理能力的抽象理解。
+• [mika6996] 质疑Tenstorrent Blackhole卡的竞争力，表明对市场定位的疑虑。
+• [littlestymaar] 强调Tenstorrent需要在卡上增加更多VRAM，并对比中国公司对Nvidia GPU的改装，提出价格与性能的期望，认为现有产品内存不足且兼容性问题会限制其成功。
+• [mixmastamyk] 对RISC-V作为AI加速器的角色表示疑问，并通过查找FAQ找到答案，显示出对技术原理的兴趣。
+• [lostmsu] 调侃Tenstorrent销售张量加速器却不提及TOps（tera operations per second），质疑其性能透明度。
+
+补充讨论：
+• 一些评论（如[rasengan0]和[littlestymaar]）对Tenstorrent硬件的规格和市场定位提出了具体建议和批评，特别是关于内存容量和价格的讨论。
+• 技术细节（如RISC-V的作用和TOps的缺失）也成为讨论焦点，表明用户对Tenstorrent产品的技术实现和透明度有一定要求。
+• 整体来看，讨论反映出对Tenstorrent产品在性能、市场竞争力和应用场景方面的不同期待和关注。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43573310" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -306,76 +460,36 @@ Graft 采用“卷”（Volume）和“快照”（Snapshot）的概念，通过
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://idiallo.com/blog/code-for-hire" target="_blank">The reality of working in tech: We're not hired to write code (2023)</a>
+                    <a href="https://phys.org/news/2025-03-efficient-meta-optics-conventional-lenses.html" target="_blank">Efficient light control: Meta-optics replace conventional lenses</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: foxfired</span> |
-                    <span>评分: 107</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-04-03 00:53</span>
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-03-30 15:07</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了一位开发人员在公司中经历的职业变迁和感悟。他的一位前同事因不满新政策而离职，这位同事曾是公司唯一的 .Net 开发人员，负责多个关键网站。同事离开后，系统出现问题，但团队无人能立即解决，最终由一名墨西哥的QA人员通过重启服务器解决了问题，并因此获得晋升。作者回顾自己的经历，尽管他曾是团队中的JavaScript专家，但随着技术发展和新工具的引入，他的工作逐渐被替代。他意识到在快速变化的科技行业中，公司更注重产品和功能的交付，而非个人的编码能力。通过担任顾问，他进一步理解到，向客户和管理层展示可见的成果比单纯的编码工作更受重视。最终，他反思是否应该继续专注于编写代码。</p>
+                    <p>文章介绍了卡尔斯鲁厄理工学院（KIT）开发的元光学（meta-optics）技术，该技术使用超构表面（metasurfaces）替代传统曲面透镜，实现更高效的光控制。元表面由微小的 meta-原子组成，能够精准调控光的相位、振幅和偏振，从而在更小的体积内实现多项光学功能。该技术可用于制造光学衍射元光栅，其效率是传统光栅的四倍，特别适用于光谱学、电信和激光系统等领域。此外，元光学在相机、传感器、增强现实显示、材料分选、医疗成像和自动驾驶等应用中也展现出广阔前景。该技术利用半导体行业的先进光刻和蚀刻技术，具备可扩展生产潜力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开发人员的核心职责是什么，是否应减少代码编写量，以及开发人员的报酬和角色认知问题。
+                    <div class="comments-summary">主要讨论点：Meta-optics技术的创新性及其在实际应用中的现状
 
 不同观点：
-• **don-code** 的观点：鼓励同事减少代码编写量，更多关注代码背后的问题和背景。他认为代码只是解决问题的一种方式，而不是唯一方式，过度依赖代码会忽略流程和人的问题。
-• **mcv** 的观点：开发人员，尤其是高级程序员，在某些地区（如荷兰）的薪酬不如经理、产品负责人、架构师甚至Scrum大师。他分享了自己从自由职业者转变为员工后收入减少的经历，并感到非代码相关的工作没有得到应有的认可。
-• **lijok** 的观点：开发人员的首要任务是实现业务目标，代码编写应该是最后的选择。优秀的开发人员应能说服经理使用简单工具（如WordPress）解决问题，而不是一味编写新代码。
-• **prescriptivist** 的观点：随着LLMs（大型语言模型）的普及，开发人员的工作重点已经从编写代码转向管理和引导代码。尽管这些工具提升了代码生成效率，但也引入了更多问题，如破坏现有流程。
-• **vkaku** 的观点：开发人员的职责不仅仅是解决问题，还需要执行。如果过度扩展职责范围，会导致官僚主义，最终损害公司利益。
-• **Willingham** 的观点：系统开发人员（如操作系统、编译器、数据库内核开发者）的核心工作仍是编写代码，且对代码的正确性、稳定性和兼容性要求极高，因此不能一概而论地认为开发人员不再需要编写代码。
-• **xnx** 的观点：代码是一种责任，解决问题应以最小化代码、员工、风险和成本为目标。
+• [积极支持] abidhusain认为，Meta-optics是一项突破性创新，能够以传统镜头无法实现的方式控制光，为增强现实/虚拟现实（AR/VR）和光学计算等领域带来了新的机会。
+• [怀疑态度] CyberDildonics对Meta-optics的影响持怀疑态度，指出这些“Meta光学”、“Meta表面”和“Meta光栅”尚未取代任何现有技术。
+• [现实验证] ipsum2进一步指出，尽管Meta-lenses技术已经存在超过10年，但目前仍未见到任何使用该技术的消费级商业产品。
 
 补充讨论：
-• **arealaccount** 认为讨论有些咬文嚼字，但整体有趣。
-• **MathMonkeyMan** 提到其工作重点是弄清楚该做什么，修改代码，并向其他人解释原因。
-• **dogleash** 指出，管理层期望开发人员具备全面技能，并将他们提拔出开发岗位，导致开发团队中“全面发展”的定义变得混乱。
-• **dev_mike12** 对合同工作的挑战提供了看法，强调明确沟通和定义范围的重要性。
-• **em-bee** 和 **94b45eb4** 讨论了开发人员缺乏某些技能或经验时可能面临的职业发展问题，并反思了现代开发人员对技术和框架的关注点。
-• **yawnxyz** 质疑如果开发人员不需要编写代码，为什么LeetCode仍是进入大公司的必经之路。
-
-争议焦点：
-• 开发人员的核心职责是解决问题还是编写代码。
-• 在现代工具（如LLMs）的帮助下，开发人员是否应更多关注代码管理和引导，而不是亲自编写代码。
-• 高级开发人员的薪酬与其贡献是否匹配，特别是在非代码相关工作未得到认可的情况下。</div>
+- 争议的焦点在于Meta-optics是否真正具有市场影响力和实际应用价值。
+- abidhusain强调了Meta-optics在未来技术发展中的潜力，尤其是在新兴领域如AR/VR和光学计算。
+- CyberDildonics和ipsum2则从现实角度出发，质疑Meta-optics的实际应用和市场普及程度。
+- ipsum2特别指出了时间因素，认为经过十多年的发展仍无消费级产品，这可能反映出该技术的实际应用面临挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43563533" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/d41586-025-01019-w" target="_blank">AI masters Minecraft: DeepMind program finds diamonds without being taught</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bglazer</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-04-03 21:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>研究人员开发了一种名为Dreamer的人工智能系统，能够在《Minecraft》游戏中自主收集钻石，而无需人类指导。这是AI领域的一个重大突破，因为收集钻石需要多个复杂步骤，包括探索环境、收集资源和制作工具。Dreamer通过构建周围环境的模型并利用强化学习进行自我改进，成功完成了这一任务。其关键在于Dreamer能"想象"未来场景，预测不同行动的潜在奖励，从而做出决策。这种能力不仅在游戏中有效，还有望应用于现实世界的机器人互动学习。该研究发表在《Nature》期刊上，标志着通用人工智能系统发展的重要一步。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43575680" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43524772" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -427,92 +541,6 @@ Graft 采用“卷”（Volume）和“快照”（Snapshot）的概念，通过
 • 7bit对工具实用性的批评与其他用户对工具的正面评价形成对比。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43518570" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bloomberg.com/news/articles/2025-04-03/microsoft-pulls-back-on-data-centers-from-chicago-to-jakarta" target="_blank">Microsoft pulls back on datacenter ambitions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nikcub</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-04-03 10:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对开源项目贡献的激励机制及其实际效果
-
-不同观点：
-• **nikcub** 认为当前的开源项目贡献机制存在问题，尤其是在激励贡献者方面。他指出，很多贡献者在没有获得足够认可或回报的情况下，容易感到倦怠并退出项目。他提到，即便是大规模的公司支持项目，也没有很好地解决这一问题。nikcub 强调，需要重新设计激励机制，让贡献者能获得更长久的动力。
-
-• **支持现有机制的观点** 认为，开源项目的贡献本身是自愿的，贡献者在参与时就应了解并接受这一性质。有人指出，现有的荣誉激励（如在项目中被提及、获得社区尊重等）已经足够，且开源项目的文化和精神就在于无偿贡献。这种观点认为，过度的物质激励可能会扭曲开源精神，导致项目变得商业化。
-
-• **混合激励机制的观点** 提出，可以结合荣誉激励和物质激励。例如，通过奖金、资助计划或提供职业发展机会等方式，让贡献者不仅获得精神上的满足，还能在物质上有所回报。这种观点的支持者认为，这不仅能激励更多人参与，还能提高贡献的质量和持续性。
-
-补充讨论：
-• **争议焦点** 在于如何在保持开源精神的同时，有效地激励贡献者。一些人担心物质激励会改变开源社区的本质，使其变得功利化；而另一些人则认为，开源社区需要与时俱进，找到适应现代社会的方式来吸引和留住优秀贡献者。
-
-• **具体例子** 被提到，诸如 Google Summer of Code (GSoC) 和其他类似的资助项目，是目前一些大公司支持开源贡献的有效方式。这些项目通过提供资金支持，吸引学生和新人参与开源，但 nikcub 认为这些措施还远远不够，且覆盖面有限。
-
-• **社区建设** 被认为是另一种激励方式，通过建立更紧密的社区关系和提供更多学习和成长机会，来增强贡献者的归属感和成就感。这种观点强调软性激励，如指导计划、知识分享和团队合作等。
-
-通过这些观点的讨论，可以看出开源贡献激励机制是一个复杂且多维度的问题，涉及文化、经济和社区动态等多个方面。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43567510" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://seis.pointlessprojects.com/" target="_blank">Show HN: Color palettes inspired by Mexican architecture</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sillysideprojs</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-04-02 20:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对一个色彩项目的不同角度评价与联想
-
-不同观点：
-• **支持并建议扩展形式**：[keiferski] 认为该项目很酷，并建议考虑将其发展为一本书。他提到最近购买了一本类似的关于日本传统色彩组合的书，提供了相关链接，显示出对色彩主题出版物的兴趣和支持。
-
-• **技术性疑问**：[jslakro] 对项目的技术实现提出了疑问，猜测颜色是否是通过程序从照片中提取出来的，显示出对项目背后技术实现的关注。
-
-• **与其他内容的关联与思考**：[bryanrasmussen] 提到该项目出现在一篇关于“世界为何失去色彩”的文章下方，不确定这是否构成反驳论点，还是仅仅是一个有趣的并列。这显示出对项目内容与更广泛文化讨论之间关系的思考。
-
-补充讨论：
-• [bryanrasmussen] 的评论引出了一个值得注意的讨论点，即该色彩项目是否可以视作对“世界失去色彩”论点的反驳或是补充，这涉及到项目内容的文化与社会意义。
-
-• 不同评论者对项目的关注点各异，有的注重形式和扩展（出书），有的关注技术实现，还有的将项目置于更广泛的文化讨论中。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43560916" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
