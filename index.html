@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-06 23:12 (北京时间)
+            最后更新时间: 2025-04-07 02:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -173,48 +173,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/brannondorsey/mem-isolate" target="_blank">Show HN: I built a Rust crate for running unsafe code safely</a>
+                    <a href="https://0xda.de/blog/2025/04/hiding-elements-that-require-javascript-without-javascript/" target="_blank">Hiding elements that require JavaScript without JavaScript</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: braxxox</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-04-06 13:28</span>
+                    <span>作者: mtlynch</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-06 16:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>`mem-isolate` 是一个 Rust crate，旨在通过使用 `fork()` 系统调用安全地运行不安全代码。它会在子进程中执行用户提供的函数，确保该函数不会影响父进程的内存状态，实现内存隔离。主要特点包括：
-
-1. **内存纯净性**：即使函数存在内存泄漏或堆碎片化问题，也不会影响主进程。
-2. **跨进程通信**：通过管道在父子进程间传递结果，使用序列化（如 `serde`）处理数据。
-3. **性能开销**：每次调用引入约 1ms 延迟，适合对内存安全要求高的场景。
-4. **系统支持**：仅支持 POSIX 系统（如 Linux, macOS），不支持 Windows 和 WebAssembly。
-
-该工具适用于运行可能导致内存问题的代码，如 FFI 调用或不安全代码，通过隔离确保主程序的稳定性。</p>
+                    <p>本文讨论了如何在不依赖JavaScript的情况下隐藏需要JavaScript功能的元素。作者首先尝试通过在`<html>`元素中添加`js-enabled`类来控制元素显示，但认为这种方法过于繁琐。随后，作者提出了一种更简便的解决方案：使用`<noscript>`标签结合自定义的`d-js-required`类。通过在`<noscript>`内的`<style>`标签中定义`.d-js-required { display: none; }`，可以轻松隐藏需要JavaScript的元素，而无需维护长长的CSS覆盖列表。这种方法简化了代码，并提高了可维护性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在应用程序中使用多进程、进程间通信（IPC）和操作系统沙箱API的优缺点，以及具体技术实现中的挑战，特别是在Rust和Windows环境下的问题。
+                    <div class="comments-summary">主要讨论点：网页开发中JavaScript的必要性及替代方案
 
 不同观点：
-• [pjmlp] 认为应该从一开始就设计多进程应用，使用操作系统的IPC和沙箱API，而不是依赖即时伪沙箱技术。他提到传统的UNIX守护进程启动方式证明了伪沙箱存在问题。
+• [kaszus] 提到CSS媒体查询现在已经能够检测JavaScript是否启用，并且该功能在大多数主流浏览器的最近两个版本中得到了支持。这暗示了一种技术解决方案，可以在不依赖JavaScript的情况下处理某些功能。
 
-• [djha-skin] 同意多进程设计的理论价值，但指出`fork()`在性能关键路径上可能非常昂贵，建议谨慎使用这种方法。
+• [bshacklett] 赞扬作者关心不使用JavaScript的用户，指出目前很多网站默认使用JavaScript处理链接等基本功能，并对此表示不满。他还提到在多个标签页中打开链接变得困难，反映了一些用户对JavaScript过度使用的烦恼。
 
-• [null_investor] 提到，虽然`fork()`和相关工具包在处理不安全代码时有用，但其使用应有限。他认为，在Rust中过度依赖`fork()`可能导致失去Rust相对于Python或Ruby的性能优势。
+• [efortis] 提出另一种技术方案，即使用JavaScript来注入需要JavaScript的元素，这意味着在某些情况下，JavaScript仍然是必要的，但可以通过技术手段减少其对整个页面的影响。
 
-• [dijit] 关注在Windows环境下用Rust调用Win32 API时遇到的实际问题，尤其是内存调试工具的缺乏，导致对内存损坏或泄漏的担忧。他请求推荐在Windows上有效的调试工具。
-
-• [teknopaul] 对整个讨论持简短的调侃态度，认为这种技巧在紧急情况下是个聪明的解决办法，但并没有深入讨论具体技术问题。
+• [gjsman-1000] 认为渐进增强（progressive enhancement）已经死亡，尤其是在主流浏览器和非IE浏览器中。他提到甚至连自己的项目也不再关注不启用JavaScript的用户，直接使用<noscript>标签给出警告，并隐藏整个页面。他还引用了一个2013年的讨论，暗示这种变化可能过早且有争议。
 
 补充讨论：
-• 争议的焦点之一是`fork()`在多进程应用中的实际性能开销，以及是否应在现代应用设计中广泛使用。
-• 另一个值得注意的讨论点是Rust在处理不安全代码（尤其是与操作系统API交互时）时的实际开发挑战，特别是在调试和内存管理方面。
-• 对Windows环境下有效调试工具的需求反映了跨平台开发中的实际困难，以及开发者在不同操作系统中面临的工具差距。</div>
+• 讨论中涉及了技术实现的多样性，包括CSS媒体查询和JavaScript注入等不同技术手段。
+• 反映了开发者和用户在JavaScript使用上的不同偏好和需求，有些用户希望减少对JavaScript的依赖，而有些开发者则倾向于简化开发流程而广泛使用JavaScript。
+• 争议的焦点在于是否应继续支持不启用JavaScript的用户，以及如何在现代网页开发中平衡用户体验与技术实现。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43601301" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43602688" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -225,113 +216,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://fuelarc.com/news-and-features/self-driving-teslas-are-fatally-striking-motorcyclists-more-than-any-other-brand-new-analysis/" target="_blank">Self-Driving Teslas Are Fatally Rear-Ending Motorcyclists More Than Any Other</a>
+                    <a href="https://www.nytimes.com/2019/10/16/us/politics/peter-navarro-ron-vara.html" target="_blank">Peter Navarro Invented an Expert for His Books, Based on Himself(2019)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: NotInOurNames</span> |
-                    <span>评分: 148</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-04-06 13:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>加拿大政府冻结了特斯拉申请的4300万加元可疑电动车补贴，原因是特斯拉在短短时间内提交了8,669份补贴申请，声称每分钟售出1.5辆车，引发政府怀疑。为此，加拿大政府决定对每笔申请进行单独详细审查。这一事件标志着特斯拉在加拿大的补贴申请遭遇阻碍，显示出政府对补贴发放的审慎态度。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：特斯拉自动驾驶技术（FSD）的安全性、技术选择（如是否使用雷达/激光雷达）以及相关的法规和责任问题。
-
-不同观点：
-• **对埃隆·马斯克及特斯拉技术的不信任**：
-  - [xbmcuser] 认为马斯克放弃雷达/激光雷达，仅依赖摄像头，表明他不是真正的天才，而是骗子。这一决定削弱了对他的信任。
-  - [lynndotpy] 同样对特斯拉及 premature "FSD" 发布持批评态度，认为这给自动驾驶研究带来了巨大挫折，且对不使用激光雷达的自动驾驶车辆可能导致的致命事故并不意外。
-  - [darthrupert] 表示因为马斯克过去半年的表现，现在对他不关心人类悲剧和真相的行为不再怀疑。
-
-• **对特斯拉面临的法规和垄断担忧**：
-  - [bryanlarsen] 预测未来四年会有大量关于特斯拉的负面报道，并指出下一届政府可能会对特斯拉持反对态度。他认为这可能会导致监管规则的改变，最终形成一种对 Waymo 等公司有利的垄断局面。
-
-• **对传感器技术优劣的讨论**：
-  - [fsh] 指出雷达传感器技术早已解决碰撞检测问题，拥有更好的传感器数据比试图从劣质数据中提取有用信息更有效。
-  - [apples_oranges] 提出政府可能强制要求使用非视觉障碍物传感器，暗示特斯拉目前的技术选择可能不符合最佳实践。
-
-• **自动驾驶事故的责任和公众接受度问题**：
-  - [scarface_74] 强调自动驾驶车辆的事故会引发比传统车辆事故更大的关注和调查，且责任归属问题（如特斯拉或保险公司）尚未明确。
-  - [outside1234] 表示对特斯拉FSD技术的信任问题感到担忧，尤其是考虑到事故责任和潜在的法律责任。
-
-补充讨论：
-• **事故统计和比较**：
-  - [lynndotpy] 提出需要了解其他自动驾驶车辆的事故数据，并质疑当前事故是否具有统计显著性。
-  
-• **对自动驾驶技术实际应用的担忧**：
-  - [pelagic_sky] 分享了作为骑车人的担忧，尤其是对特斯拉技术在实际道路应用中的安全性感到不安。
-  - [xyst] 进一步指出，作为自行车骑行者，已经对与美国司机共享道路感到不安，现在还要担心特斯拉技术的不可靠性。
-
-争议焦点：
-• **特斯拉是否应使用雷达/激光雷达等多传感器融合技术**：一部分评论认为仅依赖摄像头是不够的，而另一部分则隐含支持特斯拉的视觉主导方案，但对其具体实现表示怀疑。
-
-• **自动驾驶技术事故的责任归属及公众接受度**：特斯拉在自动驾驶事故中的法律责任，以及公众对自动驾驶技术的信任和接受度问题，是另一个争议焦点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43601421" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://qwenlm.github.io/blog/qvq-max-preview/" target="_blank">QVQ-Max: Think with Evidence</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wertyk</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-04-03 14:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了QVQ-Max，这是一个新发布的视觉推理模型，能够“理解”和分析图像、视频内容，并基于这些信息进行推理和解决问题。模型不仅能处理数学、编程等问题，还能应用于设计、创作等领域。QVQ-Max的核心能力包括细节观察、深度推理和灵活应用，可用于工作、学习和日常生活等场景，如数据分析、解决数学问题、推荐穿搭等。尽管当前版本是初步的，但其潜力显著，未来将通过提高识别准确性、增强多步骤任务处理能力和优化交互方式来进一步改进。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于新发布的多模态LLM（大型语言模型）及其相关特性、团队背景和开放性的讨论。
-
-不同观点：
-• [torginus] 对为何在周末发布更新感到疑惑，并质疑当前AI竞赛是否真的如此激烈，暗示发布时机可能与竞争环境有关。
-• [ttul] 根据博客内容，认为该模型使用了思考 token，属于多模态LLM，并对其创新性表示赞赏，提出这是否是同类中的首个模型。
-• [xpe] 关注团队的背景、收入来源和资金情况，指出关于页面没有提供足够的信息，质疑是否遗漏了某些信息。
-• [drapado] 对模型未开放权重表示失望，暗示开放权重对社区和研究可能有重要意义。
-• [gatienboquet] 将模型的“思考”功能与ChatGPT 4o的图像生成能力进行比较，质疑其独特性，认为可能只是已有技术的另一种表现形式。
-
-补充讨论：
-• 关于模型创新性和独特性的讨论是争议焦点，部分人认为其使用了独特的技术如思考 token（ttul），而另一些人则认为其功能与已有技术相似（gatienboquet）。
-• 团队背景和资金透明度问题也引起关注（xpe），显示出对项目开放性和透明度的关心。
-• 开放权重的缺失引发了社区的失望情绪（drapado），反映出开放性对部分用户的重要性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43570676" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tansanrao.com/blog/2025/04/xnu-kernel-and-darwin-evolution-and-architecture/" target="_blank">Apple’s Darwin OS and XNU Kernel Deep Dive</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tansanrao</span> |
-                    <span>评分: 360</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-04-05 23:46</span>
+                    <span>作者: amarcheschi</span> |
+                    <span>评分: 69</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-06 16:39</span>
                 </div>
 
                 <div class="summary-section">
@@ -341,39 +232,187 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Darwin内核及其技术文档的深入讨论，涉及技术实现、开源社区、安全机制等方面。
+                    <div class="comments-summary">主要讨论点：彼得·纳瓦罗（Peter Navarro）的学术身份、影响及其参与政策制定的争议
 
 不同观点：
-• jlcases：赞赏技术文档的结构化知识呈现方式，并提出开源项目中文档和代码同步的挑战，询问有效工具。
-• agentkilo：质疑文章对用户空间守护进程换出内核内存的解释不足，寻求更多关于用户空间内存管理的细节。
-• swatson741：质疑Apple选择Darwin而非Linux的决策，认为这对开源社区和Apple本身都是一种损失。
-• bch：补充Mach的虚拟内存系统对其他BSD变种的影响，并提供相关文档链接。
-• naves：提到Steve Jobs曾试图雇佣Linus Torvalds开发Mac OS X。
-• pjmlp：基于自身经验，认为文章对系统演变的描述准确，并提到NeXTSTEP和GNUStep等历史。
-• larusso：讨论I/O kit使用C++子集的争议，Apple最初宣布MacOS X不兼容当前软件，后来引入Carbon API以解决兼容性问题。
-• lapcat：询问文章是基于对操作系统的逆向工程还是文献研究。
-• emchammer：质疑Apple为何发明APFS而非使用ZFS，并建议可能通过修改ZFS以减少物理内存使用。
-• mike_hearn：赞赏Apple在安全工作上的成就，详细介绍代码签名系统和安全机制，但也指出一些实现上的不足。
-• comex：指出文章中的一些技术细节错误，并澄清Mach端口权限和Apple特定安全系统之间的关系。
-• opengears：关注Apple何时会放弃x86支持。
-• whalesalad：表示对深入了解Darwin的兴趣。
-• fithisux：认为Apple应在转向ARM时为x64提供可运行的XNU发行版，以更好地支持开源社区。
+• [pjdesno] 认为纳瓦罗作为加州大学尔湾分校的名誉教授，其头衔有可能因对学校声誉的损害而被撤销。尤其是因为他与"假经济专家"相关的书籍有一部分是在他仍为该校活跃教员时写的。该用户还指出，纳瓦罗与尔湾分校的关联已经引起全国新闻的关注，公众可能会误以为"名誉教授"意味着他仍与大学有实际联系。
+
+• [markhahn] 质疑纳瓦罗的行为为何没有被直接取消资格，暗示其行为或影响应该导致更严重的后果。
+
+• [af78] 认为事件的悲剧性在于纳瓦罗对贸易政策产生了重大影响，尽管其获得职位的过程荒谬（通过特朗普的女婿贾里德·库什纳看到《致命中国》一书而受邀成为顾问）。该用户强调，若非后果严重，这一过程本身几乎带有喜剧色彩。
+
+• [ck2] 讨论了纳瓦罗推动的关税政策，特别是"最低限度豁免"即将取消，将导致小额海外 shipments 面临高额关税，从而可能摧毁小额国际贸易。该用户质疑美国制造业是否能在十年内取代这些海外产品，甚至怀疑其可能性。
+
+• [OutOfHere] 指出纳瓦罗是特朗普关税政策的主要推手，并进一步质疑经济学学位，尤其是博士学位的实际价值，认为即便像哈佛大学这样的高水平学府颁发的经济学学位也可能缺乏实际意义。
+
+• [gbraad] 简要指出"Ron Vara"是纳瓦罗的化名，是其用来增加自身可信度的虚构角色。
 
 补充讨论：
-• 技术文档与代码同步问题：jlcases提出了开源项目中保持文档和代码同步的实际困难，并寻求社区的经验和工具。
-• 用户空间与内核内存管理：agentkilo对用户空间守护进程如何换出内核内存表示困惑，希望得到更多技术细节。
-• Apple的操作系统选择：swatson741认为Apple如果选择Linux可能会对开源社区更有利，但也承认Apple对Darwin的承诺。
-• 安全机制的复杂性：mike_hearn详细介绍了Apple的安全机制，包括代码签名、要求语言和沙盒机制，但也指出了一些潜在问题和历史演变。
-• 技术细节的准确性：comex对文章中的一些技术细节进行了纠正，强调了Mach端口权限和Apple安全系统之间的区别。
+• 争议焦点在于纳瓦罗的学术头衔和其作为"假经济专家"的行为是否应导致其名誉教授头衔被撤销，以及公众对其与大学关联的误解。
+• 纳瓦罗的政策影响，尤其是关税政策，引发对其后果的深入讨论和质疑。
+• 对经济学学位的价值和学术头衔的实际意义存在深刻怀疑。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43602777" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://corrode.dev/blog/pitfalls-of-safe-rust/" target="_blank">Pitfalls of Safe Rust</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pjmlp</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-04 17:55</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了Rust中的"安全"不仅仅指内存安全，还需处理其他问题以确保程序健壮性。即便在"安全Rust"中，仍有一些编译器无法检测的陷阱，包括类型转换错误、逻辑错误、使用`unwrap`导致的恐慌、第三方库中的不安全代码和竞争条件等。文章提供了多个避免这些问题的建议，如使用检查算术操作防止整数溢出、避免使用`as`进行数值转换、使用有界类型确保数值合法性、确保无效状态无法表示等。此外，文章还强调了在发布模式下启用溢出检查以增强安全性，并提供了具体实现方法。通过遵循这些建议，开发者可以写出更可靠的Rust代码。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Rust编程语言中的潜在问题及其处理方式
+
+不同观点：
+• [nerdile] 认为文章标题具有一定误导性。他认为“Safe Rust”这个术语不恰当，因为文章中提到的问题不仅仅存在于“Safe Rust”中，而且在“unsafe Rust”中也同样存在，甚至在其他编程语言中也很常见。他建议一个更不具吸引眼球的标题应为“Rust pitfalls: Runtime correctness beyond memory safety”（Rust的陷阱：内存安全之外的运行时正确性）。
+
+• [IshKebab] 对整数溢出和数组越界问题持乐观态度，提到了Flux工具（一个GitHub项目），认为这类工具在简化验证过程方面有很大潜力。他提到自己有使用精炼类型/液体类型的经验，认为它们在避免复杂的正式验证过程（如循环不变量）方面提供了很好的中间地带。
+
+• [woah] 提出了关于Rust中的“as”关键字的争议，质疑其是否是一个不必要的隐患（footgun），即容易导致程序员犯错的语言特性。
+
+补充讨论：
+• [IshKebab] 提到了Flux工具的潜在价值，暗示技术工具可以在解决Rust语言中的潜在问题时提供帮助。
+• [nerdile] 强调了文章标题可能带来的误导性，并讨论了Rust中“Safe”和“unsafe”代码的共有问题。
+• 争议焦点在于Rust语言特性的命名和使用上，例如“Safe Rust”的定义和“as”关键字是否为隐患。
+
+通过这些观点，可以看出讨论集中在Rust语言的陷阱和工具支持上，特别是如何有效地避免和解决这些陷阱。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43585742" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bleepingcomputer.com/news/security/max-severity-rce-flaw-discovered-in-widely-used-apache-parquet/" target="_blank">Max severity RCE flaw discovered in widely used Apache Parquet</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: andy99</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-06 17:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>研究人员发现Apache Parquet存在一个最高严重级别的远程代码执行（RCE）漏洞（CVE-2025-30065，CVSS v4评分10.0），影响1.15.0及之前所有版本。该漏洞源于反序列化不可信数据，可能让攻击者通过特制的Parquet文件控制目标系统、窃取或修改数据、中断服务或植入勒索软件等恶意 payload。该漏洞已在1.15.1版本中修复。利用此漏洞需要诱导用户导入恶意文件，因此主要威胁来自外部来源的文件。广泛使用Parquet的大数据平台如Hadoop、AWS、Google和Azure，以及Netflix、Uber等公司受影响。建议用户尽快升级至1.15.1版本，并加强监控和验证文件安全性。目前尚未发现实际攻击，但风险极高。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：解析器漏洞与数据格式本身的安全性问题
+
+不同观点：
+• [3eb7988a1663] 认为标题应明确指出这是一个解析器漏洞，而不是数据格式本身的问题。他提到自己最初担心是否需要重新编码大量数据，表明对数据处理工作量的关注。
+
+• [ustad] 关心Pandas库是否受此漏洞影响，特别是涉及到数据帧的序列化和反序列化操作，因为Pandas在底层使用了Parquet格式。这显示了对特定技术实现和潜在影响的关注。
+
+• [formerly_proven] 指出根据概念验证（PoC），这是典型的Java反序列化导致的远程代码执行（RCE）漏洞，Java序列化机制本身容易引发此类问题。这里强调了漏洞的根源在于Java反序列化机制，而非具体的数据格式。
+
+补充讨论：
+• 争议的焦点在于如何准确描述该漏洞的性质，特别是如何区分解析器漏洞和数据格式本身的缺陷。
+• 具体技术实现（如Pandas中的Parquet使用）是否受此漏洞影响也是讨论的一个重点。
+• 进一步讨论了Java序列化机制的固有缺陷，以及其在安全方面的长期问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43603091" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nautil.us/neutron-stars-hint-at-another-dimension-1202180/" target="_blank">Neutron Stars Hint at Another Dimension</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dnetesn</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-04-06 11:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章探讨了19世纪中期以来对额外维度概念的科学探索。起初，这个想法与灵性和超自然现象联系在一起，但像数学家查尔斯·辛顿等人试图通过模型来理解这些维度，例如他的“四维立方体”（tesseract）。随着时间推移，科学与灵性分道扬镳，但对额外维度的研究愈加深入。现代物理学家通过研究重力异常弱的现象，提出了“膜世界”（braneworld）假说，认为我们的宇宙是一个三维的“膜”，嵌在一个拥有额外空间维度的“体”（bulk）中。这种模型试图解释为何重力比其他基本力弱得多，并设想通过研究中子星等天体来探测这些额外维度。文章强调了科学界对探索这些未知领域的好奇心和努力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：多维空间与引力性质，特别是关于引力在多维空间中的表现以及如何判断科学共识与个别研究突破。
+
+不同观点：
+• [the__alchemist] 认为引力在多维空间（bulk）中扩展导致其力较弱，但质疑这种解释是否与引力的反平方律相悖。他进一步指出，反平方行为（如引力和电磁力）是三维几何的内在属性，而不是仅仅通过力的强度来推断维度。
+
+• [whatever1] 提出，如果引力在3+ND维度中作用，而我们仅能在三维世界中观察到它，我们应该会看到除了幅度之外的其他奇特现象。他用二维物体在一条线上的投影作比喻，说明三维物体在低维空间中的表现可能是难以解释的。
+
+• [echelon] 关注这些基于多维空间理论的故事是否仅基于单一研究者的工作，而缺乏更广泛的科学共识。他询问如何让非专业人士判断这是一个新达成的科学共识，还是一个令整个研究界震惊的突破性成果。
+
+• [MrMcCall] 提出一种复杂的维度理论，认为我们存在于一个类似洋葱的多层维度中，其中包括六个振动层次，而引力考虑了所有这些维度的影响，尽管我们只能看到三维空间。他还将这一理论与灵魂、能量和反粒子等概念联系起来，提出了一种非传统的多维宇宙观。
+
+补充讨论：
+• [p_ing] 提供了一个关于中子星的科普视频链接，尽管未直接参与多维空间讨论，但提供了相关科学内容的补充。
 
 争议焦点：
-• Apple选择Darwin而非Linux的长期影响：swatson741对Apple的决策持批评态度，而pjmlp则基于个人经验认可Darwin的发展。
-• 用户空间内存管理的技术细节：agentkilo对文章中关于用户空间守护进程换出内核内存的描述不满，要求更详细的技术解释。
-• 技术文档的深度和准确性：comex指出了文章中的一些技术错误，并提供了更准确的解释。
+• 引力在多维空间中的表现是否符合反平方律，以及是否可以通过力的强度推断维度性质。
+• 科学共识与个别突破之间的区分，以及如何有效判断一个理论的科学地位。
 
-总结：讨论主要围绕Darwin内核的技术实现、Apple的安全机制、开源社区的影响以及技术文档和代码同步问题展开，参与者提供了不同的视角和补充信息。</div>
+总体来看，讨论围绕多维空间理论及其对引力性质的影响展开，参与者提出了不同角度的质疑和扩展，包括科学判断的标准和理论的物理解释。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43597778" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43600704" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ycombinator.com/companies/foundry/jobs/WvDDlqc-founding-fullstack-engineer-building-the-future-of-browser-agents" target="_blank">Foundry (YC F24) Is Hiring</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lakabimanil</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-06 17:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Foundry is seeking a Founding Fullstack Engineer to build a robust simulation and evaluation platform for browser agents. Despite advances, current agents fail over 80% of real-world tasks. Foundry aims to fix this by creating a simulator and RL training environment, similar to those used in self-driving cars and LLMs. The role involves developing scalable simulations, creating intuitive dashboards, and collaborating with ML/RL experts to enhance browser agent reliability. The ideal candidate has 6+ years of experience, deep fullstack expertise (React, TypeScript, Node.js, Python), and cloud infrastructure management skills. Foundry offers the chance to shape a $20B+ automation market and work with a team from Scale AI.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43602940" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -388,8 +427,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: pizza</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 7</span> |
+                    <span>评分: 123</span> |
+                    <span>评论数: 12</span> |
                     <span>发布时间: 2025-04-06 08:53</span>
                 </div>
 
@@ -400,26 +439,25 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM权重量化与压缩技术及其应用
+                    <div class="comments-summary">主要讨论点：关于使用字典和随机矩阵等技巧对大型语言模型（LLM）权重进行压缩的可行性和应用
 
 不同观点：
-• [visarga] 认为该压缩技巧通过使用快速计算的基础向量词典，无需存储，具有创新性。不过，量化结果仅有3或4比特，改进有限。由于瓦片（tile）较小（8或12个权重），压缩效果不显著。他提出如果能够实现小于1比特/权重的量化，可能需要更大的瓦片。他还讨论了在神经网络架构中使用更大熵池的可能性，特别是在训练中，并赞扬了Apple和Meta的研究，认为这将有助于在手机上高效运行LLM。
-
-• [jlcases] 将此压缩方法与人类知识传递相比较，认为两者都在寻找能够重建复杂信息的紧凑表示。他提到在技术文档中应用类似概念，即通过定义一组最小的原则和架构决策来“再生”完整理解，而不是详尽记录每个实现细节。他还提出当前LLM在扩展压缩概念方面表现出色，但仍在寻找显性知识和隐性知识之间的最佳平衡。
-
-• [elashri] 简单地建议直接链接到相关论文，并提供了论文的链接，强调这是Apple和Meta研究人员的成果。
-
-• [gblargg] 解释该技术类似于找到最接近目标数据的伪随机序列部分，然后存储随机种子和较小的修正项。
-
-• [torginus] 质疑该技术是否特别适用于LLM权重而非通用数据，认为这听起来像是“多此一举”的压缩。
-
-• [anshumankmr] 则对Apple的AI项目未按期发布表示失望，偏离了主要技术讨论。
+• [visarga] 认为该技巧通过快速计算基础向量字典，避免存储，具有创新性。但压缩效果仅限于3或4位，提升有限。提出如果要进一步降低到<1 bit/weight，可能需要更长的tile。同时，提到Apple和Meta的研究对手机上高效运行LLMs有帮助，且易于实施。
+• [benob] 提出一种变体，每个参数矩阵是随机矩阵和低秩矩阵的和，计划进行从零开始的训练实验。
+• [RainyDayTmrw] 质疑这种方法与“不能通过偏移量有效压缩数据”的广泛认知如何调和，特别是使用Pi的情况下。
+• [gblargg] 解释该方法类似于找到最接近目标数据的伪随机序列部分，然后存储随机种子和较小的修正数据。
+• [_0ffh] 怀疑这是愚人节玩笑，认为一般情况下使用PRNGs进行压缩不现实，可能存在特殊例外但有所怀疑。
+• [torginus] 认为这种方法像是“带有额外步骤的压缩”，质疑为何该技术特别适用于LLM权重而非通用数据。
+• [jlcases] 将该压缩方法与人类知识传递类比，讨论在技术文档中使用类似概念，定义最小原则集以重建完整理解，并提出目前LLMs在显性和隐性知识之间的平衡上仍有待探索。
 
 补充讨论：
-• 该技术是否能进一步降低量化比特数以及在更大范围内的应用潜力。
-• 该压缩方法与人类知识传递的类比及其在技术知识管理中的潜在应用。
-• 对具体研究论文的引用及认可Apple和Meta的贡献。
-• 对该技术是否具有特殊性及其在LLM权重压缩中的独特应用的质疑。</div>
+• [elashri] 建议直接参考Apple和Meta研究人员的论文，提供论文链接。
+• [EGreg] 关注Zuck提到的Llama 4 Behemoth模型状态，质疑未完成训练却已是最高性能基准模型的说法，询问是否指预训练而非微调。
+• [anshumankmr] 对Apple Intelligence未按计划推出表示失望，尽管有这些研究进展。
+
+争议焦点：
+• 该压缩方法是否真正有效及其适用范围，特别是在与传统压缩认知对比下的可行性（RainyDayTmrw, _0ffh, torginus）。
+• Zuck关于Llama 4 Behemoth状态的声明及其基准测试含义（EGreg）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43599967" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -432,152 +470,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="http://funcall.blogspot.com/2025/04/blacksmithing-and-lisp.html" target="_blank">Blacksmithing and Lisp</a>
+                    <a href="https://qwenlm.github.io/blog/qvq-max-preview/" target="_blank">QVQ-Max: Think with Evidence</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 082349872349872</span> |
-                    <span>评分: 56</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-04-03 08:34</span>
+                    <span>作者: wertyk</span> |
+                    <span>评分: 75</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-04-03 14:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章简要介绍了锻造作为一种爱好，着重讲述了低碳钢的特性及其在加热后的可塑性。作者解释了如何使用锤子和铁钳进行锻造工作，特别是通过加热铁钳使其软化，然后敲打出适合工件的定制铁钳。这个过程让作者联想到Lisp编程，因为两者都允许在解决问题的同时定制工具或语言。文章还讨论了如何在没有铁钳的情况下制作简易铁钳，通过手握金属一端进行锻打，直到它变得太热无法手持。锻造过程中难免会被烫伤，但通过经验可以学会如何避免严重烧伤。总体而言，锻造涉及不断制作临时工具来达成最终目标，类似于一种“元循环”的过程。</p>
+                    <p>本文介绍了QVQ-Max，这是一个新发布的视觉推理模型，能够“理解”和分析图像、视频内容，并基于这些信息进行推理和解决问题。模型不仅能处理数学、编程等问题，还能应用于设计、创作等领域。QVQ-Max的核心能力包括细节观察、深度推理和灵活应用，可用于工作、学习和日常生活等场景，如数据分析、解决数学问题、推荐穿搭等。尽管当前版本是初步的，但其潜力显著，未来将通过提高识别准确性、增强多步骤任务处理能力和优化交互方式来进一步改进。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：评论中围绕Lisp编程语言及其类比的讨论，涉及不同文化中的传说以及Lisp在软件行业中的地位。
+                    <div class="comments-summary">主要讨论点：新发布模型的性能、发布时机、团队背景、技术创新以及开放性的争议
 
 不同观点：
-• [MortyWaves] 对作者试图做的类比感到困惑，认为不容易理解。
-• [Animats] 引用了伊斯兰和北欧的传说，解释了关于谁制造了第一把铁钳的问题，并提到有人可能使用了简单的绿色木头工具。同时，提到了一篇相关的文章《Vibe Coding, Final Word》。
-• [kazinator] 提出Lisp与打铁的类比，认为打铁时将铁钳敲打成形，会变成括号形状，从而联想到Lisp，而不是事后解释的可塑性。
-• [hyperbrainer] 引用了一句名言：“任何足够复杂的代码都包含一个临时的Lisp实现”，暗示Lisp在编程中的基础性作用。
-• [hdkdicnsnjes] 提出一个假设性的讨论，设想如果Lisp成为主流，软件行业会是什么样子。
+• mcbuilder认为该模型在编程方面优于LLaMA 4 Maverick，表示该模型在编码任务上表现更好，尽管这个消息对部分人来说可能已经不算新颖。
+• torginus对模型在周末发布的时机感到疑惑，质疑AI领域的竞争是否已经如此激烈，以至于需要在周末发布更新。
+• xpe指出关于页面没有详细说明核心团队的组成以及他们的收入来源或资金支持，怀疑是否有信息被忽略，并引用了官网上一句模糊的描述。
+• ttul根据博客内容推测该模型是一个使用"thinking tokens"的多模态大语言模型，并对该技术是否为首创表示好奇。
 
 补充讨论：
-• 关于铁钳起源的文化传说提供了一种历史视角，用来类比Lisp的独特性。
-• kazinator的评论特别指出了Lisp与打铁的直观联系，强调了Lisp的某些特性在实际操作中的体现。
-• 对Lisp在软件行业中地位的讨论引发了关于技术发展路径的假设和想象。
+• drapado对该模型未公开权重表示失望，指出这次没有提供开放的模型权重。
+• gatienboquet质疑所谓的"图像模式下的思考"是否与ChatGPT 4o的图像生成技术类似，暗示该功能可能并非全新或独创。
 
 争议焦点：
-• 不同评论者对Lisp类比的理解和接受程度不同，MortyWaves表示困惑，而kazinator则提出了具体的类比解释。
-• Lisp是否能够成为主流技术及其对软件行业的影响是另一个引发想象和讨论的争议点。</div>
+• 模型的发布时机和背后的竞争态势（torginus的观点）。
+• 核心团队背景和资金来源的透明度问题（xpe的质疑）。
+• 新模型功能（如"thinking tokens"和图像模式下的思考）是否为首创或具有独特性（ttul和gatienboquet的讨论）。
+• 模型未开放权重的决定引起部分用户的不满（drapado的失望）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43566651" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://utcc.utoronto.ca/~cks/space/blog/sysadmin/OpenSSHConfigOrderMatters" target="_blank">The order of files in /etc/ssh/sshd_config.d/ matters</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: NGRhodes</span> |
-                    <span>评分: 166</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-04-03 18:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文解释了为何一些用户在访问Wandering Thoughts博客或CSpace时被阻挡。原因是作者的反爬虫措施自动屏蔽了使用过旧浏览器（尤其是旧版Chrome）的访问者，以应对2025年初大量使用旧浏览器用户代理的高流量爬虫（部分用于LLM训练数据收集）。如果用户确实在使用最新浏览器却仍被阻挡，可以联系作者提供浏览器信息以解决问题。此外，文章特别提到archive.*（如archive.today等）的爬取行为类似恶意爬虫，建议使用更为规范的archive.org进行存档。作者是Chris Siebenmann，2025年2月17日发布。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SSH配置文件的处理规则、多文件配置系统的优缺点、以及配置文件命名和解析顺序对系统安全和功能的影响。
-
-不同观点：
-• [egberts1] 认为SSH客户端配置应给予用户更多控制权，通过Match/MatchGroup来管理配置，并提供了多个资源链接以进一步解释配置文件的执行顺序和状态机等技术细节。他还强调了在多文件配置中理解配置文件执行顺序的重要性。
-
-• [0xbadcafebee] 指出不同工具对配置文件的解析方式各不相同，假设所有工具的解析方式相同可能会导致安全漏洞。他提醒每次都需要检查配置解析方式。
-
-• [wruza] 支持直接替换默认的sshd_config文件，而不是修补它，因为不同的VPS主机可能有不同的模板，可能存在访问问题。
-
-• [jmclnx] 质疑 "/etc/ssh/sshd_config.d/" 目录的存在，因为在OpenBSD和Slackware系统中没有这个目录，并怀疑这是Linux特有的新做法。
-
-• [eadmund] 对"first-wins"的解析顺序感到惊讶，并质疑这种设计是否有一个好的理由。
-
-• [drpixie] 提到使用 "sshd -T" 选项可以帮助检查实际的配置情况，例如通过 "sudo sshd -T | grep password" 命令。
-
-• [eapriv] 简单提到配置文件的命名顺序很重要，通常通过文件名中的数字来表明执行顺序。
-
-• [samlinnfer] 提到之前对文档的改进，并提供了一个链接，展示了Ubuntu文档的相关更新。
-
-• [czernobog] 对配置文件按行解析的传统做法提出疑问，并询问为什么配置文件需要以数字开头命名，例如 "10-no-password.conf"。
-
-• [barotalomey] 解释了在 *.d 目录中使用数字命名的传统。
-
-• [therein] 对cloudinit的实用性提出质疑，认为它总是带来问题而不是解决问题。
-
-• [immibis] 不喜欢由多个独立文件组成的配置系统，认为这种系统不便于管理，并建议需要更智能的包管理器。他还比较了nginx配置方法的优劣，并批评了ALSA和Xorg配置系统的复杂性。
-
-• [sneak] 提到使用 "~/.ssh/conf.d/" 也可能导致类似问题，他曾因此遇到过麻烦。
-
-补充讨论：
-• 关于配置文件命名和解析顺序的争议是讨论的焦点之一，尤其是 "/etc/ssh/sshd_config.d/" 目录的存在和数字命名文件的必要性。
-• 对cloudinit的实用性和配置文件管理系统的复杂性存在质疑和批评。
-• 不同系统管理员对配置文件管理方法有不同的偏好，有些人支持替换默认配置文件，有些人则支持修补和调整。
-• 技术细节如"first-wins"解析顺序、配置文件的执行顺序和状态机等也是讨论的重要内容。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43573507" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lwn.net/Articles/1013776/" target="_blank">Lessons from open source in the Mexican government</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: signa11</span> |
-                    <span>评分: 163</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-04-04 06:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了墨西哥政府在采用开源软件方面的经验和挑战。前墨西哥政府官员Federico González Waite在SCALE 22x会议上分享了他的经历。他曾在多个高层次职位上推动开源软件的应用，成功实施了一些项目，但也遇到过失败。他指出，采用开源软件不仅能降低成本，还能帮助墨西哥实现“IT主权”，减少对国外供应商的依赖。然而，由于政府内部技术人才缺乏和腐败问题，一些项目被供应商锁定。González Waite强调了培养技术人才的重要性，并希望墨西哥从IT消费国转变为IT生产国。他目前致力于帮助其他组织向开源转型，同时关注下一个重大技术趋势。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源软件与专有软件在政府及企业中的应用与挑战
-
-不同观点：
-• **政府应资助开源基金会**：pritambarhate认为，政府应资助开源基金会，以培养和保留优秀的编程人才，长期来看对政府部门和公民都有利。
-
-• **专有软件公司的霸凌与审计威胁**：huijzer分享了专有软件公司利用政府施压其他国家的案例，并指出当项目转向开源软件时，专有软件公司会通过许可证审计进行反击，强调了法律防御的重要性。
-
-• **开源软件的综合成本考虑**：bruce511指出，开源软件的决策并非仅基于许可证成本，还需考虑培训和支持成本。成功的应用取决于将合适的开源产品放在合适的位置，而不仅仅是考虑许可证费用。
-
-• **经济网络理论与锁定效应**：looofooo0引用经济学家关于软件行业锁定效应的理论，指出成熟市场中的软件企业通过锁定客户来实现增长，解释了专有软件公司为何会采取更紧密的锁定策略。
-
-• **腐败与合同欺诈问题**：pessimizer描述了在政府采购中出现的腐败问题，合同公司通过将软件许可证放在自己名下以实现服务锁定，并借此收取支持费用，指出这种做法为腐败提供了温床。
-
-• **开源软件在企业中的发展前景**：wjholden认为，尽管开源软件在传统企业中逐渐发展，但随着云计算和人工智能的兴起，软件合同外包的增加可能使未来的开源迁移变得更加困难。
-
-• **技术与领导力的挑战**：raffraffraff和timewizard讨论了技术应用中的问题，指出使用过时技术和缺乏数据知识是常见障碍，强调需要具备变革领导力的 champion 来推动变革，并提高专业标准。
-
-补充讨论：
-• **具体案例与个人经验**：一些评论者分享了具体案例和个人经验，如 huijzer 提到的荷兰政府经验和 pessimizer 提到的美国州政府采购腐败案例，这些实际案例为讨论提供了现实背景。
-
-• **技术与腐败问题的交织**：讨论中涉及的技术问题与腐败现象交织在一起，显示出技术决策和应用中非技术因素的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43579104" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43570676" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
