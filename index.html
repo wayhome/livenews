@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-09 11:30 (北京时间)
+            最后更新时间: 2025-04-09 14:18 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -111,8 +111,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: VoVAllen</span> |
-                    <span>评分: 111</span> |
-                    <span>评论数: 8</span> |
+                    <span>评分: 183</span> |
+                    <span>评论数: 9</span> |
                     <span>发布时间: 2025-04-09 00:00</span>
                 </div>
 
@@ -123,74 +123,35 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Postgres FTS（全文搜索）实现中的问题和优化，以及将各种功能集成到Postgres的趋势。
+                    <div class="comments-summary">主要讨论点：Postgres 全文搜索（FTS）的实现与优化策略
 
 不同观点：
-• danpalmer认为，在实现Postgres FTS时，计算tsvector是基础步骤，任何阅读过文档的人都应该避免这个错误。他指出文档已经详细解释了如何优化，并暗示犯此错误的人可能没有认真阅读文档或故意误解Postgres FTS。
+• **retakeming**（pg_search 维护者）：认为 Postgres 文档中提到的两种策略都是可行的。pg_search 旨在解决将 Postgres 优化至 Elastic 级别性能的问题，尤其是针对多种查询类型（如布尔、模糊、分面、相关性排名等）。相比之下，Neon/ParadeDB 的基准测试中仅包含 12 个查询，且可以通过数据重复和复杂性来优化单个查询，但这在实际应用中并不现实。pg_search 提供了一种无需重复每列数据的简单索引定义，适用于多种查询场景。
 
-• briankelly提出，问题不在于速度，而在于规模。他认为可以一直使用直到系统崩溃，似乎对在实际应用中测试系统极限的做法表示支持。
+• **danpalmer**：指出原始文章中计算 tsvector 时的错误，认为这是对 Postgres FTS 的误解或未读基本文档导致的。Postgres 文档清晰地解释了如何优化 FTS，因此这种错误不应该出现。
 
-• nattaylor对查询计划（explain plans）缺乏了解，并提出疑问。他认为如果在查询中使用了索引，那么tsvector的即时重新检查仅在匹配项上进行，且由于LIMIT 10的设置，重新检查的数量应该很少。不过，他随后补充说明查询谓词在两个GIN索引上有条件，这可能导致查询计划选择先对一个索引进行全部匹配项的重新检查，从而增加工作量。
+• **nattaylor**：希望看到更多关于查询计划的解释。提到如果查询使用索引，那么在 LIMIT 10 的情况下，重新检查的 tsvector 应该很少。但因为查询条件涉及两个 GIN 索引，规划器可能选择先对一个索引进行行级重新检查，导致更多工作。
 
-• zhousun支持在Postgres中使用原生的全文搜索实现，认为像Lucene/Tantivy这样的替代方案是为不可变文件设计的，与Postgres的堆表结合使用效果不佳。
+• **nostrebored**：质疑为什么人们希望将所有功能（如向量搜索、全文搜索、工作负载编排、队列等）都放入 Postgres 中。
 
-• nostrebored质疑为什么人们希望将所有功能（如向量搜索、全文搜索、工作负载编排、队列等）都放入Postgres，表示不理解这种趋势。
+• **zhousun**：支持更多“Postgres 原生”的全文搜索实现。认为 Lucene/Tantivy 等方案设计用于“不可变段”，与 Postgres 堆表结合会导致更差的解决方案。
 
-• Sytten认为这种内容营销对于试图提高知名度的初创公司来说是非常有效的，并提到ParadeDB作为一个知名竞争对手的情况。
+• **briankelly**：认为问题不在于速度，而在于规模。使用 Postgres 直到其无法满足需求。
 
-• Thaxll认为，如果代码是自定义的并且运行在Postgres上，他不称之为原生。
+• **Thaxll**：认为在 PG 上运行的自定义代码不能称为原生。
+
+• **Sytten**：离题地提到这种内容营销对于初创公司来说是非常有效的，可以帮助其与知名竞争对手竞争。
 
 补充讨论：
-• 查询计划和索引使用是讨论中的一个重要技术点，特别是如何优化查询性能。
-• 对将各种功能集成到Postgres中的趋势存在争议，部分用户不理解或不支持这种做法。
-• 对"原生"实现的定义存在不同看法，部分用户强调自定义代码和原生代码的区别。
-• 内容营销在技术社区中的效果也被提及，显示出技术讨论中商业因素的影响。</div>
+• 争议焦点之一是 Postgres FTS 是否能够通过优化达到 Elastic 级别的性能，尤其是在多种查询类型的情况下。retakeming 认为 pg_search 提供了更实际的解决方案，而 danpalmer 则批评了原始文章中对基本概念的误解。
+
+• 另一个值得注意的讨论点是对查询计划和索引使用的详细解释，nattaylor 提出了对查询性能和索引选择的疑问。
+
+• 还有对 Postgres 功能扩展趋势的质疑和支持意见，nostrebored 对将所有功能集成到 Postgres 中表示不解，而 zhousun 则支持 Postgres 原生解决方案。
+
+• 最后，Sytten 提到了内容营销对初创公司的重要性，这虽然离题，但也是一个有趣的观察点。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43627646" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/reteps/dockerfmt" target="_blank">Dockerfmt: A Dockerfile Formatter</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: spicypete</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-09 01:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>`dockerfmt` 是一个现代化的 Dockerfile 格式化工具和解析器，基于 BuildKit 内部解析器构建。它提供命令行工具，用于检查和格式化 Dockerfile，支持设置缩进、添加尾部新行等。目前不支持 RUN 命令中的分号和组命令，也不处理长 JSON 命令的换行。该工具使用 `mvdan/sh` 格式化 Shell 命令，并支持简单的 heredocs 和内联注释。JS 绑定可在 `js` 目录中找到。该项目遵循 MIT 许可，用户可以通过 GitHub 贡献代码。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于项目中缺少Dockerfile的问题及Docker与Podman的对比
-
-不同观点：
-• [jensenbox] 认为项目中缺少Dockerfile是个问题，因为他希望通过Docker容器来测试该项目，而缺少Dockerfile使得这一操作变得困难。他指出，运行Docker容器是快速体验项目功能的最简便方式。
-
-• [righthand] 提出可以使用YAML的语言服务器（LSP），它会查找schema.org上的Containerfile格式，以此来替代Dockerfile。他认为这种方法很方便，尤其是在处理Github Actions的YAML文件时。
-
-• [PantaloonFlames] 提出一个相关问题，质疑为什么人们继续使用Dockerfile，而不是转向Podman。这暗示了对Podman作为Docker替代品的潜在优势的认可。
-
-补充讨论：
-• jensenbox 明确表达了对Docker容器化便捷性的依赖，认为缺少Dockerfile是一种不便。
-• righthand 提供了一种不同的技术方案，即利用YAML LSP和Containerfile格式来解决类似问题，显示出对新兴工具和方法的接受。
-• PantaloonFlames 引入了对Docker和Podman的比较，提出了对Podman的偏好问题，虽然没有详细阐述Podman的优势，但引发了关于技术选择的进一步讨论。
-
-争议焦点：
-• 是否应继续使用Dockerfile，还是寻找其他替代方案（如Podman或Containerfile）以实现容器化。这涉及到不同工具在易用性、功能性和技术趋势方面的比较。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43628037" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -253,38 +214,93 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.drawdb.app/" target="_blank">Show HN: DrawDB – open-source online database diagram editor (a retro)</a>
+                    <a href="https://github.com/reteps/dockerfmt" target="_blank">Dockerfmt: A Dockerfile Formatter</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 1ilit</span> |
-                    <span>评分: 38</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-09 00:20</span>
+                    <span>作者: spicypete</span> |
+                    <span>评分: 63</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-09 01:21</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>`dockerfmt` 是一个现代化的 Dockerfile 格式化工具和解析器，基于 BuildKit 内部解析器构建。它提供命令行工具，用于检查和格式化 Dockerfile，支持设置缩进、添加尾部新行等。目前不支持 RUN 命令中的分号和组命令，也不处理长 JSON 命令的换行。该工具使用 `mvdan/sh` 格式化 Shell 命令，并支持简单的 heredocs 和内联注释。JS 绑定可在 `js` 目录中找到。该项目遵循 MIT 许可，用户可以通过 GitHub 贡献代码。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个项目的发展方向，尤其是关于是否及如何将其商业化的问题。
+                    <div class="comments-summary">主要讨论点：Dockerfile使用、RUN命令语法、工具选择及自动格式化
 
 不同观点：
-• [cduzz] 认为项目应该通过法律手段构建所有权结构，以便将来可以出售或脱离项目，同时建议制定产品发展路线图并向社区征求反馈。他还强调了通过支持合同和功能开发向用户收费的必要性，但提醒要注意合同细节。
-• [nrjames] 则持相反观点，认为并非所有项目都必须商业化，创建者应该享受项目的乐趣，而不必急于将其变现。他警告说，建立一个成功的企业需要大量工作，可能会失去对项目的最初热情和自豪感。
-• [andrewl] 并未直接参与商业化讨论，而是从用户角度提供了技术反馈，指出项目在处理SQLite数据库视图方面存在不足，但对项目的整体印象积极，表示会继续使用。
-• [flashgordon] 支持项目的发展，但对商业化持谨慎态度。他认为，如果资金不紧迫，可以探索项目在其他领域的潜力，避免因支持付费用户而带来的责任。
+• **Dockerfile和Docker容器使用的便捷性**：jensenbox指出项目中没有提供Dockerfile，使得在Docker容器中试用该项目变得不方便。这表明用户期望项目提供Dockerfile以简化环境设置和测试流程。
+
+• **RUN命令的语法支持差异**：yjftsjthsd-h和mdaniel讨论了Docker的RUN命令对不同语法的支持问题。yjftsjthsd-h质疑为何RUN命令支持`&&`但不支持分号`;`，并给出自己常用的写法。mdaniel则引用了文档，表明自己习惯使用`set -e`和分号组合的命令写法，暗示该工具可能不适合他的习惯。
+
+• **使用YAML LSP进行格式化**：righthand提到使用YAML语言服务器协议（LSP）自动查找Containerfile格式，认为这种方法很方便。这反映出部分开发者倾向于使用自动化工具来提升开发效率。
+
+• **工具的及时性**：dddw简单表达了该工具在昨天就有需求的感叹，间接支持了该工具的实用性。
+
+• **Dockerfile与Podman的选择**：PantaloonFlames提出一个附带问题，质疑为什么人们继续构建新的Dockerfile而不是使用Podman。这涉及到Docker和Podman之间的工具选择讨论，表明部分用户认为Podman可能是更优的选择。
+
+• **自动格式化的趋势与工具推广**：brynary支持代码自动格式化的趋势，并提到为Qlty CLI添加了dockerfmt插件。这显示出作者对LLM生成代码和自动格式化的支持，并借机推广自己开发的工具Qlty CLI。
 
 补充讨论：
-• 项目的社区支持被[cduzz]视为最有价值的资产，并提醒创始人考虑社区反馈对产品发展的影响，引用了Elastic.co的例子来说明公司发展过程中可能遇到的挑战。
-• [flashgordon] 表示对项目创始人的经验感兴趣，认为项目的成功并非偶然，并建议在未急需资金的情况下，探索更多发展方向，以避免商业化带来的负担。
-• 技术细节方面，[andrewl] 提出了对SQLite数据库视图处理的不足，显示出用户对项目功能的具体需求和期待。
-
-争议的焦点：项目的商业化路径，尤其是是否需要通过法律手段构建所有权结构以及是否应该向用户收费。</div>
+• 争议的焦点在于RUN命令的语法支持差异，部分用户习惯使用分号分隔命令，但工具似乎不支持这种写法，导致用户体验不一致。
+• 用户对Dockerfile的期望与工具的实用性也是讨论的重要内容，部分用户期望项目提供Dockerfile来简化使用流程。
+• 关于Docker和Podman的工具选择问题也引发了附带讨论，表明社区对不同容器工具的偏好存在分歧。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43627758" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43628037" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://thewisenerd.com/blog/ext4-readdir/" target="_blank">The order of files in your ext4 filesystem does not matter</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: thewisenerd</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-06 12:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要描述了一次由Node镜像补丁更新引发的生产环境多小时停机事件，根本原因与Bash中的通配符扩展及底层文件系统的变化有关。具体来说，Dockerfile中的`CMD`指令使用通配符`/jars/*`来设置Java类路径，但由于未在bash中运行，JVM自行扩展了通配符。在一个POSIX系统中，这依赖于`readdir`系统调用。由于Node镜像更新改变了底层ext4文件系统的目录哈希种子，导致类路径中JAR文件顺序变化，进而引发应用程序初始化失败。
+
+此外，文章还讨论了其他潜在问题，如`buildah`构建镜像时因未缓存层导致类路径优先级问题，以及对`overlayfs`目录遍历顺序的误解，最终通过聚焦底层文件系统问题找到解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于构建工具及其相关问题（如性能、命名和标志设计）的讨论
+
+不同观点：
+• jonhohle 认为，支持重复类检测的构建工具已经存在很久了，忽视这些工具可能会带来风险。这里强调了使用此类工具的必要性和重要性，以避免潜在问题。
+
+• rzzzt 提供了一个链接，指向一个讨论该文章的页面（Hacker News上的讨论）。他并没有直接发表对文章内容的看法，而是引导读者去参考其他人的讨论，可能暗示该文章在外部有更深入的分析。
+
+• tryauuum 的评论侧重于对工具名称和标志设计的个人感受。他认为“buildah”这个工具名称和其丑陋的狗logo让人感觉不适，且对名字的发音和logo的视觉效果提出了批评。这更多是主观审美和命名习惯的讨论。
+
+• o11c 提出性能问题，认为按照磁盘上文件的顺序读取文件（通常是按写入顺序）可以显著提高I/O性能。这表明他在关注构建工具在实际操作中的性能影响，特别是文件读取顺序对系统性能的作用。
+
+补充讨论：
+• tryauuum 的评论虽然主要是对工具名称和logo的调侃，但也反映了一些开发者对工具命名和品牌设计的关注和敏感性，可能会影响工具的接受度和用户体验。
+
+• o11c 的评论指出了性能优化中常被忽视的一个技术细节，即文件读取顺序对系统性能的影响，这为讨论引入了技术深度。
+
+争议焦点：
+• 目前直接争议不明显，但tryauuum对工具名称和logo的批评可能代表了一部分用户对某些开源项目在命名和品牌设计上的不满。而o11c则更关注技术实现和性能问题，这可能代表了另一部分用户对实用性的关注。
+
+总结来看，讨论围绕构建工具的功能、命名、设计及其性能影响展开，涉及实用性、用户体验和技术细节等多方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43601026" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -299,8 +315,8 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
                 </h3>
                 <div class="story-meta">
                     <span>作者: transpute</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 47</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2025-04-05 22:16</span>
                 </div>
 
@@ -311,15 +327,26 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对不同安全防御措施的比较和评价]
+                    <div class="comments-summary">主要讨论点：系统级漏洞分类模型及其相关技术策略的有效性和未来方向
 
 不同观点：
-• [nine_k] 认为当前系统的防御数量令人印象深刻，尤其是 out-of-tree 和商业防御措施的数量。这表明对多种防御手段的覆盖面较广。
-• [nine_k] 指出，针对特定 C 语言问题（如未定义行为 UB、边界检查、释放后使用 use-after-free）的关注相对较少。这暗示了对语言级别安全问题的防御可能不足。
+• [acje的观点]  
+  - 认为在系统级处理漏洞分类的模型具有启发性，但同时质疑当前扩展冯·诺依曼架构的策略。
+  - 具体论据：  
+    - 当前策略导致脆弱的软件分区（fragile software partitioning）。
+    - 出现“吵闹的邻居”问题（noisy neighbors issue）。
+    - 通过共享内存的通信缓慢且有时不可预见（slow and unintended communication through shared memory）。
+  - 提供进一步详细分析的链接。
+
+• [nine_k的观点]  
+  - 对多种防御措施的数量表示印象深刻，特别是对开源和商业防御措施的结合。
+  - 关注C语言特定问题（如未定义行为、边界检查、释放后使用）的防御措施数量相对较少。
+  - 提出将当前防御措施与OpenBSD进行比较的兴趣，指出OpenBSD具有众多安全和深度防御特性。
 
 补充讨论：
-• [nine_k] 提到希望将该系统与 OpenBSD 进行比较，后者因其大量的安全功能和深度防御特性而著称。这暗示了对不同系统在安全防御上的表现存在一定的好奇或质疑，可能认为 OpenBSD 的做法更值得参考。
-• 争议的焦点可能在于防御措施的有效性和覆盖范围，尤其是特定于编程语言问题的防御是否足够。一方面认为整体防御数量多，另一方面对特定问题的防御力度存在疑虑。</div>
+- [acje] 对冯·诺依曼架构扩展的批评引发了对其是否适合未来系统需求的讨论。
+- [nine_k] 提出了对不同系统（如OpenBSD）防御策略的比较，可能暗示这些策略在解决C语言特定漏洞方面的优越性。
+- 争议的焦点可能在于当前技术路线（冯·诺依曼架构扩展）是否合适，以及是否有更好的替代方案（如不同系统架构或深度防御策略）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43597264" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -332,13 +359,13 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tomscii.sig7.se/2025/04/The-Barium-Experiment" target="_blank">The Barium Experiment</a>
+                    <a href="https://www.drawdb.app/" target="_blank">Show HN: DrawDB – open-source online database diagram editor (a retro)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-04-09 00:44</span>
+                    <span>作者: 1ilit</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-09 00:20</span>
                 </div>
 
                 <div class="summary-section">
@@ -348,19 +375,72 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux桌面环境中GTK等用户界面库的演变及稳定性问题
+                    <div class="comments-summary">主要讨论点：一个数据库图表工具的实用性、技术问题、 monetization策略以及社区支持
 
 不同观点：
-• duskwuff认为GTK 2.0发布于2002年，当时硬件性能有限，图形界面库的设计受限于时代技术条件。随着硬件发展，软件需要不断适应变化，期望一个用户界面库在20多年里保持不变是不现实的。他认为Linux桌面环境是一个不断变化的目标，适应变化是必要的。
+• [mubou] 认为该工具能够导出为Mermaid格式非常有用，可以方便地将数据库结构图嵌入到GitHub的README中。但提到SQL导入功能对SQLite的`.schema`导出存在问题，尤其是在处理PRIMARY KEY约束时出现错误。此外，提到draw.io这个免费工具已经有很强的功能，建议在 monetization时要谨慎，以免用户流失。可以考虑通过B2B扩展或团队协作功能增加价值。
 
-• userbinator对软件频繁变更表示不满，指出过多的变动（churn）迫使开发者不得不修改多年前写好且早已遗忘的代码。他认为Win32 (+WINE) 提供了一个更稳定的GUI API解决方案，暗示这是应对界面库频繁变化的一个可行途径。
+• [cduzz] 认为该项目有潜力，建议通过法律手段将项目与个人分离，以便未来能够出售或转让项目。同时强调社区的重要性，建议制定产品发展路线图并征求社区反馈。提到 monetization可以通过提供支持合同或特定功能开发来实现，但要谨慎处理涉及所有权的事宜。
+
+• [nrjames] 认为并非所有项目都需要 monetization，创建者可能在商业化过程中失去对项目的热情和自豪感。建议保持现状，继续依靠社区支持，享受当前的成就。
+
+• [admiralrohan] 恭喜项目发布并提到需要与Supabase等具有AI功能的竞争对手竞争，建议研究他们的开源代码以改进自己的产品。提出简单的 monetization路径是通过AI功能收费，但不建议扩团队，以免在长期竞争中不敌大公司。
+
+• [andrewl] 实验了该工具，认为效果很好，但发现上传SQLite数据库模式时视图被忽略，而视图在他们的项目中非常重要。
+
+• [flashgordon] 对项目创建者的成就表示钦佩，建议在不急需资金的情况下，继续探索项目的发展潜力，尤其是在"其他垂直领域"。提到 monetization可能会带来支持付费用户的责任。
+
+• [999900000999] 认为该工具非常酷，建议考虑增加企业功能以收费，并举例如果每月有100人支付50美元，作为副业项目收入可观。同时表示希望该工具能作为Django插件使用。
+
+• [andrewdon] 对工具的拖放功能感兴趣，询问使用的具体库。
 
 补充讨论：
-• duskwuff强调了GTK最初是为X11系统设计的，跨平台兼容性在当时并不是考虑因素，这为后来的变化埋下了伏笔。
-• userbinator则认为频繁的变更对开发者来说是一种负担，并提出Win32 (+WINE) 作为稳定且长期兼容的替代方案，隐含了对Linux桌面环境快速变化的不满。
-• 争议的焦点在于软件的变更频率和稳定性之间的平衡。一方认为变化是技术发展的自然结果，另一方则希望有一个更加稳定、长期不变的API接口。</div>
+• 技术问题：SQLite的`.schema`导入时PRIMARY KEY处理问题以及视图被忽略。
+• monetization策略的多样性：包括提供AI功能收费、企业功能收费、支持合同以及社区反馈的重要性。
+• 法律和社区：建议通过法律手段保护项目，并重视社区反馈以推动项目发展。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43627864" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43627758" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.arduino.cc/2025/03/17/this-diy-experimental-reactor-harnesses-the-birkeland-eyde-process/" target="_blank">DIY experimental reactor harnesses the Birkeland-Eyde process</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-04-05 15:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个由公民科学家Marb自制的实验反应器，利用Birkeland-Eyde过程通过电弧将空气中的氮转化为硝酸。该过程曾在化肥生产中使用，但由于高能耗在一百年前被淘汰。Marb主要出于对科学的兴趣，使用Arduino UNO Rev3控制反应器，通过 breakout shield 调节电弧电源，并使用传感器监控反应条件。尽管该过程效率不高，Marb的设计重点在于空气干燥和电弧控制。他展示了一次实验演示，并表示如果有足够兴趣，会制作更详细的 follow-up 视频。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：封闭循环系统与土壤养分补充（特别是氮固定）
+
+不同观点：
+• 观点一（支持技术进步）：[8474_s]认为该技术令人印象深刻，可以通过封闭循环系统补充土壤中的养分，尤其是减少对传统氮固定过程的依赖。这暗示了该技术有可能带来农业上的重大变革，减少对外部化肥的依赖，促进可持续农业。
+
+• 观点二（质疑技术可行性）：未直接在评论中出现，但潜在的反对或质疑可能包括对该技术实际可行性的担忧，比如封闭循环系统的成本、技术复杂性，以及在不同农业环境下的适用性。这类观点可能会强调传统氮固定方法的可靠性以及新技术的潜在风险。
+
+补充讨论：
+• 氮固定是自然界中将大气中的氮气转化为植物可用形式的过程，通常通过细菌或工业过程（如Haber-Bosch法）实现。评论中提到的技术如果成功应用，可能减少对这些传统方法的依赖。
+
+• 该技术的环境影响和经济效益可能是进一步讨论的要点。支持者可能会关注其减少化肥使用和环境污染的潜力，而反对者则可能担心初期投资成本和长期维护费用。
+
+• 争议的焦点可能集中在技术的可行性和大规模应用的前景，尤其是在资源有限或技术接受度较低的地区。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43594059" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -440,91 +520,34 @@ Cyc在商业应用中实现财务稳定，但未显示出比其他公司如Oracl
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tailscale.com/blog/series-c" target="_blank">Tailscale has raised $160M</a>
+                    <a href="https://news.mit.edu/2025/making-graphs-more-accessible-blind-low-vision-readers-0325" target="_blank">A new way to make graphs more accessible to blind and low-vision readers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: louis-paul</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-04-08 10:36</span>
+                    <span>作者: gnabgib</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-04-05 17:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Tailscale在C轮融资中筹集了1.6亿美元，旨在通过"以身份为核心的网络"解决传统网络连接中的复杂问题。自2019年成立以来，Tailscale致力于简化网络连接，减少用户对NAT穿越或VPN配置的关注。新资金将用于加速产品开发，特别是在减少摩擦、扩展网络但不增加复杂性、以及将身份作为安全连接的核心等方面。许多AI公司如Perplexity、Mistral等，以及Instacart、Duolingo等企业都在使用Tailscale来简化其网络。此轮融资由Accel领投，参与者包括CRV、Insight Partners等，并引入了Squarespace CEO Anthony Casalena作为新投资人。Tailscale计划扩大工程和产品团队，以更快地支持更多市场，并继续保持对免费用户的支持和平台的向后兼容性。</p>
+                    <p>MIT CSAIL开发了Tactile Vega-Lite系统，简化了触觉图表的设计过程，帮助教育者和设计者高效创建无障碍图表。该工具可以将Excel数据自动转换为视觉图表和触觉图表，内置设计标准，简化了以往需要多种软件配合的复杂流程。通过代码编辑器，用户可以自定义标签、刻度等元素，并利用预设的触觉模式快速调整图表。该工具旨在让不具备触觉设计专长的用户也能轻松创建无障碍图表，特别适用于盲人和低视力读者。这项研究将在2025年的人机交互会议上发表。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Tailscale获得大额投资的影响及未来发展方向
+                    <div class="comments-summary">主要讨论点：技术如何帮助视障学生更好地学习图形相关的数学内容
 
 不同观点：
-• tmpz22认为，大额融资可能带来不利影响，使公司受投资方影响，偏离用户期望的方向。他对这种大笔融资的利弊持怀疑态度，希望了解更多关于这种交易的权衡。
-• geenat建议，Tailscale应该回报技术贡献者，比如给Wireguard开发者一笔报酬，因为Tailscale在很大程度上是基于Wireguard开发的。
-• burningion分享了他使用Tailscale的具体技术项目，强调其在实际应用中的价值，如在机器人项目中的连接和调试功能。
-• elevation指出，投资者期望从Tailscale中获得多倍回报。虽然Tailscale已经开源了很多技术，但要保持与专有平台的兼容性，仍然需要依赖Tailscale公司本身。
-• suralind对公司页面列出投资者和顾问但不列出员工的做法表示不满，但同时也肯定了Tailscale的产品质量。
-• elAhmo担心大额融资会导致Tailscale改变方向，从而流失用户，这种担忧在三年前他们融资1亿美元时也曾出现。
-• mrbonner提出了一个具体的技术问题，即Tailscale的MagicDNS功能导致其网络连接问题。
-• cadamsdotcom认为，Tailscale应该从其创造的价值中获得回报，以确保其持续运营，同时他们也开源了很多技术，避免完全捕获价值。
-• otterley质疑Tailscale如何实现每年10亿美元的收入目标，这是他们在获得如此大规模投资后必须面对的挑战。
-• srameshc和aborsy都表达了对Tailscale产品的喜爱，并分享了他们使用Tailscale的具体场景和体验。
-• th0ma5询问了托管解决方案与自托管选项的失败点是什么。
-• devmor对Tailscale未来的发展持悲观态度，担心随着大额融资的进入，Tailscale会变得越来越商业化，最终失去其原有优势。
-• apitman认为，尽管Tailscale有可能最终变得商业化，但其增长有可能促进操作系统提供更好的API支持，同时也有很多开源替代方案正在兴起，值得关注。
-• ignoramous回顾了Tailscale的创始初衷，强调他们最初并不是为了获得风险投资，而是为了解决网络问题，并提到了logtail项目的重要性。
+• Jareds分享了个人的学习经历，表示十多年前由于缺乏有效的工具来帮助处理复杂图形，导致其在学习微积分时遇到困难，最终不得不从计算机科学专业转到电信专业。这表明在当时，技术在帮助视障学生处理高级图形方面的支持不足。
+• 隐含的观点是，可能现在有新的技术和资源可以帮助视障学生更好地应对图形相关的学习挑战，但Jareds并未具体提及当前的解决方案或其有效性。
 
 补充讨论：
-• 争议的焦点主要在于大额融资是否会导致Tailscale偏离其原有用户导向和技术导向，转而追求商业利益。
-• 部分用户对Tailscale的技术问题和未来商业化表示担忧，而另一些用户则对其产品质量和技术贡献表示赞赏。
-• 讨论中还涉及到开源技术与专有技术之间的平衡，以及如何在保持技术优势的同时实现商业可持续性。</div>
+• 争议的焦点可能在于当前技术是否已经足够成熟，能够有效帮助视障学生克服图形学习的障碍。Jareds的经历提示了历史上的不足，但也引发了对现今技术进展的思考。
+• 另一个值得注意的点是，Jareds的个人经历提供了一个具体例子，展示了技术不足如何影响学生的学业和职业选择，强调了改进这一领域的必要性。
+• 讨论还可能涉及到需要更多关注和资源投入，以开发针对视障学生的无障碍学习工具，特别是在高等数学教育中。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43620141" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.niemanlab.org/2025/04/which-types-of-people-arent-big-fans-of-impartial-news-people-who-dont-have-power/" target="_blank">Who isn't a big fan of "impartial" news? People who don't have power</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jaredwiener</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-09 00:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>一篇由Joshua Benton撰写的新文章探讨了哪些人群不太喜欢“公正”新闻。根据一项新研究，穷人、受教育程度较低的人、年轻人和女性更倾向于选择与自己观点一致的新闻源，而非公正新闻。研究发现，权力较少的群体，如弱势群体、年轻人和女性，更可能偏好意识形态一致的新闻，因为他们认为公正新闻可能支持现有权力结构。研究基于2020年路透社研究所的数字新闻报告，涵盖40个国家，80,000人的调查数据，显示不同群体对公正新闻的偏好存在系统性差异，尤其是在民主质量较低的国家中，这种倾向更为明显。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：新闻报道应追求何种目标——是无偏见报道，还是提供原始事实由受众自行解读？
-
-不同观点：
-• [riknos314] 认为新闻媒体不应追求无偏见，而是应尽量提供接近真相的事实，不加任何媒体自身的影响、旋转或解读。他赞赏一些媒体（如Forbes的YouTube频道）提供未经编辑的原始视频片段，让观众自己解读事实。
-
-• [karaterobot] 反驳称，观众对“无偏见”的需求是受其所处政治、社会和经济环境影响的，并不一定是新闻报道的铁律。他强调新闻机构和记者应根据具体情况选择适合的报道方式，并坚持认为即便观众不想要无偏见的新闻，新闻机构仍应追求无偏见，因为“顾客并不总是对的”。
-
-• [taeric] 认为当前人们根据身份认同选择新闻来源是可预见且令人沮丧的现象。他指出，这种现象类似于有人关注体育新闻的尖端动态，有人只关心自己支持的球队表现。这反映出人们逐渐偏向与自己身份认同一致的新闻来源，而非普遍关心更大范围的公共利益。
-
-• [ranger_danger] 提出质疑，认为追求非无偏见新闻的人可能不是因为社会权力较小，而是因为智力不足，暗示这些人可能缺乏分辨新闻质量的能力。
-
-补充讨论：
-• 争议的焦点在于新闻报道是否应追求无偏见，还是应提供更多原始信息让受众自行解读。一方认为新闻应尽量保持客观无偏，另一方认为应根据受众需求和具体环境调整报道策略。
-
-• 讨论还涉及社会环境对新闻需求的影响，有人认为受众的选择是基于身份认同和社会背景，而非纯粹对新闻质量的理性选择。
-
-• [ranger_danger] 的评论引发了关于受众智力和新闻选择关系的争议，暗示新闻偏好可能与受众的知识水平和判断能力相关。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43627877" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43595193" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
