@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-14 20:24 (北京时间)
+            最后更新时间: 2025-04-14 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,53 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.openmymind.net/Zigs-New-LinkedList-API/" target="_blank">Zig's new LinkedList API (it's time to learn fieldParentPtr)</a>
+                    <a href="https://www.geoffreylitt.com/2025/04/12/how-i-made-a-useful-ai-assistant-with-one-sqlite-table-and-a-handful-of-cron-jobs" target="_blank">A hackable AI assistant using a single SQLite table and a handful of cron jobs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-04-14 10:06</span>
+                    <span>作者: stevekrouse</span> |
+                    <span>评分: 66</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-04-14 13:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Zig的最新提交对`SinglyLinkedList`和`DoublyLinkedList`进行了重大更改，新的链表实现采用了侵入式设计，不再使用泛型。这意味着链表节点嵌入数据结构中，从而避免额外分配内存。新的结构不再直接包含数据，而是通过嵌入的节点来间接管理数据。
-
-示例代码展示了如何使用新的链表API。通过在数据结构中嵌入`SinglyLinkedList.Node`，并使用`prepend`方法将节点添加到链表中。在遍历链表时，通过节点反向获取包含该节点的用户数据。这是通过计算内存地址偏移实现的，但直接操作地址是不安全的。
-
-Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的结构实例。例如，通过`@fieldParentPtr(User, "node", n)`可以从链表节点反向获取`User`实例。
-
-文章最后强调了结构体字段的内存布局可能因对齐或填充而变化，推荐使用`@offsetOf`来获取字段偏移，以确保代码安全性。</p>
+                    <p>本文介绍了一个名为Stevens的简易AI助理，它通过单个SQLite表和几个cron任务实现，托管在Val.town平台上。Stevens每天早上通过Telegram发送日程、天气、邮件和提醒等信息，用户还可以随时通过Telegram与其互动。Stevens的架构非常简单，核心是一个记录信息的“笔记本”，即SQLite表，数据来自Google Calendar、天气API、USPS邮件扫描和Telegram消息等。该系统易于扩展，通过cron任务定期更新信息，并使用Claude API生成每日简报。这种简单的记忆系统和广泛的信息来源结合，使Stevens成为一个实用且有趣的个人助理工具。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Zig编程语言中引入的非泛型侵入式链表设计的优缺点及其实际应用
+                    <div class="comments-summary">主要讨论点：实用性AI工具的应用与简化
 
 不同观点：
-• [支持观点] mastax认为，新的非泛型版本通过将数据嵌入链表节点，可以减少内存分配次数并提高性能。这种侵入式链表设计在某些情况下表现更好，且只需要为每个节点进行一次分配。
+• [dogline] 提出一个设想，即让自己的小工具程序访问邮箱。该程序目前可以执行获取天气或运行系统特有命令等任务，如果能够访问邮箱，可以通过AI解析邮件信息并执行相应操作，如回复邮件或发送新消息。这将使程序更加实用，且不会干扰个人邮箱。
 
-• [质疑性能提升] lightingthedark质疑性能提升的说法，指出在C语言中，由于缺乏泛型支持，侵入式链表确实更受欢迎，但在Zig的泛型版本中，数据类型可以直接作为值类型嵌入节点，且编译器可以重新排列结构布局，因此内存布局上可能没有显著差异，除非刻意使用指针类型。
+• [groseje] 支持这种实用性AI工具的理念，强调工具的初衷是简化问题，而不是追求复杂的架构或技术（如向量数据库）。这种实用性的AI集成能够更好地服务于日常需求。
 
-• [耦合问题] steventhedev认为这种设计会增加数据类型和集合之间的耦合，并质疑这种方法的好处是否仅限于数据对齐，或者是否出于更强烈的愿望去移除泛型。
+• [tossandthrow] 对此技术的实现方式提出疑问，猜测是否使用SQLite数据库进行下一token预测，并提及他们使用Claude（可能是另一种AI工具）来实现类似功能。
 
-• [对齐优势] ralferoo指出，侵入式链表允许在使用较大类型时避免编译器插入对齐填充，这在需要保持默认对齐时尤为重要。
-
-• [语言特性] spiffyk认为，这种变化符合Zig社区长期以来对`@fieldParentPtr`内建功能的依赖，作为实现类似OOP继承的主要方式，这种变化在语言特性上是很自然的。
-
-• [函数参数问题] roetlich对如何安全地编写接受链表作为参数的函数表示担忧，暗示这种设计可能带来复杂性。
-
-• [链表的实用性] hoseja认为，链表应作为特定情况下的数据结构，而不是默认选项，质疑其在前沿默认使用中的必要性。
-
-• [库实现必要性] DeathArrow对语言库中实现单链表和双链表的必要性表示疑问，认为像数组列表、字典、堆栈和队列等数据结构更为常用，链表的使用频率较低。
+• [geonic] 对该项目表示赞赏，认为这是一个有趣且富有创造性的项目。
 
 补充讨论：
-• 争议的焦点在于新设计是否真正带来性能提升，以及这种侵入式设计带来的耦合和复杂性是否值得。
-• 对链表作为默认数据结构的实用性和必要性存在不同看法，反映出开发者在实际应用中对链表的偏好差异。
-• 部分讨论者关注Zig语言特性和社区习惯，认为这种设计变化符合Zig的一贯风格和需求。</div>
+• 争议焦点：虽然没有直接的争议，但[tossandthrow]对技术实现的猜测显示出对不同技术选择的关注，表明在实现简化工具的过程中，技术选择仍可能存在多样性和讨论空间。
+
+• 实用性与复杂性：讨论中多次提到实用性与技术复杂性之间的平衡，强调工具应以简化和实用为核心，而非过度依赖复杂的技术架构。
+
+• 具体实现方式：尽管评论中并未详细讨论具体实现细节，但[dogline]和[tossandthrow]的评论暗示了不同的技术实现可能，如邮箱访问与AI解析的具体方法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43679707" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43681287" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -167,45 +155,49 @@ Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.muppetlabs.com/~breadbox/txt/al.html" target="_blank">Albert Einstein's theory of relativity in words of four letters or less (1999)</a>
+                    <a href="https://github.com/codr7/hacktical-c" target="_blank">Hacktical C: practical hacker's guide to the C programming language</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: signa11</span> |
-                    <span>评分: 163</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-04-14 05:22</span>
+                    <span>评分: 84</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-14 10:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章用简单易懂的语言解释了爱因斯坦的相对论，特别是光速恒定和相对运动的概念。文章通过假设一个人在一个虚空中的情景，说明无法确定自己是否在移动，因为没有参照物。当加入床或太阳等物体时，依然无法确定谁在移动。文章接着讨论光速（c）的恒定性，即无论光源是否移动，光速对所有观察者都是相同的。实验证明，无论光线向哪个方向发射，其速度都是c，这挑战了传统的运动观念。爱因斯坦提出，为了使光速对所有观察者一致，时间也必须相对变化。文章最后通过伯特和达娜的思想实验进一步说明时间的相对性。</p>
+                    <p>《Hacktical C》是一本实用的C编程语言指南，旨在帮助程序员充分利用C语言的强大和灵活性。本书假设读者已有基础编程知识，专注于实际应用技巧，而非基础知识解释。作者自认为是一名黑客型程序员，注重解决实际问题，并通过多年实践积累了丰富的C语言经验。C语言赋予程序员极大的自由和责任，虽然不防止错误，但其作为可移植的汇编语言，在许多领域仍至关重要。本书项目采用开放许可，接受捐赠以支持发展。构建环境需要gcc、ccache和valgrind，推荐使用Linux平台进行C语言开发。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：通过有限词汇解释复杂概念的挑战和效果
+                    <div class="comments-summary">主要讨论点：C语言的优缺点以及其在不同编程场景下的适用性
 
 不同观点：
-• hkmaxpro和一些其他用户（如ahazred8ta、TobTobXX）认为，使用四字母或更少字母的单词，或者仅用最常见的单词来解释复杂概念（如研究生数学研究、真空吸尘器、火箭科学）是非常困难的，但这种方法可以引发思考，并展示限制词汇对解释的影响。他们提到了Yasha Berchenko-Kogan对数学研究生工作的描述，以及“Up Goer Five”等例子。
-• gcanyon指出，四字母的限制不一定能简化问题，并建议用不同的短词替换原句中的某些部分，以尝试改善解释效果。
-• blueaquilae和stavros认为，这种限制词汇的描述对于已经理解概念的人可能更容易接受，但对于试图从中学习新知识的人来说，解释过于简略，容易让人困惑。stavros特别提到在无法使用如“重力”和“加速度”等词汇时，理解变得困难。
-• freetonik补充说，并不是所有短单词都简单，有些短词本身也具有复杂含义，例如“void”和“iota”。
+• 观点一：C语言给予程序员高度的自由和责任，但这也意味着程序员需要自己承担犯错的风险。评论[9d]表达了对C语言的喜爱，因为它的自由度高，但同时也承认在出错时会感到挫败。
+
+• 观点二：对C语言是否针对黑客（而非学术界）存在疑问。评论[_false]提出了关于C语言书籍定位的疑问，不确定其目标读者是黑客还是学术界人士。
+
+• 观点三：C语言作为一种大多数可移植的汇编语言，具有独特的地位。评论[pjmlp]认为C语言在类似于PDP-11的计算机上具有重要意义，是一种高层次的系统语言。
+
+• 观点四：对C语言中一些复杂宏使用方式的讨论。评论[throwaway7894]分享了一个使用`__LINE__`的宏技巧，认为这种写法虽然合理，但之前并未想到，学到了新知识（TIL）。
+
+• 观点五：严格的语言在减少某些类型的错误方面有显著优势，但也牺牲了一些灵活性。评论[lou1306]认为，使用安全的语言可以完全消除某些类型的错误，并强调了高信心软件开发的重要性。
+
+• 观点六：对C语言中常见错误的批评以及对内存安全语言的推崇。评论[steinuil]指出，任何复杂的软件都会有错误，但使用内存安全语言可以减少某些类型的错误，并认为应诚实面对C语言中的问题。
+
+• 观点七：对微软C语言编译器现状的讨论。评论[akdev1l]质疑微软C语言编译器是否仍落后，并提到MSVC在C++编译方面的进步。
+
+• 观点八：在C语言中模拟面向对象特性时的建议。评论[throwaway7894]建议，如果频繁使用结构体和函数指针模拟方法，不如直接使用C++的基本特性。
 
 补充讨论：
-• jaynetics提到了没有字母“e”的小说《Gadsby》，进一步探讨了语言限制的创作可能性。
-• ahazred8ta引用了Poul Anderson的《Uncleftish Beholding》和xkcd的“Up Goer Five”来展示用简单词汇解释科学概念的努力。
-• crooked-v抱怨在多标签浏览环境中，缺乏排版设计的内容难以阅读。
-• ActorNightly提供了一个更详细的解释例子，通过思想实验阐述时空关系，并批评原始解释的不足。
-• janpmz分享了自己将内容转换为有声书的链接。
-• amelius开玩笑说，这种限制词汇的文章像是AI生成的。
-• Tepix建议在标题中添加“(1999)”标签，可能是为了增加怀旧或复古效果。
-• robinhouston提到了George Boolos的用单音节词解释Gödel第二不完备定理的文章，进一步探讨了用有限词汇解释复杂概念的主题。
-• russellbeattie尝试自己用有限词汇进行解释，并发现这种做法比看起来要困难得多。
+• 关于“黑客”一词的定义和使用。评论[kelsey978126]澄清了文本中“黑客”一词的使用，指的是编程者而非安全专业人士。
 
 争议焦点：
-• 这种限制词汇的解释方法是否有效。支持者认为这是一种有趣且具挑战性的思维训练，反对者则认为这种方法容易导致困惑，尤其是对不熟悉主题的读者而言。</div>
+• C语言的自由度和错误风险之间的平衡是讨论的核心。一些评论者欣赏C语言的自由，而另一些评论者则强调使用更严格的语言以减少错误的重要性。
+• 使用C语言模拟面向对象特性时的优劣，以及是否应直接使用C++。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43678312" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43679781" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -220,8 +212,8 @@ Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的
                 </h3>
                 <div class="story-meta">
                     <span>作者: mstef</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 70</span> |
+                    <span>评论数: 11</span> |
                     <span>发布时间: 2025-04-14 11:42</span>
                 </div>
 
@@ -232,22 +224,146 @@ Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一款浏览器书签工具（omnom）的背景、发展、及重写后的评价。
+                    <div class="comments-summary">主要讨论点：各类书签工具及其功能对比
 
 不同观点：
-• [mstef 的观点] omnom 最初是作为 del.icio.us 的替代品开发的，由 mstef 本人编写，并在用户中获得了一定的成功。然而，由于浏览器扩展的快速发展，维护这个非商业的自由软件变得过于昂贵，最终停止了更新和支持。mstef 对项目的停止表示遗憾，但并未继续维护。
-
-• [asciimoo 的贡献] asciimoo 应 mstef 的请求，重写了整个 omnom 项目，使用 Go 语言并修复了扩展问题。他还获得了 nlnet/ngi0 的支持。mstef 对 asciimoo 的工作表示赞赏，认为他做得非常好。
+• mbreese：对Karakeep（前身为Hoarder）整体满意，尤其喜欢其iOS应用，方便在不同应用间分享书签。但其通过无头Chrome抓取快照的方式在需要登录时会失效。
+• apitman：建议构建本地优先的解决方案，利用Chrome/Firefox内置的同步功能，而非依赖浏览器扩展。
+• mazsa：对原作者的个人认可，并推荐其博客。
+• MrJohz：对Karakeep的搜索功能不满，指出搜索快照内容时无法找到预期文本，可能仅搜索URL或页面标题。
+• pratio：推荐Readeck，支持Postgres和服务系统管理，对Omnom保持关注。
+• mstef：提供Karakeep和Omnom的历史背景，解释其开发初衷及演变过程，强调其隐私尊重和快照功能的 robustness。
+• dewey：希望ArchiveBox能支持存档“私密”和登录页面，曾遇到仅存档登录页面的问题。
+• amit9gupta：最终选择Goodlinks，优点包括iCloud存储、全文搜索，缺点是非开源且仅支持mac/ios。
+• andersha：推荐Historio.us。
+• submeta：自行开发了一个应用，利用archive.ph创建存档和摘要，因涉及付费文章而不打算开源。
+• vandyswa：使用静态网页和git管理书签，认为已解决问题。
 
 补充讨论：
-• [项目特性] 重写后的 omnom 是一个自托管的自由软件书签服务，适合个人或社区使用。它具有简单、尊重隐私和在快照功能上非常 robust 的特点。
-
-• [对社区的呼吁] mstef 鼓励那些想要拥有自托管的自由书签服务的人尝试 omnom，暗示该项目对有此类需求的用户是一个很好的选择。
-
-争议焦点：
-• 没有明显的争议，但隐含的讨论可能是关于自由软件项目在非商业背景下的可持续性维护问题。项目最初因维护成本过高而停止更新，这是许多自由软件项目面临的共同挑战。</div>
+- Karakeep的快照功能及其局限性是争议的焦点，特别是登录页面的处理。
+- 用户对书签工具的搜索功能有不同期望，MrJohz希望搜索能像Google一样全面。
+- 用户在选择书签工具时，考虑了开源性、跨平台支持和隐私保护等因素。
+- 一些用户分享了个人或自建解决方案，如submeta的自开发应用和vandyswa的静态网页方案。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43680232" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.openmymind.net/Zigs-New-LinkedList-API/" target="_blank">Zig's new LinkedList API (it's time to learn fieldParentPtr)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 127</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-04-14 10:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Zig的最新提交对`SinglyLinkedList`和`DoublyLinkedList`进行了重大更改，新的链表实现采用了侵入式设计，不再使用泛型。这意味着链表节点嵌入数据结构中，从而避免额外分配内存。新的结构不再直接包含数据，而是通过嵌入的节点来间接管理数据。
+
+示例代码展示了如何使用新的链表API。通过在数据结构中嵌入`SinglyLinkedList.Node`，并使用`prepend`方法将节点添加到链表中。在遍历链表时，通过节点反向获取包含该节点的用户数据。这是通过计算内存地址偏移实现的，但直接操作地址是不安全的。
+
+Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的结构实例。例如，通过`@fieldParentPtr(User, "node", n)`可以从链表节点反向获取`User`实例。
+
+文章最后强调了结构体字段的内存布局可能因对齐或填充而变化，推荐使用`@offsetOf`来获取字段偏移，以确保代码安全性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：侵入式节点数据结构的优缺点及其在不同编程语言和场景下的应用
+
+不同观点：
+• **支持侵入式数据结构的观点**：
+  - 侵入式结构可以在不同容器间移动对象而不需要重新分配内存或复杂API（mgaunard）。
+  - 侵入式结构能实现完全的多态，无需所有元素都是相同的动态类型（mgaunard）。
+  - 侵入式链表性能更好，所需分配更少，尤其适合需要减少节点分配的场景（RcouF1uZ4gsC）。
+  - 侵入式链表适合Zig语言的OOP风格继承（spiffyk）。
+
+• **反对或质疑侵入式数据结构的观点**：
+  - 侵入式结构可能导致类型不安全，任何对象都可以被放入列表而没有机制来检测类型（MawKKe）。
+  - 侵入式结构可能增加代码复杂性，并与数据类型紧密耦合，限制了其在泛型编程中的应用（steventhedev）。
+  - 侵入式链表的实现可能导致函数参数传递复杂化，难以安全编写函数（roetlich）。
+  - 链表不应作为默认数据结构，而应是特定场景下的选择（hoseja）。
+
+• **关于实现细节的讨论**：
+  - 建议使用指针简化设计，避免过度使用元编程（alexvitkov）。
+  - 提出通过函数返回数据的实现方案，讨论了具体代码实现（kajika91）。
+  - 讨论了侵入式链表与泛型链表在内存布局和性能上的区别，质疑性能提升的实际效果（mastax, lightingthedark）。
+  - 提到侵入式链表的优势在于可以处理大型类型，避免默认对齐问题（ralferoo）。
+
+补充讨论：
+- 有人建议使用泛型包装器来封装侵入式链表的内部细节，以避免暴露内部实现（esjeon）。
+- 讨论了Zig语言中`@fieldParentPtr`内建函数在OOP风格继承中的使用，认为侵入式结构的变化符合Zig语言的设计理念（spiffyk）。
+
+争议焦点：侵入式数据结构在简化内存管理与实现高性能的同时，是否会导致类型不安全和代码耦合度过高的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43679707" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/meilisearch/meilisearch" target="_blank">Meilisearch – search engine API bringing AI-powered hybrid search</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: modinfo</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-04-14 12:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Meilisearch 是一个快速、可定制的搜索引擎API，支持AI驱动的混合搜索，适用于各种应用和网站。它提供即开即用的功能，如混合搜索、输入即搜、错别字容忍、过滤与分面搜索、排序、同义词支持、地理搜索、多语言支持、安全管理、多租户支持等。Meilisearch 易于安装和维护，并提供RESTful API和多种SDK以实现无缝集成。此外，Meilisearch Cloud 提供无服务器部署和全球分析监控服务。用户数据会被匿名收集以改进产品，但可以随时停用和请求删除。更多信息和使用指南可在其文档中查看。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：各类搜索和索引工具在生产环境中的使用体验及技术特性对比，尤其是对混合搜索（hybrid search）和AI功能的讨论。
+
+不同观点：
+• **MS（可能是Microsoft或Meilisearch）在生产环境中的表现**：
+  - [bsnnkv] 作为MS的多年用户，表示旧版本运行良好，但对新推出的AI功能不感兴趣，担心其影响。
+  - [bsnnkv] 提到曾对Postgres数据同步到MS的实践被MS官方参考并应用，表明对MS早期版本的肯定。
+
+• **对Meilisearch的评价**：
+  - [adeptima] 认为Meilisearch适合快速演示，但对于需要类似Apache Lucene的全文搜索，更偏好基于Tantivy的方案。
+  - [Hawxy] 对Meilisearch的体验很好，但指出其地域覆盖不足，缺少澳大利亚的服务器实例。
+
+• **对混合搜索的需求和挑战**：
+  - [adeptima] 表示正在寻找一种系统化的方法来实现混合搜索（结合全文本搜索和嵌入式向量搜索），并询问相关经验。
+  - [esafak] 关注混合搜索中的重新排序功能以及是否支持流式数据摄入。
+
+• **对资源消耗的担忧**：
+  - [k4rli] 提到Meilisearch的依赖项Librechat内存消耗较高，类似于Elasticsearch，在新实例上需要超过3G内存，对单用户实例的资源占用提出质疑。
+
+• **对高可用性（HA）的关注**：
+  - [be_erik] 关注Meilisearch在生产环境中的高可用性，询问是否只能通过运行多个实例并保持同步来实现HA。
+
+补充讨论：
+• **替代方案的提出**：
+  - [mentalgear] 提出了Orama作为值得注意的替代方案，提供了相关GitHub链接。
+
+争议焦点：
+• **Meilisearch是否适合生产环境**：[be_erik] 和 [k4rli] 对Meilisearch在资源消耗和高可用性方面的表现提出质疑，而 [Hawxy] 和 [adeptima] 则对其功能和易用性表示肯定。
+• **混合搜索的实现**：[adeptima] 和 [esafak] 关注混合搜索的具体实现方式，尤其是如何结合全文本搜索和向量嵌入，目前尚未有明确答案。
+
+整体来看，讨论围绕Meilisearch及其他搜索工具在功能、性能、资源消耗和高可用性方面的表现展开，并对混合搜索的实现提出了进一步的需求和疑问。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43680699" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -311,88 +427,38 @@ Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cbc.ca/news/canada/toronto/lyft-conversation-transcribed-1.7508106" target="_blank">She was chatting with friends in a Lyft. Then someone texted her what they said</a>
+                    <a href="https://www.nytimes.com/2025/04/13/books/review/mario-vargas-llosa-appraisal.html" target="_blank">Mario Vargas Llosa has died</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: andy99</span> |
-                    <span>评分: 47</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-04-14 11:11</span>
+                    <span>作者: funkaster</span> |
+                    <span>评分: 157</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-04-14 03:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>多伦多女子Anvi Ahuja在一次Lyft拼车回家途中与室友的谈话被录音，并收到了一份对话文字记录，这让她对隐私安全感到担忧。Lyft公司表示正在调查此事，并声称该事件与其在美国部分城市测试的音频录制试点项目无关。Ahuja在发现未被告知可能被录音后，感到不安，认为自己的隐私被侵犯。Lyft的隐私政策禁止司机未经乘客同意进行录音，并表示已对涉事司机采取了措施。加拿大前隐私专员Ann Cavoukian指出，此事件违反了加拿大的隐私法，是“完全不可接受的”。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对监控、隐私侵犯及技术滥用的担忧，特别是在公共空间和交通工具中的隐私问题。
+                    <div class="comments-summary">主要讨论点：对马里奥·巴尔加斯·略萨（Mario Vargas Llosa）的作品、风格及其政治倾向的评价和讨论。
 
 不同观点：
-• [bhouston] 认为美国当前驱逐批评政府外交政策的人可能是一个暂时的现象，但也担心这种趋势会持续，导致更广泛的监控和意见审查。他提出了一种假设场景，即利用大型语言模型（LLM）和现有的技术（例如以色列在约旦河西岸和加沙地带使用的技术）来监控民众的意见，并压制异见者。这种技术可能被大公司和云服务提供商利用，以实现经济利益。
-
-• [davweb] 提出了一种技术失误的可能性，认为在使用Lyft应用时，司机可能无意中触发了文本框的录音功能并发送了对话记录，而不是故意进行录音和发送。这种技术误操作比公司故意录音更有可能。
-
-• [mystraline] 认为针对此类隐私侵犯的防御手段有限，提出要么保持沉默，要么使用超声波干扰设备来阻止录音。同时，也提出了一种简单的解决方案，即不使用Lyft服务。
-
-• [righthand] 对广告数据收集和隐私侵犯表示强烈反感，并表示不会再使用Lyft服务。
-
-• [micromacrofoot] 认为在乘坐共享服务时，人们不应期望有隐私，因为这些是公共空间，类似于进入加油站时被录像的情况。他们质疑为何有人会认为在陌生人驾驶的车中谈话是安全的。
-
-• [laborcontract] 认为随着LLM和转录技术的发展，个体也很容易进行大规模监控，例如在咖啡馆等公共场所放置监听设备。他指出，社会尚未完全意识到这种技术的潜在影响，并认为在高价值区域进行监控的可能性更高。
+• 有些人关注略萨的政治倾向，提到他随着年龄增长向右翼转变（[l3x]），并有人直接称他为“法西斯主义者”（[icar]），表明部分读者对其政治立场持批评态度。
+• 一些评论集中讨论略萨的作品，称赞其小说《公羊的盛宴》（La Fiesta del Chivo）是其最优秀的作品之一，值得一读（[alanvillalobos], [agigao]）。《公羊的盛宴》显然对某些读者的文学创作产生了影响（[dhosek]）。
+• 另一部分评论提到略萨的其他作品，如《教堂中的对话》（Conversación en la Catedral），认为这部作品令人印象深刻（[moomin], [culebron21]）。还有读者推荐《幼崽》（Los cachorros）（[treetalker]）。
+• 一部分读者讨论了阅读略萨作品的体验，提到其章节和段落之间的停顿较少，给阅读带来一定挑战（[dhosek]）。还有人提到自己从未读过略萨的译作，认为如果能够读原文就没必要读翻译（[dhosek]）。
 
 补充讨论：
-• 争议的焦点在于对公共空间和私人交通工具中隐私的合理期望。一部分人认为这种环境不应有隐私期望，另一部分人则对隐私侵犯表示强烈反对。
+• 有读者分享了略萨的一些轶事，如他曾与加西亚·马尔克斯发生肢体冲突（[brunorsini]），这增添了对略萨个性和生活的进一步了解。
+• 一些读者纯粹表达了对略萨逝世的哀悼与敬意，认为他的作品对文学界有重大贡献（[DeathArrow], [codingbot3000]）。
+• 有西班牙语学习者询问略萨最易读的作品，表明略萨的作品在语言学习者中也具有吸引力（[outside1234]）。
 
-• 技术滥用和误操作的可能性也被广泛讨论。一部分人担心技术被故意用于监控和压制异见，另一部分人则认为可能是技术误操作导致的无意侵犯隐私。
-
-• 对于如何防御隐私侵犯，提出了包括技术手段（如超声波干扰）和行为手段（如不使用特定服务）的建议。</div>
+争议焦点：略萨的政治倾向成为部分讨论的争议点，部分读者对他的右翼倾向持批评态度，而其他评论则更关注他的文学成就，显示出对其评价的两极化。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43680039" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-04-economic-inequality-roman-empire-han.html" target="_blank">Comparing economic inequality between the Roman Empire and the Han Dynasty</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gradus_ad</span> |
-                    <span>评分: 50</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-10 10:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>一项研究比较了罗马帝国和汉朝的经济不平等，发现汉朝的不平等程度高于罗马。研究发表在《Nature Communications》上，由博科尼大学、剑桥大学和斯坦福大学的学者进行。他们使用现代经济工具分析了两国的收入和生活条件，发现罗马人均收入约为维持生计所需的2.25倍，而汉朝为1.88倍。罗马最富1%人口占据约19%的总收入，而汉朝为26%。罗马的基尼系数为0.46，汉朝为0.48（1代表完全不平等），而现代美国为0.41。研究还指出，汉朝精英阶层从经济中获取的比例（80%）高于罗马（69%），这可能导致了其衰落。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：古代经济体中的不平等及其影响，特别是罗马与汉朝的比较
-
-不同观点：
-• [Y_Y] 认为不平等是自然且不可避免的现象，类似于“不确定性”。他提出不平等本身不一定是坏的，将其比作“没人喜欢糟糕的天气”，但重点应是如何在财富分配中找到平衡，即“使用伞而不是试图控制天气”。他质疑是否应将现代经济体的标准应用于古代社会，并暗示不平等在某种程度上是社会和经济运行的自然结果。
-
-• [lolc] 对古代人口和财富分布的估算持怀疑态度，认为这些估算中使用的模型和假设可能存在较大的误差范围。他指出罗马和汉朝的人口估算依赖于农业模型和不完整的记录，且这些估算需要通过与现代人口统计模型进行匹配，质疑其准确性。同时，他也提到罗马的记录保存相对较好，但对汉朝的记录表示怀疑。
-
-• [epicureanideal] 引用了研究中的观点，即汉朝的精英阶层对经济的“提取率”较高（80% 对比罗马的69%），并认为这可能是汉朝衰落的原因。他暗示现代社会的精英阶层应自我设限，以避免类似的经济问题。
-
-• [yanko] 提出一个现代视角的观点，认为帝国开始衰落的原因是当帝国的债务利息支付超过其军事预算时，这暗示财政问题和债务负担可能是帝国衰落的关键因素，而非单纯的不平等。
-
-补充讨论：
-• 争议的焦点在于古代经济体中的不平等是否可以直接与现代经济体进行比较，以及这些不平等是否是导致社会和经济问题（如帝国衰落）的主要因素。
-• 对古代人口和财富分布估算方法的准确性和可靠性存在质疑，特别是基于不完整记录和现代模型的匹配。
-• 不平等的“自然性”和是否应通过政策手段加以限制也是一个讨论点，特别是对现代社会的启示。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43642568" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43677917" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -454,77 +520,47 @@ Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/04/13/books/review/mario-vargas-llosa-appraisal.html" target="_blank">Mario Vargas Llosa has died</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: funkaster</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-04-14 03:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对马里奥·巴尔加斯·略萨（Mario Vargas Llosa）的作品、生平及政治倾向的评价和讨论
-
-不同观点：
-• [对略萨个人行为和性格的看法] brunorsini提到略萨曾打过加西亚·马尔克斯，对此表示惊讶和难以相信，认为这与自己对略萨的印象不符。该评论引出了一个关于作家个人行为与其文学成就之间关系的讨论。
-
-• [对略萨政治倾向的关注] l3x分享了一篇文章，探讨略萨随着年龄增长逐渐转向右翼的政治立场，暗示对其政治变化的兴趣或质疑。这引发了对略萨不仅是作为文学家，而且是作为政治人物的讨论。
-
-• [对略萨作品的情感反应和推荐] 
-  - culebron21表示在学习西班牙语时读了略萨的作品，《 Cathedral 中的对话》给他留下了深刻的悲伤印象，并激发了他对南美历史的兴趣。
-  - alanvillalobos认为略萨是自己最喜欢的虚构文学作家，特别推荐《The Feast of the Goat》（《山羊的盛宴》）。
-  - treetalker推荐了《Los cachorros》（《小狗们》）。
-  - moomin对《Cathedral 中的对话》给予高度评价，特别提到第一部分的深刻影响。
-
-• [对略萨去世的悼念] 
-  - DeathArrow表达了对略萨去世的悲痛，称略萨是其最喜欢的作家之一，并感谢略萨留下了许多杰出的作品。
-  - agigao提到《The War of the End of the World》（《世界末日的战争》）是自己读过的唯一一本略萨的书，但留下了深刻的印象，并同样对略萨的去世表示悼念。
-
-• [对略萨去世的简短情感表达] codingbot3000仅简单表达了悲伤情绪，未涉及具体作品或政治倾向。
-
-补充讨论：
-• 略萨的作品对不同读者产生了深远的情感影响，尤其是在他们学习西班牙语或探索南美历史的背景下。
-• 略萨的政治转向引发了部分读者对其个人和文学作品的重新审视，显示出文学家政治立场对其文学形象的影响。
-
-争议焦点：略萨个人行为（如打加西亚·马尔克斯）与其文学成就之间的关系，以及他政治倾向的转变是否影响其文学地位和读者对其作品的评价。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43677917" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/codr7/hacktical-c" target="_blank">Hacktical C: practical hacker's guide to the C programming language</a>
+                    <a href="https://www.muppetlabs.com/~breadbox/txt/al.html" target="_blank">Albert Einstein's theory of relativity in words of four letters or less (1999)</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: signa11</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-04-14 10:20</span>
+                    <span>评分: 195</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-04-14 05:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《Hacktical C》是一本实用的C编程语言指南，旨在帮助程序员充分利用C语言的强大和灵活性。本书假设读者已有基础编程知识，专注于实际应用技巧，而非基础知识解释。作者自认为是一名黑客型程序员，注重解决实际问题，并通过多年实践积累了丰富的C语言经验。C语言赋予程序员极大的自由和责任，虽然不防止错误，但其作为可移植的汇编语言，在许多领域仍至关重要。本书项目采用开放许可，接受捐赠以支持发展。构建环境需要gcc、ccache和valgrind，推荐使用Linux平台进行C语言开发。</p>
+                    <p>这篇文章用简单易懂的语言解释了爱因斯坦的相对论，特别是光速恒定和相对运动的概念。文章通过假设一个人在一个虚空中的情景，说明无法确定自己是否在移动，因为没有参照物。当加入床或太阳等物体时，依然无法确定谁在移动。文章接着讨论光速（c）的恒定性，即无论光源是否移动，光速对所有观察者都是相同的。实验证明，无论光线向哪个方向发射，其速度都是c，这挑战了传统的运动观念。爱因斯坦提出，为了使光速对所有观察者一致，时间也必须相对变化。文章最后通过伯特和达娜的思想实验进一步说明时间的相对性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：通过限制词语长度或使用常见词汇解释复杂概念的可行性和效果
+
+不同观点：
+• hkmaxpro认为，限制词语长度（如四字母词）类似于用非常有限的词汇解释复杂概念，虽然有趣但极具挑战性，类似于解释吸尘器如何工作。
+• stavros指出，限制词汇使解释变得更加复杂，尤其是在科学概念（如重力、加速度）的解释中，导致读者容易混淆不同术语。
+• blueaquilae认为，这种方法对已经了解概念的人更有意义，但对于新手来说，缺乏足够的解释，例如未详细解释为何在移动巴士上观察到的小行星着陆时间不同。
+• andai指出，硬性限制词汇可能弊大于利，虽然保持了简单词汇，但写作风格变得更加难以理解，并建议使用大家都熟悉的正常词汇可能更有效。
+• freetonik提到，并不是所有短词都简单，例如“void”、“iota”、“mass”等词依然复杂。
+• ahazred8ta引用了Poul Anderson的“Uncleftish Beholding”和xkcd的“Up Goer Five”作为类似尝试，用常见词解释复杂概念。
+• TZubiri以幽默方式指出，这种作品如果在1999年创作是艺术，但在2025年可能被视为垃圾，暗示网络环境的变化。
+• crooked-v抱怨在多标签浏览环境中阅读没有侧边距设计的文章很困难，批评了对用户体验的忽视。
+• TobTobXX也提到了“Up Goer Five”和MinutePhysics的合作视频，认为这些是更成功的尝试。
+• ActorNightly对原文解释不满意，提出自己的详细思想实验，通过粒子反射和镜子设置解释时空关系，认为这样才能更好地理解相对论。
+• gcanyon认为，四字母词的限制并不保证简洁，并给出了替代句以增加清晰度。
+• api提供了一种对相对论的简洁描述，即所有物体的速度总和为光速，若在空间维度上移动，则在时间维度上移动减慢。
+• amelius开玩笑说，这篇文章读起来像是AI生成的。
+• janpmz提到自己将文章转换为有声书，提供了一个听觉学习的方式。
+
+补充讨论：
+• 讨论中多次提到“Up Goer Five”和“Uncleftish Beholding”，作为用常见词解释复杂概念的成功案例。
+• 争议的焦点在于限制词汇是否真正有助于解释复杂概念，一些人认为这增加了理解难度，而另一些人则认为可以通过这种方式激发创造性解释。
+• 读者对原文中复杂的科学概念（如相对论）的解释方式提出不同看法，部分人认为需要更详细的说明或图示以帮助理解。
+• 有读者提到网络环境和用户体验问题，指出多标签浏览中文章设计的重要性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43679781" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43678312" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
