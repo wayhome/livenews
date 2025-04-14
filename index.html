@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-14 17:15 (北京时间)
+            最后更新时间: 2025-04-14 20:24 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,97 +61,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.muppetlabs.com/~breadbox/txt/al.html" target="_blank">Albert Einstein's theory of relativity in words of four letters or less</a>
+                    <a href="https://www.openmymind.net/Zigs-New-LinkedList-API/" target="_blank">Zig's new LinkedList API (it's time to learn fieldParentPtr)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: signa11</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-04-14 05:22</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-14 10:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章用简单易懂的语言解释了爱因斯坦的相对论，特别是光速恒定和相对运动的概念。文章通过假设一个人在一个虚空中的情景，说明无法确定自己是否在移动，因为没有参照物。当加入床或太阳等物体时，依然无法确定谁在移动。文章接着讨论光速（c）的恒定性，即无论光源是否移动，光速对所有观察者都是相同的。实验证明，无论光线向哪个方向发射，其速度都是c，这挑战了传统的运动观念。爱因斯坦提出，为了使光速对所有观察者一致，时间也必须相对变化。文章最后通过伯特和达娜的思想实验进一步说明时间的相对性。</p>
+                    <p>Zig的最新提交对`SinglyLinkedList`和`DoublyLinkedList`进行了重大更改，新的链表实现采用了侵入式设计，不再使用泛型。这意味着链表节点嵌入数据结构中，从而避免额外分配内存。新的结构不再直接包含数据，而是通过嵌入的节点来间接管理数据。
+
+示例代码展示了如何使用新的链表API。通过在数据结构中嵌入`SinglyLinkedList.Node`，并使用`prepend`方法将节点添加到链表中。在遍历链表时，通过节点反向获取包含该节点的用户数据。这是通过计算内存地址偏移实现的，但直接操作地址是不安全的。
+
+Zig提供了`@fieldParentPtr`内建函数，安全地从节点获取包含其的结构实例。例如，通过`@fieldParentPtr(User, "node", n)`可以从链表节点反向获取`User`实例。
+
+文章最后强调了结构体字段的内存布局可能因对齐或填充而变化，推荐使用`@offsetOf`来获取字段偏移，以确保代码安全性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：通过限制词汇解释复杂概念的难度及其实际效果
+                    <div class="comments-summary">主要讨论点：Zig编程语言中引入的非泛型侵入式链表设计的优缺点及其实际应用
 
 不同观点：
-• **stavros**：认为文章在限制词汇后，解释变得过于复杂，导致读者（如他本人）在阅读过程中感到困惑，特别是在无法使用特定术语如“重力”和“加速度”时，使得理解变得困难。他对文章前期感兴趣，但后期因混乱而失去兴趣。
-  
-• **hkmaxpro**：通过引用Yasha Berchenko-Kogan的回答，类比解释复杂概念就像用四个字母以下的词解释吸尘器，强调了限制词汇解释复杂事物的困难性，并认为这是难以做到的。
+• [支持观点] mastax认为，新的非泛型版本通过将数据嵌入链表节点，可以减少内存分配次数并提高性能。这种侵入式链表设计在某些情况下表现更好，且只需要为每个节点进行一次分配。
 
-• **freetonik**：指出并非所有短词都简单，例如“void”、“iota”、“mass”、“veer”等词，仍然可能造成理解上的困难。
+• [质疑性能提升] lightingthedark质疑性能提升的说法，指出在C语言中，由于缺乏泛型支持，侵入式链表确实更受欢迎，但在Zig的泛型版本中，数据类型可以直接作为值类型嵌入节点，且编译器可以重新排列结构布局，因此内存布局上可能没有显著差异，除非刻意使用指针类型。
 
-• **jaynetics**：提到无字母“e”的小说《Gadsby》，暗示通过限制某些元素进行创作的可行性，并将其与讨论中的文章类比。
+• [耦合问题] steventhedev认为这种设计会增加数据类型和集合之间的耦合，并质疑这种方法的好处是否仅限于数据对齐，或者是否出于更强烈的愿望去移除泛型。
 
-• **ActorNightly**：提供了一个更为详细的解释，通过思想实验展示空间和时间的关系，认为这样可以更有效地解释复杂的物理概念，并批评原文解释不够清晰。
+• [对齐优势] ralferoo指出，侵入式链表允许在使用较大类型时避免编译器插入对齐填充，这在需要保持默认对齐时尤为重要。
 
-补充讨论：
-• **janpmz**：将文章转化为有声书，提供了一个实用工具链接，但未对文章内容本身做出评价。
+• [语言特性] spiffyk认为，这种变化符合Zig社区长期以来对`@fieldParentPtr`内建功能的依赖，作为实现类似OOP继承的主要方式，这种变化在语言特性上是很自然的。
 
-• **ahazred8ta**：提到Poul Anderson的《Uncleftish Beholding》和xkcd的“Up Goer Five”作为参考，展示了通过限制词汇解释科学概念的先例和资源。
+• [函数参数问题] roetlich对如何安全地编写接受链表作为参数的函数表示担忧，暗示这种设计可能带来复杂性。
 
-• **crooked-v**：抱怨多标签环境下阅读体验不佳，批评文章排版未考虑边距问题，偏离了讨论核心。
+• [链表的实用性] hoseja认为，链表应作为特定情况下的数据结构，而不是默认选项，质疑其在前沿默认使用中的必要性。
 
-• **TobTobXX**：也提到“Up Goer Five”并推荐了一个与MinutePhysics合作的视频，认为视频解释更为直观有效。
-
-• **Tepix**：简单评论，认为文章需要加上“(1999)”标签，可能是对文章风格或内容的时代感做出评价。
-
-• **russellbeattie**：尝试用限制词汇的方式重新解释概念，发现不使用带有“-s”或“-er”的词非常困难，实际操作比想象中更具挑战性。
-
-• **amelius**：怀疑文章像是AI生成，暗示可能缺乏人类写作的真实性和深度。
-
-争议焦点：
-• 主要争议在于限制词汇解释复杂概念的有效性。一些人认为这种方法使解释变得混乱和困难（如stavros和ActorNightly），而另一些人则认为这是一种有趣且具有挑战性的创作方式（如hkmaxpro和ahazred8ta）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43678312" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://christopherdrum.github.io/posts/2025/04/porting-infocom-with-cosmo" target="_blank">Show HN: Resurrecting Infocom's Unix Z-Machine with Cosmopolitan</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ChristopherDrum</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-04-14 03:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了如何使用Cosmopolitan将经典UNIX游戏《Zork》三部曲移植到多个现代操作系统（Windows、Mac、Linux、BSD）和架构（ARM、x86）。移植后的独立可执行文件无需额外安装或外部文件即可直接运行。通过简单的命令行操作即可下载和游玩《Zork》。此外，文章还介绍了Z-machine的历史及其在不同平台上运行的原理，以及Cosmopolitan如何通过标准化C语言和ABI实现跨平台的“编写一次，随处运行”功能。Cosmopolitan不同于传统的虚拟机方法，它利用APE格式，使程序能够在多个平台上以原生方式运行。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕软件、游戏的兼容性、历史及工具使用的讨论。
-
-不同观点：
-• fredsmith219：对软件在Arch系统上的良好兼容性表示赞赏，认为其运行顺利，没有问题。
-• wyldfire：分享个人经历，提到因游戏《HHGTTG》而引发对原著小说的兴趣，并描述了多年后重温游戏的体验，强调了游戏的趣味性及文化影响。
-• o11c：提供技术建议，推荐使用特定的GCC参数来处理代码声明问题，并指出Clang在这方面的不足，强调保持代码质量的重要性。
-• bruce511：讨论了C语言及Windows程序的长期兼容性，对比了现代Web API的频繁变化，指出过去代码的持久性与现代API的不稳定性。
+• [库实现必要性] DeathArrow对语言库中实现单链表和双链表的必要性表示疑问，认为像数组列表、字典、堆栈和队列等数据结构更为常用，链表的使用频率较低。
 
 补充讨论：
-• joshu：提出关于虚拟机历史的技术性意见，认为UCSD p-system虚拟机早于Z-machine出现，对原作者的观点进行了补充。
-• user3939382：略微偏题，推荐了一款名为Vespers的游戏，认为其制作精良且氛围浓厚，为讨论增添了其他值得关注的游戏内容。
-
-争议焦点：
-• 不同工具的有效性：o11c认为Clang在处理某些代码问题时表现不佳，而GCC更为可靠，这可能引发对不同编译器优劣的讨论。
-• 兼容性的持久性：bruce511对比了过去代码的长久兼容性与现代Web API的频繁变化，提出了对开发和维护不同类型软件的思考。</div>
+• 争议的焦点在于新设计是否真正带来性能提升，以及这种侵入式设计带来的耦合和复杂性是否值得。
+• 对链表作为默认数据结构的实用性和必要性存在不同看法，反映出开发者在实际应用中对链表的偏好差异。
+• 部分讨论者关注Zig语言特性和社区习惯，认为这种设计变化符合Zig的一贯风格和需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43677909" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43679707" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -166,8 +122,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: nabla9</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 133</span> |
+                    <span>评论数: 6</span> |
                     <span>发布时间: 2025-04-14 07:47</span>
                 </div>
 
@@ -178,9 +134,120 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：日本木工刨花比赛的满足感及相关思考
+
+不同观点：
+• [zkmon] 认为比赛的满足感来自于追求的过程，而不是追求的目标是什么。他强调，无论追求的是木工比赛还是其他目标，关键在于有动力去追求，并相信这种追求能带来改善。他还指出，通常被视为成功的目标（如创业、投资、获得美国国籍等）虽然不错，但实现这些目标的成本更高，而满足感可能是一样的。因此，成功的定义应该是以较小的代价获得幸福感。
+
+• [kappasan] 从语言学的角度指出，"kezuroukai"这个名称是一个双关语。"kai"可以理解为"gathering"（聚会）或"community"（社区），因此该比赛不仅是一项技能竞赛，也可能是一种社群活动。
+
+• [WJW] 关注比赛的技术细节，表达了对选手能够手工刨出10微米厚度的木片的惊讶，尤其是冠军选手能够稳定地在个位数微米范围内操作，这让他感到震撼。
+
+• [EncomLab] 赞赏将简单技能发挥到极致的做法，认为这种对细节和精度的极致追求非常迷人，表明了他对工匠精神的欣赏。
+
+• [bamboozled] 强调日本手工刨是木工工作中最令人满意的工具之一，特别适合对木工有兴趣的人，并建议尝试使用这种工具。
+
+补充讨论：
+• 争议焦点：[zkmon] 的观点隐含了对传统成功定义的质疑，他认为高成本的目标（如创业成功、财富积累等）并不一定比简单追求（如木工比赛）带来更多的满足感，这可能引发一些人对于成功和幸福之间关系的思考和讨论。
+
+• 技术细节：[WJW] 对10微米厚度的惊讶以及对冠军选手技术的称赞，突显了比赛中的技术难度和精湛的手工技艺。
+
+• 文化双关：[kappasan] 对比赛名称的双关解读，引入了对文化和语言的理解，丰富了讨论的维度。
+
+总结：评论围绕木工刨花比赛的满足感、技术难度、文化双关以及对成功和幸福的思考展开，展现了不同角度的关注点和观点。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43679004" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.muppetlabs.com/~breadbox/txt/al.html" target="_blank">Albert Einstein's theory of relativity in words of four letters or less (1999)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: signa11</span> |
+                    <span>评分: 163</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-04-14 05:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章用简单易懂的语言解释了爱因斯坦的相对论，特别是光速恒定和相对运动的概念。文章通过假设一个人在一个虚空中的情景，说明无法确定自己是否在移动，因为没有参照物。当加入床或太阳等物体时，依然无法确定谁在移动。文章接着讨论光速（c）的恒定性，即无论光源是否移动，光速对所有观察者都是相同的。实验证明，无论光线向哪个方向发射，其速度都是c，这挑战了传统的运动观念。爱因斯坦提出，为了使光速对所有观察者一致，时间也必须相对变化。文章最后通过伯特和达娜的思想实验进一步说明时间的相对性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过有限词汇解释复杂概念的挑战和效果
+
+不同观点：
+• hkmaxpro和一些其他用户（如ahazred8ta、TobTobXX）认为，使用四字母或更少字母的单词，或者仅用最常见的单词来解释复杂概念（如研究生数学研究、真空吸尘器、火箭科学）是非常困难的，但这种方法可以引发思考，并展示限制词汇对解释的影响。他们提到了Yasha Berchenko-Kogan对数学研究生工作的描述，以及“Up Goer Five”等例子。
+• gcanyon指出，四字母的限制不一定能简化问题，并建议用不同的短词替换原句中的某些部分，以尝试改善解释效果。
+• blueaquilae和stavros认为，这种限制词汇的描述对于已经理解概念的人可能更容易接受，但对于试图从中学习新知识的人来说，解释过于简略，容易让人困惑。stavros特别提到在无法使用如“重力”和“加速度”等词汇时，理解变得困难。
+• freetonik补充说，并不是所有短单词都简单，有些短词本身也具有复杂含义，例如“void”和“iota”。
+
+补充讨论：
+• jaynetics提到了没有字母“e”的小说《Gadsby》，进一步探讨了语言限制的创作可能性。
+• ahazred8ta引用了Poul Anderson的《Uncleftish Beholding》和xkcd的“Up Goer Five”来展示用简单词汇解释科学概念的努力。
+• crooked-v抱怨在多标签浏览环境中，缺乏排版设计的内容难以阅读。
+• ActorNightly提供了一个更详细的解释例子，通过思想实验阐述时空关系，并批评原始解释的不足。
+• janpmz分享了自己将内容转换为有声书的链接。
+• amelius开玩笑说，这种限制词汇的文章像是AI生成的。
+• Tepix建议在标题中添加“(1999)”标签，可能是为了增加怀旧或复古效果。
+• robinhouston提到了George Boolos的用单音节词解释Gödel第二不完备定理的文章，进一步探讨了用有限词汇解释复杂概念的主题。
+• russellbeattie尝试自己用有限词汇进行解释，并发现这种做法比看起来要困难得多。
+
+争议焦点：
+• 这种限制词汇的解释方法是否有效。支持者认为这是一种有趣且具挑战性的思维训练，反对者则认为这种方法容易导致困惑，尤其是对不熟悉主题的读者而言。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43678312" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://omnom.zone/?src=hn" target="_blank">Omnom: Self-hosted bookmarking with searchable, wysiwyg snapshots [showcase]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mstef</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-04-14 11:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是一个提示信息，告知用户当前访问的是一个只读演示实例，无法进行修改。如需了解更多详情，建议用户访问他们的GitHub页面。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一款浏览器书签工具（omnom）的背景、发展、及重写后的评价。
+
+不同观点：
+• [mstef 的观点] omnom 最初是作为 del.icio.us 的替代品开发的，由 mstef 本人编写，并在用户中获得了一定的成功。然而，由于浏览器扩展的快速发展，维护这个非商业的自由软件变得过于昂贵，最终停止了更新和支持。mstef 对项目的停止表示遗憾，但并未继续维护。
+
+• [asciimoo 的贡献] asciimoo 应 mstef 的请求，重写了整个 omnom 项目，使用 Go 语言并修复了扩展问题。他还获得了 nlnet/ngi0 的支持。mstef 对 asciimoo 的工作表示赞赏，认为他做得非常好。
+
+补充讨论：
+• [项目特性] 重写后的 omnom 是一个自托管的自由软件书签服务，适合个人或社区使用。它具有简单、尊重隐私和在快照功能上非常 robust 的特点。
+
+• [对社区的呼吁] mstef 鼓励那些想要拥有自托管的自由书签服务的人尝试 omnom，暗示该项目对有此类需求的用户是一个很好的选择。
+
+争议焦点：
+• 没有明显的争议，但隐含的讨论可能是关于自由软件项目在非商业背景下的可持续性维护问题。项目最初因维护成本过高而停止更新，这是许多自由软件项目面临的共同挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43680232" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -244,6 +311,98 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.cbc.ca/news/canada/toronto/lyft-conversation-transcribed-1.7508106" target="_blank">She was chatting with friends in a Lyft. Then someone texted her what they said</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: andy99</span> |
+                    <span>评分: 47</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-04-14 11:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>多伦多女子Anvi Ahuja在一次Lyft拼车回家途中与室友的谈话被录音，并收到了一份对话文字记录，这让她对隐私安全感到担忧。Lyft公司表示正在调查此事，并声称该事件与其在美国部分城市测试的音频录制试点项目无关。Ahuja在发现未被告知可能被录音后，感到不安，认为自己的隐私被侵犯。Lyft的隐私政策禁止司机未经乘客同意进行录音，并表示已对涉事司机采取了措施。加拿大前隐私专员Ann Cavoukian指出，此事件违反了加拿大的隐私法，是“完全不可接受的”。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对监控、隐私侵犯及技术滥用的担忧，特别是在公共空间和交通工具中的隐私问题。
+
+不同观点：
+• [bhouston] 认为美国当前驱逐批评政府外交政策的人可能是一个暂时的现象，但也担心这种趋势会持续，导致更广泛的监控和意见审查。他提出了一种假设场景，即利用大型语言模型（LLM）和现有的技术（例如以色列在约旦河西岸和加沙地带使用的技术）来监控民众的意见，并压制异见者。这种技术可能被大公司和云服务提供商利用，以实现经济利益。
+
+• [davweb] 提出了一种技术失误的可能性，认为在使用Lyft应用时，司机可能无意中触发了文本框的录音功能并发送了对话记录，而不是故意进行录音和发送。这种技术误操作比公司故意录音更有可能。
+
+• [mystraline] 认为针对此类隐私侵犯的防御手段有限，提出要么保持沉默，要么使用超声波干扰设备来阻止录音。同时，也提出了一种简单的解决方案，即不使用Lyft服务。
+
+• [righthand] 对广告数据收集和隐私侵犯表示强烈反感，并表示不会再使用Lyft服务。
+
+• [micromacrofoot] 认为在乘坐共享服务时，人们不应期望有隐私，因为这些是公共空间，类似于进入加油站时被录像的情况。他们质疑为何有人会认为在陌生人驾驶的车中谈话是安全的。
+
+• [laborcontract] 认为随着LLM和转录技术的发展，个体也很容易进行大规模监控，例如在咖啡馆等公共场所放置监听设备。他指出，社会尚未完全意识到这种技术的潜在影响，并认为在高价值区域进行监控的可能性更高。
+
+补充讨论：
+• 争议的焦点在于对公共空间和私人交通工具中隐私的合理期望。一部分人认为这种环境不应有隐私期望，另一部分人则对隐私侵犯表示强烈反对。
+
+• 技术滥用和误操作的可能性也被广泛讨论。一部分人担心技术被故意用于监控和压制异见，另一部分人则认为可能是技术误操作导致的无意侵犯隐私。
+
+• 对于如何防御隐私侵犯，提出了包括技术手段（如超声波干扰）和行为手段（如不使用特定服务）的建议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43680039" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://phys.org/news/2025-04-economic-inequality-roman-empire-han.html" target="_blank">Comparing economic inequality between the Roman Empire and the Han Dynasty</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gradus_ad</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-10 10:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>一项研究比较了罗马帝国和汉朝的经济不平等，发现汉朝的不平等程度高于罗马。研究发表在《Nature Communications》上，由博科尼大学、剑桥大学和斯坦福大学的学者进行。他们使用现代经济工具分析了两国的收入和生活条件，发现罗马人均收入约为维持生计所需的2.25倍，而汉朝为1.88倍。罗马最富1%人口占据约19%的总收入，而汉朝为26%。罗马的基尼系数为0.46，汉朝为0.48（1代表完全不平等），而现代美国为0.41。研究还指出，汉朝精英阶层从经济中获取的比例（80%）高于罗马（69%），这可能导致了其衰落。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：古代经济体中的不平等及其影响，特别是罗马与汉朝的比较
+
+不同观点：
+• [Y_Y] 认为不平等是自然且不可避免的现象，类似于“不确定性”。他提出不平等本身不一定是坏的，将其比作“没人喜欢糟糕的天气”，但重点应是如何在财富分配中找到平衡，即“使用伞而不是试图控制天气”。他质疑是否应将现代经济体的标准应用于古代社会，并暗示不平等在某种程度上是社会和经济运行的自然结果。
+
+• [lolc] 对古代人口和财富分布的估算持怀疑态度，认为这些估算中使用的模型和假设可能存在较大的误差范围。他指出罗马和汉朝的人口估算依赖于农业模型和不完整的记录，且这些估算需要通过与现代人口统计模型进行匹配，质疑其准确性。同时，他也提到罗马的记录保存相对较好，但对汉朝的记录表示怀疑。
+
+• [epicureanideal] 引用了研究中的观点，即汉朝的精英阶层对经济的“提取率”较高（80% 对比罗马的69%），并认为这可能是汉朝衰落的原因。他暗示现代社会的精英阶层应自我设限，以避免类似的经济问题。
+
+• [yanko] 提出一个现代视角的观点，认为帝国开始衰落的原因是当帝国的债务利息支付超过其军事预算时，这暗示财政问题和债务负担可能是帝国衰落的关键因素，而非单纯的不平等。
+
+补充讨论：
+• 争议的焦点在于古代经济体中的不平等是否可以直接与现代经济体进行比较，以及这些不平等是否是导致社会和经济问题（如帝国衰落）的主要因素。
+• 对古代人口和财富分布估算方法的准确性和可靠性存在质疑，特别是基于不完整记录和现代模型的匹配。
+• 不平等的“自然性”和是否应通过政策手段加以限制也是一个讨论点，特别是对现代社会的启示。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43642568" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://github.com/jlevy/og-equity-compensation" target="_blank">Open guide to equity compensation</a>
                 </h3>
                 <div class="story-meta">
@@ -295,217 +454,12 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.grumpy-economist.com/p/tariffs-saving-and-investment" target="_blank">Tariffs, Saving, and Investment</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: k2enemy</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-04-14 05:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章由经济学家John H. Cochrane撰写，讨论了关税、储蓄与投资之间的关系。作者首先指出，关税问题本质上是支持单边自由贸易，但解释为何众多反对意见错误则较为复杂。文章重点分析了储蓄、投资及“储备货币”等问题，回应了有关美国储备货币地位是否为负担的争论。
-
-作者以希腊为例，说明当一个国家借贷过多并无法偿还时会发生消费 boom 和债务危机。类似情况在美国发生，但规模更大且无人救助。全球多国，尤其是中国，希望储蓄并投资美国。由于中国国内投资机会有限，中国选择购买美国资产，导致美元升值和贸易逆差扩大。
-
-文章应用了四个经济学基本原则：1) 资本账户与经常账户必须平衡；2) 货币只是表象，需关注商品与服务的流动；3) 贸易逆差等于储蓄与投资差额加上政府赤字；4) 区分实际与名义价值。外国对美国资产的需求推高美元，导致贸易逆差。最终，这些因素解释了外国储蓄如何影响美国经济及贸易平衡。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：经济现象和市场反应的分析
-
-不同观点：
-• [pjc50的观点] 认为文章整体方向正确，但指出一个细节错误：高利率应鼓励储蓄而非消费。低利率会刺激债务驱动的消费，而高利率则会促使人们延迟消费并进行储蓄。此外，提到美国债务问题，指出共和党不会削减债务，而是会通过赤字资助的减税政策，类似于英国前首相 Liz Truss 的预算方案。
-
-• [ArtTimeInvestor的观点] 对市场表现感到惊讶，指出尽管美国未来充满不确定性，但标普500和纳斯达克100指数仍高于一年前。同时，黄金和比特币的涨幅相对较小。质疑不确定性是否尚未被市场计入。还提出欧洲的STOXX 600指数下跌，认为在经济衰退中欧洲公司收益减少，但投资者不应只关注债券、黄金和比特币，预期资本会流入欧洲股市。最后，询问是否存在他未注意到的美国股市的潜在上涨因素。
-
-补充讨论：
-• [amrocha的观点] 批评作者基于一个根本性误解写了数千字。指出美国和希腊不同，希腊不能控制自己的货币，而美国可以控制自己的货币并永远不会违约。同时，认为通胀并不是当前需要担心的问题，任何形式的支出都是通胀性的，但整体上并不构成担忧。
-
-争议焦点：
-• 关于高利率对消费和储蓄的影响存在不同理解。
-• 美国债务问题及其潜在市场影响的看法不同，尤其是与希腊的对比。
-• 对市场不确定性是否已被市场计入的看法不一，特别是美国和欧洲股市的表现。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43678401" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kevintechnology.com/posts/leaf-widget/" target="_blank">Show HN: Nissan's Leaf app doesn't have a home screen widget so I made my own</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kcon</span> |
-                    <span>评分: 91</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-04-14 02:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了作者对日产LEAF电动车管理应用的体验及自行开发主屏小组件的过程。官方NissanConnect® EV应用可以远程控制车辆充电、调节气候控制和查看电池状态，但缺乏便捷的主屏小组件。第三方应用如"LEAF Manager"和"My Leaf"曾提供更多功能，但在北美已被迫下架。作者决定利用现有资源，不花费任何金钱，自行开发了一个主屏小组件。通过使用GitHub Actions、Appium、Raspberry Pi和IFTTT等工具，作者成功实现了自动获取车辆状态并显示在iPhone主屏上。尽管过程稍显复杂，但最终实现了预期功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：各类应用和API访问在不同平台和设备上的功能及限制
-
-不同观点：
-• **Android与iOS的功能差异**：[wizerno] 提到Android的WhatsApp小部件允许用户在不发送已读回执的情况下阅读消息，而iOS缺乏类似功能，只能通过笨拙的通知预览来替代。该用户质疑这是WhatsApp未实现的功能还是iOS本身的限制。
-
-• **汽车制造商的API开放问题**：[STELLANOVA] 和 [djaychela] 认为汽车制造商应向用户开放API，像OBD标准一样，让用户可以通过标准API访问车辆数据，以便开发者创建第三方应用。这将使车主和开发者双赢。[djaychela] 特别提到Renault Zoe的数据被制造商采集却不向用户开放。
-
-• **特斯拉与其他汽车制造商的对比**：[jdminhbg] 认为特斯拉之所以体验更好，是因为它重视应用程序的日常使用，而传统汽车制造商则常忽视这一点。
-
-• **对项目和开源精神的赞赏**：[liamwire] 和 [63] 对项目团队的无偿工作和巧妙解决方案表示赞赏，认为这种开源精神值得肯定。[63] 还提到解决方法的简洁性令人耳目一新。
-
-• **制造商对第三方应用的限制**：[MBCook] 提到福特会封锁使用第三方应用的账户，甚至官方应用也无法使用。[aprilthird2021] 则关注项目对第一方限制的应对能力。
-
-• **个人成功案例**：[vincekerrazzi] 分享了自己针对Polestar应用的解决方案，通过设置备份手机、Homebridge插件和ADB命令实现了车辆状态的监控。[featherless] 则提到自己的初创公司Sidecar被提及，表现出对项目和讨论的积极态度。
-
-• **对美国汽车制造商软件体验的批评**：[light_hue_1] 批评美国汽车制造商未能意识到他们实际上是“硬件设备上的软件公司”，尤其在电动车领域，软件体验是关键的差异化因素，而目前非特斯拉、Rivian或Polestar的车主软件体验很差。
-
-• **具体车型应用的问题**：[magicalhippo] 提到自己拥有2017款日产LEAF，其应用程序经常出错，数据不准确，最终放弃使用。[bihan] 简单询问谁使用日产LEAF，可能是在寻找使用同一车型的用户经验分享。
-
-补充讨论：
-• 项目的技术实现细节，如[mxmilkiib] 对GitHub Actions的赞赏和对其他复杂计算流程的探讨。
-• 不同用户对具体车型应用程序的实际体验反馈，如[magicalhippo] 和 [bihan] 对日产LEAF应用的具体问题和使用情况。
-
-争议焦点：汽车制造商是否应向用户开放API以及如何平衡官方应用和第三方应用之间的关系。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43677610" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.signalbloom.ai/news/" target="_blank">Show HN: I made a free tool that analyzes SEC filings and posts detailed reports</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: GodelNumbering</span> |
-                    <span>评分: 159</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-04-13 19:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>多家公司在2025年第一季度财报中表现出色。Wilson Bank Holding (WBHC) 的每股收益（EPS）大幅增长，资产负债表持续扩张。Bruker Corporation (BRKR) 收入增长10%，得益于收购但有机增长滞后。Morgan Stanley (MS) 创纪录的收入远超预期，主要受机构证券部门表现强劲推动。Fastenal (FAST) 营收略超预期，但利润率承压。JPMorgan (JPM) 凭借商业与投资银行业务表现出色，超出预期。Wells Fargo (WFC) 尽管营收未达标，但EPS超预期，并在解决法律问题上取得进展。BlackRock (BLK) ETF流入创纪录，但GAAP盈利承压。BNY Mellon (BK) 核心业务强劲，超出预期。AGNC Investment (AGNC) 核心收益超预期，但净账面价值下滑。Martin Marietta Materials (MLM) 营收增长但净收入下降，且CFO离职。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：投资工具的功能、使用体验及其改进建议
-
-不同观点：
-• [kkaatii] 对工具表示赞赏，并建议增加行业内公司对比功能，以及通过交叉引用财报和 earnings call 转录本来增强报告的深度。
-• [dchuk] 对图表的呈现方式提出批评，认为Y轴应从0开始以避免误导用户对趋势的判断。
-• [martinbaun] 表达了对工具的喜爱，并提出增加投资建议列表和行业下行分析的建议，同时讨论了与新闻网站或社交媒体连接的可能性。
-• [0wis] 对项目的工作量和开发方式表示兴趣，并计划以此为灵感进行自己的数据分析项目。
-• [notimetorelax] 希望看到对管理层历史表现的分析，包括管理层过去决策的结果和透明度。
-• [miki123211] 希望工具提供公司摘要，包括10-K和10-Q报表的解析，以便用户快速了解公司运营情况。
-• [solresol] 分享了自己类似的项目，但表示不清楚如何将其商业化。
-• [Kon-Peki] 对工具表示喜欢，但不太愿意付费，并提出关闭键盘自动纠错功能的建议。
-• [turbocon] 非常欣赏工具，并表示愿意捐助以支持开发。
-• [another-reader] 询问如何创建类似的工具，寻求相关指导和资源。
-• [thefourthchime] 对工具的编码方式表示好奇。
-• [vivzkestrel] 质疑工具的独特性，认为SEC网站已经提供了类似信息。
-• [zakki] 报告工具网站被公司的网络屏蔽问题。
-• [iambateman] 对工具使用的API表示好奇，询问是否使用了EDGAR API。
-• [solumunus] 建议通过自动生成内容和SEO来实现商业化，指出该领域有很大的盈利潜力。
-
-补充讨论：
-• 图表呈现的争议：[dchuk] 强调了图表Y轴从0开始的重要性，以避免误导用户对趋势的判断。
-• 工具的商业化：[solumunus] 和 [martinbaun] 提到了工具可能的商业模式，包括付费内容和SEO策略。
-• 项目开发细节：[0wis] 和 [thefourthchime] 对项目的工作量、开发时间和具体技术实现表示了兴趣。
-• 独特性和改进建议：用户普遍对工具表示赞赏，但提出了多个改进建议，如增加对比功能、管理层分析、图表优化等。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43675248" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-04-economic-inequality-roman-empire-han.html" target="_blank">Comparing economic inequality between the Roman Empire and the Han Dynasty</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gradus_ad</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-04-10 10:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>一项研究比较了罗马帝国和汉朝的经济不平等，发现汉朝的不平等程度高于罗马。研究发表在《Nature Communications》上，由博科尼大学、剑桥大学和斯坦福大学的学者进行。他们使用现代经济工具分析了两国的收入和生活条件，发现罗马人均收入约为维持生计所需的2.25倍，而汉朝为1.88倍。罗马最富1%人口占据约19%的总收入，而汉朝为26%。罗马的基尼系数为0.46，汉朝为0.48（1代表完全不平等），而现代美国为0.41。研究还指出，汉朝精英阶层从经济中获取的比例（80%）高于罗马（69%），这可能导致了其衰落。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：古代罗马和汉朝的人口估算及其相关的经济与社会结构问题
-
-不同观点：
-• **lolc的观点**：
-  - 认为研究罗马和汉朝的人口差异是有趣的，但差异可能很小，容易被误差范围（error bars）所掩盖。
-  - 提出罗马和汉朝的人口估算依赖于经济指标（如农业模型）和假设，而这些假设可以被调整以得出不同的结论。
-  - 指出罗马有相对较好的记录保存制度，但汉朝没有完整的 census（人口普查）数据。
-  - 引用文章说明古代人口估算通过模型生命表进行推测，而这些表依赖于证据匹配（如墓志铭、残缺的人口普查记录）。
-
-• **epicureanideal的观点**：
-  - 引用研究指出汉朝的精英阶层对经济的榨取率（extraction rate）高于罗马，达到80%（罗马为69%），这可能导致了汉朝的衰亡。
-  - 隐含的推论是现代精英阶层应自我设限，以避免类似的经济榨取问题。
-
-• **yanko的观点**：
-  - 认为帝国的衰落始于其债务利息支付超过军事预算之时，强调财政问题在帝国衰退中的作用。
-
-补充讨论：
-- **争议焦点**：
-  - lolc对人口估算的准确性提出质疑，认为假设和模型选择可能影响结论。
-  - epicureanideal和yanko更关注经济和社会结构（如榨取率、财政问题）对帝国兴衰的影响。
-  
-- **论据和例子**：
-  - lolc引用了具体的技术性方法（如模型生命表和证据匹配）来支持其对人口估算的质疑。
-  - epicureanideal通过引用研究结果，强调精英阶层榨取率对汉朝衰亡的影响。
-  - yanko则用财政角度（债务利息和军事预算）解释帝国衰退的原因。
-
-这些观点共同构成了对古代帝国人口和经济问题的多角度分析，强调了不同因素在帝国兴衰中的潜在作用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43642568" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://www.nytimes.com/2025/04/13/books/review/mario-vargas-llosa-appraisal.html" target="_blank">Mario Vargas Llosa has died</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: funkaster</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 8</span> |
+                    <span>评分: 110</span> |
+                    <span>评论数: 10</span> |
                     <span>发布时间: 2025-04-14 03:52</span>
                 </div>
 
@@ -516,23 +470,61 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对作家马里奥·巴尔加斯·略萨（Mario Vargas Llosa）的作品及其个人轶事的评价与回忆
+                    <div class="comments-summary">主要讨论点：对马里奥·巴尔加斯·略萨（Mario Vargas Llosa）的作品、生平及政治倾向的评价和讨论
 
 不同观点：
-• alanvillalobos 认为《山羊的盛宴》（The Feast of the Goat）是略萨的最佳作品，并强烈推荐未读过的人去阅读。
-• brunorsini 提到了略萨和加西亚·马尔克斯（Gabriel García Márquez）之间的个人冲突，特别提到略萨曾打过马尔克斯，这一轶事让人感到难以置信。
-• moomin 对《大教堂里的对话》（Conversation in the Cathedral）给予高度评价，尤其赞赏其第一部分，认为仅第一部分就足以成为一本好书。
-• treetalker 推荐了略萨的另一部作品《小狗们》（Los cachorros），表明这也是一部值得阅读的作品。
-• DeathArrow 表达了对略萨去世的哀悼，称略萨是历史上最伟大的小说家之一，对他留下的大量优秀作品表示感激。
-• codingbot3000 简短表达了对略萨去世的悲伤情感。
-• agigao 提到《世界末日之战》（The War of the End of the World）是自己读过的唯一一部略萨作品，并表示这本书给自己留下了深刻印象，同时也对略萨的去世表示哀悼。
+• [对略萨个人行为和性格的看法] brunorsini提到略萨曾打过加西亚·马尔克斯，对此表示惊讶和难以相信，认为这与自己对略萨的印象不符。该评论引出了一个关于作家个人行为与其文学成就之间关系的讨论。
+
+• [对略萨政治倾向的关注] l3x分享了一篇文章，探讨略萨随着年龄增长逐渐转向右翼的政治立场，暗示对其政治变化的兴趣或质疑。这引发了对略萨不仅是作为文学家，而且是作为政治人物的讨论。
+
+• [对略萨作品的情感反应和推荐] 
+  - culebron21表示在学习西班牙语时读了略萨的作品，《 Cathedral 中的对话》给他留下了深刻的悲伤印象，并激发了他对南美历史的兴趣。
+  - alanvillalobos认为略萨是自己最喜欢的虚构文学作家，特别推荐《The Feast of the Goat》（《山羊的盛宴》）。
+  - treetalker推荐了《Los cachorros》（《小狗们》）。
+  - moomin对《Cathedral 中的对话》给予高度评价，特别提到第一部分的深刻影响。
+
+• [对略萨去世的悼念] 
+  - DeathArrow表达了对略萨去世的悲痛，称略萨是其最喜欢的作家之一，并感谢略萨留下了许多杰出的作品。
+  - agigao提到《The War of the End of the World》（《世界末日的战争》）是自己读过的唯一一本略萨的书，但留下了深刻的印象，并同样对略萨的去世表示悼念。
+
+• [对略萨去世的简短情感表达] codingbot3000仅简单表达了悲伤情绪，未涉及具体作品或政治倾向。
 
 补充讨论：
-• 略萨的个人轶事，特别是与加西亚·马尔克斯的冲突，成为讨论中的一个有趣点，尽管这与他的文学作品无关。
-• 不同的读者对略萨不同作品有各自的偏好，显示出略萨作品的多样性和广泛影响力。
-• 略萨去世引发的哀悼和怀念情绪，反映出他在读者和文学爱好者中的重要地位。</div>
+• 略萨的作品对不同读者产生了深远的情感影响，尤其是在他们学习西班牙语或探索南美历史的背景下。
+• 略萨的政治转向引发了部分读者对其个人和文学作品的重新审视，显示出文学家政治立场对其文学形象的影响。
+
+争议焦点：略萨个人行为（如打加西亚·马尔克斯）与其文学成就之间的关系，以及他政治倾向的转变是否影响其文学地位和读者对其作品的评价。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43677917" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/codr7/hacktical-c" target="_blank">Hacktical C: practical hacker's guide to the C programming language</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: signa11</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-14 10:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Hacktical C》是一本实用的C编程语言指南，旨在帮助程序员充分利用C语言的强大和灵活性。本书假设读者已有基础编程知识，专注于实际应用技巧，而非基础知识解释。作者自认为是一名黑客型程序员，注重解决实际问题，并通过多年实践积累了丰富的C语言经验。C语言赋予程序员极大的自由和责任，虽然不防止错误，但其作为可移植的汇编语言，在许多领域仍至关重要。本书项目采用开放许可，接受捐赠以支持发展。构建环境需要gcc、ccache和valgrind，推荐使用Linux平台进行C语言开发。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43679781" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
