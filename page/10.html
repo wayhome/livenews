@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-21 11:37 (北京时间)
+            最后更新时间: 2025-04-21 14:18 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,39 +61,126 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ahrefs.com/blog/ai-overviews-reduce-clicks/" target="_blank">AI Overviews Reduce Clicks by 34.5%</a>
+                    <a href="https://ohadravid.github.io/posts/2025-04-19-frank/" target="_blank">Frankenstein's `__init__`</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: geox</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-04-20 19:50</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 95</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-19 11:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文总结了Ahrefs对AI概览（AI Overviews）影响点击率（CTR）的研究。通过分析30万个关键词，他们发现AI概览的出现与信息类关键词的点击率下降34.5%相关。具体数据显示，排名第一的关键词在加入AI概览后，点击率从0.073降至0.026。文章指出，AI概览类似于精选摘要，可能导致更多零点击搜索。尽管AI概览包含引用链接，但多个链接使得单个链接获得点击的机会减少。Google声称AI概览内的链接点击率更高，但无法从Search Console数据中验证。文章最后推测，若AI概览保持当前形式，点击率可能会进一步下降。</p>
+                    <p>这篇文章讲述了作者在Python生产代码中遇到的一个极其怪异的`__init__`方法问题。作者试图为一个Python服务添加一个失败测试，但测试偶尔会意外失败，错误提示`FooBarWidget`对象没有`should_exit`属性。经过调查，发现`FooBarWidget`类在其父类`FooWidget`的`__init__`方法中启动了一个新线程，导致在`__init__`完成之前关闭`FooBarWidget`实例会出现问题。这种设计是为了避免阻塞主线程，但完全无视了代码的可读性和可维护性，令人啼笑皆非。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google是否通过某种方式窃取网站所有者的内容
+                    <div class="comments-summary">主要讨论点：在Python的`__init__`方法中处理复杂操作是否合适
 
 不同观点：
-• 观点一：Google通过其服务不当获取并呈现网站内容，实质上是在窃取网站所有者的劳动成果（johng）。具体论据：Google搜索结果直接展示网站内容，用户可能不需要点击进入原网站，导致原网站流量下降，损害网站所有者的利益。
+• mjr00认为在`__init__`中进行任何复杂操作，例如读取外部资源（如配置文件或zeromq socket），都是不合适的。这种做法违反了“最小惊讶原则”，容易导致构造函数失败。他建议使用`connect/open/close`等方法，以及一个单独的配置解析函数，来避免构造函数中的复杂性。
 
-• 观点二：Google只是提供搜索服务，通过索引和展示摘要来帮助用户找到相关内容，而非窃取。支持者可能认为，Google为网站带来了潜在的流量和曝光，且用户可以选择点击进入原网站查看完整内容。
+• zokier提出可以通过多线程的方式解决这个问题，即在构造函数中启动一个工作线程，以完成对象的初始化。这样可以避免在主线程中进行复杂的初始化操作，同时确保构造函数完成时初始化已经完成。
+
+• pjot不同意在构造函数中使用多线程，认为所有的对象初始化应该在主线程中同步完成，而将任何实际使用外部资源（如ZMQ socket）的操作推迟到后台线程中进行。
+
+• _Algernon_提供了一个简单的修复建议，即在`.close`方法中添加`time.sleep(0.1)`，以解决某些时序问题。
+
+• smitty1e引用Wheeler/Lampson的话来调侃Python中解决问题的常见方式，暗示通过增加不严谨的代码层次来解决问题。
+
+• devrandoom对Python构造函数的定义提出了疑问，可能是在确认讨论的背景。
 
 补充讨论：
-• Google的搜索展示机制：一些评论可能会讨论Google的“知识图谱”或“特色摘要”功能，这些功能直接在搜索结果页面展示部分内容，减少了用户访问原网站的需求。
+• wodenokoto对评论中的激烈言辞表示欣赏，但指出如果能有更理智和人性化的解决方案示例会更有帮助。这表明讨论中存在对实际解决方案的需求。
 
-• 流量和曝光之间的平衡：部分讨论可能会提到，虽然直接展示内容可能减少点击量，但出现在Google搜索结果中本身也是一种免费宣传，有助于小网站增加曝光度。
-
-• 法律和道德问题：可能会有人提出是否存在法律上的侵权问题，或者从道德层面讨论Google是否有责任为展示的内容付费或分享广告收入。
-
-争议焦点：Google是否通过其搜索结果不公平地获利，损害了原内容创作者的利益，还是仅仅作为中介平台提供便捷的搜索服务。</div>
+争议焦点：
+• 主要争议在于是否应该在`__init__`中进行复杂操作，特别是涉及外部资源和可能失败的操作。不同的开发者提供了不同的解决方案，包括多线程、延迟初始化和单独的配置解析函数等。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43746085" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43735724" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/zerotech-studio/zack" target="_blank">Zack: A Simple Backtesting Engine in Zig</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sksxihve</span> |
+                    <span>评分: 81</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-17 03:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Zack是一个用Zig语言编写的轻量级回测引擎，用于测试交易策略在历史市场数据上的表现。它通过处理OHLCV数据，模拟交易执行和投资组合管理，并报告策略表现。Zig语言的高性能、内存控制和简明的语法使其成为该应用的理想选择。引擎的核心流程包括初始化、事件循环（处理数据、生成交易信号、模拟订单执行和更新投资组合）、以及结果报告。当前实现的策略是简单的"买入并持有"策略，根据预设的买入阈值生成买入信号，但不生成卖出信号。配置文件用于设置策略和回测参数。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：历史数据在交易策略回测中的应用及其有效性
+
+不同观点：
+• JSR_FDED 对使用历史数据进行交易策略回测感兴趣，并询问如何获取近期数据，特别是截至昨日的几个月数据。他关注的是实际操作和数据的可得性。
+• celltalk 提到自己正在开发一个回测网站 (indicatorinsights.co)，并对当前的工作表示兴趣。他提供了自己的项目作为数据和回测工具的资源。
+• henning 对历史数据是否能预测未来价格表示怀疑，尤其是对于主要指数。他认为，由于电子交易的快速性，过去的数据未必对未来有参考价值。他还提到高频交易公司（如Renaissance Technologies）可能影响了市场效率。
+
+补充讨论：
+• henning 进一步指出，尽管有些现象如动量效应存在，但高频交易公司可能已经利用了这些机会，使得普通投资者难以从中获利。他还提到了"meme stocks"（迷因股票）等非理性市场行为可能带来的短期机会，但质疑算法交易是否适用于这些情况。
+• henning 还提到算法交易中的其他策略，如通过分析订单簿来优化大额交易的执行，这与通常所说的回测策略（如移动平均交叉）有所不同。
+• 争议的焦点在于历史数据是否对预测未来价格有帮助，以及算法交易是否能在扣除交易成本、滑点和税收后仍能优于简单的买入持有策略。
+
+总结：讨论中存在对历史数据有效性的质疑，以及对算法交易在现代市场中实际应用价值的不同看法。同时，也有对不同类型算法交易策略的探讨。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43712877" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www2.eecs.berkeley.edu/Pubs/TechRpts/2021/EECS-2021-162.pdf" target="_blank">Models of Ice Skating for the Development of Robotic Ice Skating Gaits [pdf] (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: nill0</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-17 14:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：STEM与花样滑冰结合的活动及其可行性和具体实现
+
+不同观点：
+• [svisa] 介绍了一个由科技从业者发起的活动和组织（SVISA），其目的是通过结合STEM和花样滑冰来保护本地的冰场。他们举办了一个名为"STEM Ice"的活动，旨在将科技与花样滑冰结合起来，并提供了更多信息的链接和加入他们邮件列表的邀请。
+
+• [scrollaway] 对该活动表示了一定的兴趣，但对其具体目标和实现方式存在疑问。特别质疑了在模型中同时存在无限摩擦和零摩擦的情况下，如何实现转弯。这反映了对活动技术细节和实际操作可行性的关注和困惑。
+
+补充讨论：
+• [scrollaway] 提到自己既是花样滑冰运动员又是AI工程师，因此对这种跨界活动有一定兴趣，但对其具体技术实现感到困惑，尤其是关于摩擦模型的部分。这显示出对活动背后的技术原理有较高的关注，并希望获得更清晰的解释。
+
+• 争议的焦点可能在于该活动技术实现的合理性和可行性，特别是涉及复杂的物理模型时。这表明尽管活动创意新颖，但具体的科学和技术细节需要更清晰的解释和验证。
+
+• 另一个值得注意的点是[svisa]提供的链接，可能包含更多关于活动和组织的详细信息，但[scrollaway]显然还没有完全理解或找到这些信息，这提示信息的可达性和清晰性可能需要改进。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43717403" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -167,6 +254,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://420.headset.io" target="_blank">Show HN: Real-time 4/20 cannabis sales dashboard using Estuary and Tinybird</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sv123</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-04-20 19:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Headset提供业内最精确的4/20大麻销售实时分析，通过与3500多家大麻零售商直接集成，覆盖美国和加拿大，提供无与伦比的市场数据。其AI驱动的洞察引擎能够实时监控总销售额、收据、平均购物篮大小和每家店的平均销售额等关键指标。Headset的优势包括实时POS交易数据、品牌跟踪技术以及精确到分钟的城市需求分析。其Bridge系统为品牌提供实时库存情报，直接从POS系统获取数据，帮助优化库存管理和销售策略。多家业内领先公司信任Headset的数据服务。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于某张地图及相关数据的评论，涉及技术问题、数据来源以及对大麻话题的讨论]
+
+不同观点：
+• [verdverm] 认为地图很酷，但时间显示有些不准确。具体指出时间框显示正确，但时间滑块不准确，动画会超出最后的时间点。他提出了两种可能的处理方式，但未明确支持哪一种。
+
+• [cactusplant7374] 关注数据的获取方式，对如何获取地图数据表示疑问，暗示对数据来源的透明度有兴趣。
+
+• [LightBug1] 对地图分析表示赞赏，但提到“420”这个数字因文化原因变得有些尴尬或不合时宜，暗示对某些符号或数字的文化意义有所顾虑。
+
+• [ivape] 从地图联想到实体销售情况，指出相关商店无处不在，表达了一种对这种现象的担忧或恐惧情绪。
+
+• [Babkock] 对话题中的“大麻”表现出敏感和犹豫，使用幽默和双关语（“debble's lettuce”）来掩饰对讨论这一争议话题的不适，显示出对该话题的争议性有明显意识。
+
+补充讨论：
+• 时间显示的技术问题是一个具体讨论点，[verdverm] 提供了详细的观察和可能的解决方案。
+• 数据来源问题引发对透明度和获取方式的好奇心，[cactusplant7374] 的问题尚未得到解答。
+• 文化符号（如“420”）在不同人群中的解读和反应是另一个值得注意的讨论点，[LightBug1] 的评论反映了一部分人的尴尬情绪。
+• 大麻话题的争议性在 [ivape] 和 [Babkock] 的评论中有所体现，[ivape] 关注实体店的普及，而 [Babkock] 则用幽默掩饰对讨论这一话题的不安。
+
+争议的焦点：大麻话题的敏感性和文化符号的解读是主要的争议点，部分评论者表现出不同的态度和情绪反应。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43745776" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://plentyofroom.beehiiv.com/p/antivenoms-with-ai-designed-proteins" target="_blank">AI-Designed Antivenoms: New Proteins to Block Deadly Snake Toxins</a>
                 </h3>
                 <div class="story-meta">
@@ -199,181 +334,6 @@
 • 评论中还体现出对不同类型AI模型关注度的差异，[rsedgwick] 强调了除LLM外其他模型的创新潜力。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43708841" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theguardian.com/uk-news/2025/apr/17/british-rebellion-against-roman-legions-caused-by-drought-research-finds" target="_blank">British rebellion against Roman legions caused by drought, research finds</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-04-17 22:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>新研究发现，公元367年被称为“蛮族阴谋”的叛乱是由于一连串异常干燥的夏季引发的饥荒和社会崩溃所致。皮克特人、斯科蒂人和撒克逊人利用了这一混乱局势，对罗马在不列颠的防御造成了沉重打击。 senior罗马指挥官被俘或被杀，部分士兵甚至投靠了入侵者。罗马皇帝瓦伦提尼安一世花了两年时间才恢复秩序。大约40年后，罗马正式撤离不列颠。
-
-剑桥大学的研究团队通过橡树年轮数据重建了当时的气候状况，发现公元364年至366年间南不列颠经历了极度干旱，导致农作物歉收和粮食短缺，进而引发社会动荡。研究还表明，类似的气候与冲突关系在当今依然具有警示意义。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：政府垮台的原因及民众的反抗行为
-
-不同观点：
-• [londons_explore] 认为政府垮台的主要原因通常是外部入侵或缺乏食物和水。其他问题（如民众抱怨的问题）不会引发大规模的集体行动。
-• [ashoeafoot] 则补充指出，当民众处于绝境（"deaths ground"）时，例如叛军面临无路可退的情况，他们会拼死反抗，因为没有什么可失去的。
-
-补充讨论：
-• [londons_explore] 强调了外部因素（如入侵、资源短缺）对政府垮台的决定性作用，而内部问题虽然引发抱怨，但不会导致大规模行动。
-• [ashoeafoot] 进一步指出，当民众或叛军陷入绝境时，他们会有强烈的反抗动机，这暗示在特定情况下，内部问题也可能引发大规模的集体反抗。
-• 争议的焦点在于民众是否会在非生存威胁的情况下因抱怨而采取集体行动。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43722816" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://qradiolink.org/open-source-DMR-transceiver-implementation.html" target="_blank">Open Source DMR Modem Implementation in SDR with GNU Radio and Codec2</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: threeme3</span> |
-                    <span>评分: 97</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-19 12:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了使用GNU Radio和Codec2在软件定义无线电（SDR）中实现开源DMR（数字移动无线电）调制解调器的概念验证。DMR是一种广泛应用于业余无线电社区的标准，但由于使用复杂性，新手入门存在一定障碍。文章描述了一个基本的DMR调制解调器，能够通过SDR收发信机模拟用户无线电功能。尽管这是一个概念验证项目，没有实际应用场景，但它为OpenRTX项目（一个开源业余无线电固件项目）提供了灵感。OpenRTX目前支持M17模式，但未来可能支持DMR。
-
-该DMR调制解调器使用GNU Radio处理物理层，MMDVMHost处理数据链路层和部分呼叫控制层，Codec2作为音频编码器。未来开发将包括数据消息、集群无线电支持（Tier III功能）、IPv4传输等。
-
-文章还讨论了支持TDMA传输的SDR硬件平台，如LimeSDR-mini等，以及一些开源DMR接收软件如DSD、gr-dsd、SDRTrunk等。硬件方面，实际应用中还需要功率放大器和RF开关等组件，但本文未涉及这些内容。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：DMR技术及其相关音频编码、带宽和应用场景
-
-不同观点：
-• teleforce引用了Andrew Barron和Motorola Solutions提供的DMR技术指南，强调了DMR技术的现有资源和商业应用。他认为这些资源对于理解DMR非常有帮助，提供了具体的学习资料链接。[1],[2]
-
-• fsiefken提出了关于音频编码的替代方案，认为低比特率的神经音频编码（如HILcodec和SementiCodec）在2-3 kbps的比特率下表现优于Codec2，并提供了相关学术论文的链接，表明新技术可能在音频质量上更具优势。
-
-• glzone1对当前业余无线电中的音频质量表示不满，希望找到一种"高清"（HD）语音编码模式。他指出，其他通信协议如SIP和手机通信已经实现了HD音质，并质疑70cm波段是否因过于拥挤而无法实现更高带宽的HD音频传输。
-
-• lpribis关注DMR技术的具体应用，特别是tier 2和tier 3（集群网络）的区别。他询问了集群网络在业余无线电中的使用情况，并探讨了在GNU Radio中实现SDR前端反馈的标准化方法，提出了技术实现上的具体问题。
-
-补充讨论：
-• 音频编码的改进：fsiefken提出的神经音频编码方案可能引发关于现有Codec2编码是否需要更新的讨论。
-• 带宽与技术可行性：glzone1对HD音质的追求引发了对波段资源是否充足的争议，特别是在70cm波段上。
-• 技术应用与实现：lpribis对tier 3和集群网络的关注，提出了业余无线电中技术实现的可行性和标准化问题，涉及到具体的技术细节和操作挑战。
-
-争议焦点：
-• 音频编码的更新需求：是否需要用更先进的编码技术替代现有的Codec2。
-• 带宽限制与音质追求：在有限波段资源下，是否能够或应该追求更高音质的传输模式。
-• 技术实现的标准化：在业余无线电中实现更复杂的技术（如集群网络）是否具备可行性和必要性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43735945" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://adelbordbari.github.io/etc/2025-04-16-coffee/" target="_blank">Why drinking coffee in Iran has become so complicated</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: imnitwit</span> |
-                    <span>评分: 128</span> |
-                    <span>评论数: 34</span> |
-                    <span>发布时间: 2025-04-16 13:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章通过一段讽刺对话引出对现代咖啡文化的反思。作者抱怨如今在伊朗咖啡馆点一杯简单的咖啡变得异常复杂，咖啡被赋予了过多的“身份象征”和“体验”意义。文章回顾了伊朗历史上咖啡的传统，指出曾经的咖啡馆是人们聚集聊天的地方，而现在的咖啡馆更多是在贩卖生活方式和地位象征。作者认为，这种现象源于商业营销，迎合了人们渴望通过消费来表现自我和获得认同的心理。虽然一些城市如德黑兰和伊斯法罕的咖啡馆成为了社交和工作场所，但本质上这种趋势只是商业噱头，失去了咖啡原本的简单和纯粹。最终，作者感叹这种复杂的咖啡文化已经深入社会，难以改变。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕伊朗及全球咖啡文化的变化以及“第三波咖啡”现象的讨论，包括文化传承、消费选择、生活方式营销等方面。
-
-不同观点：
-• 一些评论认为，伊朗人一直以来都非常重视饮品文化，包括茶、各种传统饮料和现代咖啡文化，这是一种延续的文化传统，而非简单的“炫耀性消费”或“生活方式营销”。（Centigonal）
-• 另一部分评论将咖啡选择的多样性类比为去酒吧选择不同类型的啤酒，认为人们有权根据个人喜好选择不同的饮品，且这种多样性是积极的文化转变。（amanaplanacanal, behnamoh）
-• 有评论指出，咖啡店确实在营销一种生活方式，这种策略吸引了消费者，同时也为商家创造了品牌忠诚度和独特性。这种现象在其他品牌如Costco的Kirkland也有体现。（duxup）
-• 部分评论认为，消费者对咖啡来源和风味的关注是一种积极的现象，它促使人们更关注产品的生产过程，进而可能推动生产实践的改善。（shwin, tkzed49）
-• 有评论指出，虽然新的咖啡文化提供了更多选择，但文章没有充分讨论旧有伊朗咖啡文化的价值和失去的“第三空间”文化，认为文章对新旧文化的讨论不平衡。（Festro, dhendo1）
-
-补充讨论：
-• 部分评论提到，消费者在面对复杂菜单时可能感到困惑，但也有人认为这是提供更多选择和咖啡探索的机会。（snyp, rad_gruchalski）
-• 还有评论将伊朗的咖啡文化变化与全球其他地区的咖啡文化现象进行对比，如葡萄牙的咖啡问题，认为这是全球咖啡文化变化中的一部分。（killerstorm）
-• 最后，有评论提到，文章作者作为伊朗人用英语写作讨论伊朗文化，可能反映了更广泛的文化交流和全球化现象，这本身比咖啡店现象更有趣。（maxander）
-
-争议焦点：
-• 文章是否公正地反映了伊朗咖啡文化的变化，尤其是新旧文化的对比与价值判断。一部分人认为文章过于抱怨新的咖啡文化，而没有充分肯定其积极意义。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43705231" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2404.04671" target="_blank">Inferring the Phylogeny of Large Language Models</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: weinzierl</span> |
-                    <span>评分: 64</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-04-19 13:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了一种名为PhyloLM的方法，该方法运用系统发育算法分析大型语言模型（LLMs）之间的关系，并预测其在基准测试中的表现。PhyloLM通过计算模型输出之间的相似性来确定系统发育距离，并构建树状图，成功展示了111个开源和45个封闭模型的已知关系。此外，该方法的系统发育距离能够有效预测模型在标准基准测试中的表现，为快速评估LLMs的能力提供了时间和成本上的优势。该研究将种群遗传学概念引入机器学习，提出并验证了一种评估LLMs发展、关系及能力的工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI检测器的有效性及其依据的检测方法
-
-不同观点：
-• PunchTornado认为，尽管结果是直观和可预期的，但对AI生成内容的检测效果不佳。他表示，有人能够通过艰苦的工作证明这个结果是值得高兴的，但同时也质疑，如果结果如此明显，为什么AI检测器表现仍然不佳。
-
-• light_hue_1则认为，当前的AI检测方法存在根本性的问题。他指出，检测器关注的是错误的方面，且与生物学的类比不成立。他强调，检测器对训练数据敏感，而不是对模型架构敏感。他用动物分组的类比说明，如果仅根据环境来分类，会导致不合理的归类（如将狮子和鳄鱼归为一类）。他主张，真正的关键在于推断模型的底层架构并展示架构之间的关系，而不仅仅是通过模型名称来判断。
-
-补充讨论：
-- PunchTornado对AI检测器的实际效果表示不满，并暗示可能存在技术和方法上的不足。
-- light_hue_1进一步指出当前检测方法的局限性，并提出了一种更有效的检测思路，即关注模型的架构关系，而不是仅仅依赖训练数据。
-- 争议的焦点在于AI检测器应该如何有效检测生成内容，以及当前方法是否足够科学和实用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43736366" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -438,43 +398,44 @@ HACL*实现了新功能以满足Python的需求，例如Blake2算法的附加模
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://philwip.com/2025/04/14/galaxian-3-project-revival/" target="_blank">Restoring the Galaxian3 Theatre 6, 1992 six player arcade machine</a>
+                    <a href="https://qradiolink.org/open-source-DMR-transceiver-implementation.html" target="_blank">Open Source DMR Modem Implementation in SDR with GNU Radio and Codec2</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: countrymile</span> |
-                    <span>评分: 242</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-04-19 09:22</span>
+                    <span>作者: threeme3</span> |
+                    <span>评分: 98</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-19 12:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《Galaxian 3: Project Revival》介绍了一款由Namco于1990年推出的大型街机游戏，最初版本为28人玩的"Project Dragoon"，采用System 21平台的实时3D图形技术。1991年推出16人玩的"GM-16"版本，加入预渲染CG背景和更快的3D硬件。1992年，进一步缩减为6人玩的"Galaxian 3 Theatre 6"（GT-6），并在全球发行。1994年发布续作《Attack of the Zolgear》。2000年代初，许多Galaxian 3设备被转换为其他游戏，目前全球仅存四台GT-6。2024年3月，一个团队对美国新罕布什尔州Nashua市的Fun World arcade内的一台GT-6进行了检查，发现其存在一些问题，如部分功能失效和声音缺失。该机内部采用复杂的视频显示和控制系统，包括Sony CRT投影仪和多个专门处理3D图形和视频混合的PCB板。团队正努力修复和保存这款稀有的游戏。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：罕见街机游戏的修复与保存，包括技术细节、怀旧情感和相关回忆。
+                    <div class="comments-summary">主要讨论点：业余无线电和数字音频编解码技术的应用与发展
 
 不同观点：
-• [技术与保存] mrandish认为，对于LaserDisc游戏机的修复，最重要的是找到固态替代品，以解决传统机械LaserDisc播放器经常故障的问题。他建议使用单板计算机（如Raspberry Pi）进行替代，并提到利用FFMPEG和脚本化命令解析层来实现播放控制。
-• [怀旧与文化] cadamsdotcom和ljf对修复工作表达了赞赏，认为这种出于热爱的志愿工作比商业驱动的项目更有意义。他们提到了“魔法”就是比别人投入更多时间，并表示这种故事非常吸引人。
-• [历史与回忆] hinkley和austinallegro分享了与特定街机游戏相关的个人经历和历史信息。hinkley提到自己过去未能充分体验某些合作游戏，而austinallegro提到曾在主题公园中存在的多玩家版本街机。
-• [现代对比] wyldfire提到了现代的“Killer Queen”游戏，认为它提供了独特的多人街机体验，并希望看到更多类似的游戏。
-• [技术疑问] liendolucas提出了一个技术问题，询问在电子设备中是否可以通过二分法来查找故障部分。这个问题引发了对电子故障排查方法的讨论。
-• [历史背景] timcobb对街机游戏在园艺和绿化博览会上首次亮相表示不解，质疑其背景和合理性。
+• [fsiefken] 认为传统的Codec2编解码器可能被低比特率的神经网络音频编解码器（如HILcodec和SementiCodec）取代，因为后者在2-3 kbps的比特率下音质更好。他提供了相关研究论文的链接以支持其观点。
+
+• [teleforce] 关注DMR技术，提到Andrew Barron和Motorola Solutions提供的指南和概述，认为这些资源对理解DMR技术非常有帮助。这表明他支持利用现有成熟的商业技术来推进业余无线电的发展。
+
+• [glzone1] 表达了对"高清"语音编解码器的需求，指出SIP协议和现代通信系统（如Zoom、手机等）都已经实现了高清音质。他对业余无线电频段（如70cm）是否过于拥挤以至于无法实现高清音质提出质疑。
+
+• [lpribis] 讨论了DMR的等级2（常规信道）和等级3（集群网络）的区别，询问集群网络是否在业余无线电中使用，或者仅限于大型商业和政府系统。他还提出了在GNU Radio中如何实现对SDR前端进行反馈以支持集群操作的技术问题。
 
 补充讨论：
-• [其他技术细节] squeedles和flir对修复过程中涉及的技术细节表示兴趣，squeedles特别提到了S100板，而flir分享了自己的游戏体验。
-• [保存状态] arronday对游戏机被妥善保存而不是在废弃仓库中发现表示欣慰。
-• [地点确认] WarOnPrivacy试图确认文中提到的Fun World是否为新罕布什尔州的Fun World Game Center，提供了一个参考链接。
+• 关于编解码器的音质和带宽的讨论，涉及传统编解码器与新兴神经网络编解码器的比较。
+• 对DMR技术的不同等级的应用场景和实现方式的探讨，尤其是在业余无线电中的可行性和技术细节。
+• 对业余无线电频段是否能够支持高清音质的质疑和思考。
 
 争议焦点：
-• 主要集中在技术问题上，即如何有效替代和修复LaserDisc播放器，以及如何高效排查电子设备故障。
-
-这些观点展示了不同参与者对街机游戏修复与保存的多角度关注，包括技术、历史和情感层面。</div>
+• 是否应采用新兴的神经网络音频编解码器取代传统编解码器以提升音质。
+• 业余无线电频段是否能够支持高清音质的应用，频段是否过于拥挤。
+• 集群网络技术在业余无线电中的应用可行性和技术实现细节。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43735239" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43735945" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -485,61 +446,79 @@ HACL*实现了新功能以满足Python的需求，例如Blake2算法的附加模
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.judyrecords.com/" target="_blank">Full Text Search of US Court records</a>
+                    <a href="https://arxiv.org/abs/2404.04671" target="_blank">Inferring the Phylogeny of Large Language Models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: FigurativeVoid</span> |
-                    <span>评分: 427</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-04-18 20:24</span>
+                    <span>作者: weinzierl</span> |
+                    <span>评分: 64</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-04-19 13:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Judy Records是一个提供美国法院案件检索服务的平台，拥有超过7.4亿条法院案件记录。该平台允许用户通过搜索功能查找各类法院案件，并提供了使用指南和相关条款信息。此外，Judy Records还提供了API接口，方便开发者集成和访问其数据。平台旨在为公众和专业人士提供便捷的司法信息查询服务。</p>
+                    <p>文章介绍了一种名为PhyloLM的方法，该方法运用系统发育算法分析大型语言模型（LLMs）之间的关系，并预测其在基准测试中的表现。PhyloLM通过计算模型输出之间的相似性来确定系统发育距离，并构建树状图，成功展示了111个开源和45个封闭模型的已知关系。此外，该方法的系统发育距离能够有效预测模型在标准基准测试中的表现，为快速评估LLMs的能力提供了时间和成本上的优势。该研究将种群遗传学概念引入机器学习，提出并验证了一种评估LLMs发展、关系及能力的工具。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一个包含法律和专利记录的数据库的搜索体验和功能进行讨论。
+                    <div class="comments-summary">主要讨论点：AI检测器的有效性及其依据的检测方法
 
 不同观点：
-• [photonthug] 通过搜索“三明治谋杀”等关键词，发现了一些与法律案件相关的滑稽记录，特别是涉及三明治的案件。他引用了多个与三明治有关的犯罪案例作为例子，显示了该数据库中一些出乎意料的搜索结果。
+• PunchTornado认为，尽管结果是直观和可预期的，但对AI生成内容的检测效果不佳。他表示，有人能够通过艰苦的工作证明这个结果是值得高兴的，但同时也质疑，如果结果如此明显，为什么AI检测器表现仍然不佳。
 
-• [ww520] 提到搜索自己的名字时，只找到了交通违章记录，而没有找到他在发现阶段提交的法律简报和证词记录。
-
-• [hoten] 搜索自己的名字后，发现了一个与他外貌特征相符的刑事侵入记录，但该事件并不是他本人所为，他觉得这很诡异。
-
-• [pvg] 提供了几个与Hacker News上相关讨论的链接，暗示该数据库可能在技术社区中引起了关注。
-
-• [m348e912] 质疑该数据库的完整性，因为他未能找到关于Alec Baldwin过失杀人的案件记录，推测可能是因为该案件被法官驳回而未被收录。
-
-• [IIAOPSW] 提到一些常见的法律辩护词如“我们都伸手去拿枪”和“他自找的”在数据库中多次出现，带有一些调侃意味。
-
-• [calderwoodra] 对该数据库的性能和搜索效率表示赞赏，并好奇其背后的技术实现。
-
-• [almosthere] 提到之前有人因类似行为遇到麻烦，但未具体说明。
-
-• [dizhn] 发现自己的名字与多个专利记录关联，并对此感到意外和有趣，因为他并未意识到自己曾启发过微软的专利。
-
-• [mikewarot] 确认该数据库包含专利记录，并分享了一个自己的专利记录链接。
-
-• [sizzle] 寻求帮助，希望了解如何有效使用过滤器以排除专利记录，专注于完整的案件文本。
-
-• [Minor49er] 希望能够在移动设备上按 filing date 排序搜索结果，但未能找到该选项。
-
-• [delichon] 质疑作为一个免费服务，该数据库是否能够承受“被遗忘权”的合规负担。
-
-• [herodotus] 对数据库包含专利记录感到有趣，并确认找到了自己的专利记录。
-
-• [rokob] 未能找到自己曾经出庭的记录，不确定这是好事还是坏事。
+• light_hue_1则认为，当前的AI检测方法存在根本性的问题。他指出，检测器关注的是错误的方面，且与生物学的类比不成立。他强调，检测器对训练数据敏感，而不是对模型架构敏感。他用动物分组的类比说明，如果仅根据环境来分类，会导致不合理的归类（如将狮子和鳄鱼归为一类）。他主张，真正的关键在于推断模型的底层架构并展示架构之间的关系，而不仅仅是通过模型名称来判断。
 
 补充讨论：
-• 用户对数据库的搜索功能、数据完整性、过滤和排序功能提出了不同的问题和建议。
-• 争议的焦点包括数据库的完整性、搜索结果的相关性以及用户隐私问题（如“被遗忘权”）。
-• 一些用户对意外发现的专利记录感到惊讶，并对数据库的技术实现表示好奇。</div>
+- PunchTornado对AI检测器的实际效果表示不满，并暗示可能存在技术和方法上的不足。
+- light_hue_1进一步指出当前检测方法的局限性，并提出了一种更有效的检测思路，即关注模型的架构关系，而不是仅仅依赖训练数据。
+- 争议的焦点在于AI检测器应该如何有效检测生成内容，以及当前方法是否足够科学和实用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43731552" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43736366" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://adelbordbari.github.io/etc/2025-04-16-coffee/" target="_blank">Why drinking coffee in Iran has become so complicated</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: imnitwit</span> |
+                    <span>评分: 128</span> |
+                    <span>评论数: 34</span> |
+                    <span>发布时间: 2025-04-16 13:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章通过一段讽刺对话引出对现代咖啡文化的反思。作者抱怨如今在伊朗咖啡馆点一杯简单的咖啡变得异常复杂，咖啡被赋予了过多的“身份象征”和“体验”意义。文章回顾了伊朗历史上咖啡的传统，指出曾经的咖啡馆是人们聚集聊天的地方，而现在的咖啡馆更多是在贩卖生活方式和地位象征。作者认为，这种现象源于商业营销，迎合了人们渴望通过消费来表现自我和获得认同的心理。虽然一些城市如德黑兰和伊斯法罕的咖啡馆成为了社交和工作场所，但本质上这种趋势只是商业噱头，失去了咖啡原本的简单和纯粹。最终，作者感叹这种复杂的咖啡文化已经深入社会，难以改变。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕伊朗及全球咖啡文化的变化以及“第三波咖啡”现象的讨论，包括文化传承、消费选择、生活方式营销等方面。
+
+不同观点：
+• 一些评论认为，伊朗人一直以来都非常重视饮品文化，包括茶、各种传统饮料和现代咖啡文化，这是一种延续的文化传统，而非简单的“炫耀性消费”或“生活方式营销”。（Centigonal）
+• 另一部分评论将咖啡选择的多样性类比为去酒吧选择不同类型的啤酒，认为人们有权根据个人喜好选择不同的饮品，且这种多样性是积极的文化转变。（amanaplanacanal, behnamoh）
+• 有评论指出，咖啡店确实在营销一种生活方式，这种策略吸引了消费者，同时也为商家创造了品牌忠诚度和独特性。这种现象在其他品牌如Costco的Kirkland也有体现。（duxup）
+• 部分评论认为，消费者对咖啡来源和风味的关注是一种积极的现象，它促使人们更关注产品的生产过程，进而可能推动生产实践的改善。（shwin, tkzed49）
+• 有评论指出，虽然新的咖啡文化提供了更多选择，但文章没有充分讨论旧有伊朗咖啡文化的价值和失去的“第三空间”文化，认为文章对新旧文化的讨论不平衡。（Festro, dhendo1）
+
+补充讨论：
+• 部分评论提到，消费者在面对复杂菜单时可能感到困惑，但也有人认为这是提供更多选择和咖啡探索的机会。（snyp, rad_gruchalski）
+• 还有评论将伊朗的咖啡文化变化与全球其他地区的咖啡文化现象进行对比，如葡萄牙的咖啡问题，认为这是全球咖啡文化变化中的一部分。（killerstorm）
+• 最后，有评论提到，文章作者作为伊朗人用英语写作讨论伊朗文化，可能反映了更广泛的文化交流和全球化现象，这本身比咖啡店现象更有趣。（maxander）
+
+争议焦点：
+• 文章是否公正地反映了伊朗咖啡文化的变化，尤其是新旧文化的对比与价值判断。一部分人认为文章过于抱怨新的咖啡文化，而没有充分肯定其积极意义。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43705231" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
