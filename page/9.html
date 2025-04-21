@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-21 05:11 (北京时间)
+            最后更新时间: 2025-04-21 09:01 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,32 +61,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/hth313/Calypsi-tool-chains" target="_blank">Calypsi: A series of C compiler and assembly language cross compiler tool chains</a>
+                    <a href="https://ohadravid.github.io/posts/2025-04-19-frank/" target="_blank">Frankenstein's `__init__`</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: doener</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-04-16 22:08</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 95</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-19 11:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Calypsi工具链是一系列C语言和汇编语言的交叉编译工具，主要面向复古计算机和业余爱好者社区，未来将支持嵌入式编程常用目标。当前版本5.10支持多种处理器，如MOS 6502、WDC 65816、Motorola 68000和HP Nut（仅汇编和调试器）。支持的平台包括Arch Linux、Debian和Fedora等。工具链具有ISO C 99编译器、代码优化、源码级调试信息输出等功能。工具为闭源，但业余使用免费，有限制地允许少量收入。HP Nut目标则在BSD许可证下提供，允许商业使用。此外，项目包含多个开源支持包和示例项目，如Commodore 64和Amiga的Hello World项目。如有问题或反馈，可联系开发者或在项目页面提交。</p>
+                    <p>这篇文章讲述了作者在Python生产代码中遇到的一个极其怪异的`__init__`方法问题。作者试图为一个Python服务添加一个失败测试，但测试偶尔会意外失败，错误提示`FooBarWidget`对象没有`should_exit`属性。经过调查，发现`FooBarWidget`类在其父类`FooWidget`的`__init__`方法中启动了一个新线程，导致在`__init__`完成之前关闭`FooBarWidget`实例会出现问题。这种设计是为了避免阻塞主线程，但完全无视了代码的可读性和可维护性，令人啼笑皆非。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源问题
+                    <div class="comments-summary">主要讨论点：在Python的`__init__`方法中处理复杂操作是否合适
 
 不同观点：
-• [cogburnd02] 认为该项目甚至不是开源的，表达了不满和失望情绪（"Bleghh"）。
+• mjr00认为在`__init__`中进行任何复杂操作，例如读取外部资源（如配置文件或zeromq socket），都是不合适的。这种做法违反了“最小惊讶原则”，容易导致构造函数失败。他建议使用`connect/open/close`等方法，以及一个单独的配置解析函数，来避免构造函数中的复杂性。
+
+• zokier提出可以通过多线程的方式解决这个问题，即在构造函数中启动一个工作线程，以完成对象的初始化。这样可以避免在主线程中进行复杂的初始化操作，同时确保构造函数完成时初始化已经完成。
+
+• pjot不同意在构造函数中使用多线程，认为所有的对象初始化应该在主线程中同步完成，而将任何实际使用外部资源（如ZMQ socket）的操作推迟到后台线程中进行。
+
+• _Algernon_提供了一个简单的修复建议，即在`.close`方法中添加`time.sleep(0.1)`，以解决某些时序问题。
+
+• smitty1e引用Wheeler/Lampson的话来调侃Python中解决问题的常见方式，暗示通过增加不严谨的代码层次来解决问题。
+
+• devrandoom对Python构造函数的定义提出了疑问，可能是在确认讨论的背景。
 
 补充讨论：
-• 评论中虽然没有直接对比观点，但隐含了对开源的期望，表明至少部分用户认为开源是重要或必要的特性。
-• 评论中缺乏具体论据或例子，主要是情感上的表达，表明评论者可能对非开源项目存在负面偏见。</div>
+• wodenokoto对评论中的激烈言辞表示欣赏，但指出如果能有更理智和人性化的解决方案示例会更有帮助。这表明讨论中存在对实际解决方案的需求。
+
+争议焦点：
+• 主要争议在于是否应该在`__init__`中进行复杂操作，特别是涉及外部资源和可能失败的操作。不同的开发者提供了不同的解决方案，包括多线程、延迟初始化和单独的配置解析函数等。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43710912" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43735724" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -97,43 +109,299 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://philwip.com/2025/04/14/galaxian-3-project-revival/" target="_blank">Restoring the Galaxian3 Theatre 6, 1992 six player arcade machine</a>
+                    <a href="https://github.com/zerotech-studio/zack" target="_blank">Zack: A Simple Backtesting Engine in Zig</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: countrymile</span> |
-                    <span>评分: 242</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-04-19 09:22</span>
+                    <span>作者: sksxihve</span> |
+                    <span>评分: 81</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-17 03:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《Galaxian 3: Project Revival》介绍了一款由Namco于1990年推出的大型街机游戏，最初版本为28人玩的"Project Dragoon"，采用System 21平台的实时3D图形技术。1991年推出16人玩的"GM-16"版本，加入预渲染CG背景和更快的3D硬件。1992年，进一步缩减为6人玩的"Galaxian 3 Theatre 6"（GT-6），并在全球发行。1994年发布续作《Attack of the Zolgear》。2000年代初，许多Galaxian 3设备被转换为其他游戏，目前全球仅存四台GT-6。2024年3月，一个团队对美国新罕布什尔州Nashua市的Fun World arcade内的一台GT-6进行了检查，发现其存在一些问题，如部分功能失效和声音缺失。该机内部采用复杂的视频显示和控制系统，包括Sony CRT投影仪和多个专门处理3D图形和视频混合的PCB板。团队正努力修复和保存这款稀有的游戏。</p>
+                    <p>Zack是一个用Zig语言编写的轻量级回测引擎，用于测试交易策略在历史市场数据上的表现。它通过处理OHLCV数据，模拟交易执行和投资组合管理，并报告策略表现。Zig语言的高性能、内存控制和简明的语法使其成为该应用的理想选择。引擎的核心流程包括初始化、事件循环（处理数据、生成交易信号、模拟订单执行和更新投资组合）、以及结果报告。当前实现的策略是简单的"买入并持有"策略，根据预设的买入阈值生成买入信号，但不生成卖出信号。配置文件用于设置策略和回测参数。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：罕见街机游戏的修复与保存，包括技术细节、怀旧情感和相关回忆。
+                    <div class="comments-summary">主要讨论点：历史数据在交易策略回测中的应用及其有效性
 
 不同观点：
-• [技术与保存] mrandish认为，对于LaserDisc游戏机的修复，最重要的是找到固态替代品，以解决传统机械LaserDisc播放器经常故障的问题。他建议使用单板计算机（如Raspberry Pi）进行替代，并提到利用FFMPEG和脚本化命令解析层来实现播放控制。
-• [怀旧与文化] cadamsdotcom和ljf对修复工作表达了赞赏，认为这种出于热爱的志愿工作比商业驱动的项目更有意义。他们提到了“魔法”就是比别人投入更多时间，并表示这种故事非常吸引人。
-• [历史与回忆] hinkley和austinallegro分享了与特定街机游戏相关的个人经历和历史信息。hinkley提到自己过去未能充分体验某些合作游戏，而austinallegro提到曾在主题公园中存在的多玩家版本街机。
-• [现代对比] wyldfire提到了现代的“Killer Queen”游戏，认为它提供了独特的多人街机体验，并希望看到更多类似的游戏。
-• [技术疑问] liendolucas提出了一个技术问题，询问在电子设备中是否可以通过二分法来查找故障部分。这个问题引发了对电子故障排查方法的讨论。
-• [历史背景] timcobb对街机游戏在园艺和绿化博览会上首次亮相表示不解，质疑其背景和合理性。
+• JSR_FDED 对使用历史数据进行交易策略回测感兴趣，并询问如何获取近期数据，特别是截至昨日的几个月数据。他关注的是实际操作和数据的可得性。
+• celltalk 提到自己正在开发一个回测网站 (indicatorinsights.co)，并对当前的工作表示兴趣。他提供了自己的项目作为数据和回测工具的资源。
+• henning 对历史数据是否能预测未来价格表示怀疑，尤其是对于主要指数。他认为，由于电子交易的快速性，过去的数据未必对未来有参考价值。他还提到高频交易公司（如Renaissance Technologies）可能影响了市场效率。
 
 补充讨论：
-• [其他技术细节] squeedles和flir对修复过程中涉及的技术细节表示兴趣，squeedles特别提到了S100板，而flir分享了自己的游戏体验。
-• [保存状态] arronday对游戏机被妥善保存而不是在废弃仓库中发现表示欣慰。
-• [地点确认] WarOnPrivacy试图确认文中提到的Fun World是否为新罕布什尔州的Fun World Game Center，提供了一个参考链接。
+• henning 进一步指出，尽管有些现象如动量效应存在，但高频交易公司可能已经利用了这些机会，使得普通投资者难以从中获利。他还提到了"meme stocks"（迷因股票）等非理性市场行为可能带来的短期机会，但质疑算法交易是否适用于这些情况。
+• henning 还提到算法交易中的其他策略，如通过分析订单簿来优化大额交易的执行，这与通常所说的回测策略（如移动平均交叉）有所不同。
+• 争议的焦点在于历史数据是否对预测未来价格有帮助，以及算法交易是否能在扣除交易成本、滑点和税收后仍能优于简单的买入持有策略。
+
+总结：讨论中存在对历史数据有效性的质疑，以及对算法交易在现代市场中实际应用价值的不同看法。同时，也有对不同类型算法交易策略的探讨。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43712877" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://gallery.selfboot.cn/en/algorithms/hashring" target="_blank">Consistent Hash Ring</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jcartw</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-17 12:54</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>一致性哈希环（Consistent Hashing Ring）是一种用于分布式系统中数据分布和负载均衡的哈希算法。它将哈希值空间映射到一个环形结构上，范围从0到2^32-1。服务器节点通过哈希函数计算其哈希值，确定在环上的位置。数据也通过哈希函数确定位置，然后顺时针找到环上第一个节点作为存储位置，从而实现数据与服务器的稳定映射。
+
+该算法的优点是在节点增加或移除时，只会影响相邻节点的数据分布，减少数据迁移成本。但在物理节点较少时，数据分布可能不均匀。为解决此问题，引入了虚拟节点（Virtual Nodes），将每个物理节点虚拟化为多个节点，均匀分布在环上，从而实现更均衡的负载和更高效的资源利用。通过调整虚拟节点数量，可以灵活实现负载均衡。
+
+该工具提供可视化界面，用户可以通过添加、删除节点和调整虚拟节点数量，观察数据分布变化和算法效果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一致性哈希及其应用
+
+不同观点：
+• pyfon认为一致性哈希在设计面试准备中具有实际用途，尤其是在处理需要将用户请求路由到同一节点的场景时。他指出，在实际世界中，某些平台团队或AWS可能会处理这类问题，通常由一个团队成员在一周内实现。他还提到使用一致性哈希可以带来性能上的提升，尤其是在处理有状态的工作负载时。
+
+• ryuuseijin分享了自己用Clojure实现的一致性哈希代码，并提供了代码链接，以供他人参考和使用。
+
+• meling指出Chord DHT（分布式哈希表）使用了这种一致性哈希技术，并提供了一个维基百科链接以供进一步阅读。
+
+• __turbobrew__对虚拟节点的作用提出了疑问，指出尽管节点在环上是通过哈希随机放置的，但仍然可能导致不平衡问题。他建议将新节点放置在环上最大的间隙中以解决不平衡问题。
+
+• rad_gruchalski提到Apache Cassandra的工作原理与一致性哈希有关，并提供了相关文档链接。
+
+• eulenteufel分享了自己在设置OpenStack的Ironic服务时首次了解到哈希环技术，并提供了相关模块的链接。
+
+• packetlost推荐了DynamoDB论文作为一致性哈希应用的阅读材料，并提供了论文链接。
+
+• jcartw提到了一个互动式的一致性哈希环可视化工具，但没有提供具体细节。
+
+• samwho对讨论内容表示赞赏，但没有提出新的观点或问题。
+
+补充讨论：
+• 讨论中多次提及实际应用和相关技术文档，如Apache Cassandra和Chord DHT，显示出一致性哈希在分布式系统中的广泛应用。
+• __turbobrew__提出的关于虚拟节点放置的争议显示出在实际应用中的一致性哈希仍可能面临平衡问题，这需要进一步的优化和探讨。
+• 多个参与者提供了代码和文档链接，为想要深入了解和实现一致性哈希的读者提供了实用资源。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43716106" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.fudan.edu.cn/en/2025/0417/c344a145016/page.htm" target="_blank">Researchers develop picosecond-level flash memory device</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: croes</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-04-19 10:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>复旦大学研究团队开发了一种皮秒级闪存设备，其编程速度达到400皮秒，相当于每秒操作250亿次，打破了现有信息存储的速度限制，成为目前已知最快的半导体电荷存储设备。该突破对超快运行的大型人工智能模型具有重要应用价值。传统闪存的电场辅助编程速度远低于晶体管的开关速度，而复旦团队通过创新的物理机制，结合二维狄拉克结构和弹道传输特性，实现了通道电荷向存储层的超注入，将非易失性内存速度推至理论极限。这项技术有望重塑全球存储技术格局，推动产业升级并开辟新的应用场景。相关研究论文已在《Nature》期刊网站发表。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI技术对存储和处理能力的推动以及相关瓶颈问题
+
+不同观点：
+• **slicktux的观点**：AI技术的发展推动了存储技术的进步，但同时质疑处理能力是否会成为新的瓶颈。他认为，处理能力可能已经成为了比存储更严重的瓶颈问题。
+
+• **superkuh的观点**：对存储设备的延迟问题提出质疑，认为延迟并非仅来自存储介质本身的物理特性（如闪存中的电荷陷阱），而是更多来自确保数据准确性的各种管理开销。此外，superkuh指出，如果市场真的对低延迟存储有强烈需求，像Optane这样的技术不应该失败，并且我们应该已经生活在一个具有更高随机读写性能的世界中。
+
+补充讨论：
+• **关于存储延迟的争议焦点**：superkuh质疑slicktux对存储延迟问题的理解，认为延迟主要来自管理开销而非存储介质本身的物理特性。
+• **Optane技术的失败**：superkuh提到Intel的Optane技术未能成功推广，暗示市场可能对高性能低延迟存储的需求并没有那么强烈，或者技术实现面临其他问题。
+• **对现状的反思**：两位讨论者都对当前技术发展方向提出了反思，slicktux关心处理能力的瓶颈，superkuh则质疑存储性能的实际限制和市场需求。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43735452" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.theguardian.com/uk-news/2025/apr/17/british-rebellion-against-roman-legions-caused-by-drought-research-finds" target="_blank">British rebellion against Roman legions caused by drought, research finds</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pseudolus</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-04-17 22:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>新研究发现，公元367年被称为“蛮族阴谋”的叛乱是由于一连串异常干燥的夏季引发的饥荒和社会崩溃所致。皮克特人、斯科蒂人和撒克逊人利用了这一混乱局势，对罗马在不列颠的防御造成了沉重打击。 senior罗马指挥官被俘或被杀，部分士兵甚至投靠了入侵者。罗马皇帝瓦伦提尼安一世花了两年时间才恢复秩序。大约40年后，罗马正式撤离不列颠。
+
+剑桥大学的研究团队通过橡树年轮数据重建了当时的气候状况，发现公元364年至366年间南不列颠经历了极度干旱，导致农作物歉收和粮食短缺，进而引发社会动荡。研究还表明，类似的气候与冲突关系在当今依然具有警示意义。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：政府垮台的原因及民众的反抗行为
+
+不同观点：
+• [londons_explore] 认为政府垮台的主要原因通常是外部入侵或缺乏食物和水。其他问题（如民众抱怨的问题）不会引发大规模的集体行动。
+• [ashoeafoot] 则补充指出，当民众处于绝境（"deaths ground"）时，例如叛军面临无路可退的情况，他们会拼死反抗，因为没有什么可失去的。
+
+补充讨论：
+• [londons_explore] 强调了外部因素（如入侵、资源短缺）对政府垮台的决定性作用，而内部问题虽然引发抱怨，但不会导致大规模行动。
+• [ashoeafoot] 进一步指出，当民众或叛军陷入绝境时，他们会有强烈的反抗动机，这暗示在特定情况下，内部问题也可能引发大规模的集体反抗。
+• 争议的焦点在于民众是否会在非生存威胁的情况下因抱怨而采取集体行动。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43722816" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://youtu.be/-d8Hj0SEFR0" target="_blank">Picocalc, a Modern Retro Computer? [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: indigodaddy</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-20 19:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文主要介绍了与YouTube相关的各种信息和功能。内容包括YouTube的版权声明、联系方式、创作者信息、广告、开发者条款、隐私政策、安全指南以及新功能测试等。此外，文章还提到了NFL Sunday Ticket的服务，并注明了版权归属为2025年的Google LLC。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：物理QWERTY键盘设备运行Linux的可能性与实际应用
+
+不同观点：
+• [sunshine-o] 对物理QWERTY键盘设备充满期待，特别是如果该设备能够运行Linux系统。他们提到LilyGo的T-Deck Plus 1设备硬件很理想，但指出在ESP32-S3上运行Linux非常困难。
+
+• [queenkjuul] 同样表达了对小型设备运行完整Linux发行版的期待，设想这种设备可以作为小型、慢速的电脑使用。他们提到可能会自己动手组装类似的设备，利用手头的Milk-V板进行开发。
+
+• [gnabgib] 没有直接讨论物理键盘设备或Linux系统，而是通过分享PicoCalc项目链接，间接提到小型设备和复古计算项目的相关性，展示了小型设备的其他潜在用途。
+
+补充讨论：
+• 争议焦点在于当前硬件（如ESP32-S3）是否能够有效支持Linux系统的运行。这涉及到硬件性能、软件兼容性及开发难度等问题。
+
+• [sunshine-o] 和 [queenkjuul] 都表达了对LilyGo T-Deck Plus 1设备形态的喜爱，但对其能否真正实现Linux系统运行存在疑虑，[queenkjuul] 甚至提出自己动手组装的可能性，显示出对现有产品的不满足。
+
+• [gnabgib] 提供的PicoCalc链接显示了小型设备在复古计算和教育方面的潜力，扩展了讨论的范围，提示了小型设备在其他领域的应用价值。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43745986" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://youtu.be/Ufmu1WD2TSk" target="_blank">kurzgesagt: South Korea's demographic issue is killing their country [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: maxloh</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-20 18:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>该页面提供了关于Google及其相关服务的概览。包含有关新闻发布、版权、联系方式、创作者信息、广告、开发者条款、隐私政策、安全政策等链接。此外，还提到YouTube的功能测试以及NFL Sunday Ticket服务，并注明版权归2025年Google LLC所有。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43745681" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://qradiolink.org/open-source-DMR-transceiver-implementation.html" target="_blank">Open Source DMR Modem Implementation in SDR with GNU Radio and Codec2</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: threeme3</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-04-19 12:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了使用GNU Radio和Codec2在软件定义无线电（SDR）中实现开源DMR（数字移动无线电）调制解调器的概念验证。DMR是一种广泛应用于业余无线电社区的标准，但由于使用复杂性，新手入门存在一定障碍。文章描述了一个基本的DMR调制解调器，能够通过SDR收发信机模拟用户无线电功能。尽管这是一个概念验证项目，没有实际应用场景，但它为OpenRTX项目（一个开源业余无线电固件项目）提供了灵感。OpenRTX目前支持M17模式，但未来可能支持DMR。
+
+该DMR调制解调器使用GNU Radio处理物理层，MMDVMHost处理数据链路层和部分呼叫控制层，Codec2作为音频编码器。未来开发将包括数据消息、集群无线电支持（Tier III功能）、IPv4传输等。
+
+文章还讨论了支持TDMA传输的SDR硬件平台，如LimeSDR-mini等，以及一些开源DMR接收软件如DSD、gr-dsd、SDRTrunk等。硬件方面，实际应用中还需要功率放大器和RF开关等组件，但本文未涉及这些内容。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：DMR技术及其相关音频编码、带宽和应用场景
+
+不同观点：
+• teleforce引用了Andrew Barron和Motorola Solutions提供的DMR技术指南，强调了DMR技术的现有资源和商业应用。他认为这些资源对于理解DMR非常有帮助，提供了具体的学习资料链接。[1],[2]
+
+• fsiefken提出了关于音频编码的替代方案，认为低比特率的神经音频编码（如HILcodec和SementiCodec）在2-3 kbps的比特率下表现优于Codec2，并提供了相关学术论文的链接，表明新技术可能在音频质量上更具优势。
+
+• glzone1对当前业余无线电中的音频质量表示不满，希望找到一种"高清"（HD）语音编码模式。他指出，其他通信协议如SIP和手机通信已经实现了HD音质，并质疑70cm波段是否因过于拥挤而无法实现更高带宽的HD音频传输。
+
+• lpribis关注DMR技术的具体应用，特别是tier 2和tier 3（集群网络）的区别。他询问了集群网络在业余无线电中的使用情况，并探讨了在GNU Radio中实现SDR前端反馈的标准化方法，提出了技术实现上的具体问题。
+
+补充讨论：
+• 音频编码的改进：fsiefken提出的神经音频编码方案可能引发关于现有Codec2编码是否需要更新的讨论。
+• 带宽与技术可行性：glzone1对HD音质的追求引发了对波段资源是否充足的争议，特别是在70cm波段上。
+• 技术应用与实现：lpribis对tier 3和集群网络的关注，提出了业余无线电中技术实现的可行性和标准化问题，涉及到具体的技术细节和操作挑战。
 
 争议焦点：
-• 主要集中在技术问题上，即如何有效替代和修复LaserDisc播放器，以及如何高效排查电子设备故障。
-
-这些观点展示了不同参与者对街机游戏修复与保存的多角度关注，包括技术、历史和情感层面。</div>
+• 音频编码的更新需求：是否需要用更先进的编码技术替代现有的Codec2。
+• 带宽限制与音质追求：在有限波段资源下，是否能够或应该追求更高音质的传输模式。
+• 技术实现的标准化：在业余无线电中实现更复杂的技术（如集群网络）是否具备可行性和必要性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43735239" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43735945" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -186,318 +454,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/04/20/us/rigged-texas-lottery.html" target="_blank">Texas Officials Invited the Rigging of the State Lottery</a>
+                    <a href="https://arxiv.org/abs/2404.04671" target="_blank">Inferring the Phylogeny of Large Language Models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cainxinth</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-20 11:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：某个彩票系统因设计缺陷而被操控的可能性及其道德与规则问题
-
-不同观点：
-• **[NoToP]**：彩票系统并没有直接被操纵，但其设计存在缺陷，尤其是在票组合和头奖设置方面。这种缺陷使得有足够资源的人可以通过购买所有彩票来利用系统。尽管一些交易存在疏漏，但没有证据显示有人直接行贿或违反规则。相关方只是没有质疑那些对他们无害的问题。
-
-• **[amanaplanacanal]**：不认为存在明显问题。任何购买彩票的普通人都拥有相同的获胜机会，而那些购买所有号码的团体也面临与其他购票者相同的风险，即可能需要与其他人分享头奖。因此，系统仍然是公平的。
-
-• **[add-sub-mul-div]**：提出道德和规则问题，假设某人赢得彩票后发现由于德州官员的违规操作和帮助，导致某些企业可以确保胜利，而自己只能获得一半的头奖。这显示了对系统公平性的严重质疑，尤其是官方在其中扮演的角色。
-
-补充讨论：
-• **争议焦点**：彩票系统的设计缺陷是否构成不公平，以及官方和有资源的大型团体在其中扮演的角色。NoToP认为虽然设计有缺陷，但没有直接违规行为；而add-sub-mul-div则认为官方行为破坏了公平性。
-
-• **论据和例子**：
-  - NoToP指出系统设计缺陷和交易疏漏。
-  - amanaplanacanal认为所有人都有相同的获胜机会，系统仍然公平。
-  - add-sub-mul-div通过假设场景强调官方不当行为对个人获奖者的影响。
-
-• **外部链接**：jlund-molfese提供了一个存档链接，可能包含相关背景资料或进一步讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43743053" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://opensourcesecurity.io/2025/04-can-we-trust-cve/" target="_blank">Can We Trust CVE?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gpi</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-04-19 23:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章简要描述了CVE（常见漏洞与暴露）系统在资金问题引发的一系列混乱后，人们对它的信任危机。最初，CVE的资金出现问题，引发了安全社区的恐慌，随后CISA暂时拨款解决了问题。然而，这笔资金仅够维持11个月，未来仍不确定。文章还讨论了NVD（国家漏洞数据库）在停止更新CVE记录后失去了公众信任，且未及时沟通，进一步加剧了信任危机。CVE系统复杂且难以理解，即便其内部人士在VulnCon会议上也未对潜在问题做出预防措施。CVE董事会更是在资金撤销前12小时才得知消息，显示出管理上的混乱。尽管CISA暂时延续了CVE的服务，但人们对该系统的信任已难以恢复。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对NVD（美国国家漏洞数据库）和CVE（通用漏洞披露）的信任及其相关讨论的价值
-
-不同观点：
-• [tptacek] 认为NVD仅仅是一个为漏洞报告分配编号的机构，质疑讨论其是否值得信任的重要性。他觉得这个编号本身没有多大意义，不值得关注。
-  
-• [yellowapple] 支持透明度是信任的基础这一观点，暗示如果CVE和NVD不透明，那么对其信任就无从谈起。他认为理解这一点的人并不多，对有人能理解这一点感到欣慰。
-
-• [leoqa] 批评原文在没有提供实质性证据的情况下，对CVE管理不善进行了过多推测。他还认为将参加VulnCon（漏洞会议）视为背叛行为是过于简单化的看法，并指出原文情绪化且缺乏实质内容。
-
-补充讨论：
-• [neilv] 提出是否可以选择加入Discord上的一个讨论漏洞的社群，暗示开源和信息安全社区可能更倾向于使用Discord进行交流。他还提到对原文中未明确提出的“威胁模型”感到困惑，质疑讨论中的具体威胁是什么。
-
-争议焦点：
-• 对NVD和CVE的价值和信任问题的不同看法。
-• 对原文内容是否具有实质性、是否情绪化的不同评价。
-• 关于透明度和信任之间关系的讨论。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43740145" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://nautil.us/the-animals-that-exist-between-life-and-death-1202592/" target="_blank">The Animals That Exist Between Life and Death</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dnetesn</span> |
-                    <span>评分: 76</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-04-17 01:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>在17世纪末，自学成才的科学家安东尼·范·列文虎克通过自制的显微镜观察到了一个微观世界，他称其中的微小生物为“微动物”。1687年，他发现了一种特别的生物——轮虫，它们具有轮状附肢，生活在全球各种水环境中。他观察到，当环境干涸时，轮虫会收缩成一个皱缩的椭圆形态，称为“tun”或“xerosome”。令人惊奇的是，加水后，这些轮虫能够复活。这一发现引发了关于生命与死亡状态的哲学争论：这些生物究竟是死了还是处于一种休眠状态？范·列文虎克的观察在当时未被重视，但后来证实一些轮虫可以在干燥状态下存活多年并重新活化，挑战了生命二元论的传统观念。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：生命与死亡的定义和边界问题，特别是在连续变化的生物现象中如何界定生与死。
-
-不同观点：
-• [pdonis] 认为生命和死亡是连续变化中的近似类别，尝试在二者之间划清界限会导致例外情况。过度纠结于此是思维混乱的表现，应该接受这些类别在大多数情况下是有用的，但在边缘情况下可能会失效。
-
-• [kvark] 提出三体问题中的脱水/复水概念可能受到了那些微小生物（如轮虫）的启发，作为在灾难中生存的技能。
-
-• [Ghos3t] 提到《虚无主义者的世界》这本书，其中二元与非二元思维方式是一个核心主题，暗示对生命与死亡的讨论可能与更广泛的哲学主题相关。
-
-• [ggm] 讨论了可复活状态与死亡定义的关系，提出如果一个生物能够被复活，那么其死亡的定义可能过早。并以病毒、朊病毒、线粒体为例，质疑这些生物是否应被定义为“非生命”。
-
-• [verisimi] 认为种子与那些微小生物的状态类似，可以在休眠状态下存活多年，并提出这些生物是否可以通过反复进入初始“种子状态”来实现生命的反复激活。
-
-• [suzzer99] 以木蛙为例，指出其心脏在冻结时停止跳动，直到解冻后再次跳动，质疑这种现象是否与讨论的生物状态类似。
-
-• [lo_zamoyski] 认为生命与死亡可能不是唯一的生存状态，并提出死亡是存在的缺席。同时，批评了将科学发现与宗教教义对立的历史观点，认为这是过时的陈词滥调，特别是在涉及哲学和神学问题时。
-
-补充讨论：
-• 争议的焦点在于如何定义生命与死亡，特别是在面对可以进入休眠或脱水状态的生物时，传统的二元分类是否适用。
-• 讨论中涉及的例子包括轮虫、病毒、种子和木蛙，这些例子都展示了生命与死亡之间的模糊边界。
-• 哲学和历史的视角也被引入讨论，特别是对科学发现与宗教教义关系的批评，以及现代哲学在处理潜在性问题上的困难。
-
-以上观点展示了在生命与死亡定义问题上的多角度思考和复杂性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43712024" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jonathan.protzenko.fr/2025/04/18/python.html" target="_blank">15,000 lines of verified cryptography now in Python</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 465</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-04-18 19:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2022年11月，有人在Python的GitHub仓库中提交了第99108号问题，建议在SHA3实现中出现CVE漏洞后，Python应为所有哈希相关基础设施采用经过验证的代码。截至上周，该问题已解决，Python默认提供的所有哈希和HMAC算法现在均由经过验证的加密库HACL*提供。过渡对用户完全透明，没有功能损失。Python现在包含了HACL*的15,000行经过验证的C代码，并通过脚本自动从上游HACL*仓库获取更新。
-
-HACL*实现了新功能以满足Python的需求，例如Blake2算法的附加模式、覆盖所有Keccak变体的SHA3新API、处理构建系统困难的严格抽象模式、适当的错误管理（尤其是分配失败）以及利用HMAC算法实例化HACL的通用“流”功能。这些改进离不开Aymeric Fromherz的大量实施工作，以及Son Ho对HACL流功能的关键贡献。Python社区的Gregory P. Smith、Bénédikt Tran和Chris Eibl也提供了重要帮助。
-
-文章还深入探讨了流式API的技术细节，强调了其复杂性和验证的重要性。通过依赖类型和泛型流构造，可以实现对不同块算法的流式API的通用验证。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Python中SHA-3相关改动的技术细节、安全性和影响
-
-不同观点：
-• chrisrodrigue: 提到当前不清楚Python具体版本，经过查证发现此改动要到3.14版本才会出现。他认为这是一个安全修复，应该在所有当前支持的版本（>=3.9）中包含。
-• bgwalter: 质疑Python在此改动中的实际贡献，认为这只是一个包装的C库，并没有太大技术突破。
-• Retr0id: 关心是否支持从SHAKE流输出，并提到相关问题在pyca/cryptography库中已解决，但在Python标准库中未有等效问题。
-• IlikeKitties: 从社会影响角度出发，讨论现代加密技术对社会的影响，提及90年代的加密战争现在看来有些过时。
-• jart: 认为Python中的SHA3代码不可信，聪明人都转向了blake2b。并对代码框架化和标准化过程表示质疑。
-• andai: 关心是否可以在内存管理语言中编写加密代码，特别是需要常时运行的情况。
-• tsecurity: 关心此开发的验证过程及其复杂性。
-• hall0ween: 对Python中此改动的意义表示不理解，请求解释。
-• badmonster: 关心通用的流式验证框架在加密哈希之外的复用性。
-• pluto_modadic: 关心引入加密模块是否需要额外的编译工具如G++，或者是否已编译进CPython。
-• thebeardisred: 认为代码行数不能作为衡量加密代码质量的标准。
-• sylware: 质疑编译器和硬件的验证必要性，认为加密应主要用汇编实现。
-• Tarucho: 认为虽然改动有用，但Python的加密依赖微软技术（F*和Project Everest）值得关注。
-
-补充讨论：
-• 争议焦点在于Python中SHA-3改动的实际贡献和安全影响，以及是否应在所有支持版本中包含此改动。
-• 讨论还涉及到加密技术的社会影响、技术实现的细节和验证过程的复杂性。
-• 对于加密代码的实现语言和验证过程，也有不同见解，特别是对内存管理语言和汇编的适用性讨论。
-• 最后，对加密模块的依赖性和编译需求也有一定关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43731165" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://silenceslicer.com" target="_blank">Show HN: Web Video editor, 100% local, AI subtitle, auto cut based on volume</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jerryliuoft</span> |
-                    <span>评分: 27</span> |
+                    <span>作者: weinzierl</span> |
+                    <span>评分: 64</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-04-19 16:00</span>
+                    <span>发布时间: 2025-04-19 13:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章介绍了一种名为PhyloLM的方法，该方法运用系统发育算法分析大型语言模型（LLMs）之间的关系，并预测其在基准测试中的表现。PhyloLM通过计算模型输出之间的相似性来确定系统发育距离，并构建树状图，成功展示了111个开源和45个封闭模型的已知关系。此外，该方法的系统发育距离能够有效预测模型在标准基准测试中的表现，为快速评估LLMs的能力提供了时间和成本上的优势。该研究将种群遗传学概念引入机器学习，提出并验证了一种评估LLMs发展、关系及能力的工具。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：私密性与开源以及潜在合作
+                    <div class="comments-summary">主要讨论点：AI检测器的有效性及其依据的检测方法
 
 不同观点：
-• [bluecrab] 认为，如果一个工具是100%私密的，那么它就应该是开源的。这暗示了私密性和开源之间存在一定的关联性，可能是因为开源能够让用户验证工具的私密性。
-• [mertleee] 则关注合作的可能性，表示自己开发了一个类似的工具，并表示有意愿进行合作。这里强调的是工具的功能相似性以及合作潜力，而非私密性或开源问题。
+• PunchTornado认为，尽管结果是直观和可预期的，但对AI生成内容的检测效果不佳。他表示，有人能够通过艰苦的工作证明这个结果是值得高兴的，但同时也质疑，如果结果如此明显，为什么AI检测器表现仍然不佳。
+
+• light_hue_1则认为，当前的AI检测方法存在根本性的问题。他指出，检测器关注的是错误的方面，且与生物学的类比不成立。他强调，检测器对训练数据敏感，而不是对模型架构敏感。他用动物分组的类比说明，如果仅根据环境来分类，会导致不合理的归类（如将狮子和鳄鱼归为一类）。他主张，真正的关键在于推断模型的底层架构并展示架构之间的关系，而不仅仅是通过模型名称来判断。
 
 补充讨论：
-• [bluecrab] 的观点中隐含了对私密性承诺的质疑，认为开源是验证私密性的有效方式，这可能涉及对工具透明度的讨论。
-• [mertleee] 更关注实际的合作机会，表明对共同开发或功能整合的兴趣，这涉及到工具开发者之间的协作和资源共享。
-• 两者之间的讨论焦点在于不同的关注点：一个是工具的透明度和私密性，另一个是工具的功能和合作可能性，目前没有直接的争议，但体现了不同用户的不同需求和期望。</div>
+- PunchTornado对AI检测器的实际效果表示不满，并暗示可能存在技术和方法上的不足。
+- light_hue_1进一步指出当前检测方法的局限性，并提出了一种更有效的检测思路，即关注模型的架构关系，而不是仅仅依赖训练数据。
+- 争议的焦点在于AI检测器应该如何有效检测生成内容，以及当前方法是否足够科学和实用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43737278" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simonwillison.net/2025/Apr/19/llama-eu-ai-act/" target="_blank">Maybe Meta's Llama claims to be open source because of the EU AI act</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: code_reader</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-04-20 14:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了Meta为何在其Llama模型中使用“开源”一词，尽管其许可证并不完全符合开源定义。作者认为，这可能与欧盟AI法案有关，该法案对开源模型有特殊规定，无需遵循开源倡议组织的标准。根据法案内容，公开发布的工具或AI组件若采用自由开源许可证，可不受某些责任要求的约束，且鼓励透明的文档实践。法案未列出具体许可证名称，但定义了符合“自由开源”的许可证必须允许软件和数据被自由访问、使用、修改和再分发。作者认为，Meta可能利用这一法律漏洞进行营销。通过大型语言模型分析该法案的成本较低，但作者强调不应将其视为法律建议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于欧盟法律条文与序言的权重、开源定义及其障碍，以及不同技术选项的比较
-
-不同观点：
-• **[orra]** 认为博客文章过度强调了序言的作用。他指出，欧盟法律的核心在于条文，序言只在法院解释模糊之处时有参考价值，且其他事实同样可以用于解释。
-• **[AnotherGoodName]** 持相反观点，认为该许可证未达到开源要求是因为其包含大量限制用于不当目的的声明，这是为了符合如《欧盟人工智能法案》中的负责任AI使用法律，属于一种规避责任的行为。
-• **[paddw]** 认为，尽管根据某些联盟定义该项目不一定完全符合“开源”的标准，但将模型权重免费公开已使得其与完全封闭的选项显著不同，且对公众免费提供了大部分价值。
-• **[bionhoward]** 认为使用LLaMA比使用Gemini、ClosedAI、Claude或xAI等API更合理，因为后者更像是单向窃听工具，而前者相对不那么不明智。
-
-补充讨论：
-• **[troupo]** 对技术进步和复杂性表达了不满，认为依赖新版本的Gemini或GPT等模型来理解内容是不切实际的，强调个人阅读和理解的重要性。
-• 争议的焦点在于开源的定义以及是否应将模型的权重公开视为“开源”的一部分。有些人认为这是规避责任的措施，而另一些人则认为这已是对公众有重大价值的开放行为。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43743897" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/satellitecomponent/Neurite" target="_blank">Neurite</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: prettydope3932</span> |
-                    <span>评分: 80</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-04-19 11:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Neurite是一个开源项目，通过分形和图论原理创建非线性思维导图，适用于AI代理、网络链接、笔记和代码管理。它提供分形导航（实时缩放和自定义分形）、多代理UI（AI节点网络）、FractalGPT（结构化记忆映射和非线性记忆访问）、以及知识同步等功能。Neurite结合物理模拟和分形拓扑，支持多媒体交互和AI集成（如Wolfram Alpha和Wikipedia搜索），为用户提供一个无限扩展的工作空间，用于创意和协作。项目还推出了桌面版，增强了交互体验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一款具有“缩放”功能、背景为曼德布罗分形图像的心智图软件的评价与争议
-
-不同观点：
-• [namuol] 认为软件的背景使用分形视觉效果较为新颖，但对软件介绍文档的夸大其词感到反感，感觉像是在阅读几年前的NFT项目介绍，难以理解。
-• [khqc] 赞赏软件的概念，但认为其给予用户过多自由，反而削弱了zettelkasten方法（卡片盒笔记法）的核心价值。限制笔记大小和浏览速度等约束条件能够帮助用户更好地掌握整体结构。
-• [davidw] 批评软件的介绍像1990年代的网络宣言，暗示其内容过于复杂或不切实际。
-• [dleeftink] 认为个人知识管理（PKM）的未来不在于表象的呈现，而在于简化和整合已有思想。工具之间的切换成本高昂，且数据难以互通，需要更好的工具来个性化地适应个人语义。该项目为此奠定了基础。
-• [pphysch] 对软件的用户界面设计表示认可，但总体认为其像艺术项目，相比Obsidian等更直接的“第二大脑”工具或已有的AI/数据工作流工具，其实际优势不明确。
-
-补充讨论：
-• [slater] 遇到技术问题，软件在Firefox浏览器中无法正常工作，并提供了具体的错误信息，涉及未连接到本地服务器和跨域请求被阻止等问题。
-• [pphysch] 提出关于分形视觉效果的技术问题，询问对象的缩放比例如何表示，是否只是一个浮点数，即分形并非真正的无限。
-
-争议焦点：
-• 软件介绍文档的夸大其词引起部分用户的反感。
-• 用户自由度与zettelkasten方法的限制之间的平衡问题。
-• 软件的实际应用价值和艺术项目之间的界限。
-• 技术实现上的问题，特别是跨浏览器兼容性和本地服务器连接问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43735693" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43736366" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
