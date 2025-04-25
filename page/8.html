@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-25 23:14 (北京时间)
+            最后更新时间: 2025-04-26 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,47 +61,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.scottantipa.com/yagri" target="_blank">YAGRI: You are gonna read it</a>
+                    <a href="https://fedify.dev/tutorial/microblog" target="_blank">Creating your own federated microblog</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: escot</span> |
-                    <span>评分: 305</span> |
-                    <span>评论数: 38</span> |
-                    <span>发布时间: 2025-04-23 21:47</span>
+                    <span>作者: dahlia</span> |
+                    <span>评分: 171</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-24 09:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章提出了一种名为YAGRI（You Are Gonna Read It）的理念，作为对YAGNI（You Aren't Gonna Need It）的补充。YAGRI建议，在开发过程中，不仅要存储当前产品需求所需的最少数据，还应存储可能需要读取的数据，如时间戳和元数据。这有助于调试问题和进行数据分析。文章特别提到，在实现某些功能（如删除操作）时，应记录谁、何时、如何、为何删除了数据，而不仅仅是执行删除。常见的有用字段包括created_at、updated_at、deleted_at、created_by等。虽然不是所有存储的数据都会用到，但某些关键时刻，这些数据可能会发挥重要作用，避免未来问题。关键在于平衡，不应过度记录，但适量的额外数据存储能提供重要保障。</p>
+                    <p>这篇文章介绍了如何使用Fedify框架创建一个实现ActivityPub协议的微型博客（microblog），类似于Mastodon或Misskey。教程重点在于如何使用Fedify，而非其底层原理，适合想学习Fedify并创建ActivityPub服务器软件的开发者。读者需具备基本的网页开发经验（HTML、HTTP、SQL、JSON和JavaScript），但无需了解TypeScript、JSX、ActivityPub或Fedify。
+
+教程目标是创建一个单用户微型博客，能够与其他联邦软件通过ActivityPub交互，功能包括关注/取关、查看粉丝列表、发帖等。为简化教程，有一些功能限制如无法编辑资料、删除帖子等。
+
+文章还详细介绍了开发环境的设置，包括安装Node.js、Fedify命令，以及初始化Fedify项目的过程。完整源代码可在GitHub仓库中找到。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关系型数据库是否应内置软删除功能以及如何处理数据的修改和删除记录
+                    <div class="comments-summary">主要讨论点：ActivityPub协议的优缺点及应用场景
 
 不同观点：
-• KronisLV认为主流关系型数据库应内置支持软删除功能，避免每次查询都需要手动处理`deleted_at`条件，并建议通过如`CREATE TABLE ... WITH SOFT DELETES`的方式实现，减少应用程序中的复杂性。
-• crazygringo指出，是否实现软删除等功能不应仅由开发人员决定，而应由产品负责人评估和决定，可能存在数据不应被存储的情况。此外，添加这些功能会增加复杂性和潜在问题，必须经过详细的需求和设计讨论。
-• alganet通过描述数据库设计中的常见演进过程，指出完整审计日志和规范化表结构之间的权衡，认为没有完美的解决方案，最终需要根据实际需求做出明智选择。
-• arialdomartini反对将审计字段（如`updated_at`, `deleted_at`）与事务数据混合存储，主张使用单独的审计日志表以遵循关注点分离原则，这样可以记录所有更改而不仅仅是最后更改。
-• gorgoiler支持使用单独的编辑表记录旧值和新值的更改，认为这样可以补充主表的创建和更新时间，甚至可以接近图数据库的实现，但要注意一致性问题。
-• reillyse分享了在Rails中使用时间戳代替布尔值（如`is_deleted`）的经验，认为这样可以以较小的边际成本存储更多信息。
-• arjonagelhout提到，许多“将来可能需要的字段”来自于经验，但在团队中传递这些知识和做出权衡的直觉是困难的。
-• shaunofthedev强调，产品需求应明确指出需要哪些字段，以便在出现问题时能够追溯信息，而不需要依赖数据库管理员。
-• hoipaloi引用了反对软删除的文章，认为软删除可能不值得实施。
-• al_borland同意需要预先规划数据库以适应未来的增长和需求，但警告不要过度收集用户数据以避免法律风险。
-• mkhalil认为事件溯源（Event-sourcing）是解决此问题的方案，但由于缺乏像Next.js那样的便捷框架，尚未广泛应用。
-• PaulHoule描述了自己开发适应层以实现类似功能的经验，并分享了使用Postgres和ArangoDB的混合方案。
-• IshKebab支持记录“为什么发生变化”的信息，以Gitlab为例说明缺少此类信息可能导致的问题。
-• yellowapple详细描述了使用日志表记录所有更改的方案，认为这样可以重建记录的完整生命周期，特别适用于需要高可追溯性的场景。
-• evanmoran询问当前生产环境中对软删除的看法，并探讨了其他可能的模式，如使用触发器防止删除。
+• **_heimdall**: 对ActivityPub的吸引力感到不解，认为其功能与RSS重叠，主要区别在于可以知道谁关注了自己。不过，这对博客或微博的写作者来说并不重要。另外，ActivityPub的社交功能（如点赞和分享）需要依赖第三方服务器，去中心化的多主机选择更像是一种原则性论据，而非实际好处。
+
+• **AndrewStephens**: 认为ActivityPub缺乏简化版的静态AP feed功能，希望Mastodon用户能关注静态博客而不必实现完整的交互功能。现有的RSS桥接工具虽然可用，但希望这类功能能内置于ActivityPub中。目前通过手动发布博客到Mastodon账户的方式也能接受。
+
+• **jskherman**: 提供了一个相关工具Hollo的链接，可能对希望通过ActivityPub发布静态内容的人有所帮助。
+
+• **1dom**: 对自托管单用户ActivityPub服务器表示满意，认为其系统设计令人愉悦，尤其是与静态网站或无服务器设置相比，具有独特的吸引力。
+
+• **smjburton**: 认为缺乏搜索功能是一个不足，搜索功能对于发现新博客和让其他用户找到自己的博客都很重要，尤其是在Google只显示带有特定关键词的网站的时代。
+
+• **saltysalt**: 怀念RSS，表明对旧有内容分发方式的喜爱。
 
 补充讨论：
-• 软删除的复杂性与价值：多位讨论者对软删除的复杂性和潜在价值进行了权衡，提到需要根据具体场景决定是否实施。
-• 审计与数据跟踪：讨论中多次提到需要记录数据的完整生命周期，并分享了多种实现方式，如使用日志表或触发器。
-• 产品决策与技术实现的平衡：强调了技术决策应与产品需求相结合，避免过度设计或不足设计。</div>
+• 对ActivityPub的功能需求：包括简化版静态feed、搜索功能等，显示出用户对ActivityPub功能扩展的期望。
+• 去中心化与自托管的吸引力：部分用户（如1dom）对自托管和去中心化系统的内在满足感，强调了这类系统的非功能性吸引力。
+• 争议焦点：ActivityPub相对于RSS的实际好处，特别是去中心化与第三方托管之间的权衡，以及对社交功能的需求和实现复杂性的讨论。
+
+这些观点反映了用户对ActivityPub的不同期望和使用场景，从功能需求到系统设计，各有侧重。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43776967" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43780785" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -112,136 +114,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/UnmappedStack/TacOS" target="_blank">Show HN: My from-scratch OS kernel that runs DOOM</a>
+                    <a href="https://publicdomainreview.org/essay/i-am-making-the-world-my-confessor/" target="_blank">Mary MacLane, the Wild Woman from Butte</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: UnmappedStack</span> |
-                    <span>评分: 305</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2025-04-24 00:15</span>
+                    <span>作者: samclemens</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-25 06:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>TacOS 是一个从零开始构建的类 UNIX 操作系统，拥有自己的内核，采用 C 语言和汇编语言编写。该系统具备虚拟文件系统（VFS）、调度器、TempFS、设备管理、上下文切换、虚拟内存管理和物理页帧分配等功能，甚至可以运行《DOOM》游戏。它能够在真实硬件和 QEMU 模拟器上运行。然而，TacOS 仍是一个业余项目，存在多个已知 bug，尚未达到实际使用的要求。要构建和运行 TacOS，需使用 Limine 启动引导器，并依赖 QEMU、NASM 和 Clang 等工具。项目代码基于 MPL-2.0 许可证发布。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕自制操作系统TacOS及其运行DOOM的技术讨论
-
-不同观点：
-• [planck_tonne] 对如何在笔记本上运行该操作系统提出了实际操作问题，关注具体步骤及学习资源的推荐。该评论者对操作系统开发有基础了解，但希望获得更具体的实践指导。
-• [worldsavior] 对使用不安全语言（如C）开发操作系统提出质疑，认为应使用内存安全的低级语言来避免安全漏洞。该评论者承认项目是业余爱好，但仍主张淘汰不安全语言。
-• [the_hoffa] 对项目的动机提出好奇，询问TacOS是否专为运行DOOM设计，还是作为一个通用操作系统并以DOOM为概念验证。该评论者分享了自己多年前类似的操作系统开发经验。
-• [xhrpost] 提出是否有人尝试让现代PC硬件直接启动游戏，类似于旧世代游戏主机。该评论者认为虽然复杂驱动难以实现，但基本输入设备应该可行。
-• [OSDeveloper] 对具体实现细节提出技术性问题，询问使用的DOOM版本、存储方式及引擎相关资源文件。
-
-补充讨论：
-• [tamat] 赞赏项目并表达对阅读大量规范文档的困难，特别对构建GPU驱动及相关文档的难度提出疑问。
-• [waschl] 分享了自己类似的项目经验，强调作为业余项目的满足感，并提供了一个相关链接。
-• [badmonster] 和 [NoScopeNinja] 都对TacOS如何处理进程隔离、调度及多程序运行提出技术性问题，关注操作系统的多任务能力。
-• [throwawaymaths] 对PotatOS提出疑问，询问其具体含义，显示出对项目背景信息的需求。
-• [finalhacker] 关注操作系统内核与CPU型号的关系，以及是否能在KVM中启动该内核，显示出对虚拟化支持的兴趣。
-• [NoOn3] 对mmap实现方式提出调侃性评论，暗示可能存在取巧。
-• [andrewmcwatters] 表达了对项目的高度赞赏，认为从零开始实现内核并运行DOOM是高水平的技术成就。
-• [pkoird] 仅对项目名称表示喜爱，未提出技术性问题。
-• [thewileyone] 对项目表示印象深刻，提出一个将OS默认设置为直接运行DOOM的创意，并建议通过USB启动加载器实现多游戏支持。
-
-争议焦点：
-• [worldsavior] 对使用不安全语言开发操作系统表示反对，主张采用内存安全的低级语言，与其他评论者对项目成就的赞赏形成对比。
-
-总体来看，讨论涵盖了从技术细节到项目动机的多个方面，体现了社区对操作系统开发的浓厚兴趣及多样化观点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43778081" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bloomberg.com/news/articles/2025-04-23/perplexity-executive-says-google-blocked-motorola-s-use-of-ai-assistant" target="_blank">Google contract prevented Motorola from setting Perplexity as default assistant</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: welpandthen</span> |
-                    <span>评分: 242</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-04-23 20:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google与Motorola及Perplexity AI之间的合同争议，涉及默认助手设置和反垄断问题。
-
-不同观点：
-• **mkhalil的观点**：认为文章标题具有误导性。合同中明确规定Motorola可以预装Perplexity AI，但不能将其设为默认助手。Motorola签署了协议，现在却诉诸法庭声称他们别无选择，这种做法不合理。
-  
-• **xnx的观点**：支持Google，认为Google在多个领域表现优异，却被法院不断找麻烦。相较于iOS，Android提供了更多的自由和选择，如开放源代码、允许从任何来源安装应用程序等。
-
-• **ankit219的观点**：质疑规则的一致性，指出Google不能付费成为默认选项，而其他非垄断者却可以。认为默认设置对用户体验影响重大，设置一个不如Google的产品为默认会增加用户的困扰。
-
-• **ThePowerOfFuet的观点**：建议Motorola可以通过提示用户更改默认设置的方式来解决问题，而不是完全无法设置Perplexity AI为默认。
-
-• **jsight的观点**：提到Android用户过去抱怨Bixby等无用功能，因此用户应该有选择权。暗示当前的争议是过去问题的一个反转。
-
-• **ivape的观点**：认为各方都在争夺AI领域的市场份额，最终可能只会有少数玩家垄断市场。将Perplexity的尝试视为未来OpenAI可能进行的权力博弈的前兆。
-
-• **darknavi的观点**：关注Google将Motorola出售给Lenovo后的关系变化，暗示这可能影响当前的合同争议。
-
-• **navigate8310的观点**：认为Perplexity与手机制造商的谈判本身也是一种反竞争行为，应该全面禁止或让自由市场自行调节。
-
-• **bearjaws的观点**：认为Google在AI领域不太可能面临严重的反垄断问题，即便被认为违反法律，罚款金额也远低于其通过数据获得的收益。
-
-• **thomasjudge的观点**：对Motorola仍然活跃在手机市场表示惊讶，暗示对该品牌的现状不甚了解。
-
-• **nativeit的观点**：引用“Google试图成为微软”的说法，暗示Google在模仿过去微软的商业策略。
-
-• **ein0p的观点**：认为Google在重蹈微软在90年代反垄断审判中的覆辙，建议Google使用LLM分析过去的法律文件以应对当前的争议。
-
-补充讨论：
-• 争议焦点在于Google与Motorola合同的合法性和合理性，以及默认助手设置对用户体验和市场竞争的影响。
-• 讨论还涉及到更广泛的反垄断问题，以及对自由市场和用户选择权的关注。
-• 部分评论者对Motorola的现状和市场竞争力表示质疑，而另一些评论者则关注Google在AI领域的市场行为和潜在的反垄断风险。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43776512" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/usgraphics/status/1914913818536497187" target="_blank">IKEA website shows a verbatim copy of the physical printed receipt in HTML</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ksec</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-04-25 14:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章提到，在x.com网站上，某些与隐私相关的浏览器扩展程序可能会引发问题。建议用户禁用这些扩展程序，然后重试访问网站。文章提醒用户不必担心，可以尝试再次操作。</p>
+                    <p>本文介绍了1902年美国蒙大拿州巴特市19岁女孩玛丽·麦克莱恩（Mary MacLane）因出版一本惊世骇俗的日记而一夜成名的故事。她的作品《玛丽·麦克莱恩的故事》坦率地展现了其内心世界，充满对生活体验的渴望、对两性情感的挣扎以及对青春不公的愤怒。麦克莱恩自诩为天才，毫不掩饰地表达对自身欲望和双性恋倾向的看法，并对周围人群表现出蔑视。她的文字风格前卫、自恋且带有些许残酷，尽管描写的是日常生活琐事，但内心活动极为丰富。她的独特个性和直言不讳的态度使她成为当时文坛的“怪才”，其作品在一百年后仍显得现代且未经时。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43794145" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43790683" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -252,13 +143,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://usecopi.com/69fb5996" target="_blank">Show HN: Pomo – Manage your Stripe promo codes without code</a>
+                    <a href="https://fedi.rib.gay/notes/a6xqityngfubsz0f" target="_blank">You wouldn't steal a font</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: yelston</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-04-25 04:26</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 1314</span> |
+                    <span>评论数: 42</span> |
+                    <span>发布时间: 2025-04-23 19:42</span>
                 </div>
 
                 <div class="summary-section">
@@ -268,69 +159,31 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：链接重定向和API密钥的安全性及隐私问题
+                    <div class="comments-summary">主要讨论点：字体许可与版权问题
 
 不同观点：
-• [kawie] 对链接重定向要求访问用户位置信息表示困惑和不满，认为这种要求不正常，可能涉及隐私风险。
-• [systemswizard] 则关注API密钥的安全问题，似乎暗示某些API使用不当或存在泄露风险，认为这种情况很疯狂。
+• [phony-account] 认为字体许可费用在移动应用开发领域过高，尤其是与印刷领域相比。他认为如果许可更合理，盗版问题可能会减少。
+• [rglover] 表示愿意为价格合理的字体付费，比如单个字重$5-$10，整个字体家族$20-$100，但他认为目前许多字体的定价过高，因此选择使用Google Fonts等免费或更便宜的替代品。
+• [mchusma] 认为字体设计本身不应受版权保护，因为字体是基于公共领域的微小变化，且大多数人无法区分。他建议如果字体有技术改进，应通过专利保护。
+• [jll29] 感到悲哀的是，许多人没有意识到设计字体需要大量的创造力、工艺和时间，他们不尊重字体设计的价值。
+• [efitz] 提到LLM（大型语言模型）和SVG技术的结合可能导致未来无需许可即可使用类似字体，这将对现有的字体商业模式造成冲击。
+• [tossandthrow] 认为版权道德基础正在崩溃，变成一种大家认为可笑且不执行的法律，令人遗憾。
 
 补充讨论：
-• [kawie] 的评论隐含了对网络安全和隐私的担忧，特别是对不明链接或重定向请求访问敏感信息（如位置数据）的不信任。
-• [systemswizard] 的评论可能暗示某些系统或服务在处理API密钥时存在安全隐患，可能导致密钥泄露或被滥用。
-• 争议焦点在于网络服务中对用户隐私的保护不足以及API密钥管理的安全性问题，特别是当这些操作需要用户提供额外权限或敏感信息时。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43790095" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.math.uwaterloo.ca/tsp/korea/index.html" target="_blank">Shortest-possible walking tour to 81,998 bars in South Korea</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: geeknews</span> |
-                    <span>评分: 413</span> |
-                    <span>评论数: 31</span> |
-                    <span>发布时间: 2025-04-24 00:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了通过解决旅行商问题（TSP），找到韩国81,998个酒吧的最短步行路线。使用开源路由机器（OSRM）计算出3,361,795,003个点对点 travel times，最终得出总步行时间为15,386,117秒，约178天。该路线是经过验证的最优解，打破了此前荷兰57,912个站点的记录。计算结合了LKH代码和Concorde代码，以确保解的质量和效率。文章还讨论了TSP问题的复杂性及P vs NP问题，强调了这种大规模TSP实例的可解性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对大规模旅行商问题（TSP）解决方案的讨论，特别是涉及近82,000个酒吧的TSP实例。
-
-不同观点：
-• [gku] 强调了同一作者提供的涉及13.3亿颗星的TSP解决方案，指出其路线长度是最短可能路线的1.0038倍，展示了该解决方案的高效性。
-• [Animats] 提出了使用贝尔实验室的简单概率算法与经典TSP方法的比较，认为尽管后者不保证最优解，但对于大多数实际问题已经足够接近最优。
-• [noduerme] 对未提及总距离表示困惑，认为知道实际距离有助于理解路径的偏离程度，并提出对卡路里消耗的计算感兴趣。
-
-补充讨论：
-• [notesinthefield] 对近82,000个酒吧的数量感到惊讶，并将这个问题与一个面积相当于俄亥俄州的国家相比较。
-• [tiernano] 分享了一个有趣的相关问题，提到如何在不经过酒吧的情况下从一地到另一地，增加了讨论的趣味性。
-• [pugworthy] 描述了自己在COVID期间使用CityStrides追踪器步行探索城镇街道的个人经验，认为手动规划路线是乐趣的一部分，并提到一些人完成了惊人的步行量。
-• [OsrsNeedsf2P] 对找到如此困难的数据集表示印象深刻，但也提到在计算资源和完成度之间的平衡问题。
-• [rurban] 回顾了TSP问题在历史上的进展，从最大13到目前的31,780个点，并建议使用CUDA而非普通C语言来实现。
-• [blt] 赞赏了分支定界算法，认为它简单而有用。
-• [flerchin] 以幽默的方式指出酒吧的变动可能需要重新计算TSP路径。
-• [DennisL123] 作为OSRM的主要开发者，对大规模TSP实例的解决表示赞赏。
-• [mofunnyman] 计算出如果一生访问所有酒吧，每天需要访问5.616个酒吧，认为这非常疯狂。
-• [Catagris] 提到在其附近有些地点未被标记在地图上，指出了数据完整性的潜在问题。
-• [BrtByte] 认为涉及近82,000个酒吧的TSP解决方案既有趣又令人印象深刻，兼具数学和啤酒的魅力。
-• [HPsquared] 提出了寻找最长可能路径的相反问题，引发了新的思考方向。
+• [azalemeth] 提到一个反讽的例子，指出反盗版广告本身可能使用了侵权字体。
+• [mrkeen] 补充了反盗版广告还盗用了音乐。
+• [jchw] 讨论了字体版权和历史关联，如XBAND peripheral与某字体的潜在关系，但未找到确凿证据。
+• [socalgal2] 了解到在美国字体设计本身不受版权保护，但字体文件受保护，并提出在实践中如何区分复制与灵感借鉴的问题。
+• [ummonk] 强调只要不直接复制字体文件的代码，视觉上模仿字体设计是合法的。
+• [pelagic_sky] 分享了作为设计师的教育和工作经历，强调在专业环境中购买和许可字体的重要性。
+• [ks2048] 查找了反盗版广告活动的背景信息，指出其与FACT和MPAA的关联。
 
 争议焦点：
-• 讨论中没有明显的争议，但有对算法效率、计算资源使用以及数据完整性的不同看法和兴趣点。</div>
+• 字体许可费用的合理性，尤其是在不同使用场景（如印刷 vs. 移动应用开发）下的差异。
+• 字体设计是否应受版权保护，以及如何在法律和实践中区分版权侵权和合法借鉴。
+• 未来技术（如LLM）可能对字体设计和版权保护带来的冲击。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43778105" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43775926" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -341,67 +194,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bloomberg.com/news/articles/2015-11-03/that-time-i-tried-to-buy-some-crude-oil" target="_blank">I Tried to Buy an Actual Barrel of Crude Oil (2015)</a>
+                    <a href="https://rahuldshetty.github.io/reader-project/#/translation" target="_blank">Show HN: I Added Translation to My RSS Reader Project</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: niklasbuschmann</span> |
-                    <span>评分: 208</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-04-22 12:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：石油交易及相关行业的细节与轶事
-
-不同观点：
-• **hodder**: 作为石油交易商，每天购买约20万桶石油，强调石油交易量巨大，即使是小交易商也是如此。他还分享了石油交易中的单位换算细节（如"cubes"和km3），并表示愿意回答行业相关问题。
-• **timoth3y**: 提到NPR的《Planet Money》节目曾追踪过一桶石油从购买到精炼的整个过程，提供了有关石油行业的详细信息，并附上了相关链接。
-• **throw0101d**: 提供了2020年石油价格跌至负值的新闻链接，突显了石油市场波动的极端情况。
-• **ahazred8ta**: 以调侃的方式将hodder的石油交易轶事与一个期货交易员误将一船煤运至曼哈顿办公室的故事进行类比，带有幽默色彩。
-
-补充讨论：
-• **nickdothutton**: 分享了自己学习地质学时的经历，特别是对不同种类原油的直观认识，描述了原油的气味和特性。
-• **ANarrativeApe**: 提出了对比特币当前价值的疑问，将讨论引向数字货币与传统商品（如石油）的对比。
-• **austinallegro**: 以调侃方式表示想购买猪肉肚和冷冻浓缩橙汁，将讨论引向其他商品交易。
-• **niklasbuschmann**: 提供了存档链接，但未进一步阐述具体观点。
-• **steveBK123**: 提到一个名为Odd Lots的播客，并称赞其内容有趣且富有信息量。
-• **thenthenthen**: 提到了《The Toaster Project》一书，认为该书在某种程度上涉及石油行业话题，并提供了链接。
-• **helsinkiandrew**: 回忆了2015年和2020年在Hacker News上出现过的类似讨论，提供了历史讨论链接。
-• **bubblethink**: 以调侃方式提到"The Gang Solves the Gas Crisis"，未深入讨论具体观点。
-• **timewizard**: 提供了纽约商品交易所（NYMEX）规则手册的链接，讨论了期货合约的详细交付规定，特别是轻甜原油期货的交付细节。
-• **maCDzP**: 推荐了NPR的《The Onion King》节目，认为对商品交易感兴趣的人会喜欢。
-• **metalman**: 分享了自己在商品交易中的经验，提到私人拥有的油井和工业环境中的交易细节，强调了耐心和尊重在获取小量商品交易机会中的重要性。
-
-争议焦点：
-• 讨论中并无明显争议，主要是分享石油交易及相关行业的经验和趣闻。唯一潜在的争议点在于对石油市场极端波动情况的看法（throw0101d提供的负油价新闻），但未展开详细讨论。
-
-总结：
-讨论围绕石油交易的庞大规模和复杂性展开，涉及单位换算、市场波动、行业轶事及相关商品交易。参与者分享了各自的见解和经验，提供了丰富的背景信息和参考链接。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43761572" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wsj.com/arts-culture/books/world-war-zoos-review-of-bombs-and-beasts-a037c4b6" target="_blank">'World War Zoos' Review: Of Bombs and Beasts</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pepys</span> |
-                    <span>评分: 36</span> |
+                    <span>作者: anonymousd3vil</span> |
+                    <span>评分: 21</span> |
                     <span>评论数: 3</span> |
-                    <span>发布时间: 2025-04-22 03:57</span>
+                    <span>发布时间: 2025-04-24 20:29</span>
                 </div>
 
                 <div class="summary-section">
@@ -411,21 +210,28 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：伦敦动物园在战争时期的动物饲养和管理，以及与现代战争中动物园情况的比较。
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）与谷歌翻译在翻译质量上的对比，以及用户对自动翻译功能的接受度
 
 不同观点：
-• Ichthypresbyter认为，伦敦动物园给企鹅喂食的是便宜劣质的“猫食肉”，而不是猫的肉。他指出，战争开始时，伦敦动物园只杀死了有毒/危险的动物，以防止它们因轰炸而逃脱。他还提到，动物园饲养兔子和小豚鼠来喂养食肉动物。
+• **itake的观点**：LLM在翻译质量上优于谷歌翻译，尤其是在长文本和需要额外上下文的场景下。itake提到谷歌翻译在处理用户生成内容（如Facebook帖子）时表现不佳，特别是在需要根据语境调整翻译的语言（如越南语中的称谓）时。他举例说明，与年长女性打招呼时，GPT能根据上下文提供更合适的翻译，而谷歌翻译则只能提供通用的翻译。
 
-• nativeit提供了相关存档链接，但未直接表达观点，可能旨在为讨论提供更多背景资料。
+• **ttepasse的观点**：ttepasse对自动翻译功能持保留态度，尤其是当用户已经懂多种语言时。他认为，尽管机器翻译质量有所提高，但仍然存在“诡异谷”效应，即翻译内容虽然传达了信息，但感觉不自然。他以YouTube自动翻译视频标题和配音为例，抱怨缺乏让用户选择退出自动翻译的设置。
 
-• trhway将伦敦动物园战争时期的情况与现代战争情况进行比较，提到在乌克兰战争初期，人们购买门票以支持Mykolaiv动物园的动物。此外，提到在俄罗斯摧毁Khakhovka大坝后，附近城市的一个小动物园被完全淹没，且在俄军从赫尔松撤退时，带走了一只浣熊。
+• **cj的观点**：cj对itake的免费/开源应用如何实现翻译功能表示好奇，特别是是否使用了Google Cloud Translate API。cj指出谷歌翻译API是付费服务，因此对itake如何实现应用的翻译功能表示疑问，猜测是否是用户自带API密钥（BYOK）的模式。
 
 补充讨论：
-• 关于“cat meat”的争议焦点在于其具体含义，Ichthypresbyter认为是便宜的猫食肉，而不是猫的肉。
-• trhway提供的现代例子展示了战争对动物园动物的持续影响，以及公众在危机时期对动物的支持。
-• 不同历史时期和地域背景下，动物园在战争中对动物的管理和保护措施有所不同。</div>
+• **翻译质量的比较**：itake通过具体例子展示了LLM在处理需要上下文的翻译时优于谷歌翻译，而ttepasse则从用户体验角度表达了对机器翻译不自然感的担忧。
+
+• **自动翻译功能的用户选择**：ttepasse强调了用户应有选择退出自动翻译的自由，特别是在用户已经掌握多种语言的情况下，以避免不必要的翻译干扰。
+
+• **技术实现的疑问**：cj对itake应用的技术实现方式表示疑问，特别是如何在免费/开源的情况下使用付费的翻译服务。
+
+争议焦点：
+• LLM与谷歌翻译在实际应用中的翻译质量和上下文处理能力。
+• 用户是否应有选择退出自动翻译功能的自由，特别是在已经掌握多种语言的情况下。
+• 免费/开源应用如何实现翻译功能的技术疑问。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43758965" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43787133" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -436,46 +242,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://medicalxpress.com/news/2025-04-clinical-trial-nutritional-formula-effectively.html" target="_blank">Clinical trial: novel nutritional formula treats gut microbial overgrowth</a>
+                    <a href="https://github.com/pgdogdev/pgdog" target="_blank">PgDog is a transaction pooler logical replication manager can shard PostgreSQL</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: wglb</span> |
-                    <span>评分: 52</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-04-24 00:23</span>
+                    <span>作者: LinuxBender</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-24 17:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Cedars-Sinai研究人员开发了一种新型营养配方**mBiota Elemental**，这是一种适口的元素饮食（PED），可减少小肠细菌过度生长（SIBO）和肠道产甲烷菌过度生长（IMO）患者肠道中关键微生物的数量并改善症状。在一项前瞻性临床试验中，30名确诊为SIBO和/或IMO的成人接受了为期两周的mBiota Elemental饮食干预。结果显示，73%的受试者呼吸测试恢复正常，83%的受试者症状显著缓解。呼吸中的甲烷和氢气水平显著下降，关键微生物如**Prevotella_9**和**Fusobacterium**的相对丰度减少，92%的IMO受试者的**Methanobrevibacter smithii**水平降低或无法检测。试验中无严重不良事件，轻度副作用包括腹泻、痉挛等。研究表明，mBiota Elemental作为一种非抗生素方法，可能有效治疗SIBO和IMO。</p>
+                    <p>PgDog 是一个用于 PostgreSQL 的水平扩展解决方案，支持自动分片。它采用 Rust 编写，具有快速和安全的特点，能够管理数百个数据库和数十万个连接。PgDog 作为一个事务池和逻辑复制管理器，支持负载均衡、健康检查与故障转移、事务池管理以及自动查询路由和分片。它可以自动将查询路由到一个或多个分片，支持跨分片查询，并能在内存中组装结果。PgDog 还支持逻辑复制，允许在不停机情况下对数据库进行分片和扩展。其配置灵活，支持运行时调整，无需重启进程。可以通过 Docker 和 Kubernetes 快速部署。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：元素饮食（elemental diet）的效用、可行性、口味以及其与其它疗法（如水禁食、无纤维饮食）的比较。
-
-不同观点：
-• Aurornis 认为元素饮食本身并不是新概念，以往的元素饮食因口感差而难以忍受，而新品牌的元素饮食在口感上有了改进，使其更容易接受。同时提到，DIY元素饮食配方也有一定的效果，但口感差仍是主要挑战。
-• rikkert 分享了个人失败的经验，指出在遵循元素饮食两周后并未取得成功，且过程非常不适，包括持续的饥饿感、寒冷和乏力。他还强调饮食的味道很差，不推荐除非是最后的手段。
-• pazimzadeh 提供了详细的实验设计和研究结果链接，指出该研究的主要和次要终点，包括对肠道微生物群的影响、耐受性、症状反应和不良事件。他还详细描述了饮食的实施过程和过渡饮食的建议。
-• jinpa_zangpo 和 geden 提出了水禁食是否能达到同样效果的问题，暗示禁食可能是一种更简单且成本更低的替代方案。
-• eth0up 质疑无纤维饮食如何能够维持正常的排便功能，表达了对无纤维饮食的困惑和对高吸收率的怀疑。
-• NotGMan 指出该品牌元素饮食的成本较高，认为如食肉饮食或其他低碳水、无纤维饮食可能是更经济的选择。
-• canadiantim 则强调了元素饮食在短期内取得显著疗效的潜力，认为相比长期使用抗生素治疗，两周的元素饮食提供了更好的效果。
-
-补充讨论：
-• 元素饮食的口感问题是一个重要讨论点，Aurornis 认为新品牌有所改进，但 rikkert 认为仍难以忍受。
-• 元素饮食的成本问题也被提及，NotGMan 指出其高成本，并建议其他更经济的饮食方案。
-• 研究设计和实施细节由 pazimzadeh 提供，为讨论提供了科学依据。
-• 水禁食作为一种可能的替代方案被提出，但未有具体结论。
-• eth0up 对无纤维饮食的生理影响表示关注，提出了有关消化和排便功能的疑问。
-
-争议焦点：
-• 元素饮食的口感及其可行性：Aurornis 和 rikkert 对此有不同看法。
-• 元素饮食的成本效益：NotGMan 认为有更经济的替代方案。
-• 无纤维饮食的生理影响：eth0up 对此提出质疑。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43778120" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43785580" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -486,38 +271,248 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.phoronix.com/news/AMD-GIM-Open-Source" target="_blank">AMD Publishes Open-Source Driver for GPU Virtualization, Radeon "In the Roadmap"</a>
+                    <a href="https://ca.finance.yahoo.com/news/apple-fined-570-million-meta-094701712.html" target="_blank">Apple and Meta fined millions for breaching EU law</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: davidlt</span> |
-                    <span>评分: 160</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-04-24 06:58</span>
+                    <span>作者: Aldipower</span> |
+                    <span>评分: 423</span> |
+                    <span>评论数: 32</span> |
+                    <span>发布时间: 2025-04-23 10:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>AMD发布了开源的"GPU-IOV模块"，用于Instinct加速器的虚拟化，并计划将虚拟化支持引入其消费级Radeon独立显卡。该模块适用于Linux内核，支持基于SR-IOV的硬件虚拟化，配合KVM hypervisor使用，提供GPU虚拟化、虚拟功能配置、GPU调度、挂起检测和重置等功能。目前，该驱动已在Instinct MI300X硬件和Ubuntu 22.04 LTS系统上测试，代码已在GitHub发布。AMD工程师透露，Radeon显卡的虚拟化支持已列入计划，但具体时间未明确。</p>
+                    <p>欧盟反垄断监管机构对苹果和Meta分别罚款5亿欧元和2亿欧元，这是根据《数字市场法》（DMA）进行的首次处罚，旨在限制大型科技公司的市场影响力。苹果被要求取消阻止应用开发者引导用户获取更优惠交易的技术和商业限制，而Meta则因其“付费或同意”的广告模式违反DMA规定而被罚。尽管美国前总统特朗普威胁对 penalising 美国公司的国家征收关税，并称罚款是“经济敲诈”，但欧盟表示将严格执行新规。苹果和Meta均表示将对罚款提出异议，并可能面临进一步整改。谷歌和马斯克的X平台也可能面临类似调查。欧盟强调，所有在欧盟运营的公司必须遵守其法律和价值观。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AMD在Linux系统上的GPU驱动支持、虚拟化技术进展及其对开发者的影响
+                    <div class="comments-summary">主要讨论点：欧盟《数字市场法》(DMA) 及其对美国科技巨头（如Apple和Meta）的影响，包括罚款的公平性、罚款的执行、以及对市场竞争的影响。
 
 不同观点：
-• [latchkey] 和 [throwaway48476] 对AMD驱动程序的发布感到期待，特别是开源驱动对业务的重要性。[latchkey]强调了等待开源驱动程序的漫长过程，并提到在二进制文件在保密协议下提供后的期待。
-• [seanhunter] 对AMD在Linux上的支持表示不满，认为AMD没有很好地支持其图形卡，尤其是在机器学习（ML）环境下的支持。他指出，AMD的驱动程序和库存在兼容性问题，且开发体验远不如NVIDIA。具体问题包括ROCm和不同版本的驱动支持不一致，导致无法开箱即用。
-• [proxysna] 对消费者图形卡获得此类技术下放表示赞赏，认为这是积极的进展。
+• **支持DMA的立场**：
+   - madeofpalk：认为Apple限制Netflix告知用户可以通过官网订阅是不公平的。支持DMA允许开发者引导用户到App Store以外的支付选项，认为这是合理的干预。
+   - WhyNotHugo：反驳有关美国企业受欧盟不公平对待的说法，指出欧盟对违规企业的罚款不分国籍，且美国自己也有类似的做法（如TikTok事件）。
+
+• **质疑DMA及罚款的立场**：
+   - WhyNotHugo：尽管支持DMA的初衷，但质疑欧盟是否在实际操作中过度监管，而不是促进创新环境的建立。
+   - iagooar：认为DMA是基于意识形态偏见，专门针对大公司，特别是美国公司，本质上不是为了公平竞争，而是惩罚美国企业。
+
+• **关于罚款执行的讨论**：
+   - phtrivier：质疑罚款是否真的被支付，以及公民如何得知这些罚款是否进入了欧盟公共预算。同时，对罚款的实际执行机构（如是否通过爱尔兰）表示困惑。
+   - alexfromapex：认为数百万欧元的罚款对大公司来说微不足道，只是经营成本的一部分，无法真正起到惩戒作用。
+
+• **关于市场竞争和企业行为的影响**：
+   - pjc50：讨论了非关税贸易壁垒的问题，认为DMA的规则本质上是为了保护消费者和公众利益，且同样适用于欧盟本土公司（尽管目前没有竞争者达到同等规模）。
+   - mapcars：质疑Meta因“付费或同意”广告模式被罚款，认为许多其他网络服务（如YouTube）也有类似做法，为何只针对Meta。
+
+• **关于技术细节和实施效果的讨论**：
+   - paxys：对Meta抱怨罚款相当于“关税”的说法表示嘲讽，认为这是企业不愿改变其商业模式的托辞。
+   - mleonhard、izacus、hadrien01：引用欧盟委员会的公告，解释Meta的Facebook Marketplace因用户数量低于门槛值，不再被指定为DMA的“守门人”，说明了规则的动态性。
+   - popol12：希望Apple能遵守DMA并允许iOS上的应用侧载，而不是像iOS 17那样实施“假侧载”。
 
 补充讨论：
-• [AbuAssar] 提供了有关"AMD 2.0 – New Sense of Urgency"的链接，可能意指AMD在技术发展上的紧迫性和新策略。
-• [janpmz] 抱怨文章中的广告影响阅读体验，这一评论与主要讨论点关系不大。
-• [404human] 以幽默的方式指出AMD在基本ML功能尚未完善时推出新GPU功能，类似于先建豪华车库再修坏车，暗示功能发布顺序不当。
+• **罚款的公平性与合理性**：部分评论质疑罚款是否针对美国企业，而其他国家的企业则不受影响，认为欧盟存在双重标准。
+• **技术创新与监管之间的平衡**：有人认为DMA的监管过度，可能阻碍创新，而非促进竞争，特别是对美国科技公司的针对性。
+• **实际执行与公众透明度**：讨论了罚款是否能有效执行，以及公众如何得知罚款是否真正进入欧盟预算。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43770337" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.featureform.com/post/deploy-mcp-on-aws-lambda-with-mcpengine" target="_blank">MCP on AWS Lambda with MCPEngine</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: simba-k</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-04-23 16:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了如何使用MCPEngine在AWS Lambda上部署MCP服务器。MCP（Model Context Protocol）是让大型语言模型（LLM）调用外部工具的协议，但现有实现多为本地运行，且依赖Server-Sent Events（SSE）进行流式传输，不适合无状态环境如AWS Lambda。MCPEngine解决了这些问题，支持HTTP流式传输，兼容Lambda，并提供认证、打包等功能。文章通过三个例子演示了如何构建和部署无状态、有状态（使用RDS）和认证（使用OIDC）的MCP服务器，所有例子均可在Lambda上运行，无需自定义代理。部署可通过Terraform自动化或手动完成。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在技术环境中使用Python与Lambda，以及与Marvel Crisis Protocol（MCP）相关的服务器解决方案
+
+不同观点：
+• [cr125rider] 认为可以在AWS Lambda上运行Python，并表示这是一个不错的发现。
+• [mchusma] 寻求一种简单的远程Marvel Crisis Protocol（MCP）服务器解决方案，希望基于现有的REST API进行包装，以低成本进行用户测试，但尚未找到合适的工具。
+• [mariuz] 提供了有用的资源链接，指出AWS Lambda上已经有MCP服务器的相关实现，可能对[mchusma]有帮助。
+
+补充讨论：
+• [misbahkhan] 对某人的工作表示赞赏，可能指[mariuz]提供的资源或相关技术实现。
+• [sdenton4] 提到了Marvel Crisis Protocol（MCP）最近变得非常流行，将讨论引向MCP的文化现象。
+• [victor_xuan] 对实际使用这些技术的人表示好奇，可能是在询问实际应用场景。
+• [donovanlowkeen] 对整个讨论中的技术实现表示赞赏。
 
 争议焦点：
-AMD在Linux系统上的驱动支持和开发者体验问题，特别是与NVIDIA相比的差距。开发者[seanhunter]对AMD当前驱动和库的实际使用体验非常不满，认为基本功能未完善就推出新功能是本末倒置。</div>
+• 主要的争议和焦点并不明显，讨论主要是围绕技术可行性和具体实现的寻求与分享。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43779953" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43773777" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nytimes.com/2025/04/23/books/review/more-everything-forever-adam-becker.html" target="_blank">More Everything Forever</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: c0rtex</span> |
+                    <span>评分: 144</span> |
+                    <span>评论数: 32</span> |
+                    <span>发布时间: 2025-04-23 16:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：技术进步是否能够解决人类重大问题，以及对未来科技乌托邦的争议。
+
+不同观点：
+• aeturnum认为，“技术拯救未来”是一种低信息量的逃避现实的想法，类似于宗教信仰。他指出，虽然技术有潜力，但我们无法仅依靠技术解决气候变化等重大问题。那些鼓吹技术万能的人往往是为了从中获利，而非真正解决问题。
+• golol反对aeturnum的观点，认为技术是实现实质性改进的唯一途径。他批评了对科技企业家的贬低，并指出政治上的资源分配无法真正改善世界。
+• blaze33也质疑“技术万能”的理念，认为这种思维暗示了当前所有问题都不需要反思，且忽视了人类活动对危机的责任。他希望看到的是一个在地球上和平共处的未来，而不是因为地球环境恶化而被迫移民火星。
+• schnitzelstoat支持技术进步的希望，认为如果没有技术进步和经济增长，世界将变得零和。他指出，技术进步虽然可能过于乐观，但总比停滞和历史上的大规模人类苦难要好。
+• iNic承认技术对自然的改造能力，但对短期内建立火星殖民地持怀疑态度。他更关注AI的颠覆性影响。
+• janalsncm批评了一些科技名人对自己不熟悉领域的夸夸其谈，认为他们不应被赋予过多的发言权。
+• nektro幽默地提出，能否通过技术发明来消除亿万富翁，因为他们是许多问题背后的共同因素。
+
+补充讨论：
+• 评论中提到了TESCREAL（超人类主义、Extropianism、奇点主义、现代宇宙主义、理性主义、有效利他主义和长期主义）这一思想束，与现代硅谷科技圈的关联，并追溯到18世纪的思想家如Nikolai Fyodorov。
+• 有人提到乐观的科幻作品如Culture系列，认为这类作品能够改变人的思维方式。
+• 讨论中还涉及对内容审核和平台过滤的质疑，以及对某些讨论被删除或降权的担忧。
+
+争议焦点：
+• 争议的核心在于技术是否能够独自解决人类重大问题，如气候变化和不平等。一方认为技术是万能的解决方案，另一方则认为这种想法是逃避现实，且可能被用作牟利工具。
+• 对科技企业家和名人在技术话题上的发言权和可信度的质疑，也是讨论中的一个重要分歧点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43773746" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://terriblesoftware.org/2025/04/23/the-hidden-cost-of-ai-coding/" target="_blank">The hidden cost of AI coding</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Sharpie4679</span> |
+                    <span>评分: 309</span> |
+                    <span>评论数: 53</span> |
+                    <span>发布时间: 2025-04-23 18:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了使用AI编写代码的潜在隐形成本，即对编程乐趣和成就感的削弱。作者回顾了过去编程带来的“心流”体验——那种全神贯注、创造和解决问题的快乐。然而，随着AI工具的广泛应用，编程变得更高效，但也更被动，开发者逐渐从“创作者”转变为“策展人”，通过提示调整AI生成的代码。作者担心这种转变可能导致开发者失去深层次的满足感，即使工作更高效，但幸福感可能下降。文章最后提出，或许需要重新理解在AI辅助的时代，如何在更高层次的思考和创造中找到新的快乐和成就感。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI在编程中的应用及其对编程体验和程序员满意度的影响
+
+不同观点：
+• TrackerFF和一些音乐创作的类比，将程序员分为两类：一类热爱编程本身，另一类只关心最终产品。前者可能难以理解后者对自动化生成代码的依赖。
+• iamleppert认为AI可以帮助程序员专注于更有趣的编程部分，减少对无聊部分的关注，从而提升编程体验。
+• clbrmbr分享了AI辅助编码带来的积极体验，认为AI让他找回了初学编码时的激情和创造力。
+• rerdavies作为一个有40多年经验的程序员，表示AI提升了他的编程效率和满足感，特别是通过减少繁琐的文档工作。
+• ang_cire指出评论区的分歧，认为喜欢编码的人往往对AI持怀疑态度，而那些不喜欢编码的人则更倾向于依赖AI。
+• CopyOnWrite提到在使用AI生成大项目代码时的挑战，并质疑是否因为自己不擅长编写提示而导致效率不高。
+• tpoacher对新技术和旧技术进行比较，认为新技术的效率提升可能导致代码质量下降，编程变得不再优雅。
+• pdimitar建议将繁琐的编码工作交给AI，同时保持对代码质量的严格审查，以提高工作效率和满意度。
+• Kiro表示AI让他能够专注于自己喜欢的编码工作，从而提升了编程的乐趣。
+• ahamilton454提到作为管理者，AI工具减少了他对问题全面理解的机会，从而降低了工作的满足感。
+• kristjank质疑将部分编程工作外包给AI是否会减少程序员的成就感，并讨论了AI在辅助理解和实际解决问题上的局限性。
+• drooby怀旧地提到手工挑选和处理数据的时代，表达了对当前大数据时代的反思。
+• bradley13分享了教授编程课程的经验，担心依赖AI生成代码的新一代程序员可能缺乏对代码的深入理解。
+
+补充讨论：
+• 争议的焦点在于AI是否真正提升了编程体验和效率，以及它对程序员工作满意度和代码质量的影响。
+• 一些程序员认为AI帮助他们专注于更有趣的编程部分，而另一些人则担心AI导致程序员技能退化和代码质量下降。
+• 讨论中还涉及到对新技术和旧技术的比较，以及对编程教育和下一代程序员培养的关注。
+
+总体来看，评论呈现了对AI在编程中应用的多元看法，从积极支持到谨慎怀疑，反映了不同程序员在实际工作中的多样体验。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43775358" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ingau.me/blog/how-i-write-my-blogs-in-obsidian-and-publish-instantly/" target="_blank">How I blog with Obsidian, Hugo, GitHub, and Cloudflare</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ingav</span> |
+                    <span>评分: 323</span> |
+                    <span>评论数: 59</span> |
+                    <span>发布时间: 2025-04-23 13:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了作者如何使用Obsidian写作并快速发布博客。作者通过Obsidian进行本地纯文本写作，使用Hugo生成网站，并通过GitHub和Cloudflare Pages进行部署。具体步骤包括：安装Hugo并设置博客主题，将Obsidian与Hugo的文件夹结构连接，配置前置资料模板，本地预览文章，连接GitHub进行版本控制，以及使用Cloudflare Pages自动部署。整个流程初始设置较复杂，但完成后发布过程非常简便，只需写作、修改草稿状态、提交并推送到GitHub，Cloudflare会自动重建站点。这种方法提供了完全的控制权，无需订阅或担心平台变动。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：自建博客系统的选择与控制权衡
+
+不同观点：
+• ipsento606认为，自建博客（如使用Obsidian、Git、nginx等工具）可以提供完全的控制权，避免订阅、供应商锁定和平台政策变化的风险，但指出依赖免费服务层仍有一定风险。
+• pembrook调侃说，许多开发者博客除了宣布如何搭建博客外，几乎没有其他内容，暗示这种搭建行为可能只是开发者的爱好。
+• Vingdoloras对使用Obsidian持保留态度，认为VSCode等IDE提供更好的集成体验，但承认Obsidian的选择也有其独特的优势，特别是对于偏好其功能的人来说。
+• vunderba分享了一种更高级的自定义方案，通过编写Obsidian插件和使用Pelican静态站点生成器实现自动化部署，展示了另一种高度自控的搭建方式。
+• jagged-chisel指出，即使使用GitHub和Cloudflare，仍然存在平台风险，认为完全消除这些风险是不可能的。
+• ValtteriL支持使用VSCode进行markdown博客写作，强调其快速迭代和无需学习新编辑器的优点。
+• Brajeshwar使用Jekyll而非Hugo，并强调其高度可移植性，能够在不同平台间快速切换，减少对特定模板引擎的依赖。
+• tiffanyh建议直接使用Obsidian Publish，以省去Hugo、GitHub和Cloudflare的复杂性。
+• hk1337分享了一种使用Hugo和GitHub的模块化博客搭建方式，强调内容与主题分离的优势。
+• bryanhogan使用Astro而非Hugo，同样通过Obsidian和GitHub实现静态页面托管。
+• caboteria对Cloudflare pages和GitHub pages的选择提出疑问，询问两者的优劣。
+• tjoff反对零成本方案，认为这只会助长网络的中心化，主张使用自托管的VPS来实现真正的控制和学习价值。
+• fareesh提供了一个类似的配置指南，分享了如何实现一些特定功能（如嵌入推文）。
+• mmcnl展示了一个完全自托管的博客系统，使用Ghost作为无头CMS，Nuxt作为前端，展示了另一种高性能的搭建方式。
+• ksvarma对文章表示感谢，认为这种方法可以帮助克服对博客写作的恐惧，并建议大家不要对文字表达过于苛刻。
+
+补充讨论：
+• 关于使用Obsidian的争议：有些人认为Obsidian提供了独特的写作体验，而另一些人则认为VSCode等IDE更适合集成开发。
+• 关于平台风险的讨论：即使通过自建博客，仍然存在依赖外部平台（如GitHub、Cloudflare）的风险。
+• 关于编辑器和工具选择的讨论：VSCode和Obsidian是两个主要的偏好，各有支持者，取决于个人的工作流和需求。
+• 关于成本和自托管的讨论：有些人主张使用低成本的VPS来实现真正的控制，而另一些人则利用免费服务层实现自建博客。
+• 关于配置细节的分享：多个评论者分享了他们的具体配置和自动化方案，提供了实际操作的参考。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43771645" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
