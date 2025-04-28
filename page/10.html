@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-28 11:39 (北京时间)
+            最后更新时间: 2025-04-28 14:27 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,144 +61,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.lildigi.me/" target="_blank">Show HN: Lil digi – play a platformer game as yourself</a>
+                    <a href="https://www.http-feeds.org/" target="_blank">HTTP Feeds: a minimal specification for polling events over HTTP</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sunnyba</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-04-27 13:21</span>
+                    <span>作者: sea-gold</span> |
+                    <span>评分: 70</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-04-26 17:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>"lil digi.me" 是一个基于用户上传图片生成像素角色的网站。用户可以上传照片生成自己的角色并参与一个闯关游戏，目标是尽快逃离火山，避开火焰和熔岩等危险，平均时间为28秒。游戏通过箭头键移动和空格键跳跃进行操作，同时提醒用户不要上传敏感、不当或冒犯性的内容。网站还展示了其他玩家的通关时间以增加挑战性。</p>
+                    <p>HTTP Feeds 是一种通过普通HTTP API实现异步事件流和数据复制的方法。它定义了一个简单的规范，通过HTTP GET请求轮询事件流，使用CloudEvents格式和`application/cloudevents-batch+json`媒体类型返回按时间顺序排列的事件序列。通过`lastEventId`参数支持从特定事件开始获取后续事件，实现无限轮询以订阅实时 feeds。HTTP Feeds 允许系统在没有消息代理（如Kafka或RabbitMQ）的情况下进行异步解耦。
+
+客户端通过不断发送带有`lastEventId`的请求来获取新事件。如果返回空数组，表示没有更多事件，客户端可等待一段时间后重试。此外，还支持长轮询，服务器在超时或有新事件时返回响应，从而降低延迟。事件的唯一标识`event.id`用于追踪处理进度，建议使用时间排序的UUIDv6或数据库序列来生成，以确保事件顺序一致性。当连接数超过10K时，服务器处理并发连接的成本可能成为问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对某像素艺术生成游戏的评价与反馈
+                    <div class="comments-summary">主要讨论点：对使用HTTP和JSON进行事件同步的方案及其替代方案的讨论
 
 不同观点：
-• [正面评价]
-  ◦ [adamddev1]: 认为该游戏非常有趣，并分享了自己和朋友的愉快体验，强调了游戏中可爱的角色设计。
-  ◦ [IanCal]: 赞赏游戏从网络摄像头照片生成像素角色的创意，特别提到对细节（如T恤）的准确还原。
-  ◦ [iguana]: 称赞游戏的概念和执行都非常出色。
-  ◦ [icebxrg]: 简单直接地表示了对游戏的欣赏。
+• zzo38computer认为HTTP和JSON并非最佳选择，尤其是当需要持续获取事件更新时。他还指出，仅使用UUID作为事件ID并不理想，建议使用自动递增的ID或基于时间请求的方案，类似于NNTP协议的做法。
 
-• [技术与实现问题]
-  ◦ [sureglymop]: 质疑游戏的艺术生成是否由AI如PixelLab完成，暗示对技术实现方式的好奇。
-  ◦ [armitage__]: 对生成像素艺术的提示（prompts）感兴趣，并请求分享以了解生成准确性的原因。
-  ◦ [sunnyba]: 提到因流量过大导致的技术问题（如达到Gemini的速率限制），并为此致歉，寻求技术支持。
+• hombre_fatal建议增加高层次的 justification/inspiration 部分，提出为什么选择当前方案而不是使用典型的分页API，例如通过afterId参数进行排序和分页。
 
-• [幽默与个人体验]
-  ◦ [kuberwastaken]: 分享了自己在游戏中的成绩（top 6.9%），附上链接展示结果，带有幽默和自我调侃。
-  ◦ [moschetti1]: 以幽默方式表达对游戏的喜爱，同时提到游戏限制（无法扮演特定角色如唐纳德·特朗普），暗示对内容限制的不满。
+• philsnow指出，由于客户端使用UUID作为lastEventId进行分页请求，服务器需要永久保存所有事件。如果使用lastEventTimestamp进行分页，服务器即使丢失了特定的UUID事件，也能从下一个事件继续。
 
-• [粗俗表达]
-  ◦ [rc_kas]: 使用粗俗语言表达对游戏创意的赞赏，显示出强烈的正面情绪。
+• sea-gold提到这个问题曾在2022年4月被讨论过，提供了讨论链接（https://news.ycombinator.com/item?id=30904220）。
+
+• lud_lite质疑当需要追赶事件时，是否通过循环调用新的lastEventId来实现。他还探讨了该方案是用于社交媒体类型的信息流，还是用于数据同步（例如数据库复制），并询问事件的存储时间预期。
+
+• DidYaWipe提到未曾听闻"CloudEvents"，询问大家的看法。
+
+• wackget认为这似乎是重新发明了一个带有cursor-based分页的GET API。
+
+• fefe23强烈反对当前方案，建议使用HTTP服务器发送事件（Server-sent events），可以保持连接开放，无需轮询获取实时更新，并能从之前看到的位置恢复。
 
 补充讨论：
-• 争议焦点：目前没有明显争议，但[moschetti1]提到无法扮演特定角色，可能暗示对内容审核或限制的不满。
-• 技术问题：[sunnyba]指出的技术问题（流量过大导致的速率限制）是值得注意的一个方面，表明游戏可能面临技术挑战。
-• 用户互动：多个用户分享了自己的个人体验和成绩，显示出对游戏的强烈参与感和社区互动。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43811736" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wsj.com/health/medical-residents-working-conditions-young-doctor-suicide-3dc61495" target="_blank">Suicide Reverberates Among Young Doctors</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ViktorRay</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-04-27 20:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：医学教育和医生职业的压力及其相关问题
-
-不同观点：
-• [MyPasswordSucks] 认为医学院和住院医生阶段的训练过于强调记忆，与现代科技（如智能手机和搜索引擎）不匹配，且住院医生的工作时间过长，压力过大，报酬低，缺乏声望。这种模式虽然希望培养出能应对压力的医生，但实际却导致医生擅长处理繁重的工作，而在人性化关怀和创造性思维方面不足，最终影响患者护理质量。
-
-• [AStonesThrow] 强调医生的压力还来自于患者自身的问题，许多患者不注重自我健康管理，依赖医生“修复”他们的健康问题。医生面对的往往是无法治愈的疾病，只能进行治疗，且患者常不听从建议，导致医生的工作充满挫败感。医生如果抱着“帮助他人”的心态进入这个行业，可能会因为现实与期望的差距而感到失望。
-
-• [OutOfHere] 指出高额的教育债务是导致医生难以退出该行业的重要原因，建议医学院教育应几乎免费，只收取少量费用以防止浪费时间。
-
-• [inglor_cz] 提到在捷克，年轻女医生自杀是一个严重问题，特别是在2000年代，性别差异显著。
-
-补充讨论：
-• 医学教育和住院医生训练的压力源自过时的教育模式和不合理的工作时间安排。
-• 患者自我管理不足和不健康生活方式给医生带来额外压力和挫败感。
-• 高额教育债务使医生难以退出该行业，增加了心理负担。
-• 不同国家和地区（如捷克）的医生自杀问题显示出性别差异，强调了心理健康支持的重要性。
-
-争议焦点：医学教育和住院医生训练的合理性及如何在现代科技背景下进行改革，以减轻医生压力并提高患者护理质量。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43814683" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ddili.org/ders/d.en/" target="_blank">Programming in D: Tutorial and Reference</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: teleforce</span> |
-                    <span>评分: 136</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-04-25 20:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《Programming in D》是Ali Çehreli编写的一本关于D语言的教程和参考书，涵盖D语言的基础与高级特性。书籍提供了多种格式，包括纸质书、Kindle电子书、互动课程、以及免费的PDF等。内容从基本的"Hello World"程序开始，逐步介绍D语言的基本语法和概念，如变量、数据类型、控制结构、函数、异常处理、模板、并发编程等。书中还详细讲解了D语言独特的功能，如关联数组、契约编程、UFCS（通用函数调用语法）、混合编程等。此外，书中包含大量代码示例和练习，适合从初学者到高级开发者的学习需求。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：D语言的优劣、使用体验及其生态系统
-
-不同观点：
-• [usrbinenv] 认为D语言及其替代品（如Crystal、Dart）在技术上优于当前更流行的语言（如Python、TypeScript、Go）。虽然承认流行语言的生态更丰富，但坚持认为从语言设计角度，D等更优越。
-• [WalterBright] 分享了他在D编译器上的开发工作，表明对D语言的技术细节有浓厚兴趣，但未直接评价其优劣。
-• [zascrash] 和 [Daunk] 都表示D语言未得到应有的认可，希望有更多大公司支持该语言。
-• [kingbob000] 表示在大学课程中使用过D语言，但如今难以找到使用场景，暗示其实用性较低。
-• [croemer] 提到LDC2编译器在macOS上的崩溃问题，表明D语言工具链存在技术问题。
-• [nerdralph] 指出D语言的库较少，尤其是与Perl、Python、C++相比，限制了其实用性。
-• [jpecar] 提到D语言在多核CPU上的运行时问题，进一步提出了其在大规模系统上的适用性问题。
-• [Defletter] 分享了使用D语言开发的负面体验，特别是工具链不完善、编译问题以及对mixins和属性的处理不当，最终选择了其他语言。
-
-补充讨论：
-• D语言的工具链问题：[Defletter] 详细描述了使用D语言时遇到的工具链问题，包括多个竞争的编译器（dmd、ldc、gdc）以及IDE插件无法处理mixins和属性等问题，表明D语言在开发体验上存在不足。
-• 生态系统问题：[pmags] 提到十年前使用D语言时标准库存在缺陷，并询问近几年D语言的生态是否有显著改善，表明生态系统一直是D语言的短板。
-• 实际应用问题：[shoozza] 提出了D语言是否适合创建极小可执行文件的问题，引发了对D语言在特定场景（如游戏开发）中的适用性讨论。
+• 链接提到的先前讨论（sea-gold提供的链接）可能包含更多背景信息和相关观点。
+• 对"CloudEvents"的提及引发了对该技术方案的兴趣和讨论需求。
+• 对服务器发送事件（Server-sent events）的讨论提供了一种替代方案，强调实时更新和状态恢复的能力。
 
 争议焦点：
-• D语言的技术优越性与其生态系统的不足之间的矛盾。虽然一些开发者认为D语言在设计上优于其他语言，但其工具链和库的缺乏限制了其实际应用。</div>
+• 使用HTTP和JSON是否是最佳方案，特别是对于需要持续更新和同步的场景。
+• 事件ID的选择：UUID与自动递增ID或基于时间的请求方案的对比。
+• 事件存储和追赶机制：如何处理事件的存储时间及客户端如何有效地追赶上事件流。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43798009" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43805358" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -209,140 +119,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.doliver.org/articles/rss-as-a-skill" target="_blank">Reading RSS content is a skilled activity</a>
+                    <a href="https://www.doliver.org/articles/programming-is-a-thinkers-game" target="_blank">AI Coding assistants provide little value because a programmer's job is to think</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: d0liver</span> |
-                    <span>评分: 128</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2025-04-26 00:08</span>
+                    <span>评分: 85</span> |
+                    <span>评论数: 49</span> |
+                    <span>发布时间: 2025-04-27 20:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了互联网从早期 quirky 和利他主义的状态，演变为如今以吸引用户注意力为核心的经济模式，这种模式往往对用户产生有害影响。广告商通过算法增加用户参与度，却不关心用户体验。文章提出通过 RSS 技术重新掌控注意力，强调 RSS 阅读器的使用体验与社交媒体不同，用户自主决定阅读内容。作者建议通过信任链来筛选内容，从信任的来源开始订阅，再根据其推荐扩展，逐步打造个性化且多元化的内容库。使用 RSS 阅读器不仅是内容聚合，更是一种技能和习惯，通过主动筛选内容，用户能更好地管理自己的注意力。</p>
+                    <p>本文主要讨论了书面代码与实际运行代码之间的巨大差距，尤其以JavaScript为例。作者指出，书面代码往往无法完整反映程序运行时的复杂性，包括环境依赖、函数定义不明、事件驱动执行、`this`指向问题、DOM加载顺序等。此外，代码通常需要外部工具和人工判断来验证其正确性，特别是在不同环境下的表现。作者批评了AI生成的代码，认为其虽然看似可用，但缺乏良好的抽象和解释，导致代码质量低下。相比之下，模块、文档和开源项目提供了更可靠的选择，帮助工程师更好地完成复杂任务。最后，作者引用了Linus Torvalds的观点，强调理解程序背后的意义比单纯查看源码更为重要。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：RSS阅读的价值、使用方法及潜在问题
+                    <div class="comments-summary">主要讨论点：AI在编程中的实际应用及其优劣势
 
 不同观点：
-• bsnnkv认为RSS的魅力在于自己决定内容是否有价值，他采用“现在读或永不读”的策略，避免积压未读内容。
-• simonw强调通过信任链来筛选信息源，找到有品位和判断力的人进行关注，而不仅限于RSS。
-• rambambram分享了自己定制RSS阅读器的经验，通过随机选择源来避免信息过载，并认为RSS不应模仿社交媒体的即时通知模式。
-• AstroBen推荐了一些具体的RSS工具和资源，如HN RSS和RSS Hub，以增强RSS使用体验。
-• ranger207表示不需要阅读所有订阅内容，只需快速浏览并标记感兴趣的内容，RSS提供了一个按时间顺序的纯净信息流。
-• soapdog提出可以通过配置更平静的用户体验来解决RSS阅读的压倒性问题，如通过自定义的阅读器BlogCat。
-• mnls指出RSS可能导致另一种形式的“信息暴政”，即被发布者控制，并认为这可能导致信息过载和数字负担。
-• AndrewOMartin认为链式信任适用于YouTube等其他平台，并提到从Hacker News的RSS中获得了有用的技能。
-• mbanerjeepalmer将用户分为两类：精心修剪信息源的人和认为RSS也是一种“暴政”的人，并建议使用LLM/嵌入模型来过滤低相关性内容。
-• nexo-v1表示虽然维护有意义的信息源需要精力，但这是值得的，定期维护比完全自动化更有效。
-• VP2262认为RSS的主要优势是能将想读的内容集中在一个地方，但仍需筛选以减少阅读量。
-• 1dom强调自我策划的重要性，认为如果不由自己策划信息源，可能会被他人引导至非最佳状态，并对比了信息聚合与金融危机的因果关系。
-• karpathy希望RSS能结合Twitter的一些功能，如回复、引用、点赞等，并提出LLM驱动的定制化算法信息流。
-• bitbasher认为好的RSS阅读器可以帮助控制过度消费，并通过RSS阅读YouTube内容以避免分心。
-• skybrian分享了在Newsblur中管理大量订阅的方法，通过分组来优先阅读重要的信息源。
+• **AI已实际应用于编程并带来效率提升**：[kace91] 认为当前许多文章对AI在编程中应用的质疑不切实际，因为他自己已经在使用AI工具（如Cursor）处理代码重构、命名建议等任务，并显著提升了效率。他以健身作为类比，认为AI的价值已经像锻炼能增强力量一样显而易见。
+
+• **AI工具的价值在于减少人机交互的摩擦**：[bastawhiz] 强调AI工具的价值在于提高编码速度，而不是代替人类思考。他使用AI工具来减少机械性工作（如代码格式化），从而让自己有更多时间专注于设计和架构等高层次问题。
+
+• **AI让程序员有更多时间思考高层次问题**：[linsomniac] 指出，AI工具可以帮助程序员减少在编码上的时间消耗，从而有更多时间思考高层次的设计问题。他认为，程序员应该追求减少编码时间，增加思考时间，特别是在职业生涯后期。
+
+• **AI在长期项目中存在局限性**：[kristopolous] 提出“Day-50问题”，即AI工具在项目初期（Day-0）可能非常有效，但在项目进行到第50天时，由于代码复杂性、文档过时等问题，AI的效率会大幅下降。他认为AI编码的真正问题是人机交互（HCI）工作流的问题，而非AI智能程度不够。
+
+• **AI工具不能取代程序员，但能提升效率**：[rcarmo] 认为AI工具不能完全取代程序员，但在某些情况下（如前端开发）可以显著提升效率。他强调，AI生成的代码需要经过仔细审查才能进入生产环境。
+
+• **AI工具的使用效果取决于程序员的经验和判断**：[jawns] 指出，程序员的职责是向雇主或客户交付价值，而非单纯思考。使用AI工具可以提升交付价值的速度和质量，但程序员仍需具备良好的判断力来审查和修改AI生成的代码。
+
+• **AI工具可能影响程序员的成长和经验积累**：[gersh] 担心，如果编程中的机械性工作都被AI自动化，程序员将失去通过实践积累经验的机会，从而影响他们的判断力和成长。
+
+• **AI工具将改变软件开发的本质**：[mrtksn] 认为，AI将彻底改变软件开发的方式，未来的代码将不再需要人类直接编写和管理。AI将处理一切方法性的工作，而人类将专注于更高层次的设计和架构。
 
 补充讨论：
-• 讨论中反复提到如何有效筛选和处理大量RSS订阅内容，避免信息过载和“数字负担”。
-• 有人提出RSS不应模仿社交媒体的即时通知和算法推荐，而应保持其独特的信息控制和策划优势。
-• 信任链和自我策划被认为是有效管理RSS信息源的重要策略。
-• 技术工具和自定义阅读器的使用在优化RSS阅读体验中起到关键作用。
-• 部分用户认为RSS可能导致另一种形式的“信息暴政”，即被发布者控制，需谨慎筛选订阅源。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43799697" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://scalewithlee.substack.com/p/when-etchsts-breaks-your-substack" target="_blank">Writing "/etc/hosts" breaks the Substack editor</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: scalewithlee</span> |
-                    <span>评分: 626</span> |
-                    <span>评论数: 63</span> |
-                    <span>发布时间: 2025-04-25 13:48</span>
-                </div>
+• **AI工具在处理重复性工作中的价值**：[protocolture] 认为，AI工具在处理重复性工作（如代码模板）中具有显著价值，可以解放程序员去解决新的问题。
 
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：WAF（Web应用防火墙）规则在安全性和可用性之间的平衡，尤其是在处理技术内容和潜在安全威胁时引发的争议。
-
-不同观点：
-• **WAF规则的必要性与调整困难**：[matt_heimer]认为WAF规则在安全和可用性之间需要平衡，某些技术讨论网站可能因为默认的严格规则导致功能异常。虽然规则可以保护潜在的安全漏洞，但精细调整这些规则非常耗时，有时只能完全关闭规则。
-• **WAF引发的问题是“愚蠢的错误”**：[blenderob]和[robertlagrant]认为这些问题不是安全与可用性的平衡问题，而是由于错误的实施导致。他们认为应该在应用后端而非WAF层面处理安全问题，WAF规则的错误应用既不安全也影响用户体验。
-• **WAF规则导致误报和可用性问题**：[SonOfLilit]和[pimanrules]分享了因WAF误报导致实际功能受限的经历，比如因特定字符串或代码关键字导致请求被阻止，影响了正常操作。
-• **WAF的适用场景和内容过滤问题**：[josephcsible]和[johnklos]认为WAF的内容过滤应高度依赖于上下文，WAF在无法区分命令与内容的情况下不应进行过滤。他们强调，过滤应基于发送方配置等外部因素，而非单纯的内容过滤。
-• **历史案例和WAF的局限性**：[mrgoldenbrown]提到了“斯肯索普问题”（Scunthorpe problem），即因过滤机制导致的误报问题。其他用户如[jmmv]和[Habgdnv]也分享了因WAF错误拦截而产生的困扰，并质疑WAF的实用性和实施质量。
-
-补充讨论：
-• **WAF规则与开发者责任**：[Y_Y]质疑WAF阻止特定路径（如`/etc/hosts`）的有效性，认为这种猫捉老鼠的游戏注定失败，开发者应依赖经过验证的安全措施，而非依赖WAF的表面保护。
-• **具体案例中的WAF问题**：[petercooper]提到使用OpenRouter服务时因Cloudflare保护而导致请求被阻止，认为这些商业模型的API请求不应受到如此严格的保护。
-• **WAF的根本问题**：[arp242]直言WAF是“无用的”，认为依赖WAF是开发能力不足的表现，更好的安全措施应从代码层面入手，而非依赖简单的内容过滤。
-
-争议焦点：WAF是否应在保护应用安全中扮演核心角色，或者是否应将更多的安全措施交由应用后端处理，以避免误报和用户体验下降。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43793526" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://samj.substack.com/p/that-joke-isnt-funny-any-more" target="_blank">I wrote a book called “Crap Towns”. It seemed funny at the time</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: url</span> |
-                    <span>评分: 371</span> |
-                    <span>评论数: 58</span> |
-                    <span>发布时间: 2025-04-26 00:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于《Crap Towns》一书在当下是否还能出版及其幽默风格的变化
-
-不同观点：
-• 作者SamJordison认为，当今社会对幽默的接受度发生了变化，书中的幽默在今天可能不再合适，甚至显得“肮脏”。他指出，社会的不平等加剧以及原子化可能影响了幽默的可接受性。此外，他强调自己并非喜剧演员，虽然无法得出明确结论，但凭借在出版行业的经验，能感受到出版商的紧张情绪。
-• 用户svat认为，问题不仅仅是“政治正确”的讨论，而是更深层次的社会变化。当今世界不再像过去那样通过集体自嘲来分享失败的喜悦，幽默变得不再亲切，而更像是一种恶意攻击。
-• 用户rikroots分享了个人经历，指出政府曾尝试通过阅读类似书籍来改进政策，但效果不显著。他强调，尽管改变不易，但仍需努力。
-• 用户jdietrich指出，二十年前的小镇幽默基于一种集体身份感，而现在由于社会分化，幽默变成了针对特定群体的攻击，不再具有包容性。
-
-补充讨论：
-• 用户amiga386提到了一个长期运行的类似项目“ChavTowns”，并提供了相关链接，指出该项目因缺乏访问而停止更新。
-• 用户wrasee建议作者尝试出版《Crap Towns》的20年更新版，认为幽默具有独特的表达能力，并可通过反思过去20年的变化来延续对话。
-• 用户firefoxd认为，当今社会强调个人责任，将失败归因于个人，而非环境，因此“小镇差劲”的评价被视为对人的攻击，而非对小镇本身的客观评价。
-• 用户perching_aix指出，自我贬低幽默可能加剧社会疏离感，并提醒作者警惕过度矫正和“清教徒主义”的负面影响。
-• 用户ggm认为，作者关于现在无法出版《Crap Towns》的说法不准确，但承认可能存在误解和误读。
-• 用户ChrisMarshallNY分享了一个类似项目的网站因涉及侮辱性内容而更改域名的例子，暗示幽默内容可能引发极端反应。
-• 用户smelendez认为，类似的幽默仍然存在于年轻人群体中，但以书籍形式出版可能不再受欢迎。
+• **AI工具可能掩盖代码抽象问题**：[tangotaylor] 指出，AI工具可能被用来掩盖代码中不好的抽象或不直观的语法问题，而不是真正解决这些问题。他认为，程序员应该更多地思考如何改进代码设计，而不是依赖AI工具来处理机械性工作。
 
 争议焦点：
-• 幽默在当今社会是否仍然具有包容性和亲切感，还是变成了针对特定群体的攻击性内容。
-• 社会变化是否使得《Crap Towns》这样的幽默作品不再适合出版，或者只是因为误解和误读而显得不合时宜。</div>
+• **AI工具是否能在长期项目中保持效率**：一些人认为AI工具在短期项目中非常有效，但在长期项目中由于代码复杂性和文档过时等问题，效率会下降。
+
+• **AI工具是否会影响程序员的成长和经验积累**：一些人担心，过度依赖AI工具可能导致程序员失去通过实践积累经验的机会，从而影响他们的判断力和职业发展。
+
+• **AI工具是否能取代程序员**：虽然大多数人认为AI工具不能完全取代程序员，但在某些领域（如前端开发）中，AI工具可能显著减少人类的工作量。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43799820" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43815033" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -353,51 +177,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.pagetable.com/?p=43" target="_blank">Bill Gates's Personal Easter Eggs in 8 Bit BASIC (2008)</a>
+                    <a href="https://www.tomshardware.com/peripherals/usb/usb-2-0-is-25-years-old-today-the-interface-standard-that-changed-the-world" target="_blank">USB 2.0 is 25 years old today – the interface standard that changed the world</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: michalpleban</span> |
-                    <span>评分: 126</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-04-26 19:43</span>
+                    <span>作者: thunderbong</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-04-27 17:27</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了微软在1979年为Commodore PET计算机的BASIC V2中隐藏的一个复活节彩蛋。用户输入“WAIT6502,1”后，屏幕左上角会显示“MICROSOFT!”。据传，这是比尔·盖茨在与Commodore创始人杰克·特拉梅尔争吵后加入的，以防Commodore声称代码非微软所写。文章还探讨了微软BASIC解释器的发展历史，包括为Altair 8800开发的4KB BASIC、为6502 CPU修改的版本以及不同计算机型号上的实现。例如，1977年Ohio Scientific的Model 500是首个包含微软BASIC的计算机。此外，文章提到苹果的Apple I使用了6502 CPU，但沃兹尼亚克编写了自有的Integer BASIC，而微软BASIC作为AppleSoft在Apple II上可选。Commodore收购MOS后，将微软BASIC改名为Commodore BASIC，并去除版权信息。文章最后详细解释了复活节彩蛋的代码逻辑。</p>
+                    <p>USB 2.0标准于2000年4月27日推出，传输速度高达480 Mbps，远超之前的USB 1.1和苹果的FireWire 400，且成本更低，迅速成为主流。尽管2000年发布，但直到2002年VIA和2003年苹果才开始在设备中采用。Windows系统直到2002年发布SP1和2003年发布SP4才支持USB 2.0。USB 2.0取代了老旧的并行和串行端口，更加紧凑和便捷，广泛用于连接外设。尽管如今有更快标准如USB4，USB 2.0仍广泛用于低速设备如鼠标和键盘，且最新iPhone 16e仍采用该标准。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于比尔·盖茨在个人计算机历史中的角色及其技术贡献的评价
+                    <div class="comments-summary">主要讨论点：USB技术的发展及其复杂性，以及与其他类似技术的比较。
 
 不同观点：
-• csl和dang对文章表示赞赏，csl特别提到比尔·盖茨的评论，并将文章与比尔·盖茨联系起来，dang则分享了相关的技术讨论链接，显示出对比尔·盖茨技术贡献的关注和兴趣。
-
-• cookie_monsta认为文章内容缺乏趣味，期待更有趣和奇思妙想的内容，但实际讨论的却是知识产权保护，感到失望。
-
-• asadm提出技术性问题，询问在当今先进的反编译工具下，类似比尔·盖茨曾经使用的技术保护手段是否还能有效防止克隆和盗版。
-
-• gitroom表达了对老计算机历史和故事的浓厚兴趣，表现出对技术历史的欣赏态度。
-
-• amelius以讽刺的语气建议，如果在复制他人代码时加入公司X、Y、Z的“彩蛋”，可以防止代码被他人冒领，暗示了技术领域中知识产权问题的复杂性。
-
-• anthk从技术角度对比尔·盖茨在Altair Basic上的成就提出质疑，认为Forth语言在性能上可能更具优势，暗示比尔·盖茨的技术选择并非最优。
-
-• OpenLoong简单表示对文章的兴趣，没有深入展开。
-
-• neuroelectron以讽刺口吻评论比尔·盖茨的技术贡献，暗示其某些行为类似于盗用他人成果并抢先署名。
-
-• ilrwbwrkhv高度评价比尔·盖茨，认为他是值得尊敬的“黑客”，尽管其手段强硬，但对人类的贡献远超其他人，并批评当前的富裕阶层缺乏道德。
-
-• jojo14对比尔·盖茨的技术能力和贡献持怀疑态度，认为所谓的“彩蛋”实际上更像是后门，并否认比尔·盖茨作为开发者的身份，试图打破关于比尔·盖茨的神话。
+• [ksec的观点] 认为USB技术在早期虽然速度更快，但规范文档非常复杂，且使用体验上存在不便（如需要多次插入）。他还提到，随着技术发展，计算机系统整体变得越来越抽象，导致对底层工作原理的理解变得更加困难。
+• [bobmcnamara的观点] 认为USB的成功主要归功于其市场营销和兼容性，而不是纯粹的技术优势。他指出，其他技术如FireWire和Thunderbolt在某些技术指标上更早提供了优势，但USB通过一个接口整合了多种功能，使其在市场上更具吸引力。
 
 补充讨论：
-• 评论中涉及了关于比尔·盖茨个人技术能力和贡献的争议，部分评论者对其持高度评价，部分则质疑其实际开发能力和道德问题。
-• 讨论中还涉及到技术保护手段在现代技术环境下的有效性问题，显示出对技术历史和现代技术发展关系的思考。
-• 知识产权保护和技术手段在技术社区中的角色也是讨论的重点，不同评论者对此持有不同看法，有的认为是一种保护手段，有的则认为是隐藏的后门。</div>
+• [ksec的个人经历] 提到在2000年左右，计算机系统的抽象程度增加，导致对系统工作原理的理解变得更加困难。这反映出技术进步带来的便利与复杂性之间的权衡。
+• [bobmcnamara的技术比较] 强调USB在技术上并非总是领先，但在市场上却取得了成功，暗示市场需求和用户体验可能比单纯的技术指标更重要。
+
+争议焦点：USB的成功主要是因为技术优势还是市场营销和兼容性。这涉及到对技术发展过程中不同因素的评价和优先级判断。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43806491" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43813566" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -408,162 +216,289 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.chemistryworld.com/news/australian-who-ordered-radioactive-materials-over-the-internet-walks-away-from-court/4021306.article" target="_blank">Australian who ordered radioactive materials walks away from court</a>
+                    <a href="https://sifeiliu.net/CosAE-page/" target="_blank">CosAE: Learnable Fourier Series for Image Restoration</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mrkeen</span> |
-                    <span>评分: 309</span> |
-                    <span>评论数: 37</span> |
-                    <span>发布时间: 2025-04-26 06:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>24岁的澳大利亚男子埃马努埃尔·利登（Emmanuel Lidden）因在网上购买铀和钚等放射性材料而被判两年良好行为约束令，免于更严厉的刑罚。他承认了两项罪名：未经许可进口和持有核材料。尽管其行为违法，法官认为他患有精神健康问题且无恶意意图。这起事件导致2023年8月发生重大危险品事故，利登居住的街道被封锁，居民被疏散。尽管如此，利的律师批评边境部队过度反应，称材料数量极小且安全。澳大利亚边境部队则希望此案能提高公众对进口法规的认识。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：澳大利亚一起涉及进口放射性物质的案件引发的多方面讨论，包括法律、社会和个人权利等问题。
-
-不同观点：
-• **支持被告并批评案件处理不当**：
-   - **deng**：认为案件荒谬，指出日常物品中也有放射性物质，且辐射剂量是关键。对比煤电站和汽车污染，认为社会对辐射过度恐惧。
-   - **shit_game**：强烈批评案件处理方式，认为涉及的物质和数量不应导致如此严重的指控，并质疑将被告心理健康问题作为辩护理由。
-   - **leonewton253**：批评澳大利亚的处理方式，使国家看起来像“流放囚犯的殖民地”。
-   - **derefr**：建议刑事司法系统应引入“检察官过错”的判决选项，以补偿被告因不正当起诉所受的损失。
-
-• **关注心理健康和法律问题**：
-   - **ulf-77723**：指出法官需将收集化学元素的行为与心理健康问题联系起来，以不使现行法律显得荒谬。
-   - **keepamovin**：提到被告因面临起诉而被雇主解雇，希望他能复职。
-
-• **批评媒体公开个人信息**：
-   - **jampekka**：质疑媒体公开被告姓名和健康信息的做法，认为这是一种惩罚，并提到在芬兰除非罪行严重或被告是公众人物，否则不会公开姓名。
-
-• **讨论边境安全和国家政策**：
-   - **aunty_helen**：认为澳大利亚作为岛屿国家，边境安全过度严格，有一种将某些物品永久排除在外的 mentality。
-   - **bpiroman**：质疑是否应对烟雾探测器中的镅-241进行禁令，认为当前的过度反应不合理。
-
-• **对比历史背景**：
-   - **red_admiral**：提到过去化学实验的宽松环境，引用Oliver Sacks的经历，说明过去孩子可以轻易获取化学物质进行实验。
-
-补充讨论：
-• **视频引用**：多个评论者引用了YouTube视频以提供更多背景或见解，显示出视频内容在这一讨论中的影响力。
-• **案件后续**：有评论提到案件的后续发展及相关新闻链接，显示出公众对案件处理进展的关注。
-• **对社会风险厌恶的批评**：
-   - **whimsicalism**：批评盎格鲁-撒克逊国家的极端风险厌恶和对“热心邻居”举报的依赖，认为治理存在问题。
-
-争议焦点：
-• 案件的核心争议在于澳大利亚法律对放射性物质的过度反应，以及被告心理健康问题是否应成为辩护理由。批评者认为此案暴露了法律系统和媒体在处理类似案件时的缺陷。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43801439" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/facebookresearch/MILS" target="_blank">LLMs can see and hear without any training</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: T-A</span> |
-                    <span>评分: 184</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-04-26 13:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Facebook研究团队的一个项目，展示了大型语言模型（LLMs）无需专门训练即可处理视觉和音频任务的能力。项目名为MILS，提供了代码和详细的操作指南，包括如何安装环境、下载数据集、设置路径以及运行图像、音频和视频字幕生成任务。该方法仅用于推理，支持多GPU运行，并在多个标准数据集（如MS-COCO、Clotho、MSR-VTT等）上进行了测试。用户可通过指定GPU设备并行处理多个任务，生成结果存储在指定目录中，并使用提供的评估脚本获取性能指标。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一篇论文及其提出的基于LLM（大型语言模型）和多模态模型的系统，评论中的不同观点集中在该系统的创新性、实际功能、以及其在AI能力发展中的意义。
-
-不同观点：
-• **vessenes**：认为该系统本质上是一个演员/批评者管道（actor/critic pipeline），但其实现方式和结果很有趣。LLM通过外部工具反馈，能够在推理时进行自我改进，这在GPT-3时代无法实现。该能力是模型能力的一个重要进展，且具有通用性，可应用于如编码等领域。
-
-• **EncomLab**：对AI的进步持讽刺态度，将AI系统的反应与简单的物理设备（如夜灯和恒温器）进行类比，暗示AI所谓的“看见”和“知道”与人类认知有本质区别，认为当前的AI讨论多为文字游戏。
-
-• **scribu**：认为该系统只是生成更好的提示以输入到多模态模型中，标题有“标题党”嫌疑，但承认其有一定趣味性。
-
-• **nico**：提出“看见”和“听见”的定义是哲学问题，引用NPR的蝙蝠侠播客来引导人们思考这些概念的深层含义，而不是简单接受AI的表面能力。
-
-• **gitroom**：对模型的逐渐改进感到兴奋，但质疑这种改进是运气还是真正的技能提升。
-
-• **viraptor**：认为该系统是经典的演员/批评者设置，但论文中未提及这一点，质疑是否遗漏了重大区别。
-
-• **robocop_legacy**：看到该方法的潜力，提出可以保存最佳任务上下文并训练元学习器，从而在无需保留LLM的情况下对模型进行微调，应用于特定任务。
-
-• **JoBrad**：质疑“without any”训练的定义，认为LLM完全无需训练的说法不现实，指出公司投入巨资提升LLM的理解能力。
-
-• **TheCoreh**：将LLM的工作方式比喻为玩“Wordle”，通过外部系统的评分逐步改进输出质量。
-
-• **sega_sai**：认为论文内容与标题不符，标题暗示LLM无需图像输入即可生成图像，但实际并非如此。
-
-• **v01rt**：解释“without training”是指转移学习与演员/批评者方法。
-
-• **alex1138**：提到扎克伯格对AI的乐观态度，认为即使不杞人忧天，至少也应对AI潜在风险保持警惕。
-
-• **jagged-chisel**：认为计算机无需编程即可接收输入，对论文系统的创新性表示怀疑。
-
-补充讨论：
-• 争议焦点在于该系统是否真正具有创新性，以及LLM的“自我改进”能力是否如论文所述那样显著。
-• 对“看见”和“听见”的定义引发哲学思考，反映了技术进步带来的概念挑战。
-• 对模型改进是运气还是技能的讨论，显示出对AI技术实际效果的质疑与期待并存。
-• 对“without training”的不同理解，揭示了技术术语在传播中的模糊性与误解。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43803518" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.construction-physics.com/p/robot-dexterity-still-seems-hard" target="_blank">Robot Dexterity Still Seems Hard</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mhb</span> |
-                    <span>评分: 67</span> |
+                    <span>作者: E-Reverance</span> |
+                    <span>评分: 55</span> |
                     <span>评论数: 8</span> |
-                    <span>发布时间: 2025-04-26 17:53</span>
+                    <span>发布时间: 2025-04-26 20:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了人形机器人在灵活操作物体方面仍面临的挑战。尽管许多公司，如1X Technologies、Apptronik、Agility Robotics和Figure AI，已筹集大量资金开发人形机器人，并且这些机器人在运动能力上取得了显著进展，如跑步、翻跟头、踢足球等，但操作能力仍是一个难题。前OpenAI首席研究官Bob McGrew指出，使机器人有用的是其操作物体能力而非运动能力。传统机器人虽能进行精确动作，但在多样的环境中灵活操作不同物体仍很困难。文章强调，尽管特定任务可以自动化，但开发能在新环境或多变环境中灵活执行多种任务的机器人仍需时日。</p>
+                    <p>本文介绍了一种名为CosAE（Cosine Autoencoder）的新型自动编码器，它结合了经典的傅里叶级数和前馈神经网络。CosAE通过将输入图像表示为一系列二维余弦时间序列，利用可学习的频率和傅里叶系数进行编码，在保持细节的同时实现了高度的空间压缩。其瓶颈层编码频率系数，使得即使在64倍下采样的情况下仍能保持图像细节。实验表明，CosAE在灵活分辨率超分辨率和盲图像修复任务中超越了现有方法，展现了其对复杂甚至未知图像退化的强大泛化能力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：机器人技术中的自主驾驶与机器人灵巧性（dexterity）的实现方法及相关挑战
+                    <div class="comments-summary">主要讨论点：围绕图像修复技术及其相关工具和评价指标的讨论
 
 不同观点：
-• sashank_1509认为Waymo的自动驾驶技术主要依赖于手动编码的逻辑和处理各种边缘情况，而非依赖端到端的深度学习模型。他质疑神经网络在处理无限多边缘案例时的有效性，并提出类似方法可能适用于人形机器人。
-• levocardia指出灵巧性的一大挑战在于接触建模（如静态和动态摩擦），并提到OpenAI通过大规模随机化参数的方式解决这一问题，但认为仍需探索更好的实时学习方法。
-• iandanforth认为当前机器人训练的数据量远不及语言模型，提出随着数据量增加和仿真技术发展，机器人能力可能会有快速进展，并预测仿真技术可能在实际任务中超越手动数据收集。
-• MisterTea强调反馈机制的重要性，认为机器人需要像人类一样通过感觉来理解自身动作，而不仅仅是依赖坐标定位，并用手臂麻木的例子说明机器人缺乏感觉的问题。
-• Zigurd指出已有成功的商用手术机器人，且这些机器人并不模仿人类手部动作，认为专用机器人可能比通用机器人更有用。
-• DGAP质疑这些挑战是否适用于手术机器人，并提到现有手术机器人有大量训练数据和预设位置，可能不涉及灵巧性问题。
-• beefnugs批评市场对“AI”概念的过度炒作，认为高价的人形机器人实际能力有限，无法完成多种日常任务。
-• m3kw9通过个人经验说明人类依赖多种感觉来判断物体状态，强调多种传感器组合对实现灵巧性的重要性。
+• syockit认为，看到修复后的图像有一种不安的感觉，可能是因为知道图像是经过修复的，并好奇如果在自然环境中看到是否还会有相同的感觉。
+• maxbond讨论了在深度学习中使用傅里叶分析的经历，指出相关研究较少，并怀疑是因为复数处理困难。他还分享了自己将实部和虚部简单拼接的方法，并希望得到更多建议。
+• sorenjan对修复结果的快速推理时间表示惊讶和赞赏，强调了在V100上实现4倍超分辨率仅需36毫秒。
+• PaulRobinson对使用FID等指标评价性能表示怀疑，认为传统的像素正确恢复百分比更为直观，并提及对“计算机，增强！”这类影视桥段的刻板印象因此改变。
+• gitroom理解等待代码发布的困扰，表示对酷炫结果的期待。
+• nullc建议使用gabor滤波器作为基函数，认为这样可以为神经网络的学习提供更有帮助的过完备性。
+• dingdingdang关注代码发布的现状，指出尚未有代码发布。
 
 补充讨论：
-• 讨论中涉及的多个观点围绕机器人灵巧性和自主驾驶的实现方法展开，涵盖了数据训练、仿真技术、手动编码、感觉反馈等多个方面。
-• 争议的焦点在于端到端深度学习模型与手动编码逻辑的优劣，以及仿真技术与真实数据训练的未来发展方向。
-• 对于灵巧性的实现，不同评论者强调了感觉反馈、接触建模、传感器组合等不同方面，反映了多维度技术挑战。
-• 对手术机器人的讨论引出了专用机器人与通用机器人的对比，提出了灵巧性在不同应用场景中的具体表现和要求。</div>
+• doctorpangloss提到自动编码器正在迎头赶上，并预测未来将实现亮度与颜色的分离及UCS的改进。
+• 争议的焦点之一是评价指标的使用，特别是FID在图像修复技术中的适用性。PaulRobinson认为传统指标更直观，而FID等新指标在特定应用中可能显得不够精确。
+• 另一个讨论点是傅里叶分析在深度学习中的应用潜力及其实现方法，特别是对复数处理的困难和改进方向。
+
+这些观点展示了图像修复技术在不同技术层面的讨论，包括用户体验、技术实现和评价标准的争议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43805683" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43807029" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wsj.com/articles/turning-brazilian-farmland-back-into-forest-gains-some-traction-9965350c" target="_blank">Microsoft says it will buy 8M tons of carbon offsets (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wslh</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-27 22:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43815760" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="http://ucbvax.berkeley.edu/passing-of-ucbvax.txt" target="_blank">The Passing of Ucbvax (1994)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ecliptik</span> |
+                    <span>评分: 65</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-04-26 20:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于旧硬件设备退役的情感和技术演变，以及与历史设备相关的发现和研究困难。
+
+不同观点：
+• EvanAnderson表达了对设备退役仪式的喜爱，认为随着年龄和经验的增长，越来越 appreciate 这种仪式感。他分享了自己在安装的硬件中藏纸条的习惯，希望未来替换设备的人能从中获得乐趣。
+
+• classichasclass专注于VAX系列计算机的性能提升，详细列举了不同代际VAX设备的性能数据，如11/750和VAXstation 3200的VUPs值，强调了技术进步的显著性。
+
+• dredmorbius对寻找历史主机最后有效日期的问题表示好奇，提到在研究类似年份大学主机时遇到的困难，并指出许多以前由本地主机提供的服务现在由大型商业平台承担，反映了技术时代的变迁。
+
+• bagatelle提到在为学校演示做研究时发现了相关历史文档，虽然对研究帮助不大，但欣赏其中的幽默。他还表示如果将来退役重要服务器，愿意举行类似的仪式。
+
+• jmclnx通过引用邮件路径，指出邮件是通过UUCP发送或接收的，关注历史通信技术及其路径。
+
+补充讨论：
+• 讨论中涉及了技术进步（如VAX设备的性能提升）和现代技术变迁（如服务转向大型商业平台）的对比。
+• 评论中还体现了对历史设备的怀旧情感和对仪式感的重视，以及在研究和技术考古中遇到的实际困难。
+• 争议焦点不明显，但不同评论者关注点各异，从技术性能、历史研究到个人情感和仪式，展现了多维度的讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43806630" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://phys.org/news/2025-04-experimental-dirac-exceptional.html" target="_blank">First experimental observation of Dirac exceptional points</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-04-28 02:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>中国科学技术大学的研究团队首次通过实验观察到狄拉克例外点（Dirac Exceptional Points, EPs），这是一类新型的能量简并现象，存在于非厄米系统中。与传统例外点不同，狄拉克例外点具有实值能量谱和本征态简并的特性。研究人员利用金刚石中的氮空位缺陷构造了一个非厄米哈密顿量，成功观察到这些能量简并现象。该研究发表在《Physical Review Letters》上，为非厄米动力学和量子系统的控制提供了新途径，可能推动量子传感器和量子计算机等技术的发展。研究团队希望这一发现能促进非厄米和量子物理领域的进一步研究。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43816976" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://craig-russell.co.uk/blog/2024-10-24-optimistic-sci-fi/" target="_blank">We Need More Optimistic Science Fiction</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: craig552uk</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-04-27 20:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章呼吁更多乐观的科幻作品，认为科幻不仅是为了娱乐，还具有塑造未来的责任。过去，科幻曾激发人类对太空探索等领域的热情，推动了现实中的科技进步。然而，如今科幻多聚焦于反乌托邦和末世情节，与现实的困境越发相似，导致人们对未来失去乐观期待。作者引用托尔金和米尔顿·弗里德曼的观点，强调科幻作为“逃避现实”的工具，不应仅是短暂的精神慰藉，而应激励人们想象和创造更好的未来。科幻应帮助社会探索新的可能性，提出替代当前政治和经济体系的新想法，重新点燃对未来的希望和雄心。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对科幻作品中技术描绘的乐观与悲观看法
+
+不同观点：
+• [AIPedant] 引用Colin Fraser的观点，认为《黑镜》其实是一种乐观的科幻，因为它描绘的邪恶技术至少能如描述那样正常运作。他通过一系列例子对比，提出真正悲观的科幻应包括：人们崇拜一个比狗还蠢的AI神、友好的类人机器人无法正常行走、重力弯曲驱动器仅为装饰且导致癌症、大部分功能失效的波将金式戴森球，政府将停电问题归咎于外系统移民等。
+
+• [nothercastle] 认为技术普遍被用于作恶，并认为这种情况不太可能改变，表现出对技术发展的悲观态度，没有区分技术成功与否，直接聚焦于技术作恶的普遍性。
+
+• [luotuoshangdui] 赞同[AIPedant]的观点，并询问是否有推荐的乐观科幻作品，显示出对乐观科幻的兴趣，试图寻找与悲观科幻相对的正面例子。
+
+补充讨论：
+- [AIPedant] 的例子带有讽刺性质，强调悲观科幻不仅应关注技术失败，还应关注技术即便成功也可能导致荒谬或悲剧性的社会结果。
+- [nothercastle] 的评论相对简短，直接指出了对技术发展普遍用于作恶的看法，没有具体讨论技术成功与否的问题。
+- [luotuoshangdui] 的提问引出了对乐观科幻的需求，可能反映出一部分观众对当前悲观科幻泛滥的疲劳感，试图寻找不同的叙事视角。
+
+争议焦点：科幻作品中技术的描绘应该是乐观还是悲观的，以及如何定义这些乐观或悲观的具体表现形式。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43814724" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nonstopsystems.com/radio/frank_radio_antenna.htm" target="_blank">Slinky-Coil Dipole (2021)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rolph</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-04-26 20:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Slinky天线的使用及其效果
+
+不同观点：
+• [firesteelrain] 提到 QuirkyQRP 曾经制作过 Slinktenna，并表示自己用它来进行FT8通信。这表明Slinky天线在现代业余无线电操作中仍有实际应用。
+
+• [Animats] 指出 Slinky 天线早在1970年代就已存在，并解释其螺旋线圈使其有效长度比直线天线更长。同时提到一些生存主义者（preppers）喜欢使用Slinky天线，因其便于储存、易于架设且可重复使用。这说明该天线具有一定的历史背景，并在特定群体中受欢迎。
+
+• [puttycat] 表达了对人们在各种职业和兴趣中发现新事物的惊叹，暗示了对Slinky天线及其相关兴趣的赞赏，但未直接评价其性能。
+
+• [mikewarot] 分享了自己在1980年代使用Slinky天线的经验，指出尽管在天花板电线管道附近，该天线在40米和15米波段上仍然有效。然而，他建议如果有条件，最好使用户外的标准偶极天线。这表明Slinky天线在某些情况下有效，但并非最佳选择。
+
+• [dr_dshiv] 以讽刺口吻质疑Slinky天线的实际用途，提到是否能用于与月球进行无线电通信。这反映了对Slinky天线实际效能的怀疑。
+
+补充讨论：
+• Slinky天线的历史和物理特性是讨论的一个重要方面，[Animats] 提供的链接进一步详细介绍了这种天线的工作原理和优势。
+• 实际使用经验的分享，如[mikewarot] 的例子，提供了对天线性能的实际见解。
+• 对Slinky天线用途的质疑和幽默评论，如[dr_dshiv] 的发言，显示了对该天线效能的不同看法和争议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43806838" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.itsfoss.com/lenovo-cuts-windows-tax/" target="_blank">Lenovo May Be Avoiding 'Windows Tax' via Cheaper Laptops with Preinstalled Linux</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: m463</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-04-27 17:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Perplexity公司推出的Comet浏览器引发了隐私担忧。这款AI驱动浏览器计划追踪用户的每一个动作，包括浏览习惯和在线活动，以提供个性化体验。然而，这种深度追踪可能导致用户数据被滥用或泄露，威胁个人隐私安全。专家建议，用户在选择浏览器时应谨慎考虑其数据收集政策，以保护自身隐私。文章呼吁加强监管，防止科技公司过度收集用户信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：消费者是否有权在不购买预装Windows系统的情况下购买笔记本电脑，以及相关操作系统的选择和价格问题。
+
+不同观点：
+• **[greatgib]**：十年前法国有过法律斗争，允许消费者购买不预装Windows系统的电脑。虽然现在不再广泛宣传，但消费者仍可以要求制造商退还Windows许可证费用。大约8-10年前，他成功退回了120-130欧元。法律还要求零售商标示部分价格为Windows许可证费用，但不确定现在是否执行。
+
+• **[JorgeGT]**：西班牙的联想和宏碁提供不预装任何操作系统的电脑选项，特别是ThinkPad系列，但便宜的消费级产品线通常不提供此选项。戴尔提供Linux选项，但没有“无系统”选项。
+
+• **[jjani]**：韩国十年前已经开始这样操作，所有品牌包括美国品牌如HP和戴尔都提供此类选择。
+
+• **[sillywalk]**：提到HP曾提供FreeDOS选项，但这是一个在Debian下运行的FreeDOS虚拟机。
+
+• **[pipes]**：对Linux笔记本不需要支付Windows许可证表示不意外，认为这不值得讨论。
+
+• **[DownrightNifty]**：最新的X1 Carbon (Gen 13)似乎不正式支持Linux系统。
+
+• **[micovec]**：确认Windows税是真实的，去年九月以便宜100美元的价格购买了未预装系统的联想IdeaPad Slim 3。
+
+• **[1970-01-01]**：提出关于UEFI密钥的问题，质疑如果购买无Windows系统的电脑，是否可以通过自行安装Windows来绕过许可证费用。
+
+• **[oriettaxx]**：认为这是反垄断问题，并提到在意大利消费者有权获得约100欧元的退款，法律对此有严格规定。
+
+补充讨论：
+• **争议焦点**：消费者是否有权在不购买Windows许可证的情况下购买笔记本电脑，以及零售商和制造商是否充分披露了这部分费用。
+
+• **操作系统的选择**：不同国家和品牌在提供无预装系统或Linux系统选项上的差异，尤其是高端和低端产品线的不同策略。
+
+• **UEFI密钥问题**：如果购买无系统电脑，是否能自行安装Windows并绕过许可证费用，这是一个技术性讨论点。
+
+• **法律和退款问题**：法国和意大利的法律要求零售商退还Windows许可证费用，但实际执行情况可能存在差异。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43813826" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
