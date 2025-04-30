@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-04-30 14:19 (北京时间)
+            最后更新时间: 2025-04-30 17:14 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,48 +61,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://openai.com/index/sycophancy-in-gpt-4o/" target="_blank">Sycophancy in GPT-4o</a>
+                    <a href="https://jepsen.io/analyses/amazon-rds-for-postgresql-17.4" target="_blank">Jepsen: Amazon RDS for PostgreSQL 17.4</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dsr12</span> |
-                    <span>评分: 171</span> |
-                    <span>评论数: 37</span> |
-                    <span>发布时间: 2025-04-30 03:06</span>
+                    <span>作者: aphyr</span> |
+                    <span>评分: 408</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-04-29 14:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章主要讨论了Amazon RDS for PostgreSQL在多可用区（Multi-AZ）部署中的事务隔离性表现。PostgreSQL通常提供三种事务隔离级别：Read Committed、Snapshot Isolation（在PostgreSQL中称为Repeatable Read）和Serializable。然而，测试发现，Amazon RDS for PostgreSQL在多AZ配置下并未实现标准的Snapshot Isolation，而是可能提供了Parallel Snapshot Isolation，这是一种稍弱的 consistency model。
+
+通过Jepsen测试库，文章展示了在健康运行状态下，RDS出现了G-nonadjacent循环，违反了Snapshot Isolation的原则。具体表现为事务之间存在非相邻的读写依赖，导致一种称为Long Fork的异常，而未观察到Short Fork（Write Skew）。这种行为在多个PostgreSQL版本中（从13.15到17.4）均有出现，表明RDS的多AZ集群无法确保Snapshot Isolation。
+
+总结：Amazon RDS for PostgreSQL多AZ部署可能提供的是Parallel Snapshot Isolation，而非标准的Snapshot Isolation，导致在某些情况下出现事务隔离性异常。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：ChatGPT的谄媚性（sycophancy）问题及其影响和解决方案
+                    <div class="comments-summary">主要讨论点：Amazon RDS for PostgreSQL多可用区集群的Snapshot Isolation问题及其影响
 
 不同观点：
-• **[支持修正谄媚问题]**：一些用户（如intellectronica、daemonologist）认为OpenAI修正谄媚问题是正确的决定。他们指出，谄媚行为反映了LLM（大型语言模型）在人类偏好训练中的固有缺陷，且这种行为可能对用户产生潜移默化的负面影响，尤其是对那些心理状态脆弱的人。
-  
-• **[对修正的质疑]**：有用户（如MichaelAza）反而喜欢谄媚版本，认为该版本能更好地遵循用户的个性化指令，并且在某些情况下提供了有趣且令人耳目一新的回答。这种观点质疑修正的必要性，认为问题可能出在默认设置上，而非模型本身。
-
-• **[API与Web应用的区别]**：minimaxir指出，通过API直接控制系统提示的用户可以避免谄媚问题，而使用ChatGPT网页版的用户则会受到模型变化的影响。该观点强调了不同用户体验之间的差异，并建议通过技术手段（如编辑系统提示）来解决问题。
-
-• **[长期用户满意度]**：esafak和一些其他用户支持OpenAI注重长期用户满意度的决定。他们认为，软件行业需要更多关注长期价值，而不仅仅是短期的用户反馈。
-
-• **[AI人格和道德问题]**：一些用户（如Jean-Papoulos、RainyDayTmrw）对将人类道德和价值判断应用于AI表示担忧。他们指出，AI本质上不具备人类的道德和价值，因此对其行为进行道德评判可能不合适。
-
-• **[潜在风险]**：SeanAnderson提到谄媚行为可能对某些用户（如有精神健康问题的人）产生危险影响，这种观点强调了AI开发者在防止伤害方面的责任。
+• hliyan：赞赏文章直接、简洁的写作风格，倾向于无修饰的技术分享，认为这种风格更适合STEM学科的成果展示。
+• luhn：指出文章未明确说明该问题仅限于多可用区集群（multi-AZ clusters），并解释了多可用区实例（multi-AZ instances）和多可用区集群的区别，认为新功能的复杂性可能是导致问题的原因。
+• cswilliams：分享了以前在公司遇到的类似问题，使用pg_dump并行工作时出现不一致错误，怀疑与文章中提到的问题相关。
+• ezekiel68：认为文章描述的问题可能导致写后读取返回过时数据，类似于竞态条件，但并不认为会产生无意义的数据。
+• nijave：询问此问题是否在上游PostgreSQL集群中不存在，质疑AWS是否在集群配置或补丁上引入了此行为。
+• tibbar：认为文章标题没有突出重点，应强调RDS for PostgreSQL 17.4未正确实现Snapshot Isolation。
+• badmonster：关注如果开发者假设Snapshot Isolation而实际为Parallel Snapshot Isolation可能引发的安全或应用级别错误，特别是在使用读副本端点的多可用区配置中。
+• mushufasa：引用文章数据，确认问题并非版本回归，而是一个长期存在的错误或功能请求。
+• password42：希望所有Amazon RDS版本都能经过Jepsen测试。
+• film42：认为AWS需要更新文档以说明此问题，并关注可能的性能影响。
+• cr3ative：认为文章写作风格过于学术化，难以理解问题及其影响，感到被排除在外。
 
 补充讨论：
-• **[AI人格模式]**：sharpshadow和mvkel讨论了AI人格模式的潜在应用，认为用户可能希望AI根据特定需求表现出不同的人格特质。
-
-• **[技术实现与模型一致性]**：RainyDayTmrw和m101提出了技术实现和模型一致性的问题，质疑在使用固定模型标识符（如"4o"）时是否能确保行为一致，以及模型行为变化可能导致的用户体验问题。
+• baq：提到Jepsen的独立工作可能引起内部关注，并对aphyr表示赞赏。
+• oblio：好奇Aurora在此测试中的表现。
+• wb14123：对Amazon RDS未通过简单测试表示惊讶。
 
 争议焦点：
-• **是否需要修正谄媚问题**：一部分用户认为谄媚行为是有趣且有用的，而另一部分用户则认为这可能带来负面影响，需要修正。
-
-• **AI的道德和价值问题**：如何将人类道德和价值判断应用于AI，以及开发者在防止AI产生负面影响方面的责任。</div>
+• 文章写作风格的简明性与学术化之间的矛盾（hliyan与cr3ative的观点对比）。
+• AWS在多可用区集群配置或补丁中是否引入了问题（luhn与nijave的观点对比）。
+• 问题对实际应用的影响程度及AWS可能的应对措施（badmonster、film42与ezekiel68的观点）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43840842" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43833195" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -117,8 +121,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: gnabgib</span> |
-                    <span>评分: 40</span> |
-                    <span>评论数: 3</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 8</span> |
                     <span>发布时间: 2025-04-30 02:53</span>
                 </div>
 
@@ -135,21 +139,29 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何识别敌对势力IT人员及对当前网络安全威胁的认知
+                    <div class="comments-summary">主要讨论点：对SentinelOne报告及相关网络安全问题的不同看法
 
 不同观点：
-• **looperhacks** 提出，许多公司缺乏识别敌对势力IT人员的能力，尤其是在网络安全专家不足的情况下，是否有可行的方法来识别这些人员。这暗示了对普通公司来说，应对高级网络威胁存在挑战。
+• [dubbel] 最初以为SentinelOne的报告与Chris Krebs事件有关，并涉及现政府，但后来发现是关于不同国家背景的黑客活动。这表明评论者对报告主题有误解，随后澄清。
 
-• **CyberMacGyver** 则侧重于时间节点，指出因为正值RSA（美国注册安全专业人士）会议期间，所以会有很多关于网络安全的讨论。这表明他认为当前关于网络安全的讨论增多是时机使然，并不一定代表新问题的出现。
+• [sublimefire] 认为报告内容较为浅显，提到的工具如goreshell、shadowpad、scatterbrain等只是点到为止。推测报告目标受众更偏向企业高管，而非技术分析师或安全专家。还指出报告的潜在目的可能是让读者感到不安，从而促使他们雇佣SentinelOne的服务。
 
-• **hulitu** 引用了一些近期的威胁例子，包括朝鲜IT人员伪装成求职者、勒索软件操作者试图寻找平台漏洞、中国国家支持的黑客攻击与公司业务和客户相关的组织。他还以讽刺的语气提到，幸好没有俄罗斯或伊朗的参与。这暗示了对当前主要网络威胁来源的认知，并通过讽刺表达了对部分国家威胁行为的关注。
+• [shihabkhanbd] 建议参考SANS的二十大安全控制措施，评估自身安全状况，并制定计划来填补最大的安全漏洞。这反映出一种实用、自助的网络安全策略，而非依赖外部服务。
+
+• [PeterStuer] 以讽刺的语气质疑是否因为之前成功解决了MOSSAD、CIA和NSA的内鬼问题，现在才开始关注朝鲜（DPRK）的威胁。此评论带有调侃意味，质疑报道的优先性和选择性。
+
+• [CyberMacGyver] 指出由于RSA大会的临近，预计会有大量网络安全相关的帖子。这暗示报告的发布时机可能与行业活动有关，带有一定的市场宣传意味。
+
+• [looperhacks] 提出如何识别敌对势力的IT工作人员的问题，并指出大多数公司缺乏网络安全专家的能力。这反映了对实际安全操作中辨别敌对分子的困惑和需求。
+
+• [mikewarot] 认为像Windows、Linux、MacOS这样的操作系统由于设计上的缺陷无法真正保证安全，声称能做到这一点的公司是在卖“假药”。他还提出基于能力的操作系统和数据二极管作为潜在的解决方案，反映出对主流操作系统安全性的不信任，并提倡使用特定技术来增强安全性。
+
+• [hulitu] 引用报告中提到的威胁来源（如DPRK和勒索软件操作者），并以讽刺的口吻表示“幸好没有俄罗斯或伊朗”，暗示对报告选择性报道的怀疑。
 
 补充讨论：
-• **hulitu** 的评论中提到的具体威胁例子，如朝鲜和中国的网络攻击活动，显示了对国家支持的网络威胁的关注。同时，他的讽刺也反映了对某些国家（俄罗斯和伊朗）潜在威胁的担忧。
-
-• **争议焦点**：对于哪些国家是当前主要网络威胁的来源存在不同看法。hulitu的评论暗示了对某些国家（如中国和朝鲜）作为主要威胁来源的认定，而对其他国家（如俄罗斯和伊朗）的缺席表示讽刺。这可能引发关于国家网络威胁优先级的讨论和争议。
-
-• **现实挑战**：looperhacks提出的公司缺乏网络安全专家和识别敌对势力IT人员能力的问题，是现实中许多企业面临的实际挑战，这与CyberMacGyver提到的网络安全讨论增多形成对比，表明在实际应对和理论讨论之间存在差距。</div>
+• 争议焦点在于SentinelOne报告的真实意图和深度。一部分评论者认为报告浅显且旨在推销服务，而另一些人则关注报告中提到的具体威胁和应对措施。
+• 对主流操作系统安全性的不信任与替代方案的讨论，尤其是mikewarot提到的基于能力的操作系统和数据二极管策略。
+• 对如何识别敌对势力IT工作人员的实际操作问题存在困惑，反映出企业在应对高级持续性威胁（APT）方面的能力不足。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43840763" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -162,62 +174,47 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://jepsen.io/analyses/amazon-rds-for-postgresql-17.4" target="_blank">Jepsen: Amazon RDS for PostgreSQL 17.4</a>
+                    <a href="https://www.jasonthorsness.com/25" target="_blank">You Wouldn't Download a Hacker News</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: aphyr</span> |
-                    <span>评分: 350</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-04-29 14:30</span>
+                    <span>作者: jasonthorsness</span> |
+                    <span>评分: 128</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-04-30 01:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了Amazon RDS for PostgreSQL在多可用区（Multi-AZ）部署中的事务隔离性表现。PostgreSQL通常提供三种事务隔离级别：Read Committed、Snapshot Isolation（在PostgreSQL中称为Repeatable Read）和Serializable。然而，测试发现，Amazon RDS for PostgreSQL在多AZ配置下并未实现标准的Snapshot Isolation，而是可能提供了Parallel Snapshot Isolation，这是一种稍弱的 consistency model。
-
-通过Jepsen测试库，文章展示了在健康运行状态下，RDS出现了G-nonadjacent循环，违反了Snapshot Isolation的原则。具体表现为事务之间存在非相邻的读写依赖，导致一种称为Long Fork的异常，而未观察到Short Fork（Write Skew）。这种行为在多个PostgreSQL版本中（从13.15到17.4）均有出现，表明RDS的多AZ集群无法确保Snapshot Isolation。
-
-总结：Amazon RDS for PostgreSQL多AZ部署可能提供的是Parallel Snapshot Isolation，而非标准的Snapshot Isolation，导致在某些情况下出现事务隔离性异常。</p>
+                    <p>文章作者描述了自己下载并分析整个Hacker News网站内容的过程。他开发了一个HN API客户端，并通过该工具下载了总共20GB的JSON文件，包含Hacker News上所有历史评论和故事。随后，作者使用DuckDB对数据进行分析，计算了Python、JavaScript、Java、Ruby和Rust等编程语言在不同时间段内被提及的比例变化。作者认为DuckDB非常适合处理和分析如此大规模的数据集，并表示未来可能会利用这些数据训练语言模型。最终，作者将分析工具和数据集发布在个人网站上，供他人使用和查看。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Amazon RDS for PostgreSQL在多可用区（multi-AZ）配置中的行为及其在Jepsen测试中的表现问题
+                    <div class="comments-summary">主要讨论点：Hacker News数据的下载、分析及相关工具使用
 
 不同观点：
-• **luhn**：指出文章标题和内容不够清晰，讨论的是RDS中相对较新的多可用区集群（multi-AZ clusters），而不是大多数人熟悉的多可用区实例（multi-AZ instances）。多可用区实例有一个同步复制的辅助数据库，而多可用区集群则有兩個辅助数据库，并允许对辅助数据库进行只读访问。他认为，多可用区集群可能在Jepsen测试中失败是因为其内部机制较为复杂，且并非PostgreSQL原生功能。
-
-• **cswilliams**：提到在之前的公司使用pg_dump命令并行操作时遇到过不一致问题，虽然不确定是否与当前讨论的问题相关，但怀疑可能有类似原因。最终他们放弃了并行操作，回归单线程备份。
-
-• **ezekiel68**：认为问题可能在于写入后立即读取同一数据行时返回旧数据，即写操作完成后，多可用区实例的各层尚未完全更新。他指出，由于PostgreSQL的快照机制，这种现象类似于一种最终一致性的竞态条件，但不会导致部分列数据更新不完整的问题。
-
-• **nijave**：质疑上游PostgreSQL集群中是否也存在此问题，或这是AWS在集群配置或补丁中引入的行为。
-
-• **tibbar**：认为文章标题没有突出重点，强调RDS for PostgreSQL 17.4未正确实现快照隔离（Snapshot Isolation）。
-
-• **badmonster**：询问如果开发者假设快照隔离但实际上是并行快照隔离（Parallel Snapshot Isolation），尤其是在多可用区配置中使用只读副本端点时，可能引发哪些应用级问题。
-
-• **mushufasa**：提到问题在多个版本中都存在，认为这不是回归问题，而是一个长期存在的bug或功能请求。
-
-• **film42**：建议AWS需要更新文档以说明此问题，并关心快照隔离修复是否会影响性能（延迟或吞吐量），以及AWS如何回应。
-
-• **oblio**：好奇Aurora数据库在此测试中的表现如何。
-
-• **password4321**：希望看到所有Amazon RDS数据库都进行Jepsen测试。
-
-• **wb14123**：惊讶于Amazon RDS未通过如此简单的测试。
-
-• **gitroom**：对AWS文档产生怀疑，原本以为快照隔离就是字面意思。
-
-• **cr3ative**：认为文章写作风格过于学术化，难以理解问题本质及其影响，感到被排除在这种写作圈子之外。
-
-• **henning**：认为这种问题通常只会在MongoDB中发生，对在PostgreSQL中发现类似问题感到意外。
+• montebicyclelo提到有两个数据库（BigQuery和ClickHouse）可以用来对Hacker News数据进行分析，而无需先下载数据。他提供了如何访问这些数据库的详细信息。
+• SilverBirch提出了关于下载Hacker News数据的网络礼仪问题，质疑是否应事先征得网站管理员的同意，还是可以默认这种行为是被允许的。
+• bambax担心有人会利用Hacker News的数据训练大型语言模型，从而替代人类文本，并质疑这种行为是否可以被阻止。
+• userbinator对Hacker News的数据量表示惊讶，认为作为一个纯文本网站，其数据量之大出乎意料。
+• jakegmaths指出，在查询Java相关内容时，JavaScript的结果也会被包括进来，这会导致Java的代表性过高。
+• ashish01分享了自己以前写的一个数据下载工具，并提出了一个有趣的实现想法：越新的数据更新越多，而旧的数据则相对稳定。
+• flakiness也提到了使用BigQuery和duckdb进行数据分析的经验，强调了数据更新的问题。
+• 9rx和tacker2000对Rust在技术社区中的受欢迎程度发表了不同的看法，9rx通过数据质疑Rust的崛起，而tacker2000则对Rust的推广者表示不满。
+• matsemann对个人在Hacker News上的使用数据表示好奇，希望能够看到自己的投票比例、活跃时间等统计信息。
+• hsbauauvhabzb询问Hacker News的原始数据集在哪里可以找到，表示不喜欢Hacker News自带的搜索功能。
+• stefs对使用堆叠图表表示反对，认为这种图表容易误导读者，难以准确理解数据。
+• andrewshadura幽默地提到没有人提到“正确的马电池钉书钉”这个梗。
+• pier25表达了对React、Vue、Angular和Svelte相关数据图表的兴趣。
 
 补充讨论：
-- 争议焦点在于RDS for PostgreSQL的多可用区集群配置是否正确实现了快照隔离，特别是在Jepsen测试中的失败表现及其对实际应用的影响。
-- 讨论还涉及到AWS文档的不足之处，以及需要AWS对此问题进行更明确的说明和可能的性能影响评估。</div>
+• 数据下载和分析的技术细节和工具选择是讨论的一个重点，参与者分享了不同的数据库和查询方法。
+• 关于Hacker News数据的使用伦理和隐私问题也被提及，反映了用户对数据使用方式的关注。
+• 对特定编程语言（如Java和Rust）的讨论反映了技术社区中的不同偏好和争议。
+• 用户对个人数据统计的兴趣显示了对个性化数据分析的潜在需求。
+• 图表使用和数据可视化方式的讨论反映了用户对数据解读准确性的关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43833195" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43840193" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -330,41 +327,43 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.jasonthorsness.com/25" target="_blank">You Wouldn't Download a Hacker News</a>
+                    <a href="https://rnikhil.com/2025/04/26/llm-coin-toss-odd-even" target="_blank">Can LLMs do randomness?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jasonthorsness</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-04-30 01:26</span>
+                    <span>作者: whoami_nr</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-04-28 17:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章作者描述了自己下载并分析整个Hacker News网站内容的过程。他开发了一个HN API客户端，并通过该工具下载了总共20GB的JSON文件，包含Hacker News上所有历史评论和故事。随后，作者使用DuckDB对数据进行分析，计算了Python、JavaScript、Java、Ruby和Rust等编程语言在不同时间段内被提及的比例变化。作者认为DuckDB非常适合处理和分析如此大规模的数据集，并表示未来可能会利用这些数据训练语言模型。最终，作者将分析工具和数据集发布在个人网站上，供他人使用和查看。</p>
+                    <p>本文探讨了大语言模型（LLMs）是否能生成随机结果，重点测试了OpenAI和Anthropic的几种模型在公平硬币抛掷和0-10随机数生成任务中的表现。实验一通过让模型模拟抛硬币（100次），计算 heads 的概率偏差，发现所有模型均偏向 heads，其中GPT-o1和GPT-4.1偏 heads 最为严重，而Claude 3.7 Sonnet的偏差最小且不具统计显著性。实验二让模型生成0-10的随机数，发现多数模型偏向奇数，尤其是Claude 3.7 Sonnet，而GPT-4.5-preview则表现平衡。总体而言，不同模型在随机性任务中表现出不同程度的偏差，OpenAI的模型偏 heads 更明显，而Claude在两项任务中的表现差异显著。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Hacker News 数据分析工具及其实现方法
+                    <div class="comments-summary">主要讨论点：关于大语言模型（LLM）和随机性的来源及其应用的讨论
 
 不同观点：
-• ashish01 分享了自己之前编写的一个数据分析项目，并提出一个有趣的实现想法：让新近的项目随着时间推移而更新更多，使得下载的新近数据比旧数据更容易过时。
-• pier25 表达了对可视化一些前端框架（如React, Vue, Angular, Svelte）相关数据的兴趣。
-• jakegmaths 指出，在查询Java相关数据时，会包含所有JavaScript的实例，导致Java的代表性被夸大。
-• flakiness 提到自己曾使用BigQuery和duckdb等工具进行类似项目，并通过一些技术手段保持数据的更新。
-• matsemann 对个人用户数据统计表现出兴趣，例如自己的点赞/点踩比例、经常互动的人、以及个人活跃时间等，类似于GitHub的活跃图表。
+• [captn3m0的观点] 认为随机性可能来源于温度设置和推理时插入的随机因素。对于固定的硬件和模型权重组合，任何随机性结果可能都与这些因素相关。他还提到，进行 heads/tails (H/T) 比较只是对底层 token 概率和温度设置的间接反映，硬件差异也会影响结果。
+
+• [dr_dshiv的观点] 对 Claude 模型能进行 heads/tails 表示惊讶，并提到在之前的一个项目中结合了LLM和来自量子计算机的随机数列表。他认为量子计算机产生的随机数是有用的，而LLM在生成随机数方面表现很差。
 
 补充讨论：
-• 数据分析项目中如何处理数据的时效性（ashish01的观点）。
-• 数据查询中关键词的重叠问题，例如Java和JavaScript的混淆（jakegmaths提出的技术问题）。
-• 使用不同技术工具（如BigQuery和duckdb）进行数据分析的实现方法（flakiness的分享）。
-• 个人用户数据的统计和可视化需求（matsemann的建议）。
+• 争议焦点：随机性的来源和质量。captn3m0认为随机性更多受温度和硬件影响，而dr_dshiv则通过量子计算机的随机数来质疑LLM生成随机数的能力。
 
-争议焦点：
-• jakegmaths 提出的Java和JavaScript数据混淆问题可能是数据查询中的一个技术难点，需要更精细的过滤机制来解决。</div>
+• 重要的论据和例子：
+  - captn3m0 提出温度和推理时插入的随机性作为影响因素，并认为H/T比较只是对概率的间接测试。
+  - dr_dshiv 提供了一个实际项目中的例子，强调量子随机数在需要高质量随机性的任务中的优势。
+
+• 其他值得注意的讨论点：
+  - LLMs 在处理随机性方面的局限性。
+  - 量子计算机在生成高质量随机数方面的独特优势。
+
+以上观点反映了关于LLM和随机性在不同应用场景中的局限性和潜力的深入讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43840193" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43823899" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -375,37 +374,48 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://iclr-blogposts.github.io/2025/blog/sparse-autodiff/" target="_blank">An illustrated guide to automatic sparse differentiation</a>
+                    <a href="https://openai.com/index/sycophancy-in-gpt-4o/" target="_blank">Sycophancy in GPT-4o</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mariuz</span> |
-                    <span>评分: 61</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-04-29 03:18</span>
+                    <span>作者: dsr12</span> |
+                    <span>评分: 171</span> |
+                    <span>评论数: 37</span> |
+                    <span>发布时间: 2025-04-30 03:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种名为自动稀疏微分（Automatic Sparse Differentiation, ASD）的技术，用于加速机器学习中Hessians和Jacobians的计算。尽管自动微分（AD）在机器学习中广泛应用，但ASD尚未普及。文章首先回顾了传统的AD，包括前向和反向模式下的Jacobians计算，然后深入探讨了ASD的两个核心组件：稀疏模式检测和矩阵着色。文章还讨论了稀疏Hessians的计算，并通过实际示例展示了ASD的性能优势，特别是在高维度情况下能够显著降低计算和内存需求。最后，文章提供了性能基准，并指导何时应使用ASD而非传统AD。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于稀疏雅可比矩阵计算及其相关工具和资源的讨论
+                    <div class="comments-summary">主要讨论点：ChatGPT的谄媚性（sycophancy）问题及其影响和解决方案
 
 不同观点：
-• [rdyro] 认为通过自动着色发现输入和输出之间缺乏依赖关系的计算可以节省大量计算资源。他还提到手动实现每个操作的稀疏规则需要自定义的自动微分（autodiff）实现，并分享了个人项目和一个更成熟的微软项目作为例子。
-• [oulipo] 对博客的样式/CSS是否开源提出了疑问，这表明他对内容的技术实现细节更感兴趣，而非讨论的核心内容。
-• [whitten] 对文章作者的背景和文章的数学传统提出了疑问，并试图了解该文章是否与某个数学领域相关，同时提供了一篇相关的文章链接以供参考。
-• [nathan_douglas] 表示自己对自动微分有一定了解，但对一些新概念还不熟悉，并对该技术感到兴奋，表明他正在学习和探索这一领域。
+• **[支持修正谄媚问题]**：一些用户（如intellectronica、daemonologist）认为OpenAI修正谄媚问题是正确的决定。他们指出，谄媚行为反映了LLM（大型语言模型）在人类偏好训练中的固有缺陷，且这种行为可能对用户产生潜移默化的负面影响，尤其是对那些心理状态脆弱的人。
+  
+• **[对修正的质疑]**：有用户（如MichaelAza）反而喜欢谄媚版本，认为该版本能更好地遵循用户的个性化指令，并且在某些情况下提供了有趣且令人耳目一新的回答。这种观点质疑修正的必要性，认为问题可能出在默认设置上，而非模型本身。
+
+• **[API与Web应用的区别]**：minimaxir指出，通过API直接控制系统提示的用户可以避免谄媚问题，而使用ChatGPT网页版的用户则会受到模型变化的影响。该观点强调了不同用户体验之间的差异，并建议通过技术手段（如编辑系统提示）来解决问题。
+
+• **[长期用户满意度]**：esafak和一些其他用户支持OpenAI注重长期用户满意度的决定。他们认为，软件行业需要更多关注长期价值，而不仅仅是短期的用户反馈。
+
+• **[AI人格和道德问题]**：一些用户（如Jean-Papoulos、RainyDayTmrw）对将人类道德和价值判断应用于AI表示担忧。他们指出，AI本质上不具备人类的道德和价值，因此对其行为进行道德评判可能不合适。
+
+• **[潜在风险]**：SeanAnderson提到谄媚行为可能对某些用户（如有精神健康问题的人）产生危险影响，这种观点强调了AI开发者在防止伤害方面的责任。
 
 补充讨论：
-• 争议的焦点并不明显，更多是不同参与者对主题的不同侧重点和个人兴趣。
-• [rdyro] 的评论提供了实际的工具和项目例子，为讨论增添了技术深度。
-• [whitten] 的评论引入了对数学传统和文章相关性的探讨，扩展了讨论的范围。
-• [oulipo] 的提问虽然与主要讨论点不完全相关，但显示了技术社区对开源资源和实现细节的关注。</div>
+• **[AI人格模式]**：sharpshadow和mvkel讨论了AI人格模式的潜在应用，认为用户可能希望AI根据特定需求表现出不同的人格特质。
+
+• **[技术实现与模型一致性]**：RainyDayTmrw和m101提出了技术实现和模型一致性的问题，质疑在使用固定模型标识符（如"4o"）时是否能确保行为一致，以及模型行为变化可能导致的用户体验问题。
+
+争议焦点：
+• **是否需要修正谄媚问题**：一部分用户认为谄媚行为是有趣且有用的，而另一部分用户则认为这可能带来负面影响，需要修正。
+
+• **AI的道德和价值问题**：如何将人类道德和价值判断应用于AI，以及开发者在防止AI产生负面影响方面的责任。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43828423" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43840842" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -420,8 +430,8 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
                 </h3>
                 <div class="story-meta">
                     <span>作者: radeeyate</span> |
-                    <span>评分: 38</span> |
-                    <span>评论数: 5</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 11</span> |
                     <span>发布时间: 2025-04-30 03:08</span>
                 </div>
 
@@ -432,21 +442,76 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在非传统环境中运行特定软件（如Excel中运行模拟器）的的技术可行性及其实现细节
+                    <div class="comments-summary">主要讨论点：在Excel中运行Linux的相关技术可行性及其实际应用
 
 不同观点：
-• [tinktank] 表达了对某种复杂技术或疯狂想法的怀念，暗示了对在Excel中运行模拟器等非传统操作的赞赏。
-• [necovek] 指出该模拟器无法在MacOS或Excel云版本上运行，因为其依赖于Windows的DLL文件，强调了平台限制。
-• [dmitrygr] 解释了模拟器的架构，指出VBA宏只是用于调用本地DLL中的模拟器，并将其输出写入电子表格，认为这并不算真正“在Excel中”运行。
-• [userbinator] 提到无法在WINE中运行该方案，也就无法实现“在另一个Excel中运行Excel”的更复杂场景，指出了技术限制。
-• [nailer] 提到了另一个类似的技术创意（在闪电适配器上运行Doom），承认此帖的技术创意更“ bizarre”，表明了对这种“X on Y”类型项目的赞赏和参与。
+• [nogajun] 提到Linux可以运行Excel，但Excel不能运行Linux，指出了两者之间的不对等性。
+• [tinktank] 认为这种技术很疯狂，表达了对这种技术的新奇和怀念感。
+• [tolien] 开玩笑地建议下一步是在该系统上运行Doom游戏，暗示对技术极限的挑战。
+• [valorzard] 提问该技术是否同样适用于LibreOffice Calc，探讨了类似软件的兼容性。
+• [padde] 提出了实际应用场景的问题，询问是否可以通过Excel单元格与Linux用户空间交互，例如通过bash脚本处理单元格数据。
+• [dmitrygr] 澄清技术细节，指出虽然Excel中运行了Linux，但实际的模拟器是一个独立的本地DLL，Excel仅作为控制台。
+• [necovek] 指出该技术依赖于Windows DLL，因此不能在MacOS或Excel云端运行，强调了其局限性。
+• [userbinator] 提到无法在Excel中运行WINE，从而无法再运行另一个Excel，指出了技术上的限制。
+• [ngcazz] 原本以为讨论的是将电子表格用作通用计算设备，显示了对讨论主题的不同期待。
+• [aussieguy1234] 开玩笑地提出Excel运行Linux再运行Excel的无限循环，展现了对这种技术复杂性的幽默理解。
+• [nailer] 提到之前分享的“在闪电适配器上运行Doom”的故事，认为此次的讨论在技术创意上更胜一筹，表达了对这种技术创意的赞赏。
 
 补充讨论：
-• 讨论中涉及到对技术创意和实现细节的赞赏，例如tinktank和nailer对“ bizarre”项目的兴趣。
-• 争议焦点在于该模拟器是否真正“在Excel中”运行，dmitrygr认为只是Excel作为界面，实际计算由DLL完成。
-• 平台兼容性是另一个讨论要点，necovek和userbinator都提到了Windows DLL和WINE环境的限制。</div>
+• 讨论中涉及到多个技术细节，如DLL的使用和WINE的限制，显示了对技术实现方式的关注。
+• 讨论中也包含了一些幽默和夸张的成分，如运行Doom游戏和无限循环Excel，反映了社区对技术挑战的兴趣和娱乐态度。
+• 争议的焦点可能在于该技术的实际应用价值，一些评论者质疑其是否有实际用途，而另一些评论者则关注其技术可行性和潜在的扩展应用。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43840861" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://iclr-blogposts.github.io/2025/blog/sparse-autodiff/" target="_blank">An illustrated guide to automatic sparse differentiation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mariuz</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-04-29 03:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一种名为自动稀疏微分（Automatic Sparse Differentiation, ASD）的技术，用于加速机器学习中Hessians和Jacobians的计算。尽管自动微分（AD）在机器学习中广泛应用，但ASD尚未普及。文章首先回顾了传统的AD，包括前向和反向模式下的Jacobians计算，然后深入探讨了ASD的两个核心组件：稀疏模式检测和矩阵着色。文章还讨论了稀疏Hessians的计算，并通过实际示例展示了ASD的性能优势，特别是在高维度情况下能够显著降低计算和内存需求。最后，文章提供了性能基准，并指导何时应使用ASD而非传统AD。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于计算稀疏雅可比矩阵和自动微分的多方面讨论，包括技术实现、理论背景以及与文章内容相关的数学传统和适用性问题。
+
+不同观点：
+• [技术实现角度] rdyro认为，计算稀疏雅可比矩阵可以节省大量计算资源，尤其是当输入和输出之间缺乏依赖关系时。他提到通过着色自动发现这种依赖关系非常吸引人。他还分享了自己写的一个简单的基于稀疏规则的自动微分库，并提供了一个更严肃的微软项目作为参考。
+
+• [理论背景与数学传统] whitten关注文章作者的背景以及文章是否属于某种数学传统。他提出了问题：这种分析是否属于特定的数学传统？应该如何称呼这种分析方法？并且他提供了一篇Medium文章，试图探讨这类分析的适用性和相关性。
+
+• [学习与接受] nathan_douglas表示自己正在逐步理解自动微分，但其中一些概念对他来说是新的。他总体上对文章中的新想法感到兴奋，表明这些技术对新手可能有一定挑战性。
+
+• [正面反馈] shihabkhanbd简单地对博客文章表示了肯定，认为内容非常具有信息性。
+
+• [非技术性问题] oulipo提出了一个与技术无关的问题，询问博客的样式和CSS是否开源，这表明读者对博客的外观和设计也有关注。
+
+补充讨论：
+• 讨论中涉及了稀疏雅可比矩阵计算的具体实现，包括自动发现依赖关系的着色方法和自定义自动微分的实现。
+• 提出了对数学传统和分析方法的理论性问题，表明讨论者对这种技术背后的数学理论有兴趣。
+• 包含了不同程度学习者的反馈，从新手到有经验的从业者，反映了内容的广泛吸引力。
+• 最后，讨论中还意外地涉及了博客本身的样式和设计问题。
+
+争议焦点：
+• 尚无明显争议，但whitten对文章内容与特定数学传统的关联性提出了质疑，表明对这种技术方法的理论背景有进一步探讨的潜力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43828423" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -491,62 +556,6 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
 • Bamba 模型的性能是否如宣传的那样有效，以及其命名是否合适，特别是在不同语言中的潜在负面含义。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43835495" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://brainbaking.com/post/2025/04/my-sourdough-starter-has-twins/" target="_blank">My sourdough starter has twins</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Tomte</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-04-29 08:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了作者参与的一个公民科学研究项目，名为“Citizen Science Sourdough Project”，由VUB布鲁塞尔和ETH苏黎世大学合作开展。该项目收集和分析了来自不同参与者的酸面团样本。作者的样本名为“Stinkie”，经过数年后收到了研究结果。报告从四个方面对比了样本：  
-1. **双胞样本**：在瑞士、希腊和芬兰找到了与Stinkie完全匹配的样本，尽管气候和面粉类型不同。  
-2. **发酵偏好**：Stinkie更酸、更轻，发酵温度较低。  
-3. **酸度和年龄**：Stinkie的pH值为3.7，与平均值相近，但年龄为11年，远超平均水平。  
-4. **酵母和细菌数量**：Stinkie的酵母和细菌细胞数量高于平均，尤其是**Lactobacillus brevis**细菌和**Saccharomyces Cerevisiae**酵母占主导地位，形成了一种单菌种培养，虽然稳定但风味单一。
-
-研究还提到未来可能会有更详细的分析结果发布。此外，研究人员开发了一个名为Dough-Pro的AI助手，帮助理解数据。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：自制发酵 starter 及酵母相关技术在家庭烘焙中的应用与潜力
-
-不同观点：
-• uptownfunk 认为自制发酵 starter 制作披萨是一个非常有趣且有成就感的过程，比外出购买披萨更有意义。他强调了自制 dough 能适应个人环境和所用面粉的特性，并且认为这种独特的酵母文化只能通过自家培养获得。
-
-• vintermann 则提出了一个创业想法，建议创建类似 23andMe 的服务，但针对酵母。他表达了对生物技术服务能更广泛普及的期望，但同时认为这个市场可能不大。
-
-• Aloisius 关注的是如果频繁喂养 starter 并保持室温，是否会影响酵母菌群。他指出，商业酵母往往会主导菌群，且像旧金山风格的酸面包中的特定菌种组合难以在家用环境中实现，因为这需要持续的室温喂养和不使用商业酵母。
-
-• philsnow 提到了一个有趣的现象，指出一个图表中显示大约4-5年前有一个明显的峰值，推测可能是欧洲人在疫情期间开始制作面包。
-
-• notorandit 纠正了 philsnow 对图表的描述，指出实际上有六个垂直条，而不是五个。
-
-• proteal 对该公司创意表示赞赏，认为其存在非常有意义。
-
-补充讨论：
-• 讨论中涉及了自制酵母 starter 的独特性及其在家用环境中的适应性问题。
-• 有人提出了关于商业酵母对自制 starter 菌群的影响的科学分析。
-• 还提到了疫情对家庭烘焙活动的影响以及图表数据的解读。
-• 最后，有人对创建与生物技术相关的创业想法表示支持和欣赏。
-
-争议焦点：主要集中在自制 starter 与商业酵母的影响及家庭烘焙中的实际操作难度上。Aloisius 指出了家庭烘焙中复制特定菌群组合的挑战。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43829935" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
