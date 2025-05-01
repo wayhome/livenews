@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-01 05:13 (北京时间)
+            最后更新时间: 2025-05-01 09:05 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,54 +61,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2504.20879" target="_blank">The Leaderboard Illusion</a>
+                    <a href="https://jepsen.io/analyses/amazon-rds-for-postgresql-17.4" target="_blank">Jepsen: Amazon RDS for PostgreSQL 17.4</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pongogogo</span> |
-                    <span>评分: 131</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-04-30 07:58</span>
+                    <span>作者: aphyr</span> |
+                    <span>评分: 468</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-04-29 14:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章《The Leaderboard Illusion》讨论了Chatbot Arena排行榜在评估人工智能系统时存在的系统性问题。研究发现，部分供应商通过未公开的私下测试手段，能够在公开发布前测试多种模型变体并选择最佳成绩发布，导致排行榜评分存在选择性披露和偏差。特别是，Meta在Llama-4发布前测试了27种私有模型变体。此外，专有闭源模型在数据获取和保留上具有优势，例如Google和OpenAI获取了大量数据，而开源模型仅获得较少数据。这种不平衡导致了对排行榜特定动态的过度拟合，而非评估模型的整体质量。文章提出了改革建议，以促进更公平、透明的基准测试。</p>
+                    <p>文章主要讨论了Amazon RDS for PostgreSQL在多可用区（Multi-AZ）部署中的事务隔离性表现。PostgreSQL通常提供三种事务隔离级别：Read Committed、Snapshot Isolation（在PostgreSQL中称为Repeatable Read）和Serializable。然而，测试发现，Amazon RDS for PostgreSQL在多AZ配置下并未实现标准的Snapshot Isolation，而是可能提供了Parallel Snapshot Isolation，这是一种稍弱的 consistency model。
+
+通过Jepsen测试库，文章展示了在健康运行状态下，RDS出现了G-nonadjacent循环，违反了Snapshot Isolation的原则。具体表现为事务之间存在非相邻的读写依赖，导致一种称为Long Fork的异常，而未观察到Short Fork（Write Skew）。这种行为在多个PostgreSQL版本中（从13.15到17.4）均有出现，表明RDS的多AZ集群无法确保Snapshot Isolation。
+
+总结：Amazon RDS for PostgreSQL多AZ部署可能提供的是Parallel Snapshot Isolation，而非标准的Snapshot Isolation，导致在某些情况下出现事务隔离性异常。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI模型性能测试的准确性与可信性，尤其是在商业竞争环境下的测试数据泄露和针对性优化（"训练以通过测试"）问题。
+                    <div class="comments-summary">主要讨论点：Amazon RDS for PostgreSQL多可用区（multi-AZ）集群在Snapshot Isolation一致性模型下的表现问题，以及其对实际应用和开发者的影响。
 
 不同观点：
-• **mrandish的观点**：AI模型性能测试中存在测试数据泄露到训练数据的问题，导致测试结果不可靠。商业团队由于巨大利益驱动，可能采取各种手段（包括作弊）来提高成绩，而小型学术或社区团队则处于劣势。因此，应该默认所有参与者都会以各种方式作弊。
-
-• **godelski的观点**：测试指标只是指导，而不是目标。引用Goodhart定律说明，任何指标一旦成为目标，就可能被操纵或失效。Cohere的报告直接指出了这一点，强调评估非常困难，特别是当奖励机制被“黑”时（如奖励作弊）。认为单靠基准测试无法证明AI的安全性或性能，必须结合分析。
-
-• **pongogogo的观点**：同意Cohere的报告，认为当前无法信任任何公开的基准测试，需要依赖私下的评估手段来确保结果的可信性。
-
-• **bob1029的观点**：通过遗传编程和非传统ML技术的例子，说明任何观测到的统计规律一旦被用于控制目的，就会失效。尝试找到简单且不易被欺骗的适应度函数非常困难，最终所有指标都可能被“作弊”。
-
-• **unkulunkulu的观点**：指出这种现象类似于常见的社会不平等——成功带来更多关注，从而导致更多成功。因此，资源会集中在顶尖团队，其他团队则被忽视。
-
-• **jmount的观点**：提供了一个相关的文章链接，讨论如何在比赛中取得好成绩，暗示了在AI测试中也可能存在类似策略性“取胜”手段。
-
-• **ekidd的观点**：指出Chatbot Arena等平台可能偏好特定类型的回答（如大量要点、表情符号），这可能导致模型为了高分而产生不准确但讨好的回答，形成不良动态。
-
-• **jmmcd的观点**：认为大公司投入大量精力来“游戏”基准测试，严重损害了AI研究的信誉。
-
-• **aredox的观点**：认为大型LLM开发者投入大量精力来优化基准测试成绩，显示了他们对AGI进展和投资回报的信心。
+• hliyan认为技术写作应更加直接、简洁，像STEM学科那样呈现结果，而不是使用网络流行语和复杂修辞。他表示过去喜欢阅读有趣的博客文章，但现在更倾向于简单明了的风格。
+• luhn指出文章没有明确说明问题仅限于多可用区集群（multi-AZ clusters），这是一个相对较新的功能，与人们熟悉的多可用区实例（multi-AZ instance）不同。多可用区集群具有更高的健壮性，但其底层机制更复杂，可能是导致Jepsen测试失败的原因。
+• havkom称赞了调查，并指出许多软件开发者对事务和事务模型的了解不足，强调这些知识对高流量和复杂问题的软件项目非常重要。他分享了自己在项目中切换到Read Committed Snapshot Isolation以解决锁定争用的经验。
+• cswilliams提到自己曾在公司遇到使用pg_dump并行工作时出现的备份不一致问题，怀疑是否与本文讨论的行为有关。
+• baq认为Jepsen的独立调查结果对RDBMS利益相关者来说不是好消息，并猜测内部会有一些担忧。
+• ezekiel68分析了实际影响，认为在多可用区配置中，写后读可能返回旧数据，这是一种竞态条件导致的事件ually consistent现象，但不至于产生无意义的数据。
+• nijave询问这是否是上游Postgres集群中的问题，或者AWS通过集群配置或补丁引入了这种行为。
+• tibbar认为标题没有突出重点，应强调RDS for PostgreSQL 17.4未正确实现Snapshot Isolation。
+• badmonster关心如果开发者假设Snapshot Isolation而实际上是Parallel Snapshot Isolation，可能引发什么样的安全或应用级错误。
+• mushufulsa松了一口气，认为这只是长期存在的bug或功能需求，而非升级版本带来的回归问题。
+• password4321希望所有Amazon RDS版本都能经过Jepsen测试。
+• film42认为AWS需要更新文档以说明这一问题，并讨论了Snapshot Isolation修复是否会影响性能。
+• oblio好奇Aurora在这方面的表现如何。
+• wb14123对Amazon RDS未通过如此简单的测试表示惊讶。
 
 补充讨论：
-• **lostmsu的观点**：提供了一个LLM和人类共同参与的社会推理游戏链接，欢迎反馈，可能是对讨论中提到的测试不信任问题的一种实践探索。
+• 多可用区集群与多可用区实例的区别及其复杂性。
+• Snapshot Isolation在多可用区配置中的实际表现和潜在问题。
+• 开发者对事务和事务模型理解的重要性。
+• Jepsen测试结果对AWS RDS用户的影响及AWS可能的回应。
 
-• **n8m8的观点**：认为这个问题是可以预见的，但依然非常重要，强调了讨论的现实意义。
-
-争议焦点：
-• 商业团队是否为了利益最大化而在AI测试中作弊或采取不正当手段。
-• 公开基准测试的可信性以及是否需要依赖私人评估。
-• 基准测试指标是否本质上容易被操纵和失效，单靠测试能否证明AI的性能或安全性。</div>
+争议焦点：AWS RDS for PostgreSQL多可用区集群未实现Snapshot Isolation的实际影响以及AWS应如何应对和沟通这一问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43842380" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43833195" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,47 +118,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=43844665" target="_blank">Show HN: Kexa.io – Open-Source IT Security and Compliance Verification</a>
+                    <a href="https://www.jasonthorsness.com/25" target="_blank">You Wouldn't Download a Hacker News</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: patrick4urcloud</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-04-30 13:04</span>
+                    <span>作者: jasonthorsness</span> |
+                    <span>评分: 261</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-04-30 01:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章作者描述了自己下载并分析整个Hacker News网站内容的过程。他开发了一个HN API客户端，并通过该工具下载了总共20GB的JSON文件，包含Hacker News上所有历史评论和故事。随后，作者使用DuckDB对数据进行分析，计算了Python、JavaScript、Java、Ruby和Rust等编程语言在不同时间段内被提及的比例变化。作者认为DuckDB非常适合处理和分析如此大规模的数据集，并表示未来可能会利用这些数据训练语言模型。最终，作者将分析工具和数据集发布在个人网站上，供他人使用和查看。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对某安全工具的评论和疑问，包括其功能、用户体验、市场宣传用语以及技术实现等方面。
+                    <div class="comments-summary">主要讨论点：针对Hacker News数据的下载、分析及其相关技术与伦理问题的讨论
 
 不同观点：
-• [ziddoap] 对市场宣传中提到的"even non-experts can guarantee the security of their cloud environments"表示担忧。他认为没有任何工具能够完全保证安全，这种说法让他联想到一些不靠谱的VPN公司。尽管他并没有深入评估该产品，但这样的表述让他对产品的第一印象打了折扣。
-
-• [sontek] 关注该工具相对于Cloud Custodian等其他工具的优势，询问其政策引擎的具体好处是什么。
-
-• [stego-tech] 对自动化合规和漏洞管理工具表示支持，并期待尝试该工具。不过，他提供了用户体验反馈，指出“Offers”页面在手机上显示不正常，包括文字不换行、图形不缩放以及列不对齐等问题。
-
-• [mrbluecoat] 对工具的logo设计提出了幽默的批评，认为其设计类似于一种著名的光学错觉图片。不过，他也对工具提升公司安全状态的努力表示赞赏。
-
-• [zufallsheld] 关心该工具是否可以在不使用其SaaS组件的情况下运行，尤其是在隔离网络环境中（air-gapped）运行。
-
-• [gitroom] 对工具简化安全管理表示赞赏，认为这种工具能够帮助用户更好地处理安全领域的复杂信息。
-
-• [shooker435] 关注该工具与Vanta的关系，询问它是可以取代Vanta还是作为其补充。
+• @mattkevan 分享了自己通过下载Twitter数据并微调模型生成内容的经历，幽默地表达了对AI学习负面内容的担忧，类似于科幻电影中的情节。
+• @montebicyclelo 提供了两个数据库（BigQuery和ClickHouse）的参考，用于无需下载即可进行Hacker News数据的分析，并给出了具体查询路径。
+• @bambax 引用了另一评论并表达了对未来可能有人利用LLM模型替代人类发言的担忧，质疑这种趋势是否可被阻止。
+• @userbinator 惊讶于Hacker News 20 GiB JSON文件的文本数据量，进行了简单的计算，指出人类在18年内平均每天发布的文本量。
+• @jakegmaths 指出在查询Java相关内容时，会包含JavaScript的结果，导致Java的代表性过高。
+• @SilverBirch 提出了关于下载Hacker News数据的网络礼仪问题，质疑是否需要事先征求网站管理员的许可。
+• @flakiness 分享了自己使用BigQuery数据集并导出到parquet，再通过duckdb查询的经验。
 
 补充讨论：
-• 争议焦点在于市场宣传用语是否夸大其词，[ziddoap] 对"guarantee"一词的使用持怀疑态度，认为这会影响用户对产品真实能力的信任。
-• 用户对工具的功能和用户体验提出了具体问题和建议，如[stego-tech] 的UX反馈和[zufallsheld] 对运行环境的疑问，显示出用户对实际使用场景的关注。
-• 用户[shooker435] 对工具的定位提出疑问，显示出对该工具与现有解决方案之间关系的关注。
+• @xnx 拥有大量Hacker News数据分析结果，但不确定如何分享，询问了使用Tableau Public等工具的建议，并希望找到能直接从Clickhouse生成图表的工具。
+• @ashish01 提到了自己曾经编写的数据处理项目，并讨论了数据时效性的问题，指出近期下载的数据会比旧数据更快过时。
+• @shayway 正在抓取HN数据以分析AI相关帖子的比例，并与过去如Web3和加密货币等热门话题进行比较。
+• @sebastianmestre 请求重新制作堆叠图，以便更容易查看Rust语言的相关数据，或者制作非堆叠版本的图表。
+• @stefs 反对使用堆叠图表，认为这种图表容易造成数据解读的偏差，并指出其隐含的不必要关联性。
+• @9rx 对“Rust的崛起”提出质疑，指出该语言在其创建前的关注度更高，幽默地称之为“Rust的衰落”。
+• @matsemann 对个人在Hacker News上的活动数据表示好奇，希望了解如自己的投票比例、活跃时间等个性化统计信息。
+• @tacker2000 附和了关于Rust语言讨论的幽默，表示对Rust拥护者日益增多感到无奈。
 
-总体而言，评论中的讨论围绕产品功能、用户体验、市场宣传用语的准确性以及技术实现的可能性展开。用户们表达了各自对工具的期待、疑问以及具体的使用反馈。</div>
+争议焦点：
+- 使用Hacker News数据进行分析的伦理和合法性问题，如是否需要征求网站管理员许可。
+- 数据分析中图表类型的选择，特别是堆叠图表是否会导致数据解读偏差。
+- 对AI生成内容可能取代人类发言的潜在影响的担忧与幽默解读。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43844665" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43840193" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -222,45 +223,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nist.gov/news-events/news/2025/04/new-atomic-fountain-clock-joins-elite-group-keeps-world-time" target="_blank">New atomic fountain clock joins group that keeps the world on time</a>
+                    <a href="https://www.nytimes.com/2025/04/30/world/julia-parsons-dead.html" target="_blank">Julia Parsons, U.S. Navy Code Breaker During World War II, Dies at 104</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: austinallegro</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-04-29 12:39</span>
+                    <span>作者: donohoe</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-01 00:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>美国国家标准与技术研究院（NIST）的科学家们推出了一种新的铯喷泉原子钟NIST-F4，其精度极高，有望成为世界标准时间的主要频率基准。NIST-F4通过测量铯原子的恒定频率来保持时间，其设计使其运行上亿年误差不到一秒。该钟加入了由全球十个国家运行的精英时钟行列，增强了全球时间的稳定性和安全性。NIST-F4不仅用于校准协调世界时（UTC），还通过无线电和互联网分发美国官方时间，广泛应用于电信、金融交易和交通系统等领域。它的推出标志着科学和工程上的重大突破，对现代社会的精密时间测量至关重要。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：原子钟及相关技术的现状与未来发展
-
-不同观点：
-• RetroTechie：对小型便携式原子钟感兴趣，提到以前曾有类似香烟盒大小的原子钟，但目前对超精确时间没有实际需求。他关注的是小型化、低功耗的原子钟，而不是大型、笨重的设备。
-• geerlingguy：提到从铷原子钟升级到更精确的NIST-F4原子钟，并引入了核钟的概念，认为核钟可能带来更高的精度和稳定性。
-• infogulch：详细解释了基于铯原子的原子钟的工作原理，并讨论了核钟的潜在优势，包括更高的精度和更窄的频率交互范围，同时提到核钟技术的实现难度。
-• 0cf8612b2e1e：关注原子钟的同步问题，质疑在极高精度下如何避免在时钟同步过程中引入误差。
-• algorithmsRcool：强调了时间测量的精度已经超过了其他物理量的测量精度，并引用了NIST的数据来说明光学晶格钟的超高精度。
-
-补充讨论：
-• CGMthrowaway：提到阿罕布拉宫的狮子钟，将讨论引向历史和文化背景下的钟表艺术。
-• WarOnPrivacy：提供了NIST铯喷泉钟的解释链接，增加了讨论的技术背景。
-• throw0101a：质疑时钟精度的“极限”在哪里，提出是否存在实际应用需要进一步提高精度，讨论了精度提高的边际效益。
-• move-on-by：关注原子钟的地理分布问题，质疑为什么大量原子钟集中在一地而不是分散布局，提出了可能的物流问题。
-
-争议焦点：
-• 原子钟的小型化和实用性：RetroTechie关注小型、便携的原子钟，而infogulch和geerlingguy则讨论了新型核钟的技术可行性和未来潜力。
-• 精度与应用的关系：throw0101a质疑更高精度的实际需求和应用场景，而algorithmsRcool则强调了当前时间测量的精度已经远超其他物理量测量。
-• 同步误差问题：0cf8612b2e1e对高精度原子钟的同步问题提出了技术性疑问。
-
-总体来看，讨论围绕原子钟的技术发展、实际应用和未来潜力展开，涉及小型化、同步、精度极限以及地理分布等多个方面。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43831792" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43852220" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -271,45 +252,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://akapugs.blog/2022/05/03/674/" target="_blank">Joining Sun Microsystems – 40 years ago (2022)</a>
+                    <a href="https://lemonyte.com/blog/beamng-malware" target="_blank">I Found Malware in a BeamNG Mod</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: TMWNN</span> |
-                    <span>评分: 146</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-04-30 14:57</span>
+                    <span>作者: davikr</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-04-30 19:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讲述了作者40年前加入初创公司Sun Microsystems的经历。作者最初在Amdahl Corp工作，负责将UNIX移植到大型机。1980年末，他转至数据通信领域，但并不满意。在参与UNIX和伯克利BSD UNIX工作期间，他结识了Bill Joy等人。1981-1982年，硅谷掀起创业热潮，UNIX和Motorola 68000是热门技术，许多初创公司应运而生。作者通过与多位业内人士交流后，被Sun Microsystems的Scott McNealy邀请面试，并结识了Andy Bechtolsheim和Vinod Khosla。Bill Joy的加入以及UNIX和68000技术的结合促使作者决定加入Sun，成为其第8号员工。作者在Sun的第一年，成功修复了UNIX系统中的磁盘驱动问题，并见证了Sun的快速成长。他对能参与Sun Microsystems的辉煌历程感到无比感激。</p>
+                    <p>本文讲述了作者在BeamNG.drive游戏中的一款模组（American Road）中发现了恶意软件。起初，作者在启动游戏时收到防病毒软件的警告，提示有可疑的`curl.exe`活动。通过使用Process Monitor和WinDbg等工具，作者确认了问题源自游戏内的模组管理器，并追踪到模组"American Road"中的可疑JavaScript代码。该代码试图加载一个不存在的"banner.c_css"文件，并使用了不必要的XMLHttpRequest。进一步分析发现，该代码利用了Chromium Embedded Framework的漏洞，将shellcode注入内存，执行恶意命令。最终，作者通过逐一启用模组，确认了"American Road"模组是问题来源，并提醒用户小心此类恶意模组。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对SGI、Sun等科技公司兴衰的回顾与反思
+                    <div class="comments-summary">主要讨论点：BeamNG.drive 游戏的安全性问题及其带来的潜在风险
 
 不同观点：
-• JSR_FDED认为在SGI的巅峰时期工作是一段珍贵的经历，公司聚集了大量聪明人，且客户多从事创新性工作（如虚拟风洞、飞行模拟器等），而非简单的财务管理。不过，市场证明，财务管理类市场的规模更大。
-• gopalv分享了自己通过家族关系进入计算机行业的经历，强调家族支持在职业发展中的作用，并对比了过去几代人的家庭结构差异。
-• jmwilson认为在公司巅峰期工作是一种幸运，并提到自己在Facebook的经历，强调行业有周期性，辉煌时期终会过去。
-• otras对科技公司兴衰的历史书籍感兴趣，询问是否有关于Sun公司的推荐书籍。
-• DogRunner提供了一个链接，让读者查看相关图片。
-• mrcwinn以幽默的方式称赞JSR_FDED在那个时代的酷炫形象。
-• LastTrain提到针对家庭酿造市场的公司表现不佳，暗示这些公司未能成功。
-• ajross详细分析了Sun公司的快速崛起和衰落，强调Sun在Unix世界的创新和其最终被Linux取代的过程。
+• 第一个观点（davikr）：BeamNG.drive 已经被发现两次因为不良的安全实践导致安全问题。第一次是由于禁用了地址空间布局随机化（ASLR），导致了与迪士尼被黑客攻击有关的安全漏洞；这次则是由于禁用了Chromium Embedded Framework（CEF）的沙盒机制。该评论者认为，开发者特意关闭常规安全功能的举动非常奇怪。
+  - 支持论据：具体提到了两次安全事件，并引用了相关讨论链接（关于ASLR禁用导致安全问题的讨论）。
+  - 批评点：对开发者禁用常见安全功能的举动表示不解和批评。
+
+• 第二个观点（隐含的反对观点）：虽然未直接引用其他人的评论，但从语气中可以推断出，可能有人认为这些安全问题并不严重或者不常见，否则评论者不会特别强调这是“第二次我们知道的情况”。这暗示着可能有人低估了此类安全问题的影响。
+  - 支持论据：提到具体事件（迪士尼被黑）试图强调问题的严重性。
 
 补充讨论：
-• jeffrallen推荐了一个与Lyons相关的播客。
-• berlinbrowndev对Java的兴起表示好奇。
-• zkmon对Sun被卖给Oracle表示不解。
-• minitoar对图片和某些人物（如khosla）发表了幽默评论。
+• 争议焦点：开发者为何选择禁用关键安全功能（如ASLR和CEF沙盒）以及这些功能被禁用后对用户和第三方带来的潜在风险。
+• 涉及技术：讨论中提到了ASLR和CEF沙盒等具体安全机制，显示出技术细节在分析此事件中的重要性。
+• 安全隐患的广泛影响：提到与迪士尼被黑客攻击有关，暗示该问题可能不仅影响游戏本身，还可能对其他相关组织或用户数据构成威胁。
 
-争议焦点：
-• 关于市场规模的争议：JSR_FDED认为创新性市场的规模不如财务管理类市场大，尽管前者更具吸引力。
-• 关于家族支持的争议：gopalv强调家族支持的重要性，暗示现代社会中这种支持的缺失可能影响个人发展。</div>
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43846187" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43849536" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -320,51 +296,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cnbc.com/2025/04/29/port-of-los-angeles-sees-shipping-volume-down-35percent-next-week-as-tariffs-bite.html" target="_blank">Port of Los Angeles says shipping volume will plummet 35% next week</a>
+                    <a href="https://arxiv.org/abs/2504.20879" target="_blank">The Leaderboard Illusion</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: perihelions</span> |
-                    <span>评分: 230</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-04-30 13:07</span>
+                    <span>作者: pongogogo</span> |
+                    <span>评分: 148</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-04-30 07:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>美国洛杉矶港执行董事Gene Seroka表示，由于特朗普政府对华加征关税，美国从中国的货物运输量将大幅下降。预计下周抵达西海岸的货物量将比去年同期减少超过三分之一，降幅约35%。洛杉矶港约45%的业务来自中国，但许多美国零售商已停止从中国发货。一些运输公司试图从东南亚其他地区补货，但整体贸易量仍将显著减少。此外，五到七周后，美国零售商库存将开始受到影响，可能导致商品选择减少和价格上涨。经济学家警告，进口减少可能引发美国运输和零售行业裁员，甚至导致经济衰退。</p>
+                    <p>文章《The Leaderboard Illusion》讨论了Chatbot Arena排行榜在评估人工智能系统时存在的系统性问题。研究发现，部分供应商通过未公开的私下测试手段，能够在公开发布前测试多种模型变体并选择最佳成绩发布，导致排行榜评分存在选择性披露和偏差。特别是，Meta在Llama-4发布前测试了27种私有模型变体。此外，专有闭源模型在数据获取和保留上具有优势，例如Google和OpenAI获取了大量数据，而开源模型仅获得较少数据。这种不平衡导致了对排行榜特定动态的过度拟合，而非评估模型的整体质量。文章提出了改革建议，以促进更公平、透明的基准测试。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国港口物流和国际运输的现状及可能的影响
+                    <div class="comments-summary">主要讨论点：AI模型性能测试的准确性和公平性，尤其是大型厂商在排行榜上获得优势的潜在问题。
 
 不同观点：
-• **对港口数据的关注**：dten提到洛杉矶港有免费的实时数据面板，并指出某些周的货运量同比下降35%，但随后一周预测会有25%的增长。该评论侧重于数据分析和趋势预测。
-
-• **视频资源分享**：trebligdivad和danans分享了YouTube视频和播客资源，讨论当前的运输情况。这些资源提供了对运输和物流问题的深入分析和描述。
-
-• **国际运输成本上升**：mstaoru提到从中国到欧盟的国际搬运费用比三个月前高了2.5-3倍，海运检查更严格，空运因运量低而更贵，表明当前国际运输面临挑战。
-
-• **潜在的经济影响**：taylodl担心物流问题可能导致商品短缺，甚至比疫情初期的厕纸抢购更严重。dr_pardee则指出，有人通过规避关税的方式减少影响，并分享了一些相关链接。
-
-• **供应链和仓储的连锁反应**：guywithahat提到洛杉矶经济很大程度上依赖仓库，这可能影响住房成本，进而影响菲尼克斯等其他地区。pelagic_sky指出西雅图港口目前是空的，并提供了一篇文章链接。
-
-• **零售商的应对策略**：duxup提出零售商可能会选择提高价格或干脆不提供某些商品，以应对供应链问题。
-
-• **制造业投资和机会**：guywithahat还提到自己曾尝试在美国建立PCB组装厂但未果，现在的物流问题让他感到遗憾。
-
-• **更广泛的贸易影响**：rtkwe担心全面的关税政策可能导致船只因不满载而不来美国，影响其他东南亚贸易。
-
-• **长期趋势和数据来源**：xnx寻求关于美国港口活动的权威网站，以追踪长期趋势，并提供了一个数据来源链接。
-
-• **短期供应短缺**：gonzo41和ramesh31引用播客和个人观察，提到长滩港的繁忙情况，并预测节假日购物季可能出现的商品短缺问题。
+• simonw认为，资金雄厚的厂商可以通过提交多个模型版本并选择表现最好的模型来获得不公平优势。他希望看到更透明的信息披露，比如在排行榜上注明尝试了多少次。
+• mrandish指出，由于测试数据泄漏或其他作弊方式，AI模型性能测试结果可能不准确。他认为在竞争激烈且资金庞大的情况下，所有参赛者都有可能作弊，因此应采取怀疑态度。
+• godelski强调，评估指标只是指导工具，而非最终目标。他引用了Goodhart's Law，指出当一个指标成为目标时，它就不再是一个好的指标。他认为依赖指标证明AI安全是不可靠的。
+• pongogogo认为，当前的公共 benchmark 不可信，需要依赖私人的评估机制。
+• unkulunkulu认为，这种不平等现象在各领域普遍存在，成功者获得更多关注和资源，导致进一步的成功。
+• bob1029讨论了在遗传编程中遇到的类似问题，即任何度量指标都可能被“欺骗”，并提到寻找理想通用压缩器的困难。
+• jmount提供了一个相关的写up链接，讨论类似效应。
+• ekidd担心Chatbot Arena的评分标准可能偏向于特定类型的回答，比如使用大量项目符号和表情符号，而这可能导致不良的动态。
+• jmmcd对FAIR的公信力受到影响表示震惊。
+• aredox认为，大型LLM开发商投入大量精力来“游戏”benchmark，显示了他们对AGI进展和收回投资的信心。
+• lostmsu提供了一个LLMs和人类共同参与的社交推理游戏链接，供反馈。
+• n8m8认为，这种情况是可预见的，但仍然非常重要。
 
 补充讨论：
-• 讨论中涉及的资源和链接为理解和追踪当前的物流和供应链问题提供了有价值的参考。
-• 争议的焦点主要在于关税规避的道德和法律问题，以及物流中断对经济的广泛影响。
-• 不同评论者对未来商品短缺和价格上涨的可能性表达了不同程度的担忧。</div>
+• 讨论中涉及的争议焦点在于AI模型测试中的透明度和公平性问题，尤其是大型厂商可能利用资源优势进行多次尝试以获得最佳结果。
+• 另一个争议点是评估指标的有效性和被“欺骗”的可能性，以及如何在实际应用中避免这些问题。
+• 有人提到当前依赖benchmark的评估方法可能导致不准确的结果，并呼吁更多私人评估和透明度。
+• 还有人担心Chatbot Arena的评分标准可能偏向于某些表面特征，而非实际的回答质量。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43844708" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43842380" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -426,47 +396,65 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theverge.com/news/658705/boox-mira-pro-color-e-ink-desktop-monitor" target="_blank">The Mira Pro Color is Boox's first color E Ink monitor</a>
+                    <a href="https://fortune.com/article/retailers-weeks-of-inventory-left-trump-china-trade-war/" target="_blank">Retailers will soon have only about 7 weeks of full inventories left</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tortilla</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-04-30 17:33</span>
+                    <span>作者: andrewfromx</span> |
+                    <span>评分: 251</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-04-30 11:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Boox推出了其首款25.3英寸彩色E Ink桌面显示器Mira Pro Color。该显示器采用与Kindle等电子阅读器相同的彩色E Ink屏幕技术，具有护眼优势，适合长时间使用。虽然其刷新率无法与LCD或OLED屏幕相比，但Boox提供了四种可自定义的显示模式，使其足够快以播放视频。该显示器更适合文字编辑、写作或处理电子表格等生产力任务，而非游戏或视频编辑。Mira Pro Color配备前光和色温调节功能，并有HDMI、USB-C和DisplayPort等多种接口。不过，由于E Ink面板成本高，其价格为1,899.99美元，且从中国发货可能涉及关税。</p>
+                    <p>据港口执行董事Gene Seroka警告，在美国与中国之间的贸易战背景下，洛杉矶港的零售商库存即将仅剩约7周的完整库存。由于持续的关税和贸易紧张，进口商正面临供应链中断和成本上升的问题。Seroka指出，尽管港口努力提高效率，但持续的贸易争端可能导致商品短缺和价格上涨，影响美国消费者。这一情况凸显了贸易战对全球供应链的深远影响，并可能加剧经济不确定性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：E-ink显示器的优缺点及其适用场景
+                    <div class="comments-summary">主要讨论点：美国对华关税政策及其潜在经济影响
 
 不同观点：
-• CobaltFire：分享了使用Bigme B251 E-ink显示器的经验，认为尽管存在刷新慢、色彩饱和度低和残影等问题，但在处理文字相关任务时非常愉悦。他推荐Amazon购买，因为面板可能有质量问题，Amazon的退货政策提供了保障。同时提到MacOS用户需要使用stillcolor软件。
+• **短期痛苦，长期收益？**  
+  - **toddmorey** 提出，政治上关税政策被视为短期痛苦、长期收益，但他找不到经济学家支持这一理论。仅少数如Jeff Ferry认为历史上的关税政策促进了美国工业化，但当前全球供应链的现实不同。
+  
+• **供应链危机的严重性**  
+  - **faefox** 强调，一旦现有库存耗尽，供应链问题将比COVID期间的冲击更严重，且这次是“自我造成”的，可能无法恢复。
 
-• Funes-：认为E-ink技术非常出色，但当前的刷新率和图像质量限制了它作为通用显示器的用途。他更倾向于将E-ink设备用于低功耗、极简的场景，例如Mudita Kompakt，而不是尝试改造常规智能手机。
+• **地缘政治策略**  
+  - **mediumsmart** 认为，关税政策可能是为了通过孤立中国来施压，并期待在7周内看到结果。但他对美国经济是否受益持怀疑态度。
 
-• CommieBobDole：质疑E-ink显示器的目标市场，指出其高价格、慢刷新率和有限色彩的表现，询问是否有特定应用场景可以弥补这些缺点。
+• **社会和经济混乱**  
+  - **fudged71** 和 **inverted_flag** 提到了可能的商品短缺和抢购潮，类似于之前的厕纸恐慌。
+  - **mindcrash** 警告，如果关税政策持续，可能会影响整个西方经济，而不仅是美国。
 
-• izzydata：对E-ink显示器的外观表示赞赏，但认为当前的刷新率和价格使其难以接受作为日常显示器使用，期待未来价格下降和刷新率提升。
+• **非传统解决方案和犯罪组织参与**  
+  - **MaoSYJ** 提出，贩毒集团可能会利用其走私基础设施来解决物流问题，暗示犯罪组织可能参与走私高价值产品。
 
-• enescakir：表达了对Daylight团队推出E-ink显示器的期望，认为目前的Mira Pro虽然不错但仍显“第一代”的感觉。
+• **消费者行为和反资本主义观点**  
+  - **deadbabe** 认为反资本主义者可能会支持关税政策，因为减少消费和商业激励符合其理念。
 
-• gibibit：不看好E-ink显示器的普及，认为E-ink在小尺寸、电池供电的阅读设备上表现良好，但不适合大尺寸桌面显示器，尤其是考虑到其刷新率慢和寿命有限的问题。
+• **历史对比与当前危机**  
+  - **cynicalsecurity** 将美国当前的商品短缺与苏联时期做对比，警告如果持续，可能会重蹈覆辙。
 
-• throwaway74354：提醒用户Boox设备常有GPL违规问题，暗示品牌可能存在法律和道德问题。
-
-• techpineapple：对E-ink显示器表示兴趣，但对其高昂的价格（$1,899.99）表示犹豫。
+• **全球视角**  
+  - **foobar1962** 指出，只有美国零售商受到影响，其他国家则观望事态发展，类似于看戏吃爆米花。
 
 补充讨论：
-• 争议焦点在于E-ink显示器的刷新率、色彩表现和价格是否合理，以及其适用场景。支持者强调其在文字处理和低功耗场景的优势，批评者则关注其技术限制和高成本。
+• **当前影响已经显现**  
+  - **alchemist1e9** 观察到，大零售商已经出现大量商品短缺。
 
-• 不同的用户对E-ink技术的期望和需求各异，一些用户关注其作为通用显示器的潜力，另一些则更看重其在特定应用场景（如阅读和极简设备）中的表现。</div>
+• **美国中心视角**  
+  - **k4rli** 强调，讨论中提到零售商时应明确是美国零售商。
+
+争议焦点：
+• **关税政策是否能带来长期经济收益**  
+  一方认为关税可能促进美国工业化，另一方则认为当前全球化背景下，供应链中断带来的风险远大于收益。
+
+• **供应链危机的严重性和可恢复性**  
+  部分评论认为供应链危机会非常严重且可能不可恢复，另一方则持相对乐观态度，认为短期波动后会恢复正常。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43848381" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43843821" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -477,51 +465,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.sentinelone.com/labs/top-tier-target-what-it-takes-to-defend-a-cybersecurity-company-from-todays-adversaries/" target="_blank">What It Takes to Defend a Cybersecurity Company from Today's Adversaries</a>
+                    <a href="https://arstechnica.com/cars/2025/04/republicans-want-to-tax-ev-drivers-200-year-in-new-transport-bill/" target="_blank">Republicans in Congress Want a Flat $200 Annual EV Tax</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gnabgib</span> |
-                    <span>评分: 151</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-04-30 02:53</span>
+                    <span>作者: m463</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-01 00:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章总结：
-
-SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动机的犯罪软件攻击和高级国家支持的攻击活动。这些攻击针对一家美国网络安全公司，攻击者包括：假扮求职者的朝鲜IT人员、试图滥用平台的勒索软件操作者，以及针对与公司业务和客户群一致的组织的中资支持攻击者。
-
-文章强调，网络安全供应商本身是一个关键但少讨论的攻击面。作为高价值目标，SentinelOne不仅帮助客户防御攻击，自身也面临同样的威胁。文章披露了朝鲜IT人员试图通过虚假身份申请公司职位的详细情况，这些人员不断改进策略，使用 stolen 或伪造的身份，试图渗透到公司内部。
-
-通过情报驱动的互动，SentinelOne开发了识别和应对这些威胁的流程，以提高整体防御能力。文章呼吁业界加强协作，提升整体防御水平。</p>
+                    <p>美国众议院交通与基础设施委员会即将讨论其预算立法提案，其中包含对电动车和混合动力车的新年度注册费用。根据该提案，纯电动车将需支付200美元的年费，混合动力车则需支付100美元，而柴油车等高排放车辆的费用较低，且2030年前无需付费。费用将随通胀逐年增加，直至2034年或2035年到期。尽管该法案旨在填补高速公路信托基金的资金缺口，但由于对电动车的高额收费可能抑制其普及，且商业车辆和农用车辆获得豁免，实际效果受到质疑。环保组织批评该提案惩罚了清洁能源车辆驾驶者，而非解决信托基金的根本问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SentinelOne发布的关于国家行为体网络威胁的报告，以及对网络安全行业的广泛讨论。
-
-不同观点：
-• [dubbel] 最初认为文章会讨论Chris Krebs事件及现任政府，但实际内容是关于不同国家行为体的威胁，感觉有些预期落差。
-• [sublimefire] 认为文章内容较为浅显，提到的工具如goreshell、shadowpad、scatterbrain等只是表面文章，文章可能更针对企业高管而非技术分析师或安全人员，目的是让读者感到需要雇佣SentinelOne的帮助。
-• [ganoushoreilly] 认为文章中大量使用破折号，像是使用ChatGPT编写或改写的，质量存疑。
-• [CyberMacGyver] 指出在RSA大会期间，网络安全相关文章增多是正常现象。
-• [gitroom] 强调黑市活动与官方安全措施并行，讨论是技术升级还是人员更聪明能更好地防止泄漏。
-• [mediumsmart] 认为文章提醒公司保持低成本运营，暗示培训和开销的控制很重要。
-• [ElWalkingBeard] 提到根据经验，7GB的RAM是常见配置。
-• [PeterStuer] 讽刺地问是否因为已经成功清除MOSSAD、CIA和NSA的内鬼，所以现在目标转向了DPRK。
-• [looperhacks] 质疑是否能识别敌对方IT工作人员，指出很多公司缺乏网络安全专家能力。
-• [mikewarot] 认为Windows、Linux、MacOS等系统本质上不安全，声称能保护这些系统的公司都在卖“蛇油”。他提出基于能力的操作系统和数据二极管是更可行的安全策略。
-• [motohagiography] 认为文章提醒了设立前台公司购买安全服务和软件以进行逆向工程和竞争分析是常态，并低估了黑市服务经济。
-• [hulitu] 讽刺地说幸好文章没提到俄罗斯或伊朗，暗示这些国家同样是不可忽视的网络威胁行为体。
-
-补充讨论：
-• 争议焦点在于SentinelOne报告的真实意图和深度，部分评论者质疑其技术深度和目的（如sublimefire和ganoushoreilly）。
-• 对操作系统安全性的讨论（mikewarot）引发了关于现有系统本质安全性的争议。
-• 黑市活动与官方安全措施的并行性被多次提及（gitroom和motohagiography），显示出对网络安全行业背后经济活动的关注。
-• 部分评论带有讽刺语气（PeterStuer和hulitu），反映了对于某些国家行为体威胁的无奈或不信任。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43840763" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43852500" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -532,45 +494,40 @@ SentinelOne最近几个月观察并抵御了多种攻击，包括出于经济动
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/NSG650/LinuxInExcel" target="_blank">Linux in Excel</a>
+                    <a href="https://news.ycombinator.com/item?id=43844665" target="_blank">Show HN: Kexa.io – Open-Source IT Security and Compliance Verification</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: radeeyate</span> |
-                    <span>评分: 163</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-04-30 03:08</span>
+                    <span>作者: patrick4urcloud</span> |
+                    <span>评分: 62</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-04-30 13:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>**LinuxInExcel** 是一个在 Excel 中运行 Linux 的项目，利用 **mini-rv32ima** 模拟器实现。该模拟器作为一个独立的 DLL 文件，通过 VBA 宏进行调用，将输出结果写入电子表格单元格中。尽管项目存在许多 bug，且作者并未花费过多时间完善，但其目的是为了好玩和实现 Linux 在 Excel 中的运行。构建 DLL 需要使用 MSVC，命令为 `cl dllmain.c /LD /Fefun.dll`，并在 Excel 文件中修改 DLL 的路径。项目代码主要使用 C 语言编写。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在Excel或类似电子表格环境中嵌入不同功能或系统的可行性与应用场景
+                    <div class="comments-summary">主要讨论点：用户对某安全工具的评价与反馈，涵盖营销表述、技术功能、用户体验及工具比较等方面。
 
 不同观点：
-• [euroderf] 提出未来可能在每个单元格中嵌入不同的语言模型（LLM），然后由一个总的控制模型（OTTO）汇总结果。这暗示了对复杂电子表格环境的未来设想。
-• [h4ck_th3_pl4n3t] 则设想将网络扫描工具（nmap）移植到电子表格虚拟机中，用于检测横向移动可能性，带有半开玩笑的"下一代恶意软件"意味。
-• [nogajun] 指出Linux可以运行Excel，但Excel不能运行在Linux上，强调了平台之间的兼容性问题。
-• [dmitrygr] 解释了模拟器是通过一个由VBA宏加载的独立DLL运行的，认为Excel只是控制台，实际计算由DLL完成，这与表面上的"在Excel中运行"有所不同。
-• [valorzard] 提问同样的技术是否可以应用于LibreOffice Calc，探讨了跨软件的兼容性。
-• [ivolimmen] 反问是否可以在Linux下的LibreOffice中运行Windows，暗示了对跨平台虚拟化技术的质疑。
-• [padde] 提出了实际应用场景的问题，询问是否可以通过Excel单元格与Linux用户空间交互，例如通过bash脚本处理单元格数据。
-• [necovek] 指出该技术依赖于Windows DLL，因此不能在MacOS或Excel云版本中运行，强调了平台限制。
-• [userbinator] 开玩笑地表示无法在Excel中运行WINE，更不用说在WINE中运行Excel，指出了技术实现上的难度。
-• [tolien] 半开玩笑地建议下一步是在电子表格中运行Doom游戏。
-• [snvzz] 提到RISC-V架构的不可避免性，暗示了对未来计算架构的展望。
-• [apexalpha] 以一种讽刺的口吻赞扬了在数据库工具中运行Linux和Doom的"壮举"，暗示了对某些技术展示实际价值的怀疑。
-• [ngcazz] 原本期待讨论电子表格作为通用计算设备的使用，暗示了对实际应用深度的期望。
+• [ziddoap] 对营销文案中"保证安全性"的表述提出质疑，认为没有任何工具能完全保证云环境的安全，这种表述容易让人联想到不靠谱的VPN公司。虽然对产品本身未有深入评价，但此类表述影响其对产品的信任。
+• [jmpavlec] 指出GitHub描述中存在多个错别字，具体在描述语句中，如"monitoring"被写成"monitoring and manage alerting"等，可能会影响专业形象。
+• [stego-tech] 对工具的自动化合规和漏洞管理功能表示期待，但也反馈了在iPhone 14 Pro上的显示问题，如文本不换行、图形不缩放、列不对齐等。
+• [mrbluecoat] 对工具的Logo设计提出主观看法，调侃其像老鼠或 optical illusion 图片，但同时也对工具提升公司安全态势的努力表示赞赏。
+• [sontek] 询问该工具的政策引擎相对于Cloud Custodian的优势，寻求更详细的解释。
+• [zufallsheld] 关心该工具是否可以在不依赖SaaS组件的情况下运行，尤其是在隔离网络环境中（air-gapped）。
+• [gitroom] 对工具简化安全管理表示赞赏，个人非常感兴趣。
+• [shooker435] 询问该工具是否可以替代或补充类似Vanta的工具，关心其功能重叠与互补性。
 
 补充讨论：
-• 评论中多次提到跨平台兼容性和技术限制，例如对Windows DLL的依赖以及Linux和Excel之间的交互。
-• 多条评论以半开玩笑的方式提到在电子表格中运行复杂程序（如Doom），反映了技术爱好者对突破常规限制的兴趣。
-• 实际应用场景和技术可行性是讨论的焦点，部分评论对该技术的实用价值持怀疑态度。</div>
+• 争议焦点在于营销文案中的"安全性保证"表述，[ziddoap]认为这种说法不严谨且容易引起误解，影响用户信任。
+• 用户对工具的功能表示期待，但也提出了一些技术细节上的问题，如是否支持离线运行、政策引擎的优势等。
+• 用户体验问题集中在移动端显示问题，如[stego-tech]反馈的iPhone显示异常，这可能影响产品的用户体验。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43840861" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43844665" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
