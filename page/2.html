@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-09 20:25 (北京时间)
+            最后更新时间: 2025-05-09 23:14 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,427 +61,189 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://samwho.dev/reservoir-sampling/" target="_blank">Reservoir Sampling</a>
+                    <a href="https://brevzin.github.io/c++/2025/05/02/soa/" target="_blank">Implementing a Struct of Arrays</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: chrisdemarco</span> |
-                    <span>评分: 447</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-05-08 17:02</span>
+                    <span>作者: mpweiher</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-05-09 10:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了水库抽样（Reservoir Sampling）技术，用于在不知道数据总规模的情况下进行公平随机抽样。文章解释了何时需要使用水库抽样，并通过简单的乘除运算展示了其背后的数学原理，而未使用复杂的数学符号。文章还模拟了一个日志收集服务在面对大量日志涌入时的场景，说明了如何通过水库抽样在日志流高峰期进行公平抽样，避免系统过载。水库抽样的优势在于，它能够在不确定数据总量的情况下，保证每个元素都有均等的被选中机会，同时避免内存过度消耗。文章最后提供了一种简单的实现方法。</p>
+                    <p>本文介绍了如何使用C++26的反射机制实现一个结构体数组（Struct of Arrays, SoA），以替代传统的数组 of 结构体（Array of Structs, AoS）模式，从而提高内存使用效率和性能。文章借鉴了Andrew Kelley在Zig编译器中的优化思路，将原本组合在一起的结构体成员拆分为独立的数组存储。
+
+文章首先解释了Zig语言中如何通过简单的代码修改实现这一优化，然后转向C++26，利用其反射特性来实现类似的`SoaVector<T>`。通过`std::meta::define_aggregate()`函数，文章展示了如何动态生成包含每个非静态数据成员指针的聚合结构体。接着，文章讨论了如何实现`push_back`和`grow`函数来管理动态数组，并确保每个数据成员数组同步增长。
+
+文章的核心在于利用C++26的反射功能简化SoA模式的实现，避免手动处理每个成员的独立数组操作，同时提高代码的可维护性和性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Reservoir Sampling算法的应用及相关技术讨论
+                    <div class="comments-summary">主要讨论点：C++中使用反射和SOA（Struct of Arrays）模式的复杂性与优势
 
 不同观点：
-• [magicalhippo] 分享了一个关于因人为错误导致数据估算不准确的故事，强调了数据准确性的重要性及其可能带来的实际影响。
-• [sadiq] 提出了高级扩展，讨论了计算跳过记录数量的算法，并提供了一个详细描述这些算法的链接。
-• [Lichtso] 深入探讨了加权水库采样（WRS）在实时光线追踪中的应用，包括光传输估计和蒙特卡罗方法等技术细节。
-• [justanotheratom] 从实际日志收集的角度出发，提出了优先级排序、上下文分组和聚合汇总等实用策略，以应对数据高峰期时的日志处理问题。
+• gpderetta认为使用模板和反射机制是有趣的，并展示了如何使用模板元编程实现SOA结构。他提供的代码示例展示了在C++中通过模板实现SOA模式的可能性，并强调了这种方法的灵活性。
+• PessimalDecimal对C++的复杂性表示不满，认为C++已经变得臃肿不堪，并暗示这种复杂性可能是不必要的。
+• the__alchemist对比了Rust和Zig中的SOA模式，指出在Rust中使用SOA模式更直观，特别是在处理SIMD和CUDA时。他认为C++示例中的抽象可能类似于Jai语言的尝试，通过在API和实现之间引入中间层来平衡性能和易用性。
+• monkeyelite提到了元对象协议（Meta Object Protocol）的概念，认为在类定义和实现之间引入一个中间阶段可以选择实例的布局和访问方法，这与讨论中的SOA模式有相似之处。
+• gr4vityWall对现代C++的复杂性表示认同，并分享了一个使用Haxe宏在编译时将AoS转换为SoA的例子，认为这种方法虽然效果不错，但可能不如直接使用索引访问值那么直观。
+• sph提出了一个关于"^^type"操作符的问题，显示出对代码中特定语法的不解。
+• TheHideout试图简化讨论，认为文章的核心是在向量中使用结构体时，可以通过类似ECS（实体组件系统）的方式获得数组的好处。
+• mac3n提到了JOVIAL语言中的TABLE结构，指出这种结构早在几十年前就有了类似的设计，显示出这种模式并非新概念。
+• Enthouan则认为C语言在这种场景下可能更简单直接，暗示C++的复杂性可能是不必要的。
 
 补充讨论：
-• [samwho] 作为文章作者，表示愿意接受反馈并提供了文章相关代码的链接，供他人使用和修改。
-• [stygiansonic] 提到了“Algorithm R”并引用了一篇论文，认为这是对水库采样算法的早期描述。
-• [hinkley] 联想到二战时期盟军通过序列号估算德国坦克数量的算法，强调了该算法的高准确性。
-• [gregable] 讨论了加权版本和分布式版本的水库采样算法，并简要介绍了一种简单的随机选择算法。
-• [hansvm] 分享了在工作中使用类似技术的经验，强调了在准静态数据环境下估算百分位的需求和方法，如使用splay树和调整替换概率。
-• [tanvach] 从数据科学的角度提出，数据量本身包含了有价值的信息，建议记录每个数据点所代表的数量以便后续统计重建。
-• [vismit2000] 提供了一个简短的视频解释，作为对水库采样算法的补充说明。
-• [phillipcarter] 指出了水库采样在遥测收集（traces, logs, metrics）分析中的应用，强调了该领域对开发者的挑战性。
-• [wood_spirit] 回忆了在一次面试中遇到水库采样问题，并通过事先掌握的知识顺利解决。
-• [pixelbeat] 提到GNU coreutils的shuf命令在大输入情况下使用水库采样以实现内存操作的边界控制。
-• [jbellis] 指出Dropwizard Metrics中使用了水库采样算法，提供了实际应用的参考链接。
+• 讨论中涉及了多种语言的对比，如Rust、Zig、Jai和C，反映出不同语言在处理SOA模式时的不同设计选择和复杂性。
+• 一些评论者对C++的复杂性表示担忧，认为这种复杂性可能导致代码难以理解和维护。
+• 另一个讨论点是编译时类型生成和宏的使用，这些技术在提高性能的同时也可能增加代码的复杂性和魔法性。
+• 历史语言如JOVIAL的提及显示出SOA模式在计算机科学中的长期应用和重要性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43935434" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.science.org/content/article/exclusive-nsf-faces-radical-shake-officials-abolish-its-37-divisions" target="_blank">NSF faces shake-up as officials abolish its 37 divisions</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: magicalist</span> |
+                    <span>评分: 157</span> |
+                    <span>评论数: 29</span> |
+                    <span>发布时间: 2025-05-09 12:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：美国科学研究资金和学术界的未来不确定性及其潜在影响
+
+不同观点：
+• **ddahlen**：基于个人在学术界和工业界的经验，指出目前学术界的不确定性，包括招聘冻结、国际研究生面临离境压力、科研人员资金被削减等问题。特别提到政府资助的战略性投资对于保持关键知识的重要性，尤其是在私营企业可能倒闭的情况下。
+  
+• **ourmandave**：关注新的资助提案审查流程，特别是与多元化、公平和包容（DEI）相关的新标准。批评这种新结构可能会导致不符合"总统指令"的提案被否决，暗示这种做法是出于政治动机。
+
+• **frob**：个人经历显示NSF资助对其成长的重要性，认为目前的政策变化正在破坏这些帮助科研人员发展的机制。
+
+• **hdivider**：质疑是否会利用机器学习系统进行更集中的审查，并担心政府通过这种方式加强对资金分配的控制。同时指出当前系统的演变是为了防止滥用，但新的集权化操作可能会带来问题。
+
+• **chairhairair**：从预算角度出发，指出NSF的预算相对较少，质疑政府为何关注科学领域的调整而不是其他更大预算的部门。
+
+• **adamc**：简单表达对美国科学领域遭受损害的担忧。
+
+• **insane_dreamer**：认为削减科研经费将严重损害美国的全球竞争力，并预测这种损害可能需要十年或更长时间才能恢复，即使未来政策回调。
+
+• **xhkkffbf**：提出特朗普政府的政策是对拜登时期将大量资金分配给特定种族和性别群体的反动，认为这是政治化的结果，并指出这种做法引起了科学界的嫉妒和实际问题。
+
+• **antonvs**：认为特朗普政府的核心动机是摧毁曾经让他感到羞辱的系统，指出这种破坏性行为的根源是个人屈辱和潜在的无意识目标。
+
+• **fabian2k**：指出预算削减高达55%，不仅仅是重组，而是对科研系统的实质性破坏，并认为剩余部分还将被迫 adher 一种意识形态纯净的"反觉醒"路线。
+
+• **srikanth767**：简短地暗示目前的政策可能是某种贿赂机制。
+
+• **SubiculumCode**：强烈反对NSF和NIH的预算削减，认为这将严重损害美国的国际地位，并指出科学家可能会因此迁移到欧洲和加拿大。
+
+• **ThinkBeat**：从法律角度出发，指出预算需要国会批准，质疑特朗普政府是否可以直接决定最终预算。
+
+• **superkuh**：提供一个绕过Cloudflare的存档链接，以方便访问被限制的文章。
+
+• **LightBug1**：以旁观者身份表达对美国现状的讽刺和无奈，认为美国民主制度已经做出了选择，美国需要承担这种后果。
+
+补充讨论：
+- 讨论的焦点包括科研经费削减的潜在影响、资助审查流程的政治化倾向、对学术和科研系统未来不确定性的担忧，以及对美国全球竞争力的长远影响。
+- 不同评论者对当前政策变化的动机有不同的看法，一些人认为是出于政治动机，另一些人则认为是对过去政策的不满和反动。
+- 对科研系统恢复能力的讨论也较为突出，部分评论者认为即使未来政策调整，恢复科研能力也需要很长时间。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43935913" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://c0de517e.com/021_taxonomy.htm" target="_blank">A Taxonomy for Rendering Engines</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-06 18:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了实时渲染引擎的分类体系，强调了分享行业内“来之不易”的经验教训的重要性。作者指出，游戏开发和计算机图形学领域虽然乐于分享技术进步，但往往忽视了幕后决策的讨论。文章呼吁建立一个描述渲染引擎背景的分类法，类似于数据库领域的成熟分类。作者提出了一个3x3维度分类框架，包括产品特性、生产过程和技术要求等方面，如引擎用户、平台支持、内容抽象、迭代速度、延迟处理、数据流等。文章最后强调，技术成功与用户规模和团队规模密切相关，解决工程问题需要考虑这些因素的复杂性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43908220" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cryptpad.org/" target="_blank">CryptPad: An Alternative to the Google Suite</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ColinWright</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-09 11:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>CryptPad是一款注重隐私的协作办公套件，提供端到端加密，开源且支持实时编辑与协作。用户无需账户即可共享文件夹和文件，数据无法追溯到创建者，且不含追踪功能。相比Google Docs，CryptPad在保证隐私的同时不牺牲功能和易用性，支持多操作系统，具备简洁的界面和丰富的应用，如富文本编辑器、Kanban工具等。用户赞赏其安全性、开放源代码、零知识加密以及无需电子邮件地址注册的便利性，适用于学校、工作场所等多场景的文档协作。CryptPad免费且匿名，被视为Google Drive的隐私友好替代品。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Cryptpad作为一种文档协作工具的优缺点，及其与大型科技公司和替代工具的比较。
+
+不同观点：
+• [hmsimha] 认为Cryptpad存在安全问题，尤其是在通过分享链接分享文档时，文档可能会被Google、Apple、Microsoft等大公司获取。他指出Cryptpad未能有效防御服务器攻击和恶意浏览器扩展导致的数据泄露问题，并认为Cryptpad团队无意解决这些问题。他还提到，虽然Cryptpad提供密码保护选项，但并非默认设置，因此大多数文档可能未被保护。
+
+• [righthand] 认为Cryptpad的问题在于其锁定效应，即提取文档时必须使用其UI进行解密。他更倾向于使用与Syncthing兼容的文档界面，让Syncthing处理同步和加密问题。
+
+• [mupuff1234] 对Cryptpad被称为Google套件的替代品而非Microsoft套件的替代品表示疑惑，并指出其使用了Microsoft的图标。
+
+• [ocdtrekkie] 主要抱怨Cryptpad的加载时间过长，尤其是在公开分享的文档中，这种加载时间是无法 justified 的。
+
+补充讨论：
+• [hmsimha] 提到的安全问题包括大公司浏览器同步历史记录导致文档链接泄露，以及服务器被攻陷时可能发生的文档泄露问题。他还指出Cryptpad未采用如桌面应用或签名浏览器扩展等更安全的交付方式。
+
+• [righthand] 提出的Syncthing作为替代方案，强调了去中心化和自托管的同步和加密方案。
 
 争议焦点：
-• 实际应用中应如何处理日志收集高峰期时的数据丢弃问题（justanotheratom的观点与其他实用策略的讨论）。</div>
+• Cryptpad的安全性及其在默认设置下是否能有效保护用户隐私和数据。
+• Cryptpad的加载时间是否合理，尤其是在公开分享文档的情况下。
+
+这些观点反映了用户对Cryptpad在安全性、易用性和性能方面的不同期望和体验。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43928315" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.darknavy.org/blog/a_first_glimpse_of_the_starlink_user_ternimal/" target="_blank">Starlink User Terminal Teardown</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: walterbell</span> |
-                    <span>评分: 155</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-09 03:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文简要概述了DARKNAVY对Starlink用户终端的初步调查。Starlink是SpaceX提供的低地球轨道卫星互联网服务，其用户终端包括路由器和天线。文章重点分析了天线部分（UTA），特别是Starlink标准驱动版（Rev3）的硬件构成。通过拆解，发现UTA的PCB主要由STMicroelectronics的RF前端芯片和定制SoC（Cortex-A53）组成，硬件资料保密。尽管SpaceX通过固件更新提升了安全性，但仍有被攻击的风险。通过提取和分析eMMC芯片中的固件，发现大部分内容未加密，揭示了启动链、内核及文件系统部分内容。分析显示，软件架构类似DPDK，通过用户空间程序处理网络包。此外，系统启动时根据硬件加载相应逻辑。DARKNAVY还构建了QEMU模拟环境进行分析，并发现UTA包含一个安全芯片STSAFE-A110，提供身份验证和加密功能。文章最后提到系统中可能存在一些“彩蛋”。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SpaceX Starlink用户终端的技术细节，包括初始化过程、固件仿真、网络处理性能等技术问题。
-
-不同观点：
-• [jwrallie] 指出系统初始化时会自动将41个SSH公钥写入`/root/.ssh/authorized_keys`，并质疑为何有如此多的公钥，认为这可能导致过多的人拥有root访问权限。该评论对系统的安全性提出了担忧，尤其是当端口22始终对本地网络开放时。
-
-• [latchkey] 提到过去关于SpaceX Starlink用户终端的讨论，并提供了一个相关讨论链接（Teardown of the SpaceX Starlink User Terminal），指向一个更早的、有大量评论的讨论帖（158个赞和138条评论），引导读者参考之前的分析。
-
-• [nine_k] 关注到文章标题中的拼写错误，提醒作者修正标题中的"Ternimal"应为"Terminal"。该评论属于技术讨论之外的编辑建议。
-
-• [breppp] 询问如何在QEMU环境中仿真与外部设备（如GPS）连接的固件，寻求相关资源或现成解决方案。该评论反映了对技术细节的实际需求，尤其是固件开发和仿真方面的资源。
-
-• [purpleidea] 回应有关41个SSH公钥的讨论，建议公开这些公钥以查看哪些开发者在使用它们，从而进一步探讨开发者的使用情况和潜在安全问题。
-
-• [walterbell] 提供了一个相关文章链接（https://web.archive.org/www.darknavy.org/blog/a_first_glimps...），引导读者查看有关DarkNavy团队对Starlink终端的初步分析，为技术讨论提供更多背景信息。
-
-• [londons_explore] 讨论了用户终端在处理1Gbps网络流量时的性能问题，特别是处理100字节UDP包时的高吞吐量需求。该评论指出，在这种高负载下，每个包只有1000个CPU周期进行处理，认为这对工程团队提出了极高的要求，尤其是在优化代码和使用低级汇编语言时。
-
-补充讨论：
-• 评论之间的主要争议点在于系统安全性，尤其是41个SSH公钥的管理问题。部分评论者质疑如此多的公钥是否必要，以及是否会导致安全风险。
-• 另一个值得注意的讨论点是关于网络处理性能的技术挑战，尤其是在高带宽和低延迟需求下如何优化包处理效率。
-• 多个评论者提供了相关的资源链接和技术建议，显示出对技术细节的关注和分享精神。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933452" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.newsweek.com/catholic-church-excommunicate-priests-following-new-us-state-law-2069039" target="_blank">Catholic Church to Excommunicate Priests for Following New US State Law</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nabla9</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-09 11:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>华盛顿州新法律要求神职人员报告忏悔中涉及的儿童虐待事件，但这与天主教会的教义冲突。教会警告，任何遵守该法律的神职人员将被逐出教会。教会认为泄露忏悔内容是严重罪行，而新法律则取消了忏悔的保密性。这引发了关于宗教自由与国家保护儿童责任之间紧张关系的全国讨论。美国司法部正调查该法律是否侵犯宗教保护。同时，教皇选举即将开始，前教皇方济各的葬礼上有多国政要出席。专家指出，这一争议可能影响其他州对神职人员举报要求的做法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">格式示例：
-
-主要讨论点：对某事件或现象表示失望和担忧，涉及价值观的冲突
-
-不同观点：
-• FollowingTheDao认为，当前的现象表明一切都变得不再神圣，表达了一种失望和不满的情绪。这种观点暗示了对传统价值观或某些被尊重事物的丧失感到担忧。
-• 另一种可能的观点（隐含反驳）是，这种变化可能只是社会进步或演变的一部分，不一定全然负面。变革可能带来新的机遇和视角，某些“不再神圣”的事物可能只是社会动态变化的体现。
-
-补充讨论：
-• FollowingTheDao的评论带有情绪化表达，可能针对具体事件或趋势，但没有详细说明是什么引发了这种感慨。
-• 争议的焦点可能在于不同人群对“神圣”的定义和理解不同，一些人可能认为变革是必要的，而另一些人则可能认为这是一种价值观的沦丧。
-• 该评论可能引发关于文化、社会进步和传统价值观之间平衡的更广泛讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43935717" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.linyangchen.com/Philately" target="_blank">Malaya's Timeless Design</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cenazoic</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-06 12:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是一份关于椰子行动党（Coconut Action Party）的详细研究，涵盖了多个方面的内容。文章讨论了椰子主题邮票的设计、印制及其演变历史，包括手刻字体、雕刻周期和印刷技术等。它还深入分析了邮票的纸张、水印、颜色和油墨，以及伪造邮票和印花税票的问题。地理上，文章涉及了全球各地的椰子设计，如马来西亚各州、新加坡和荷属东印度等地。此外，文章探讨了邮票的防伪标志、版号和一些历史事件，如二战对邮票的影响。技术方面，文章运用了多种科学方法分析邮票，如表面形貌分析、纤维分析和光谱学等。最后，文章附有参考文献和附录，提供了详细的椰子主题邮票目录和百科全书。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人们是否需要工作来找到生活的意义，以及如果没有工作的需求，人们是否仍能找到生活的充实感。
-
-不同观点：
-• Kubb认为人们不需要通过工作来找到意义，因为意义是可以被创造的。他提出，如果人们不再需要从事传统的工作，他们会探索出新的知识领域，并且人类有无限的创造意义的能力。
-
-补充讨论：
-• Kubb通过与朋友讨论一个假设性问题引出观点，即如果没有工作的必要，人们的生活是否会失去意义。他强调了人类在创造意义方面的无限潜力，并以探讨邮票这样平凡的事物也能深入作为例子，暗示了人类对探索和创造的渴望不限于工作。
-
-• 讨论中隐含的争议焦点在于“工作的必要性”与“生活意义”之间的关系。Kubb的观点挑战了传统上将工作与人生意义挂钩的看法，提出了一个更为理想化的、不受工作束缚的意义创造过程。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43904546" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://screenrant.com/night-living-dead-movie-public-domain-copyright-accident/" target="_blank">How "Night of the Living Dead" Accidentally Became Public Domain</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: edavis</span> |
-                    <span>评分: 22</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-06 20:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《活死人之夜》是由乔治·罗梅罗执导的经典恐怖片，奠定了现代僵尸的形象：无智力的行尸走肉，渴望活人 flesh。该片因发行商忘记添加版权声明而进入公共领域，导致罗梅罗损失了数百万潜在收入。尽管如此，影片因其易得性而成为经典，影响了如《行尸走肉》和《僵尸之地》等众多作品。罗梅罗后续拍摄了五部僵尸电影，其中《活死人黎明》被认为是最出色的续作。尽管他在好莱坞未获足够认可，但罗梅罗作为僵尸电影教父的地位无可撼动。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕电影《Night of the Living Dead》版权问题的讨论，包括版权法的历史变化以及版权缺失对作品的影响。
-
-不同观点：
-• [gus_massa] 指出，《Night of the Living Dead》发行于1968年，当时的版权法要求在作品上使用版权声明。根据1909年版权法，缺少适当的版权声明会导致作品永久失去版权保护。他解释了不同时期的法律对版权声明的要求，特别是1978年至1989年之间的过渡期规则。
-
-• [teddyh] 认为，虽然《Night of the Living Dead》因版权问题失去了潜在的经济收益，但正是其进入公共领域的状态帮助它成为经典。他反驳了“如果Linus Torvalds通过Linux收费会变得富有”的观点，认为《Night of the Living Dead》正是因为可以自由获取和在电视上频繁播放，才得以广为人知，否则可能只是一个历史注脚。
-
-• [wodenokoto] 对发行商是否有足够的所有权将修改后的电影版本发布到公共领域提出质疑。他提到一个类似的案例，一家公司错误地将材料以左版许可证发布，而实际上他们并没有重新许可这些材料的权利。他质疑这种情况下材料的再分发是否合法。
-
-补充讨论：
-• 争议的焦点在于《Night of the Living Dead》因版权声明缺失而进入公共领域，导致其失去经济收益，但同时也因此获得了广泛的公众关注和文化地位。
-• 讨论还涉及到版权法的历史演变以及不同法律时期对版权保护的具体要求和影响。
-• 另一个值得注意的点是，不同观点对版权缺失的利弊有不同评价，有人认为经济损失不可忽视，另一些人则认为公共领域的开放性对作品传播有积极作用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43909179" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.audiobookshelf.org/" target="_blank">Audiobookshelf: Self-hosted audiobook and podcast server</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: fjk</span> |
-                    <span>评分: 107</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-05-09 02:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Audiobookshelf 是一个自托管的音频书和播客服务器，允许用户在自己的服务器上管理和播放音频书籍及播客。文档部分提供了详细的设置和使用指南，帮助用户快速上手。常见问题解答则解决了用户在使用过程中可能遇到的各种问题。此外，用户可以通过多种方式支持该项目的发展。展示区则展示了其他用户的使用案例和成果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AudioBookShelf（ABS）应用的功能、使用体验及其在不同平台上的表现
-
-不同观点：
-• Krick认为Android应用在控制按钮设计上存在不足，尤其是缺少±1分钟的快进/快退按钮。他同时关注移动设备特有的功能，如耳机断开时是否停止播放、锁屏控件是否好用、暂停后是否自动回退，以及离线下载功能是否完善。
-• Rft使用ABS在本地服务器上，主要用于下载和收听无视频的播客，提到在处理大量现有剧集时遇到过困难，并指出Music Assistant可以集成ABS作为媒体源。
-• Walthamstow因无法在Android应用中排队播放播客而停止使用ABS，强调在不便操作手机的情况下自动播放下一集的重要性。
-• TheAceOfHearts对元数据清理工具的笨重表示不满，建议通过规则定义和增量运行工具来改进，并展望AI辅助工具在元数据管理中的潜力。
-• Midasz高度评价ABS，认为它是自托管世界的重要组成部分，并提到其他自托管解决方案如Immich和Plex(amp)。
-• Arn_Thor认为ABS是一个不错的独立服务器解决方案，但自己使用Plex及其插件来管理音频书，推荐Prologue用于IOS。
-• InsideOutSanta询问DRM-free音频书的来源，表示有意放弃Audible转向类似ABS的解决方案。
-• Heisenzombie对ABS用于播客的功能表示困惑，质疑在个人服务器上复制播客的用途。
-• Agnishom、Effff、Pyuser583和Rosege对ABS表示满意，认为其功能和体验都不错。
-
-补充讨论：
-• 关于元数据管理，TheAceOfHearts提出了 crowdsourcing 和AI辅助工具的设想，旨在简化大规模音频书库的整理工作。
-• 关于DRM-free音频书的来源问题，InsideOutSanta的问题得到了社区的积极回应，显示出对非DRM音频书需求的关注。
-• 关于播客功能，heisenzombie的疑问引发了对ABS播客模块使用场景的讨论，rft和walthamstow的使用经验提供了一些实际案例。
-• 争议焦点主要集中在Android应用的功能完善性和播客管理的实用性上。Krick和walthamstow对应用的特定功能提出了批评，而rft和TheAceOfHearts则分享了他们在其他方面的积极体验。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933248" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.w3.org/TR/wasm-core-2/" target="_blank">WASM 2.0</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lioeters</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-05-09 08:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>WebAssembly (Wasm) 是一种安全、可移植的低级代码格式，旨在高效执行和紧凑表示。其目标是实现高性能的网页应用，但不局限于网页，也可用于其他环境。Wasm 是一个开放标准，由 W3C 社区小组开发，本文档介绍了其 2.0 版的核心标准。
-
-### 设计目标
-- **快速、安全、便携**：接近原生性能，内存安全，防止数据损坏和安全漏洞。
-- **硬件和语言无关**：支持多种现代架构和编程语言。
-- **开放**：程序可以与其环境简单交互。
-- **高效、可移植**：二进制格式紧凑，模块化，可流式和并行处理。
-
-### 范围
-WebAssembly 是一个虚拟指令集架构（virtual ISA），核心规范定义了指令集、二进制编码、验证和执行语义，但不包括与具体执行环境的交互。
-
-### 安全考虑
-WebAssembly 无法直接访问执行环境，所有交互需通过嵌入器提供的函数进行。嵌入器负责制定安全策略，可能需要应对侧信道攻击。
-
-### 依赖
-WebAssembly 依赖于 [IEEE-754-2019] 浮点数表示和 [UNICODE] 名称表示标准。
-
-总结：WebAssembly 是一种跨平台、高效的代码格式，适用于多种环境，具有严格的安全和设计目标。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：WebAssembly (Wasm) 2.0发布及其新特性，包括其实用性和未来发展。
-
-不同观点：
-• [技术特性讨论] **lioeters** 总结了Wasm 2.0的新增特性，包括向量指令、批量内存操作、多值返回、引用类型、非陷阱转换和符号扩展指令。这些改进旨在提升Wasm在计算密集型应用中的性能，如音视频编解码、机器学习和加密等。
-
-• [实用性疑问] **rossant** 关注Wasm 2.0是否支持C语言中通过值返回结构体的函数编译，暗示了对某些具体编程场景的适用性疑问。
-
-• [学习资源推荐] **pdubroy** 提供了一个学习Wasm的资源，推荐了一个在线书籍《WebAssembly from the Ground Up》，并介绍其通过构建简单编译器来学习Wasm的方式，为新手提供了学习路径。
-
-• [规范细节关注] **treetalker** 指出了Wasm的命名问题，强调Wasm不是缩写而是全称，显示出对技术命名规范的关注。
-
-• [实现现状疑问] **anentropic** 询问是否有运行时已经实现了Wasm 2.0的新特性，关注新版本的实际应用情况。
-
-• [编辑草案评论] **aleksi** 对编辑草案的URL中包含"bikeshed"感到好奇，可能是在调侃技术文档命名中的非正式性。
-
-• [浏览器支持和实用性批评] **Dabbling_Dion** 认为如果没有浏览器直接支持DOM访问的Wasm，且需要JavaScript "shim"，Wasm 2.0的新特性将无用武之地，暗示了对浏览器支持现状的担忧。
-
-• [Wasm整体质疑] **TekMol** 对Wasm的价值提出质疑，认为Wasm仅提供了速度上的提升，而在浏览器中运行其他语言的代码可以通过编译成JavaScript实现，暗示了对Wasm整体实用性的怀疑。
-
-补充讨论：
-• 争议焦点在于Wasm 2.0的实际应用价值，特别是在浏览器中的支持和相对于JavaScript的性能优势是否足够显著。
-• 不同用户关注Wasm 2.0的技术细节、学习资源、实现现状和命名规范等多方面，显示出社区对Wasm发展的多角度关注。
-• **Dabbling_Dion** 和 **TekMol** 的观点代表了对Wasm在浏览器中应用前景的质疑，提出了Wasm需要直接DOM访问支持和与JavaScript编译对比的挑战。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43934711" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.usenix.org/blog/usenix-atc-announcement" target="_blank">Usenix ATC Announcement</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: eatbitseveryday</span> |
-                    <span>评分: 75</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-09 03:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>USENIX将于2025年庆祝成立50周年，并宣布其历史最悠久的年度技术会议（USENIX ATC）将在2025年7月后结束。自1975年成立以来，USENIX一直是高级计算系统社区创新者的重要聚集地。其年度会议在1995年合并为单一的年度技术会议（ATC），并持续了30年。然而，随着更多专注特定主题的USENIX会议加入日程，ATC的参会人数逐渐减少，无法维持必要的研究者和从业者群体。因此，USENIX董事会决定结束ATC。
-
-ATC曾见证了许多行业“首次”，如1979年ONYX UNIX硬件、1983年Sendmail、1985年NFS等重要发布。然而，随着社区和技术的演变，其他会议如USENIX Security和FAST等逐渐吸引了更多关注。尽管ATC的结束是一个艰难的决定，但USENIX认识到变革的必然性，并感谢ATC对协会及社区的重大贡献。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：USENIX ATC会议的现状和变化，特别是参与人数的减少及其原因。
-
-不同观点：
-• [aoki] 认为USENIX ATC虽然仍有大量论文提交并经过评审、接受和发表，但社区已经发生了变化，现在更多人选择参加其他会议。他提到2000年有1,698名参会者，而2024年却减少到165名，并感叹该会议已经变成了一个“只写不发”的会议。他还回忆起在学校时阅读NFS和Kerberos论文的经历，暗示会议曾经的辉煌。
-
-• [zinekeller] 指出页面本身解释了资金紧缩的问题，并提到2025年ATC页面上有国家科学基金会作为金牌赞助商。他认为需要考虑白宫的近期事件的影响大小，尽管他倾向于认为这是一个长期存在的问题，但也不否认近期事件可能带来的负面影响。
-
-• [ferfumarma] 简单地将参与人数的减少视为一个令人遗憾的里程碑，没有深入分析原因，但显然对此变化持悲观态度。
-
-补充讨论：
-• 争议的焦点可能在于USENIX ATC参与人数减少的主要原因。是由于近期事件（如白宫的政策变化）还是更长期的结构性问题（如社区兴趣转移或资金问题）？
-• 不同的评论者对原因的侧重点不同：aoki更关注社区兴趣的转移，zinekeller则试图平衡近期事件和长期问题的影响，而ferfumarma主要表达对现状的惋惜。
-• 资金问题被明确提到，可能是影响会议吸引力的一个重要因素。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933511" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/martinfama/fui" target="_blank">Fui: C library for interacting with the framebuffer in a TTY context</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Bhulapi</span> |
-                    <span>评分: 122</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-05-08 22:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>`fui` 是一个用于帧缓冲区（framebuffer）的 C 语言库，能够在 tty 环境下进行图形界面操作。它支持：
-
-1. 向多个图层绘制像素，然后合成并渲染到帧缓冲区。
-2. 基本的图形绘制功能，如线、矩形和圆。
-3. 使用位图字体进行文本渲染。
-4. 利用 `libevdev` 处理键盘和鼠标事件，并实现了一个通用事件系统。
-5. 使用 ALSA 实现简单的音频播放功能。
-
-安装步骤包括运行 `make` 和 `sudo make install`，库是静态链接的。由于需要 root 权限访问视频和输入设备，建议将用户添加到 `video` 和 `input` 用户组。示例代码和简单的游戏（如 `asteroids`）包含在项目中。该项目使用 MIT 许可证。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕终端实验及相关技术概念的讨论
-
-不同观点：
-• [abnercoimbre] 认为终端实验早就应该有所发展，并提到自己之前展示的终端项目，旨在摆脱传统shell。该项目引起了两极分化的反应。他还表示会关注Fui项目，认为可能对未来的Linux构建有用。
-• [markisus] 对“framebuffer”的概念感到困惑，特别是是否存在整个桌面的全局framebuffer，并询问这是否是Linux特有的概念。
-• [clbrmbr] 回忆起QuickBasic和SCREEN 13的时代，提到在Mac上实现全屏图形仍然是个问题。
-• [antirez] 提到Kitty图形协议和Ghostty终端模拟器，认为这是在不同抽象层次上的相关技术。
-• [RetroTechie] 认为这种终端实验最好在裸机上运行，或者最多在小型的RTOS上运行，而不是在复杂的Linux驱动堆栈下。
-• [kristianp] 询问“in a TTY”上下文中的具体含义，认为这不应该是在终端窗口中。
-• [nimish] 提出是否可以将LVGL移植到这种终端上以实现完整的GUI。
-• [cellis] 觉得这个项目小巧且易于理解。
-• [anthk] 提到SVGAlib和libggi，认为FUI可能类似于后者。
-• [actionfromafar] 询问该项目的许可证。
-• [mouse_] 提醒大家不要随意从互联网上复制命令执行，尤其是涉及到root权限和dd命令。不过，他也分享了一个关于如何在TTY中进行framebuffer截图的示例。
-
-补充讨论：
-• 评论中涉及多个技术概念，如framebuffer、TTY、LVGL、SVGAlib、libggi等，显示出对底层图形和终端技术的广泛兴趣和讨论。
-• 关于framebuffer的具体定义和应用场景引发了部分讨论，特别是其与操作系统和硬件的关系。
-• 对终端实验项目的实用性和潜在应用场景（如Linux构建、裸机运行等）也有不同看法。
-• 许可证问题和安全性问题也被提及，显示出对项目开放性和安全性的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43931845" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43935707" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -496,8 +258,8 @@ ATC曾见证了许多行业“首次”，如1979年ONYX UNIX硬件、1983年Sen
                 </h3>
                 <div class="story-meta">
                     <span>作者: JNRowe</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2025-05-09 10:39</span>
                 </div>
 
@@ -508,9 +270,229 @@ ATC曾见证了许多行业“首次”，如1979年ONYX UNIX硬件、1983年Sen
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：关于时间表达的语法规则和GPG、Git中使用SHA1算法的相关讨论
+
+不同观点：
+• NooneAtAll3认为，关于时间表达的语法规则——“since用于时间点，for用于时间段”——并没有得到应有的普及，对此表示遗憾。这暗示了该用户可能认为这是一种重要且应广泛知晓的规则。
+
+• jmclnx则关注于技术领域中SHA1算法的使用问题，特别是在GPG（GNU Privacy Guard）和Git中的应用。jmclnx提到GPG中使用SHA1的问题，并对其未来被淘汰的前景表示担忧。他还提到了Git中使用SHA1的情况，并对是否已有更改表示不确定。此外，jmclnx分享了自己最近将Git提交签名从GNU PG更改为了ssh-ed25519。
+
+补充讨论：
+• jmclnx的评论中隐含了对SHA1算法安全性问题的关注，尤其是在加密和数据完整性方面的潜在风险。他对于即将到来的技术过渡表示出一定的焦虑，可能是因为这涉及大量现有系统的兼容性和安全性更新。
+
+• jmclnx还提供了一个实际操作的例子，即自己已经将Git提交签名从GNU PG切换到了ssh-ed25519，暗示出对更安全算法的倾向性选择。这可能反映了技术社区中一部分人正在积极应对SHA1过时所带来的挑战。
+
+争议焦点：
+• 尽管没有直接的争议，但可以看出潜在的争议在于技术社区对SHA1过时的应对。一部分人可能对过渡到新算法带来的复杂性和潜在兼容性问题感到不安，而另一部分人可能更关注新算法的安全优势并积极采用。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43935356" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://spectrum.ieee.org/amazon-stowing-robots" target="_blank">Amazon's Vulcan Robots Now Stow Items Faster Than Humans</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Luc</span> |
+                    <span>评分: 103</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-09 11:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>亚马逊的Vulcan机器人如今在存放物品速度上已超过人类。该公司一直在德国的一个仓库中测试这些机器人。与大多数专注于从箱子中拣选物品的仓库机器人不同，亚马逊的Vulcan机器人解决了将物品存入箱子的不同挑战。这一进展标志着仓储自动化技术的又一重要里程碑。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：自动化与机器人在仓库作业中的应用及其影响
+
+不同观点：
+• **支持自动化技术进步的观点**：[m3kw9] 认为自动化技术减少了一些繁重的工作，未来可能会创造新的就业机会，避免人们从事类似“奴隶般”的劳动。
+• **质疑自动化必要性的观点**：[elzbardico] 提出在缺乏社会保障的情况下，自动化可能导致社会不平等，担心技术巨头掌控社会，普通人的生活更加艰难。
+• **对自动化效率的怀疑**：[danielovichdk] 质疑为什么自动化技术没有更早实现，暗示对技术进步的速度和效率不满。
+• **对具体技术实现的疑问**：[voidUpdate] 对“真正的触觉”这一说法表示不解，质疑过去能检测施力的机器人是否就具备“假触觉”。
+
+补充讨论：
+• **对仓库作业量的计算**：[londons_explore] 对亚马逊仓库中机器人工作量与人类工作量的对比提出疑问，通过计算推测人类完成相同工作所需的时间。
+• **对技术应用场景的类比**：[mapt] 将仓库机器人与集装箱标准化系统类比，质疑当前机器人技术是否在解决一个过于复杂的问题，而不是采用更标准化的解决方案。
+• **对包装设计的考虑**：[matthewfelgate] 提出公司是否会为了适应机器人操作而重新设计产品包装，暗示技术应用可能带来的产业链调整。
+• **对未来工厂的调侃**：[LeonB] 引用幽默的未来工厂场景，描述一个高度自动化、仅需极少人力的工厂环境。
+• **对人类工作能力的评价**：[mensetmanusman] 提到普通人类并非“储存大师”，暗示机器人可能在某些任务上比人类更有效率。
+• **对消费主义的反思**：[oxqbldpxo] 质疑我们是否应该减少不必要的购买行为，从而减少对大规模仓库作业的需求。
+
+争议焦点：
+• **自动化对就业的影响**：一方认为自动化减少了艰苦的工作，另一方担心自动化会导致失业和社会不平等。
+• **自动化技术的成熟度**：有人认为自动化技术早就应该实现，而另一方则对现有技术表示惊叹。
+• **自动化应用的合理性**：有人质疑当前技术是否在解决正确的问题，是否应该采用更简单的标准化方案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43935586" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://liliputing.com/dasung-paperlike-13k-is-a-13-3-inch-e-ink-color-monitor-crowdfunding/" target="_blank">Dasung Paperlike 13K is a 13.3 inch E Ink color monitor</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-09 13:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Dasung Paperlike 13K是一款13.3英寸的E Ink彩色显示器，分辨率为3200x2400像素，灰度内容显示可达300ppi，刷新率最高37Hz。该显示器支持USB Type-C和HDMI输入，具备触屏和反向触控功能，可连接安卓手机进行屏幕镜像。它有一个3.5毫米耳机插孔、内置扬声器和DC电源输入，配有六个物理按钮用于调节功能。机身由铝合金制成，重721克，支持VESA安装。彩色版售价749美元，黑白版售价679美元，目前已开始预售。彩色版配有前光，而黑白版没有。该显示器不完全支持苹果设备，主要兼容Windows、Linux和Android系统。预计2025年5月发货。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Dasung 25寸显示器的用户反馈与相关问题
+
+不同观点：
+• **产品交付问题**：[greysonp] 表示参与了该显示器的众筹，但尽管每周联系客服，依然没有收到产品，建议其他人远离该品牌。
+• **价格与关税质疑**：[comrade1234] 质疑该品牌产品在不同国家生产后的价格差异，特别提到了中国与墨西哥的生产成本及关税问题，并给出了具体的时间点以强调关税变化的动态性。
+• **兼容性问题**：[mrinfinite] 提到该品牌的25.3寸屏幕与Mac不兼容，表示虽然对产品感兴趣，但由于兼容性问题，暂时不会考虑购买非Mac兼容的显示器。
+• **价格与能耗信息不足**：[silvestrov] 指出评论中缺乏对价格和功耗的具体信息，并提出这种显示器是否适合用于超轻便携设备的疑问。
+• **产品性能质疑**：[twiclo] 对宣传视频中显示器的刷新率表示怀疑，认为视频中的效果看起来太好了，以至于可能不真实，提供了具体视频链接以供参考。
+
+补充讨论：
+• **争议焦点**：评论中对产品交付问题、兼容性及性能真实性的质疑形成了主要争议。部分用户对产品的实际性能与宣传不符提出怀疑，而[greysonp] 的交付问题则表明可能存在客户服务和物流方面的问题。
+• **其他关注点**：价格和能耗信息是部分用户关心的重点，特别是在考虑购买决策时，这些信息的缺乏影响了用户的决策过程。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43936813" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://royalsocietypublishing.org/doi/10.1098/rsif.2024.0757" target="_blank">Reconstructing illusory camouflage patterns on moth wings using computer vision</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-09 13:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43936461" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2504.16966" target="_blank">Structuring Competency-Based Courses Through Skill Trees</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-05 13:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一种通过技能树（Skill Trees）结构化基于能力课程的新方法，特别适用于计算机科学教育。随着教育向能力导向和自动化教学发展，现有的以理论为中心的课程结构不再适用。技能树展示了技能之间的依赖关系，并结合概念树（Concept Trees）来包含直观的概念或抽象模型。该框架提供了技能树和概念树的正式定义，并给出了设计和课程规划指南。在一个大学数据库课程中的应用显示，学生困惑和压力减少，达到预期技能水平所需的学习时间缩短。本文已提交至Koli Calling '25会议发表。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：技能树方法在管理和教育中的应用及其潜在问题
+
+不同观点：
+• [roenxi] 认为技能树方法可以有效应用于软件工程管理，以解决目前管理层能力评估不准确的问题。当前依赖指标或依赖高层管理人员的做法效果不佳。roenxi建议通过技能培训和测试的方式，培养管理者的具体能力，特别是在敏捷开发等领域的应用。这种方法比现行的“让聪明人自行摸索”的方式更有效。
+
+• [Garlef] 对技能组合的教育方法提出质疑，指出学会独立技能A和B并不自动意味着能够同时应用它们，或者在需要时单独应用A或B。Garlef用音乐学习的例子说明技能过渡和组合的复杂性，认为技能树方法在细节上可能存在问题，但整体思路是有趣且值得探索的。
+
+• [johnecheck] 支持将技能树方法用于学习和培训，认为将技能分解为先决条件和必备知识的做法是有价值的。johnecheck提到大学学位课程已经采用了类似的结构化学习方式，并表示这种方法在小规模学习中也同样适用。
+
+• [accrual] 赞同技能树方法，并希望高等教育能够采用这种有效的方式。accrual还提到考虑攻读乔治亚理工学院的在线硕士课程，质疑这种在线教育形式是否采用了技能树方法，或者仍然偏向传统教育模式。
+
+• [whiteborb] 指出技能树方法面临的挑战，即如何定义和枚举复杂的现实世界技能。whiteborb认为实际技能往往需要灵活组合不同的工具和策略，但同时表示像LLMs（大型语言模型）这样的技术可能有助于解决这一问题，通过生成新场景来帮助学习。
+
+• [didgeoridoo] 提到Exercism.org已经采用了类似的技能树方法，但不确定其主要目的是教育驱动还是为了增加学习的趣味性和进度感。didgeoridoo还提出哪些知识领域可能不适合这种结构化学习方式的问题。
+
+补充讨论：
+• 争议焦点之一是技能树方法是否能有效应用于复杂的现实技能，特别是需要灵活组合和过渡的领域。
+• 另一个值得注意的讨论点是如何在高等教育和在线教育中应用技能树方法，以及这些教育形式是否已经开始采用这种方法。
+• 技术（如LLMs）在帮助实现和优化技能树方法中的潜在作用也被提及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43894967" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bart.gov/" target="_blank">Entire BART system is down due to computer systems failure</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ksajadi</span> |
+                    <span>评分: 51</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-09 14:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>BART服务因电脑网络问题全面暂停，建议乘客选择其他交通方式。Embarcadero站新电梯启用，BART董事会因PG&E停电改至下午1点召开。BART将为2025年Bay to Breakers提供特别早班服务，且在第一季度暴力犯罪率下降23%。2025年初湾区公共交通客流量显著增加。乘客可使用BART行程规划器查看实时信息和站台详情。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：BART（旧金山湾区捷运系统）的故障及其背后原因
+
+不同观点：
+• [scarmig] 对BART全线停运的原因尚不明确，提到了早晨的爆炸事件，但未确认是否与此有关。他推测可能是一个DNS问题，而非网络攻击，并表达了对维修人员的祝福。
+
+• [fhkatari] 对BART的持续故障表示遗憾，特别提到疫情前的大规模扩展项目，指出BART在票务收入上依赖较高，导致因乘客量减少而受到更大冲击。
+
+• [CoffeeOnWrite] 关注新安装的闸机扫描仪问题，认为其故障频发且未得到公开解释。对媒体未报道这一问题表示不满，并指出这一问题对付费乘客的负面影响。同时赞赏一线工作人员的努力，但对问题能否很快解决持怀疑态度。
+
+补充讨论：
+• 不同评论者对BART问题的关注点不同：[scarmig] 更关心当前的停运事件及其技术原因，[fhkatari] 则从宏观角度讨论BART的财务困境，[CoffeeOnWrite] 聚焦于乘客体验和具体设备故障。
+
+• 争议的焦点可能在于BART管理和媒体报道的透明度问题，特别是[CoffeeOnWrite] 提到媒体未能充分报道乘客面临的实际问题，而官方也未给出合理解释。
+
+• 另一个值得注意的点是对BART技术问题的推测和不确定性，[scarmig] 提到了多种可能性，如网络攻击或DNS问题，但尚未有确切答案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43937242" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
