@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-10 17:14 (北京时间)
+            最后更新时间: 2025-05-10 20:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,43 +61,56 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.darknavy.org/blog/a_first_glimpse_of_the_starlink_user_ternimal/" target="_blank">Starlink User Terminal Teardown</a>
+                    <a href="https://brevzin.github.io/c++/2025/05/02/soa/" target="_blank">Implementing a Struct of Arrays</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: walterbell</span> |
-                    <span>评分: 264</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-05-09 03:03</span>
+                    <span>作者: mpweiher</span> |
+                    <span>评分: 118</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-05-09 10:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文简要概述了DARKNAVY对Starlink用户终端的初步调查。Starlink是SpaceX提供的低地球轨道卫星互联网服务，其用户终端包括路由器和天线。文章重点分析了天线部分（UTA），特别是Starlink标准驱动版（Rev3）的硬件构成。通过拆解，发现UTA的PCB主要由STMicroelectronics的RF前端芯片和定制SoC（Cortex-A53）组成，硬件资料保密。尽管SpaceX通过固件更新提升了安全性，但仍有被攻击的风险。通过提取和分析eMMC芯片中的固件，发现大部分内容未加密，揭示了启动链、内核及文件系统部分内容。分析显示，软件架构类似DPDK，通过用户空间程序处理网络包。此外，系统启动时根据硬件加载相应逻辑。DARKNAVY还构建了QEMU模拟环境进行分析，并发现UTA包含一个安全芯片STSAFE-A110，提供身份验证和加密功能。文章最后提到系统中可能存在一些“彩蛋”。</p>
+                    <p>本文介绍了如何使用C++26的反射机制实现一个结构体数组（Struct of Arrays, SoA），以替代传统的数组 of 结构体（Array of Structs, AoS）模式，从而提高内存使用效率和性能。文章借鉴了Andrew Kelley在Zig编译器中的优化思路，将原本组合在一起的结构体成员拆分为独立的数组存储。
+
+文章首先解释了Zig语言中如何通过简单的代码修改实现这一优化，然后转向C++26，利用其反射特性来实现类似的`SoaVector<T>`。通过`std::meta::define_aggregate()`函数，文章展示了如何动态生成包含每个非静态数据成员指针的聚合结构体。接着，文章讨论了如何实现`push_back`和`grow`函数来管理动态数组，并确保每个数据成员数组同步增长。
+
+文章的核心在于利用C++26的反射功能简化SoA模式的实现，避免手动处理每个成员的独立数组操作，同时提高代码的可维护性和性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SpaceX Starlink用户终端的技术细节及其安全性、逆向工程和网络处理性能等技术问题
+                    <div class="comments-summary">主要讨论点：C++的复杂性、结构数组（SoA）与数组结构（AoS）的性能比较、元编程与编译时优化、不同语言的对比与实现
 
 不同观点：
-• [jwrallie] 对系统初始化时自动写入41个SSH公钥表示担忧，认为这样可能会导致过多的用户拥有root权限，质疑安全性。
-• [account-5] 认为逆向工程非常困难，尤其对于新设备或昂贵的设备，表达了对如何进入这一技术领域的困惑。
-• [purpleidea] 建议公布41个公钥，以便分析哪些开发者在使用这些密钥，隐含对透明度和安全性的关注。
-• [londons_explore] 对所有数据包在用户空间处理表示惊讶，指出在处理高吞吐量时（如1Gbps流量）所面临的性能挑战，强调需要高效的工程技术。
-• [alextousss] 对如何保护固件免于逆向工程表示兴趣，询问是否有相关技术文档或介绍，关注产品的安全性。
+• PessimalDecimal认为文章展示了C++的臃肿和复杂，偏离了原本讨论存储格式效率的主题。
+• Dwedit详细解释了SoA与AoS在不同访问模式下的性能差异，包括缓存利用和地址计算的优化。
+• gr4vityWall提到使用Haxe宏在编译时进行AoS到SoA的转换，并对可读性提出质疑。
+• ozgr4kurt质疑是否需要通过元编程来优化结构设计，认为从一开始就设计好列式存储会更好。
+• perihelions展示了如何在Common Lisp中实现SoA的想法，提供了一个不同语言的视角。
+• the__alchemist在Rust和Zig中使用SoA进行数值和科学计算，但对C++和文章中的抽象表示感到困惑。
 
 补充讨论：
-• [latchkey] 提到以往关于SpaceX Starlink用户终端拆解的讨论，提供了一个历史讨论链接作为参考。
-• [walterbell] 提供了一个与SpaceX Starlink相关的技术博客链接，可能包含更多技术细节。
-• [nine_k] 指出原文标题中的错别字，属于编辑建议。
-• [numpad0] 猜测Starlink的代码是否与其火箭代码共享基础，表达了对技术统一性的兴趣。
-• [breppp] 关注如何在仿真环境中处理与外部设备（如GPS）连接的固件，寻求相关资源和解决方案。
+• monkeyelite提到“元对象协议”的概念，建议在类定义和实现之间增加一个选择布局和访问方法的阶段。
+• mac3n提到JOVIAL语言的历史特性，指出其TABLE结构可以声明为SERIAL或PARALLEL。
+• sph对C++代码中的特殊操作符^^type表示困惑，请求解释。
+• TheHideout简化了SoA和ECS（实体组件系统）之间的类比，认为文章本质上是在讨论反射。
+• gpderetta提供了一个基于模板的SoA实现，并讨论了反射的优点和复杂性。
+• hinkley讨论了聚合与组合的问题，指出在某些语言中处理SoA时拥有者或类别的概念很重要。
+• gwenzek认为学习Zig语言可能比学习现代C++的元编程更容易。
+• adzm对文章中出现的反射和"unibrow"操作符感到新奇。
 
 争议焦点：
-• 系统初始化时写入41个SSH公钥是否会导致安全风险，即过多用户拥有root权限的问题。
-• 如何在保证性能的前提下处理高吞吐量的网络数据包，尤其是在用户空间中处理的挑战。</div>
+• 现代C++的复杂性与元编程的实际价值：PessimalDecimal和ozgr4kurt对C++的复杂性提出质疑，而gpderetta则展示了反射和模板的潜在优势。
+• SoA与AoS在实际应用中的性能优化：Dwedit详细分析了不同访问模式下的性能差异，而gr4vityWall和the__alchemist则在可读性和实现细节上提出了不同看法。
+
+其他值得注意的讨论点：
+• 不同编程语言中实现SoA的差异和历史背景（如JOVIAL语言的特性）。
+• 实际应用中处理聚合与组合问题的重要性（hinkley的观点）。
+• 学习曲线和语言复杂性对比（gwenzek的观点）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933452" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43935434" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -108,52 +121,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nuejs.org/blog/standards-first-react-alternative/" target="_blank">Show HN: Hyper – Standards-first React alternative</a>
+                    <a href="https://baharmon.github.io/basics" target="_blank">Parametric Modeling with Grasshopper</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tipiirai</span> |
-                    <span>评分: 44</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-05-09 13:59</span>
+                    <span>作者: downboots</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-05-07 23:57</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Hyper是一种以标准为核心的标记语言，用于构建用户界面，强调使用HTML、CSS和JavaScript，追求简洁和可扩展性。与React的混合逻辑、结构和样式的单体架构不同，Hyper实现了React 2013年最初的愿景：一个无头视图层。Hyper通过语义HTML和少量类名实现复杂UI，如其表格组件仅需3.9KB的JS，而现代React需要91.3KB。Hyper的设计系统允许通过一个32行的CSS文件实现主题转换，避免了React中通过CSS-in-JS或Tailwind造成的紧耦合和大量维护工作。Hyper通过严格的分离关注点，实现真正的可重用组件和零样板代码，使应用在扩展时仍保持简单。</p>
+                    <p>本文介绍了使用Grasshopper进行基本几何建模的基础知识，Grasshopper是一个用于Rhinoceros 3D建模软件的可视化编程界面，基于NURBS数学模型。通过可视化编程，用户可以算法生成几何图形。本文涵盖了点、线、多线段、曲线和曲面的建模方法。
+
+**点**：可通过坐标构造或从Rhino中引用，使用"Construct Point"组件和"Number Slider"设置坐标值，也可通过文本面板输入坐标或直接在Rhino中绘制。
+
+**线**：可通过起点和终点定义，或通过方向和长度生成。使用"Line"组件连接起点和终点，或通过"Line SDL"组件设置起点、方向和长度。还可以通过移动点生成线段。
+
+本文还提供了学习资源的推荐，如《Grasshopper Primer》和相关教程，帮助进一步掌握Grasshopper的使用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：前端框架和工具的比较与争议
+                    <div class="comments-summary">主要讨论点：视觉编程语言和Grasshopper等工具的应用及分类
 
 不同观点：
-• **React与Nue的功能对比**：[rustc] 提到在"Complex components"代码对比中，React版本包含更多功能（如完整样式、图标、可排序列等），而Nue似乎通过简单的类自动注入这些功能，质疑这种对比是否公平。[__jonas] 进一步讨论了React中使用外部CSS的惯用方式，反驳了认为React不常用classNames和外部CSS的观点，并指出React文档中并未提到Tailwind等工具是惯用方式。
-
-• **Hyper与EJS的比较**：[mg] 偏好EJS，因为其语法简单，只需要了解"<% 开始JS" 和 "%> 结束JS"，其余部分是纯HTML和JS，而Hyper的语法较为复杂。
-
-• **框架逻辑嵌入HTML属性的争议**：[faefox] 认为Angular/Vue将应用逻辑嵌入HTML属性的方式在演示中效果很好，但在实际应用中可能导致两种结果：要么过于简单，需要用JS实现所有功能；要么为了迎合所有需求导致复杂的DSL（如ngFor）。相比之下，JSX更为实用并最终胜出。
-
-• **HARC Stack的简洁性与功能性**：[librasteve] 赞赏简洁且富有表现力的代码，展示了用HARC Stack实现的基本表格例子，但承认HARC Stack目前没有可排序、可过滤的表格组件，且使用了HTMX。同时提到不应进行“逐行代码”的比较。
-
-• **React的复杂性与功能平衡**：[vessenes] 认为React在功能与复杂性之间存在平衡，虽然React的功能丰富，但复杂度较高。理想的框架应在功能与简洁性之间做出明智选择，优化价值与复杂性的比率。
-
-• **虚拟化渲染与性能问题**：[jitl] 询问如何在Hyper中实现100,000项表格的虚拟化渲染。
-
-• **React Server Components的类似问题解决**：[nicce] 提出Nue如何解决与React Server Components类似的问题，如消除后端与前端之间的网络实现差距，使组件定义与动态功能添加无缝衔接。
-
-• **类似框架的参考**：[superchris] 提到Nue看起来像Sprae，并分享了使用Sprae连接模板与Elixir后端的项目，认为这是一个被忽视的优秀工具。
-
-• **框架命名冲突**：[streptomycin] 提到前端框架名称冲突问题，指出多个框架名称相似。
+• Duanemclemore认为Ivan Reese的Visual Programming Codex是一个丰富的资源，但遗漏了Flowgorithm，这是一个用于编程初学者教学的优秀工具，尽管名字不太好。
+• FormFollowsFunc提出Grasshopper属于程序化建模而非参数化建模，并对比了Grasshopper与SolidWorks等软件，指出前者通过节点图构造几何，而后者通过参数和约束系统进行操作。
+• jazzyjackson分享了个人经验，强调Grasshopper在事件导向编程中的应用，例如结合Kinect和Pd-extended进行音效触发。
+• Duanemclemore（同一用户再次发言）作为建筑学教授和计算设计师，详细介绍了Grasshopper在建筑设计和教育中的广泛应用，并指出其在打破设计过程神秘性方面的价值。他还提到其珠宝公司X Over Zero使用Grasshopper进行设计和制作。
+• ddkto强调Grasshopper在建筑参数化设计中的事实标准地位，并提到RhinoCompute在网络应用中的使用。
+• downboots列举了其他具有类似界面的工具，如Unity、Blender、Chemcad和KiCad，并提出这些工具在模块化AI代理和ODE隔间模型中的潜在应用。
+• msds对近期Rhino/Grasshopper内容的增加表示欢迎，并提到在McNeel生态系统中遇到的优秀人物和有趣体验。
 
 补充讨论：
-• [internetter] 提供了Nue的发布帖链接，为讨论提供了背景信息。
-• [dleeftink] 询问Nue是否是Riot.js的进化或新方向，探讨了Riot.js对Nue的影响。
+• Grasshopper是否属于参数化建模或程序化建模是讨论的焦点，FormFollowsFunc和Duanemclemore对此有不同见解。
+• 不同用户分享了各自使用Grasshopper的经验和应用场景，包括教学、珠宝设计和事件导向编程。
+• 讨论中提到了其他类似工具和平台，扩展了视觉编程语言的应用范围和可能性。
+• 用户普遍认可Grasshopper在建筑设计和参数化设计领域的核心地位。
 
-争议焦点：
-• React与Nue的功能对比是否公平，以及不同框架的简洁性与功能性之间的平衡问题。
-• 框架命名冲突和框架逻辑嵌入HTML属性的实用性与复杂性。</div>
+争议焦点：Grasshopper是否属于参数化建模或程序化建模。FormFollowsFunc认为其属于程序化建模，而Duanemclemore则强调其在参数化和程序化设计中都能发挥作用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43936844" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43921681" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -164,13 +173,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.fastcompany.com/91332060/soundcloud-faces-backlash-after-adding-an-ai-training-clause-in-its-user-terms" target="_blank">SoundCloud faces backlash after adding an AI training clause in its user terms</a>
+                    <a href="https://www.science.org/content/article/data-manipulations-alleged-study-paved-way-microsoft-s-quantum-chip" target="_blank">Data manipulations alleged in study that paved way for Microsoft's quantum chip</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: doctaj</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-10 03:48</span>
+                    <span>作者: EvgeniyZh</span> |
+                    <span>评分: 196</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-05-09 11:23</span>
                 </div>
 
                 <div class="summary-section">
@@ -180,25 +189,38 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SoundCloud与Bandcamp作为音乐平台的优劣比较
+                    <div class="comments-summary">主要讨论点：量子计算研究的现状、挑战及可能的数据操纵问题
 
 不同观点：
-• [danhau] 认为SoundCloud对独立音乐人没有吸引力，相比之下Bandcamp更优越。他质疑SoundCloud的目标受众是谁，暗示其可能不适合独立音乐人。
+• **对量子计算持怀疑态度**：
+   - [_heimdall] 认为量子计算目前像是烟雾弹，理论数学复杂且难以验证，怀疑许多研究存在数据操纵或设计缺陷，预测未来还会有更多类似问题曝光。
+   - [dreamcompiler] 认为量子计算在实际应用中的工程挑战太大，短期内无法看到投资回报，甚至可能一生都无法见到。
+   - [os2warpman] 指出，经过25年的发展，量子计算主要成就只是大量消耗了氦-3，远没有带来实际突破。
 
-• [musicfan123] 回应指出，SoundCloud对于新兴艺术家来说是一个很好的平台，因为它的用户基础大，容易帮助新音乐人被发现。虽然Bandcamp对销售音乐更有利，但SoundCloud在推广和传播方面更有优势。
+• **对研究数据操纵问题的失望和担忧**：
+   - [krastanov] 对数据操纵问题感到失望，尤其是在年轻科学家受到影响的情况下，认为这是对科学诚信的打击。
+   - [Panoramix] 认为虽然数据挑选和操纵值得质疑，但不一定会完全否定研究结果，可能仍有一定的科学价值，只是结论需要弱化。
+   - [sschueller] 感到一些研究人员只是在“扮演”科学家，而不是真正做科学工作，暗示可能存在学术不端行为。
 
-• [indyartist22] 补充说，SoundCloud的免费使用选项对预算有限的音乐人来说非常有价值。此外，SoundCloud提供了与其他艺术家和听众互动的社区氛围，这对新手尤其重要。
-
-• [beatmaker89] 认为两者有不同的用途，SoundCloud适合分享和推广作品，而Bandcamp更适合销售和盈利。因此，选择哪个平台应根据音乐人的具体需求和目标来定。
+• **为量子计算辩护及解释挑战**：
+   - [chermi] 强调微软的数据操纵问题不能否定整个量子计算领域，认为该领域仍在稳步进展。他详细解释了量子计算的难度、多种技术路径的探索以及在学术和工业界之间的文化冲突。
+   - [teekert] 提到早在二月份就有学者对微软的研究持怀疑态度，但同时也承认在这样复杂和高风险的领域中，出现问题并不意外。
 
 补充讨论：
-• 争议的焦点在于SoundCloud是否对独立音乐人有价值。一方认为其传播力和用户基础更重要，另一方则更看重Bandcamp在销售和盈利方面的优势。
+• **对量子计算投资和知识产权的看法**：
+   - [devwastaken] 认为现代科技的核心是知识产权，即便研究本身不成功，企业仍希望通过知识产权获利，甚至通过占有IP来阻碍他人进展。
+   
+• **讽刺与幽默**：
+   - [russianGuy83829] 和 [trentnix] 以幽默的方式评论此事，认为这可能会成为一个有趣的视频内容或者调侃称世界末日因此推迟。
 
-• 讨论中还提到，不同音乐人根据自己的职业阶段和目标，可能对这两个平台有不同的偏好。例如，新兴艺术家可能更倾向于使用SoundCloud来增加曝光率，而已有固定粉丝群体的音乐人可能更偏好Bandcamp来实现盈利。
+争议焦点：
+• 量子计算是否只是“烟雾弹”，其理论基础和实际应用前景如何。
+• 微软在量子计算研究中的数据操纵问题是否严重到影响整个领域的发展。
+• 量子计算工程挑战是否能在可预见未来被克服，或是否值得长期投资。
 
-• 用户体验和平台功能也被间接提及，如SoundCloud的互动性和免费使用选项，以及Bandcamp在音乐销售和粉丝支持方面的优势。这些因素都会影响音乐人对平台的选择。</div>
+总结：评论中对于量子计算的讨论呈现出明显的两极分化，一部分人对其前景持悲观和怀疑态度，另一部分人则为其辩护，强调其复杂性和潜在价值，同时也指出了研究中的问题和挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43943077" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43935625" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -209,41 +231,191 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://corticallabs.com/cl1.html" target="_blank">The CL1: the first code deployable biological computer</a>
+                    <a href="https://nemets.substack.com/p/germania" target="_blank">Germania: The Origins and Migrations of the Germanic Peoples</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sprawl_</span> |
-                    <span>评分: 43</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-05-06 20:40</span>
+                    <span>作者: alserio</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-05-10 06:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>CL1是全球首款可部署代码的生物计算机。它结合了真实神经元和硅芯片，神经元在营养液中生长，通过芯片与模拟环境互动，实现自我编程和无限灵活性。CL1运行生物智能操作系统（biOS），允许用户直接部署代码至真实神经元，解决复杂问题。该设备为高性能闭环系统，自带生命支持，可独立运行6个月，支持即插即用，兼容多种设备。CL1提供无动物测试的伦理替代方案，助力医学和科研，通过低能耗实现可持续研究，并支持深入学习与脑功能研究。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕“生物计算机”产品的可行性、技术细节、伦理问题及其真实性的讨论。
+                    <div class="comments-summary">主要讨论点：对历史事件及其解读的看法
 
 不同观点：
-• **等待更多信息再讨论**：[dang]认为目前只有注册列表，没有足够信息来深入讨论，建议等到产品可用或有更多细节时再讨论。该观点得到了部分支持，认为目前的讨论较为泛泛。
-• **已有类似技术展示**：[skulk]提到YouTube上的The Thought Emporium频道展示了类似技术，如用大鼠神经元玩DOOM的实验，这表明类似的生物计算机技术已有前期研究。
-• **伦理与神经元来源问题**：[omneity]提出关于使用的神经元来源的伦理问题，并建议讨论神经元的获取和是否所有神经元都具备同等价值，甚至提议设立"神经元竞技场"来评估不同样本。
-• **产品真实性与应用场景质疑**：[andrewmcwatters]质疑该产品的实际功能展示，认为如果这是一个真正的技术突破，应该有具体的代码示例或应用展示，而不是仅靠营销手段吸引关注。[InsideOutSanta]也表达了对产品真实性的怀疑，认为可能是一个艺术项目。
-• **历史对比与技术怀疑**：[genpfault]指出类似的生物计算机技术早在20世纪80年代就有应用，质疑该产品是否真的如宣传所言是“第一个”。
+• [thomassmith65] 认为1919年后，泛日耳曼运动在德国掌权，并试图通过战争统治大部分旧世界。他讽刺地描述了该运动如何短暂统一了除少数国家外的所有日耳曼国家，并暗示对该历史情景的某种浪漫化情感。他用一种戏谑的语气，似乎是在表达对该历史事件的复杂态度，可能带有对历史叙述的批判。
+
+• [ekianjo] 对[thomassmith65]的历史叙述提出异议，特别关注人口增长和历史背景的准确性。他认为在20世纪之前，由于缺乏避孕措施和教育，高出生率伴随着高婴儿死亡率，因此对所谓的“泛日耳曼国家统一”这种大规模历史事件提出质疑。他的评论更注重历史事实和人口统计学的准确性。
+
+• [LargoLasskhyfv] 对文章及其网站表示欣赏，但没有深入讨论历史事件本身。他的评论更多是关于阅读体验，而不是对历史叙述的分析或批判。
 
 补充讨论：
-• **幽默与调侃**：[comrade1234]和[Proofread0592]以幽默方式表达了对生物计算机的期待和对其未来应用场景的调侃，比如“回家喂电脑”和“博客 hosted on human brain cells”。
-• **对计算能力的关注**：[jarbus]提到无法判断该机器的计算能力，表明了对实际性能的关注。[WorkerBee28474]则以调侃方式表达了对技术进展的惊讶，认为生物神经技术比某些游戏的发布还要早。
-• **外部资源补充**：[fuentesjr]提供了视频链接补充讨论，展示了相关技术的发展和应用场景。
+- [thomassmith65] 的评论带有明显的讽刺意味，可能是在批评某些人对历史事件的过度浪漫化或理想化。
+- [ekianjo] 则关注历史事实，尤其是人口统计学的细节，认为历史叙述应基于更准确的背景信息。
+- [LargoLasskhyfv] 的评论则表明了对文章形式的欣赏，而非内容本身的讨论。
 
 争议焦点：
-• **产品的真实性与技术细节**：部分用户质疑该生物计算机是否真的具备所宣传的功能，以及其计算能力的实际表现。
-• **伦理问题**：神经元的来源和使用在讨论中被提出，显示出对伦理问题的关注。</div>
+- 历史事件的解读与事实准确性。
+- 对历史事件的情感态度是否影响了客观的历史叙述。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43909418" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43943696" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.poker.org/latest-news/the-birth-of-ai-poker-letters-from-the-1984-wsop-a4v2W4N4X3EP/" target="_blank">The birth of AI poker? Letters from the 1984 WSOP</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: indigodaddy</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-05-05 16:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇笔记是迈克·卡罗（Mike Caro）写给亨利·博林格（Henri Bollinger）的，未注明日期。卡罗在信中感谢博林格的支持和友谊，并提到自己正在进行的项目，包括撰写书籍和开发教育材料。他强调了在扑克策略和心理学方面的研究，并表示期待与博林格进一步合作。卡罗还提到了一些个人近况和未来计划，表达了对博林格健康和成功的祝福。整体而言，这是一封简短而友好的私人信件，反映了两人之间的深厚友谊和专业合作关系。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：科罗拉多州的在线扑克监管和合法性问题
+
+不同观点：
+• [对在线扑克现状不满] LostMyLogin 表达了对科罗拉多州在线扑克环境的不满，认为当前只能在不规范的小网站上玩扑克，而且可能有很多机器人玩家，体验不佳。他怀念“黑色星期五”之前的时期，当时在线扑克更为繁荣和规范。
+
+• [对其他形式的合法赌博的质疑] LostMyLogin 提到，尽管在线扑克受到限制，人们仍然可以通过彩票、每日梦幻体育和体育博彩进行赌博，他对这种不一致的合法性状况表示困惑和不满。
+
+补充讨论：
+• [黑色星期五的影响] LostMyLogin 提到了“黑色星期五”事件，这是2011年美国政府对在线扑克网站的打击，导致许多扑克玩家失去了账户资金，在线扑克市场大幅萎缩。这一事件显然对玩家社区产生了持久的影响。
+
+• [监管不一致] 评论暗示了对不同形式的赌博监管不一致的批评，即在线扑克受到严格限制，而其他形式的赌博却合法且广泛可用。
+
+争议焦点：科罗拉多州在线扑克的不规范性和监管不一致是引发讨论的主要争议点，尤其是与其他合法赌博形式的对比。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43896835" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.templatesbypaul.com/" target="_blank">Google Doc Templates for Startups</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pkoullick92</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-05-09 20:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了Paul创建的一系列文档模板，用于提高团队协作和流程效率。包括决策文档（Decision doc）、回顾文档（Retro doc）、战略文档（Strategy doc）、项目跟踪器（Project tracker）、调查文档（Investigation doc）等，用于不同场景如决策对齐、团队改进、项目管理等。此外，还有角色与责任 clarifier、产品管理相关文档（如PRD、产品愿景文档）以及面试练习模板。Paul是一位有经验的产品领导者，曾是Keeper的CEO和创始人，文中提供了他的联系方式和LinkedIn信息。这些模板旨在帮助团队更有效地沟通和协作。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：文档模板的可用性、设计以及实际使用中的问题
+
+不同观点：
+• donohoe认为模板的内容质量较高，但设计和布局不够用户友好，使用起来不方便。他建议进行一次设计改进，以提高模板的可用性和视觉一致性。
+• yegle提出了具体的改进建议：在决策文档中增加"利益相关者"部分，以便于列出相关人员及其关注点；在调查文档中增加"已尝试的方法"部分，按时间线记录每个假设的验证过程和结果；此外，还分享了Google Docs中关于1:1会议记录的现有支持资源。
+• farceSpherule通过自身经验指出，文档记录在实际工作中往往被忽视，直到影响个人绩效和评价时才会引起重视。这暗示了在实际工作中推行文档记录的困难。
+
+补充讨论：
+• yegle的评论中提供了具体的操作建议和工具支持（如Google Docs的视频教程），这些建议可能有助于改进文档模板的实际应用效果。
+• farceSpherule的评论揭示了文档记录在实际推行中的现实挑战，即工程师往往不愿意花费时间在文档上，除非有直接的影响。
+• donohoe的评论则更多关注模板的用户体验和设计方面，强调了视觉设计和使用便利性的重要性。
+
+争议焦点：文档模板在实际使用中的可用性和推行阻力。donohoe和yegle关注的是模板本身的改进，而farceSpherule则关注实际推行中的执行力和员工的配合度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43940500" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="http://bitshifters.cc/2025/05/04/odin.html" target="_blank">Odin, a Pragmatic C Alternative with a Go Flavour</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hmac1282</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-05-09 18:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Odin是由Bill "gingerBill" Hall开发的一种通用系统编程语言，旨在作为C语言的现代替代品，强调简单性、性能和可读性，同时不牺牲对低层细节的控制。它具有数据导向设计，支持SOA（结构数组）和隐式零初始化。尽管注重这些特性，Odin还内置了动态地图和数组，这在手动管理内存的语言中较为少见。Odin注重实际解决方案，强调实用性而非理想主义，代码简洁易读。它提供了丰富的内置类型如复数、向量、矩阵和四元数，且不采用运算符重载。其语法受Jai启发，简洁直观，类似于C语言，但去除了一些复杂性。Odin的错误处理类似Go，使用多返回值，虽然提供了一些改进，但可能感觉不如其他解决方案流畅。总体而言，Odin在保持C语言简单性的同时，提升了编程体验，消除了许多内存相关问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Odin语言的定位、特点及其与其他编程语言（如C、C++、Go、Zig等）的比较
+
+不同观点：
+• Johnnyjeans认为Odin不是C语言的继承者或替代者，而是Pascal的继承和改进。他强调Odin避免了90年代面向对象编程（OO）的复杂性，同时提供了诸如类型转换、动态数组、参数化多态等实用功能。他不认为Odin是C的替代品，但作为C++程序员，他非常关注Odin。
+
+• Ossobuco对Odin持积极态度，他在一个15k行代码的项目中使用了Odin，感觉非常愉快。作为从web开发转向低级语言的开发者，他赞赏Odin提供了高层次的语言特性，同时保持了C语言的控制和性能。他唯一的不满是缺乏命名空间，但可以通过前缀解决。
+
+• Taylorallred认为Odin在简单性、便利性和速度方面非常适合游戏开发。他指出，Odin提供常见功能而不是抽象机制的设计决策是其成败的关键。例如，条件编译使用`when`子句而不是预处理器宏。
+
+• Rednafi将Odin视为C的继承者，并与Go语言进行了比较。他喜欢Odin提供的控制能力和无垃圾收集器的特性，并认为Odin比Zig或Rust更符合他的需求。
+
+• Thegeekpirate在使用Odin后，发现它取代了他长期使用的Go语言，并强烈推荐尝试。
+
+• Vandyswa提到了D语言作为C替代品的可能性，并提供了相关教程和书籍链接。
+
+• Pbohun赞赏Odin的内置库功能，使得某些程序的创建变得简单，例如使用Raylib库。
+
+• Ultrarunner关注编程语言中大小写的使用，并考虑这对开发的影响。他提到Odin中方法调用的大写方式可能影响代码的清晰度。
+
+• Throwaway81523对Odin缺乏像Go那样的轻量级线程感到失望，认为它是另一个没有吸引力的花括号语言。
+
+• Yawaramin询问Odin如何实现内存安全，特别是如何避免使用后释放（use-after-free）问题。
+
+• Gitroom认为Odin的易用性使其比其他C类语言更具吸引力，并提出小痛点可能是阻碍更多人转向Odin的原因。
+
+• Mcbrit在使用Odin和Raylib进行粒子引擎开发时，感觉非常愉快，并比较了Odin和Go的日常开发体验。
+
+• Leelou2对Odin在简单性和实用性之间的平衡表示赞赏，并询问使用过Odin和Go的开发者对两者的差异和优缺点的看法。
+
+• Throwawaymaths对Zig语言中元编程的使用频率提出疑问。
+
+• Dwedit询问Odin与Zig或Beef语言的比较。
+
+补充讨论：
+• 讨论中多次提到了Odin与Go、Zig、C和C++等语言的比较，特别是关于内存管理、抽象机制、语言复杂性和开发体验等方面。
+• 内存安全是讨论的一个焦点，特别是如何在没有垃圾收集器的情况下实现内存安全。
+• 不同开发者对Odin的设计决策（如缺乏命名空间、条件编译方式等）有不同看法，有些认为是优点，有些则认为是缺点。
+• Odin在游戏开发中的应用和其“电池 included”的特点被多次提及，并被视为其优势之一。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43939520" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -307,46 +479,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.science.org/content/article/why-536-was-worst-year-be-alive" target="_blank">Why 536 was 'the worst year to be alive' (2018)</a>
+                    <a href="https://www.darknavy.org/blog/a_first_glimpse_of_the_starlink_user_ternimal/" target="_blank">Starlink User Terminal Teardown</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Jimmc414</span> |
-                    <span>评分: 104</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-05-09 19:07</span>
+                    <span>作者: walterbell</span> |
+                    <span>评分: 264</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-05-09 03:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文简要概述了DARKNAVY对Starlink用户终端的初步调查。Starlink是SpaceX提供的低地球轨道卫星互联网服务，其用户终端包括路由器和天线。文章重点分析了天线部分（UTA），特别是Starlink标准驱动版（Rev3）的硬件构成。通过拆解，发现UTA的PCB主要由STMicroelectronics的RF前端芯片和定制SoC（Cortex-A53）组成，硬件资料保密。尽管SpaceX通过固件更新提升了安全性，但仍有被攻击的风险。通过提取和分析eMMC芯片中的固件，发现大部分内容未加密，揭示了启动链、内核及文件系统部分内容。分析显示，软件架构类似DPDK，通过用户空间程序处理网络包。此外，系统启动时根据硬件加载相应逻辑。DARKNAVY还构建了QEMU模拟环境进行分析，并发现UTA包含一个安全芯片STSAFE-A110，提供身份验证和加密功能。文章最后提到系统中可能存在一些“彩蛋”。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：536年是否是人类历史上最糟糕的年份
+                    <div class="comments-summary">主要讨论点：SpaceX Starlink用户终端的技术细节及其安全性、逆向工程和网络处理性能等技术问题
 
 不同观点：
-• [支持536年是最糟糕年份的观点] 一些用户认同536年是最糟糕的年份，提到当年火山爆发导致的气候变化、饥荒、瘟疫以及东罗马帝国的衰落。例如，用户clipsy简单地表示536年是最糟糕的年份。
-
-• [质疑536年是最糟糕年份的观点] 用户senderista指出文章中将东罗马帝国的衰落与536年的事件直接联系起来是错误的，因为东罗马帝国在接下来的近千年里仍然存在。这表明将536年称为“最糟糕”可能过于简单化。
-
-• [更早的基因瓶颈事件] 用户ljlolel提到，在几十万年前发生过一次基因瓶颈事件，当时人类祖先的数量减少到几百人，这可能比536年更糟糕。这引入了一个更早的历史事件作为“最糟糕”年份的竞争者。
-
-• [对非西方历史的影响的忽视] 用户DyslexicAtheist提出，讨论中主要关注西方历史，而忽略了非西方历史。他认为，比较现代社会与536年社会对灾难的感知可能很有趣，但也强调了非西方历史的缺失。
-
-• [对历史记录的质疑] 用户ashoeafoot质疑关于536年火山灰从冰岛蔓延到中国的说法，并询问当时是否有当地文化的记录。这反映了对历史记录可信度的关注。
+• [jwrallie] 对系统初始化时自动写入41个SSH公钥表示担忧，认为这样可能会导致过多的用户拥有root权限，质疑安全性。
+• [account-5] 认为逆向工程非常困难，尤其对于新设备或昂贵的设备，表达了对如何进入这一技术领域的困惑。
+• [purpleidea] 建议公布41个公钥，以便分析哪些开发者在使用这些密钥，隐含对透明度和安全性的关注。
+• [londons_explore] 对所有数据包在用户空间处理表示惊讶，指出在处理高吞吐量时（如1Gbps流量）所面临的性能挑战，强调需要高效的工程技术。
+• [alextousss] 对如何保护固件免于逆向工程表示兴趣，询问是否有相关技术文档或介绍，关注产品的安全性。
 
 补充讨论：
-• [历史文献的稀缺性] 用户geye1234提到，在536年后的200年里，英国只有四份文献记录，显示出当时历史记录的稀缺性。
-
-• [现代与历史的对比] 用户zombiwoof幽默地表示，与即将到来的2025年相比，536年可能还算好过，这提供了一种现代视角与历史事件的对比。
+• [latchkey] 提到以往关于SpaceX Starlink用户终端拆解的讨论，提供了一个历史讨论链接作为参考。
+• [walterbell] 提供了一个与SpaceX Starlink相关的技术博客链接，可能包含更多技术细节。
+• [nine_k] 指出原文标题中的错别字，属于编辑建议。
+• [numpad0] 猜测Starlink的代码是否与其火箭代码共享基础，表达了对技术统一性的兴趣。
+• [breppp] 关注如何在仿真环境中处理与外部设备（如GPS）连接的固件，寻求相关资源和解决方案。
 
 争议焦点：
-• 536年是否可以被定义为“最糟糕的年份”存在争议，主要围绕东罗马帝国的衰落时间线以及是否忽视了其他历史事件和非西方历史的影响。
-
-• 历史记录的可信度，尤其是关于跨大陆火山灰传播的记载，也引发了质疑。</div>
+• 系统初始化时写入41个SSH公钥是否会导致安全风险，即过多用户拥有root权限的问题。
+• 如何在保证性能的前提下处理高吞吐量的网络数据包，尤其是在用户空间中处理的挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43940033" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43933452" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -357,171 +526,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.gojiberries.io/cell-mates-extracting-useful-information-from-tables-for-llms/" target="_blank">Cell Mates: Extracting Useful Information from Tables for LLMs</a>
+                    <a href="https://publicdomainreview.org/essay/bright-as-a-feather/" target="_blank">As Bright as a Feather: Ostriches, Home Dyeing, and the Global Plume Trade</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: goji_berries</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-06 20:30</span>
+                    <span>作者: crescit_eundo</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-07 20:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了如何利用大型机器学习模型从表格数据中提取有用信息。尽管大型语言模型（LLMs）在处理文字和图像信息方面表现出色，但在处理表格数据（如调查数据）时仍存在不足，主要挑战在于如何有效表示这些数据。简单将表格每一行视为一句话的表示方法往往会遗漏关键信息，甚至产生负面效果。文章提出了一种机械提取技术，包含三个步骤：首先，理解数据的收集和结构；其次，确定可以提出的问题类型；最后，生成单变量、双变量和多变量的统计摘要及可视化图表。这种方法可用于增强检索增强生成（RAGs）系统和补充可能存在偏差的"世界数据"，并建议从哈佛Dataverse等数据存储库开始实施。</p>
+                    <p>本文探讨了19世纪染色鸵鸟羽毛在时尚界的流行，尤其是在大西洋两岸的帽子和围巾上的应用。作者Whitney Rakich通过Alexander Paul的《实用鸵鸟羽毛染色指南》（1888年）一书，分析了鸵鸟产业及全球羽毛贸易。书中包含48个染色样本和详细染色说明，展示了如柠檬黄、电光蓝、红宝石等多种颜色。鸵鸟羽毛因其奢华价值被广泛追捧，不仅用于时尚，还用于丧葬艺术等领域。随着全球对羽毛需求增加，20世纪初成为鸟类生存的艰难时期，鸵鸟等鸟类的羽毛被大量捕猎用于商业目的。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同公司（Google、Microsoft）在处理文档和表格工具方面的相似性比较
-
-不同观点：
-• **观点一**：有人认为，这与Google通过Sheets和Microsoft通过Excel所做的事情类似。这表明可能存在一种趋势，即不同公司都在提供基于云的文档处理工具，这些工具允许用户在线协作和编辑文档。（例子：Google Sheets、Microsoft Excel）
-• **观点二**：另一种观点可能会指出，尽管表面上相似，但不同公司的产品在功能、集成性和用户体验上可能存在显著差异。例如，Google Sheets更注重实时协作和云端存储，而Microsoft Excel可能在复杂数据处理和高级功能上更有优势。
-
-补充讨论：
-• **技术实现差异**：Google的产品通常完全基于云，而Microsoft的产品可能同时提供本地和云端版本，这种差异可能影响用户选择。
-• **用户习惯**：一些用户可能更习惯于使用Microsoft Excel，尤其是那些需要高级功能的专业用户，而Google Sheets可能更受喜欢轻量级和实时协作的用户欢迎。
-• **争议焦点**：争议可能集中在哪种工具更适合现代用户的需求，尤其是在协作和功能需求的权衡上。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43909328" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.kleine-koenig.org/ukl/the-linux-kernels-pgp-web-of-trust.html" target="_blank">The Linux Kernel's PGP Web of Trust</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: JNRowe</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-09 10:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Linux内核开发过程中使用PGP签名，主线维护者需在提交给Linus Torvalds的拉取请求中使用签名标签。由于密钥服务器概念存在问题，Konstantin Ryabitsev通过一个Git仓库维护相关密钥，目前有602个有效密钥。要加入该仓库，密钥需在5步信任路径内与Linus的密钥相连。当前有2个密钥因信任路径丢失受影响。GnuPG 2.4.x开始拒绝使用SHA-1算法的第三方签名，尽管这暂时不影响内核PGP密钥库，因为信任路径检查不依赖GnuPG的签名信任。然而，若全部SHA-1签名被弃用，将有大量密钥失去信任路径，包括多位知名内核开发者的密钥。为改善此问题，将在Embedded Recipes 2025会议期间举办密钥签名活动，参与者需在2025年5月12日前提交公钥。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源生态系统中的代码签名和安全机制，尤其是PGP和PKI的比较与应用
-
-不同观点：
-• seethishat提到BitKeeper和Linux内核源代码管理的历史，以及由此引发的git和签名提交的诞生。这表明早期的代码管理问题推动了现代工具的发展，并通过历史事件展示了当前工具的演变。
-
-• notepad0x90强烈支持在FOSS（自由和开源软件）生态系统中使用PKI（公钥基础设施），而不是PGP（Pretty Good Privacy）。他指出PKI有更好的工具支持和用户体验，并且在商业系统如Windows中已经证明了其有效性。他认为PGP使用起来繁琐且容易出错，特别是在密钥管理和实际威胁应对方面不如PKI。他建议开源项目采用PKI来提高软件供应链的安全性和信任度。
-
-• jmclnx讨论了GPG中SHA1的使用问题以及git中使用SHA1带来的复杂性，并提到他已经将自己的git提交签名改为使用ssh-ed25519。这反映了对旧有加密算法向更新、更安全算法过渡的关注和期待。
-
-• NooneAtAll3则关注于语法问题，指出了评论中一个关于时间表述的语法错误，虽然这与主要讨论的技术问题关系不大，但也体现出对细节的关注。
-
-补充讨论：
-• PGP和PKI的比较是主要争议点。notepad0x90认为PKI更适合当前的软件环境，而PGP过于依赖用户的手动操作和正确性，存在安全风险。
-• 另一个值得注意的讨论点是关于加密算法的过渡，特别是SHA1的逐步淘汰及其对现有系统的影响。
-• 还提到了开源软件供应链的安全问题，以及通过采用更实际的方法如PKI来增强信任的建议。
-
-争议焦点：PGP与PKI的优劣对比，特别是在用户体验、安全性和实际应用中的表现。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43935356" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.audiobookshelf.org/" target="_blank">Audiobookshelf: Self-hosted audiobook and podcast server</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: fjk</span> |
-                    <span>评分: 176</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-05-09 02:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Audiobookshelf 是一个自托管的音频书和播客服务器，允许用户在自己的服务器上管理和播放音频书籍及播客。文档部分提供了详细的设置和使用指南，帮助用户快速上手。常见问题解答则解决了用户在使用过程中可能遇到的各种问题。此外，用户可以通过多种方式支持该项目的发展。展示区则展示了其他用户的使用案例和成果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：音频书籍和播客管理的自托管解决方案，以及相关应用程序的功能和用户体验
-
-不同观点：
-• Krick认为当前的Android应用程序在控制功能上不足，特别是在回退按钮和移动特定功能（如断开耳机时停止播放、锁屏小工具、暂停后自动回退等）方面。他还强调了下载音频书籍以离线使用的需求。
-• TheAceOfHearts关注元数据清理工具的改进，建议通过规则定义和增量工具来提升大 collection 的管理效率，并提出通过AI工具自动化标签处理的可能性。
-• Walthamstow因Android应用程序无法排队播客而停止使用，强调在特定场景下自动播放下一集的必要性。
-• Apitman正在开发一个音频书籍应用程序，并就是否集成播客功能征求意见。
-• Azalemeth推荐AntennaPod作为优秀的播客管理软件，并指出其下载和元数据集成的优点。
-• P0w3n3d寻找类似Spotify的自托管解决方案，但对Owncloud不感兴趣。
-• Arn_Thor使用Plex及其音频书籍插件，并提到Prologue在IOS上的配合使用。
-• Andnand作为自托管新手，询问如何在arm架构（Raspberry Pi）上安装软件包。
-• Rft使用该软件下载和收听无视频组件的播客，并提到Music Assistant的集成。
-• Midasz认为该软件是自托管世界的支柱之一，并与其他自托管服务进行比较。
-• Kyriakos推荐PinePods用于播客管理，指出其跨平台支持和功能上的不足。
-• InsideOutSanta寻找无DRM音频书籍的来源，以替代Audible。
-• Heisenzombie质疑在自托管音频书籍服务器上复制播客的用例。
-• Apitman询问关于API开发的经验。
-• Gitroom希望有一个统一的解决方案来处理所有音频书籍和播客的离线同步。
-
-补充讨论：
-• 用户对播客和音频书籍管理的需求存在分歧，部分用户希望集成播客功能，而另一些用户则关注音频书籍的专用功能。
-• 用户对自托管解决方案的元数据管理和离线功能有较高需求，并提出了自动化和AI工具的潜在解决方案。
-• 争议的焦点在于音频书籍和播客功能是否应集成在同一应用程序中，以及现有应用程序在不同平台上的功能实现差异。
-• 用户对自托管解决方案的安全性和可控性表现出较高的关注，特别是与商业服务（如Audible和Spotify）的对比。
-• 对API开发的讨论可能吸引开发者社区的兴趣，并推动应用程序功能的扩展和改进。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933248" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.usenix.org/system/files/conference/usenixsecurity25/sec25cycle1-prepub-595-linker.pdf" target="_blank">A Formal Analysis of Apple's iMessage PQ3 Protocol [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: luu</span> |
-                    <span>评分: 143</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-09 02:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：iMessage使用PQ3加密协议的安全性和隐私性
-
-不同观点：
-• [contact9879] 认为该评论讨论的主题与之前的一篇论文有关，该论文在PQ3发布时首次出现，并提供了一个链接指向ePrint上的相关论文。这表明讨论的技术具有一定的学术背景，关注的是PQ3协议的技术细节和更新。
-
-• [modeless] 提出质疑，认为尽管iMessage采用了高安全性的加密协议，但Apple默认会将用户的加密密钥备份到iCloud，这实际上削弱了安全性。他还提到这种做法一方面是为了帮助用户恢复数据，另一方面也可能是为了响应执法部门的要求提供明文数据。这里表达了对隐私泄露的担忧，尤其是涉及到执法机构获取信息的问题。
-
-补充讨论：
-• [modeless] 通过引用Apple官方支持文档来支持其观点，强调了iCloud备份可能带来的隐私风险。
-• 争议的焦点在于，高安全性的加密协议与Apple的iCloud备份策略之间的矛盾。一方关注协议的技术进步，另一方则担心实际应用中的隐私泄露问题。
-• 还提到了执法机构获取明文信息的可能性，这是隐私讨论中的一个敏感话题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43933412" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43920421" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
