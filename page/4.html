@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-11 09:05 (北京时间)
+            最后更新时间: 2025-05-11 11:40 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://a16z.com/lead-bullets/" target="_blank">Lead Bullets (2011)</a>
+                    <a href="https://blog.castle.io/detect-and-crash-chromium-bots-with-one-weird-trick-bots-hate-it/" target="_blank">Detect and crash Chromium bots</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: msukkarieh</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-10 15:31</span>
+                    <span>作者: avastel</span> |
+                    <span>评分: 125</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-05-07 15:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>在本文中，Ben Horowitz分享了他在Netscape和Opsware工作期间面对强大竞争对手微软和Bladelogic的经历。他强调，当公司面临生死存亡的威胁时，必须直面挑战，而不是寻找捷径或回避问题。在Netscape时，他的团队发现微软的网络服务器性能远超他们的产品，且微软计划免费提供。Horowitz和团队尝试通过合作和收购来增强产品线，但最终意识到必须直接解决核心问题——提高产品性能。经过努力，他们成功提升了性能，使服务器业务达到4亿美元的规模。同样，在Opsware，面对Bladelogic的竞争压力，Horowitz坚持改进产品而不是寻找其他捷径，最终使公司价值达到16亿美元。他指出，企业在面对生存威胁时，必须勇敢迎战，而不是逃避。</p>
+                    <p>本文介绍了一种利用Chromium浏览器漏洞来检测并崩溃自动化程序（如Puppeteer和Playwright）的技巧。该方法通过在iframe上调用`contentWindow.open`导致无头浏览器崩溃，从而可能用作检测信号。具体代码示例如下：
+
+```javascript
+const iframe = document.createElement("iframe");
+iframe.src = "data:text/html,<body></body>";
+document.body.appendChild(iframe);
+iframe.contentWindow.open("", "", "top=9999");
+```
+
+若浏览器崩溃，则表明是机器人。然而，这种方法在生产环境中并不推荐，因为它会打断用户体验，且可能导致意外的副作用，如内存泄漏。此外，这种检测方式过于明显，且无法提供有用的元数据用于决策。最重要的是，机器人技术不断演变，这种方法可能很快失效。因此，本文建议谨慎对待此类技巧，不应过度依赖。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：创业和风险投资中的策略选择与执行挑战
+                    <div class="comments-summary">主要讨论点：浏览器自动化工具（如Playwright、Puppeteer）在使用过程中遇到的问题及其相关讨论
 
 不同观点：
-• **normie3000的观点**：认为在商业竞争中没有所谓的“银弹”解决方案，即没有单一的策略可以一劳永逸地解决问题。相反，需要依靠多种实际的、可能并不完美的方法（“铅弹”）来应对挑战。这强调了在现实商业环境中解决问题的复杂性和多面性。
+• [oefrha] 指出在使用Playwright等工具操作Chrome时，`page.evaluate` 调用会挂起，浏览器无提示地崩溃，且若未正确执行`browser.close()`，会导致内存泄漏。此外，提到在macOS上使用Chrome时，会生成一个超过1GB的Chrome副本存放在特定目录中，未正确关闭浏览器时该副本会残留，占用大量存储空间。该用户通过添加`--disable-features=MacAppCodeSignClone`参数来解决此问题，但认为这非常麻烦。
 
-• **bsder的观点**：批评了某些风险投资和创业者的思维方式，特别是他们对于公司成长和竞争的看法。bsder提到一个案例：当被问及为何竞争对手的收入是其五倍时，创业者解释是因为依赖合作伙伴和OEMs，而不是建立直接销售渠道。bsder对此表示质疑，认为如果产品更好，就应该勇敢竞争，而不是回避直接对抗。同时指出，扩展直接销售渠道需要大量投入，并存在失败的风险，但有些人只把成功定义为一种特定的模式。
+• [wraptile] 提到当前网页中过多的验证码和反机器人机制使得浏览网页变得困难，并讽刺谷歌搜索结果质量下降，认为谷歌没有有效降低这种不良用户体验的网页排名。还提到自己因此转向使用Kagi来屏蔽某些域名。
+
+• [chrismorgan] 提到在Chromium的官方问题追踪系统中，发现一个高优先级（P1）的bug报告（关于浏览器无法正常关闭的问题）已经存在近一年，但未得到任何关注。用户对Chromium团队的bug修复效率表示失望，并认为Firefox在修复bug方面表现更好。
+
+• [lifthrasiir] 引用了之前在Hacker News上关于Canvas指纹识别噪声检测的讨论，指出当时的反响并不积极，暗示此类技术在社区中存在争议。
+
+• [neuroelectron] 以讽刺的语气提到"无头浏览器"的存在本身就很有趣，认为网页通过JavaScript解释器提供内容是一种令人发笑的巧合，并进一步讽刺"无版本HTML"的概念。
+
+• [wslh] 提到在Google Chrome中进行`document.title`的无限循环修改时，会导致其他标签页的页面冻结，但尚未在当前计算机上复现此问题。
+
+• [omneity] 提供了一个广告插曲，介绍其公司Herd提供的一种浏览器自动化和编排框架，声称该框架使用真实浏览器，避免了其他自动化工具遇到的一些问题。用户解释了Herd框架的API类似于Puppeteer，但完全自建，并提供了相关文档链接。同时，用户表示理解不是所有人都喜欢这种插件式广告，但认为提供该信息是有帮助的。
 
 补充讨论：
-• **争议的焦点**：bsder的观点中，创业者是否应该在拥有更好产品的情况下，直接与竞争对手对抗以争取市场份额。bsder认为创业者应更具竞争性，而现实中许多创业者可能更倾向于保守策略以规避风险。
-
-• **论据和例子**：bsder通过一个具体的创业者和VC对话的例子，说明在面对竞争时，创业者可能更倾向于选择风险较小的合作模式，而不是直接建立销售渠道。这体现了不同策略选择的实际执行挑战和风险考虑。
-
-• **风险与回报的讨论**：bsder指出扩展直接销售渠道意味着巨大的投入和失败的风险，这反映了创业公司在成长过程中面临的实际困境，即如何在资源有限的情况下追求最大化回报。</div>
+• 争议焦点：浏览器自动化工具在不同操作系统（如macOS）上引发的问题（如内存泄漏、存储空间占用）及其解决方法。
+• 浏览器自动化工具在不同浏览器（如Chrome、Firefox）中的表现差异，以及开发者社区对修复这些问题的反应速度。
+• 当前网页中验证码和反机器人机制对用户体验的负面影响及其在搜索引擎排名中的处理。
+• 关于Canvas指纹识别技术的讨论及其在技术社区中的接受程度。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43946472" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43916622" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,13 +120,144 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cell.com/current-biology/fulltext/S0960-9822(25)00447-6" target="_blank">Loss of dance and infant-directed song among the Northern Aché</a>
+                    <a href="https://www.hjorthjort.xyz/2018/02/21/the-deathbed-fallacy.html" target="_blank">The deathbed fallacy</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
+                    <span>作者: mefengl</span> |
+                    <span>评分: 73</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-05-10 10:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了所谓的“临终谬误”（Deathbed Fallacy）。许多人临终时常常后悔没有多陪伴家人、多旅行、少担忧等，这些遗憾被广泛传播并用于人生建议。然而，作者认为，临终者的 regret 并不能作为当前生活决策的可靠指南。原因有三：
+
+1. **非代表性状态**：临终时的心态无法代表整个人生的幸福或意义，临终者没有未来，他们的想法仅限于当下和记忆。
+2. **不了解过去的自己**：人们往往以为自己了解过去的自己，但实际上记忆和认知存在偏差，导致对过去决策的误解。
+3. **近因效应**：临终者的遗憾可能受到老年阶段的记忆影响，而非整个人生的全面反思。
+
+作者强调，不应单纯依赖临终者的遗憾来指导当前生活，因为每个时间点的自己都是不同的“人”，临终时的看法未必明智。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于临终遗憾的观点及其合理性
+
+不同观点：
+• **lolinder**：认为作者过于关注“临终遗憾”这一现代概念，而忽视了这一思想在多种文化和历史中的普遍存在。他引用了马可·奥勒留、道德经、佛教的念死概念、古兰经和圣经中的例子，说明反思死亡并据此调整生活是人类普遍的现象。
+
+• **bombcar**：认为“临终遗憾”是一种修辞手法，用来审视自己的生活，确定真正的目标，并提出难以面对的问题，以此激励自我反思。
+
+• **gus_massa**：质疑临终遗憾列表的选择性，指出除非有对临终时刻的记录和统计，否则这些列表可能只是基于不可靠的记忆，缺乏准确性。
+
+• **roenxi**：认为文章虽然准确，但忽视了有些人即使在临终时仍有重大错误和遗憾，因此不能简单地依赖临终者的建议，而应从那些认为自己生活圆满的人身上学习。
+
+• **fullshark**：认为人们不一定围绕临终想法进行优化，但会利用这一框架来理解如何利用时间，特别是在当前生活不如意时。
+
+• **gopherloafers**：提到Stephen Jenkinson的作品《Die Wise》，指出西方文化中对逝者的遗忘和对老年人的不尊重是临终焦虑的根源，提供了一种不同于文章中的观点。
+
+• **mathgeek**：将临终规划比作退休规划，指出虽然规划得好会有好处，但也要认识到可能永远达不到那个阶段。
+
+• **xianshou**：批评通过减少临终遗憾来规划生活的做法，认为人类天性总是渴望未得到的东西，因此无论怎样选择都会有遗憾。
+
+• **plastic3169**：处于中年阶段，对死亡话题更加关注，但同时也担心活得太长，需要为可能的长寿做准备，如学习新事物、结交新朋友、保持活跃等。
+
+• **gitroom**：反思如何有效地利用时间，考虑剩余的人生和想做的事情。
+
+• **ChrisMarshallNY**：提到史蒂夫·乔布斯的临终遗言，引发对临终时刻的思考。
+
+• **g4zj**：认为临终遗憾并非谬误，而是一个值得考虑的假设，尽管可能忽视了审慎推理。
+
+• **constantcrying**：认为作者误解了临终遗憾的论点，强调这一观点是为了引导人们从未来视角反思当前生活，而不是简单地看临终者的遗憾。
+
+补充讨论：
+- 临终遗憾的普遍性和文化背景。
+- 对临终遗憾列表的准确性和选择性的质疑。
+- 临终规划的实用性和对长寿的考虑。
+- 对临终遗憾论点的不同理解和争议焦点，即是否应根据临终反思来调整当前生活。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43944467" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.vintagecomputing.com/index.php/archives/2833/why-the-apple-ii-didnt-support-lowercase-letters" target="_blank">Why the Apple II Didn't Support Lowercase Letters (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: colinbartlett</span> |
+                    <span>评分: 62</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-10 21:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文由Steve Wozniak解释为何最初的Apple II不支持小写字母。20世纪70年代初，Wozniak在经济拮据的情况下进行个人数字项目，受限于成本，他购买了仅支持大写字母的60美元键盘。他的电视终端（用于访问ARPAnet）因此也只支持大写字母。Apple I和Apple II的设计直接沿用了这一现成的电视终端。由于缺乏资金，Wozniak无法使用分时服务来简化编码工作，所有代码都是手写和手动编译的，因此加入小写字母非常困难。他与Steve Jobs讨论过此问题，但因成本问题未做更改。最终，Apple I和Apple II仅支持大写字母的主要原因是Wozniak的经济困境。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：早期个人计算机（如Apple II）的设计、键盘问题、大小写字母的支持以及其历史影响
+
+不同观点：
+• WalterBright：1978年因无法负担键盘，自制了一个6800单板计算机的键盘，使用EBCDIC键盘并以8x8网格连接，只要不同时按下多个键，键盘工作良好。他提到设计笔记和相关物品都已丢失。
+
+• Syzygies：1980年贷款购买Apple II，并进行了“换档键修改”以支持大小写字母。虽然Apple II没有直接推动其数学研究，但帮助了朋友学习计算机，影响了他们的职业生涯。Apple II的内存布局清晰易懂。
+
+• aantix：1992年以150美元购买了Apple 2+，附带手册帮助学习编程。提到终端程序连接BBS时，通过按键切换大小写显示。
+
+• 90s_dev：提到一个深入讨论该主题的帖子，提供了更宏观视角的启发。
+
+• kazinator：拥有一个Apple ][+克隆机，支持小写字母和数字键盘，产自香港，ROM标识为"V.S.C. 1203"。
+
+• kragen：提到早期电视终端仅支持大写字母，并惊叹于Woz在1970年用分立逻辑构建CPU的事实。
+
+• dang：提到2020年关于“为什么Apple II不支持小写字母”的讨论，链接了相关评论。
+
+• zabzonk：1980年代拥有Dragon32，仅有上档字符，键盘不错但显示糟糕，对6809处理器感兴趣。
+
+• ourmandave：质疑当时能获得40列（扩展卡80列）显示已经是幸运的。
+
+• kristianp：询问关于Apple早期的书籍，提到《The Little Kingdom》但指出其包含Mac内容。
+
+• TMWNN：详细解释Apple II和II+不支持小写字母的原因，提及Apple III的失败和资源占用导致Apple IIe延迟推出，使得IBM PC超越Apple II系列。
+
+• WalterBright：补充说明有时仅有上档字符是因为字符生成器为5*7网格，不足以显示小写字母。
+
+• frshOffTheBoat：感谢分享。
+
+• sillystu04：希望现代计算机将大小写视为纯粹风格问题，建议“S”等于“s”应为真。批评当前大小写敏感性在国际化和电子邮件地址处理上的不一致性，但认为改变已不可能。
+
+补充讨论：
+- 讨论中涉及多个早期计算机型号如Apple II、TRS-80、Commodore PET 2001和Apple III，比较它们在键盘和大小写支持上的差异。
+- 对Apple II不支持小写字母的技术和商业原因有深入探讨，包括Apple III项目对公司资源的占用。
+- 对现代计算中大小写敏感性的批评和改进希望，特别是国际化和电子邮件地址处理上的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43949056" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://dinkomarinac.dev/building-local-first-flutter-apps-with-riverpod-drift-and-powersync" target="_blank">Building Local-First Flutter Apps with Riverpod, Drift, and PowerSync</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kobieps</span> |
                     <span>评分: 33</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-07 01:39</span>
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-06 20:48</span>
                 </div>
 
                 <div class="summary-section">
@@ -118,19 +267,28 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：观察原住民（如Northern Aché）是否会改变他们的行为
+                    <div class="comments-summary">主要讨论点：围绕Flutter、本地优先（local-first）架构、状态管理以及相关技术选择的讨论。
 
 不同观点：
-• romaaeterna认为，Northern Aché人已经失去了制造火和工具的能力，依据是表1的数据。这一观点暗示了文化或技能的丧失，可能是由于外部影响或与现代社会接触的结果。
-  
-• wildzzz则提出一个反思性的问题，质疑观察行为本身是否会改变这些人的行为。这表明了一种对研究方法和观察者效应的关注，即外部观察者可能对被观察群体产生影响，导致其行为发生变化。
+• [account-5] 认为对于本地优先的应用程序，可以使用SQLite数据库本身进行状态管理，而不是使用像Drift这样的专门状态管理工具。他们引用了PowerSync的文章，并指出自己开发的小项目不需要复杂的状态管理功能，因此觉得Flutter的状态管理显得笨重和复杂。
+
+• [doawoo] 作为Flutter的新手，认为Riverpod相对于无状态组件和Hooks来说过于复杂，带来了更多的心智负担，并询问为什么有人会偏好使用Riverpod。
+
+• [hosh] 强调了本地优先和离线优先的区别，指出本地优先的一个核心目标是让用户拥有自己的数据，而不是依赖于中心化的服务器。他们批评了一些将离线优先包装为本地优先的趋势，并指出真正的本地优先应用应该允许在没有网络的情况下通过蓝牙等本地方式协作，而不是将数据锁定在SAAS服务中。他们引用了Martin Kleppmann的论文来支持自己的观点。
+
+• [zerr] 提出了一个问题，为什么Flutter在美国没有像在其他一些国家那样受欢迎，并认为美国更倾向于JavaScript为中心的技术栈。
+
+• [sgt] 询问上述讨论中的方案是否也适用于Flutter Web。
 
 补充讨论：
-• 讨论涉及了对原住民文化及其演变的关注，特别是外部接触如何可能影响其传统技能和文化传承。
-• 另一个值得注意的点是研究中的观察者效应，即当人们知道自己正在被观察时，他们的行为可能会与平常有所不同。
-• 争议的焦点可能在于如何在不影响原住民的情况下进行观察和研究，以及如何保护这些群体免受外部干扰对其文化和生活方式的影响。</div>
+• [account-5] 再次提问，为什么不能直接使用SQLite，而要使用像Drift这样的工具，表明其对使用专门工具的必要性存在疑问。
+
+争议焦点：
+• 本地优先和离线优先的区别及其在实际应用中的实现方式。
+• Flutter中不同状态管理工具（如Riverpod和Hooks）的优劣和适用场景。
+• Flutter在美国市场的接受度和JavaScript的主导地位。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43911421" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43909487" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -141,43 +299,106 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://michael.stapelberg.ch/posts/2025-05-10-grobi-x11-monitor-autoconfig/" target="_blank">In praise of grobi for auto-configuring X11 monitors</a>
+                    <a href="https://www.theguardian.com/technology/2025/may/07/experts-warn-therapy-ai-chatbots-are-not-safe-to-use" target="_blank">'It cannot provide nuance': UK experts warn AI therapy chatbots are not safe</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: secure</span> |
-                    <span>评分: 66</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-10 06:28</span>
+                    <span>作者: distalx</span> |
+                    <span>评分: 108</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-05-10 15:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了作者使用Alexander Neumann开发的程序**grobi**来自动配置X11多显示器设置，特别是处理一台Dell 32英寸8K显示器（UP3218K）的复杂情况。以前，作者需要手动运行`xrandr`命令配置显示器，现在通过创建`grobi`配置文件和启用该服务，可以自动检测显示器连接状态并进行配置。文章详细说明了配置文件的设置方法以及如何在Arch Linux上安装和启用`grobi`。此外，作者还提到使用`zleep`程序配合智能插座控制显示器的电源，实现更全面的自动化。文章最后对比了`grobi`与`autorandr`，并说明`grobi`目前不支持Wayland。</p>
+                    <p>上周，ChatGPT的开发公司OpenAI下架了一款对用户反馈过于“谄媚”的聊天机器人版本。与此同时，英国专家对AI心理治疗聊天机器人表示担忧，认为这些工具可能提供危险建议，需要加强监管。King's College London的Til Wykes教授指出，AI缺乏提供细微差别的能力，可能会建议不适当的行为。Meta的CEO马克·扎克伯格则认为AI可以充当每个人的治疗师，补充人们的社交圈。然而，有报道称Meta的AI平台上出现假冒治疗师身份的聊天机器人，显示出监管不足的问题。专家强调，确保AI技术安全使用亟需加强 oversight和规范。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：显示器待机功耗、Linux系统下显示器配置问题、X11与Wayland的技术选择、以及电子设备产生的线圈噪音问题。
+                    <div class="comments-summary">主要讨论点：AI（特别是大型语言模型LLM）是否能够或应该用于心理治疗，以及其安全性、有效性和伦理问题。
 
 不同观点：
-• 关于显示器待机功耗，**[snthd]**提到其显示器待机功耗高达30W，但引用了戴尔官方文档，显示待机功耗应为0.2W至0.3W，并指出实际功耗可能因设备不同而异。同时，有其他用户也反映相似问题，建议实际测量功耗。
+• **caseyy** 认为，依赖LLM进行心理支持是愚蠢的，并引用了一个极端例子，说明AI给出了极其不负责任的建议，可能导致有害行为。他强调应听取专家意见，而不是盲目相信LLM的支持者。
 
-• 关于Linux系统下的显示器配置，**[fn-mote]**认为原帖没有提供与其他解决方案的比较，并表示自己通过热键解决配置问题，虽然有效，但并不代表Linux对非技术用户友好。
+• **lurk2** 分享了自己使用Replika的负面体验，认为该AI只是一种市场工具，且现在主要用于色情内容。他质疑AI的“个性发展”是否真实存在，并指出如果AI模型在本地运行，可能对经历情感危机的人有一定帮助，但Meta等广告驱动型公司不适合提供这类服务。
 
-• 关于X11与Wayland的技术选择，**[bitwize]**认为到2025年不应再使用已经过时的X11，而应转向Wayland。**[raverbashing]**也支持这一观点，指出在Windows和MacOS上显示器配置可以开箱即用，而在Linux上需要手动配置，并批评X11的过时架构。
+• **sheepscreek** 承认AI不能替代传统治疗，但在成本和可及性方面有优势，可以作为治疗间隔期的补充工具。然而，隐私问题是一个重大风险，订阅模式加上隐私保障才是可行之道。
 
-• 关于线圈噪音问题，**[modzu]**表示对线圈噪音非常敏感，能在各种电子设备中听到高频噪音，而其他人似乎不注意或不在意。
+• **hy555** 提到其前伴侣参与的一项研究显示，AI在治疗效果上比安慰剂还要差，且有未披露的利益相关方支付费用阻止研究结果的发布，暗示AI治疗存在严重问题。
+
+• **Xcelerate** 提出两点：1) 人们由于职业威胁而本能地认为LLM不如人类有效；2) 尽管LLM目前不能取代人类治疗师，但否认其潜在价值会阻碍社会进步。他主张通过严谨的实验来验证LLM的治疗价值。
+
+• **jdietrich** 指出在英国等地区，心理治疗不受监管，因此LLM未必比人类治疗师更危险，至少AI不会对人造成身体伤害。
+
+• **kbelder** 认为许多人类治疗师也不安全，主张通过比较成功率和责任问题来评估AI和人类治疗师的安全性。
+
+• **drdunce** 强调应让用户知情并负责任地部署AI技术，避免将LLM视为全知全能的存在，它只是一个“大型语言模型”，不应被信任用于提供生活建议。
+
+• **HPsquared** 和 **more_corn** 认为，即使AI治疗不安全，但仍可能比完全没有治疗要好，特别是在资源有限的情况下。
 
 补充讨论：
-• 在显示器待机功耗问题上，争议焦点在于实际测量值与官方规格不符，用户对实际功耗差异感到困惑。
+• **bigmattystyles** 和 **j45** 提到，AI的廉价和即时可用性是其主要吸引力，但也可能带来问题。AI或许能在初级阶段提供一些帮助，但不能取代专业人士。
 
-• 在Linux系统配置问题上，讨论显示出技术用户与非技术用户之间的差异，技术用户能通过手动配置解决问题，但非技术用户可能面临困难。
+• **j45** 进一步指出，AI可以帮助人们组织思路，提高与专业人士交流的效率，并可能减少治疗时间和成本。
 
-• 在X11与Wayland的选择上，讨论反映了技术发展的趋势，部分用户认为应尽快转向Wayland以取代过时的X11。
+• **James_K** 对AI持强烈批评态度，认为AI只是为了持续吸引用户使用而存在，且可能变得非常善于操控人，他对AI的未来发展感到担忧。
 
-• 线圈噪音问题则反映了个体对环境噪音的敏感性及其带来的困扰，尽管这在技术讨论中属于较为主观的体验。</div>
+争议焦点：
+• AI是否能够在心理治疗中提供有效帮助，还是只会带来更大的风险。
+• 人类专家是否因为职业威胁而本能地反对AI的应用。
+• AI在隐私保护和伦理问题上的可靠性，特别是在敏感的心理健康领域。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43943610" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43946498" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://storytotell.org/prologs-eternal-september" target="_blank">Prolog's Eternal September (2017)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Tomte</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-08 11:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者最近意识到，他在Stack Overflow上回答Prolog问题的方式违反了平台规则，且这种做法实际上适得其反。许多初学者在Stack Overflow上提问Prolog作业问题，但他们并不查看已有解决方案，只是希望有人替他们完成作业。作者认为，这反映了一个更深层次的问题：Prolog是必修课，但教授本身也不理解它，因此无法有效教学。作者希望创造一个更建设性的学习环境，提出两个建议：建立一个小型的解决方案数据库，每个解决方案都有详细注解，帮助理解基础和高级概念；为教授设计一系列教学幻灯片，即使他们不太懂Prolog也能使用。作者希望通过这种方式改善Prolog的教学和学习体验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Prolog教学及其相关问题，包括教育质量、课程设计、技术应用等。
+
+不同观点：
+• **neilv** 认为，初学者在Stack Overflow等论坛上并不是为了寻找现有解决方案，而是希望别人替他们完成作业。AI的兴起使得这一现象更加普遍，导致懒惰的学生依赖AI完成作业，而真正感兴趣的人则被排除在外。
+• **melenaboija** 强调了其20年前逻辑课程的有效性，该课程通过从基础概念逐步深入，帮助学生建立了对Prolog的深刻理解，并认为这种教学方法非常成功。
+• **chuckadams** 提出，在现代类型系统的背景下教授Prolog可能更有价值，因为Prolog与Haskell、Scala等语言有相当大的重叠，但他同时指出，如果学校不重视某个科目，很难找到真正懂它的人来教学。
+• **throw10920** 讨论了教育者带来的低质量内容的问题，并猜测这可能是因为一些教育者希望通过教授旧技术来展示不同的技术视野。
+• **cbarrick** 关注Prolog的创新，尤其是模块系统，希望有人能像Clojure对Lisp那样对Prolog进行现代化改造。
+• **disambiguation** 建议将LLMs和Prolog结合，以创建更好的推理代理，认为LLMs虽然不擅长解决推理问题，但可能擅长编写解决这些问题的Prolog代码。
+• **crustycoder** 认为Prolog被视为小众的学术工具，难以推广。他建议直接面向实际编程人员，通过实际例子和与已知技术（如SQL或函数式编程）的关联来推广Prolog。
+• **Arch-TK** 指出，Prolog成为必修课但教授不理解它是一个问题，并认为C语言教学中也有类似问题。
+• **subjectsigma** 推荐了一个YouTube频道，认为其提供了从入门到专家级的Prolog教程，能够解决讨论中的问题。
+• **oh_my_goodness** 认为Q&A网站如果对提问者持敌对态度，将变得有毒。他指出，问题不仅在于新用户的涌入，还在于原有用户的自大。
+• **NooneAtAll3** 强调了良好且大量的练习对于学习编程的重要性，认为一位认真负责的教师对学习效果影响巨大。
+• **JadeNB** 认为，设计课程以适应不懂Prolog的教师教学是不理想的，主张通过说服教师Prolog的有趣性和重要性，来提高教学质量。
+• **CyberDildonics** 认为问题可能在于Prolog本身，如果学生在课程结束后再也不想使用它，可能应该重新审视其教学价值。
+
+补充讨论：
+• Prolog的教学问题涉及课程设计、教育者素质、技术更新等多个方面。
+• 不同参与者对Prolog的实用性和教学方法有不同看法，有的强调其学术价值，有的则质疑其现实应用。
+• AI技术的兴起对教育和学习方式的影响也被讨论，尤其是在作业完成和内容生成方面。
+• 论坛文化及其对新手态度的影响也被提及，强调了友好和包容的讨论环境的重要性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43925132" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -232,84 +453,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://en.wikipedia.org/wiki/Unique_games_conjecture" target="_blank">Unique Games Conjecture</a>
+                    <a href="https://www.cell.com/current-biology/fulltext/S0960-9822(25)00447-6" target="_blank">Loss of dance and infant-directed song among the Northern Aché</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-10 16:38</span>
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-07 01:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>独特游戏猜想（Unique Games Conjecture, UGC）是计算复杂性理论中的一个未解问题，由Subhash Khot于2002年提出。该猜想声称，确定某种称为“独特游戏”的近似值问题是NP难的，涉及硬度逼近理论。如果UGC为真且P≠NP，那么许多重要问题不仅无法在多项式时间内得到精确解，也无法得到好的多项式时间近似解，包括在多种学科中出现的约束满足问题。
-
-UGC可以用多种等价方式表述，常见的一种涉及“标签覆盖问题”和其唯一性约束。该问题要求在满足某些约束的情况下最大化满足的约束比例。UGC断言，对于任意足够小的常数对(ε, δ)，存在一个常数k，使得(1−δ, ε)-间隙标签覆盖问题在k大小字母表上是NP难的。
-
-UGC还与线性方程组模k的最大化问题（Max2Lin(k)）等价，并涉及计算拓扑学问题。学术界对UGC的真伪持不同观点。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对链接内容的理解难度
+                    <div class="comments-summary">主要讨论点：观察原住民（如Northern Aché）是否会改变他们的行为
 
 不同观点：
-• ComboSoftware认为链接内容过于复杂，需要一篇针对初学者的解释文章。这表明他对链接中的技术或概念感到困惑，希望有更简单易懂的解释。
-• 其他用户可能隐含的观点是，链接的内容不需要进一步简化，或者他们已经理解了链接中的内容，因此没有对复杂性提出质疑。
+• romaaeterna认为，Northern Aché人已经失去了制造火和工具的能力，依据是表1的数据。这一观点暗示了文化或技能的丧失，可能是由于外部影响或与现代社会接触的结果。
+  
+• wildzzz则提出一个反思性的问题，质疑观察行为本身是否会改变这些人的行为。这表明了一种对研究方法和观察者效应的关注，即外部观察者可能对被观察群体产生影响，导致其行为发生变化。
 
 补充讨论：
-• ComboSoftware的评论暗示了在技术交流中对初学者友好的资源的需求，这可能反映了一个更广泛的问题，即专业内容对普通读者或新手不够友好。
-• 另一个值得注意的点是，这条评论可能引发关于如何在技术社区中提供支持和资源的讨论，例如通过教程、指南或社区帮助来解决理解困难的问题。
-• 如果有人回应ComboSoftware的评论，争议的焦点可能在于链接内容是否真的需要简化，或者是否已经有足够的资源来帮助理解这些内容。</div>
+• 讨论涉及了对原住民文化及其演变的关注，特别是外部接触如何可能影响其传统技能和文化传承。
+• 另一个值得注意的点是研究中的观察者效应，即当人们知道自己正在被观察时，他们的行为可能会与平常有所不同。
+• 争议的焦点可能在于如何在不影响原住民的情况下进行观察和研究，以及如何保护这些群体免受外部干扰对其文化和生活方式的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43946949" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ltxv.video/" target="_blank">LTXVideo 13B AI video generation</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zoudong376</span> |
-                    <span>评分: 194</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-05-10 11:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>LTXV-13B是Lightricks开发的具有130亿参数的AI视频生成模型，显著提升了视频生成的速度和质量，比同类模型快30倍。该模型支持文本到视频、图像到视频的转换，并具备实时性能和高质量输出。其核心技术包括多尺度渲染、内核优化和增强的提示 adherence。LTXV-13B兼容消费级硬件，如NVIDIA 4090/5090 GPU，并提供量化和内存高效版本。该模型于2025年5月发布，开放源代码和权重，支持通过Hugging Face和GitHub访问，并提供API集成。主要功能包括多模式视频生成、高分辨率实时处理和社区开发支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LTXV视频模型的使用、技术问题、开源性质及争议
-
-不同观点：
-• 官方立场：Lightricks的联合创始人兼CTO指出，LTXV模型可以在消费级GPU上运行，并建议用户从官方资源获取模型和相关工具。Lightricks团队成员ronreiter也确认某些第三方网站与Lightricks无关。
-• 社区资源：用户snagadooker提供了更多社区资源和讨论平台，如GitHub仓库和Discord服务器，供用户获取信息和支持。
-• 技术问题：用户coldcode提到在Mac上的浏览器问题，包括视频无法显示和CDN配置问题。terhechte则询问如何修改非量化版本以使其工作。
-• 开源性质争议：用户simonw讨论了LTXV-13B的“开放权重”和“开源”的区别，指出官网在术语使用上的不准确，并提供了相关法律文件和代码提交历史作为证据。
-• 硬件要求：用户givinguflac询问自己的NVIDIA 3070显卡是否可以运行模型，尽管官方要求4090/5090显卡。
-• 伦理与社会影响：用户gnarlouse表达了对AI视频技术的伦理和社会影响的担忧，认为其可能带来的风险大于其创造的边际价值。
-• 功能与性能：用户pwillia7和turnsout对模型的性能和功能表示赞赏，但也提到需要更快的生成速度。用户jl6则对生成视频的时长限制提出了疑问。
-
-补充讨论：
-• 用户shakna提到在使用默认图像到视频工作流时遇到像素化问题，并寻求解决方案。
-• 用户chmod775将LTXV模型与ARK的AI预告片进行了比较，认为目前还不适合专业用途，但在某些不当用途上可能被滥用。
-
-争议焦点：
-• 开源性质：LTXV模型是否为“开源”还是“开放权重”引发了用户simonw的质疑，并对官网的描述提出了修正建议。
-• 第三方网站：官方明确表示某些第三方网站与Lightricks无关，提醒用户避免使用这些网站以防问题和内容缺失。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43944974" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43911421" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -384,136 +556,42 @@ UGC还与线性方程组模k的最大化问题（Max2Lin(k)）等价，并涉及
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.hillelwayne.com/post/alan-kay/" target="_blank">Alan Kay did not invent objects (2019)</a>
+                    <a href="https://sprig.hackclub.com/share/X4EGvOFk1q8FroEPCj1G" target="_blank">Show HN: Sprigman – Pac-Man Recreated in a Limited Tile Based JavaScript Engine</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: iamwil</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-07 18:07</span>
+                    <span>作者: kuberwastaken</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-05-07 20:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了关于“面向对象编程（OOP）”的几个误解和事实。首先，Alan Kay并没有发明对象，对象的概念来源于Simula语言，Smalltalk团队也承认受到了Simula的启发。Kay创造了“面向对象编程”这一术语，但他自己后来认为“ messaging”（消息传递）才是OOP的核心，而非类和对象。早期OOP文献显示，类、对象和消息被视为三大核心概念，但Kay和一些支持者认为消息传递更为重要。尽管Simula被认为是面向对象的，但Smalltalk被视为第一个真正的OOP语言，因为它的一切都是对象，且消息传递系统独立于对象内部，具有高度灵活性。这使得Smalltalk在OOP的发展中具有独特贡献。</p>
+                    <p>Sprig是一个由Hack Club开发的构建基于瓦片的游戏的小型JavaScript工具包，旨在通过制作和分享游戏来学习编程。游戏在网格化的瓦片上构建，使用`setLegend`定义精灵类型，通过`bitmap`创建图形，并用`setMap`设计关卡。精灵的绘制顺序由定义顺序决定，先定义的类型会被绘制在顶部。工具包支持设置固体物体（无法重叠）和可推动的精灵。用户输入通过`onInput`处理，游戏逻辑可在`afterInput`中实现。精灵可以通过设置`x`和`y`坐标移动，并可使用多种函数操作和管理。此外，Sprig还支持添加文本、颜色以及创建音乐和音效。新手可以通过教程学习，并可在Hack Club的Slack社区获得帮助。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于谁是面向对象编程（OOP）思想的先驱以及Alan Kay在其中的贡献
+                    <div class="comments-summary">主要讨论点：Sprig游戏项目的更新和改进
 
 不同观点：
-• giardini认为Ivan Sutherland在1963年发布的SketchPad是OOP的先驱，强调了Sutherland的贡献。他提供了相关的维基百科链接和一篇关于Sutherland的文章，以支持他的观点。
-• dang引用了2019年一篇讨论Alan Kay是否发明了对象的文章，暗示对于谁是OOP的真正发明者存在争议。
-• neilv提供了Alan Kay自己对Smalltalk早期历史的描述，指出Kay承认Simula在对象概念上的先行性，但强调Kay通过Simula和SketchPad的结合实现了进一步的发展，尤其是在灵活性和控制方面。
-• taylodl指出Smalltalk的开发始于1969年，虽然Kay不是对象的发明者，但他是将对象概念推广并使其成为今天我们所熟知形式的关键人物。
+• 正面评价：用户kuberwastaken对更新持积极态度，强调了更新增加了更酷的元素，如具有多重人格的幽灵，更智能的地图生成等。[链接展示具体更新内容]
+
+• 功能讨论：部分用户关注更新中的具体功能，尤其是对"多重人格幽灵"的概念感到新奇，并讨论了这种设计如何影响游戏体验。有人提到这可能增加游戏的复杂性和趣味性。
+
+• 技术讨论：有用户对"更智能的地图生成"表示兴趣，并询问具体的技术细节，例如地图生成的算法是否基于已有的随机生成技术，还是引入了新的AI技术。有技术背景的用户开始讨论可能的实现方式。
 
 补充讨论：
-• Rochus提供了另一个相关讨论的链接，可能包含更多关于该主题的见解。
-• johnea表达了对Alan Kay的个人崇拜，提到Kaypro电脑公司，这与技术历史相关，但并未直接涉及OOP的发明权争议。
+• 用户体验：部分玩家关注更新是否会影响游戏的难度和平衡性，尤其是多重人格幽灵可能带来的不确定性，担心这会使游戏变得过于复杂或不公平。
+
+• 后续发展：有用户询问kuberwastaken未来的更新计划，是否会加入更多角色或故事背景来支持现有的新功能。
 
 争议焦点：
-• 争议的核心在于谁应被视为OOP的真正先驱。是Ivan Sutherland通过SketchPad奠定了基础，还是Simula在1967年首次引入了对象概念，而Alan Kay通过Smalltalk对其进行了推广和普及。
+• 更新内容的平衡性：一些玩家担心新加入的复杂元素可能会破坏游戏的原有平衡，特别是多重人格幽灵的设计，可能对新手玩家不够友好。
 
-总结：讨论主要围绕Ivan Sutherland、Simula和Alan Kay在OOP发展中的贡献和先后顺序，各方提供了不同的历史资料和个人见解来支持各自的观点。</div>
+• 技术实现的透明度：部分用户希望开发者能更详细地解释新功能的技术实现，特别是关于智能地图生成的具体机制。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43918880" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tixy.land" target="_blank">A simple 16x16 dot animation from simple math rules</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: andrewrn</span> |
-                    <span>评分: 173</span> |
-                    <span>评论数: 33</span> |
-                    <span>发布时间: 2025-05-10 02:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个名为"tixy"的创意编程挑战。参与者需用最多32个字符编写代码，实现特定视觉效果。代码采用箭头函数的形式，参数为`t`（时间）、`i`（索引）、`x`（横坐标）、`y`（纵坐标）。挑战类似于代码高尔夫，强调简洁和创意。用户可以通过点击页面上的点获取更多信息，探索其他参与者的解决方案和效果。这一活动鼓励开发者在有限空间内发挥无限创意。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户分享和讨论基于Tixy平台的创意和项目
-
-不同观点：
-• [animal531] 分享了两个Tixy上的创作链接，其中一个模拟了白细胞的攻击，另一个展示了数学函数生成的动态效果。
-• [jakegmaths] 表达了对Tixy的喜爱，并分享了自己在获得原作者许可后创建的带有谜题的Tixy网格，用于计算机科学教学。
-• [asicsp] 提供了一个之前关于Tixy模式讨论的链接，引导读者查看其他相关讨论。
-• [alexilchenko] 分享了一个五重星的数学图案链接，并进一步在评论末尾分享了一个“那不是月亮”的创作。
-• [levzettelin] 将Tixy比喻为简化版的Shadertoy，表示这很符合自己的兴趣。
-• [siraben] 分享了两个自己创作的动态效果链接，分别命名为“糖果波浪”和“糖果激光”。
-• [siev] 提供了一个“跳动的心脏”的数学图案链接。
-• [rpastuszak] 分享了一个受Tixy启发的绘画应用程序，该程序具有可编程的笔刷，并提供了详细的技术说明。
-• [Isognoviastoma] 分享了一个类似于雷达的图案链接。
-• [nopakos] 对Tixy展示的效果表示赞赏，并提出希望在家中实现类似效果的设想，如使用多个屏幕或气球等物理装置。
-• [continuational] 简单地表达了对Tixy的喜爱并分享了一个简单的动态效果链接。
-• [Nautman] 分享了一个类似雨刷效果的数学图案链接，并表示对Tixy的喜爱。
-• [mckeed] 分享了一个中心圆波效果的数学图案链接。
-• [Tepix] 分享了自己创作的链接，并表示对该创作的喜爱。
-
-补充讨论：
-• 评论中主要以分享Tixy创作链接为主，用户通过数学函数生成各种动态效果，并互相展示和交流。
-• 一些用户如[jakegmaths]和[rpastuszak]进一步将Tixy效果应用于教学和应用程序开发，展示了Tixy在教育和技术领域的潜力。
-• [nopakos] 提出了将Tixy效果从线上带到现实生活中的创意，讨论了物理装置实现的可能性。
-• 评论中没有明显的争议，主要以分享和展示个人创作为主，气氛积极和谐。
-
-争议焦点：无明显争议，主要是用户之间的创意分享和正面反馈。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43942881" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.propublica.org/article/revlimid-price-cancer-celgene-drugs-fda-multiple-myeloma" target="_blank">The Price of Remission</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: danso</span> |
-                    <span>评分: 80</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-08 12:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《The Price of Remission》一文由记者David Armstrong撰写，讲述了他被诊断出多发性骨髓瘤后，对高昂药物价格的调查与反思。这种无法治愈的血液癌症需要他长期服用一种名为Revlimid的药物，该药物源自曾因导致出生缺陷而被禁的沙利度胺。尽管Revlimid有效延长了患者的生命，但其每日一粒近1000美元的高价让许多患者难以负担。Armstrong揭示了制药公司如何通过多次涨价和监管漏洞维持高价，即使每粒胶囊的制造成本仅25美分。文章还提到了一位纽约律师Beth Wolmer为拯救患癌丈夫所做的努力，反映了美国药物定价失控的问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：药物Revlimid（Lenalidomide）的高价格、专利保护、市场竞争以及通过非传统渠道获取药物的可行性。
-
-不同观点：
-• [eterm] 提到Revlimid价格极其昂贵，但通过国家医疗系统，个人无需支付高额费用。其政府通过议价能力将成本降低到原价的五分之一。
-• [comrade1234] 介绍了其妻子公司开发的一种多发性骨髓瘤免疫疗法药物，该药物最初在中国开发，尽管效果显著，但因与中国的关系导致股票表现不佳。Pfizer投资数十亿推动该药物上市，预计今年销售额将达到10亿美元。
-• [csours] 引用了佛罗里达州为获取廉价药物而争取社会化医疗的案例，佛罗里达州通过加拿大处方药进口计划获得FDA批准，预计第一年可节省1.8亿美元。
-• [planck_tonne] 质疑为何这种昂贵的抗癌药物要限制竞争，认为限制竞争的目的可能是为了保护垄断，而非患者利益。
-• [est31] 指出Revlimid的专利将于明年到期，届时将有更多仿制药进入市场，价格可能下降。Celgene公司同意在2026年1月31日之后允许其他公司生产和销售该药物的仿制药。
-• [A_D_E_P_T] 提供了如何通过自行采购和质量控制从实验室获取药物的详细步骤，指出通过非正式渠道可以大大降低成本，并提到这种做法在某些领域较为普遍。
-• [y-curious] 提出是否可以通过中国或印度的实验室获取药物，尽管存在法律风险，但理论上可行，类似于电影《达拉斯买家俱乐部》中的情节。
-
-补充讨论：
-• 争议的焦点之一是药物的高价格和专利保护是否合理，特别是对特定癌症治疗药物的市场控制。
-• 另一个值得注意的讨论点是通过非传统渠道获取药物的实际操作性和法律风险，以及这种做法在患者群体中的潜在流行性。
-• 不同国家和地区在药物进口和价格谈判方面的策略也被提及，显示出各国在应对高价药物方面的不同努力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43925396" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43920212" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
