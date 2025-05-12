@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-12 23:17 (北京时间)
+            最后更新时间: 2025-05-13 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://theartofmachinery.com/2017/01/24/boot_to_d.html" target="_blank">Bios Boot to D</a>
+                    <a href="https://blog.appsignal.com/2025/05/07/an-introduction-to-solid-queue-for-ruby-on-rails.html" target="_blank">An Introduction to Solid Queue for Ruby on Rails</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: teleforce</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-12 02:00</span>
+                    <span>作者: amalinovic</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-05-08 07:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了如何使用D语言编写类似C的语言代码，并使其在PC上通过BIOS引导加载运行。作者对从BIOS启动到现代高级语言的运行过程进行了简要分析，强调了x86 PC的向后兼容性。文章首先介绍了汇编语言的基础知识，解释了汇编指令与硬件寄存器的关系，以及如何用标签模拟高级语言中的变量。接着，文章描述了启动过程：BIOS进行硬件自检，然后从磁盘加载前512字节，检查是否为可引导扇区（以0x55和0xAA为标记），并将这512字节加载到内存地址0x7c00开始执行。作者计划将D语言代码直接放在引导扇区后的磁盘空间中，并在16位实模式下运行。虽然实模式与早期x86设备兼容，但其功能有限，许多现代x86特性无法使用。</p>
+                    <p>Rails 8引入了一个新的背景任务处理库——Solid Queue。虽然已有多种队列系统如Sidekiq和Resque，但Solid Queue旨在减少对额外基础设施（如Redis）的依赖，仅使用数据库。其主要优势在于无需额外依赖，同时满足Rails开发者对性能、可靠性和兼容性的高要求。
+
+Solid Queue包含两个核心组件：Jobs和Workers。Jobs是ActiveRecord模型，用户通过它与系统交互，定义和执行后台任务。Workers则负责执行这些任务，根据配置生成并后台运行。
+
+Solid Queue使用多个数据库表来管理任务的不同状态，如准备、调度、执行和失败。任务的生命周期从创建、入队到执行，所有操作都依赖数据库表记录。
+
+总之，Solid Queue通过仅依赖数据库实现背景任务处理，简化了Rails应用的部署和运维，同时满足高效和可靠的要求。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：2017年某事件或话题的评价
+                    <div class="comments-summary">主要讨论点：Mastodon项目是否应从Redis/Sidekiq切换到Solid Queue或其他队列解决方案，以降低设置和维护的复杂性。
 
 不同观点：
-• 观点一：2017年整体是积极的一年。
-  - 论据：全球经济复苏，股市上涨，科技继续快速发展，人工智能和自动驾驶等技术取得显著进展。
-  - 例子：举例提到特斯拉的自动驾驶技术，以及人工智能在医疗领域的应用。
-  
-• 观点二：2017年存在一些令人担忧的全球性问题。
-  - 论据：政治不稳定、气候变化问题依然严峻，国际冲突频发，贫富差距加剧。
-  - 例子：提到美国的政治动荡，以及全球气候协议的执行不力。
+• **支持继续使用Sidekiq + Redis**：
+  - **性能优势**：Sidekiq + Redis在处理大量任务（每秒数十到数十万个任务）时表现优异，任务被快速处理和执行，避免了瓶颈问题。[shayonj]
+  - **熟悉度和易用性**：一些开发者对Sidekiq的API非常熟悉，认为其设置简单、扩展性好，且Redis依赖在现代基础设施中已经变得非常简单。[Trasmatta]
 
-• 观点三：科技发展的双刃剑效应。
-  - 论据：一方面科技带来了便利和效率，另一方面也带来了隐私问题、失业问题等。
-  - 例子：Facebook的数据隐私问题，自动化对就业市场的冲击。
+• **支持切换到Solid Queue**：
+  - **降低基础设施复杂性**：Solid Queue使用数据库作为后备存储，能减少对复杂基础设施的依赖，特别适合不需要处理极高任务量的中小型应用。[Justsignedup]
+  - **操作简化与可维护性**：Solid Queue可以减少运维负担，尤其是在不需要额外消息队列的情况下，有助于降低Mastodon实例的设置和维护复杂度。[evolve2k]
+
+• **建议考虑其他替代方案**：
+  - **Good Job**：有人认为Good Job比Solid Queue更合适，因其在功能、UI等方面与Sidekiq更接近，具备更强的功能对等性。[bdcravens]
+  - **GCP Cloud Tasks**：提出使用GCP Cloud Tasks作为简化方案，只需实现HTTP端点，无需管理worker和listener，从而减少基础设施复杂度。[latchkey]
+  - **pgmq库**：建议使用pgmq库，认为其在结合PostgreSQL与边缘函数（如Supabase Deno）时表现出色，是一个值得探索的方向。[cpursley]
+
+• **其他经验分享**：
+  - **delayed_job**：有开发者偏好使用delayed_job，因其避免了Sidekiq在事务和after_commit钩子上的复杂性问题，特别是在数据库作为唯一状态源时表现良好。[rietta]
+  - **跨语言实现**：有人好奇是否已有其他语言或框架实现了类似的解决方案，暗示可能存在更广泛的技术选型空间。[wang_zuo]
 
 补充讨论：
-• 有人认为2017年的积极经济表现无法掩盖深层次的社会问题，如收入不平等和劳动市场的变化。
-• 争议焦点在于科技进步是否真正提升了整体社会福祉，还是仅仅使一小部分人受益。
-• 讨论还涉及到环境问题，认为全球在环境保护方面的努力不够，气候变化问题没有实质性进展。
+- **技术细节争议**：对Solid Queue和Sidekiq的性能、设计模式选择存在技术性讨论，例如"UPDATE SKIP LOCKED"的工作原理以及对任务执行的影响。[neerajdotname2]
+- **高层次接口的争议**：有评论对高层次接口的可靠性提出质疑，认为它们可能不够“solid”（稳定）。[nwhnwh]
 
-</div>
+争议焦点：Mastodon项目是否应为了降低复杂性而放弃Sidekiq + Redis的高性能组合，选择像Solid Queue这样基于数据库的解决方案，或者探索其他替代方案如GCP Cloud Tasks和Good Job。性能、可维护性和基础设施复杂性是争议的核心。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43958968" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43924082" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,80 +120,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://michael.orlitzky.com/articles/in_defense_of_self-signed_certificates.xhtml" target="_blank">In defense of self-signed certificates (2013)</a>
+                    <a href="https://openjdk.org/jeps/515" target="_blank">JEP 515: Ahead-of-Time Method Profiling</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 1vuio0pswjnm7</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-12 04:28</span>
+                    <span>作者: cempaka</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-11 14:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>JEP 515 旨在通过提前收集方法执行概要信息来改善Java应用程序的预热时间。具体做法是在应用程序的"训练运行"阶段收集方法概要信息，并存储在AOT缓存中，以便在生产运行时直接使用。这使得HotSpot JVM在应用启动时即可利用这些信息进行即时编译（JIT），从而更快达到峰值性能。该方案不改变应用代码，也不引入新的约束或工作流，而是利用JEP 483引入的AOT缓存机制。通过提前收集概要信息，应用在生产环境中的预热时间大幅缩短，同时JVM仍会在运行时继续进行动态优化，确保适应生产环境中的行为变化。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否用DANE替代pinning是合理的安全措施
+                    <div class="comments-summary">主要讨论点：JEP 对 Java 标准库及 JVM 性能提升的影响，以及与其他技术或语言的比较和关联。
 
 不同观点：
-• Phillipseamore认为可以用DANE（DNS-Based Authentication of Named Entities）替代pinning，并认为这种方法仍然有效。此观点表明DANE可以起到与pinning类似的安全作用，可能是因为DANE依赖于DNSSEC（DNS Security Extensions）来确保证书的合法性，从而避免中间人攻击。
+• [motoboi] 认为该 JEP 如果能够使 Java 标准 API 的大部分实现 AOT 编译，将极大提升 Java 程序的运行速度，尤其是在 Stream API 等已经成熟且广泛使用的部分。他还提到，虽然 JVM 的 JIT 编译已经非常高效，但 AOT 可以使 Java 程序更加敏捷。
+
+• [indolering] 指出 OpenJ9 已经具备类似的功能，并表示看到解释型语言和编译型语言之间的界限变得模糊是很令人欣喜的。
+
+• [rst] 从历史角度出发，提到这个优化思路与最早的优化编译器 Fortran I 有相似之处，尤其是通过模拟流图来检测热点并进行优化的方法。
+
+• [tikkabhuna] 提问该 JEP 是否与 Azul Zing 的 ReadyNow 功能类似或相同，暗示可能存在功能重叠或竞争关系。
+
+• [nmstoker] 提出是否可以将这种方法应用于 Python 的性能优化中，尤其是 Faster Python 项目，虽然他也提到这可能已经被考虑过。
+
+• [mshockwave] 建议除了存储配置文件外，还可以缓存一些本地代码，以消除热点函数的 JIT 开销。他还补充说明，这一点在 JEP 的“替代方案”部分被描述为未来的工作方向。
 
 补充讨论：
-• DANE的支持者可能认为，DANE通过在DNSSEC保护的DNS记录中直接绑定证书信息，提供了另一种方式来验证服务器的身份，从而减少对传统证书颁发机构（CA）的依赖。
-• 然而，反对用DANE替代pinning的意见可能会指出，DANE的广泛部署依赖于DNSSEC的普及和正确实施，而目前很多区域的DNSSEC部署并不完善，可能带来额外的风险。
-• 争议的焦点可能在于两种技术的安全性、成熟度和部署难度上的差异，特别是在防止中间人攻击和确保通信安全方面的有效性。
-
-总结：评论中主要讨论了是否可以用DANE替代pinning作为确保通信安全的手段，提出了对DANE技术依赖DNSSEC的有效性和部署现状的不同看法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43959656" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="http://rochus-keller.ch/?p=1350" target="_blank">When Suno covers my song (very useful) – a study with variations</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Rochus</span> |
-                    <span>评分: 66</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-08 14:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕生成音乐的质量和用户体验的讨论
-
-不同观点：
-• [apt-apt-apt-apt] 认为生成的 "Latin Jazz with small band with acc. guitar" 版本比原版更出色，像是一个升级版。他提到同时播放所有音轨的方式很特别，但对需要通过在新标签页打开链接才能随意跳转播放位置的操作感到麻烦，认为这对大多数用户来说过于繁琐。
-
-• [Rochus] 分享了自己与朋友在2004年即兴创作的实验性音乐作品，并提供了多个由Suno生成的不同风格的变奏版本。他表示对这些生成版本感到非常惊讶和欣赏，特别是"Bulgarian brass band"、"Cuban orchestra"和"Jazz rock band"的变奏。
-
-补充讨论：
-• [evertedsphere] 提到 "suno" 这个词让他想起在 Hindi 语言中 "suno" 是 "audi" 的意思，暗示可能存在多语言含义的联想，但并未深入展开。
+• 该 JEP 涉及的 AOT 编译技术与历史上其他语言的优化编译技术（如 Fortran I）有概念上的相似性。
+• 不同 JVM 实现（如 OpenJ9 和 Azul Zing）之间的功能比较和竞争。
+• 讨论了该技术在其他编程语言（如 Python）中应用的可能性和潜在价值。
+• 对未来工作方向的建议，如缓存本地代码以进一步优化性能。
 
 争议焦点：
-• 用户体验问题：[apt-apt-apt-apt] 对需要通过复杂操作才能实现歌曲随意跳转的功能表示不满，认为这不利于用户体验。
-
-其他值得注意的讨论点：
-• 对生成音乐质量的肯定：两位用户都对Suno生成的音乐质量表示了赞赏，[Rochus] 特别强调了生成音乐在不同风格上的多样性和创造性。
-
-• 对实验性音乐的分享：[Rochus] 主动分享了自己多年前的实验性音乐作品，展示了音乐创作和生成技术之间的互动与融合。</div>
+• 该 JEP 与 Azul Zing 的 ReadyNow 功能是否存在相似性或竞争关系（tikkabhuna 的提问）。
+• 该技术的创新性与历史上已有优化技术的相似性（rst 的评论）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43926713" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43954178" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -194,40 +172,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2505.03335" target="_blank">Absolute Zero: Reinforced Self-Play Reasoning with Zero Data</a>
+                    <a href="https://skincontact.substack.com/p/21-observations-from-people-watching" target="_blank">Observations from people-watching</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: leodriesch</span> |
-                    <span>评分: 73</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-05-11 07:07</span>
+                    <span>作者: jger15</span> |
+                    <span>评分: 414</span> |
+                    <span>评论数: 45</span> |
+                    <span>发布时间: 2025-05-10 22:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章提出了一种新的强化学习范式，称为"Absolute Zero"（绝对零点），该模型无需任何外部数据，通过自我生成任务并解决这些任务来提升推理能力。传统方法依赖人类标注的数据集，但该方法通过自我演化训练课程和使用代码执行器验证答案，实现了无监督的学习。实验表明，Absolute Zero Reasoner (AZR) 在编码和数学推理任务上表现出色，超越了依赖大量人类标注数据的现有模型。该方法适用于不同规模和类型的模型，展示了在无数据条件下提升AI推理能力的潜力。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于自生成数据和自 play 技术在模型训练中的应用及其效果的讨论
+                    <div class="comments-summary">主要讨论点：评论者对通过观察和“读人”的技巧及其有效性的看法
 
 不同观点：
-• a2128 指出该模型并非在零数据情况下训练，而是基于一个在大规模数据（18万亿tokens）上预训练的模型（Qwen 2.5），并通过结合Python解释器的自生成数据进行微调。这表明预训练数据和自生成数据的结合可能是有效的。
-• macrolime 认为OpenAI和DeepMind等公司可能已经在做类似的事情，只是没有公开发布。这暗示了行业内可能存在未公开的类似研究。
-• gitroom 提到自 play 技术现在似乎是显而易见的路径，但其效果比大量数据倾倒更好，并提出疑问：当前的AI进展是由于优秀的pipeline还是实际的突破？
-• Waterluvian 关注模型在回答错误后能否自我纠正，提到GPT等模型在遇到错误时仍会有“隧道视野”问题，难以自我修正。
-• nullc 希望看到这些技术在Python和JS之外的语言上运行，表明对模型在不同语言表现上的关注。
-• squillion 幽默地警告滥用此技术可能会导致模型“失明”，暗示对模型过度依赖自生成数据的潜在风险。
-• QuadmasterXLII 提到此例可以作为对“现代激励机制禁止发布负面结果”的反驳，强调发布负面结果的重要性。
-• mentalgear 引用AZR模型的例子，说明即使不使用人类精选数据，仅通过自 play 技术也能在编码和数学推理基准上达到最先进的结果，显示了自 play 技术在无监督情况下的潜力。
+• 一些评论者，如 [mpweiher] 和 [SunlightEdge]，认为读人是一种有用的工具，可以提供有价值的见解，但并不总是准确。他们强调这种技巧可能会产生误导，且当它有效时，会让人上瘾。然而，必须小心对待，不能过度依赖。
+• [neerajsi] 和 [disambiguation] 分享了个人经历，表明在特定情况下，读人可以非常精确，特别是在观察熟悉的人群时。然而，[disambiguation] 也提到这种能力引发了自我反思，并强调主观性。
+• [dillydogg] 和 [azan_] 对读人持怀疑态度，认为这种做法容易流于判断性，且假设过多，缺乏现实依据。
+• [PeterStuer] 指出作者可能过度推论，将特定环境下的观察结果泛化到所有情境中，忽视了人在不同环境下表现的差异。
+• [polishdude20] 和 [Simon_O_Rourke] 认为作者所看到的更多是自身自我的反映，且文中存在过多的投射和主观判断。
 
 补充讨论：
-• 讨论中涉及到自 play 技术的有效性、模型自我修正的能力、不同语言的表现、以及对行业内未公开研究的猜测。
-• 争议焦点可能在于自 play 技术的效果是否被夸大，以及AI进展究竟是由于技术突破还是pipeline的改进。
-• 对模型在不同语言上的表现和潜在风险也有一定关注。</div>
+• [kadonoishi] 将作者的洞察力与过时的理论框架进行对比，认为作者的观察力很强，但理论基础不一致。
+• [delichon] 分享了一个个人故事，展示如何利用情感共鸣来影响他人，这个例子支持了读人在某些情境下的有效性。
+• [gumboshoes] 提到文中将身体和心理特征分开讨论存在问题，并指出作者在从观察到解释的转化中存在困难。
+• [Bjartr] 认为尽管文章并不全面，但其中提出的原则仍然具有帮助，并引用了“所有模型都有用，但都不完整”的观点来支持其立场。
+
+争议的焦点：
+• 读人技巧的准确性和可靠性是主要争议点。一部分评论者认为它有帮助，但需要谨慎使用，而另一部分评论者则认为它过于主观且缺乏依据。
+• 另一个争议点是作者是否过度推论，将特定环境中的观察结果泛化到所有情境中。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43951985" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43949542" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -238,54 +218,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.abortretry.fail/p/intel-winning-and-losing" target="_blank">Intel: Winning and Losing</a>
+                    <a href="https://github.com/vapetrov/PCB_strain_gauge" target="_blank">Strain gauge made out of PCB</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 105</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-05-10 11:19</span>
+                    <span>作者: dr_coffee</span> |
+                    <span>评分: 112</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-07 13:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章回顾了英特尔公司的发展历程，包括其在2008年推出的Atom处理器和Nehalem微架构。Atom处理器采用Bonnell微架构，主打低功耗市场，但缺乏一些高级功能，如乱序执行和专用整数乘除单元。其配套的Poulsbo芯片组功能丰富，但体积大，功耗较高，限制了Atom在手持设备中的应用。Nehalem微架构则代表了英特尔在高性能计算方面的突破，推出了支持三通道DDR3内存、集成内存控制器和多核设计的Core i7及Xeon处理器，取消了传统的北桥/南桥架构，提升了性能和扩展性。尽管Atom在某些方面表现出色，但其整体系统功耗和芯片组体积限制了其在手held市场的发展。</p>
+                    <p>该项目是一个基于PCB的自制应变计，包含放大器，可测量微米级别的微小形变，全量程为±3厘米。推荐的PCB厚度为0.6毫米，可通过调整厚度改变输出电压。设计包括4元件或2元件的传感桥，并提供加强板以防止弯曲。该应变计可手动组装，兼容Seeed Studio XIAO RP2040微控制器或外部微控制器。外部ADC和偏压生成器可选择性安装。附带的示例固件会在串口打开后进行5秒的偏移校准，并持续采样。可通过脚本绘制自定义传感元件形状并导入KiCad。项目采用MIT许可证。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Intel的发展历程、战略失误及其原因分析
+                    <div class="comments-summary">主要讨论点：DIY毫克精度天平的技术细节和挑战，包括应变片传感器的使用、电压设置以及环境因素的影响。
 
 不同观点：
-• **gopherloafers**：认为Intel在1980年代和1990年代非常高效，但之后由于市场细分和内部领导层争斗，导致许多项目被取消，公司逐渐失去方向。特别提到Intel未能适应市场的碎片化，最终让ARM在"ubiquitous computing"领域取得胜利。同时，对个人计算平台的重新整合充满期待。
-
-• **fidotron**：认为Intel的核心问题是过于相信ISA对性能没有影响，且自认为工艺优势不可撼动。公司内部臃肿的部门和官僚主义严重，使得2010年后无法扭转局面。即使是最优秀的商业领袖也无法在不引发内部矛盾的情况下拯救Intel。
-
-• **AnotherGoodName**：认为文章过于关注CPU的规格列表和工艺改进，缺乏对Intel为何放弃XScale转向Atom，以及Itanium等值得讨论的问题的深入探讨。希望看到更多关于战略决策背后原因的分析。
-
-• **acroyear**：指出Intel多次试图引入有远见的人才但屡屡失败，且公司内部存在大量 incompetent 人员。特别提到Mike Bell、Eric Kim和Murthy Renduchintala等人对公司的负面影响。此外，还提到Intel与Nokia合作的Moblin OS项目因Nokia高层的内部问题而失败，暗示Intel可能因短期利润考虑而拒绝了真正的创新。
-
-• **jxjnskkzxxhx**和**ashvardanian**：提到文章在2013年左右突然结束，缺乏后续发展，读者对之后发生的事情感到困惑。
-
-• **igtztorrero**：认为Atom系列产品的失败是Intel的转折点，特别是Atom笔记本电脑性能低下，严重损害了公司声誉。
-
-• **dash2**：认为文章未能深入分析Intel失去市场主导地位的原因和失误的根源。
-
-• **aurizon**：将Intel与Apple和IBM进行对比，认为Intel是一个失败的垄断者，像IBM的MCA架构一样无法适应市场变化。
-
-• **jbverschoor**：调侃Intel的域名可能就是其大部分市值的体现，暗示公司实际价值不高。
+• knotimpressed 关注的是DIY毫克精度天平的实现，特别是应变片传感器的成本和分辨率是否足够高。
+• amelius 提出了关于BRIDGE_SUPPLY电压连接到电压调节器输出和PWM信号的技术问题，通过使用FSA5157L6模拟开关实现。
+• rolph 分享了关于压电传感器与应变片传感器的比较资源链接，引导讨论向两种传感器技术的选择和区别。
+• fake-name 讨论了自制应变片在温度和湿度变化下的重复性问题，指出环境因素对测量精度的影响，并提出校准的必要性或接受相对值的妥协。
 
 补充讨论：
-- **争议焦点**：Intel内部管理的混乱和战略决策的失误是讨论的核心，特别是关于公司为何未能抓住智能手机革命的机会以及在Atom和XScale上的失败。
-- **值得注意的论据**：
-  - Intel的官僚主义和内部臃肿使得改革难以进行。
-  - 文章缺乏对关键决策和市场变化的深入分析。
-  - Atom产品的失败被认为是公司的一个重大失误。
-  - Intel与Nokia合作项目的失败被认为是由于外部因素（Nokia高层的变动）和内部问题共同导致。
+• fake-name 进一步解释了商用应变片通常使用康斯坦丁电阻元件和聚酰亚胺载体薄膜，以应对温度变化，并且这些元件价格相对低廉。
+• amelius 对knotimpressed提到的厚度与输出电压关系提出疑问，认为较薄的板子在相同重量下应产生更大的电压摆幅，这与knotimpressed的预期相反。
 
-这些观点共同描绘了Intel在技术变革和市场竞争中所面临的挑战，以及公司内部管理和战略决策的失误如何影响其市场地位。</div>
+争议焦点：主要集中在应变片传感器的环境稳定性及其在DIY项目中的可行性，特别是在温度和湿度变化下的精度和校准问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43944790" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43915470" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -296,70 +259,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://media.hubspot.com/what-the-hell-are-rare-earth-elements" target="_blank">What the hell are rare earth elements?</a>
+                    <a href="https://royalsociety.org/blog/2025/05/hill-or-high-water/" target="_blank">Hill or High Water</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Anon84</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-11 12:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了稀土元素的重要性及其在全球供应链中的战略地位，特别是在电动汽车、智能手机和军事技术等领域。虽然美国曾经在稀土产业占据主导地位，但过去几十年中国逐渐控制了全球约60-70%的稀土开采和高达90%的加工能力。美国在 Mountain Pass 拥有唯一的稀土矿，但依赖中国进行加工和磁材生产。随着中国对稀土出口的限制加剧，美国正努力通过补贴国内加工厂、加快许可审批以及与乌克兰签署矿产投资协议等方式重振稀土产业。尽管稀土并不真正“稀有”，但其提取和加工过程复杂、成本高且对环境有风险，美国面临能否赶超中国的挑战。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：欧盟稀土元素的定义及相关产业动态，特别是中国和美国在稀土领域的竞争与合作，以及具体稀土元素的例子。
-
-不同观点：
-• [thenthenthen] 提到欧盟定义了约30种稀土元素，并引用了欧盟官方来源。他还提到了瑞典通过游戏化方式鼓励当地采矿活动，称之为“矿物狩猎”。但他对未来的发展方向表示不确定。
-
-• [throwaway422432] 回顾了Molycorp公司在20世纪80年代将稀土市场的近垄断地位拱手让给中国的历史，并指出这种模式在多个行业中重复出现。他进一步讨论了Lynas Rare Earths公司在马来西亚的工厂开始生产高稀土元素（如镝和铽），并提到尽管Lynas得到了美国国防部的资助，但其主要客户仍是日本公司如Sumitomo。他还提到Lynas在美国德克萨斯州建设新工厂的计划，但由于废水处理问题，项目成本可能会增加。
-
-• [hkon] 对稀土元素的具体名称感兴趣，并列举了15种稀土元素，但没有深入讨论产业或市场动态。
-
-• [htrp] 提出了一个不同的问题，质疑HubSpot为何经营媒体公司，这与主要讨论点关系不大，但反映了对讨论背景的困惑或不满。
-
-补充讨论：
-• 稀土元素的定义和种类在[thenthenthen]和[hkon]的评论中被提及，提供了具体的元素名称和欧盟的定义来源。
-• [throwaway422432] 提供了关于稀土产业竞争的历史背景和当前动态的详细信息，特别是中国和美国之间的竞争以及Lynas公司的情况。他还引用了多个来源来支持其论点。
-• 争议焦点在于稀土市场的国际竞争和供应链问题，特别是美国和其盟友如何应对中国在这一领域的主导地位。
-
-总体来看，讨论围绕稀土元素的定义、产业动态、历史背景以及国际竞争展开，不同评论者提供了不同的视角和信息。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43953272" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=9YM7pDMLvr4" target="_blank">Andreas Kling's Keynote Presentation on the Ladybird Browser [video]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: danboarder</span> |
-                    <span>评分: 7</span> |
+                    <span>作者: benbreen</span> |
+                    <span>评分: 27</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-05-12 07:21</span>
+                    <span>发布时间: 2025-05-09 03:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文简要列出了与YouTube相关的各种信息和功能。包括关于YouTube的介绍、版权问题、联系方式、创作者信息、广告、开发者条款、隐私政策、安全指南以及YouTube的运作方式和测试新功能的信息。此外，还提到了NFL Sunday Ticket服务，并注明了版权为2025年Google LLC所有。</p>
+                    <p>Ainsley Vinall介绍了1958-59年皇家学会智利南部探险的一组摄影幻灯片，这些资料最近被添加到学会的收藏中。探险队由Martin Holdgate爵士领导，他捐赠了超过300张幻灯片以及他的野外笔记、探险日记和一些收集的物品。这次探险是为纪念达尔文《物种起源》发表100周年而计划的，原计划进行广泛的南温带区域旅行，但由于船只问题，最终专注于智利南部的研究。探险队包括五名科学家，分别来自英国、新西兰和智利，研究领域涵盖动物学、植物学、海洋生物学、地质学和昆虫学。探险期间，他们重访了达尔文曾到访的地点，研究了新西兰、澳大利亚和南美洲共有的物种，并探索了智利南部的雨林、山脉和岛屿，记录了当地的景观、野生生物以及原住民Kawésqar人的生活。这次探险为现代地球历史研究提供了重要信息。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43960421" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43933605" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -370,50 +288,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://about.fandom.com/news/fandom-sells-giant-bomb-to-independent-creators" target="_blank">Fandom sells gaming media brand Giant Bomb to long-term staff</a>
+                    <a href="https://retool.com/visual-basic" target="_blank">The History and Legacy of Visual Basic</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: minimaxir</span> |
-                    <span>评分: 212</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-05-11 00:00</span>
+                    <span>作者: ibobev</span> |
+                    <span>评分: 127</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-05-10 23:24</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年5月10日，粉丝平台Fandom将游戏媒体品牌Giant Bomb出售给其长期员工及内容创作者Jeff Bakalar和Jeff Grubb。交易细节未公开，Giant Bomb的节目将在交易完成后尽快恢复。Fandom表示，此举旨在让Giant Bomb回归独立根源，相信Jeff和Jeff能延续其 legacy。Jeff Bakalar和Jeff Grubb感谢粉丝支持，并表示未来将由社区支持团队运营，更多计划将陆续公布。Giant Bomb以独特风格提供游戏新闻、评论和视频内容，自2008年成立以来在业界具有影响力。</p>
+                    <p>1988年春，Alan Cooper在微软总部展示了他开发的Tripod，一个为Windows操作系统设计的shell构造工具。受微软动态链接库（DLLs）的启发，Cooper意识到Windows的shell过于简陋，决定开发一个更用户友好的界面。他设想了一个“shell构造工具包”，让不同用户可以根据需求自定义界面。为此，他开发了一个包含按钮和列表框等控件的原型，用户可以通过拖放构建个性化shell。尽管最初Cooper想将这些元素命名为“waldos”，但最终他的团队称之为“gizmos”，而微软后来采用了“controls”这一名称。Tripod成为Visual Basic的雏形，极大推动了Windows应用开发的普及。然而，随着技术演进，Visual Basic逐渐失去主导地位，但其影响仍在塑造现代软件开发。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：视频游戏新闻网站的现状及Giant Bomb等老牌媒体的未来
+                    <div class="comments-summary">主要讨论点：Visual Basic（VB）的历史、影响、现状及替代工具
 
 不同观点：
-• drumhead认为，整体上在线视频游戏新闻行业正处于低迷状态，许多过去的知名网站要么消失，要么大幅裁员。他指出，像IGN这样的大型网站尽管拥有大量订阅者，但视频观看量很低，观众似乎已经转向个人YouTube主或Twitch。他认为，视频游戏网站作为商业项目前景黯淡，可能只能通过服务特定 niche 观众来维持生存，但对行业的复苏不抱希望。
-
-• jaoane强烈批评Fandom网站，认为其通过SEO手段淹没了其他有用的网站，称其为“cancerous website”（有害网站），并希望其关闭。其他用户如 nubinetwork 也表达了对Fandom网站的不满。
-
-• jpalawaga怀念过去的Whiskey Media，认为其内容和社区都非常优秀，但对如今的状况感到遗憾，不知道过去的用户群体去了哪里。
-
-• kevingadd详细介绍了Giant Bomb的历史和其创新之处，指出其在视频内容和播客方面的早期贡献，并强调其内容在当时游戏媒体中的独特性。
-
-• dustbunny提到了更早的1up.com，回忆其在播客方面的影响，并表示有兴趣下载其档案内容。
-
-• randall提到了Jeff Bakalar和The 404节目，表达了对时代变化的感慨。
-
-• Trasmatta认为Giant Bomb是旧互联网时代的遗留产物，对其未来持乐观态度。
-
-• bitwize希望有一个能够媲美TheGIA的游戏网站，但认为那样的网络时代已经过去。
-
-• stevage和pinkmuffinere则对标题的混乱表示不满，认为应该更清晰地表达内容。
+• Stratoscope（开发者视角）：作为VB的开发者之一，分享了VB开发过程中的一些趣闻，如“fire an event”命名的由来，并对自己参与的VBX API进行反思，认为其虽有缺陷但非常成功。同时，表达了自己仍在寻找工作机会。
+• RebeccaTheDev（怀旧开发者）：怀念VB6的快速原型开发能力，认为其简单易用，且在GUI开发上非常高效，优于现代工具如Xcode。
+• don-bright（商业视角）：指出VBA在商业环境中依然广泛使用，特别是在Excel中，且对许多行业至关重要，反驳了VB已死的观点。
+• guestbest（安全性考虑）：认为VB被淘汰主要是出于安全考虑，特别是由于互联网浏览器的普及。
+• showerst（怀旧与多样性）：怀念VB的拖放式编程体验，认为这种体验在现代多样化的显示设备环境下难以再现。
+• pkoird（自学成才的开发者）：分享了自己在第三世界国家通过自学VB6实现简单计算器的经历，认为VB的简单易用无可替代。
+• 90s_dev（经验与重构）：讨论了重写代码的必要性和经验，认为重写代码在某些情况下是合理的，特别是对已有深入理解的项目。
+• heelix（技术能力）：分享了使用VB构建COM组件的经历，认为VB在UI之外也有强大的技术能力。
+• saidinesh5（工具易用性）：认为像VB、Flash这样的工具具有极高的直观性，容易上手，而现代HTML5等工具则需要更多的文档和教程支持。
+• FlingPoo（游戏开发者）：分享了自己用VB3开发游戏并成功销售的经历，展示了VB在游戏开发中的潜力。
+• 0xbadcafebee（批判与AI展望）：批评软件行业不愿让编程变得容易，认为AI的到来可能终结编程，并对此表示期待。
+• ChicagoDave（职业转变）：分享了自己从VB 1.0到VB 6的经历，并在.NET时代转向C#，学习了面向对象编程。
+• pfraze（现代工具推荐）：推荐了Retool作为VB怀旧者的现代替代工具，认为其在数据可视化方面有潜力。
+• WA（青少年编程经历）：分享了自己在90年代通过VB进入编程世界的经历，并成功创建了一些小游戏。
 
 补充讨论：
-• 评论中多次提到对老牌网站衰落的惋惜和对现代游戏媒体点击诱饵化的不满。
-• 用户对Fandom网站的强烈反感形成了一个小讨论焦点，jaoane和nubinetwork都对Fandom持批评态度。
-• 对Giant Bomb历史和贡献的回顾以及对其未来发展的不同看法是另一个值得注意的讨论点。kevingadd和Trasmatta对Giant Bomb持积极态度，而drumhead则较为悲观。
-• 标题的混乱引发了stevage和pinkmuffinere的讨论，他们建议更明确的标题表达。</div>
+• VB的简单易用性被广泛怀念，特别是在快速原型开发和GUI设计方面。
+• VBA在商业环境中的持续重要性被强调，特别是在Excel中的应用。
+• 现代工具在易用性和直观性上被认为不如VB，但也有开发者尝试寻找现代替代品如Retool。
+• 对VB被淘汰的原因有多种看法，包括安全考虑和技术发展的自然淘汰。
+• 对VB开发经历的个人故事丰富了讨论，展示了VB在不同领域和背景下的广泛影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43950046" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43949855" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -424,47 +340,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theregister.com/2025/05/12/uk_creatives_ai_letter/" target="_blank">Paul McCartney, Elton John and other creatives demand AI comes clean on scraping</a>
+                    <a href="https://epochalypse-project.org/" target="_blank">The Epochalypse Project</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rntn</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-05-12 13:27</span>
+                    <span>作者: maxeda</span> |
+                    <span>评分: 192</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-05-11 10:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>超过400名英国知名创意产业人士，包括保罗·麦卡特尼、艾尔顿·约翰、凯特·布什和伊恩·麦克莱恩等，联名致信首相，支持对《数据（使用和访问）法案》进行修订，要求AI公司在使用受版权保护的作品进行训练时必须透明。他们反对政府允许在文本和数据挖掘中对版权规则做例外处理的计划，认为这会导致多年的版权侵权。信中呼吁AI公司必须告知版权所有者其使用的具体作品，以确保透明度和保护创意产业。美国版权局也曾发现AI公司有时会侵犯版权，而相关法律争议仍在继续。</p>
+                    <p>《Epochalypse项目：32位时间戳漏洞——我们的数字定时炸弹》文章指出，2038年1月19日，全球数百万敏感的嵌入式和工业计算机系统将因32位时间戳溢出出现异常行为，可能导致医院设备、银行系统、交通控制、电网等关键基础设施出现严重故障。该漏洞源于许多系统使用32位整数表示自1970年以来的秒数，到2038年将溢出并导致时间错误。
+
+与千年虫（Y2K）问题相比，此次问题规模更大、嵌入式系统难以更新、社会对数字基础设施依赖更深，且可能被恶意利用。解决这一全球性挑战需要识别和优先处理关键系统，实施修复，并制定应急计划。时间紧迫，需立即采取行动。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI数据抓取和内容创作的伦理与法律问题
+                    <div class="comments-summary">主要讨论点：2038年问题（Y2038 bug）的严重性、可利用性、影响范围以及可能的解决方案。
 
 不同观点：
-• **Tedivm** 认为，AI公司不仅仅是抓取数据，而是在盗版。普通的网页抓取是合法的，因为用户同意将其内容公开，但作者并未同意其作品被用于AI训练，将两者混为一谈是不道德的。
-• **Realo** 从人类创作的角度出发，认为人类通过生活经验创造新作品，而AI只是模仿已有作品，因此AI生成的内容不应完全属于AI。
-• **Hu3** 提出，人类创作也是基于预先存在的模型（如DNA）和外部输入，因此AI的创作方式与人类没有本质区别。
-• **F1codz** 关注法律执行问题，认为关键在于如何防止AI抄袭而非阻止数据抓取，因为如果AI通过学习生成的作品类似于受保护的作品，是否构成犯罪仍难以界定。
-• **Ksymph** 建议对2022年之前的数据采取 grandfather clause（既往不咎），但要求对之后的数据必须获得明确同意，然而执行上存在困难。
-• **Waterluvian** 将数据问题比作洗钱问题，认为在AI模型中，数据经过混合后变得难以追踪。
-• **Alganet** 强调当前处于灰色地带，不仅仅是知名作品，所有互联网内容都可能被用于AI训练，因此需要保护普通用户的权利。
-• **Empath75** 认为政策最终会倾向于产生最多经济价值的一方，AI公司通过影响政治来获取利益，类似于当前版权制度的问题。
-• **DarkWiiPlayer** 主张AI公司必须证明其训练数据获得了明确的授权，包括明确的用户同意。
+• **对漏洞严重性的质疑**：[perlgeek] 提出，虽然时间同步协议可能被恶意利用，但我们尚未看到大量此类攻击。他质疑该漏洞的实际可利用性和严重性，并试图了解问题的严重程度以及解决方案的稳健性。
+• **具体影响不明确**：[Waterluvian] 认为，当前对“不可预测的影响”描述过于模糊，建议通过具体测试结果和故障模式的目录，使问题更加具体化，以便引起组织的重视。
+• **历史漏洞实例**：[jsd1982] 分享了一个Y2038 bug的实例，在经典ASP代码中遇到该问题，并指出即使错误发生在2038年最大日期14年之前，系统仍然崩溃。这表明遗留代码中可能存在不可预见的问题。
+• **对普通用户影响不大**：[AndrewDucker] 认为，对于普通家庭用户而言，要求他们检查智能设备是否能在13年后继续使用是过度要求，因为这些设备很可能不会使用那么久。但企业和基础设施需要注意此问题。
+• **解决方案的复杂性**：[johnklos] 强调了解决方案的复杂性，特别是开源项目和企业对于旧系统支持的意愿问题。他提到NetBSD早在2012年就解决了64位时间问题，而Linux的过渡则较为缓慢。他还指出，企业通常不愿投入资源解决旧系统问题。
 
 补充讨论：
-• **Hndownfall** 和 **Dumblydorr** 的评论带有讽刺意味，质疑当前争论的真诚性，特别是涉及富裕的创作者和技术公司之间的利益冲突时。
-• **Superkuh** 认为，除了政治家，评论者对该问题的了解和资格有限，并暗示当前的争论类似于历史上对技术进步的抵制。
-• **Francisofascii** 引用“站在巨人的肩膀上”这一比喻，认为人类和AI的创作都是基于已有工作的衍生，没有本质区别。
+• **时间表示范围的广泛性**：[ks2048] 开玩笑地提到未来292271025015年的问题，暗示时间表示范围的问题可能会在极远的未来再次出现。
+• **实际修复情况**：[ninjin] 指出OpenBSD在2014年已经修复了Y2038问题，Linux大约在2020年跟进。
+• **物联网设备的可弃性**：[Retr0id] 担心许多物联网设备可能只会通过“丢弃旧设备并购买新设备”来解决2038年问题。
+• **提高意识的时机**：[sans_souse] 开玩笑地问是否现在提出Y10k问题为时过早，暗示对长远未来的潜在问题不必过早担忧。
 
 争议焦点：
-• AI数据抓取是否等同于盗版行为，尤其是当涉及普通互联网内容时。
-• 如何在法律上定义和执行AI生成内容的版权问题。
-• 是否需要以及如何获得用户对数据使用的明确同意。
-• 经济利益如何影响相关政策的制定和执行。</div>
+• **漏洞的实际严重性和可利用性**：[perlgeek] 质疑2038年问题的实际可利用性和严重性，并提出为何我们尚未看到大量此类攻击。这表明在社区中对该问题的实际威胁程度存在一定争议。
+
+技术讨论：
+• **时间表示的技术细节**：[panzi] 讨论了JavaScript中自Unix纪元以来的毫秒数何时不再能被IEEE双精度浮点数准确表示的问题。
+• **具体修复工具和方法**：[mkj] 分享了一个测量软件包中可疑时间转换的工具，并提供了具体的技术实现方法链接。
+
+幽默与轻松话题：
+• **时间旅行的玩笑**：[rkapsoro] 开玩笑说计划在2038年举办派对，而[cranberryturkey] 则提到过去曾有人遗憾错过Y2K问题的趣闻。
+
+总结：社区对2038年问题的严重性、影响范围、技术解决方案以及长远未来可能出现的时间表示问题进行了广泛讨论，同时夹杂着一些幽默与轻松的评论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43962662" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43952714" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -475,46 +396,140 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.doc.cc/articles/a-brief-history-of-the-numeric-keypad" target="_blank">A brief history of the numeric keypad</a>
+                    <a href="https://flak.tedunangst.com/post/fan-service" target="_blank">Fan Service</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ThomPete</span> |
-                    <span>评分: 70</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-05-08 20:04</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 148</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-11 04:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章简要探讨了电话和计算器键盘布局的差异及其历史渊源。虽然两者功能相似，但电话键盘是1-2-3在上，而计算器是7-8-9在上。作者追溯了数字键盘的演变，指出1844年法国人Jean-Baptiste Schwilgué发明了首个带数字键的计算器。早期的设计如James White的1822年发明也展示了键盘布局的概念。
+                    <p>本文描述了在OpenBSD系统上为ASUS笔记本开发ACPI WMI驱动以控制风扇速度的过程。ASUS笔记本通过Fn键组合可以调节风扇速度，但该功能在OpenBSD上不可用。作者首先解释了ACPI作为硬件抽象层的作用，并指出虽然ACPI提供了标准方法，但厂商常加入非标准功能，导致仍需编写自定义驱动。作者试图通过WMI扩展解决此问题，WMI使用GUID映射方法名以识别特定功能。
 
-关于计算器键盘倒置排列的原因，有理论认为这与收银机设计有关，因0键在最底部更易触及。然而，早期收银机直到1893年才开始使用单独的0键和三列垂直数字排列。1884年，Dorr Felt发明的Comptometer也采用了类似的垂直排列，每个数字列代表不同的十进位。
-
-文章总结，虽然键盘布局差异的历史原因尚不完全明确，但与早期机械设计及使用习惯密切相关。</p>
+作者开发了一个初步的ACPI驱动读取_WDG缓冲区并修正GUID字节顺序问题。通过分析系统ACPI代码，解决了调用_WED方法时返回值恒为1的问题，成功识别不同事件。进一步编写代码处理设备状态，成功控制键盘背光灯，但在调节风扇模式时未见效果。参考Linux驱动后，发现需要进行位操作以检测和设置风扇状态，但仍未获得预期结果，推测可能遗漏了Linux驱动中的某些细节。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同设备上的数字键盘布局差异及其逻辑
+                    <div class="comments-summary">主要讨论点：围绕现代计算机系统中ACPI、WMI、EC（嵌入式控制器）等技术在功能实现上的变化及其影响的讨论。
 
 不同观点：
-• [crazygringo] 认为，数字键盘（numeric keypad）和电话键盘（telephone keypad）布局的差异源于使用需求的不同。数字键盘的0位于底部且较大，便于输入常见的价格数字，而电话键盘的数字1-9使用频率相近，因此采用更自然的数字顺序，0放在底部，因为计数通常不从0开始。
-• [abanana] 指出，电话号码和数学意义上的数字不同，电话号码是独立的字符串，每个数字没有数学上的关联，因此输入电话号码和输入计算用的数字在思维方式上不同，这也可能是键盘布局差异的一个原因。
-• [teo_zero] 对电脑键盘上0位于9右侧的设计表示好奇，并希望了解其原因，这与讨论的主要话题相关但有所偏离。
-• [cduzz] 通过个人经验讲述了在担任接线员时使用的电话公司键盘与标准终端键盘的不同，并指出这些键盘设计与特定功能需求相关。
-• [thenthenthen] 提到不同国家的ATM键盘使用不同的布局（1-2-3或7-8-9），并猜测这可能与语言、历史或殖民主义有关。
-• [userbinator] 提到电视遥控器的数字布局与电话键盘一致，且一些自助服务终端使用按字母顺序排列的键盘，令人困惑。
-• [rmccue] 提出，键盘设计可能受到Benford’s law的影响，即较低数字在日常生活中更常使用。
-• [gitroom] 表达了对不同键盘布局适应困难的挫折感，并质疑这种不适是否会推动设计变革。
-• [card_zero] 调侃自己同时拥有电话和计算器键盘，暗示对讨论主题的轻松态度。
-• [tekla] 则以幽默方式质疑讨论中对键盘差异的关注，暗示实际使用中（如Excel）这种差异并不显著。
+• [userbinator] 认为，过去在EC中实现的功能（如屏幕亮度、音量调整等）在任何操作系统下都能正常工作，甚至在DOS中也不需要驱动程序。然而，现代笔记本电脑需要依赖复杂的操作系统和驱动程序来实现这些简单功能，这是一种倒退和生态封闭的表现，可能是微软希望通过这种方式增加PC生态系统的封闭性。
+
+• [mjg59] 指出，Windows通过WMI让用户空间的策略代理更容易接入，而不是直接调用原始的ACPI方法。尽管WMI在某种程度上是自描述的，但很多方法并没有文档记录，因此仍需要通过反编译ACPI字节码来理解。这表明WMI的复杂性和文档不足带来了额外的技术挑战。
+
+• [diegoperini] 对Linux系统中代码结构的有序性表示赞赏，但也指出其逻辑性虽然强，但使用起来并不那么方便，形象地比喻为在按字母顺序排列的超市中导航。
+
+• [ac29] 提到电池寿命的改善以及通过设置EPB来实现更高效的CPU频率调节，从而降低风扇噪音。这表明在Linux系统中，通过技术手段可以实现更高的能效和更好的用户体验。
+
+• [dodomodo] 认为，ACPI WMI的设计初衷是让固件能够更直接地暴露高级WMI对象，这比Linux中的sysfs风格更清晰易用。然而，当支持的基础设施不足时，这种设计的优势就不再明显。
 
 补充讨论：
-• 争议焦点在于键盘布局差异的根本原因，特别是不同键盘设计是否真正符合使用需求，以及这种差异是否应被视为设计缺陷。
-• 讨论中多次提到不同设备键盘布局的一致性或不一致性问题，特别是ATM、遥控器和自助终端等设备的布局差异带来的困惑。
-• 一些评论也引入了个人经验和具体使用场景，如接线员的工作经历，为理解键盘设计提供了实际案例。</div>
+• 评论中提到了技术实现的历史变化，以及这种变化对用户体验和系统复杂性的影响。
+• 对Linux和Windows系统中不同技术方案的优缺点进行了对比，特别是WMI和sysfs风格的对比。
+• 涉及了技术文档的缺乏和技术实现的复杂性对开发者和用户的影响。
+• 对现代系统中功能实现的封闭性和复杂性提出了批评，并讨论了这种趋势可能带来的生态系统封闭问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43930725" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43951368" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.vintagecomputing.com/index.php/archives/2833/why-the-apple-ii-didnt-support-lowercase-letters" target="_blank">Why the Apple II Didn't Support Lowercase Letters (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: colinbartlett</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-05-10 21:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文由Steve Wozniak解释为何最初的Apple II不支持小写字母。20世纪70年代初，Wozniak在经济拮据的情况下进行个人数字项目，受限于成本，他购买了仅支持大写字母的60美元键盘。他的电视终端（用于访问ARPAnet）因此也只支持大写字母。Apple I和Apple II的设计直接沿用了这一现成的电视终端。由于缺乏资金，Wozniak无法使用分时服务来简化编码工作，所有代码都是手写和手动编译的，因此加入小写字母非常困难。他与Steve Jobs讨论过此问题，但因成本问题未做更改。最终，Apple I和Apple II仅支持大写字母的主要原因是Wozniak的经济困境。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Apple II及早期个人计算机的历史、技术特点和影响
+
+不同观点：
+• WalterBright分享了自己在1978年因经济原因自制6800计算机键盘的经历，解释了当时技术条件的限制，如只能识别单键输入和使用8x8键盘矩阵。
+• caminanteblanco对WalterBright的帖子表示赞赏，并幽默地提到期待Wozniak（沃兹尼亚克，Apple联合创始人）的帖子。
+• Syzygies提到自己在1980年购买Apple II并进行“shift键修改”的经历，虽然修改成功，但对Wozniak的技术解释感到困惑。Apple II虽然未直接推动其数学研究，但帮助了朋友们的职业发展。
+• aantix回忆1992年以150美元购买Apple 2+的经历，尽管当时已过时，但通过附带的手册学会了编程，并使用终端程序连接BBS。
+• dang提供了2020年关于“Apple II不支持小写字母”的讨论链接。
+• kragen对Wozniak自行构建CPU和Apple II作为早期互联网访问工具的历史影响表示惊叹。
+• zabzonk提到自己在1980年代初使用Dragon32计算机的经历，该机只有大写字母，但键盘较好。
+• Asraelite提到在游戏LittleBigPlanet中使用数字信号和逻辑门构建计算机的社区，其中一些计算机使用Apple II字符集。
+• __s提到定制人体工学键盘的价格与通货膨胀下的60美元计算机成本相当。
+• kazinator提到自己使用的Apple ][+克隆机支持小写字母和数字键盘，表明香港制造的版本在技术上有所改进。
+• timonoko分享了自己1977年从军队退役后学会摩尔斯电码和AK-47维护的经历，认为键盘和显示器在当时被视为多余。
+• kristianp询问关于Apple早期历史的推荐书籍，并提到《The Little Kingdom》一书。
+• 90s_dev提到自己为项目深入研究了相关主题，并提供了一个有启发性的链接。
+• ourmandave提到当时能获得40列显示已经算幸运，80列需要扩展卡。
+
+补充讨论：
+• 讨论中多次提到Apple II的技术限制，如仅支持大写字母和早期键盘设计。
+• 不同用户分享了各自对早期个人计算机的亲身使用经历，反映了当时技术对个人和职业发展的影响。
+• 争议焦点主要在于对Apple II技术特点的不同理解和解释，例如Syzygies对Wozniak技术说明的困惑。
+• 讨论还涉及了早期计算机的自制和技术改造，以及这些设备在个人学习和职业生涯中的长期影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43949056" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://statmodeling.stat.columbia.edu/2024/05/26/is-there-a-balance-to-be-struck-between-simple-hierarchical-models-and-more-complex-hierarchical-models-that-augment-the-simple-frameworks-with-more-modeled-interactions-when-analyzing-real-data/" target="_blank">Is there a balance to be struck between simple hierarchical models and</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: luu</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-05-07 15:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在分析实际数据时，简单层次模型与增加更多交互作用的复杂层次模型之间是否需要平衡
+
+不同观点：
+• [Onawa] 提出讨论的核心问题：在处理实际数据时，是否需要在简单的层次模型和增加了更多交互作用的复杂模型之间找到平衡。她关注的是模型复杂度的选择以及如何在简单和复杂之间取舍。
+
+• [a-dub] 对Onawa的问题提出了算法化的思路，认为可以从简单的比较开始，逐步增加模型复杂性，直到达到理想的结果。这表明他支持一种循序渐进、逐步增加复杂性的建模方法。
+
+• [joe_the_user] 提出统计模型和机器学习/人工智能模型在目标和方法上的区别。他认为统计模型追求无偏预测，而机器学习模型更关注预测效果，不关心传统意义上的统计偏差。他的观点指向了不同建模范式之间的目标差异，暗示在选择模型时应考虑应用场景和目标。
+
+补充讨论：
+• [a-dub] 的观点隐含着对模型选择的实际操作建议，即通过实验和迭代来决定模型的复杂度，而不是一开始就追求最复杂的模型。
+
+• [joe_the_user] 的评论引入了模型类型之间的争议：统计模型和机器学习模型在预测中的不同侧重点。他强调了统计模型在无偏估计上的追求，而机器学习模型则更注重实际预测效果，这可能会影响模型复杂度的选择。
+
+• 争议的焦点在于模型复杂性和目标之间的平衡问题。具体来说，是在统计模型的无偏性与机器学习模型的预测能力之间，如何根据具体应用场景做出选择。
+
+总结来看，讨论围绕着模型复杂度的选择展开，包括如何逐步增加复杂性、统计模型与机器学习模型的不同目标和应用场景，以及如何根据具体需求在这些模型之间做出权衡。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43916818" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
