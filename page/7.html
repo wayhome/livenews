@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-14 14:19 (北京时间)
+            最后更新时间: 2025-05-14 17:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,70 +61,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://admiralcloudberg.medium.com/trial-by-fire-the-crash-of-aeroflot-flight-1492-ee61cebcf6ec" target="_blank">Trial by Fire: The crash of Aeroflot flight 1492</a>
+                    <a href="https://corrode.dev/blog/rust-option-handling-best-practices/" target="_blank">Don't unwrap options: There are better ways (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: shmeeed</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-05-13 07:12</span>
+                    <span>作者: mu0n</span> |
+                    <span>评分: 88</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-05-13 17:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2019年5月5日，俄罗斯国际航空（Aeroflot）1492航班在莫斯科谢列梅捷沃机场着陆后起火，导致机上41人遇难，37人幸存。这架苏霍伊超级喷气机100（Sukhoi Superjet 100）在着陆过程中遭遇雷暴和飞控系统故障，多次撞击跑道后起火。机尾迅速被火焰吞噬，部分乘客因毒烟丧生。事故引发了关于航空公司、飞机、机组人员及乘客责任的争议，尤其是一些乘客在撤离时仍试图拿取随身行李。经过近六年的调查，独立调查委员会发布了一份近600页的报告，指出事故原因复杂，包括天气、技术故障及人为因素。这起事故揭示了一个涉及广泛、技术复杂且带有悲剧性的故事。</p>
+                    <p>文章主要讨论了在Rust中处理`Option`类型的`None`值时，避免使用`unwrap()`的更好方法。常见问题是当函数返回`Result`时，无法直接使用`?`运算符处理`Option`，因为该运算符仅适用于`Result`类型。文章指出，许多人遇到编译错误后由于不理解错误信息而选择使用`unwrap()`，但这可能导致运行时`panic`。作者建议避免滥用`unwrap()`，尤其是在库或大型项目中，应优雅地处理错误。
+
+解决方案包括：
+1. 如果可以，将函数返回类型改为`Option`。
+2. 使用`ok_or()`或`ok_or_else()`将`Option`转换为`Result`，从而自定义错误信息。
+3. 直接使用模式匹配处理`None`情况。
+
+这些方法能更安全地处理`None`，并使代码更健壮。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：俄罗斯航空某事故的原因分析及系统设计、应急响应和行业安全的广泛讨论
+                    <div class="comments-summary">主要讨论点：Rust中的错误处理和不同的编程风格
 
 不同观点：
-• mppm 认为事故的主要原因是飞行员错误，约占80%，包括未严格遵守程序和清单，以及手动模式下的操作失误。另外15%归因于乘客取行李延缓了撤离，5%归因于飞机设计问题，而紧急响应的延迟仅占很小部分，因为火势蔓延过快，应急响应时间影响有限。
-• andrewaylett 关注飞机系统模式切换的问题，尤其是正常模式与直接法模式（Direct Law）的巨大差异。他提出紧急操作应尽量与常规操作保持一致，以避免在紧急情况下增加操作难度，并以汽车的驾驶系统为例说明这一设计原则。
-• nativeit 认为该事故分析详尽，揭示了系统、机构和公司中存在的严重缺陷，并警示类似问题在美国也可能发生。评论还提到对俄罗斯航空安全现状的担忧，特别是2022年后事故报告的透明度下降。
-• the_mitsuhiko 指出，俄罗斯航空业存在制度性的冷漠，限制了关心安全的从业人员发挥作用。并提到自2022年以来，俄罗斯的事故报告在西方视野中消失，使得其航空安全性更难评估。
-• rdtsc 对飞行手册中的严重错误（将空客的控制法描述混入SSJ的控制法中）表示震惊，认为这是典型的不严谨操作，并提到SSJ飞机直接模式复现的频率远高于预期。
+• ChadNauseam认为`let-else`是一个很棒的Rust语法特性，因为它能确保else分支会“发散”（返回、恐慌、中断或继续），从而避免出错。他还提到`let-else`不能轻易插入到链式调用中，而`Option::ok_or`虽然适合链式调用，但在“or”分支中调用函数（如`format!`）时效率较低。
+• evrimoztamur强调在实时应用中（如视频游戏）避免恐慌的重要性，并使用严格的Clippy lint规则来防止错误处理中的疏漏。他特别提到数值转换可能会失败，因此需要特别注意。
+• Sharlin对`ok_or`的命名表示了一些异议，认为它与`Result`类型更相关，但他也承认这种命名方式反映了将`Option`转换为`Result`的功能。
+• vibyry则认为在某些情况下直接使用`unwrap`是可以接受的，特别是在无法从错误中恢复或确保类型不为`None`时。他还提到，即使不严格遵循Rust的惯用风格，依然能获得Rust的大部分好处。
+• cibyr推荐使用`anyhow::Context`来替代`unwrap()`，认为这样能更轻松地处理错误。
+• Zambyte分享了Zig语言中的等效解决方案，展示了如何使用`orelse`和`if`来处理可选值，提供了一种不同的编程思路。
+• mcflubbins表示希望有Clippy检查来限制`unwrap()`的使用，因为他很少在实际中需要用到它。
+• tekacs介绍了一种自定义的错误处理设置，通过扩展`Result`和`Option`来提供更详细的错误信息和处理机制。
+• tengbretson询问Rust的内置`Option`和`Result`类型是否实现了`map`和`flatMap`，表明对Rust函数式编程特性的关注。
+• Ar-Curunir对文章中提到的`let-else`风格表示赞赏，并指出目前缺乏中级Rust材料来教授常见的设计模式和惯用风格。
+• the__alchemist分享了一种处理嵌套过多的实用方法，虽然不一定是惯用风格，但在实际情况下很有用。
+• sophacles对关于`?`操作符不能用于`Option`的错误消息表示不满，认为其解释已经足够清楚。
+• rienbdj则开玩笑地问Rust社区何时会开始推广“do”符号和单子变换器，暗示对函数式编程风格的潜在兴趣。
 
 补充讨论：
-• user_7832 询问关于航空安全的其他学习资源，提到AOPA和NTSB的视频资源。
-• kynetic 对乘客在紧急情况下仍取行李的自利行为表示震惊。
-• d_silin 总结了多项因素，包括飞行员训练不足、MAK调查受阻、飞机手册错误以及飞行员在事故中的具体操作失误，并提到压力和随机因素对事故的影响。
-
-争议焦点：
-• 飞行员错误与系统设计缺陷在事故中的权重分配存在争议。mppm认为飞行员错误占主要因素，而the_mitsuhiko和d_silin则强调了系统和制度问题。
-• 紧急模式下的操作应与常规操作保持一致的设计理念讨论，andrewaylett支持操作一致性，以减少紧急情况下的额外风险。</div>
+• 关于`let-else`和`Option::ok_or`的优缺点以及适用场景的深入讨论。
+• 错误处理中不同策略的权衡，包括严格避免恐慌与适当使用`unwrap`。
+• 对Clippy lint规则在代码质量控制中的重要性的不同看法。
+• 关于Rust中函数式编程特性和惯用风格的讨论。
+• 对新手友好型Rust教程和中间级别学习资源的缺乏提出了关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43970363" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dlang.org/articles/d-array-article.html" target="_blank">D Slices</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: teleforce</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-05-13 22:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了D语言中切片（slices）的特性及其优势。D切片是对C语言数组的一种改进，解决了C数组在安全性与管理上的不足，如缓冲区溢出问题。D切片不仅包含指针，还跟踪数组段的长度，并由垃圾收集器管理内存，从而避免了内存损坏风险。D切片支持动态扩展，并可通过简单的函数添加功能，使编写高效代码变得更加简洁和安全。文章通过代码示例展示了D切片的定义、分配及操作方法，强调了其在性能和语法简洁性上的优势。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43978569" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43975785" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -171,46 +155,97 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://dejan.ai/blog/chromes-new-embedding-model/" target="_blank">Chrome's New Embedding Model: Smaller, Faster, Same Quality</a>
+                    <a href="https://jamal.haba.sh/its-2025-why-are-banks-still-getting-authentication-so-wrong/" target="_blank">Why are banks still getting authentication so wrong?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kaycebasques</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-13 14:39</span>
+                    <span>作者: kamikazee</span> |
+                    <span>评分: 145</span> |
+                    <span>评论数: 43</span> |
+                    <span>发布时间: 2025-05-13 18:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Chrome的最新更新引入了一个新的文本嵌入模型，该模型比之前的版本缩小了57%（从81.91MB减少到35.14MB），同时在语义搜索任务中保持几乎相同的性能。模型缩小主要通过将嵌入矩阵从float32量化为int8精度实现，且未明显影响嵌入质量或搜索排名。新模型在架构上与旧模型相似，主要区别在于关键嵌入矩阵的量化，使得新模型的存储需求大幅下降。尽管内部进行了量化，新模型的输出嵌入仍保持完整的float32精度，甚至略有提高。用户将受益于更小的存储占用、更快的浏览器更新以及更高效的资源利用，而搜索质量保持不变。这一优化特别有利于存储空间有限的设备。</p>
+                    <p>文章批评了TD银行等金融机构在2025年仍使用脆弱的SMS双因素认证（2FA），导致用户在国际旅行等常见场景下遭遇认证难题。SMS-based 2FA不仅不安全，还容易受到SIM卡交换、网络钓鱼等攻击。文章指出，尽管有更安全的选择，如 passkeys、TOTP标准和硬件安全密钥，这些银行仍依赖过时且不安全的认证方法。作者呼吁采用基于标准、用户友好的认证机制，如FIDO2/WebAuthn、TOTP支持和安全恢复路径，以提升安全性和用户体验。银行必须改进认证系统，不能再以不便为借口忽视用户安全。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Chrome内嵌句子嵌入模型的用途及是否应开源
+                    <div class="comments-summary">主要讨论点：银行身份验证系统的安全性、便利性与复杂性之间的平衡
 
 不同观点：
-• jbellis：
-  - 认为Chrome内嵌的嵌入模型没有包含特别专有的技术，尤其在针对CPU优化的嵌入模型中。
-  - 对该模型未开源表示遗憾，并提到如果开源会愿意使用。
-  - 目前使用MiniLM-L6-v2作为替代，效果不错，并附上一个技术博客链接以支持其观点。
-
-• darepublic：
-  - 回应jbellis，确认Chrome确实内嵌了一个小型的设备端句子嵌入模型，但仅作为内部功能。
-  - 详细解释该模型的用途：自M版本128起，浏览器可以将每次页面访问的标题/片段及搜索查询转化为密集向量，用于语义历史记录搜索，并展示“答案”芯片。
-  - 指出该功能被两个实验所限制，目前尚未广泛开放。
-
-• pants2：
-  - 简单询问Chrome使用嵌入模型的具体用途。
+• **Bryanlarsen** 认为银行要求电话验证（如询问生日信息）是不安全的做法，容易让用户成为诈骗的受害者。
+• **Kokonoko** 批评密码到期策略，认为强制用户每六个月更改密码并不能提升安全性，反而可能适得其反。
+• **Etskinner** 指出，登录流程复杂的原因是过时的安全观念（如复杂的密码要求和使用短信进行2FA），这些观念被产品经理错误地应用。
+• **Quintu5** 认为银行在安全性和监管要求之间面临权衡，银行采用多种认证方式是为了避免被罚款。
+• **Chvid** 主张身份验证应由国家统一提供，像护照一样，并举例丹麦的MitID系统和欧盟的EIDAS计划。
+• **Gtkspert** 提出，银行的威胁模型不仅包括账户被盗用，还包括利用合法账户洗钱的风险，因此银行选择不易自动化的验证方式。
+• **Lenerdenator** 分享个人经历，批评银行在账户被盗用后的处理方式，并指出银行缺乏明显的安全防护措施是因为他们不会因失败而面临经济损失。
+• **Comrade1234** 称赞UBS Switzerland的认证系统，使用电子设备生成一次性密码，不依赖短信验证。
+• **Phui3ferubus** 提到欧盟要求提供与特定操作相关的验证码，导致TOTP和第三方认证应用受限。
+• **Meleagris** 指出加拿大银行系统的登录流程过于复杂，尤其是对老年人不友好，并提到某些手机运营商不支持SMS 2FA。
+• **Bberenberg** 提供了一种解决方法，即在旅行时禁用数据使用，但仍能接收免费的SMS。
+• **Noleary** 认为尽管SMS 2FA有缺陷，但它的便利性和用户熟悉度使得它比其他更安全的选项更受欢迎，推行更安全的验证方式需要长时间教育用户。
+• **Patrakov** 批评一些应用使用TOTP标准但封闭不互通，且以不可提取和备份种子作为借口。
+• **Physhster** 指出Bank of America允许使用FIDO U2F作为第二因素，但不允许移除短信验证，认为没有意义。
+• **Tadzikpk** 认为由于转换银行账户的摩擦成本高，用户很少基于在线认证的便利性选择银行，银行缺乏改进动力。
 
 补充讨论：
-- Chrome内嵌的句子嵌入模型主要用于“历史嵌入”，将历史记录和搜索查询转换为向量进行语义搜索。
-- 该模型是否应开源存在争议，jbellis认为既然模型没有特别专有的内容，理应开源以供更广泛的使用。
-- darepublic则详细描述了该模型的具体应用场景和技术限制。
-
-争议焦点：Chrome的嵌入模型是否应开源，以及其专有性。</div>
+• 争议焦点在于银行在安全性和便利性之间的权衡，特别是SMS 2FA的优劣。
+• 一些评论者认为银行的安全措施过于复杂且不够有效，而另一些评论者则指出这些措施是为了应对监管和防止洗钱等实际威胁。
+• 国家统一提供身份验证服务的提议获得了一些支持，特别是在欧盟和丹麦的例子中。
+• 用户对多因素认证（MFA）的接受度和理解程度也是讨论的一个重要方面，一些评论者指出需要更简单、更易用的解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43973502" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43976359" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://erratique.ch/writings/anti-personnel-computing" target="_blank">Anti-Personnel Computing (2023)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: transpute</span> |
+                    <span>评分: 100</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-05-13 08:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"Anti-personnel computing"是一个新术语，用于描述21世纪初主流计算的特点。它指计算设备的使用损害用户利益，而使第三方实体受益。具体来说，"anti-personnel computer"指的是一种主要用于损害用户利益、为第三方实体谋利的计算设备。该词源自“反人员地雷”（anti-personnel mine）以及“个人计算”（personal computing）和“个人电脑”（personal computer）等词，反映了技术对用户的不利影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于“反个人计算”（anti-personnel computing）及其相关概念的讨论，涉及技术对用户的负面影响、隐私问题以及可能的解决方案。
+
+不同观点：
+• JohnMakin认为当前软件行业的氛围与90年代末和2000年初的互联网泡沫时期相似，当时网页上充斥着广告和恶意软件，而现在类似的现象再次出现，反映出过度追求高估值和营收的狂热可能导致崩溃。
+• vanschelven引用了GNU哲学，强调保持对计算的控制，以避免被技术控制。
+• fmajid和praptak对术语提出质疑和建议。fmajid认为“反个人计算”这个术语不准确，建议用“浮士德式计算”（Faustian computing）。praptak则更倾向于使用“反特性”（antifeatures）这个更精确的术语。
+• Tepix指出，当前软件系统越来越难以避免对用户不利的影响，利润最大化的驱动是这种现象的根源，并提到Cory Doctorow对“恶化”（enshittification）的描述，尽管引起了广泛关注，但非盈利和去中心化服务仍未占据较大市场份额。
+• pjc50认为“用户 hostile”或“hostile architecture”更适合描述那些对用户不利的系统，而“反个人”应保留用于那些真正危险的应用，比如用于识别种族的监控摄像头。
+• keisborg喜欢“反个人计算”这个术语，因为它利用了负面联想来引发讨论，并提议禁止“反个人计算”。
+• DonHopkins回忆了Mac电脑崩溃时的炸弹图标，以及Windows 9x的非法操作提示，这些设计曾让用户感到恐慌。
+• casey2区分了“反个人计算”和“反特性”，前者包括数据收集、封闭生态系统、暗模式和不透明程序，后者指那些对用户有害或控制用户的行为。
+• 6510讨论了中国和西方在数据使用上的差异，提出可以通过加密和智能使用时间和地点来保护隐私，并提出探索“反个人计算”和有用应用之间的边界，认为可能存在互利空间。
+
+补充讨论：
+• 讨论中涉及的术语争议，包括“反个人计算”、“浮士德式计算”和“反特性”，反映了人们对技术负面影响的关注和术语准确性的追求。
+• 对技术系统中利润最大化驱动带来的负面影响及其解决方案的探讨，包括Cory Doctorow的“恶化”概念和加密技术的潜在应用。
+• 对隐私和数据使用的不同看法，有人担心技术对个人的控制和隐私侵犯，也有人认为在某些情况下可以通过技术手段实现互利。
+
+争议焦点：
+• 术语“反个人计算”是否准确和合适，以及如何定义和区分不同类型的技术负面影响。
+• 如何在技术系统中平衡利润最大化和用户利益，以及如何有效保护隐私和避免技术对用户的控制。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43970637" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -276,55 +311,6 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://erratique.ch/writings/anti-personnel-computing" target="_blank">Anti-Personnel Computing (2023)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: transpute</span> |
-                    <span>评分: 100</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-05-13 08:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>"Anti-personnel computing"是一个新术语，用于描述21世纪初主流计算的特点。它指计算设备的使用损害用户利益，而使第三方实体受益。具体来说，"anti-personnel computer"指的是一种主要用于损害用户利益、为第三方实体谋利的计算设备。该词源自“反人员地雷”（anti-personnel mine）以及“个人计算”（personal computing）和“个人电脑”（personal computer）等词，反映了技术对用户的不利影响。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于“反个人计算”（anti-personnel computing）及其相关概念的讨论，涉及技术对用户的负面影响、隐私问题以及可能的解决方案。
-
-不同观点：
-• JohnMakin认为当前软件行业的氛围与90年代末和2000年初的互联网泡沫时期相似，当时网页上充斥着广告和恶意软件，而现在类似的现象再次出现，反映出过度追求高估值和营收的狂热可能导致崩溃。
-• vanschelven引用了GNU哲学，强调保持对计算的控制，以避免被技术控制。
-• fmajid和praptak对术语提出质疑和建议。fmajid认为“反个人计算”这个术语不准确，建议用“浮士德式计算”（Faustian computing）。praptak则更倾向于使用“反特性”（antifeatures）这个更精确的术语。
-• Tepix指出，当前软件系统越来越难以避免对用户不利的影响，利润最大化的驱动是这种现象的根源，并提到Cory Doctorow对“恶化”（enshittification）的描述，尽管引起了广泛关注，但非盈利和去中心化服务仍未占据较大市场份额。
-• pjc50认为“用户 hostile”或“hostile architecture”更适合描述那些对用户不利的系统，而“反个人”应保留用于那些真正危险的应用，比如用于识别种族的监控摄像头。
-• keisborg喜欢“反个人计算”这个术语，因为它利用了负面联想来引发讨论，并提议禁止“反个人计算”。
-• DonHopkins回忆了Mac电脑崩溃时的炸弹图标，以及Windows 9x的非法操作提示，这些设计曾让用户感到恐慌。
-• casey2区分了“反个人计算”和“反特性”，前者包括数据收集、封闭生态系统、暗模式和不透明程序，后者指那些对用户有害或控制用户的行为。
-• 6510讨论了中国和西方在数据使用上的差异，提出可以通过加密和智能使用时间和地点来保护隐私，并提出探索“反个人计算”和有用应用之间的边界，认为可能存在互利空间。
-
-补充讨论：
-• 讨论中涉及的术语争议，包括“反个人计算”、“浮士德式计算”和“反特性”，反映了人们对技术负面影响的关注和术语准确性的追求。
-• 对技术系统中利润最大化驱动带来的负面影响及其解决方案的探讨，包括Cory Doctorow的“恶化”概念和加密技术的潜在应用。
-• 对隐私和数据使用的不同看法，有人担心技术对个人的控制和隐私侵犯，也有人认为在某些情况下可以通过技术手段实现互利。
-
-争议焦点：
-• 术语“反个人计算”是否准确和合适，以及如何定义和区分不同类型的技术负面影响。
-• 如何在技术系统中平衡利润最大化和用户利益，以及如何有效保护隐私和避免技术对用户的控制。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43970637" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://blog.pypi.org/posts/2023-04-23-introducing-pypi-organizations/" target="_blank">PyPI Organizations (2023)</a>
                 </h3>
                 <div class="story-meta">
@@ -360,6 +346,96 @@
 • datadrivenangel提出了对PyPI安全功能的改进建议，反映了用户对安全性的关注。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43975541" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://dejan.ai/blog/chromes-new-embedding-model/" target="_blank">Chrome's New Embedding Model: Smaller, Faster, Same Quality</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kaycebasques</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-13 14:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Chrome的最新更新引入了一个新的文本嵌入模型，该模型比之前的版本缩小了57%（从81.91MB减少到35.14MB），同时在语义搜索任务中保持几乎相同的性能。模型缩小主要通过将嵌入矩阵从float32量化为int8精度实现，且未明显影响嵌入质量或搜索排名。新模型在架构上与旧模型相似，主要区别在于关键嵌入矩阵的量化，使得新模型的存储需求大幅下降。尽管内部进行了量化，新模型的输出嵌入仍保持完整的float32精度，甚至略有提高。用户将受益于更小的存储占用、更快的浏览器更新以及更高效的资源利用，而搜索质量保持不变。这一优化特别有利于存储空间有限的设备。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Chrome浏览器内嵌的嵌入模型（embedding model）及其影响
+
+不同观点：
+• jbellis认为Chrome内嵌的嵌入模型未开源令人遗憾，尽管该模型是为在CPU上运行优化的，但他怀疑其中是否包含任何高度专有的技术。他表示如果模型开源会使用，并提到目前MiniLM-L6-v2是一个不错的替代选择。
+
+• darepublic解释Chrome内嵌的模型是一个小型的设备端句子嵌入模型，属于内部功能，主要用于“历史嵌入”（History Embeddings）。自M-128版本以来，浏览器可以将每次页面访问的标题/摘要及搜索查询转化为密集向量，以实现语义历史搜索并显示“答案”标签。该功能目前在两个实验背后进行。
+
+• Alifatisk关注内嵌模型对系统性能的影响，尤其是对老旧设备的负载问题，特别是担心模型可能导致风扇加速旋转，询问对嵌入模型有更多了解的人以获取解答。
+
+• pants2对Chrome使用嵌入模型的具体用途感到困惑，直接询问其应用场景。
+
+补充讨论：
+• jbellis提供了对外部模型MiniLM-L6-v2的推荐，显示出对替代方案的了解和开放态度。
+• darepublic提供了关于嵌入模型具体功能和历史背景的详细解释，帮助澄清其他用户的疑问。
+• Alifatisk的担忧集中在实际使用中的性能问题，特别是对老旧硬件的影响，这可能是一个值得进一步探讨的技术细节。
+• pants2的提问引发了对嵌入模型实际用途的进一步解释，显示出对该技术缺乏了解的需求。
+
+争议焦点：
+• 主要争议在于Chrome内嵌模型未开源的问题，jbellis对此表示遗憾，而其他用户则关注其实际功能和性能影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43973502" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.realestatenews.com/2025/04/10/zillow-to-bar-publicly-marketed-listings-not-shared-via-mls" target="_blank">Zillow to bar publicly marketed listings not shared via MLS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gscott</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-14 00:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Zillow即将实施新标准，禁止未通过MLS共享的公开营销房源在其平台展示。此举得到eXp的支持，旨在创建公平的竞争环境。根据新标准，任何通过社交媒体、 yard signs等公开推广的房源，若未在24小时内提交至MLS，将无法在Zillow上显示。这一政策与NAR的“延迟营销”政策可能产生冲突，后者允许在特定延迟期内不将房源上传至MLS。Zillow认为，所有公开营销的房源都应让所有买家公平访问。eXp表示支持该举措，认为这将提高市场透明度和信任度。Zillow希望更多公司加入，以维护开放的市场环境，并指出MLS数据表明，未在MLS展示的房源可能导致卖家经济损失。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：房产销售策略及其对消费者的影响
+
+不同观点：
+• Justsignedup对房产销售过程中的经济逻辑感到困惑，特别是关于某项策略是否对消费者有利。他提出了一个问题，即某项操作究竟是对消费者有利（pro-consumer）还是不利（anti-consumer）。
+
+• Duxup则关注于不将房产列在MLS（Multiple Listing Service，房源共享服务）上的做法，质疑这种策略的优点。他认为不列出在MLS上可能对销售不利，因为MLS能够增加房源的曝光度。
+
+补充讨论：
+• Justsignedup的问题暗示了关于房产市场透明度的讨论。他可能在考虑卖方或中介的某些行为是否旨在控制市场信息，从而影响买方的决策和利益。
+
+• Duxup的评论引出了一个实际操作中的策略问题，即通过限制房源的曝光（如不使用MLS）是否能够带来某些好处。例如，卖家可能希望通过私下销售避免某些费用或保持价格不透明，但这可能会损害买家的选择权。
+
+• 争议焦点在于房产销售策略是否透明、公平。一方关注消费者是否能获得足够的房源信息以做出明智选择，另一方则关注卖家是否能够通过限制信息流动获得额外利益。
+
+• 整体来看，这场讨论反映了消费者和卖家在房产交易中的信息不对称问题，以及不同的销售策略如何影响双方的利益。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43979546" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -415,35 +491,6 @@
 • 讨论中还提供了多个外部资源链接，如视频解释和相关讨论链接，为深入了解提供了参考。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43969442" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.propublica.org/article/homevestors-fraud-charles-carrier-texas" target="_blank">How a "We Buy Ugly Houses" Franchise Left a Trail of Financial Wreckage in Texas</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rwc9</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-05-14 03:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文揭露了德州一起涉及“We Buy Ugly Houses”特许经营权的庞氏骗局。达拉斯特许经营人Charles Carrier被指控多年运作骗局，从富裕投资者和收入较低的老年人处骗取数千万美元。投资者Ronald Carver及其父亲被承诺9%的年回报率，初期收到了回报，最终却损失了约700,000美元。Carrier利用同一房产进行多次贷款，甚至对未拥有的房产也如此操作，导致投资者失去抵押保障。尽管有预警信号，HomeVestors公司未及时干预，否认对Carrier的行为负责，称其特许经营独立运营。此事件对众多投资者造成无法估量的财务损失。Carrier承认责任，HomeVestors则被投资者指控监管不力。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43980394" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
