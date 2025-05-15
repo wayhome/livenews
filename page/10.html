@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-15 17:16 (北京时间)
+            最后更新时间: 2025-05-15 20:24 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,95 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/ShinyTrinkets/twofold.ts" target="_blank">TwoFold (2f), CLI text expander/template engine</a>
+                    <a href="https://www.warpstream.com/blog/taking-out-the-trash-garbage-collection-of-object-storage-at-massive-scale" target="_blank">Garbage collection of object storage at scale</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: croqaz</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-11 18:28</span>
+                    <span>作者: ko_pivot</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-10 13:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>TwoFold (2✂︎f) 是一个命令行工具，使纯文本文件具有动态文件的功能，介于文本扩展器和模板引擎之间。它受 Emacs Org-mode、Python Jupyter Notebooks 和 React JS 启发，通过处理文本文件中的 LISP/XML 样式的标签，生成动态内容。它支持 XML、HTML 文档，并可自定义标签样式如 lisp、jinja2 等。TwoFold 可实时监控文件变化，支持实时协作，适用于验证信息、计算统计、检查拼写错误等。它兼容多种文本文件格式，但不适配二进制文件。标签分为单次使用和可刷新两类，用户可自定义标签并通过命令行加载。首次运行需使用 Bun 下载和启动，提供预构建的可执行文件。使用时通过 XML 样式的标签调用 JavaScript 函数，可以扫描文件查看可用标签并进行渲染。</p>
+                    <p>WarpStream是一个Apache Kafka的替代方案，构建于对象存储之上。其主要技术挑战之一是有效清除已逻辑删除的文件，以避免存储成本过高。简单使用存储桶策略（bucket policy）不适用于复杂系统，如WarpStream，因为它需要支持不同的数据保留期和Kafka的压缩主题功能。同步删除方法也不可行，因为分布式系统中可能出现元数据存储和对象存储不一致的情况，导致文件被遗留在对象存储中，增加成本。为解决此问题，WarpStream考虑使用延迟队列和异步协调等方法来有效管理对象存储的清理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：TwoFold 应用的性质和功能
+                    <div class="comments-summary">主要讨论点：对象存储中的垃圾回收（GC）机制及不同技术方案的优劣
 
 不同观点：
-• [支持观点] croqaz 认为 TwoFold 是一个小型的命令行应用程序，能够让纯文本文件像动态文件一样工作。这表明 TwoFold 提供了一种将静态文本转换为动态内容的方式，结合了文本扩展器、模板引擎和小型编程语言的功能。
-  - 论据：TwoFold 结合了文本扩展器、模板引擎和编程语言的功能，使其在处理文本时具有高度的灵活性和动态性。
-  
-• [潜在质疑观点] 虽然没有明确表达，但可能有人会质疑 TwoFold 是否真的能有效结合文本扩展器、模板引擎和编程语言的功能，还是会因为功能过多而变得复杂和难以使用。
-  - 例子：用户可能会关心这种多功能性是否会导致学习曲线陡峭，或者在处理简单任务时是否会显得过于复杂。
+• **DeathAnatos的观点**：不赞同仅依赖桶策略（bucket policy），并提出使用写前日志（WAL, Write-Ahead Log）来处理删除操作。具体做法是将待删除的对象记录到WAL中，执行删除操作后再删除WAL文件。如果系统崩溃，可以根据WAL文件重新执行删除命令。这种方法特别适用于需要在对象存储和SQL数据库等不同存储系统中同步删除操作的场景。
+
+• **Telotortium的观点**：质疑文章的广告性质，指出文章的结构巧妙地将产品宣传融入技术讨论中。该用户提到其公司（WarpStream）销售基于对象存储的Apache Kafka替代品，并认为这种方式比直接在文末打广告更有效。
+
+• **Juancn的观点**：提出了一种基于概率标记-清除（mark-and-sweep）的GC方法，使用布隆过滤器（bloom filter）进行大规模文件/对象的垃圾回收。该方法包括并行构建多个布隆过滤器，然后合并这些过滤器，在清除阶段使用过滤器来判断文件是否仍被引用。布隆过滤器可以确定文件不存活的确定性，而对于可能存活的文件则有一定概率误报。
+
+• **Siscia的观点**：支持使用简单的定期压缩和桶策略结合的方式来进行垃圾回收。具体做法是定期压缩文件，并设置桶策略删除超过一定时间范围的文件。同时设置警报机制监控文件年龄，以确保不会误删仍在使用的文件。
 
 补充讨论：
-• TwoFold 的具体应用场景，例如在代码生成、文档自动化或其他需要动态文本处理的任务中，可能会被进一步讨论。
-• 可能还会讨论 TwoFold 与其他类似工具的比较，比如其在功能、易用性和性能上的优劣。
+• **争议焦点**：不同方案在实际应用中的复杂性和可靠性。DeathAnatos强调了WAL的实用性，而Juancn则认为概率性方法（布隆过滤器）更为高效。Siscia则主张简单有效的方案，避免复杂的机制。
+• **技术细节**：讨论涉及了多种技术手段，如WAL、布隆过滤器、定期压缩和桶策略等，展示了不同场景下的技术选择和权衡。
+• **应用场景**：不同方案适用于不同的成本和可靠性要求，例如Siscia提到的方案在成本不敏感的情况下表现优异。
 
-</div>
+这些观点展示了在对象存储垃圾回收问题上的多种技术路径和实际考虑。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43955834" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.ft.com/content/1d35759f-f2a9-46c4-904b-4a78ccc027df" target="_blank">Insurers launch cover for losses caused by AI chatbot errors</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jmacd</span> |
-                    <span>评分: 130</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-05-11 10:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI保险的有效性、可行性及潜在问题
-
-不同观点：
-• **保险技术专家（loeber）**：认为这种AI保险并非全新的保险类型，只是现有产品的适应性调整，且市场规模有限。他指出，AI保险并不是一种革命性变化，并提供了更详细的文章链接供进一步阅读。
-
-• **质疑AI保险的实际作用（conartist6，imoverclocked）**：
-  - **conartist6** 以讽刺的方式提出，这种保险可能导致不负责任的行为，比如把孩子交给AI照顾，自己却去喝酒，最终因有保险而不需承担责任。
-  - **imoverclocked** 认为依赖AI保险来弥补损失是一种错误的方式，表明当前的AI技术尚未成熟，消费者也不喜欢使用，但企业仍选择这种效率低下的方式来解决问题。
-
-• **对比AI与人类的表现（AzzyHN，85392_school）**：
-  - **AzzyHN** 质疑AI聊天机器人和低薪、培训不足的员工谁会犯更多错误，暗示AI并非总是最佳选择。
-  - **85392_school** 指出，这种保险只覆盖模型退化的情况，但目前还没有证据表明固定检查点的LLM会退化，质疑其实际必要性。
-
-• **对AI保险商业模式的看法（otabdeveloper4，JumpCrisscross）**：
-  - **otabdeveloper4** 认为这是在“AI泡沫”中赚钱的方式，暗示这种保险可能只是投机行为。
-  - **JumpCrisscross** 提出了一种创新模式，认为基础模型开发者可以承担首次损失，从而降低用户保险费用并提高使用率。
-
-• **具体场景下的保险应用（DonHopkins，yieldcrv）**：
-  - **DonHopkins** 以讽刺口吻提问，是否可以为荒谬行为（如吃胶水披萨、注射消毒剂等）购买保险，质疑AI保险的适用范围。
-  - **yieldcrv** 认为如果AI经常出现“幻觉”错误，应该像人类承包商一样购买错误和遗漏保险，以弥补可能的失误。
-
-补充讨论：
-• **对AI技术不成熟的担忧（Neywiny）**：Neywiny分享了自己与AI打交道的经历，认为AI提供的答案往往不准确，幸好还有人类参与把关。
-
-• **技术细节讨论（fsfod）**：提到保险费用是否会根据模型输出的温度参数进行调整，显示出对技术细节的关注。
-
-• **类比其他保险案例（vfclists）**：将AI保险与针对恶意软件（如NotPetya）的保险相比较，暗示AI保险可能会像前者一样普及并遇到类似问题。
-
-争议焦点：AI保险是否能有效应对实际问题，以及是否会导致道德风险和不负责任的行为。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43952707" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43945423" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -201,6 +147,42 @@
 总结：讨论主要围绕不同序列化格式在性能、工具支持和特定使用场景下的优劣展开，参与者提供了各自的经验和见解。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43978476" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.engadget.com/big-tech/appeals-court-confirms-that-tracking-based-online-advertising-is-illegal-in-europe-223714124.html" target="_blank">Appeals court rules that tracking-based online advertising is illegal in Europe</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: adwmayer</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-15 06:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>比利时上诉法院裁定，目前用于大多数在线广告的透明度和同意框架（TCF）在欧盟是非法的。该决定支持了比利时数据保护局2022年的调查结果，即支撑在线广告的技术违反了欧盟《通用数据保护条例》（GDPR）的多项原则。TCF由互动广告局创建，旨在标准化网站请求用户同意被追踪的方式，但被认定在GDPR下非法。隐私倡导者认为，谷歌、亚马逊、微软等公司通过虚假同意弹窗欺骗了数亿欧洲人。尽管互动广告局对判决表示部分宽慰，但仍需根据裁定调整其广告技术框架，未来监管机构将监督其修改。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于TCF同意书合法性的讨论以及相关讽刺性情况
+
+不同观点：
+• [juliangmp] 认为在阅读一篇关于法院判定TCF同意书为非法的文章前，自己却被要求接受TCF同意书，这具有强烈的讽刺意味。此评论暗示了对实际操作和法律裁定不一致的困惑或不满。
+
+补充讨论：
+• [morjom] 提供了更多讨论的链接，暗示关于该话题在其他地方有更深入的对话，可能涉及技术、法律及隐私等更广泛的议题。
+• 争议的焦点可能集中在TCF同意书的合法性以及网站在法律裁定后的实际执行问题。用户[juliangmp]的评论指出了一种矛盾：在法律判定之后，用户仍然需要遵守相关规定，这引发了对隐私政策执行效率和法律判决实际效果的质疑。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43992337" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -277,51 +259,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tixy.land" target="_blank">A simple 16x16 dot animation from simple math rules</a>
+                    <a href="https://www.openwall.com/lists/oss-security/2025/05/12/1" target="_blank">Multiple security issues in GNU Screen</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: andrewrn</span> |
-                    <span>评分: 524</span> |
-                    <span>评论数: 62</span> |
-                    <span>发布时间: 2025-05-10 02:56</span>
+                    <span>作者: st_goliath</span> |
+                    <span>评分: 401</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2025-05-13 11:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个名为 "tixy" 的创意编程挑战。参与者需要用不超过32个字符的代码实现有趣的视觉效果或功能，类似于代码高尔夫。页面上的点可以点击以获取更多信息。基本函数模板为 `(t,i,x,y) =>`，其中 `t` 代表时间，`i` 是索引，`x` 和 `y` 是坐标，开发者可以利用这些参数创作出各种图形效果。这是一个鼓励简洁和创意的编程活动。</p>
+                    <p>本文主要讨论了Openwall团队在2025年5月披露的GNU Screen软件中的多个安全问题，特别是5.0.0版本和设置为setuid-root的安装实例。这些问题包括一个本地提权漏洞，可被利用于获得root权限，以及其他一些影响旧版本的安全问题。文章详细描述了每个漏洞，并提供了针对Screen 4.9.1和5.0.0版本的补丁。此外，文中还讨论了Screen的多用户模式及其潜在的安全风险，并给出了改进建议和受影响系统的概况。由于与上游沟通困难，当时尚未有官方的修复版本发布。Openwall还提到在披露过程中遇到的一些问题，并提供了一个受影响系统的矩阵图以供参考。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对Tixy平台及其类似项目的讨论与创作分享
+                    <div class="comments-summary">主要讨论点：GNU Screen及其安全问题、替代工具以及开源软件开发的现状
 
 不同观点：
-• **欣赏与喜爱**：
-  ◦ 多个用户（如[stankot], [jakegmaths], [Nautman]等）表达了对Tixy的喜爱，并分享了自己创建的动画或互动效果。他们认为Tixy是一个能够激发创造力的工具，尤其适合编程和数学爱好者。
-  
-• **创作分享**：
-  ◦ 用户们积极分享自己使用Tixy制作的作品链接，如[animal531]的“White blood cells attack”、[Reefersleep]的“X Plus Star”等。这些作品展示了Tixy平台上的多样化创作可能性，包括数学函数、时间变量等的应用。
-  
-• **扩展与启发**：
-  ◦ [rpastuszak]提到受到Tixy启发，开发了一个带有可编程笔刷的绘图应用，并提供了技术实现细节。这表明Tixy不仅限于自身平台，还能激发其他项目的开发。
-  
-• **类似项目比较**：
-  ◦ [stankot]提到了自己创建的类似项目Pulsar，以及另一个使用HTML滑块的项目Sliderland，认为这些项目与Tixy有相似的目标，但在发现Tixy之前已经自行开发。这表明Tixy可能在某些功能上与其他项目重叠，但各有特色。
-
-• **简化工具**：
-  ◦ [levzettelin]将Tixy比喻为“Shadertoy的简化版”，认为它适合编程新手。这表明Tixy的简单易用使其成为一个很好的学习与创意工具。
+• [RMPR] 指出Screen的多用户模式及其setuid-root权限带来的安全隐患，并联想到类似工具tmate，同时质疑tmux是否存在类似漏洞。
+• [teddyh] 提到在Debian系统中，GNU Screen并没有以setuid-root权限安装，暗示其实际风险可能有限。
+• [zoobab] 关注GNU Screen文档不足的问题，并联系了其作者，建议需要更好的问题跟踪系统。
+• [mmsc] 对GNU Screen开发停滞表示担忧，并询问Screen是否具备在不附加到session的情况下新增窗口的功能。
+• [sundarurfriend] 推荐Zellij作为现代终端复用器，认为其具备良好的默认设置和易于发现的用户界面。
+• [dminvs] 指出Screen自2005年以来就存在相关问题，并提到rkhunter等工具早已覆盖这一反模式。
+• [seethishat] 提到tmux是OpenBSD的一部分，并经过审计，认为它是更安全的选择。
+• [lemonwaterlime] 提出关于开发者使用开源工具和相关行业资金的问题，暗示开源工具维护的复杂性。
+• [kazinator] 分享了自己为解决特定问题而赋予Screen setuid权限的经历，并指出其系统可能需要特定构建方式才能支持该特性。
+• [ho_schi] 表示对GNU Screen的喜爱并希望吸引更多开发者来维护它。
+• [Scene_Cast2] 使用byobu和tmux，但认为Zellij看起来很有趣，是一种现代替代方案。
+• [warpeggio] 认为自己的tmux使用方式更优越。
+• [0xDEAFBEAD] 质疑Screen相对于终端模拟器多标签功能的优点。
 
 补充讨论：
-• **技术细节与作者背景**：
-  ◦ [agys]提到了Tixy的作者Martin Kleppe及其在JavaScript魔术方面的成就，提供了相关链接。这为Tixy的技术背景提供了更多信息。
-  
-• **社区与分享**：
-  ◦ [asicsp]提到之前在其他平台上有关于Tixy的讨论和模式分享，表明Tixy有一个活跃的用户社区，用户之间会分享和讨论创作。
-
-争议焦点：
-• 没有明显的争议，但[levzettelin]将Tixy描述为“Shadertoy for dummies”可能暗示了一种对Tixy简化性质的看法，可能引发对Tixy是否过于简单的讨论。不过，其他用户更多是表达了赞赏，未见对此观点的反驳。</div>
+• 争议焦点：GNU Screen的setuid-root权限配置带来的安全风险及其合理性。部分用户认为此配置存在较大安全隐患，而另一些人指出某些发行版并未采用这种配置。
+• 替代工具：Zellij和tmux被多次提及，作为现代和更安全的终端复用器选择，部分用户对其功能和易用性表示赞赏。
+• 开源软件维护：多位用户关注GNU Screen的开发停滞问题，并对其未来发展表示担忧，同时有人建议改进文档和问题跟踪系统。
+• 实际使用体验：一些用户分享了自己使用不同工具的体验和偏好，反映了个人习惯和需求对工具选择的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43942881" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43971716" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -332,47 +309,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.teenvogue.com/story/copaganda-when-the-police-and-the-media-manipulate-our-news" target="_blank">Copaganda: How Police and the Media Manipulate Our News</a>
+                    <a href="https://www.nytimes.com/2025/05/14/technology/ai-jobs-radiologists-mayo-clinic.html" target="_blank">The A.I. Radiologist Will Not Be with You Soon</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pavel_lishin</span> |
-                    <span>评分: 168</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-05-14 23:39</span>
+                    <span>作者: voxadam</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-05-14 12:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《Copaganda》一书揭示了警察和媒体如何通过选择性报道扭曲公众对安全的认知，制造道德恐慌，使人们害怕弱势群体，忽视富人和权贵的更大危害。这种恐慌常导致政府加大压制，增加警察和监狱预算，尽管证据显示这些投资无法真正提升社会安全。书中举例，如1980年代的“ crack婴儿”恐慌、1990年代的“超级掠食者”恐慌，以及近年的“零售盗窃”和“逃票”恐慌，每次都引发更严厉的法律和政策。媒体通过高频报道特定事件，误导公众认为犯罪率上升，而实际上却在下降。这种选择性报道助长了“用真相撒谎”的现象，掩盖了社会不平等的根本原因。书中所有版税捐给反对警察暴力的组织，并为囚犯和教师提供免费书籍讨论。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于“copaganda”（美化警察的宣传）及相关媒体表现形式的讨论，涉及警察、医疗等行业剧的情节设置和角色发展，以及对社会问题（如盗窃、犯罪）的处理和反应。
+                    <div class="comments-summary">主要讨论点：AI在放射学和病理学领域的应用前景及其实际效果
 
 不同观点：
-• Balgair认为，警察和医疗程序类剧集（procedurals）中的角色通常缺乏内在成长，剧情变化更多依赖于故事本身而非角色发展。这类剧集从爱伦·坡的侦探故事和福尔摩斯系列开始流行，虽然近年来有些变化，但观众仍倾向于关注这些具有生死攸关情节的剧集。此外，Balgair提到不同变体的程序类剧集（如法律、消防、政治等），但认为这些缺乏警察和医疗剧集的戏剧性。
-
-• PaulKeeble指出，医疗剧（docganda）同样存在美化现象，特别是在展现医疗系统超能力时，掩盖了实际中的资金挑战和系统问题。医疗剧中通常没有揭示保险拒赔或某些疾病治疗中的重大问题，因此和copaganda类似。
-
-• bittercynic同意文章的主要观点，但认为讨论制造犯罪恐慌的部分削弱了论证。他提到零售盗窃问题确实存在，并认为虽然不需要更严厉的警察手段，但该问题值得解决，且对社会有腐蚀性影响。
-
-• SpicyLemonZest批评文章没有探讨犯罪率在政策反应后的变化情况，并引用数据表明某些地区的犯罪率显著下降。
-
-• KennyBlanken讨论了警犬作为copaganda的一部分，指出公众和警察对这些狗的喜爱和利用，同时提到这些狗在法律上的问题，如美国最高法院曾裁定警犬的使用合宪，即使其准确性低于随机概率。
-
-• FridayoLeary批评文章没有认真讨论实际问题，而是简单地将其视为恐慌，并认为罪犯必须面对后果，同时质疑文章对警察、监狱预算和暴力问题的看法。
+• Workaccount2认为，当前文章中对"AI"的描述过于宽泛，混淆了不同AI架构的能力。他指出，文中的AI示例使用的是较为陈旧的CNN架构，而更大规模的Transformer模型可能会表现出色。他质疑本地运行的CNN模型是否能与大规模Transformer模型媲美。
+• Pseudocomposer分享了自己在AI病理算法集成方面的工作经验，认为AI工具可以提高病理学家的工作效率，并带来显著的经济效益。然而，市场对这种方法的价值认同度不高。
+• Joshdavham指出，非领域专家常自信地断言AI将取代某些专业领域，但这种观点可能缺乏对实际复杂性的理解。
+• Seesthruya是一位有20年经验的放射科医生，他认为AI不会在五年内取代人类放射科医生，并对自己的职业前景持乐观态度。
+• Epistasis提到，一些在病理学AI领域工作了约十年的创业公司，发现最有前景的市场是大型制药公司的研发部门，而不是医院或诊断实验室。
+• Kazinator认为，需要持证上岗的职业不会轻易被AI取代。AI技术可以帮助标记医学诊断图像中人类可能忽略的细节，但最终仍需放射科医生解读。
+• D_burfoot指出，LLM的强大在于可以从大量未标记文本中学习，但在医学图像领域，缺乏足够大的数据库。要“攻克”放射学，AI公司需要启动大规模的数据收集项目。
+• EcommerceFlow质疑，当前的数据集是否是限制AI在放射学领域发展的主要因素，并提出如果发生大规模医疗数据泄露，是否会推动该领域的发展。
+• Pj_mukh引用数据，指出自Hinton的预言以来，放射科医生数量增长了55%，质疑他其他预言的准确性。
+• Airstrike幽默地问道，AI是否会降低X光检查的费用。
+• Bobowzki指出，ML在放射学中的优势在于计算机可以同时观察传感器的整个动态范围，而人类只能观察窗口或压缩窗口。
+• Jmward01认为，神经网络在模式识别方面表现出色，阻碍其在放射学中应用的主要因素是电子健康记录提供商、法规以及行业的惯性。
 
 补充讨论：
-• 讨论中提到了对“copaganda”的定义和认识问题，部分评论者认为对警察和医疗剧集的美化宣传未得到足够重视（如PaulKeeble和KennyBlanken的观点）。
-
-• 争议的焦点之一是关于零售盗窃问题的严重性和反应是否适当，部分评论者（如bittercynic和SpicyLemonZest）认为犯罪问题存在但处理方式可能过度。
-
-• 另外，讨论还涉及了不同类型的程序类剧集和其变体，如法律、政治和历史修复等，但这些变体剧集的戏剧性和社会影响力被认为不如警察和医疗剧集。
-
-• 最后，还有关于具体文化作品（如《Brooklyn 99》）是否属于copaganda的讨论，显示出对某些流行文化作品的定性和解读存在分歧。</div>
+• 讨论中涉及AI在放射学和病理学中的具体应用、技术限制、市场接受度以及伦理和法律问题。
+• 争议的焦点在于AI是否能在短期内取代或显著辅助放射科医生，以及当前的技术和数据是否足够支持这一进程。
+• 不同观点中对AI能力的评价和对市场接受度的看法存在显著差异，反映出技术发展与实际应用之间的差距。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43990333" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43983928" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -432,46 +406,101 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.openwall.com/lists/oss-security/2025/05/12/1" target="_blank">Multiple security issues in GNU Screen</a>
+                    <a href="https://wqtz.bearblog.dev/high-stress-job-relationships/" target="_blank">In a high-stress work environment, prioritize relationships</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: st_goliath</span> |
-                    <span>评分: 401</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-05-13 11:28</span>
+                    <span>作者: wqtz</span> |
+                    <span>评分: 324</span> |
+                    <span>评论数: 38</span> |
+                    <span>发布时间: 2025-05-13 13:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要讨论了Openwall团队在2025年5月披露的GNU Screen软件中的多个安全问题，特别是5.0.0版本和设置为setuid-root的安装实例。这些问题包括一个本地提权漏洞，可被利用于获得root权限，以及其他一些影响旧版本的安全问题。文章详细描述了每个漏洞，并提供了针对Screen 4.9.1和5.0.0版本的补丁。此外，文中还讨论了Screen的多用户模式及其潜在的安全风险，并给出了改进建议和受影响系统的概况。由于与上游沟通困难，当时尚未有官方的修复版本发布。Openwall还提到在披露过程中遇到的一些问题，并提供了一个受影响系统的矩阵图以供参考。</p>
+                    <p>文章讨论了在高压力工作环境下，优先考虑人际关系的重要性。在这种环境中，每个人都很 stressed，并非只有你一人如此。尽管你可能想辞职或对他人发火，但冲动行事会让你留下负面印象，甚至影响未来的职业机会。即使工作本身可能看似不重要，但与他人的关系却有长期影响。因此，在做决定或处理任务时，应多考虑对别人的影响，而不仅仅关注截止日期或任务本身。保持良好的人际关系有助于职业发展，不应让“专业环境”破坏这种基本的人际互动。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：GNU Screen及其安全问题、替代工具以及开源软件开发的现状
+                    <div class="comments-summary">主要讨论点：职场中人际关系与压力来源的讨论
 
 不同观点：
-• [RMPR] 指出Screen的多用户模式及其setuid-root权限带来的安全隐患，并联想到类似工具tmate，同时质疑tmux是否存在类似漏洞。
-• [teddyh] 提到在Debian系统中，GNU Screen并没有以setuid-root权限安装，暗示其实际风险可能有限。
-• [zoobab] 关注GNU Screen文档不足的问题，并联系了其作者，建议需要更好的问题跟踪系统。
-• [mmsc] 对GNU Screen开发停滞表示担忧，并询问Screen是否具备在不附加到session的情况下新增窗口的功能。
-• [sundarurfriend] 推荐Zellij作为现代终端复用器，认为其具备良好的默认设置和易于发现的用户界面。
-• [dminvs] 指出Screen自2005年以来就存在相关问题，并提到rkhunter等工具早已覆盖这一反模式。
-• [seethishat] 提到tmux是OpenBSD的一部分，并经过审计，认为它是更安全的选择。
-• [lemonwaterlime] 提出关于开发者使用开源工具和相关行业资金的问题，暗示开源工具维护的复杂性。
-• [kazinator] 分享了自己为解决特定问题而赋予Screen setuid权限的经历，并指出其系统可能需要特定构建方式才能支持该特性。
-• [ho_schi] 表示对GNU Screen的喜爱并希望吸引更多开发者来维护它。
-• [Scene_Cast2] 使用byobu和tmux，但认为Zellij看起来很有趣，是一种现代替代方案。
-• [warpeggio] 认为自己的tmux使用方式更优越。
-• [0xDEAFBEAD] 质疑Screen相对于终端模拟器多标签功能的优点。
+• alphazard认为，软件开发中的压力往往源于不称职的同事，他们带来混乱和不确定性，导致额外压力。与此相对，优秀的同事则能创造积极的工作环境。他建议避免与不称职的同事进行过多互动，并寻找那些能够激发持续合作的环境。
+• cj则从求职角度出发，建议求职者在面试中应尽量以积极的方式描述过去的职位，即使那份工作并不如意，以免让面试官产生负面印象。
+• neilv指出，在高压力和功能失调的工作环境中，人际关系可以帮助减缓压力，但对环境的适应也可能让人不愿离开本应尽快逃离的工作场所。他提醒，有时忠诚可能对个人有害无益。
+• itchyjunk持不同看法，他认为不必过分关注人际关系，专注于自己的事情反而减少了他的压力。他强调这种方式适合自己，但不一定适用于每个人。
+• gdubs反对在职场中过度掩饰自己或过于在意面试表现，认为这样会损害心理健康。他鼓励人们保持乐观和合作，同时也要认识到自己可能低估了自己的能力和潜力。
+• dpe82提到谷歌的一项研究，表明心理安全感是团队有效性的最重要因素，强调了工作环境中安全感的重要性。
+• jimkleiber从更广泛的人际关系角度出发，建议待人友善，因为每个人都有自己的隐形战斗。他将生活视为一种情感战斗，主张通过这种方式来管理生活中的冲突。
+• _ink_分享了个人经历，指出因在创业公司过度工作导致个人关系失败，提醒他人不要重蹈覆辙。
+• rajnathani强调社交关系的重要性，指出科学研究表明社交关系与幸福感密切相关，并建议减少自我放纵的活动，增加与他人的社交时间。
+• zhengyi13简单总结，认为提醒人们要 empathetic（有同理心）是有益的。
+• Tistron和zphds分别讨论了技术细节和健康生活方式对减缓压力的重要性。
+• Aziell分享了在高压力环境中的个人经历，意识到过度压力和焦虑无助于解决问题，反而会使同事关系紧张。他强调人际关系在职场中的长期价值。
+• BartSpaans总结，在任何工作中，人际关系往往比个人能力更为重要，因为晋升、协作和寻找新机会都依赖于良好的人际网络。
 
 补充讨论：
-• 争议焦点：GNU Screen的setuid-root权限配置带来的安全风险及其合理性。部分用户认为此配置存在较大安全隐患，而另一些人指出某些发行版并未采用这种配置。
-• 替代工具：Zellij和tmux被多次提及，作为现代和更安全的终端复用器选择，部分用户对其功能和易用性表示赞赏。
-• 开源软件维护：多位用户关注GNU Screen的开发停滞问题，并对其未来发展表示担忧，同时有人建议改进文档和问题跟踪系统。
-• 实际使用体验：一些用户分享了自己使用不同工具的体验和偏好，反映了个人习惯和需求对工具选择的影响。</div>
+• 评论中多次提到高压力和功能失调的工作环境对个人心理和身体健康的影响，以及如何通过人际关系来缓解这些压力。
+• 部分评论强调了在职场中保持心理安全感和积极的人际关系对个人职业发展的重要性。
+• 争议的焦点在于如何平衡个人职业发展和维持健康的人际关系，特别是在功能失调的环境中，何时应该选择离开。
+
+这些观点展示了在职场中人际关系和压力管理的复杂性，以及不同策略对个人职业和心理健康的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971716" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43972535" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://membrane.stream/" target="_blank">Membrane: Media Framework for Elixir</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lawik</span> |
+                    <span>评分: 156</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-05-10 13:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Membrane是一个易于理解和定制的多媒体框架，支持实时通信（WebRTC SFU）、服务器端处理（视频缩放、帧率转换、音频混合等）、多种可切换的输入输出协议（如HLS、RTP、RTSP、RTMP等），并能与Elixir应用无缝集成。它支持多种编解码器的转码，并提供监控工具以帮助调试。该框架由Software Mansion开发，被多家公司用于解决实际问题，如Firework和Keep In Mind。Membrane是开源的，用户可以通过GitHub、Twitter和Discord等平台参与社区并获取支持。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Elixir中的高性能媒体流框架及其应用和相关资源
+
+不同观点：
+• **赞赏项目并强调技术潜力**：
+  - [victorbjorklund] 认为该项目很酷，尽管尚未用于严肃项目，但能够在Elixir中拥有高性能的媒体流框架令人惊叹。他提到可以用BEAM构建类似Twitch的应用，尽管建议搭配Postgres数据库。
+  - [Sean-Der] 也赞赏项目团队，并提到看到服务器端PeerConnection统计可视化和视频合成器的实时修改功能，认为这是未来的技术。
+
+• **寻求学习资源和教程**：
+  - [kingofheroes] 提到以前做过Phoenix框架的教程并享受其中，询问是否有好的最新教程推荐。
+
+• **对许可证问题的关注**：
+  - [AlphaWeaver] 提到在为客户项目考虑使用该框架时，发现部分组件使用自定义许可证，尽管大部分是Apache 2.0开源许可证，但需要注意选择合适的部分使用。
+
+• **对技术选择的遗憾**：
+  - [mml] 表示希望Nvidia选择这个方向而不是gstreamer，暗示对gstreamer技术选择的不满。
+
+• **对项目需求的表达**：
+  - [neya] 认为Elixir非常需要这样的项目，过去常被迫使用NodeJS实现，对此项目表示感谢。
+
+• **开发环境体验**：
+  - [nw05678] 表示在探索Elixir时，发现其开发环境不如其他语言流畅。
+
+补充讨论：
+- 该项目被广泛认为具有很大潜力，尤其在Elixir生态系统中提供了高性能媒体流的能力。
+- 用户对项目的技术实现和团队表示赞赏，但也有人对开发环境和许可证问题表示关注。
+- 学习资源的需求和不同技术选择的对比也是讨论中的重要部分。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43945483" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -532,60 +561,6 @@
 • 公司对回家作业的反馈质量及其实际动机。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=43980036" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://membrane.stream/" target="_blank">Membrane: Media Framework for Elixir</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lawik</span> |
-                    <span>评分: 156</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-10 13:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Membrane是一个易于理解和定制的多媒体框架，支持实时通信（WebRTC SFU）、服务器端处理（视频缩放、帧率转换、音频混合等）、多种可切换的输入输出协议（如HLS、RTP、RTSP、RTMP等），并能与Elixir应用无缝集成。它支持多种编解码器的转码，并提供监控工具以帮助调试。该框架由Software Mansion开发，被多家公司用于解决实际问题，如Firework和Keep In Mind。Membrane是开源的，用户可以通过GitHub、Twitter和Discord等平台参与社区并获取支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Elixir中的高性能媒体流框架及其应用和相关资源
-
-不同观点：
-• **赞赏项目并强调技术潜力**：
-  - [victorbjorklund] 认为该项目很酷，尽管尚未用于严肃项目，但能够在Elixir中拥有高性能的媒体流框架令人惊叹。他提到可以用BEAM构建类似Twitch的应用，尽管建议搭配Postgres数据库。
-  - [Sean-Der] 也赞赏项目团队，并提到看到服务器端PeerConnection统计可视化和视频合成器的实时修改功能，认为这是未来的技术。
-
-• **寻求学习资源和教程**：
-  - [kingofheroes] 提到以前做过Phoenix框架的教程并享受其中，询问是否有好的最新教程推荐。
-
-• **对许可证问题的关注**：
-  - [AlphaWeaver] 提到在为客户项目考虑使用该框架时，发现部分组件使用自定义许可证，尽管大部分是Apache 2.0开源许可证，但需要注意选择合适的部分使用。
-
-• **对技术选择的遗憾**：
-  - [mml] 表示希望Nvidia选择这个方向而不是gstreamer，暗示对gstreamer技术选择的不满。
-
-• **对项目需求的表达**：
-  - [neya] 认为Elixir非常需要这样的项目，过去常被迫使用NodeJS实现，对此项目表示感谢。
-
-• **开发环境体验**：
-  - [nw05678] 表示在探索Elixir时，发现其开发环境不如其他语言流畅。
-
-补充讨论：
-- 该项目被广泛认为具有很大潜力，尤其在Elixir生态系统中提供了高性能媒体流的能力。
-- 用户对项目的技术实现和团队表示赞赏，但也有人对开发环境和许可证问题表示关注。
-- 学习资源的需求和不同技术选择的对比也是讨论中的重要部分。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43945483" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
