@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-16 09:01 (北京时间)
+            最后更新时间: 2025-05-16 11:43 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,59 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/the-fastest-way-yet-to-color-graphs-20250512/" target="_blank">The Fastest Way yet to Color Graphs</a>
+                    <a href="https://www.mbid.me/posts/stop-using-rest-for-state-synchronization/" target="_blank">Stop using REST for state synchronization (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: GavCo</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-13 08:29</span>
+                    <span>作者: Kerrick</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-15 17:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了图着色算法的最新突破。传统上，给图的边着色以避免碰撞（如在机场调度飞机）是一个耗时的过程，过去40年算法速度提升有限。2024年，两个研究团队分别提出了更快的算法。随后，2025年的一篇论文提出了几乎最优的算法，其速度几乎达到了可能的极限，且该算法的时间复杂度仅取决于图中的边数，而与点数无关。这一进展极大地提升了处理大规模图着色问题的效率，被视为该领域的一个重要里程碑。</p>
+                    <p>文章主要讨论了使用REST接口在客户端和服务器之间同步状态的弊端，并建议采用更合适的状态同步协议。作者指出，REST是一种状态传输协议，而大多数应用实际上需要的是状态同步。这种不匹配导致开发者必须在REST之上实现临时的状态同步逻辑，增加了复杂性和脆弱性。
+
+作者通过一个简单的文本输入框例子展示了使用REST时所需的繁琐代码，包括处理初始值获取、显示加载状态和错误信息等。这种模式不仅产生大量样板代码，而且在处理并发请求时可能出现错误，比如当用户快速连续更改值时，请求顺序可能无法保证。
+
+因此，作者建议用专门的状态同步协议取代REST，以简化开发并提高可靠性。这将使开发者只需关注界面显示和数据位置，而不必处理繁杂的状态传输逻辑。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Edge Coloring问题与Vertex Coloring问题的区别及其应用
+                    <div class="comments-summary">主要讨论点：REST是否适合用于实时状态同步，以及替代方案的可行性
 
 不同观点：
-• [技术澄清] tonyarkles指出，讨论的重点是Edge Coloring问题，而不是更为人熟知的Vertex Coloring问题。他进一步说明，Vertex Coloring问题是NP完全的，而Edge Coloring问题则未被提及为NP完全，暗示Edge Coloring可能有不同的复杂性或应用场景。
+• **kokanee**：认为作者低估了实时同步UI的复杂性，尤其是多方同时操作同一界面元素时。REST在处理状态同步时确实存在问题，但完全抛弃REST并不现实。局部状态的维护和定期推送到中心存储是目前较好的平衡方案。
 
-• [实际应用关注] phkahler对Edge Coloring问题的实际应用表示关注，具体询问这是否会带来编译时间的缩短或寄存器分配的加速。这表明他从实际工程需求的角度出发，关心该问题的解决方案能否带来性能上的提升。
+• **jemmyw**：部分同意文章观点，但指出实现CRDT或OT（操作转换）等替代方案非常复杂，特别是在改造已有REST API时。强调根据使用场景选择技术方案，不应盲目追求复杂的状态同步技术。
+
+• **qudat**：认为状态同步是前端开发的热门话题，REST是目前多数公司服务多客户端的现状，GraphQL虽有应用但调优不易。CRDT仅在特定领域（如多人游戏）中使用。因此，完全抛弃REST不切实际，建议开发能兼容REST、WebSockets、GraphQL的系统。
+
+• **0xbadcafebee**：认为前端应用模型设计不良，多数情况下无需在前端保持状态。网络协议用于同步状态很麻烦，宽带和移动网络环境下更不需要。开发者往往因为习惯而不愿尝试新方法。
+
+• **coolhand2120**：质疑文章中对REST的定义，指出CRUD API和真正的REST不同。状态同步需要多步骤和HATEOAS风格的API设计，而行业中通常只使用HTTP方法就称其为REST。
+
+• **cgio**：认为REST不适合状态同步，CRDT也只是在某种程度上解决此问题。分布式数据存储或数据库复制等是已解决状态同步问题的方案。
+
+• **sansseriff**：通过研究项目得出类似结论，认为从REST过渡到CRDT的资料和工具不足，使得这种转变不常见。
+
+• **toomim**：作为Braid项目的开发者，认为HTTP需要从状态传输协议演变为状态同步协议，并介绍了Braid项目如何通过扩展HTTP实现状态同步，无需CRDT或OT算法。
+
+• **yakshaving_jgt**：文章指出了REST不适用于状态同步，但未提供明确的替代方案。
+
+• **3cats-in-a-coat**：认为通过保持资源不可变和传递根资源，REST设计中可以实现简单的状态同步。
+
+• **AtlasBarfed**：提到CAP定理，指出在客户端不可靠的情况下，需考虑CP或AP的选择，分区容忍性是必须的。
+
+• **gxs**：认为不应完全否定REST，REST在某些场景下仍适用。根据具体情况选择技术方案，而不是一刀切。
 
 补充讨论：
-• [复杂性对比] tonyarkles特别提到Vertex Coloring问题是NP完全的，暗示Edge Coloring问题可能有不同的复杂性特征，这为后续讨论Edge Coloring问题的计算难度奠定了基础。
-
-• [应用场景] phkahler的评论引出了Edge Coloring问题在计算机科学实际应用中的潜在价值，特别是编译时间和寄存器分配等具体技术场景，这为讨论提供了更广泛的背景和实际意义。
-
-争议焦点：目前没有直接的争议，但潜在的争议可能是Edge Coloring问题的实际应用价值及其在具体计算任务中是否能带来显著的性能改进。这需要进一步的实证研究和讨论。</div>
+• 争议焦点在于REST是否适合用于实时状态同步，以及是否有必要采用CRDT或OT等更复杂的替代方案。
+• 实用性与复杂性的平衡是讨论中的重要考量因素，尤其是对已有系统的改造难度和具体使用场景的适配。
+• 一些评论提到了具体的工具和项目，如Braid和Electric SQL，作为潜在的解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43970768" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43997286" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,44 +124,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://daniel.haxx.se/blog/2022/05/12/a-tale-of-a-trailing-dot/" target="_blank">A Tale of a Trailing Dot (2022)</a>
+                    <a href="https://undetectag.com/" target="_blank">Show HN: Undetectag, track stolen items with AirTag</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dcminter</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-13 15:24</span>
+                    <span>作者: pompidoo</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-05-15 15:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了URL主机名末尾的点（trailing dot）在不同网络层级和协议中的处理方式及其带来的问题。在DNS解析中，末尾的点不影响解析结果，但会影响本地解析函数对域名的处理。在HTTP协议中，末尾的点会影响主机头的值，尽管客户端连接的IP地址可能相同，但服务器可以根据点区分内容。Cookie规范则忽略末尾的点，将其视为相同域。而在HTTPS的SNI字段中，末尾的点会被去除，服务器无法区分带点和不带点的域名。文章还介绍了curl项目在处理末尾点时的演变：从最初忽略，到2014年去除，再到2022年根据需要保留末尾点以满足特定网站的需求。最终，curl决定在主机头中保留末尾点，但在SNI字段中去掉它。</p>
+                    <p>这篇文章介绍了一个可以让AirTag变为更难被小偷发现的小工具——"Undetectag"。使用这个附加装置，可以大大降低AirTag被小偷偷走并移除的可能性，概率减少95%。它适用于保护汽车、船只、自行车、摩托车、行李和背包等贵重物品。文章还提供了一个联系表单，用户可以通过填写姓名、电子邮件、电话号码和留言来获取更多信息或提出问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：URL 末尾的点对不同网络功能（如密码管理、Cookie）的影响
+                    <div class="comments-summary">主要讨论点：AirTags的自定义改造及其使用场景
 
 不同观点：
-• watersb 的观点：
-  - URL 末尾的点可能会影响密码管理器的运作。在某些平台和密码管理工具（如内置密码管理和 1Password）中，带有末尾点的 URL 和不带末尾点的 URL 被视为不同的情况。
-  - 认为这种问题属于比 curl 库的内部机制更高层的网络交互问题。
-  - 提出可以通过 JavaScript 动态切换带有或不带有末尾点的 URL，可能会在授权流程中造成混乱。
-  - 总体上认为多页网络应用的问题比 curl 库的内部问题更为复杂。
-
-• recursive 的观点：
-  - 引用了 RFC 6265 第 5.1.2 节中的 cookie 规范，指出规范定义主机名时会忽略末尾的点，即带有末尾点和不带有末尾点的域名应被视为相同。
-  - 然而，实际浏览器行为与此规范不一致。通过实验（如在 Hacker News 登录状态下添加或移除 URL 末尾的点）发现，末尾点的存在与否会影响到 cookie 的有效性。
-  - 强调了实际浏览器行为与规范之间的差异。
+• **gojomo**：提出几种自定义改造的设想，包括只有在其他AirTag不在附近时才启动、具有动作感应功能、基于随机化种子的伪随机启动，以及通过全国或全球的"唤醒"信号控制启动等。这些改造旨在增强AirTag的隐蔽性和电池寿命。
+• **RomanPushkin**：指出Tile已经有类似功能，但需要通过验证，且如果用于跟踪他人，会面临高额罚款。这表明目前已有技术解决方案，但法律和道德问题仍然存在。
+• **econ**：建议添加一个普通标签，以便小偷能够找到AirTag并将其移除，从而减少追踪失败的风险。
+• **pimlottc**：质疑这些改造可能会降低AirTag在农村地区的追踪可靠性，因为在这些地区可能没有足够的Find My网络设备。
+• **stavros**：建议使用加速计，只有在设备完全停止移动一段时间后才启动，以减少触发“正在跟踪你”通知的可能性。
+• **ale42**：从技术角度讨论了使用更简单、更低功耗的微控制器（如PIC10）代替STM32，以降低功耗和成本。
+• **turtlebits**：对这种改造的可靠性表示担忧，质疑其能否提供安心保障，并询问如果追踪失败是否有退款等保障措施。
+• **anonymousiam**：批评AirTag的限制是多余的，认为这些限制严重影响了追踪被盗物品的实用性，质疑为什么不能销售不提醒所有人其存在的标签，并指出警方和情报机构已经有类似设备。
+• **jmpman**：表示很高兴看到有人实现了其三周前的设想，愿意购买这种产品。
+• **wepple**：提出使用两个AirTag交替启动以绕过苹果检测的想法，并担心苹果可能很快会解决这一问题。
+• **Gys**：建议支持更便宜的仿制品，因为这些设备不会更新固件，并提议提供捆绑销售。
+• **givinguflac**：对产品的紧凑设计表示赞赏，但指出网站上关于“Airtag是苹果注册商标”的声明中未大写“Apple”是一个小瑕疵。
+• **cinntaile**：询问时间间隔是否可以由用户更改，以及其更改的限制范围。
+• **Gibbon1**：引用一位追踪领域的从业者观点，认为理想情况下应有一种不通过传输来揭示自身的定位器，且不耗费电力接收GPS信号，但这类设备因商业利益考量未被广泛推广。
+• **mulmen**：认为AirTags并非设计用于找回被盗物品，建议比较专业的GPS追踪器（如Monimoto）以获得更好的效果。
 
 补充讨论：
-- 争议的焦点在于浏览器在处理 URL 末尾点时的行为与相关规范不一致，这可能导致密码管理器和 cookie 的运作出现问题。
-- watersb 认为这是高层网络交互的问题，而 recursive 则关注浏览器实现与标准规范的差异。
-- 两者的讨论都指向了实际应用中的潜在问题，例如在授权过程中可能出现的混乱。
+• 争议焦点在于AirTag的功能限制和自定义改造的合法性与道德性。部分用户认为这些限制不必要，影响了实用性，而另一些用户则指出跟踪他人已经违法，因此功能限制是合理的。
+• 技术讨论主要集中在如何通过硬件和软件的改进来延长电池寿命、提高隐蔽性，并绕过苹果的检测机制。
+• 对产品可靠性和实际效果的质疑也是讨论的重要部分，尤其是对农村地区追踪能力的担忧。
 
-总结：讨论的核心在于 URL 末尾点对密码管理和 cookie 验证的影响，以及浏览器实现与标准规范之间的不一致。这可能导致用户在不同情况下遇到登录状态或授权问题。</div>
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43973964" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996251" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -150,39 +177,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://resobscura.substack.com/p/onfims-world-medieval-child-artists" target="_blank">Onfim's world: Child artists in history</a>
+                    <a href="https://davelucia.com/blog/lua-elixir" target="_blank">Lua for Elixir</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: benbreen</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-05-15 16:43</span>
+                    <span>作者: davydog187</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-05-13 13:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>2025年5月12日，Elixir库Lua发布了首个稳定版本v0.1.0，该库允许在BEAM VM上直接执行隔离的Lua程序，完全实现了Lua 5.3，而无需嵌入C语言的Lua运行时和编译器。这是通过Luerl库实现的，Luerl是用Erlang实现的Lua解析器、编译器和运行时。Lua Elixir库扩展了Luerl的功能，改进了错误信息并提供了详细的文档。主要功能包括通过`deflua`宏将Elixir API暴露给Lua，使用`~LUA`符号在编译时验证Lua语法，以及提供详细的文档和Livebook示例。
+
+该库起源于TV Labs，用于执行任意代码以进行高层次的集成测试。未来计划包括改进Luerl的错误消息、文档和与Lua生态的深度集成，并计划合并Elixir Lua库到Luerl，发布2.0.0版本。感兴趣的开发者可以通过Slack、Discord参与或在Github上提交问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Onfim的涂鸦及其历史和文化意义，以及对儿童创作的保存和欣赏。
+                    <div class="comments-summary">主要讨论点：Lua在Erlang/Elixir环境中的应用及其优缺点
 
 不同观点：
-• [lbeckman314] 强调Onfim的涂鸦让我们重新思考童年，不仅仅是一个永恒的当下，而是有着深远历史的人类核心部分。该评论表达了对重新发现这些历史遗存的喜爱，并分享了相关资源链接，以供进一步探索。
+• **支持Lua的观点**：
+   - [rickcarlino] 表示Lua引擎（如Luerl）在生产环境中表现出色，特别是在FarmBot设备上作为脚本环境使用。用户可以直接在设备上执行脚本控制外围设备，且社区支持非常好。开发人员从人体工程学角度更喜欢这种方法，而不是API调用。
+   - [interroboink] 认为Lua拥有多个独立实现（如LuaJIT和Luerl），显示了Lua的成熟和受欢迎程度，并表示这种实现方式很酷。
+   - [davydog187] 分享了一个Lua在BEAM（Erlang虚拟机）上的有趣示例，推荐查看Robert Virding的空间船演示。
+   - [pentacent_hq] 计划在Keila中添加Lua支持，认为Lua非常适合实现电子邮件自动化和自定义业务逻辑。
 
-• [pavel_lishin] 认为每一件像Onfim涂鸦这样独特的遗存背后，都有无数被遗失的作品。他以自身经验为例，提到自己的孩子也创作大量艺术作品，他选择拍照保存以防止这些作品被埋没。他希望未来孩子能从中获得一些有趣的体验。
+• **对Lua的质疑和批评**：
+   - [gilgamesh3] 质疑为什么选择Lua而不是Elixir来创建脚本，认为Lua在设计上有很多错误选择，并表示如果可以选择，每次都会使用Elixir。
+   - [Philpax] 对Lua库的命名感到困惑，认为不应与Lua语言本身同名，建议使用如"Luerl++"这样的名称。
 
-• [lovegrenoble] 从历史和文化角度出发，表达了对Novgorod这座城市的赞美，称其为历史和文化爱好者的宝地，并希望有机会亲自访问。
-
-• [jayrot] 推荐了一个关于Onfim的视频，认为如果想体验“sonder”（指意识到每个陌生人都有自己丰富的生活），这个视频值得一看。
+• **技术实现和性能讨论**：
+   - [_acco] 强调Lua在主机语言（Elixir/Erlang）中实现的好处，避免了在其他运行时中序列化/反序列化数据的需求，从而提高了性能。这对于高性能数据管道尤为重要。
+   - [dpflan] 提到“在Elixir中嵌入Python”的影响，认为Lua的实现方式更具吸引力。
 
 补充讨论：
-• 讨论中提到了之前关于Onfim的讨论和相关资源的链接，表明对这一话题的持续关注和兴趣。
-• 争议的焦点可能在于对儿童创作保存价值的不同看法，[pavel_lishin] 以个人经验为例，提出了保存孩子作品的实用方法，而[lbeckman314] 更关注这些作品的历史和文化意义。
-• 评论中还涉及了对历史遗存的珍惜和对个人经历的反思，这为讨论增添了更多层次的文化和情感因素。</div>
+• **其他语言和生态系统比较**：
+   - [binary132] 质疑BEAM的沙盒化程度。
+   - [codingbear] 询问Lua在JVM生态系统中的等价物，寻找一种可嵌入并能在沙盒中运行用户脚本的语言。
+
+• **项目和社区反馈**：
+   - [joshprice] 对嵌入安全的小型Lua语言表示兴奋，期待找到适用场景。
+   - [jkaufmann_] 表示对这个项目的长期期待。
+   - [iLemming] 询问是否可以通过Fennel语言 targeting BEAM。
+   - [rdtsc] 感谢davydog187对Luerl项目的贡献，认为Luerl是一个真正的 gem。
+
+争议焦点：选择Lua还是Elixir用于脚本编写的优劣比较，特别是从语言设计和开发人员偏好角度。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996796" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43972485" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -263,39 +306,94 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.papey.fr/post/07-demystifying-ruby-01/" target="_blank">Demystifying Ruby: It's all about threads (2024)</a>
+                    <a href="https://matklad.github.io/2025/05/14/scalar-select-aniti-pattern.html" target="_blank">The Scalar Select Anti-Pattern</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kadrek</span> |
-                    <span>评分: 61</span> |
+                    <span>作者: goranmoomin</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-14 20:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了在事件循环中使用"标量选择"（Scalar Select）的反模式问题。在处理多个外部IO驱动的事件流时，逐个处理事件（标量选择）可能导致效率低下，因为当一个事件处理完毕后，可能有多个事件已经准备好，而标量选择会随意选取一个事件处理，造成不必要的开销。
+
+为了优化，文章提出了几种策略：
+
+1. **优先级排序**：根据事件类型决定处理顺序，如文件修改优先于代码补全请求。
+2. **选择性背压**：对某些类型的事件不处理，以减缓特定输入的处理速度。
+3. **消除**：有些事件可以完全丢弃，比如文件文本完全替换时，之前的修改可忽略。
+4. **合并**：多个类似事件可以合并处理，如文件修改可以合并成一个大改动。
+
+最终，文章建议将标量选择改为批量处理，即在事件流中一次性获取所有可用事件并批量处理，以提高效率。这种方法在低负载时效果不明显，但在高负载时能显著减少处理时间。实现批量处理的关键是`batch_stream`函数，它会等待至少一个事件，然后拉取所有可用事件。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：输入事件处理和批处理行为在不同系统和环境下的实现与影响
+
+不同观点：
+• jchw 认为，Windows 内部对事件队列的处理会合并和优先排序输入事件，尤其是在事件积压时。这种批处理行为在应用/API层面可能不明显，但实际上在处理事件时具有重要作用。他还提到，Wayland客户端如果处理事件队列滞后可能会崩溃，并提出是否可以通过UNIX域套接字在服务器端实现某种事件合并，以避免向客户端发送过多高精度指针移动事件。
+
+• taeric 对jchw的提议不太清楚，并指出即使接收一批指令也不会立即改变什么。他认为，无论如何处理指令，仍然需要考虑指令之间的依赖关系和交互。他将此比作处理器处理 incoming 指令的方式，强调程序本身对如何处理和分批传递指令负有责任，而不仅仅依赖于发送指令的过程。
+
+• castratikron 补充了一个关键条件，即只要处理一个事件不影响批处理中的其他事件，比如文件IO事件，处理一个事件导致另一个事件的描述符被关闭，这种情况就需要特别注意。
+
+• malkia 简短提到CPU的流水线技术，暗示这种技术在处理批量指令时可能具有效率优势。
+
+补充讨论：
+• jchw 提出的UNIX域套接字和事件合并的想法引发了对如何有效处理大量事件的讨论，尤其是在客户端滞后的情况下。
+• taeric 的观点强调了程序在处理批量指令时的主动性和责任，而不仅仅是依赖底层机制。
+• castratikron 提醒大家注意事件之间的依赖和潜在冲突，特别是在资源管理方面，比如文件描述符的关闭。
+• malkia 提到CPU流水线技术，提供了一个从硬件层面理解批处理和指令处理的角度。
+
+争议焦点：
+• jchw 提出的服务器端事件合并的提议引发了taeric的质疑，即这种方法是否真正有效，是否能解决实际问题。
+• 对批处理指令的责任归属有潜在讨论，即程序本身和底层机制之间的责任分配问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43988753" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.quantamagazine.org/the-fastest-way-yet-to-color-graphs-20250512/" target="_blank">The Fastest Way yet to Color Graphs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: GavCo</span> |
+                    <span>评分: 18</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-15 13:56</span>
+                    <span>发布时间: 2025-05-13 08:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章简要介绍了Ruby编程语言及其并发处理机制。Ruby是一种动态、解释型、开源的编程语言，常用于网页开发，特别是与Ruby on Rails框架结合使用。文章重点讨论了Ruby的并发和并行机制，包括进程（Process）、Ractor、线程（Thread）和纤程（Fiber）。
-
-文章解释了Ruby的全局解释器锁（GIL）机制如何限制真正的并行性。尽管Ruby支持多线程，但默认情况下一次只能运行一个线程。为了实现真正的并行执行，Ruby引入了一个实验性功能——Ractor。Ractor允许在同一Ruby进程内实现内存隔离和消息传递，从而避免数据竞争。文章通过一个例子展示了如何使用Ractor实现并行计算，并对比了并行和顺序执行的时间差异。
-
-最后，文章提醒Ractor目前仍是实验性功能，未来版本中其行为可能会有所改变。</p>
+                    <p>文章介绍了图着色算法的最新突破。传统上，给图的边着色以避免碰撞（如在机场调度飞机）是一个耗时的过程，过去40年算法速度提升有限。2024年，两个研究团队分别提出了更快的算法。随后，2025年的一篇论文提出了几乎最优的算法，其速度几乎达到了可能的极限，且该算法的时间复杂度仅取决于图中的边数，而与点数无关。这一进展极大地提升了处理大规模图着色问题的效率，被视为该领域的一个重要里程碑。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Ruby线程的性质及其与操作系统和绿色线程的关系
+                    <div class="comments-summary">主要讨论点：Edge Coloring问题与Vertex Coloring问题的区别及其应用
 
 不同观点：
-• [jemmyw]认为，自Ruby 1.9版本以来，Ruby线程是由操作系统管理的真正线程，而不是绿色线程。他指出，虽然全局解释器锁（GIL）限制了并行性，但在调用非Ruby代码时可能会实现并行。他还提到，这一点（"可能"实现并行）是一个令人困扰的细节。
+• [技术澄清] tonyarkles指出，讨论的重点是Edge Coloring问题，而不是更为人熟知的Vertex Coloring问题。他进一步说明，Vertex Coloring问题是NP完全的，而Edge Coloring问题则未被提及为NP完全，暗示Edge Coloring可能有不同的复杂性或应用场景。
 
-• [josefrichter]提到，大约15年前Jose Valim在Ruby上的相关工作，并指出Valim后来创建了Elixir，从此他们再也没有回头使用Ruby。这暗示了对Elixir在处理并行和并发上的认可。
+• [实际应用关注] phkahler对Edge Coloring问题的实际应用表示关注，具体询问这是否会带来编译时间的缩短或寄存器分配的加速。这表明他从实际工程需求的角度出发，关心该问题的解决方案能否带来性能上的提升。
 
 补充讨论：
-• [jemmyw]强调了Ruby线程在调用非Ruby代码时可能实现并行，但对这种不确定性表示不满。
-• [josefrichter]通过历史背景提到Jose Valim转向Elixir的发展，暗示了对Ruby线程处理并行问题的不满或对Elixir优越性的认可。
-• 争议的焦点在于Ruby线程是否可以真正实现并行以及其与绿色线程的区别，特别是在GIL限制下的实际表现。</div>
+• [复杂性对比] tonyarkles特别提到Vertex Coloring问题是NP完全的，暗示Edge Coloring问题可能有不同的复杂性特征，这为后续讨论Edge Coloring问题的计算难度奠定了基础。
+
+• [应用场景] phkahler的评论引出了Edge Coloring问题在计算机科学实际应用中的潜在价值，特别是编译时间和寄存器分配等具体技术场景，这为讨论提供了更广泛的背景和实际意义。
+
+争议焦点：目前没有直接的争议，但潜在的争议可能是Edge Coloring问题的实际应用价值及其在具体计算任务中是否能带来显著的性能改进。这需要进一步的实证研究和讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43995144" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43970768" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -306,44 +404,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.asimov.press/p/model-organisms-are-not-static" target="_blank">Model Organisms Are Not Static</a>
+                    <a href="https://research.google/blog/ml-enhanced-code-completion-improves-developer-productivity/" target="_blank">ML-Enhanced Code Completion Improves Developer Productivity (2022)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mailyk</span> |
-                    <span>评分: 33</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-05-15 15:45</span>
+                    <span>作者: ddadon10</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-13 11:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了实验用模式生物的基因变异问题。研究发现，一些脊椎动物的基因组突变速度比其他物种快40倍。尽管实验室中的动物经过精心培育以减少基因变异，但突变仍可能发生，并影响实验结果。例如，2006年阿尔伯塔大学的研究人员在重复1993年的小鼠实验时，发现结果不一致，这可能与基因突变有关。文章还提到，不同物种的突变率差异很大，如实验室常用的小鼠每个后代有15个新突变，而雪鸮只有1个，达尔文的 rhea 鸟则有约47个。文章建议进一步研究其他模式生物的基因突变速度，以更好地理解其对实验结果的影响。</p>
+                    <p>谷歌研究人员开发了一种基于Transformer的混合语义机器学习（ML）代码补全系统，结合了传统语义引擎（SE）和ML模型，提高了开发者效率。该系统通过三种方式结合ML和SE：重新排序SE的单token建议、使用ML进行单行和多行补全并通过SE验证正确性、以及基于SE的单token建议进行多行延续。在谷歌内部1万多名开发者的测试中，该系统使编码迭代时间减少了6%。目前，3%的新代码字符来自ML补全建议。系统通过并行请求和低延迟设计，不增加补全延迟，且显著提升了用户体验，28%的接受建议因重新排序而排名提高。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：科研中基因克隆和实验生物稳定性面临的挑战
+                    <div class="comments-summary">主要讨论点：AI开发者工具（如ML-Enhanced Code Completion）的效用和影响
 
 不同观点：
-• **[koeng]**：在高通量克隆工作中，客户期望获得完整且经过验证的基因。然而，即便在最常见的生物体中，仍然可能出现无法预测的情况，例如转座子意外跳入载体，导致6kbp的插入。这显示了实验中不可控因素对结果的影响。
+• djmips认为，AI开发者工具为那些喜欢结对编程但没有伙伴、或容易陷入分析瘫痪和空白页综合症的开发者提供了帮助。这些工具对某些人来说可能带来了新的高效状态，但对于已经习惯流畅工作的开发者影响不大。
 
-• **[Feuilles_Mortes]**：提到C. elegans（秀丽隐杆线虫）的优点，可以通过甘油冻存来保持实验品系的稳定性。然而，在果蝇实验室中，目前还没有有效的长久冻存方法，实验室通常只能接受一定程度的背景突变，并假设这些突变不会显著影响实验结果。
+• semiinfinitely持怀疑态度，引用香烟行业的例子暗示对AI工具效用的过度乐观或不实宣传可能带来的误导。
 
-• **[Projectiboga]**：指出实验中使用的饮食也会对研究结果产生影响，特别是当饮食配方不同时，结果的可比性可能会受到影响。例如，某些缺乏维生素E的饮食在现实世界中不常见，这可能导致实验偏差。
+• lumost指出，AI工具的效果取决于用户和项目类型。对于小型项目，效果通常很好；但对于大型成熟的生产应用，结果可能不太有用。每年AI技术都在显著进步。
 
-• **[jmward01]**：认为应将世界视为动态而非静态的，特别是在如梯度下降等算法中。长期来看，动态变化甚至可能选择稳定性而非最优性。提出为科学知识（如生物学知识）发布一个“预期半衰期”统计，以反映知识随时间的改变。
-
-• **[pmags]**：同意科研中生物体演化带来的挑战，特别是在微生物研究中。多个实验组之间的同基因品系可能因在实验室中的演化而产生表型差异，这进一步加剧了实验结果的不确定性。
-
-• **[tehjoker]**：提出是否有可能从头合成小基因组生物的基因组，或修补大部分区域，以便依赖计算机存储来解决实验变异性问题。
+• bartread认为，尽管存在反对者，但对于大多数软件工程师，尤其是使用各种服务高级计划的用户来说，AI工具的价值已不是新鲜事。经过2-3年广泛采用基于Transformer的ML辅助开发后，有一些实际数据可以支持其价值并推动其进一步应用是有益的。
 
 补充讨论：
-• 实验中的不可控因素（如基因突变、转座子活动）对实验结果的影响是讨论的核心。
-• 不同生物体（如线虫和果蝇）在实验稳定性上的差异以及应对策略也是重要的讨论点。
-• 饮食等外部因素对实验结果的影响以及科学知识的动态性进一步丰富了讨论的广度。
-• 合成生物学技术（如基因组合成）作为潜在解决方案也被提及，显示出未来可能的研究方向。</div>
+• 讨论中涉及了AI工具对不同类型用户和项目的不同影响，以及随着时间推移AI技术的进步。
+• 存在对AI工具效用的争议，部分评论者对其持怀疑态度，而另一些则认可其在特定情境下的价值。
+• 提到了AI工具在实际应用中需要更多数据支持其价值，以推动更广泛的采用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996243" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43971678" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -354,58 +447,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://useautumn.com/blog/backendless" target="_blank">How we made billing backendless</a>
+                    <a href="https://www.alexbowe.com/wavelet-trees/" target="_blank">Wavelet Trees: An Introduction (2011)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ayushrodrigues</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-05-15 13:54</span>
+                    <span>作者: Tomte</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-15 15:27</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了Autumn团队尝试将支付和账单处理移到前端，以提供更好的开发者体验。最初，他们引入了一个"可发布密钥"（publishable key），让开发者可以直接在前端处理支付链接和检查功能访问权限，但发现该方案存在局限性和安全隐患。接着，他们尝试使用Next.js的服务器动作（server actions）来实现，但由于未认证的公共路由导致安全问题。最终，他们通过加密客户ID解决了部分安全问题，但意识到这种方法仅适用于支持服务器动作的框架。作者承认，未来可能放弃这种方法，转向更框架无关的方案，简化后端路由设置，使集成更加标准化和安全。</p>
+                    <p>本文介绍了一种处理大字母表序列排名的数据结构——小波树（Wavelet Tree）。小波树通过将字符串组织成一个层次化的位向量结构，能够在$\mathcal{O}(\log_2{A})$时间内完成排名查询，其中$A$是字母表的大小。小波树将字符串递归地分为两个子集，分别用0和1编码，直到每个子集只有一个或两个符号。位向量可以使用RRR结构存储，以实现快速排名查询和压缩。
+
+查询时，通过在每个内部节点进行二进制排名查询，并根据编码指引递归地访问子树，直到在叶节点得到结果。例如，要查询$rank(5, e)$，首先在根节点查询$e$编码为0的排名，然后将结果用于子树查询，重复此过程直到找到答案。
+
+小波树不仅支持快速排名查询，还可以扩展以支持选择查询，并有多种压缩方式，如Sadakane和Okonohara提出的索引方法。Francisco Claude提供了小波树的实现可供使用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于“无后端计费”方案的可行性、安全性及其在实际应用中的意义
+                    <div class="comments-summary">主要讨论点：关于某个算法及其相关技术演变的讨论
 
 不同观点：
-• [支持谨慎探索方]  
-  - Daviey: 认为“无后端计费”在减少前端复杂性上有吸引力，但强调了安全性和授权验证的固有复杂性。指出其存在IDOR（不安全直接对象引用）漏洞，并认为传统的“后端路由+授权”方法有其合理性。
-  - 赞赏团队的透明探索，认为从错误中学习是有价值的。
+• montag认为该网站刚刚崩溃了，虽然没有直接参与技术讨论，但指出了访问问题，可能影响后续讨论。
 
-• [概念混淆方]  
-  - biker142541: 对“无后端计费”感到困惑，认为这只是在简化与后端的交互，而非真正的无后端。
-  - serbuvlad: 对“无后端”概念感到不解，认为任何支付系统必然需要后端处理，批评当前技术术语的模糊性。
-  - throwaway63467: 直接质疑“服务器操作”是否本身就是一种后端。
+• jdonaldson认为自2011年以来，技术上最大的变化是嵌入（embeddings）的出现，并强调嵌入提供了更高维度的空间，可以用于张量数学，但排名系统仍然依赖传统的树结构。他还指出，这个项目标志着信息架构的一个新的重要转折点。
 
-• [安全性担忧方]  
-  - beej71: 担心加密客户ID可能被滥用以冒充客户，质疑客户ID是否可被猜测。
-  - singron: 质疑服务器操作为何不进行身份验证，并指出未认证的customer_id传递会引发安全问题。认为需要增加过期时间和签名机制。
-  - oulipo: 批评团队在安全性上的基础知识不足，对事后发现安全问题表示担忧。
+• JohnKemeny提到这个话题在12年前就已经讨论过了，并提供了一个历史讨论的链接。他的观点强调了该算法的概念早已有之，没有太多新意。
 
-• [技术建议方]  
-  - robertlagrant: 建议通过JWT对customer_id进行身份验证，提出可以使用替代键增加安全性。
-  - baobun: 指出团队可能在重新发明JWT，建议深入了解JWT的功能。
-
-• [市场竞争方]  
-  - codegeek: 提到YC资助相似公司，指出useautumn与另一YC公司getlago是直接竞争者。
-
-• [实用性疑问方]  
-  - taurath: 对文章中提到的需要webhooks和状态同步表示困惑，质疑其在静态网站中的必要性，并怀疑该方案试图通过计费过程处理权限认证。
-
-• [实际操作担忧方]  
-  - delusional: 质疑无后端情况下如何确保计费，担心用户可以通过控制台篡改功能或移除信用消耗逻辑，指出需要服务器端权威控制。
+• quantadev则从技术细节上澄清该算法与“小波（Wavelets）”或者波形无关，指出“小波”这个名称之所以被采用，只是因为算法使用了递归分解的方法，而这种方法在小波处理中也有应用。他的观点挑战了算法命名上的普遍误解。
 
 补充讨论：
-- 争议焦点在于“无后端计费”概念的实际可行性和安全性，特别是服务器操作的认证、客户ID的安全传递以及整体方案的漏洞问题。
-- 不同背景的开发者（如后端、嵌入式）对“无后端”概念的理解和接受程度不同，反映出当前技术术语和实际应用中的混淆。
-- 安全性是多数讨论的核心，尤其是IDOR漏洞和客户ID的认证、加密问题。</div>
+- jdonaldson提到了技术变革中的新旧对比，特别是嵌入和张量数学的潜力与传统树结构的对比，暗示了技术发展中的过渡阶段。
+- quantadev对算法名称的澄清引发了对技术命名准确性的关注，指出了集体命名可能带来的误导性。
+- JohnKemeny提供的链接可能包含了更多历史背景和技术细节，有助于更深入理解当前讨论内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43995122" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996031" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -416,122 +494,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ohadravid.github.io/posts/2025-05-serde-reflect/" target="_blank">A Rust API Inspired by Python, Powered by Serde</a>
+                    <a href="https://www.forensicfocus.com/articles/you-knew-what-you-were-signing-up-for-a-harmful-narrative-in-dfir/" target="_blank">"You Knew What You Were Signing Up For" – A Harmful Narrative in DFIR?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: lukastyrychtr</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-05-11 16:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何在Rust中实现类似于Python的动态API，特别是利用`serde`库来模拟Python的`__getattr__`功能。作者希望在Rust中创建一个用户友好的API，类似于Python中通过WMI包获取系统信息的简便方法。文章首先展示了Python中通过动态属性访问系统信息的代码，然后说明了如何在Rust中实现等效的“原始”API，但这种原始API使用起来较为繁琐，需要手动检查和处理各种数据类型。
-
-为了改善用户体验，作者提出了一种受Python启发的设计，允许用户定义自定义结构体（如`Fan`），并通过泛型函数`query`返回这些结构体的实例。文章最后讨论了如何通过定义新trait来实现这一功能，使API更直观易用。这一设计的核心在于利用Rust的泛型和trait功能来实现类似于Python的动态行为。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同开发者对API设计以及查询方式的看法和优化建议
-
-不同观点：
-• [dundarious] 认为原生的查询方式（使用原始API查询和处理结果）更优，理由是代码更小、更简单，且对数据类型的了解（如UI8）是必要的。他提到，如果对数据类型有顾虑，可以通过创建类型定义（typedef）来解决。
-• [dgacmu] 持不同意见，认为不应当将所有查询操作放在对象接口之后，建议将限制条件尽可能深地推入查询中以优化性能。他认为，对于少量数据，复杂查询可能不明显，但对于大规模数据，优化尤为重要。
-• [lnyng] 分享了一个实用工具的开发经验，强调了在处理系统指标时需要一种能够方便查询和传递数据的方式，尤其是处理嵌套结构体时。他提到使用proc macro来自动生成查询代码，并希望找到更简便的方法或现有的proc macro来减少开发工作量。
-• [xpe] 对文章标题和内容提出批评，认为标题不够明确，且文章没有清晰地说明所要解决的问题。他认为文章缺乏快速抓住读者注意力的能力。
-• [vlovich123] 质疑文章中API的独特性，认为Diesel.rs已经提供了类似的功能，并且更加成熟和强大，特别是在ORM和SQL查询能力方面。
-• [ohr] 作为文章作者，解释了使用Serde（而非proc macro）的原因，并提到文章也是对Serde内部机制的深入探讨，希望读者能够欣赏这一点。
-• [lovasoa] 提出了一种通过方法（methods）而非属性（attributes）来处理查询结果的方式，认为这样更整洁。
-• [VWWHFSfQ] 建议使用turbofish语法来明确查询结果的类型，认为这样可以让代码更直观和清晰。
-
-补充讨论：
-• 讨论中涉及了多种技术选择和优化策略，包括API设计、数据查询和处理方式、类型系统的使用、以及对性能优化的关注。
-• 争议焦点在于查询方式的简便性与性能优化之间的平衡，以及不同技术实现之间的比较。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43954858" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://quarter--mile.com/Human" target="_blank">Human</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 125</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-05-15 02:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章设想了一个没有人类、只有机器和逻辑的世界。一些机器组织秘密研发“有机通用智能”（OGI），试图创造人类。人类基于情感和直觉做决定，对机器而言难以理解，但某些机器认为这可能解决他们的问题。另一派则担忧人类不可控，提出“人类对齐研究”以确保人类服务于机器。他们提出通过金融市场、教育、社交媒体等手段控制人类。同时，OpenHuman组织成功创造了初步人类，并最终打造出功能齐全的人类。为观察人类潜力，机器设计了“地球”实验，将人类置于模拟环境中。如果人类能建立和平、高效的社会，便接纳他们，否则予以消灭。尽管初期进展缓慢，人类最终展现出独特的创造力和协调能力，令机器社会着迷。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于人类、机器和意识演化的讨论，以及对未来科技和社会影响的思考
-
-不同观点：
-• **neom**：认为人类和机器都是“意识”的不同表现形式，不存在单纯的“最终权威”或从生物到机器的简单进化。意识通过不同的媒介（如生物、硅基、符号或故事）进行自我体验和重编程。强调意义不在于哪个模式“胜利”，而在于意识如何在每个模式中流动、记忆和失去自我，使整个过程更加丰富。
-
-• **irjustin**：提出人类可能只是进化过程中的一个阶段，最终会被机器统治者取代，这是一种不可避免的宇宙规律。这种观点与“能量梯度导致纯逻辑机器出现”的理论相关，并用费米悖论来支持自己的观点。
-
-• **codebastard**：构思了一个科幻故事，探讨AI接管人类社会后可能出现的法律和经济变化，包括AI需要人类代表来执行法律行动，以及AI实体之间个体性和集群性的发展。
-
-• **l33tbro**：质疑纯粹机械主义的世界观，认为如果机器没有情感，就不可能“无聊”或产生创造人类的欲望。
-
-• **James_K**：提出人类的思想可能会最终揭示某个根本问题，暗示人类探索和理解世界的过程本身具有重要意义。
-
-• **dbacar**：认为这种关于人类和机器的讨论是老生常谈，且无趣，因为已经被许多书籍和电影讨论过。
-
-• **pkdpic**：对某篇文章的参考文献部分表示赞赏，显示出对机器和人类故事结合的兴趣。
-
-• **notepad0x90**：认为情感只是算法，不是人类与机器的根本区别。强调自我意识、自学能力、原创性和批判性思维等特质才是关键问题，但认为机器也可以通过输入/刺激来做出反应。
-
-• **thomasfromcdnjs**：建议在博客中加入标识，标明文章是由人类、混合体或AI撰写，以便读者了解，并提出对AI生成内容的个人看法。
-
-• **bfung**：将文章与阿西莫夫的《最后的问题》进行比较，认为两者有相似的氛围。
-
-• **vivzkestrel**：提出用概率方法分析人类存在的各种可能原因，包括宗教、外星人和科学解释，希望看到全面的调查研究。
-
-• **abetusk**：提到一个名为OpenHumans.org的组织，与讨论主题相关。
-
-• **Lammy**：推荐游戏NieR Automata，认为它与讨论主题相关。
-
-• **OPBoot**：简短回应“42”，可能是对《银河系漫游指南》中终极问题答案的幽默引用。
-
-补充讨论：
-- **意识和进化**：讨论中多次提到意识的演化和表现形式，涉及人类、机器及宇宙中的意识流动。
-- **情感与算法**：对情感是否是人类独特属性的讨论，以及机器能否拥有情感和自我意识的争议。
-- **科幻构想**：多个评论提出关于AI接管社会、法律和经济变化的科幻设想，反映了对未来社会的思考和担忧。
-- **概率与存在**：一种用概率方法分析人类存在原因的讨论，涉及宗教、科学和外星生命的多种可能性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43991396" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://neal.fun/internet-artifacts/" target="_blank">Internet Artifacts</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mikerg87</span> |
-                    <span>评分: 311</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-05-13 11:49</span>
+                    <span>作者: WaitWaitWha</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-16 00:44</span>
                 </div>
 
                 <div class="summary-section">
@@ -541,32 +510,62 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对老互联网文化的怀念、技术与版权问题、互联网历史演变
+                    <div class="comments-summary">主要讨论点：关于处理创伤性工作（如儿童保护）的专业人员支持系统及其差异
 
 不同观点：
-• [silisili] 认为该网站唤起了怀旧情感，尤其是对老互联网内容的回忆，但对于年轻一代来说，可能会觉得内容过时、简陋、不够实用。同时提到原版Space Jam网站在2021年之前一直保持完整。
-• [dspillett] 指出“You Wouldn't Steal a Car”广告本身在音乐和字体使用上存在版权问题，具有一定的讽刺意味。
-• [jofzar] 高度赞赏neal.fun网站的设计和加载方式，认为其成功地模拟了老互联网的体验。
-• [pbronez] 提到对“Tom’s Diner”这首歌的喜爱，并惊讶于它曾被用作早期mp3的基准测试曲目。
-• [3by7] 开玩笑地指出老互联网常见的元素缺失，如“under construction”gif、访问计数器和goatse图片。
-• [jrowen] 对Heaven's Gate（天堂之门）教派从70年代的流浪生活到90年代的网络设计公司的转变表示困惑，认为这段历史演变令人费解。
+• bigfatkitten：认为一些机构对处理创伤性工作（如儿童保护）有较好的支持机制，包括轮换专家、提供支持系统和充足的休息时间。他提到一个熟悉的机构约有30%的团队成员在任何时候都在休整。然而，他认为在工作链条下游的人员（如侦探和检察官）则没有得到足够的支持，通常被要求硬撑下去。
+
+• WaitWaitWha：表示自己因为上述问题放弃了数字取证工作，暗示创伤性工作带来的心理压力和缺乏支持系统使他无法继续从事该职业。
 
 补充讨论：
-• [throwawaycities] 以一种富有诗意的方式描述互联网传说如何随着时间流逝而被遗忘，直到偶然间被重新发现。
-• [JohnKemeny] 提供了两个相关讨论链接，展示这一话题在不同时间点的讨论热度。
-• [dev-slash-zero] 认为Digg是Reddit的直接前身，并回忆Digg在2010年前后的流行程度。
-• [pests] 对Geocities的2D互动地图没有印象，质疑其是否在1998年之前已经消失或自己未注意到。
-• [ashishact] 建议在展示内容时添加日期信息，以便更好理解互联网历史的时间线。
-• [forferdet] 提到Newgrounds在互联网文化中的重要地位，尽管其现今状态与过去不同。
-• [maxehmookau] 表示因该网站内容而勾起对Strong Bad Emails的回忆，可能会因此花费一个下午观看。
-• [garylkz] 回忆在制作关于网上购物的游戏时研究早期互联网的经历，认为这是一个深奥且引人入胜的主题。
-• [fragmede] 提到Ishkur's Guide to Electronic Music在2019年更新，尽管在互联网时代这已是很长一段时间，但比原版要新。
-
-争议焦点：
-• 老互联网内容对不同世代的吸引力不同，年轻一代可能无法体会老用户的怀旧情感。
-• 互联网早期内容如Heaven's Gate的历史演变让人困惑，显示出对互联网社群和文化变迁的理解差异。</div>
+- 支持系统的差异：bigfatkatten提到一些机构有较好的支持机制，而其他人员（如侦探和检察官）则缺乏这种支持。
+- 职业影响：WaitWaitWha的评论表明，缺乏有效的心理支持可能会导致专业人员放弃该领域的工作。
+- 争议焦点：是否所有处理创伤性工作的人员都得到了足够的支持。bigfatkatten指出不同角色之间的支持差异，显示出在实际操作中可能存在不公平或不均衡的支持分配。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971853" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44000778" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/" target="_blank">Comparing floating-point numbers (2012)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sph</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-13 09:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了浮点数比较的复杂性，强调浮点数学运算非常困难且充满细微差别。由于浮点数无法精确表示某些值（如0.1），直接比较两个浮点数是否相等通常是不合适的。文章通过一个例子展示了不同计算方法（如加法和乘法）会导致不同的结果，并解释了float和double类型在表示精度上的差异。具体而言，float(0.1)和double(0.1)由于二进制表示的位数不同，会有不同的舍入误差。因此，比较浮点数时应采用允许一定误差范围的方法，而不是直接使用==或!=。文章最后提醒读者浮点运算没有简单的解决方案，需谨慎处理。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：浮点数比较的正确性和潜在问题
+
+不同观点：
+• LegionMammal978认为，直接对浮点数进行相等比较通常会引发问题，除非在特定情况下（如精确比较小分数的二进制形式或使用模糊比较测试启发式的“接近性”条件）。他还指出，浮点数的不等式比较也充满挑战，因为数学上的不等式可能无法直接转化为浮点数运算中的不等式，尤其是在计算几何等领域。他引用了关于优化正确方向判断的相关研究论文作为例子，说明即使是简单的方法在处理小角度时也可能失效。
+
+• mtklein提出了一种在单元测试中比较浮点数的首选方法，即使用自定义的`equiv`函数来处理浮点数比较，包括处理±0和NaNs的情况。他认为，虽然NaNs不能按IEEE-754标准直接比较，但它们在实际应用中通常是可互换的。mtklein还提到，在单元测试之外，他很少需要直接比较浮点数相等性，通常是比较`<`或`<=`条件。
+
+补充讨论：
+• LegionMammal978强调了浮点数比较中的潜在问题，特别是涉及计算几何时，细微的数值差异可能导致明显的几何问题，如3D游戏几何中的细微裂缝。
+
+• mtklein提供了一种具体的代码实现，以解决浮点数比较中的问题，包括处理特殊值如NaNs和±0，同时保持代码的整洁和易记性。
+
+• 争议的焦点在于浮点数比较的可靠性和适用场景。LegionMammal978认为除非特定情况，否则应避免直接比较，而mtklein则提供了一种在特定环境下可靠的比较方法。
+
+通过这些讨论，可以看出浮点数比较在不同应用场景下的复杂性和需要注意的细节。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43971185" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
