@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-16 14:25 (北京时间)
+            最后更新时间: 2025-05-16 17:14 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,35 +61,96 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.forensicfocus.com/articles/you-knew-what-you-were-signing-up-for-a-harmful-narrative-in-dfir/" target="_blank">"You Knew What You Were Signing Up For" – A Harmful Narrative in DFIR?</a>
+                    <a href="https://matklad.github.io/2025/05/14/scalar-select-aniti-pattern.html" target="_blank">The Scalar Select Anti-Pattern</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: WaitWaitWha</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-16 00:44</span>
+                    <span>作者: goranmoomin</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-14 20:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文讨论了在事件循环中使用"标量选择"（Scalar Select）的反模式问题。在处理多个外部IO驱动的事件流时，逐个处理事件（标量选择）可能导致效率低下，因为当一个事件处理完毕后，可能有多个事件已经准备好，而标量选择会随意选取一个事件处理，造成不必要的开销。
+
+为了优化，文章提出了几种策略：
+
+1. **优先级排序**：根据事件类型决定处理顺序，如文件修改优先于代码补全请求。
+2. **选择性背压**：对某些类型的事件不处理，以减缓特定输入的处理速度。
+3. **消除**：有些事件可以完全丢弃，比如文件文本完全替换时，之前的修改可忽略。
+4. **合并**：多个类似事件可以合并处理，如文件修改可以合并成一个大改动。
+
+最终，文章建议将标量选择改为批量处理，即在事件流中一次性获取所有可用事件并批量处理，以提高效率。这种方法在低负载时效果不明显，但在高负载时能显著减少处理时间。实现批量处理的关键是`batch_stream`函数，它会等待至少一个事件，然后拉取所有可用事件。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于处理创伤性工作（如儿童保护）的专业人员支持系统及其差异
+                    <div class="comments-summary">主要讨论点：输入事件处理和批处理行为在不同系统和环境下的实现与影响
 
 不同观点：
-• bigfatkitten：认为一些机构对处理创伤性工作（如儿童保护）有较好的支持机制，包括轮换专家、提供支持系统和充足的休息时间。他提到一个熟悉的机构约有30%的团队成员在任何时候都在休整。然而，他认为在工作链条下游的人员（如侦探和检察官）则没有得到足够的支持，通常被要求硬撑下去。
+• jchw 认为，Windows 内部对事件队列的处理会合并和优先排序输入事件，尤其是在事件积压时。这种批处理行为在应用/API层面可能不明显，但实际上在处理事件时具有重要作用。他还提到，Wayland客户端如果处理事件队列滞后可能会崩溃，并提出是否可以通过UNIX域套接字在服务器端实现某种事件合并，以避免向客户端发送过多高精度指针移动事件。
 
-• WaitWaitWha：表示自己因为上述问题放弃了数字取证工作，暗示创伤性工作带来的心理压力和缺乏支持系统使他无法继续从事该职业。
+• taeric 对jchw的提议不太清楚，并指出即使接收一批指令也不会立即改变什么。他认为，无论如何处理指令，仍然需要考虑指令之间的依赖关系和交互。他将此比作处理器处理 incoming 指令的方式，强调程序本身对如何处理和分批传递指令负有责任，而不仅仅依赖于发送指令的过程。
+
+• castratikron 补充了一个关键条件，即只要处理一个事件不影响批处理中的其他事件，比如文件IO事件，处理一个事件导致另一个事件的描述符被关闭，这种情况就需要特别注意。
+
+• malkia 简短提到CPU的流水线技术，暗示这种技术在处理批量指令时可能具有效率优势。
 
 补充讨论：
-- 支持系统的差异：bigfatkatten提到一些机构有较好的支持机制，而其他人员（如侦探和检察官）则缺乏这种支持。
-- 职业影响：WaitWaitWha的评论表明，缺乏有效的心理支持可能会导致专业人员放弃该领域的工作。
-- 争议焦点：是否所有处理创伤性工作的人员都得到了足够的支持。bigfatkatten指出不同角色之间的支持差异，显示出在实际操作中可能存在不公平或不均衡的支持分配。</div>
+• jchw 提出的UNIX域套接字和事件合并的想法引发了对如何有效处理大量事件的讨论，尤其是在客户端滞后的情况下。
+• taeric 的观点强调了程序在处理批量指令时的主动性和责任，而不仅仅是依赖底层机制。
+• castratikron 提醒大家注意事件之间的依赖和潜在冲突，特别是在资源管理方面，比如文件描述符的关闭。
+• malkia 提到CPU流水线技术，提供了一个从硬件层面理解批处理和指令处理的角度。
+
+争议焦点：
+• jchw 提出的服务器端事件合并的提议引发了taeric的质疑，即这种方法是否真正有效，是否能解决实际问题。
+• 对批处理指令的责任归属有潜在讨论，即程序本身和底层机制之间的责任分配问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44000778" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43988753" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.papey.fr/post/07-demystifying-ruby-01/" target="_blank">Demystifying Ruby: It's all about threads (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kadrek</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-15 13:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章简要介绍了Ruby编程语言及其并发处理机制。Ruby是一种动态、解释型、开源的编程语言，常用于网页开发，特别是与Ruby on Rails框架结合使用。文章重点讨论了Ruby的并发和并行机制，包括进程（Process）、Ractor、线程（Thread）和纤程（Fiber）。
+
+文章解释了Ruby的全局解释器锁（GIL）机制如何限制真正的并行性。尽管Ruby支持多线程，但默认情况下一次只能运行一个线程。为了实现真正的并行执行，Ruby引入了一个实验性功能——Ractor。Ractor允许在同一Ruby进程内实现内存隔离和消息传递，从而避免数据竞争。文章通过一个例子展示了如何使用Ractor实现并行计算，并对比了并行和顺序执行的时间差异。
+
+最后，文章提醒Ractor目前仍是实验性功能，未来版本中其行为可能会有所改变。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Ruby线程的性质及其与操作系统和绿色线程的关系
+
+不同观点：
+• [jemmyw]认为，自Ruby 1.9版本以来，Ruby线程是由操作系统管理的真正线程，而不是绿色线程。他指出，虽然全局解释器锁（GIL）限制了并行性，但在调用非Ruby代码时可能会实现并行。他还提到，这一点（"可能"实现并行）是一个令人困扰的细节。
+
+• [josefrichter]提到，大约15年前Jose Valim在Ruby上的相关工作，并指出Valim后来创建了Elixir，从此他们再也没有回头使用Ruby。这暗示了对Elixir在处理并行和并发上的认可。
+
+补充讨论：
+• [jemmyw]强调了Ruby线程在调用非Ruby代码时可能实现并行，但对这种不确定性表示不满。
+• [josefrichter]通过历史背景提到Jose Valim转向Elixir的发展，暗示了对Ruby线程处理并行问题的不满或对Elixir优越性的认可。
+• 争议的焦点在于Ruby线程是否可以真正实现并行以及其与绿色线程的区别，特别是在GIL限制下的实际表现。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43995144" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -155,58 +216,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://useautumn.com/blog/backendless" target="_blank">How we made billing backendless</a>
+                    <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/" target="_blank">Comparing floating-point numbers (2012)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ayushrodrigues</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-05-15 13:54</span>
+                    <span>作者: sph</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-05-13 09:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了Autumn团队尝试将支付和账单处理移到前端，以提供更好的开发者体验。最初，他们引入了一个"可发布密钥"（publishable key），让开发者可以直接在前端处理支付链接和检查功能访问权限，但发现该方案存在局限性和安全隐患。接着，他们尝试使用Next.js的服务器动作（server actions）来实现，但由于未认证的公共路由导致安全问题。最终，他们通过加密客户ID解决了部分安全问题，但意识到这种方法仅适用于支持服务器动作的框架。作者承认，未来可能放弃这种方法，转向更框架无关的方案，简化后端路由设置，使集成更加标准化和安全。</p>
+                    <p>本文讨论了浮点数比较的复杂性，强调浮点数学运算非常困难且充满细微差别。由于浮点数无法精确表示某些值（如0.1），直接比较两个浮点数是否相等通常是不合适的。文章通过一个例子展示了不同计算方法（如加法和乘法）会导致不同的结果，并解释了float和double类型在表示精度上的差异。具体而言，float(0.1)和double(0.1)由于二进制表示的位数不同，会有不同的舍入误差。因此，比较浮点数时应采用允许一定误差范围的方法，而不是直接使用==或!=。文章最后提醒读者浮点运算没有简单的解决方案，需谨慎处理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于“无后端计费”方案的可行性、安全性及其在实际应用中的意义
+                    <div class="comments-summary">主要讨论点：浮点数比较的正确性和潜在问题
 
 不同观点：
-• [支持谨慎探索方]  
-  - Daviey: 认为“无后端计费”在减少前端复杂性上有吸引力，但强调了安全性和授权验证的固有复杂性。指出其存在IDOR（不安全直接对象引用）漏洞，并认为传统的“后端路由+授权”方法有其合理性。
-  - 赞赏团队的透明探索，认为从错误中学习是有价值的。
+• LegionMammal978认为，直接对浮点数进行相等比较通常会引发问题，除非在特定情况下（如精确比较小分数的二进制形式或使用模糊比较测试启发式的“接近性”条件）。他还指出，浮点数的不等式比较也充满挑战，因为数学上的不等式可能无法直接转化为浮点数运算中的不等式，尤其是在计算几何等领域。他引用了关于优化正确方向判断的相关研究论文作为例子，说明即使是简单的方法在处理小角度时也可能失效。
 
-• [概念混淆方]  
-  - biker142541: 对“无后端计费”感到困惑，认为这只是在简化与后端的交互，而非真正的无后端。
-  - serbuvlad: 对“无后端”概念感到不解，认为任何支付系统必然需要后端处理，批评当前技术术语的模糊性。
-  - throwaway63467: 直接质疑“服务器操作”是否本身就是一种后端。
-
-• [安全性担忧方]  
-  - beej71: 担心加密客户ID可能被滥用以冒充客户，质疑客户ID是否可被猜测。
-  - singron: 质疑服务器操作为何不进行身份验证，并指出未认证的customer_id传递会引发安全问题。认为需要增加过期时间和签名机制。
-  - oulipo: 批评团队在安全性上的基础知识不足，对事后发现安全问题表示担忧。
-
-• [技术建议方]  
-  - robertlagrant: 建议通过JWT对customer_id进行身份验证，提出可以使用替代键增加安全性。
-  - baobun: 指出团队可能在重新发明JWT，建议深入了解JWT的功能。
-
-• [市场竞争方]  
-  - codegeek: 提到YC资助相似公司，指出useautumn与另一YC公司getlago是直接竞争者。
-
-• [实用性疑问方]  
-  - taurath: 对文章中提到的需要webhooks和状态同步表示困惑，质疑其在静态网站中的必要性，并怀疑该方案试图通过计费过程处理权限认证。
-
-• [实际操作担忧方]  
-  - delusional: 质疑无后端情况下如何确保计费，担心用户可以通过控制台篡改功能或移除信用消耗逻辑，指出需要服务器端权威控制。
+• mtklein提出了一种在单元测试中比较浮点数的首选方法，即使用自定义的`equiv`函数来处理浮点数比较，包括处理±0和NaNs的情况。他认为，虽然NaNs不能按IEEE-754标准直接比较，但它们在实际应用中通常是可互换的。mtklein还提到，在单元测试之外，他很少需要直接比较浮点数相等性，通常是比较`<`或`<=`条件。
 
 补充讨论：
-- 争议焦点在于“无后端计费”概念的实际可行性和安全性，特别是服务器操作的认证、客户ID的安全传递以及整体方案的漏洞问题。
-- 不同背景的开发者（如后端、嵌入式）对“无后端”概念的理解和接受程度不同，反映出当前技术术语和实际应用中的混淆。
-- 安全性是多数讨论的核心，尤其是IDOR漏洞和客户ID的认证、加密问题。</div>
+• LegionMammal978强调了浮点数比较中的潜在问题，特别是涉及计算几何时，细微的数值差异可能导致明显的几何问题，如3D游戏几何中的细微裂缝。
+
+• mtklein提供了一种具体的代码实现，以解决浮点数比较中的问题，包括处理特殊值如NaNs和±0，同时保持代码的整洁和易记性。
+
+• 争议的焦点在于浮点数比较的可靠性和适用场景。LegionMammal978认为除非特定情况，否则应避免直接比较，而mtklein则提供了一种在特定环境下可靠的比较方法。
+
+通过这些讨论，可以看出浮点数比较在不同应用场景下的复杂性和需要注意的细节。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43995122" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43971185" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -217,89 +259,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://resobscura.substack.com/p/onfims-world-medieval-child-artists" target="_blank">Onfim's world: Child artists in history</a>
+                    <a href="https://www.asimov.press/p/model-organisms-are-not-static" target="_blank">Model Organisms Are Not Static</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: benbreen</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-05-15 16:43</span>
+                    <span>作者: mailyk</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-15 15:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章讨论了实验用模式生物的基因变异问题。研究发现，一些脊椎动物的基因组突变速度比其他物种快40倍。尽管实验室中的动物经过精心培育以减少基因变异，但突变仍可能发生，并影响实验结果。例如，2006年阿尔伯塔大学的研究人员在重复1993年的小鼠实验时，发现结果不一致，这可能与基因突变有关。文章还提到，不同物种的突变率差异很大，如实验室常用的小鼠每个后代有15个新突变，而雪鸮只有1个，达尔文的 rhea 鸟则有约47个。文章建议进一步研究其他模式生物的基因突变速度，以更好地理解其对实验结果的影响。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Onfim的涂鸦及其历史和文化意义，以及对儿童创作的保存和欣赏。
+                    <div class="comments-summary">主要讨论点：科研中基因克隆和实验生物稳定性面临的挑战
 
 不同观点：
-• [lbeckman314] 强调Onfim的涂鸦让我们重新思考童年，不仅仅是一个永恒的当下，而是有着深远历史的人类核心部分。该评论表达了对重新发现这些历史遗存的喜爱，并分享了相关资源链接，以供进一步探索。
+• **[koeng]**：在高通量克隆工作中，客户期望获得完整且经过验证的基因。然而，即便在最常见的生物体中，仍然可能出现无法预测的情况，例如转座子意外跳入载体，导致6kbp的插入。这显示了实验中不可控因素对结果的影响。
 
-• [pavel_lishin] 认为每一件像Onfim涂鸦这样独特的遗存背后，都有无数被遗失的作品。他以自身经验为例，提到自己的孩子也创作大量艺术作品，他选择拍照保存以防止这些作品被埋没。他希望未来孩子能从中获得一些有趣的体验。
+• **[Feuilles_Mortes]**：提到C. elegans（秀丽隐杆线虫）的优点，可以通过甘油冻存来保持实验品系的稳定性。然而，在果蝇实验室中，目前还没有有效的长久冻存方法，实验室通常只能接受一定程度的背景突变，并假设这些突变不会显著影响实验结果。
 
-• [lovegrenoble] 从历史和文化角度出发，表达了对Novgorod这座城市的赞美，称其为历史和文化爱好者的宝地，并希望有机会亲自访问。
+• **[Projectiboga]**：指出实验中使用的饮食也会对研究结果产生影响，特别是当饮食配方不同时，结果的可比性可能会受到影响。例如，某些缺乏维生素E的饮食在现实世界中不常见，这可能导致实验偏差。
 
-• [jayrot] 推荐了一个关于Onfim的视频，认为如果想体验“sonder”（指意识到每个陌生人都有自己丰富的生活），这个视频值得一看。
+• **[jmward01]**：认为应将世界视为动态而非静态的，特别是在如梯度下降等算法中。长期来看，动态变化甚至可能选择稳定性而非最优性。提出为科学知识（如生物学知识）发布一个“预期半衰期”统计，以反映知识随时间的改变。
 
-补充讨论：
-• 讨论中提到了之前关于Onfim的讨论和相关资源的链接，表明对这一话题的持续关注和兴趣。
-• 争议的焦点可能在于对儿童创作保存价值的不同看法，[pavel_lishin] 以个人经验为例，提出了保存孩子作品的实用方法，而[lbeckman314] 更关注这些作品的历史和文化意义。
-• 评论中还涉及了对历史遗存的珍惜和对个人经历的反思，这为讨论增添了更多层次的文化和情感因素。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996796" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.irishtimes.com/business/2025/05/16/john-collison-of-stripe-i-am-baffled-by-companies-doing-an-about-face-on-social-initiatives/" target="_blank">Stripe: 'I am baffled by companies doing an about-face on social initiatives'</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: reillyse</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-16 05:14</span>
-                </div>
+• **[pmags]**：同意科研中生物体演化带来的挑战，特别是在微生物研究中。多个实验组之间的同基因品系可能因在实验室中的演化而产生表型差异，这进一步加剧了实验结果的不确定性。
 
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>约翰·科里森（John Collison）是爱尔兰成功的企业家之一，与哥哥帕特里克（Patrick）共同创立了全球支付巨头Stripe。Stripe为众多知名企业如福特、亚马逊和Zoom提供支付技术服务，并在人工智能市场占据一定份额，客户包括OpenAI等。Stripe每年在旧金山举办Stripe Sessions大会，发布新产品并与客户交流。2019年参会人数为1,000人，2024年增至8,000人。Stripe自2010年成立以来，致力于简化在线支付流程，现已扩展至防欺诈、发票、支付等多个领域。公司允许客户单独使用其部分服务，增加了企业采用的灵活性。Stripe的支付量在2023年达到1.4万亿美元，其客户增长速度远超标普500企业。2024年，公司关注加密货币和人工智能两大增长领域。Stripe目前估值915亿美元，拥有8,500名员工，总部位于都柏林和美国。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于通过禁止成人网站使用加密货币支付来打击非法内容的问题
-
-不同观点：
-• **支持禁止的观点**：
-  - 认为禁止成人网站使用加密货币支付可以帮助打击非法内容，尤其是涉及到未成年人的不良内容。
-  - 指出加密货币的匿名性使得追踪资金流向变得困难，从而助长了非法活动的蔓延。
-  - 通过限制支付方式，可以增加对网站内容的监管压力，迫使它们采取更多措施来确保内容的合法性。
-
-• **反对禁止的观点**：
-  - 认为禁止加密货币支付并不能有效解决非法内容的问题，因为非法内容创造者会找到其他支付方式。
-  - 强调加密货币的隐私特性对于用户保护个人信息和避免身份盗窃具有重要意义。
-  - 指出这种禁止措施可能会对合法的成人内容创作者和消费者带来不必要的困扰和不便。
-
-• **关于监管可行性的观点**：
-  - 有人认为政府和监管机构应该制定更有效的监管框架，而不是简单地禁止某种支付方式。
-  - 提出可以通过技术手段来追踪和打击非法活动，而不是限制支付方式。
-  - 强调教育和提高公众意识是防止非法内容传播的重要手段。
+• **[tehjoker]**：提出是否有可能从头合成小基因组生物的基因组，或修补大部分区域，以便依赖计算机存储来解决实验变异性问题。
 
 补充讨论：
-- 讨论中有人提到需要平衡隐私保护和打击非法内容之间的关系，寻找不牺牲用户隐私的解决方案。
-- 有人担心这种禁止措施可能会导致加密货币在其他领域应用的合法性受到质疑。
-- 争议的焦点在于加密货币匿名性是否是导致非法内容泛滥的主要原因，以及禁止支付方式是否能起到实质性作用。</div>
+• 实验中的不可控因素（如基因突变、转座子活动）对实验结果的影响是讨论的核心。
+• 不同生物体（如线虫和果蝇）在实验稳定性上的差异以及应对策略也是重要的讨论点。
+• 饮食等外部因素对实验结果的影响以及科学知识的动态性进一步丰富了讨论的广度。
+• 合成生物学技术（如基因组合成）作为潜在解决方案也被提及，显示出未来可能的研究方向。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44002032" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996243" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -362,40 +359,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://daniel.haxx.se/blog/2022/05/12/a-tale-of-a-trailing-dot/" target="_blank">A Tale of a Trailing Dot (2022)</a>
+                    <a href="https://resobscura.substack.com/p/onfims-world-medieval-child-artists" target="_blank">Onfim's world: Child artists in history</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dcminter</span> |
-                    <span>评分: 28</span> |
+                    <span>作者: benbreen</span> |
+                    <span>评分: 27</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2025-05-13 15:24</span>
+                    <span>发布时间: 2025-05-15 16:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了URL主机名末尾的点（trailing dot）在不同网络层级和协议中的处理方式及其带来的问题。在DNS解析中，末尾的点不影响解析结果，但会影响本地解析函数对域名的处理。在HTTP协议中，末尾的点会影响主机头的值，尽管客户端连接的IP地址可能相同，但服务器可以根据点区分内容。Cookie规范则忽略末尾的点，将其视为相同域。而在HTTPS的SNI字段中，末尾的点会被去除，服务器无法区分带点和不带点的域名。文章还介绍了curl项目在处理末尾点时的演变：从最初忽略，到2014年去除，再到2022年根据需要保留末尾点以满足特定网站的需求。最终，curl决定在主机头中保留末尾点，但在SNI字段中去掉它。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：URL中域名末尾的点（trailing dot）对不同网络技术的影响
+                    <div class="comments-summary">主要讨论点：Onfim的涂鸦及其历史和文化意义，以及对儿童创作的保存和欣赏。
 
 不同观点：
-• **bonki的观点**：对HSTS（HTTP Strict Transport Security）在域名有或无末尾点时的处理存在疑问。bonki认为，如果带末尾点和不带末尾点的域名被视为不同的身份（可能提供不同的虚拟主机），那么在其中一个设置了HSTS的情况下，忽略另一个的HSTS是否合理。这暗示了对HSTS处理的一致性问题。
+• [lbeckman314] 强调Onfim的涂鸦让我们重新思考童年，不仅仅是一个永恒的当下，而是有着深远历史的人类核心部分。该评论表达了对重新发现这些历史遗存的喜爱，并分享了相关资源链接，以供进一步探索。
 
-• **watersb的观点**：扩展了讨论，指出在密码管理中，URL中末尾点也会导致问题。某些平台的内置密码管理和第三方密码管理器（如1Password）会将带末尾点和不带末尾点的URL视为不同的情况。虽然watersb没有具体说明可能导致的问题，但提出了在多页面web应用中通过JavaScript切换URL末尾点可能引发的授权问题。
+• [pavel_lishin] 认为每一件像Onfim涂鸦这样独特的遗存背后，都有无数被遗失的作品。他以自身经验为例，提到自己的孩子也创作大量艺术作品，他选择拍照保存以防止这些作品被埋没。他希望未来孩子能从中获得一些有趣的体验。
 
-• **recursive的观点**：引用了RFC 6265中关于cookie规范的描述，指出规范中规定域名末尾点应被忽略，即带点和不带点的域名应被视为相同。然而，recursive通过实验发现，实际浏览器行为与此不符，带末尾点的域名和不带末尾点的域名在cookie处理上存在差异，导致登录状态不同。
+• [lovegrenoble] 从历史和文化角度出发，表达了对Novgorod这座城市的赞美，称其为历史和文化爱好者的宝地，并希望有机会亲自访问。
+
+• [jayrot] 推荐了一个关于Onfim的视频，认为如果想体验“sonder”（指意识到每个陌生人都有自己丰富的生活），这个视频值得一看。
 
 补充讨论：
-• **争议焦点**：
-  - **理论规范与实际实现的差异**：recursive指出了RFC规范和实际浏览器行为的不一致，这是讨论中的一个争议点。
-  - **不同技术层面的影响**：从HSTS、密码管理到cookie处理，不同技术对末尾点的处理方式不同，这导致了复杂的交互问题。
-  - **潜在的实际应用问题**：watersb提出了在web应用中通过JavaScript切换URL末尾点可能引发的授权问题，这是一个值得注意的潜在风险。
-
-总结：讨论围绕URL中域名末尾点对不同网络技术的影响展开，包括HSTS、密码管理和cookie处理，指出了理论规范与实际实现之间的差异，以及潜在的实际应用问题。</div>
+• 讨论中提到了之前关于Onfim的讨论和相关资源的链接，表明对这一话题的持续关注和兴趣。
+• 争议的焦点可能在于对儿童创作保存价值的不同看法，[pavel_lishin] 以个人经验为例，提出了保存孩子作品的实用方法，而[lbeckman314] 更关注这些作品的历史和文化意义。
+• 评论中还涉及了对历史遗存的珍惜和对个人经历的反思，这为讨论增添了更多层次的文化和情感因素。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43973964" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996796" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -406,39 +402,56 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/" target="_blank">Comparing floating-point numbers (2012)</a>
+                    <a href="https://useautumn.com/blog/backendless" target="_blank">How we made billing backendless</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sph</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-13 09:37</span>
+                    <span>作者: ayushrodrigues</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-05-15 13:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了浮点数比较的复杂性，强调浮点数学运算非常困难且充满细微差别。由于浮点数无法精确表示某些值（如0.1），直接比较两个浮点数是否相等通常是不合适的。文章通过一个例子展示了不同计算方法（如加法和乘法）会导致不同的结果，并解释了float和double类型在表示精度上的差异。具体而言，float(0.1)和double(0.1)由于二进制表示的位数不同，会有不同的舍入误差。因此，比较浮点数时应采用允许一定误差范围的方法，而不是直接使用==或!=。文章最后提醒读者浮点运算没有简单的解决方案，需谨慎处理。</p>
+                    <p>文章介绍了Autumn团队尝试将支付和账单处理移到前端，以提供更好的开发者体验。最初，他们引入了一个"可发布密钥"（publishable key），让开发者可以直接在前端处理支付链接和检查功能访问权限，但发现该方案存在局限性和安全隐患。接着，他们尝试使用Next.js的服务器动作（server actions）来实现，但由于未认证的公共路由导致安全问题。最终，他们通过加密客户ID解决了部分安全问题，但意识到这种方法仅适用于支持服务器动作的框架。作者承认，未来可能放弃这种方法，转向更框架无关的方案，简化后端路由设置，使集成更加标准化和安全。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：浮点数比较的正确性和潜在问题
+                    <div class="comments-summary">主要讨论点：关于“无后端计费”方案的可行性、安全性及其实际应用的讨论
 
 不同观点：
-• LegionMammal978认为，直接对浮点数进行相等比较通常会引发问题，除非在特定情况下（如精确比较小分数的二进制形式或使用模糊比较测试启发式的“接近性”条件）。他还指出，浮点数的不等式比较也充满挑战，因为数学上的不等式可能无法直接转化为浮点数运算中的不等式，尤其是在计算几何等领域。他引用了关于优化正确方向判断的相关研究论文作为例子，说明即使是简单的方法在处理小角度时也可能失效。
+• **Daviey**：认为“无后端计费”突显了开发体验（DX）与安全性之间的矛盾。虽然减少后端模板代码有吸引力，但安全性问题不可避免。特别是服务器操作中的IDOR漏洞（不安全的直接对象引用）是一个严重问题，仅靠前端无法解决。最终结论是，传统的“后端路由加认证”方法存在是有理由的。
 
-• mtklein提出了一种在单元测试中比较浮点数的首选方法，即使用自定义的`equiv`函数来处理浮点数比较，包括处理±0和NaNs的情况。他认为，虽然NaNs不能按IEEE-754标准直接比较，但它们在实际应用中通常是可互换的。mtklein还提到，在单元测试之外，他很少需要直接比较浮点数相等性，通常是比较`<`或`<=`条件。
+• **biker142541**：对“无后端计费”的概念感到困惑，认为如果需要服务器操作，那就不是真正的无后端。建议更清晰地说明只是简化了后端交互，而不是完全去除后端。
+
+• **taurath**：同样对文章感到不解，质疑为何计费需要webhooks和状态同步。认为可以在静态网站上接受支付而不需要webhooks，并提出这可能是在通过计费过程处理权限认证，而不是直接称之为认证。
+
+• **beej71**：担心如果加密后的客户ID被获取，是否会导致客户被冒充。问题在于客户ID是否可被猜测，从而引发安全问题。
+
+• **serbuvlad**：认为现代web技术越来越复杂且难以理解。强调任何支付处理都需要后端，所谓“无后端”只是混淆概念。同时也提到serverless实际上还是有服务器，只是形式不同。
+
+• **singron**：提出服务器操作为何不能被认证，认为这是明显的解决方案。还提到密钥轮换和过期机制的问题，指出如果不解决这些问题，最终可能会重新发明类似JWT的机制。
+
+• **robertlagrant**：建议直接对用户进行认证，然后可以安全地传递客户ID或使用替代键。提出可以使用JWT来实现这一点，特别是在无服务器函数中。
+
+• **baobun**：认为团队正在重新发明JWT，建议深入了解JWT及其功能。
+
+• **oulipo**：批评文章中的工程师缺乏基本的安全知识，指出多次事后才意识到方案不安全，令人担忧。
+
+• **codegeek**：指出YC投资了类似的公司，useautumn与另一家YC公司getlago是直接竞争对手。
+
+• **throwaway63467**：质疑服务器操作是否本身就是后端，认为如果需要服务器操作，那就不算是无后端。
+
+• **delusional**：质疑在没有后端的情况下如何确保计费的准确性。提出用户可以通过控制台调用函数或修改代码，认为大多数多人在线游戏已经通过服务器权威模拟解决了类似问题。
 
 补充讨论：
-• LegionMammal978强调了浮点数比较中的潜在问题，特别是涉及计算几何时，细微的数值差异可能导致明显的几何问题，如3D游戏几何中的细微裂缝。
-
-• mtklein提供了一种具体的代码实现，以解决浮点数比较中的问题，包括处理特殊值如NaNs和±0，同时保持代码的整洁和易记性。
-
-• 争议的焦点在于浮点数比较的可靠性和适用场景。LegionMammal978认为除非特定情况，否则应避免直接比较，而mtklein则提供了一种在特定环境下可靠的比较方法。
-
-通过这些讨论，可以看出浮点数比较在不同应用场景下的复杂性和需要注意的细节。</div>
+- 争议的焦点在于“无后端计费”是否可行及安全，特别是如何处理认证和授权问题。
+- 多次提到JWT作为解决方案或类似概念，表明JWT在这种场景下的适用性和普遍性。
+- 对“无后端”这一术语的混淆和质疑贯穿评论，反映出对新概念的理解和接受程度不一。
+- 强调了安全性的重要性，尤其是在处理支付和客户数据时，不能仅依赖前端解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971185" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43995122" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -449,53 +462,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://deno.com/blog/an-update-on-fresh" target="_blank">An Update on Fresh</a>
+                    <a href="https://www.nytimes.com/2025/05/15/world/europe/harvard-law-magna-carta-original.html" target="_blank">Harvard Law paid $27 for a copy of Magna Carta. It's an original</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: agos</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-05-15 15:30</span>
+                    <span>作者: jgwil2</span> |
+                    <span>评分: 178</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-05-15 18:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《Fresh 2 最新进展》由 Marvin Hagemeister 于2025年5月15日发布，介绍了 Deno 团队对 Fresh 框架的更新计划。Fresh 是一个基于最新网页标准的简单 web 框架，Fresh 1.0 因其高效性广受欢迎。然而，随着项目需求增长，Fresh 1 的架构难以满足更大项目和更多功能的需求。因此，团队着手开发 Fresh 2，以提供更强的可扩展性、速度和易用性。
-
-开发 Fresh 2 的过程中，团队发现许多问题源于底层技术，如 Deno 本身的兼容性问题，因此优先改进了 Deno 核心平台和 JavaScript 注册表 JSR，并支持 npm 包。目前，Fresh 2 的预发布版本已在 deno.com 和 Deno Deploy 上投入使用，但仍在完善插件系统和打包工具。Fresh 2.0 稳定版预计于2025年第三季度末发布。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Deno及其相关技术（如Fresh框架）的现状、发展、以及社区反馈
+                    <div class="comments-summary">主要讨论点：围绕《大宪章》的历史、价值及其现代意义的讨论
 
 不同观点：
-• **对"An Update On X"标题的敏感性**：
-  - andrewl-hn和watusername指出，由于过去VC和初创公司经常用这种标题来宣布坏消息，现在这种标题容易让人误解为项目即将关闭。
-  - 不过，andrewl-hn也承认这篇文章实际上是在讲Deno的开发进展，而不是关闭项目。
+• 一些评论关注《大宪章》的历史价值和其作为法律文件的现行效力。例如，[A_Duck]指出《大宪章》仍是有效的法律文件，并提供了英国立法门户网站的链接以证明其现行部分。[draley]则进一步解释现存的《大宪章》多为官方副本，而非原件，尽管这些副本在历史上多次被重新确认，具有合法性。
 
-• **对Deno和Fresh的使用体验**：
-  - bpev表示对Deno环境感到舒适，常用它来做非浏览器端的JavaScript/TypeScript任务，但不太使用Fresh，觉得客户端和服务器端的混合开发容易变得混乱。
-  - roxolotl认为Deno在一个平行宇宙中可能已经流行，但在现实中，Deno试图提供更成熟、更安全的环境并不是大多数JavaScript开发者所追求的，这导致其未能广泛普及。
-  - Imustaskforhelp对Deno的前景感到悲观，指出Deno的部署产品在功能和覆盖范围上不如Supabase和Bunny CDN，且Node和Cloudflare Workers等竞争技术仍然强劲。
+• 另一个讨论点是《大宪章》的市场价值。[highfrequency]通过计算复利利息，将以27美元购买的《大宪章》在80年后以2100万美元出售，与沃伦·巴菲特的投资生涯相比较。[davikr]补充说明，经过通胀调整后，实际价值约为450美元。
 
-• **对Deno和Fresh前景的不同看法**：
-  - aarestad分享了一些Deno的趣闻，提到Deno被用于Google的视频墙项目，显示其在一些实际应用中的成功。
-  - dfee对Fresh和Deno的健康状况表示担忧，认为Fresh的进展缓慢可能预示着Deno组织整体的困境，但也表示希望Deno能成功。
-  - globalise83和simlevesque对Fresh持积极态度，globalise83特别提到Fresh的文件系统路由对AI辅助开发非常友好，simlevesque则分享了自己使用Fresh成功开发商业产品的经验。
-  - enz也使用Fresh进行商业项目开发，对其服务器端渲染（SSR）和岛屿架构的组合感到满意。
+• 一些评论分享了个人经历和对《大宪章》实物展览的观感。[willmeyers]和[alephnerd]都提到在访问图书馆时偶然看到《大宪章》的震撼，并推荐他人参观。同时，[heelix]描述了在Salisbury看到《大宪章》副本的体验，并表示这是他首次阅读该文件。[anthk]将《大宪章》与同时代的其他法律文件进行比较，强调其在当时的开放和进步性。
+
+• 还有评论对《大宪章》的保存和展示细节提出质疑。[jb1991]注意到一张照片中的人未戴手套触摸这份古老文件，暗示对文物保护的担忧。[PaulHoule]分享了在大学图书馆发现罕见书籍的个人经历，并提到在市场上可以找到相对廉价的副本。
+
+• 最后，[queuebert]以讽刺口吻指出《大宪章》副本对于工薪家庭来说变得难以负担，暗示了历史文物商品化的问题。
 
 补充讨论：
-• **Fresh框架的具体技术问题**：
-  - 65指出了Fresh主页上的一个路由bug，这表明Fresh在实际使用中可能还存在一些小问题。
-
-• **社区互动**：
-  - lucacasonato表示愿意回答任何问题，显示出对社区互动的积极态度。
-
-争议焦点：
-• Deno和Fresh是否能成功在市场中占据一席之地，尤其是在Node、Cloudflare Workers等竞争技术存在的情况下。社区中对此存在不同看法，一些人对其前景感到担忧，而另一些人则对其技术优势充满信心。</div>
+• 评论中也涉及对具体图书馆和博物馆的推荐，如哈佛大学的Widener图书馆和其馆藏的Gutenberg Bible，显示出对文化与历史遗产的广泛兴趣。
+• 对《大宪章》法律效力的讨论也引发了关于历史文件在现代社会中地位的思考。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996071" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43997830" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -506,33 +506,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://buglesstack.com/" target="_blank">Show HN: I made a platform to debug Puppeteer (JS) crashes visually</a>
+                    <a href="https://research.google/blog/ml-enhanced-code-completion-improves-developer-productivity/" target="_blank">ML-Enhanced Code Completion Improves Developer Productivity (2022)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ivanalemunioz</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-13 20:57</span>
+                    <span>作者: ddadon10</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-13 11:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种通过使用Buglesstack工具加速Puppeteer崩溃调试的方法。在Puppeteer脚本中捕获错误时，自动获取当前页面的URL、截图、HTML内容及错误信息，并发送至Buglesstack进行可视化分析，帮助开发者快速定位和解决问题。该方法简化了调试流程，减少了查找和修复错误的时间。通过即时可视化和详细页面信息，开发者可以更容易地识别问题并迅速解决。</p>
+                    <p>谷歌研究人员开发了一种基于Transformer的混合语义机器学习（ML）代码补全系统，结合了传统语义引擎（SE）和ML模型，提高了开发者效率。该系统通过三种方式结合ML和SE：重新排序SE的单token建议、使用ML进行单行和多行补全并通过SE验证正确性、以及基于SE的单token建议进行多行延续。在谷歌内部1万多名开发者的测试中，该系统使编码迭代时间减少了6%。目前，3%的新代码字符来自ML补全建议。系统通过并行请求和低延迟设计，不增加补全延迟，且显著提升了用户体验，28%的接受建议因重新排序而排名提高。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对AFIP例子的评价
+                    <div class="comments-summary">主要讨论点：AI开发者工具（如ML-Enhanced Code Completion）的效用和影响
 
 不同观点：
-• Pablogancharov对AFIP例子持积极态度，认为这是一个很好的例子（"El ejemplo de la afip es genial"）。这表明他对使用AFIP作为案例来解释或说明某个观点表示赞同和欣赏。
+• djmips认为，AI开发者工具为那些喜欢结对编程但没有伙伴、或容易陷入分析瘫痪和空白页综合症的开发者提供了帮助。这些工具对某些人来说可能带来了新的高效状态，但对于已经习惯流畅工作的开发者影响不大。
+
+• semiinfinitely持怀疑态度，引用香烟行业的例子暗示对AI工具效用的过度乐观或不实宣传可能带来的误导。
+
+• lumost指出，AI工具的效果取决于用户和项目类型。对于小型项目，效果通常很好；但对于大型成熟的生产应用，结果可能不太有用。每年AI技术都在显著进步。
+
+• bartread认为，尽管存在反对者，但对于大多数软件工程师，尤其是使用各种服务高级计划的用户来说，AI工具的价值已不是新鲜事。经过2-3年广泛采用基于Transformer的ML辅助开发后，有一些实际数据可以支持其价值并推动其进一步应用是有益的。
 
 补充讨论：
-• 评论中未出现对AFIP例子的直接反对或不同看法，因此没有明显的争议。
-• AFIP（Administración Federal de Ingresos Públicos）是阿根廷的联邦公共收入管理局，评论中的例子可能与税务或公共收入管理相关，具体例子内容未详细展开，但可以从正面评价中推测其具有说明性和启发性。
-• 该评论可能是在更广泛的讨论税务或政府机构效率的背景下出现，具体背景需要根据上下文进一步推断。</div>
+• 讨论中涉及了AI工具对不同类型用户和项目的不同影响，以及随着时间推移AI技术的进步。
+• 存在对AI工具效用的争议，部分评论者对其持怀疑态度，而另一些则认可其在特定情境下的价值。
+• 提到了AI工具在实际应用中需要更多数据支持其价值，以推动更广泛的采用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43977648" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43971678" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
