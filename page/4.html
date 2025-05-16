@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-16 11:43 (北京时间)
+            最后更新时间: 2025-05-16 14:25 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,59 +61,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.mbid.me/posts/stop-using-rest-for-state-synchronization/" target="_blank">Stop using REST for state synchronization (2024)</a>
+                    <a href="https://www.orsolabs.com/post/refactoring-clojure-1/" target="_blank">Refactoring Clojure</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Kerrick</span> |
-                    <span>评分: 40</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-05-15 17:30</span>
+                    <span>作者: luu</span> |
+                    <span>评分: 85</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-05-15 19:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了使用REST接口在客户端和服务器之间同步状态的弊端，并建议采用更合适的状态同步协议。作者指出，REST是一种状态传输协议，而大多数应用实际上需要的是状态同步。这种不匹配导致开发者必须在REST之上实现临时的状态同步逻辑，增加了复杂性和脆弱性。
+                    <p>本文讨论了如何重构一个Clojure代码，以实现更易读的Markov文本生成器。代码最初实现了一个词级别的Markov过程，用于生成随机句子。重构的目的是在不改变代码行为的前提下提升可读性。为此，作者首先通过REPL和特征测试（characterization tests）理解代码行为，确保重构不会改变输出结果。
 
-作者通过一个简单的文本输入框例子展示了使用REST时所需的繁琐代码，包括处理初始值获取、显示加载状态和错误信息等。这种模式不仅产生大量样板代码，而且在处理并发请求时可能出现错误，比如当用户快速连续更改值时，请求顺序可能无法保证。
+特征测试包括对不同输入字符串的预期输出进行验证，确保重构后的函数`markov-data`生成相同的哈希表结构。
 
-因此，作者建议用专门的状态同步协议取代REST，以简化开发并提高可靠性。这将使开发者只需关注界面显示和数据位置，而不必处理繁杂的状态传输逻辑。</p>
+原代码较为复杂，作者建议从头重写。新实现通过`reduce`函数处理单个句子，将其拆分为单词并更新哈希表。处理单句的函数`process-sentence`利用`reduce`和`update`实现对哈希表的更新。最终，`markov-data`函数通过将输入文本按句号分割，并调用`process-sentence`处理每个句子，完成重构。
+
+重构后的代码更加简洁、易读，同时通过特征测试确保行为一致。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：REST是否适合用于实时状态同步，以及替代方案的可行性
+                    <div class="comments-summary">主要讨论点：Clojure代码的可读性、重构难度、代码格式和语法高亮问题
 
 不同观点：
-• **kokanee**：认为作者低估了实时同步UI的复杂性，尤其是多方同时操作同一界面元素时。REST在处理状态同步时确实存在问题，但完全抛弃REST并不现实。局部状态的维护和定期推送到中心存储是目前较好的平衡方案。
-
-• **jemmyw**：部分同意文章观点，但指出实现CRDT或OT（操作转换）等替代方案非常复杂，特别是在改造已有REST API时。强调根据使用场景选择技术方案，不应盲目追求复杂的状态同步技术。
-
-• **qudat**：认为状态同步是前端开发的热门话题，REST是目前多数公司服务多客户端的现状，GraphQL虽有应用但调优不易。CRDT仅在特定领域（如多人游戏）中使用。因此，完全抛弃REST不切实际，建议开发能兼容REST、WebSockets、GraphQL的系统。
-
-• **0xbadcafebee**：认为前端应用模型设计不良，多数情况下无需在前端保持状态。网络协议用于同步状态很麻烦，宽带和移动网络环境下更不需要。开发者往往因为习惯而不愿尝试新方法。
-
-• **coolhand2120**：质疑文章中对REST的定义，指出CRUD API和真正的REST不同。状态同步需要多步骤和HATEOAS风格的API设计，而行业中通常只使用HTTP方法就称其为REST。
-
-• **cgio**：认为REST不适合状态同步，CRDT也只是在某种程度上解决此问题。分布式数据存储或数据库复制等是已解决状态同步问题的方案。
-
-• **sansseriff**：通过研究项目得出类似结论，认为从REST过渡到CRDT的资料和工具不足，使得这种转变不常见。
-
-• **toomim**：作为Braid项目的开发者，认为HTTP需要从状态传输协议演变为状态同步协议，并介绍了Braid项目如何通过扩展HTTP实现状态同步，无需CRDT或OT算法。
-
-• **yakshaving_jgt**：文章指出了REST不适用于状态同步，但未提供明确的替代方案。
-
-• **3cats-in-a-coat**：认为通过保持资源不可变和传递根资源，REST设计中可以实现简单的状态同步。
-
-• **AtlasBarfed**：提到CAP定理，指出在客户端不可靠的情况下，需考虑CP或AP的选择，分区容忍性是必须的。
-
-• **gxs**：认为不应完全否定REST，REST在某些场景下仍适用。根据具体情况选择技术方案，而不是一刀切。
+• jlarocco认为Clojure代码难读，尤其是与Common Lisp相比，Clojure的标识符过于简略和隐晦，不如其他Lisp方言那样使用可读性强的文本名称。他以一个Common Lisp的代码为例，说明传统Lisp使用更具描述性的命名方式。
+• roxolotl则强调了Clojure在重构方面的优势，指出由于Lisp的结构特性，可以轻松地在树的任何层次上提取和重构代码，这在函数式编程中尤为突出，比Haskell或函数式JavaScript更容易操作。
+• 0_gravitas批评了讨论中一些对网站格式无意义的评论，认为这些浅层的评论导致了网站内容质量的下降。
+• gleenn支持Clojure的重构能力，认为Clojure的静态顶层函数、不可变性以及测试工具（如"with-redefs"）使得编写和重构代码变得更容易，并减少了内存共享问题。
+• noodletheworld对重构持怀疑态度，认为简单的递归函数替代原函数并不总是理想，并指出从零重写代码然后通过测试验证的方式并不总能展示Clojure的优势，且这种做法可能过于大胆。
+• NightMKoder和billmcneale、IceDane都提到了Clojure代码高亮的问题，尤其是彩虹括号和不合适的配色方案使得代码在移动设备上难以阅读。
+• michaelteter建议将内嵌形式拆分为单一职责的小函数，以提高代码可读性和测试的简便性，尽管命名和组织是挑战。他还提到AI工具在命名和修改函数方面的潜力。
+• leelou2讨论了Clojure缺少静态类型检查在重构中的风险，强调了测试套件的重要性，并提出了使用Clojure的spec进行运行时验证以增加安全性。
 
 补充讨论：
-• 争议焦点在于REST是否适合用于实时状态同步，以及是否有必要采用CRDT或OT等更复杂的替代方案。
-• 实用性与复杂性的平衡是讨论中的重要考量因素，尤其是对已有系统的改造难度和具体使用场景的适配。
-• 一些评论提到了具体的工具和项目，如Braid和Electric SQL，作为潜在的解决方案。</div>
+• Clojure代码的可读性和标识符命名问题是一个主要争议点，部分开发者认为其简略的命名方式降低了可读性。
+• 重构的难易程度存在不同看法，部分开发者认为Clojure的重构非常方便，而另一些开发者则认为从零重写代码并不可取且风险较高。
+• 语法高亮和代码格式问题被多次提及，尤其是对移动设备上的阅读体验影响较大。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43997286" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43998423" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -124,49 +111,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://undetectag.com/" target="_blank">Show HN: Undetectag, track stolen items with AirTag</a>
+                    <a href="https://www.ycombinator.com/companies/fetii/jobs/QDjleWs-senior-operations-manager-fetii" target="_blank">Fetii (YC S22) Is Hiring</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pompidoo</span> |
-                    <span>评分: 87</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-05-15 15:46</span>
+                    <span>作者: Mattiommi</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-15 17:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个可以让AirTag变为更难被小偷发现的小工具——"Undetectag"。使用这个附加装置，可以大大降低AirTag被小偷偷走并移除的可能性，概率减少95%。它适用于保护汽车、船只、自行车、摩托车、行李和背包等贵重物品。文章还提供了一个联系表单，用户可以通过填写姓名、电子邮件、电话号码和留言来获取更多信息或提出问题。</p>
+                    <p>Fetii是一家主打按需团体交通的初创公司，正在招聘高级运营经理，工作地点包括达拉斯和奥斯汀等，可远程工作。该职位要求3年以上经验，薪资范围在7万至20万美元，提供股票期权。工作性质为全职，需适应不规则工时，包括周末和早晚班。职责包括管理司机网络、车队部署、合规监管、质量控制及安全 enforcement等，需具备强大的运营和领导能力，适合有创业精神、能在高压下工作的人。公司由Y Combinator支持，并获得Mark Cuban投资，正快速扩展。成功应聘者将参与公司关键增长阶段，获得股票期权及与创始人直接合作的机会。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AirTags的自定义改造及其使用场景
-
-不同观点：
-• **gojomo**：提出几种自定义改造的设想，包括只有在其他AirTag不在附近时才启动、具有动作感应功能、基于随机化种子的伪随机启动，以及通过全国或全球的"唤醒"信号控制启动等。这些改造旨在增强AirTag的隐蔽性和电池寿命。
-• **RomanPushkin**：指出Tile已经有类似功能，但需要通过验证，且如果用于跟踪他人，会面临高额罚款。这表明目前已有技术解决方案，但法律和道德问题仍然存在。
-• **econ**：建议添加一个普通标签，以便小偷能够找到AirTag并将其移除，从而减少追踪失败的风险。
-• **pimlottc**：质疑这些改造可能会降低AirTag在农村地区的追踪可靠性，因为在这些地区可能没有足够的Find My网络设备。
-• **stavros**：建议使用加速计，只有在设备完全停止移动一段时间后才启动，以减少触发“正在跟踪你”通知的可能性。
-• **ale42**：从技术角度讨论了使用更简单、更低功耗的微控制器（如PIC10）代替STM32，以降低功耗和成本。
-• **turtlebits**：对这种改造的可靠性表示担忧，质疑其能否提供安心保障，并询问如果追踪失败是否有退款等保障措施。
-• **anonymousiam**：批评AirTag的限制是多余的，认为这些限制严重影响了追踪被盗物品的实用性，质疑为什么不能销售不提醒所有人其存在的标签，并指出警方和情报机构已经有类似设备。
-• **jmpman**：表示很高兴看到有人实现了其三周前的设想，愿意购买这种产品。
-• **wepple**：提出使用两个AirTag交替启动以绕过苹果检测的想法，并担心苹果可能很快会解决这一问题。
-• **Gys**：建议支持更便宜的仿制品，因为这些设备不会更新固件，并提议提供捆绑销售。
-• **givinguflac**：对产品的紧凑设计表示赞赏，但指出网站上关于“Airtag是苹果注册商标”的声明中未大写“Apple”是一个小瑕疵。
-• **cinntaile**：询问时间间隔是否可以由用户更改，以及其更改的限制范围。
-• **Gibbon1**：引用一位追踪领域的从业者观点，认为理想情况下应有一种不通过传输来揭示自身的定位器，且不耗费电力接收GPS信号，但这类设备因商业利益考量未被广泛推广。
-• **mulmen**：认为AirTags并非设计用于找回被盗物品，建议比较专业的GPS追踪器（如Monimoto）以获得更好的效果。
-
-补充讨论：
-• 争议焦点在于AirTag的功能限制和自定义改造的合法性与道德性。部分用户认为这些限制不必要，影响了实用性，而另一些用户则指出跟踪他人已经违法，因此功能限制是合理的。
-• 技术讨论主要集中在如何通过硬件和软件的改进来延长电池寿命、提高隐蔽性，并绕过苹果的检测机制。
-• 对产品可靠性和实际效果的质疑也是讨论的重要部分，尤其是对农村地区追踪能力的担忧。
-
-</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996251" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996980" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -177,55 +140,127 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://davelucia.com/blog/lua-elixir" target="_blank">Lua for Elixir</a>
+                    <a href="https://www.cnbc.com/2025/05/15/coinbase-says-hackers-bribed-staff-to-steal-customer-data-and-are-demanding-20-million-ransom.html" target="_blank">Coinbase says hackers bribed staff to steal customer data, demanding $20M ransom</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: davydog187</span> |
-                    <span>评分: 164</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-05-13 13:03</span>
+                    <span>作者: gpi</span> |
+                    <span>评分: 117</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-05-15 15:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年5月12日，Elixir库Lua发布了首个稳定版本v0.1.0，该库允许在BEAM VM上直接执行隔离的Lua程序，完全实现了Lua 5.3，而无需嵌入C语言的Lua运行时和编译器。这是通过Luerl库实现的，Luerl是用Erlang实现的Lua解析器、编译器和运行时。Lua Elixir库扩展了Luerl的功能，改进了错误信息并提供了详细的文档。主要功能包括通过`deflua`宏将Elixir API暴露给Lua，使用`~LUA`符号在编译时验证Lua语法，以及提供详细的文档和Livebook示例。
-
-该库起源于TV Labs，用于执行任意代码以进行高层次的集成测试。未来计划包括改进Luerl的错误消息、文档和与Lua生态的深度集成，并计划合并Elixir Lua库到Luerl，发布2.0.0版本。感兴趣的开发者可以通过Slack、Discord参与或在Github上提交问题。</p>
+                    <p>Coinbase披露，网络犯罪分子贿赂海外客服代理，窃取客户数据用于社交工程攻击。公司估计修复成本可能高达4亿美元。5月11日，Coinbase收到一封邮件，声称掌握部分客户账户信息及内部资料，并索要赎金以不公开信息。尽管密码和私钥未被泄露，但包括姓名、地址、电话和邮件等敏感信息受到影响。Coinbase表示，已独立发现 breach，立即开除了涉事员工，并加强了欺诈监控。公司拒绝支付2000万美元的赎金要求，并设立同等金额的奖励基金以协助抓捕罪犯。尽管遭遇此次事件，Coinbase仍在扩展其全球业务并即将进入S&P 500指数。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Lua在Erlang/Elixir环境中的应用及其优缺点
+                    <div class="comments-summary">主要讨论点：Coinbase客户敏感信息泄露事件及其影响
 
 不同观点：
-• **支持Lua的观点**：
-   - [rickcarlino] 表示Lua引擎（如Luerl）在生产环境中表现出色，特别是在FarmBot设备上作为脚本环境使用。用户可以直接在设备上执行脚本控制外围设备，且社区支持非常好。开发人员从人体工程学角度更喜欢这种方法，而不是API调用。
-   - [interroboink] 认为Lua拥有多个独立实现（如LuaJIT和Luerl），显示了Lua的成熟和受欢迎程度，并表示这种实现方式很酷。
-   - [davydog187] 分享了一个Lua在BEAM（Erlang虚拟机）上的有趣示例，推荐查看Robert Virding的空间船演示。
-   - [pentacent_hq] 计划在Keila中添加Lua支持，认为Lua非常适合实现电子邮件自动化和自定义业务逻辑。
+• **Coinbase未充分保护客户信息的责任问题**：
+  - **[neilv]** 认为Coinbase没有充分保护客户的敏感信息，导致信息泄露，且未明确说明外包给哪些海外员工或承包商处理这些信息。他批评将责任推给“海外人员”是不负责任的。
+  
+• **Coinbase修改用户协议的时机问题**：
+  - **[mxhold]** 提到Coinbase在4月12日更新了用户协议，而泄露事件发生在5月15日，这可能不是简单的巧合。新的协议包括放弃集体诉讼权和选择管辖地等条款，可能与事件后续的法律处理有关。
 
-• **对Lua的质疑和批评**：
-   - [gilgamesh3] 质疑为什么选择Lua而不是Elixir来创建脚本，认为Lua在设计上有很多错误选择，并表示如果可以选择，每次都会使用Elixir。
-   - [Philpax] 对Lua库的命名感到困惑，认为不应与Lua语言本身同名，建议使用如"Luerl++"这样的名称。
+• **Coinbase对泄露事件的处理措施**：
+  - **[skybrian]** 引用了Coinbase的官方博客，指出公司将赔偿因社会工程攻击而受骗的用户，并已经通知了受影响的客户。
 
-• **技术实现和性能讨论**：
-   - [_acco] 强调Lua在主机语言（Elixir/Erlang）中实现的好处，避免了在其他运行时中序列化/反序列化数据的需求，从而提高了性能。这对于高性能数据管道尤为重要。
-   - [dpflan] 提到“在Elixir中嵌入Python”的影响，认为Lua的实现方式更具吸引力。
+• **数据泄露对账户恢复的影响及解决方案**：
+  - **[thepasswordis]** 认为泄露的数据可能用于账户恢复，增加了账户被黑客恢复的风险，建议Coinbase设立实体办公室进行账户恢复操作，并提出硬件双因素认证（如YubiKeys）作为解决方案。
+
+• **泄露事件对用户的影响及应对措施**：
+  - **[elif]** 提到泄露事件后钓鱼电话增多，建议Coinbase采取更多措施保护用户，如重新创建账户或将KYC数据与账户分离。
+
+• **KYC法规与数据泄露的关系**：
+  - **[molticrystal]** 指出Coinbase必须保留大量敏感信息是由于KYC法规，并认为政府应对此负责。
+
+• **客户支持流程的安全性**：
+  - **[blindriver]** 建议建立ISO标准，限制一线客服人员对敏感信息的访问权限，将复杂的安全操作交给更高层级的客服人员处理，以减少安全风险。
+
+• **数据泄露的不同类型**：
+  - **[pentagrama]** 提出疑问，为什么公司能够保护密码和私钥等数据，却不能保护电子邮件和姓名等个人信息。
+
+• **加密货币所有权问题**：
+  - **[paxys]** 强调如果用户没有完全控制自己的加密货币密钥，那么他们并不真正拥有这些加密货币。
+
+• **事件发生的时间点与市场影响**：
+  - **[westonplatter0]** 提到泄露事件发生的时间点很讽刺，正好在Coinbase被纳入标普500指数的前一天。
+
+• **KYC法规的历史与风险**：
+  - **[kragen]** 认为KYC法规要求公司收集和存储大量个人信息，带来了个人和国家安全的风险，并指出这在历史上是由于9/11事件后法律变更所导致的。
 
 补充讨论：
-• **其他语言和生态系统比较**：
-   - [binary132] 质疑BEAM的沙盒化程度。
-   - [codingbear] 询问Lua在JVM生态系统中的等价物，寻找一种可嵌入并能在沙盒中运行用户脚本的语言。
-
-• **项目和社区反馈**：
-   - [joshprice] 对嵌入安全的小型Lua语言表示兴奋，期待找到适用场景。
-   - [jkaufmann_] 表示对这个项目的长期期待。
-   - [iLemming] 询问是否可以通过Fennel语言 targeting BEAM。
-   - [rdtsc] 感谢davydog187对Luerl项目的贡献，认为Luerl是一个真正的 gem。
-
-争议焦点：选择Lua还是Elixir用于脚本编写的优劣比较，特别是从语言设计和开发人员偏好角度。</div>
+- 讨论中还涉及了对Coinbase用户协议修改时机的质疑，以及对不同类型数据泄露原因的探讨。此外，有用户提出通过硬件双因素认证和实体办公室来增强账户安全性，并有人从加密货币所有权角度提出见解。整体讨论还涵盖了KYC法规的历史背景及其对数据安全的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43972485" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996307" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://juhrjuhr.itch.io/deep-space-exploitation/devlog/945428/9-pathfinding" target="_blank">Pathfinding</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sebg</span> |
+                    <span>评分: 122</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-05-15 12:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>JuhrJuhr在其游戏开发日志中介绍了NPC路径寻找的实现方法，特别强调了适应动态物理环境、保持与障碍物的距离、以及游戏区域边界环绕等独特需求。为了处理动态环境，他采用A*搜索算法，结合空间分区树来减少每次路径查询的计算量。空间分区树将游戏区域划分为不同层次的节点，通过缓存和定期刷新（每500毫秒）来保持路径的实时更新。路径选择上，算法优先选择离障碍物较远但必要时可以靠近的路线，并支持类似《Asteroids》游戏的边界环绕效果。这种方法有效平衡了路径搜索的效率和自然性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：路径规划技术及其优化
+
+不同观点：
+• **推荐多种路径规划技术**：
+  - [pton_xd] 提到了几种技术，包括子目标图（Subgoal graphs）、预计算地标（precalculated landmarks）和theta*算法。他还建议查看Red Blob Games网站上的其他变种和技术，并指出优先队列的实现对性能有重要影响。
+  
+• **商业项目与技术分享**：
+  - [juhrjuhr] 作为游戏开发者，感谢了社区的兴趣，并提到未来可能会分享更多详细的性能基准数据。同时，他借机宣传了自己的商业游戏项目，提供了Steam页面链接。
+
+• **车辆行为与游戏趣味性**：
+  - [chrisdalke] 认为编写路径规划代码很有趣，并指出在游戏中，A*路径可能会因为车辆 overshooting 而导致意外碰撞，但这种意外也可能增加游戏的趣味和混乱。
+
+• **自定义路径规划解决方案**：
+  - [Farer] 提到了自己的自定义路径规划项目，并邀请其他人查看其GitHub页面。
+
+• **多线程与世界状态**：
+  - [munificent] 提出了一种疯狂的想法，即让路径规划线程拥有自己的可变世界状态副本，并在世界状态改变时并行更新两个副本。虽然这会带来大量的重复工作，但在多核机器上可能是值得的。
+
+• **路径规划的性能问题**：
+  - [Sohcahtoa82] 对现代硬件上路径规划需要几毫秒的时间感到惊讶，指出A*算法在游戏中使用已有20多年，现代硬件应该更快，质疑为何性能问题依然存在。
+
+• **环境变化与预计算路径**：
+  - [dgb23] 提到在环境（碰撞地图）变化时进行更严格的路径规划，生成预计算的路径规划地图（网格或图）。在不同类型的游戏或应用中，使用非常粗略的逻辑进行总体移动，并根据实际情况调整具体路径可能是一个值得尝试的想法。
+
+• **路径规划资源推荐**：
+  - [90s_dev] 推荐了Red Blob Games上的A*路径规划介绍，并分享了自己在游戏开发中的经验和未解之谜。
+
+• **随机成本与NPC行为**：
+  - [andrewmcwatters] 回忆起在路径规划中添加随机成本，使得NPC行为变得漫无目的或跟随“醉酒路径”。
+
+• **路径重计算的优化建议**：
+  - [ninetyninenine] 指出如果背景对象不移动，则不需要重新计算路径，建议在重新计算前检查是否有对象移动。
+
+补充讨论：
+- 讨论中涉及了多种路径规划算法的推荐和实现细节，包括对性能优化的不同建议（如多线程处理、预计算地图和路径重计算的优化）。
+- 商业项目宣传与技术分享并存，体现了技术社区中实用与推广的双重需求。
+- 不同开发者根据自身经验提出了对路径规划的具体看法和实际案例，丰富了讨论的深度和广度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43994333" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -306,53 +341,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://matklad.github.io/2025/05/14/scalar-select-aniti-pattern.html" target="_blank">The Scalar Select Anti-Pattern</a>
+                    <a href="https://github.com/axbycc/LiveSplat" target="_blank">Show HN: Real-Time Gaussian Splatting</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: goranmoomin</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-14 20:19</span>
+                    <span>作者: markisus</span> |
+                    <span>评分: 130</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-05-15 13:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了在事件循环中使用"标量选择"（Scalar Select）的反模式问题。在处理多个外部IO驱动的事件流时，逐个处理事件（标量选择）可能导致效率低下，因为当一个事件处理完毕后，可能有多个事件已经准备好，而标量选择会随意选取一个事件处理，造成不必要的开销。
-
-为了优化，文章提出了几种策略：
-
-1. **优先级排序**：根据事件类型决定处理顺序，如文件修改优先于代码补全请求。
-2. **选择性背压**：对某些类型的事件不处理，以减缓特定输入的处理速度。
-3. **消除**：有些事件可以完全丢弃，比如文件文本完全替换时，之前的修改可忽略。
-4. **合并**：多个类似事件可以合并处理，如文件修改可以合并成一个大改动。
-
-最终，文章建议将标量选择改为批量处理，即在事件流中一次性获取所有可用事件并批量处理，以提高效率。这种方法在低负载时效果不明显，但在高负载时能显著减少处理时间。实现批量处理的关键是`batch_stream`函数，它会等待至少一个事件，然后拉取所有可用事件。</p>
+                    <p>LiveSplat 是一个用于 RGBD 摄像头流的实时高斯溅射（Gaussian Splatting）算法。它最初是一个大型专有 VR 远程机器人系统的一部分，后因受到关注而单独发布。该工具目前为 alpha 质量，未开源，但可通过特定链接安装，支持 Windows 和 Ubuntu 系统，要求使用 Nvidia 显卡和 RGBD 传感器。使用时需编写整合脚本将 RGBD 流输入 LiveSplat 查看器，项目提供了针对 Intel Realsense 设备的示例脚本。如遇问题或商业合作，可联系作者。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：输入事件处理和批处理行为在不同系统和环境下的实现与影响
-
-不同观点：
-• jchw 认为，Windows 内部对事件队列的处理会合并和优先排序输入事件，尤其是在事件积压时。这种批处理行为在应用/API层面可能不明显，但实际上在处理事件时具有重要作用。他还提到，Wayland客户端如果处理事件队列滞后可能会崩溃，并提出是否可以通过UNIX域套接字在服务器端实现某种事件合并，以避免向客户端发送过多高精度指针移动事件。
-
-• taeric 对jchw的提议不太清楚，并指出即使接收一批指令也不会立即改变什么。他认为，无论如何处理指令，仍然需要考虑指令之间的依赖关系和交互。他将此比作处理器处理 incoming 指令的方式，强调程序本身对如何处理和分批传递指令负有责任，而不仅仅依赖于发送指令的过程。
-
-• castratikron 补充了一个关键条件，即只要处理一个事件不影响批处理中的其他事件，比如文件IO事件，处理一个事件导致另一个事件的描述符被关闭，这种情况就需要特别注意。
-
-• malkia 简短提到CPU的流水线技术，暗示这种技术在处理批量指令时可能具有效率优势。
-
-补充讨论：
-• jchw 提出的UNIX域套接字和事件合并的想法引发了对如何有效处理大量事件的讨论，尤其是在客户端滞后的情况下。
-• taeric 的观点强调了程序在处理批量指令时的主动性和责任，而不仅仅是依赖底层机制。
-• castratikron 提醒大家注意事件之间的依赖和潜在冲突，特别是在资源管理方面，比如文件描述符的关闭。
-• malkia 提到CPU流水线技术，提供了一个从硬件层面理解批处理和指令处理的角度。
-
-争议焦点：
-• jchw 提出的服务器端事件合并的提议引发了taeric的质疑，即这种方法是否真正有效，是否能解决实际问题。
-• 对批处理指令的责任归属有潜在讨论，即程序本身和底层机制之间的责任分配问题。</div>
+                    <div class="comments-summary">摘要生成失败（网络错误）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43988753" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43994827" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -363,127 +370,59 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/the-fastest-way-yet-to-color-graphs-20250512/" target="_blank">The Fastest Way yet to Color Graphs</a>
+                    <a href="https://www.mbid.me/posts/stop-using-rest-for-state-synchronization/" target="_blank">Stop using REST for state synchronization (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: GavCo</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-13 08:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了图着色算法的最新突破。传统上，给图的边着色以避免碰撞（如在机场调度飞机）是一个耗时的过程，过去40年算法速度提升有限。2024年，两个研究团队分别提出了更快的算法。随后，2025年的一篇论文提出了几乎最优的算法，其速度几乎达到了可能的极限，且该算法的时间复杂度仅取决于图中的边数，而与点数无关。这一进展极大地提升了处理大规模图着色问题的效率，被视为该领域的一个重要里程碑。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Edge Coloring问题与Vertex Coloring问题的区别及其应用
-
-不同观点：
-• [技术澄清] tonyarkles指出，讨论的重点是Edge Coloring问题，而不是更为人熟知的Vertex Coloring问题。他进一步说明，Vertex Coloring问题是NP完全的，而Edge Coloring问题则未被提及为NP完全，暗示Edge Coloring可能有不同的复杂性或应用场景。
-
-• [实际应用关注] phkahler对Edge Coloring问题的实际应用表示关注，具体询问这是否会带来编译时间的缩短或寄存器分配的加速。这表明他从实际工程需求的角度出发，关心该问题的解决方案能否带来性能上的提升。
-
-补充讨论：
-• [复杂性对比] tonyarkles特别提到Vertex Coloring问题是NP完全的，暗示Edge Coloring问题可能有不同的复杂性特征，这为后续讨论Edge Coloring问题的计算难度奠定了基础。
-
-• [应用场景] phkahler的评论引出了Edge Coloring问题在计算机科学实际应用中的潜在价值，特别是编译时间和寄存器分配等具体技术场景，这为讨论提供了更广泛的背景和实际意义。
-
-争议焦点：目前没有直接的争议，但潜在的争议可能是Edge Coloring问题的实际应用价值及其在具体计算任务中是否能带来显著的性能改进。这需要进一步的实证研究和讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43970768" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://research.google/blog/ml-enhanced-code-completion-improves-developer-productivity/" target="_blank">ML-Enhanced Code Completion Improves Developer Productivity (2022)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ddadon10</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-05-13 11:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>谷歌研究人员开发了一种基于Transformer的混合语义机器学习（ML）代码补全系统，结合了传统语义引擎（SE）和ML模型，提高了开发者效率。该系统通过三种方式结合ML和SE：重新排序SE的单token建议、使用ML进行单行和多行补全并通过SE验证正确性、以及基于SE的单token建议进行多行延续。在谷歌内部1万多名开发者的测试中，该系统使编码迭代时间减少了6%。目前，3%的新代码字符来自ML补全建议。系统通过并行请求和低延迟设计，不增加补全延迟，且显著提升了用户体验，28%的接受建议因重新排序而排名提高。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI开发者工具（如ML-Enhanced Code Completion）的效用和影响
-
-不同观点：
-• djmips认为，AI开发者工具为那些喜欢结对编程但没有伙伴、或容易陷入分析瘫痪和空白页综合症的开发者提供了帮助。这些工具对某些人来说可能带来了新的高效状态，但对于已经习惯流畅工作的开发者影响不大。
-
-• semiinfinitely持怀疑态度，引用香烟行业的例子暗示对AI工具效用的过度乐观或不实宣传可能带来的误导。
-
-• lumost指出，AI工具的效果取决于用户和项目类型。对于小型项目，效果通常很好；但对于大型成熟的生产应用，结果可能不太有用。每年AI技术都在显著进步。
-
-• bartread认为，尽管存在反对者，但对于大多数软件工程师，尤其是使用各种服务高级计划的用户来说，AI工具的价值已不是新鲜事。经过2-3年广泛采用基于Transformer的ML辅助开发后，有一些实际数据可以支持其价值并推动其进一步应用是有益的。
-
-补充讨论：
-• 讨论中涉及了AI工具对不同类型用户和项目的不同影响，以及随着时间推移AI技术的进步。
-• 存在对AI工具效用的争议，部分评论者对其持怀疑态度，而另一些则认可其在特定情境下的价值。
-• 提到了AI工具在实际应用中需要更多数据支持其价值，以推动更广泛的采用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971678" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.alexbowe.com/wavelet-trees/" target="_blank">Wavelet Trees: An Introduction (2011)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Tomte</span> |
+                    <span>作者: Kerrick</span> |
                     <span>评分: 40</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-05-15 15:27</span>
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-15 17:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种处理大字母表序列排名的数据结构——小波树（Wavelet Tree）。小波树通过将字符串组织成一个层次化的位向量结构，能够在$\mathcal{O}(\log_2{A})$时间内完成排名查询，其中$A$是字母表的大小。小波树将字符串递归地分为两个子集，分别用0和1编码，直到每个子集只有一个或两个符号。位向量可以使用RRR结构存储，以实现快速排名查询和压缩。
+                    <p>文章主要讨论了使用REST接口在客户端和服务器之间同步状态的弊端，并建议采用更合适的状态同步协议。作者指出，REST是一种状态传输协议，而大多数应用实际上需要的是状态同步。这种不匹配导致开发者必须在REST之上实现临时的状态同步逻辑，增加了复杂性和脆弱性。
 
-查询时，通过在每个内部节点进行二进制排名查询，并根据编码指引递归地访问子树，直到在叶节点得到结果。例如，要查询$rank(5, e)$，首先在根节点查询$e$编码为0的排名，然后将结果用于子树查询，重复此过程直到找到答案。
+作者通过一个简单的文本输入框例子展示了使用REST时所需的繁琐代码，包括处理初始值获取、显示加载状态和错误信息等。这种模式不仅产生大量样板代码，而且在处理并发请求时可能出现错误，比如当用户快速连续更改值时，请求顺序可能无法保证。
 
-小波树不仅支持快速排名查询，还可以扩展以支持选择查询，并有多种压缩方式，如Sadakane和Okonohara提出的索引方法。Francisco Claude提供了小波树的实现可供使用。</p>
+因此，作者建议用专门的状态同步协议取代REST，以简化开发并提高可靠性。这将使开发者只需关注界面显示和数据位置，而不必处理繁杂的状态传输逻辑。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某个算法及其相关技术演变的讨论
+                    <div class="comments-summary">主要讨论点：REST是否适合用于实时状态同步，以及替代方案的可行性
 
 不同观点：
-• montag认为该网站刚刚崩溃了，虽然没有直接参与技术讨论，但指出了访问问题，可能影响后续讨论。
+• **kokanee**：认为作者低估了实时同步UI的复杂性，尤其是多方同时操作同一界面元素时。REST在处理状态同步时确实存在问题，但完全抛弃REST并不现实。局部状态的维护和定期推送到中心存储是目前较好的平衡方案。
 
-• jdonaldson认为自2011年以来，技术上最大的变化是嵌入（embeddings）的出现，并强调嵌入提供了更高维度的空间，可以用于张量数学，但排名系统仍然依赖传统的树结构。他还指出，这个项目标志着信息架构的一个新的重要转折点。
+• **jemmyw**：部分同意文章观点，但指出实现CRDT或OT（操作转换）等替代方案非常复杂，特别是在改造已有REST API时。强调根据使用场景选择技术方案，不应盲目追求复杂的状态同步技术。
 
-• JohnKemeny提到这个话题在12年前就已经讨论过了，并提供了一个历史讨论的链接。他的观点强调了该算法的概念早已有之，没有太多新意。
+• **qudat**：认为状态同步是前端开发的热门话题，REST是目前多数公司服务多客户端的现状，GraphQL虽有应用但调优不易。CRDT仅在特定领域（如多人游戏）中使用。因此，完全抛弃REST不切实际，建议开发能兼容REST、WebSockets、GraphQL的系统。
 
-• quantadev则从技术细节上澄清该算法与“小波（Wavelets）”或者波形无关，指出“小波”这个名称之所以被采用，只是因为算法使用了递归分解的方法，而这种方法在小波处理中也有应用。他的观点挑战了算法命名上的普遍误解。
+• **0xbadcafebee**：认为前端应用模型设计不良，多数情况下无需在前端保持状态。网络协议用于同步状态很麻烦，宽带和移动网络环境下更不需要。开发者往往因为习惯而不愿尝试新方法。
+
+• **coolhand2120**：质疑文章中对REST的定义，指出CRUD API和真正的REST不同。状态同步需要多步骤和HATEOAS风格的API设计，而行业中通常只使用HTTP方法就称其为REST。
+
+• **cgio**：认为REST不适合状态同步，CRDT也只是在某种程度上解决此问题。分布式数据存储或数据库复制等是已解决状态同步问题的方案。
+
+• **sansseriff**：通过研究项目得出类似结论，认为从REST过渡到CRDT的资料和工具不足，使得这种转变不常见。
+
+• **toomim**：作为Braid项目的开发者，认为HTTP需要从状态传输协议演变为状态同步协议，并介绍了Braid项目如何通过扩展HTTP实现状态同步，无需CRDT或OT算法。
+
+• **yakshaving_jgt**：文章指出了REST不适用于状态同步，但未提供明确的替代方案。
+
+• **3cats-in-a-coat**：认为通过保持资源不可变和传递根资源，REST设计中可以实现简单的状态同步。
+
+• **AtlasBarfed**：提到CAP定理，指出在客户端不可靠的情况下，需考虑CP或AP的选择，分区容忍性是必须的。
+
+• **gxs**：认为不应完全否定REST，REST在某些场景下仍适用。根据具体情况选择技术方案，而不是一刀切。
 
 补充讨论：
-- jdonaldson提到了技术变革中的新旧对比，特别是嵌入和张量数学的潜力与传统树结构的对比，暗示了技术发展中的过渡阶段。
-- quantadev对算法名称的澄清引发了对技术命名准确性的关注，指出了集体命名可能带来的误导性。
-- JohnKemeny提供的链接可能包含了更多历史背景和技术细节，有助于更深入理解当前讨论内容。</div>
+• 争议焦点在于REST是否适合用于实时状态同步，以及是否有必要采用CRDT或OT等更复杂的替代方案。
+• 实用性与复杂性的平衡是讨论中的重要考量因素，尤其是对已有系统的改造难度和具体使用场景的适配。
+• 一些评论提到了具体的工具和项目，如Braid和Electric SQL，作为潜在的解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43996031" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43997286" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -494,35 +433,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.forensicfocus.com/articles/you-knew-what-you-were-signing-up-for-a-harmful-narrative-in-dfir/" target="_blank">"You Knew What You Were Signing Up For" – A Harmful Narrative in DFIR?</a>
+                    <a href="https://davelucia.com/blog/lua-elixir" target="_blank">Lua for Elixir</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: WaitWaitWha</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-16 00:44</span>
+                    <span>作者: davydog187</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-05-13 13:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>2025年5月12日，Elixir库Lua发布了首个稳定版本v0.1.0，该库允许在BEAM VM上直接执行隔离的Lua程序，完全实现了Lua 5.3，而无需嵌入C语言的Lua运行时和编译器。这是通过Luerl库实现的，Luerl是用Erlang实现的Lua解析器、编译器和运行时。Lua Elixir库扩展了Luerl的功能，改进了错误信息并提供了详细的文档。主要功能包括通过`deflua`宏将Elixir API暴露给Lua，使用`~LUA`符号在编译时验证Lua语法，以及提供详细的文档和Livebook示例。
+
+该库起源于TV Labs，用于执行任意代码以进行高层次的集成测试。未来计划包括改进Luerl的错误消息、文档和与Lua生态的深度集成，并计划合并Elixir Lua库到Luerl，发布2.0.0版本。感兴趣的开发者可以通过Slack、Discord参与或在Github上提交问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于处理创伤性工作（如儿童保护）的专业人员支持系统及其差异
+                    <div class="comments-summary">主要讨论点：Lua在Erlang/Elixir环境中的应用及其优缺点
 
 不同观点：
-• bigfatkitten：认为一些机构对处理创伤性工作（如儿童保护）有较好的支持机制，包括轮换专家、提供支持系统和充足的休息时间。他提到一个熟悉的机构约有30%的团队成员在任何时候都在休整。然而，他认为在工作链条下游的人员（如侦探和检察官）则没有得到足够的支持，通常被要求硬撑下去。
+• **支持Lua的观点**：
+   - [rickcarlino] 表示Lua引擎（如Luerl）在生产环境中表现出色，特别是在FarmBot设备上作为脚本环境使用。用户可以直接在设备上执行脚本控制外围设备，且社区支持非常好。开发人员从人体工程学角度更喜欢这种方法，而不是API调用。
+   - [interroboink] 认为Lua拥有多个独立实现（如LuaJIT和Luerl），显示了Lua的成熟和受欢迎程度，并表示这种实现方式很酷。
+   - [davydog187] 分享了一个Lua在BEAM（Erlang虚拟机）上的有趣示例，推荐查看Robert Virding的空间船演示。
+   - [pentacent_hq] 计划在Keila中添加Lua支持，认为Lua非常适合实现电子邮件自动化和自定义业务逻辑。
 
-• WaitWaitWha：表示自己因为上述问题放弃了数字取证工作，暗示创伤性工作带来的心理压力和缺乏支持系统使他无法继续从事该职业。
+• **对Lua的质疑和批评**：
+   - [gilgamesh3] 质疑为什么选择Lua而不是Elixir来创建脚本，认为Lua在设计上有很多错误选择，并表示如果可以选择，每次都会使用Elixir。
+   - [Philpax] 对Lua库的命名感到困惑，认为不应与Lua语言本身同名，建议使用如"Luerl++"这样的名称。
+
+• **技术实现和性能讨论**：
+   - [_acco] 强调Lua在主机语言（Elixir/Erlang）中实现的好处，避免了在其他运行时中序列化/反序列化数据的需求，从而提高了性能。这对于高性能数据管道尤为重要。
+   - [dpflan] 提到“在Elixir中嵌入Python”的影响，认为Lua的实现方式更具吸引力。
 
 补充讨论：
-- 支持系统的差异：bigfatkatten提到一些机构有较好的支持机制，而其他人员（如侦探和检察官）则缺乏这种支持。
-- 职业影响：WaitWaitWha的评论表明，缺乏有效的心理支持可能会导致专业人员放弃该领域的工作。
-- 争议焦点：是否所有处理创伤性工作的人员都得到了足够的支持。bigfatkatten指出不同角色之间的支持差异，显示出在实际操作中可能存在不公平或不均衡的支持分配。</div>
+• **其他语言和生态系统比较**：
+   - [binary132] 质疑BEAM的沙盒化程度。
+   - [codingbear] 询问Lua在JVM生态系统中的等价物，寻找一种可嵌入并能在沙盒中运行用户脚本的语言。
+
+• **项目和社区反馈**：
+   - [joshprice] 对嵌入安全的小型Lua语言表示兴奋，期待找到适用场景。
+   - [jkaufmann_] 表示对这个项目的长期期待。
+   - [iLemming] 询问是否可以通过Fennel语言 targeting BEAM。
+   - [rdtsc] 感谢davydog187对Luerl项目的贡献，认为Luerl是一个真正的 gem。
+
+争议焦点：选择Lua还是Elixir用于脚本编写的优劣比较，特别是从语言设计和开发人员偏好角度。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44000778" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43972485" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -533,39 +492,109 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/" target="_blank">Comparing floating-point numbers (2012)</a>
+                    <a href="https://undetectag.com/" target="_blank">Show HN: Undetectag, track stolen items with AirTag</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sph</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-13 09:37</span>
+                    <span>作者: pompidoo</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-05-15 15:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了浮点数比较的复杂性，强调浮点数学运算非常困难且充满细微差别。由于浮点数无法精确表示某些值（如0.1），直接比较两个浮点数是否相等通常是不合适的。文章通过一个例子展示了不同计算方法（如加法和乘法）会导致不同的结果，并解释了float和double类型在表示精度上的差异。具体而言，float(0.1)和double(0.1)由于二进制表示的位数不同，会有不同的舍入误差。因此，比较浮点数时应采用允许一定误差范围的方法，而不是直接使用==或!=。文章最后提醒读者浮点运算没有简单的解决方案，需谨慎处理。</p>
+                    <p>这篇文章介绍了一个可以让AirTag变为更难被小偷发现的小工具——"Undetectag"。使用这个附加装置，可以大大降低AirTag被小偷偷走并移除的可能性，概率减少95%。它适用于保护汽车、船只、自行车、摩托车、行李和背包等贵重物品。文章还提供了一个联系表单，用户可以通过填写姓名、电子邮件、电话号码和留言来获取更多信息或提出问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：浮点数比较的正确性和潜在问题
+                    <div class="comments-summary">主要讨论点：AirTags的自定义改造及其使用场景
 
 不同观点：
-• LegionMammal978认为，直接对浮点数进行相等比较通常会引发问题，除非在特定情况下（如精确比较小分数的二进制形式或使用模糊比较测试启发式的“接近性”条件）。他还指出，浮点数的不等式比较也充满挑战，因为数学上的不等式可能无法直接转化为浮点数运算中的不等式，尤其是在计算几何等领域。他引用了关于优化正确方向判断的相关研究论文作为例子，说明即使是简单的方法在处理小角度时也可能失效。
-
-• mtklein提出了一种在单元测试中比较浮点数的首选方法，即使用自定义的`equiv`函数来处理浮点数比较，包括处理±0和NaNs的情况。他认为，虽然NaNs不能按IEEE-754标准直接比较，但它们在实际应用中通常是可互换的。mtklein还提到，在单元测试之外，他很少需要直接比较浮点数相等性，通常是比较`<`或`<=`条件。
+• **gojomo**：提出几种自定义改造的设想，包括只有在其他AirTag不在附近时才启动、具有动作感应功能、基于随机化种子的伪随机启动，以及通过全国或全球的"唤醒"信号控制启动等。这些改造旨在增强AirTag的隐蔽性和电池寿命。
+• **RomanPushkin**：指出Tile已经有类似功能，但需要通过验证，且如果用于跟踪他人，会面临高额罚款。这表明目前已有技术解决方案，但法律和道德问题仍然存在。
+• **econ**：建议添加一个普通标签，以便小偷能够找到AirTag并将其移除，从而减少追踪失败的风险。
+• **pimlottc**：质疑这些改造可能会降低AirTag在农村地区的追踪可靠性，因为在这些地区可能没有足够的Find My网络设备。
+• **stavros**：建议使用加速计，只有在设备完全停止移动一段时间后才启动，以减少触发“正在跟踪你”通知的可能性。
+• **ale42**：从技术角度讨论了使用更简单、更低功耗的微控制器（如PIC10）代替STM32，以降低功耗和成本。
+• **turtlebits**：对这种改造的可靠性表示担忧，质疑其能否提供安心保障，并询问如果追踪失败是否有退款等保障措施。
+• **anonymousiam**：批评AirTag的限制是多余的，认为这些限制严重影响了追踪被盗物品的实用性，质疑为什么不能销售不提醒所有人其存在的标签，并指出警方和情报机构已经有类似设备。
+• **jmpman**：表示很高兴看到有人实现了其三周前的设想，愿意购买这种产品。
+• **wepple**：提出使用两个AirTag交替启动以绕过苹果检测的想法，并担心苹果可能很快会解决这一问题。
+• **Gys**：建议支持更便宜的仿制品，因为这些设备不会更新固件，并提议提供捆绑销售。
+• **givinguflac**：对产品的紧凑设计表示赞赏，但指出网站上关于“Airtag是苹果注册商标”的声明中未大写“Apple”是一个小瑕疵。
+• **cinntaile**：询问时间间隔是否可以由用户更改，以及其更改的限制范围。
+• **Gibbon1**：引用一位追踪领域的从业者观点，认为理想情况下应有一种不通过传输来揭示自身的定位器，且不耗费电力接收GPS信号，但这类设备因商业利益考量未被广泛推广。
+• **mulmen**：认为AirTags并非设计用于找回被盗物品，建议比较专业的GPS追踪器（如Monimoto）以获得更好的效果。
 
 补充讨论：
-• LegionMammal978强调了浮点数比较中的潜在问题，特别是涉及计算几何时，细微的数值差异可能导致明显的几何问题，如3D游戏几何中的细微裂缝。
+• 争议焦点在于AirTag的功能限制和自定义改造的合法性与道德性。部分用户认为这些限制不必要，影响了实用性，而另一些用户则指出跟踪他人已经违法，因此功能限制是合理的。
+• 技术讨论主要集中在如何通过硬件和软件的改进来延长电池寿命、提高隐蔽性，并绕过苹果的检测机制。
+• 对产品可靠性和实际效果的质疑也是讨论的重要部分，尤其是对农村地区追踪能力的担忧。
 
-• mtklein提供了一种具体的代码实现，以解决浮点数比较中的问题，包括处理特殊值如NaNs和±0，同时保持代码的整洁和易记性。
-
-• 争议的焦点在于浮点数比较的可靠性和适用场景。LegionMammal978认为除非特定情况，否则应避免直接比较，而mtklein则提供了一种在特定环境下可靠的比较方法。
-
-通过这些讨论，可以看出浮点数比较在不同应用场景下的复杂性和需要注意的细节。</div>
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971185" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996251" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://easel.games/about" target="_blank">Show HN: Easel – Code multiplayer games like singleplayer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: BSTRhino</span> |
+                    <span>评分: 74</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-14 10:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Easel是一款2D游戏编程语言，简化了多人游戏的开发，使之像单人游戏一样容易。它自动处理网络和同步等复杂任务，让开发者专注于游戏逻辑。Easel采用层次化编程语言，结合行为和反应式风格，使复杂逻辑表达更简单。对初学者友好，同时也能满足专业开发者的需求。Easel提供完整的游戏开发环境，包括图形、音频、物理和用户界面等，并支持在线编辑和即时全球发布。用户称赞其易用性和高效性，认为它极大地提升了开发体验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：手 rolled rollback 实现及相关技术细节的讨论
+
+不同观点：
+• [chrisdirkis] 关注点在于 rollback 实现中的时钟同步技巧和自适应延迟对游戏性的影响。他认为自适应延迟在网络条件不佳时可能会导致不公平，但比角色瞬移要好。
+
+• [_--__--__] 提出关于引擎如何在没有明确游戏状态知识的情况下触发 rollback 的疑虑。他提到在早期的《街霸 V》中，玩家可以滥用这一机制，在连击时快速输入导致对手 rollback，尤其是在游戏时钟不同步的情况下。
+
+• [asadm] 赞赏该项目，并提到自己曾开发过类似多玩家 SDK，经过反馈后调整至中间路线以支持现有语言和游戏引擎。他的方案已经扩展到支持数百万玩家。
+
+• [vinibrito] 对多租户抽象问题感兴趣，特别是如何为开发者和用户抽象不同房间或实例。他正在构建一个可视化开发工具，因此对非开发者易于理解的抽象感兴趣。
+
+• [oakwhiz] 关注隐藏信息的处理，询问如何向玩家客户端揭示“需要知道”或“潜在可见集合”的信息。
+
+• [DigiEggz] 表示自己专注于包含在线多人游戏的开发，对此项目非常期待。
+
+• [rishflab] 对 async coroutines 的使用提出批评，认为其生命周期管理不当会导致崩溃，且其缓存/内存访问行为会导致性能问题。
+
+• [georgeecollins] 认为开发一个全功能的游戏引擎非常困难，建议将其作为 Godot 或 Bevy 等引擎的插件，以利用这些引擎的基础设施，同时改进它们的多人支持。
+
+• [pfg_] 提到 WASM-4 有类似的多人模型，但需要注意延迟屏幕过渡以避免不一致的胜利显示。
+
+• [cmdrk] 将该项目与 BYOND 进行比较，认为两者在概念上有一些相似之处。
+
+• [traverseda] 关心游戏在 100 年后是否仍能被游玩，询问这种长期可玩性的保证。
+
+• [actionfromafar] 对项目的综合性和凝聚力表示赞赏，认为其结合了自己曾经用 C 语言实验过的各种想法。
+
+补充讨论：
+• 争议焦点在于 rollback 机制的公平性和可滥用性，特别是在网络条件不佳时的自适应延迟处理。
+• 对 async coroutines 的使用和性能影响存在不同看法，部分开发者认为其生命周期管理不当会导致问题。
+• 有建议将该项目扩展为其他流行引擎的插件，以提高其可用性和普及性。
+• 长期可玩性也是一个被提及的关注点，表明部分开发者对项目的可持续性有期望。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43982892" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
