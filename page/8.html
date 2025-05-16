@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-16 17:14 (北京时间)
+            最后更新时间: 2025-05-16 20:26 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2505.08827" target="_blank">Self Rewarding Self Improving: Autonomous LLM Improvement</a>
+                    <a href="https://matklad.github.io/2025/05/14/scalar-select-aniti-pattern.html" target="_blank">The Scalar Select Anti-Pattern</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tamassimond</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-05-15 22:18</span>
+                    <span>作者: goranmoomin</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-14 20:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种通过自我评价实现自我改进的大语言模型方法。利用生成和验证解决方案之间的不对称性，模型无需参考答案即可自我评估并提供可靠的奖励信号，从而实现强化学习。实验表明，该方法在Countdown谜题和MIT Integration Bee问题上显著提升了性能，Qwen 2.5 7B模型相比基线提高了8%，并在积分任务上超越了GPT-4o。结合合成问题生成，模型能自主生成、解决和评估问题，形成完整的自我改进循环。该研究展示了LLM作为奖励信号的潜力，为缺乏训练数据或复杂评估的领域开辟了新的强化学习环境。</p>
+                    <p>本文讨论了在事件循环中使用"标量选择"（Scalar Select）的反模式问题。在处理多个外部IO驱动的事件流时，逐个处理事件（标量选择）可能导致效率低下，因为当一个事件处理完毕后，可能有多个事件已经准备好，而标量选择会随意选取一个事件处理，造成不必要的开销。
+
+为了优化，文章提出了几种策略：
+
+1. **优先级排序**：根据事件类型决定处理顺序，如文件修改优先于代码补全请求。
+2. **选择性背压**：对某些类型的事件不处理，以减缓特定输入的处理速度。
+3. **消除**：有些事件可以完全丢弃，比如文件文本完全替换时，之前的修改可忽略。
+4. **合并**：多个类似事件可以合并处理，如文件修改可以合并成一个大改动。
+
+最终，文章建议将标量选择改为批量处理，即在事件流中一次性获取所有可用事件并批量处理，以提高效率。这种方法在低负载时效果不明显，但在高负载时能显著减少处理时间。实现批量处理的关键是`batch_stream`函数，它会等待至少一个事件，然后拉取所有可用事件。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：输入事件处理和批处理行为在不同系统和环境下的实现与影响
+
+不同观点：
+• jchw 认为，Windows 内部对事件队列的处理会合并和优先排序输入事件，尤其是在事件积压时。这种批处理行为在应用/API层面可能不明显，但实际上在处理事件时具有重要作用。他还提到，Wayland客户端如果处理事件队列滞后可能会崩溃，并提出是否可以通过UNIX域套接字在服务器端实现某种事件合并，以避免向客户端发送过多高精度指针移动事件。
+
+• taeric 对jchw的提议不太清楚，并指出即使接收一批指令也不会立即改变什么。他认为，无论如何处理指令，仍然需要考虑指令之间的依赖关系和交互。他将此比作处理器处理 incoming 指令的方式，强调程序本身对如何处理和分批传递指令负有责任，而不仅仅依赖于发送指令的过程。
+
+• castratikron 补充了一个关键条件，即只要处理一个事件不影响批处理中的其他事件，比如文件IO事件，处理一个事件导致另一个事件的描述符被关闭，这种情况就需要特别注意。
+
+• malkia 简短提到CPU的流水线技术，暗示这种技术在处理批量指令时可能具有效率优势。
+
+补充讨论：
+• jchw 提出的UNIX域套接字和事件合并的想法引发了对如何有效处理大量事件的讨论，尤其是在客户端滞后的情况下。
+• taeric 的观点强调了程序在处理批量指令时的主动性和责任，而不仅仅是依赖底层机制。
+• castratikron 提醒大家注意事件之间的依赖和潜在冲突，特别是在资源管理方面，比如文件描述符的关闭。
+• malkia 提到CPU流水线技术，提供了一个从硬件层面理解批处理和指令处理的角度。
+
+争议焦点：
+• jchw 提出的服务器端事件合并的提议引发了taeric的质疑，即这种方法是否真正有效，是否能解决实际问题。
+• 对批处理指令的责任归属有潜在讨论，即程序本身和底层机制之间的责任分配问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43999919" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43988753" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -90,13 +118,244 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.lux.camera/what-is-hdr/" target="_blank">What is HDR, anyway?</a>
+                    <a href="https://github.com/pig-dot-dev/muscle-mem" target="_blank">Show HN: Muscle-Mem, a behavior cache for AI agents</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: _kush</span> |
-                    <span>评分: 707</span> |
-                    <span>评论数: 46</span> |
-                    <span>发布时间: 2025-05-14 12:46</span>
+                    <span>作者: edunteman</span> |
+                    <span>评分: 210</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-05-14 19:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>**Muscle Memory (muscle-mem)** 是一个用于 AI 代理的行为缓存工具。它记录代理在执行任务时的工具调用模式，并在遇到相同任务时重放这些轨迹，从而避免重复调用大语言模型（LLM），提高速度、减少变异性并节省成本。Muscle Memory 不是一个新的代理框架，而是可以与任何自定义代理集成。它通过缓存命中（cache-hit）和缓存未命中（cache-miss）机制工作，并使用 "Check" 进行缓存验证，确保工具调用的安全性。开发者可以通过 `@engine.tool` 装饰器记录工具调用，并定义捕获和比较回调函数来验证缓存有效性。项目已开源，并提供了安装和使用指南。
+
+</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI应用中记忆与上下文的处理瓶颈及解决方案
+
+不同观点：
+• **[mindwok]** 认为记忆和上下文是当前AI应用的瓶颈，需要一种通用的解决方案，可能需要内置于模型中，因为目前大家似乎都在重复构建类似的功能。
+
+• **[deepdarkforest]** 对通用解决方案持怀疑态度，指出在比较嵌入（embeddings）和缓存验证时存在许多不确定性，例如界面上的时间变化或数据库驱动的应用可能随意改变嵌入。他还认为每次操作都需要进行验证，因为问题可能在任何时候出现，因此嵌入方法可能不足够可靠。他建议使用更便宜的LLM调用或调整脚本作为替代方案，并表示他们的团队采用了完全不同的方法且效果不错。
+
+• **[parsabg]** 支持探索这个方向，并提出了一种实现方式，即在成功完成任务后存储(上下文, 任务, 工具序列)的元组。他还设想了一个代理对代理的市场，标准化这些记忆，并允许代理基于发现计算路径的工作量进行“自建或购买”决策。他强调创建跨任务和环境的“上下文”概念的重要性，并对嵌入方法持怀疑态度，认为减少缓存命中/未命中的误报率比短期效率更重要。
+
+• **[web-cowboy]** 希望减少重复任务的摩擦，例如创建新的GraphQL查询及其相关任务。他希望有一个MCP可访问的提示，让代理意识到他有一套处理请求的指令。
+
+• **[swairshah]** 提出如何比较环境状态以决定缓存命中或未命中的问题，包括屏幕状态、所有打开的应用、所有运行的进程等。他认为这是一个可以解决但非常有趣的问题，并建议参考人类使用肌肉记忆的方式。
+
+• **[dmos62]** 关注简单方法的局限性，认为如果引擎要实现“部分”缓存命中，将需要变得更加复杂。他质疑这种方法在更嘈杂环境中的适用性。
+
+• **[huevosabio]** 对定义缓存命中与否的问题表示关注，因为“代理”定义松散且任务涵盖几乎所有内容。
+
+补充讨论：
+• **[dbish]** 建议使用这些轨迹来自动微调模型，而不仅仅是重放，以便类似的工作流也可以得到改进。
+
+• **[allmathl]** 质疑使用代理自动化遗留应用的成本效益，认为修复软件以支持脚本编写可能更便宜且收益更高。他还询问如何强制“代理”纠正其行为。
+
+• **[nico]** 对当前用户体验表示不满，指出选择模板后长时间生成和随机错误的问题，并希望有更好的下一步指导。
+
+• **[fkjadoon94]** 和 **[android521]** 对项目的实现和未来发展表示兴趣，并询问是否会发布TypeScript库以吸引更多开发者。
+
+• **[lherron]** 将这个概念比作即时编译代理提示为代码，表示对这个概念的实现充满期待。
+
+• **[DrNosferatu]** 提到他曾写过类似规则，但结果参差不齐，对该方法的有效性表示好奇。
+
+争议焦点：
+- 是否存在一种通用的解决方案来解决AI中的记忆和上下文问题，还是需要针对不同场景进行定制化开发。
+- 嵌入方法的可靠性及其在缓存验证中的适用性。
+- 如何定义和比较环境状态以决定缓存命中或未命中。
+- 自动化遗留应用的成本效益问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43988381" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.asimov.press/p/model-organisms-are-not-static" target="_blank">Model Organisms Are Not Static</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mailyk</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-15 15:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了实验用模式生物的基因变异问题。研究发现，一些脊椎动物的基因组突变速度比其他物种快40倍。尽管实验室中的动物经过精心培育以减少基因变异，但突变仍可能发生，并影响实验结果。例如，2006年阿尔伯塔大学的研究人员在重复1993年的小鼠实验时，发现结果不一致，这可能与基因突变有关。文章还提到，不同物种的突变率差异很大，如实验室常用的小鼠每个后代有15个新突变，而雪鸮只有1个，达尔文的 rhea 鸟则有约47个。文章建议进一步研究其他模式生物的基因突变速度，以更好地理解其对实验结果的影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：科研中基因克隆和实验生物稳定性面临的挑战
+
+不同观点：
+• **[koeng]**：在高通量克隆工作中，客户期望获得完整且经过验证的基因。然而，即便在最常见的生物体中，仍然可能出现无法预测的情况，例如转座子意外跳入载体，导致6kbp的插入。这显示了实验中不可控因素对结果的影响。
+
+• **[Feuilles_Mortes]**：提到C. elegans（秀丽隐杆线虫）的优点，可以通过甘油冻存来保持实验品系的稳定性。然而，在果蝇实验室中，目前还没有有效的长久冻存方法，实验室通常只能接受一定程度的背景突变，并假设这些突变不会显著影响实验结果。
+
+• **[Projectiboga]**：指出实验中使用的饮食也会对研究结果产生影响，特别是当饮食配方不同时，结果的可比性可能会受到影响。例如，某些缺乏维生素E的饮食在现实世界中不常见，这可能导致实验偏差。
+
+• **[jmward01]**：认为应将世界视为动态而非静态的，特别是在如梯度下降等算法中。长期来看，动态变化甚至可能选择稳定性而非最优性。提出为科学知识（如生物学知识）发布一个“预期半衰期”统计，以反映知识随时间的改变。
+
+• **[pmags]**：同意科研中生物体演化带来的挑战，特别是在微生物研究中。多个实验组之间的同基因品系可能因在实验室中的演化而产生表型差异，这进一步加剧了实验结果的不确定性。
+
+• **[tehjoker]**：提出是否有可能从头合成小基因组生物的基因组，或修补大部分区域，以便依赖计算机存储来解决实验变异性问题。
+
+补充讨论：
+• 实验中的不可控因素（如基因突变、转座子活动）对实验结果的影响是讨论的核心。
+• 不同生物体（如线虫和果蝇）在实验稳定性上的差异以及应对策略也是重要的讨论点。
+• 饮食等外部因素对实验结果的影响以及科学知识的动态性进一步丰富了讨论的广度。
+• 合成生物学技术（如基因组合成）作为潜在解决方案也被提及，显示出未来可能的研究方向。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43996243" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://groups.csail.mit.edu/mac/classes/6.805/articles/crypto/cypherpunks/may-crypto-manifesto.html" target="_blank">The Crypto Anarchist Manifesto (1988)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: greyface-</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-16 09:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章预测了加密技术将带来的社会和经济革命，称之为“加密无政府状态”。它描述了一种未来场景：人们通过匿名方式交流和互动，无需知晓对方的真实身份，且这些互动无法被追踪。这种技术依赖于公共密钥加密和零知识证明等方法，随着计算机网络和个人电脑速度的提升，这些技术正变得可行且难以阻挡。尽管政府会以国家安全和犯罪活动为由试图阻止，但加密无政府状态仍将发展，改变政府对经济的干预方式，并催生出信息和知识产权的新市场。正如过去印刷术改变了社会权力结构，加密技术也将颠覆传统企业和政府角色。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44003301" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://easel.games/about" target="_blank">Show HN: Easel – Code multiplayer games like singleplayer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: BSTRhino</span> |
+                    <span>评分: 74</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-05-14 10:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Easel是一款2D游戏编程语言，简化了多人游戏的开发，使之像单人游戏一样容易。它自动处理网络和同步等复杂任务，让开发者专注于游戏逻辑。Easel采用层次化编程语言，结合行为和反应式风格，使复杂逻辑表达更简单。对初学者友好，同时也能满足专业开发者的需求。Easel提供完整的游戏开发环境，包括图形、音频、物理和用户界面等，并支持在线编辑和即时全球发布。用户称赞其易用性和高效性，认为它极大地提升了开发体验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：手 rolled rollback 实现及相关技术细节的讨论
+
+不同观点：
+• [chrisdirkis] 关注点在于 rollback 实现中的时钟同步技巧和自适应延迟对游戏性的影响。他认为自适应延迟在网络条件不佳时可能会导致不公平，但比角色瞬移要好。
+
+• [_--__--__] 提出关于引擎如何在没有明确游戏状态知识的情况下触发 rollback 的疑虑。他提到在早期的《街霸 V》中，玩家可以滥用这一机制，在连击时快速输入导致对手 rollback，尤其是在游戏时钟不同步的情况下。
+
+• [asadm] 赞赏该项目，并提到自己曾开发过类似多玩家 SDK，经过反馈后调整至中间路线以支持现有语言和游戏引擎。他的方案已经扩展到支持数百万玩家。
+
+• [vinibrito] 对多租户抽象问题感兴趣，特别是如何为开发者和用户抽象不同房间或实例。他正在构建一个可视化开发工具，因此对非开发者易于理解的抽象感兴趣。
+
+• [oakwhiz] 关注隐藏信息的处理，询问如何向玩家客户端揭示“需要知道”或“潜在可见集合”的信息。
+
+• [DigiEggz] 表示自己专注于包含在线多人游戏的开发，对此项目非常期待。
+
+• [rishflab] 对 async coroutines 的使用提出批评，认为其生命周期管理不当会导致崩溃，且其缓存/内存访问行为会导致性能问题。
+
+• [georgeecollins] 认为开发一个全功能的游戏引擎非常困难，建议将其作为 Godot 或 Bevy 等引擎的插件，以利用这些引擎的基础设施，同时改进它们的多人支持。
+
+• [pfg_] 提到 WASM-4 有类似的多人模型，但需要注意延迟屏幕过渡以避免不一致的胜利显示。
+
+• [cmdrk] 将该项目与 BYOND 进行比较，认为两者在概念上有一些相似之处。
+
+• [traverseda] 关心游戏在 100 年后是否仍能被游玩，询问这种长期可玩性的保证。
+
+• [actionfromafar] 对项目的综合性和凝聚力表示赞赏，认为其结合了自己曾经用 C 语言实验过的各种想法。
+
+补充讨论：
+• 争议焦点在于 rollback 机制的公平性和可滥用性，特别是在网络条件不佳时的自适应延迟处理。
+• 对 async coroutines 的使用和性能影响存在不同看法，部分开发者认为其生命周期管理不当会导致问题。
+• 有建议将该项目扩展为其他流行引擎的插件，以提高其可用性和普及性。
+• 长期可玩性也是一个被提及的关注点，表明部分开发者对项目的可持续性有期望。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=43982892" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2505.08906" target="_blank">Comparing Parallel Functional Array Languages: Programming and Performance</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: matt_d</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-16 04:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章比较了五种并行函数数组语言（Accelerate、APL、DaCe、Futhark和SaC）在编程表达能力和性能方面的表现。通过N-body模拟、MultiGrid、Quickhull和Flash Attention四个基准测试，展示了函数数组代码比手工优化的基准实现更简洁且易于理解。这些语言可以从单一源代码生成多核和GPU可执行程序，具有良好的性能可移植性。实验在32核AMD EPYC 7313系统和NVIDIA A30 GPU上进行，结果表明成熟的函数数组语言能够提供与最佳传统技术相竞争的性能。文章还深入分析了每种语言在不同基准和架构上的表现原因。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44001803" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wsj.com/opinion/one-nuclear-war-can-ruin-the-whole-climate-apocalypse-greenhouse-emissions-weapons-fc6413b7" target="_blank">One Nuclear War Can Ruin the Whole Climate</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bostonian</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-05-16 10:27</span>
                 </div>
 
                 <div class="summary-section">
@@ -106,32 +365,27 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：HDR技术在游戏、摄影和显示器中的应用及其优缺点
+                    <div class="comments-summary">主要讨论点：关于Mark Lynas与Ted Nordhaus新书《Six Minutes to Winter: Nuclear War and How to Avoid It》的讨论
 
 不同观点：
-• Terr_认为，人眼的自然视觉可以动态调整光照和焦距，而目前的游戏中HDR和景深效果往往降低体验的真实感，导致颜色和模糊问题，直到 gaze-tracking 技术普及才能解决。
-• Asafira 提供了有关HDR的科普资源，并通过自身的专业背景（AMO物理学）说明了HDR在相机技术中的应用，强调了HDR技术在摄影中的实际价值。
-• Dahart 指出，HDR捕捉、格式和工作流与HDR显示是不同的概念，并澄清Ansel Adams并没有使用现代意义上的HDR技术，混淆这些概念只会引起更多困惑。
-• CarVac 表示，HDR显示在高亮部分（如白色墙壁）的处理上让人不适，并且在色调映射上倾向于低对比度，不符合个人口味。
-• Caseyy 通过幽默的方式表达了对HDR在影视中应用的看法，特别是夜晚观看影片时HDR效果带来的不适。
-• Gyomu 作为摄影师，指出HDR内容在实际显示中存在亮度不一致的问题，尤其是在夜间使用低亮度浏览内容时更为明显。
-• Aidenn0 提到HDR技术的普及面临基础设施升级的巨大成本问题，消费者对HDR显示的接受度也受到设备更换周期的影响。
-• Gwbas1c 强调计算机无法读取人类意图，因此在软件开发中理解这一点很重要，间接提到HDR内容生成中AI的局限性。
-• Sergioisidoro 补充了模拟摄影中通过开发者控制动态范围的方法，并批评手机HDR照片在创意摄影中的表现。
-• The__alchemist 对HDR显示器的实用性表示好奇，并提到HDR在真实场景与照片显示之间的差距。
-• Echo_time 提到在不同浏览器（Firefox和Chrome）中查看HDR相关内容时的体验差异，可能与浏览器设置有关。
-• Chaboud 详细说明了HDR在专业视频/电影工具中的演变，强调了色彩和亮度描述的绝对意义，并介绍了相关技术标准。
-• Mxfh 对某些文章中HDR解释的不满，认为文章没有解决消费者数字环境中的色彩管理问题，并指出HDR UI设计中的亮度问题。
-• Kristianp 提供了一个关于Sigma相机HDR功能的文章链接，展示了较为成功的HDR照片案例。
-• Hfgjbcgjbvg 简单表达了对数字相机技术的兴趣。
+• 观点一：对新书的发布表示关注和支持
+   - 论据和例子：Bostonian提供了新书的链接，并对书籍的发布表示关注，显示出对核战争及如何避免这一话题的重视。
+   - 支持理由：通过推荐书籍，Bostonian implicitly支持作者对核战争问题的探讨，认为这是一个值得公众关注的重要议题。
+
+• 观点二：对书籍内容和主题的潜在质疑
+   - 论据和例子：虽然没有直接的评论质疑书籍内容，但潜在的质疑可能包括对作者能否提供新颖或有效解决方案的担忧，尤其是在核战争这样复杂且历史悠久的问题上。
+   - 质疑理由：过去一些关于核战争的讨论可能被认为过于理论化或缺乏实际操作性，因此一些读者可能会对新书的实际贡献持保留态度。
 
 补充讨论：
-• HDR技术的定义和应用范围存在混淆，特别是在摄影和显示领域，不同观点对HDR的实际效果和使用体验存在分歧。
-• 浏览器兼容性和HDR内容显示问题也被提及，表明在网络环境中HDR技术的实现仍存在挑战。
-• 讨论中多次提到HDR技术的实际体验问题，包括高亮部分处理不当、UI设计中的亮度问题等，表明HDR技术在消费级应用中仍需改进。
-• 对HDR技术普及的成本和消费者接受度的讨论，反映了技术从专业领域向消费领域普及的现实障碍。</div>
+• 讨论焦点：书籍《Six Minutes to Winter》的核心主题——核战争及其避免策略
+   - 该书不仅探讨了核战争的现实威胁，还提出了如何避免这种灾难性事件的策略，这可能是讨论中的核心议题。
+   - 争议焦点：是否能提出切实可行的解决方案，以及如何在当前国际政治环境中有效实施这些策略。
+
+• 讨论关系：Bostonian的评论主要是信息分享，为后续可能的深入讨论奠定基础。未来的讨论可能会围绕书籍内容的有效性和实用性展开，特别是针对当前全球政治气候的适应性。
+
+总结：评论引发了对新书《Six Minutes to Winter: Nuclear War and How to Avoid It》的关注，潜在讨论包括对核战争问题探讨的必要性及书籍内容的实际价值。争议可能集中在解决方案的可行性及其实施的现实性上。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43983871" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44003686" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -142,33 +396,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://buglesstack.com/" target="_blank">Show HN: I made a platform to debug Puppeteer (JS) crashes visually</a>
+                    <a href="https://resobscura.substack.com/p/onfims-world-medieval-child-artists" target="_blank">Onfim's world: Child artists in history</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ivanalemunioz</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-13 20:57</span>
+                    <span>作者: benbreen</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-15 16:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种通过使用Buglesstack工具加速Puppeteer崩溃调试的方法。在Puppeteer脚本中捕获错误时，自动获取当前页面的URL、截图、HTML内容及错误信息，并发送至Buglesstack进行可视化分析，帮助开发者快速定位和解决问题。该方法简化了调试流程，减少了查找和修复错误的时间。通过即时可视化和详细页面信息，开发者可以更容易地识别问题并迅速解决。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对AFIP例子的评价
+                    <div class="comments-summary">主要讨论点：Onfim的涂鸦及其历史和文化意义，以及对儿童创作的保存和欣赏。
 
 不同观点：
-• Pablogancharov对AFIP例子持积极态度，认为这是一个很好的例子（"El ejemplo de la afip es genial"）。这表明他对使用AFIP作为案例来解释或说明某个观点表示赞同和欣赏。
+• [lbeckman314] 强调Onfim的涂鸦让我们重新思考童年，不仅仅是一个永恒的当下，而是有着深远历史的人类核心部分。该评论表达了对重新发现这些历史遗存的喜爱，并分享了相关资源链接，以供进一步探索。
+
+• [pavel_lishin] 认为每一件像Onfim涂鸦这样独特的遗存背后，都有无数被遗失的作品。他以自身经验为例，提到自己的孩子也创作大量艺术作品，他选择拍照保存以防止这些作品被埋没。他希望未来孩子能从中获得一些有趣的体验。
+
+• [lovegrenoble] 从历史和文化角度出发，表达了对Novgorod这座城市的赞美，称其为历史和文化爱好者的宝地，并希望有机会亲自访问。
+
+• [jayrot] 推荐了一个关于Onfim的视频，认为如果想体验“sonder”（指意识到每个陌生人都有自己丰富的生活），这个视频值得一看。
 
 补充讨论：
-• 评论中未出现对AFIP例子的直接反对或不同看法，因此没有明显的争议。
-• AFIP（Administración Federal de Ingresos Públicos）是阿根廷的联邦公共收入管理局，评论中的例子可能与税务或公共收入管理相关，具体例子内容未详细展开，但可以从正面评价中推测其具有说明性和启发性。
-• 该评论可能是在更广泛的讨论税务或政府机构效率的背景下出现，具体背景需要根据上下文进一步推断。</div>
+• 讨论中提到了之前关于Onfim的讨论和相关资源的链接，表明对这一话题的持续关注和兴趣。
+• 争议的焦点可能在于对儿童创作保存价值的不同看法，[pavel_lishin] 以个人经验为例，提出了保存孩子作品的实用方法，而[lbeckman314] 更关注这些作品的历史和文化意义。
+• 评论中还涉及了对历史遗存的珍惜和对个人经历的反思，这为讨论增添了更多层次的文化和情感因素。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43977648" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43996796" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -179,52 +439,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/altcha-org/altcha" target="_blank">Lightweight open source reCaptcha alternative</a>
+                    <a href="https://www.nytimes.com/2025/05/15/world/europe/harvard-law-magna-carta-original.html" target="_blank">Harvard Law paid $27 for a copy of Magna Carta. It's an original</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: michalpleban</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-05-13 09:19</span>
+                    <span>作者: jgwil2</span> |
+                    <span>评分: 178</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-05-15 18:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>ALTCHA 是一个自托管的 CAPTCHA 替代方案，利用工作量证明（PoW）机制保护网站和在线服务免受垃圾信息和滥用。它不依赖 cookies 或指纹识别，确保用户隐私，并符合 GDPR、WCAG 2.2 AA 标准以及欧洲无障碍法案（EAA）。其特点包括无摩擦的用户体验、无 cookie 设计、完全无障碍、轻量级（GZIP 压缩后仅 17 kB）、自托管以及提供 SaaS 选项。安装和使用简单，支持多种前端和后端技术，并可通过配置实现多种功能。与 hCaptcha 和 reCAPTCHA 相比，ALTCHA 的体积更小，性能更优。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：CAPTCHA系统的有效性、技术实现及其问题
+                    <div class="comments-summary">主要讨论点：围绕《大宪章》的历史、价值及其现代意义的讨论
 
 不同观点：
-• [binary132] 认为互联网和应用程序栈过度依赖专有托管服务，这些服务可能会随时间消失或失效。依赖第三方服务的功能性存在风险，尤其是当这些服务中断或改变时。专有软件即使可以自行操作，也仍然不如能够“自行修复设备”的开源方案。
+• 一些评论关注《大宪章》的历史价值和其作为法律文件的现行效力。例如，[A_Duck]指出《大宪章》仍是有效的法律文件，并提供了英国立法门户网站的链接以证明其现行部分。[draley]则进一步解释现存的《大宪章》多为官方副本，而非原件，尽管这些副本在历史上多次被重新确认，具有合法性。
 
-• [serhack_] 提出有效的CAPTCHA类系统应通过收集大量数据、识别可疑模式并验证这些模式来动态生成挑战。例如，如果系统识别出用户是机器人，它会提供计算量更大的挑战，以增加机器人操作的难度。
+• 另一个讨论点是《大宪章》的市场价值。[highfrequency]通过计算复利利息，将以27美元购买的《大宪章》在80年后以2100万美元出售，与沃伦·巴菲特的投资生涯相比较。[davikr]补充说明，经过通胀调整后，实际价值约为450美元。
 
-• [remram] 质疑现代CAPTCHA系统是否真的在区分计算机和人类，认为它们只是在区分人类浏览器和机器人浏览器，甚至可能只是减慢所有浏览器的速度。
+• 一些评论分享了个人经历和对《大宪章》实物展览的观感。[willmeyers]和[alephnerd]都提到在访问图书馆时偶然看到《大宪章》的震撼，并推荐他人参观。同时，[heelix]描述了在Salisbury看到《大宪章》副本的体验，并表示这是他首次阅读该文件。[anthk]将《大宪章》与同时代的其他法律文件进行比较，强调其在当时的开放和进步性。
 
-• [dankobgd] 认为reCAPTCHA系统不仅无用，还会惹恼真实用户，并分享了自己在使用MIUI网站时遇到的麻烦经历，暗示这些系统可能只是为了收集用户数据。
+• 还有评论对《大宪章》的保存和展示细节提出质疑。[jb1991]注意到一张照片中的人未戴手套触摸这份古老文件，暗示对文物保护的担忧。[PaulHoule]分享了在大学图书馆发现罕见书籍的个人经历，并提到在市场上可以找到相对廉价的副本。
 
-• [Jleagle] 提问为什么机器人不能计算工作量证明（PoW），暗示如果机器人能够计算PoW，那么这种CAPTCHA机制可能无效。
-
-• [pabs3] 关心如果没有设置cookie，系统如何知道用户已经计算了PoW，或者是否每次页面加载都需要重新计算。
-
-• [rahimnathwani] 询问是否有实时演示，以便更好地理解所讨论的CAPTCHA系统如何工作。
-
-• [progx] 提出在人工智能时代，如何检测真实人类和AI的问题，暗示传统CAPTCHA可能无法应对AI的挑战。
-
-• [chrismorgan] 详细分析CAPTCHA的演变，指出它已经偏离了原本区分计算机和人类的目标，变成了仅仅是增加攻击成本的机制。讨论了SHA哈希作为PoW机制的潜在问题，特别是针对专业硬件的优势，认为这种机制最终可能无法抵挡强大的攻击者。同时，指出大多数机器人仍然非常愚蠢，简单的防御措施可能已经足够。
-
-• [immibis] 讽刺reCAPTCHA的目的是增强Google用户档案和拒绝合法用户，暗示所讨论的替代方案可能没有解决这些问题，并提到传统CAPTCHA收集大量指纹数据以确保只有特定配置的用户可以访问网站。
+• 最后，[queuebert]以讽刺口吻指出《大宪章》副本对于工薪家庭来说变得难以负担，暗示了历史文物商品化的问题。
 
 补充讨论：
-- CAPTCHA系统的有效性和其技术实现，包括PoW的具体机制和潜在漏洞。
-- 讨论了专有托管服务和专有软件的长期可靠性问题。
-- 对现代CAPTCHA系统是否真正实现其宣称目标的质疑和批评。
-- 关于如何在人工智能时代有效区分人类和机器人的开放性问题。</div>
+• 评论中也涉及对具体图书馆和博物馆的推荐，如哈佛大学的Widener图书馆和其馆藏的Gutenberg Bible，显示出对文化与历史遗产的广泛兴趣。
+• 对《大宪章》法律效力的讨论也引发了关于历史文件在现代社会中地位的思考。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971068" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43997830" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -235,287 +483,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nypost.com/2025/05/15/science/orcas-abandoned-in-shuttered-marine-park-filmed-in-algae-infested-pool/" target="_blank">Orcas abandoned in shuttered marine park filmed in algae-infested pool</a>
+                    <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/" target="_blank">Comparing floating-point numbers (2012)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rguiscard</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-16 03:39</span>
+                    <span>作者: sph</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-05-13 09:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>法国马林兰公园关闭后，园内最后两只虎鲸被困在充满藻类的池中，健康和安全受到严重威胁。动物权益组织呼吁法国政府尽快将它们转移到其他保护设施，但相关转移计划屡遭拒绝，包括日本和西班牙的海洋公园。虎鲸Wikie和其11岁的儿子Keijo因在人工环境中出生，无法被放归野外。目前，救援团队正努力将它们安置到加拿大新斯科舍省的一个保护区，但时间紧迫，情况危急。同时，园内还有12只海豚同样被困。</p>
+                    <p>本文讨论了浮点数比较的复杂性，强调浮点数学运算非常困难且充满细微差别。由于浮点数无法精确表示某些值（如0.1），直接比较两个浮点数是否相等通常是不合适的。文章通过一个例子展示了不同计算方法（如加法和乘法）会导致不同的结果，并解释了float和double类型在表示精度上的差异。具体而言，float(0.1)和double(0.1)由于二进制表示的位数不同，会有不同的舍入误差。因此，比较浮点数时应采用允许一定误差范围的方法，而不是直接使用==或!=。文章最后提醒读者浮点运算没有简单的解决方案，需谨慎处理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对文章内容简短和信息不足的质疑，以及对欧盟和动物福利的关注。
+                    <div class="comments-summary">主要讨论点：浮点数比较的方法及其实践中的问题
 
 不同观点：
-• Junon认为文章过于简短，质疑其真实性。他们指出文章仅有三个段落和一张照片，无法全面说明事件的背景和细节，尤其是关于为何动物被遗弃在公园以及相关责任人的考量。
-• Junon对欧盟可能涉及此事件表示怀疑，认为欧盟不会故意允许这种动物福利问题发生。他们对于事件背后的原因表示关注，尤其是公园发生了什么，以及为什么没有采取措施保护动物。
+• mtklein认为在单元测试中可以使用一种自定义的等价函数`equiv`来比较浮点数，该函数考虑了±0和NaNs的情况，并通过整齐的代码布局帮助记忆。他还指出，在单元测试之外，通常不会用到浮点数的精确比较，更多是使用`<`或`<=`的条件。
+
+• sph分享了自己在生产环境中使用的修复浮点数误差的方法，即通过`toPrecision`来修正计算结果。虽然这种方法在处理小浮点数误差时有效，但sph自己也承认这种方法存在根本性的缺陷，只是在特定应用场景下（如转换投注赔率）侥幸有效。
+
+• LegionMammal978则主张，任何浮点数的相等比较都是有风险的，除非是处理精确的小数分数或者测试近似相等的启发式条件。他还指出，不仅相等比较，浮点数的不等比较在实际应用中也会遇到困难，比如在计算几何中，需要特别的优化来处理正确性问题。
 
 补充讨论：
-• Junon的评论反映了对信息透明度和细节的需求，尤其是涉及到公共利益和动物福利的问题时，读者希望获得更深入的报道和解释。
-• 评论中还隐含了对相关责任方的质疑和批评，认为在处理动物福利问题上应有更多的关注和行动。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44001632" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nasa.gov/centers-and-facilities/stennis/stennis-first-open-source-software/" target="_blank">NASA Stennis's first open source software</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mindcrime</span> |
-                    <span>评分: 74</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-05-13 12:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>NASA's Stennis Space Center发布了首个开源软件——NASA数据采集系统同行评审工具。该工具旨在提升系统应用开发的协作效率，特别是支持火箭推进测试工作。由软件工程师Brandon Carver和Shane Cravens主导开发，该工具简化了代码评审过程，帮助开发者更早发现问题，提高软件质量和生产力。它专为与National Instruments的LabVIEW配合使用而设计，解决了图形化编程语言在代码对比上的挑战，提供了自动化和更有效的评审功能。通过将其开源，NASA希望全球开发者社区能进一步改进这一工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：NASA开源软件NDAS及其相关工具和技术选择
-
-不同观点：
-• **[az09mugen]**：对TortoiseGit及其功能的积极评价，尤其是其修订图形（revision graph）和三向合并工具（3-way merge tool）。认为TortoiseGit是Windows上最好的免费软件之一，并且因为缺乏替代工具而未切换到MacOS。此外，对LabVIEW和G编程语言表示了兴趣，并提到对NASA工作人员使用Windows的意外。
-
-• **[WillAdams]**：表达了对Open Vehicle Sketchpad未成为通用CAD软件的遗憾，并希望这类软件能够得到更广泛的应用和发展。
-
-• **[djoldman]**：对NDAS软件的许可证表示关注，提供了许可证链接供查阅。
-
-• **[zombot]**：对LabVIEW作为“只写语言”表示质疑，认为NASA使用这种语言令人意外。
-
-• **[Animats]**：指出NDAS软件并非NASA首个开源软件，NASA已经发布开源软件多年，并提供了相关链接。
-
-• **[gitroom]**：赞赏NASA保持开源的做法，但希望NASA能更频繁地进行开源活动，并质疑是否因旧习惯或官僚程序导致未完全开放。
-
-补充讨论：
-• **工具偏好**：az09mugen对TortoiseGit的偏好和具体功能（如修订图形和三向合并工具）的重视，与其他潜在工具（如p4merge）进行了对比。
-• **技术选择惊讶**：对NASA使用Windows和LabVIEW的惊讶，与通常认为NASA更多使用Linux或MacOS的印象形成对比。
-• **许可证关注**：djoldman提出了对软件许可证的关注，提供了具体链接以便进一步查阅。
-• **开源实践**：gitroom和Animats讨论了NASA的开源实践，提出了是否因内部阻力或程序问题导致未完全开放的疑问，并提供了NASA开源软件的更多信息。
+• mtklein和LegionMammal978都提到了浮点数比较在实际应用中应尽量避免，转而使用更可靠的条件或方法。
+• sph的实践展示了在特定场景下（如小浮点数处理），一些看似不严谨的方法可能暂时有效，但其潜在问题也不容忽视。
+• LegionMammal978提供了进一步的资源（如论文链接），说明在复杂计算（如几何计算）中处理浮点数误差的难度和解决方案。
 
 争议焦点：
-• **LabVIEW作为“只写语言”的适用性**：zombot对LabVIEW的质疑与其他对NASA技术选择的惊讶形成呼应，但未展开深入讨论。</div>
+• 浮点数比较的可靠性及其实际应用中的处理方法。具体而言，是采用精确比较、近似比较还是特定场景下的临时修正方法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43971941" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://themarkup.org/pixel-hunt/2025/04/28/how-california-sent-residents-personal-health-data-to-linkedin" target="_blank">California sent residents' personal health data to LinkedIn</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: anticorporate</span> |
-                    <span>评分: 170</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-05-15 14:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《The Markup》调查发现，加州平价医疗法案（Affordable Care Act）的健康保险网站coveredca.com向LinkedIn传输敏感数据。当用户填写有关是否失明、怀孕、使用多种处方药等问题时，网站上的跟踪器会将这些信息发送给LinkedIn，甚至包括是否为跨性别者或家暴受害者。该行为是在一个广告活动中进行的，目前这些跟踪器已被移除。Covered California表示正在审查数据安全和隐私协议，确保不会非法共享用户信息。此事件引发了对隐私违规的担忧，有专家指出这种做法侵犯了用户隐私。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Covered California向LinkedIn等平台泄露敏感健康信息的问题，以及相关数据追踪和隐私保护的争议。
-
-不同观点：
-• [kordlessagain] 认为，Covered California泄露敏感健康信息的问题反映了更广泛的行业问题，即原本用于护理的基础设施被用于广告行为 targeting。作者质疑科技公司和AI系统背后的动机，认为这些行为并非出于智慧，而是出于权力集中和恐惧落后。
-• [vharuck] 认为，Covered California使用60多个追踪器是故意为之，而非简单的失误。他对为什么一个仅处理健康保险的独立机构需要如此多的追踪器表示疑惑，并指出这种行为明显不妥。
-• [bensonn] 强调，称这些数据为“泄露”并不准确，因为添加LinkedIn追踪代码是故意行为，追踪器按设计执行了其功能。他指出，这是Covered California的选择，而非意外。
-• [neilv] 分享了个人经历，LinkedIn根据其浏览历史展示了相关广告，质疑是否有人将私人医疗信息提供给了LinkedIn。
-• [oaththrowaway] 质疑为什么一个州级机构需要进行广告追踪，认为这可能是为了资金需求。
-• [1024core] 直接指出这种行为可能违反HIPAA法案，并对此表示惊讶。
-• [knowitnone] 认为，加州的调查可能会偏袒自己，且指出LinkedIn与Microsoft的关系。
-• [blindriver] 询问定期清除cookies是否能防止长期追踪。
-• [goldchainposse] 解释说，许多公司主动将数据提供给大科技公司，而非出售数据，科技公司利用这些数据进行广告投放。
-• [treebeard901] 详细描述了医疗记录的复杂性和潜在的滥用问题，指出医疗信息的共享和不透明性问题严重。
-• [barbazoo] 试图澄清，是否需要用户故意点击广告才能让LinkedIn获取敏感信息。
-• [dzdt] 指出，根据Covered California的隐私政策，这种数据共享行为可能违反HIPAA法案，并引用了相关文件支持其观点。
-• [actionfromafar] 提到联邦政府也曾将居民的健康数据发送给xAI，认为当前问题不仅限于州级。
-• [rob_c] 批评州级机构在处理公共数据和敏感信息方面的无能，建议相关负责人辞职。
-
-补充讨论：
-• 争议的焦点在于Covered California是否故意泄露敏感信息，以及这种行为是否违反相关隐私保护法律如HIPAA。
-• 讨论中还涉及科技公司和AI系统在数据收集和广告投放中的角色和动机。
-• 有人质疑政府机构为何需要进行广告追踪，是否出于资金需求。
-• 医疗记录的共享和不透明性问题也被详细讨论，反映出对整个医疗信息系统的广泛担忧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43995302" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://nullonerror.org/2025/05/11/i-have-built-an-iot-device-to-let-my-family-know-when-i-am-in-a-meeting/" target="_blank">Show HN: I’ve built an IoT device to let my family know when I’m in a meeting</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: delduca</span> |
-                    <span>评分: 111</span> |
-                    <span>评论数: 33</span> |
-                    <span>发布时间: 2025-05-11 14:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了一款名为"I'm in Meeting"的物联网设备，旨在解决居家办公时家人在不恰当时候打扰的问题。该设备使用ESP32微控制器，通过Wi-Fi和mDNS技术连接，利用Arduino框架简化开发。ESP32运行一个HTTP服务器，接收PATCH请求，并根据摄像头状态（开启或关闭）通过JSON payload控制LED面板显示红色或蓝色。同时，一个Python守护程序定期查询苹果API，检查摄像头使用状态，并发送相应请求到ESP32。该设备简单实用，通过自动提示会议状态来避免打扰。设备演示视频和源代码可通过链接查看。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：为笔记本电脑添加指示灯以显示麦克风、摄像头状态及自定义忙碌状态的创意及其技术实现
-
-不同观点：
-• albert_e 提出希望有一个LED灯条安装在笔记本屏幕上方，用于指示麦克风、摄像头状态，以及自定义忙碌状态，帮助周围人判断是否可以打扰。
-• gia_ferrari 和 lemming 分别分享了自己通过现有智能家居系统（如Home Assistant和Homekit）实现类似功能的方案，强调了无需额外硬件的便捷性。
-• Aurornis 指出，过去类似产品因手动控制繁琐而失败，认为自动触发更为实用。
-• ranggi 和 onair4you 表示喜欢这种创意，并提出了类似"ON AIR"标志的替代方案，强调无需自定义硬件。
-• sky gazer 和 deivid 分享了自己通过代码实现该功能的详细技术方案，并指出macOS系统更新对功能的影响。
-• sanex 和 arieldeveloper 表示有兴趣尝试构建类似系统，但尚未付诸实践。
-• nine_k 将该方案与现有商业产品（如busy.bar）对比，认为这是更便宜的核心功能替代方案。
-• turtlebits 提出了一个潜在问题：如果关闭摄像头，指示灯如何反映用户状态。
-
-补充讨论：
-• 讨论中提到了多个技术实现方式，包括DBUS监听、MQTT事件、Homekit和Hammerspoon等工具。
-• 有人分享了开源项目链接，如deivid的"ON AIR"项目，提供了跨平台支持（mac和Linux）。
-• 争议焦点在于手动控制的可行性与自动触发的可靠性，以及在不同场景（如关闭摄像头）下的功能表现。
-• 多个参与者分享了个人实现方案的技术细节和代码资源，展示了不同的技术路径和实现难度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43954027" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bradrodriguez.com/papers/index.html" target="_blank">Moving Forth: a series on writing Forth kernels</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 53</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-15 05:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文列出了Bradford J. Rodriguez发表的各类论文、研讨会、计算机程序，涵盖Forth内核设计、多任务处理、多处理器系统、专家控制系统等主题。主要系列包括《Moving Forth》系列，详细讲解Forth内核设计及其实现；多篇关于多任务和多处理器系统的文章，如《Multiprocessing for the Impoverished》系列；以及1997年博士论文《An Embedded Temporal Expert For Control of a Tandem Accelerator》和1989年硕士论文《PatternForth: A Pattern-Matching Language for Real-Time Control》。此外，还包括关于Forth汇编器、模式匹配语言、MIDI控制器等主题的杂文和计算机程序代码，如CamelForth在不同处理器上的实现。所有内容均附带文本、图片及相关链接，部分为PDF格式。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Forth编程语言及其相关资源、工具的使用和学习难点
-
-不同观点：
-• [benji-york] 认为该系列标题参考了1981年的书籍《Starting FORTH》，并提供了一个在线阅读链接。他建议阅读这本书的几章内容，认为这对学习Forth有帮助。
-• [zck] 表示自己在编写Forth时遇到了设计限制不同于传统指南的困难。由于使用C语言而不是汇编，他感到学习汇编比较困难，且C语言不能像汇编那样直接跳转代码。他还提到理解底层信息（如变量`w`的用途和寄存器使用）的挑战，并有意制作一系列图表来更好地理解Forth的程序流程。
-• [anthk] 分享了一个GitHub上的Forth相关项目（subleq），并提供了使用说明。他还提到另一个工具（muxleq），并指出其在不同操作系统上的编译和使用方法。他通过具体例子展示了如何运行和测试Forth代码，并分享了在这些工具上获得的性能体验。
-
-补充讨论：
-• [zck] 的评论中提到了学习Forth的具体困难，包括语言的底层细节和程序流的理解问题，这与其他评论中分享资源和工具的使用形成对比。
-• [anthk] 的评论更侧重于实际操作和工具使用，提供了详细的步骤和性能比较，显示出对Forth在不同平台上运行的实际体验的关注。
-• 争议的焦点可能在于Forth学习的难度和方法。例如，[zck] 觉得从汇编学习Forth比较困难，而[benji-york] 则建议通过阅读经典书籍来学习。同时，[anthk] 提供了一种通过实际项目和工具来实践学习的途径。
-
-总结：讨论围绕Forth编程的学习资源、工具使用及实际编程中的挑战展开，参与者分享了各自的经验和见解。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43992100" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://aeon.co/essays/why-does-every-film-and-tv-series-seem-to-have-the-same-plot" target="_blank">Our narrative prison</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: anarbadalov</span> |
-                    <span>评分: 172</span> |
-                    <span>评论数: 35</span> |
-                    <span>发布时间: 2025-05-14 16:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了当代影视和文学作品尽管表面上提供了前所未有的选择，但许多故事仍然遵循着古老的叙事结构。文章指出，这些故事通常包括主角在平凡世界中的生活，某个突发事件打破平静，迫使主角踏上新的旅程，并在途中面对自我认知的挑战。这个结构可以追溯到亚里士多德在《诗学》中提出的三幕剧结构，并经过后世思想家和作家的发展，如古斯塔夫·弗赖塔格的叙事金字塔。尽管好莱坞编剧试图通过这种公式化的结构来确保商业成功，但这种结构常被巧妙地隐藏在多样化的叙事中。文章认为，这种现象反映了西方消费资本主义的本质，即在伪装成多样性和自由的选择中，实际上存在着隐形的约束和一致性。最终，这些故事在提供幻想的同时，重新巩固了现状。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：叙事结构和故事创作的多样性及其限制
-
-不同观点：
-• [acc_297] 认为 Mike Duncan 的虚构历史项目通过打破传统科幻故事的叙事结构，创造了一种独特的听觉体验。故事没有遵循传统的冲突-高潮-解决结构，而是留下了许多未解之谜和未解决的情节，类似于真实历史。这种风格新颖且引人入胜。
-
-• [mrob] 提出外国电影提供了更多结构上的多样性，例如使用四段式的 kishōtenketsu 结构。这种结构不同于西方的三段式英雄旅程，提供了不同的欣赏体验，并强调了全球化导致的艺术同质化问题。
-
-• [munificent] 指出了另一种常见的叙事结构，其中社区而非主人公发生改变。这种结构常见于一些迪士尼电影，如《花木兰》和《冰雪奇缘》，主人公在故事中始终是正确的，最终催化了社会的变化。
-
-• [pinkmuffinere] 认为英雄旅程不仅是一种创作工具，也是一种分析故事的视角。任何故事都可以通过足够的想象力与英雄旅程匹配，这反映了我们对故事的视角而非故事本身的限制。
-
-• [klik99] 比较了音乐创作和叙事，指出在风格流行后规则往往被标准化，限制了创作的活力。同样，过于严格地遵循英雄旅程可能限制叙事的多样性和发展。
-
-• [daft_pink] 批评现代电影需要满足一系列条件，如包含浪漫副线、魅力反派、轻松幽默等，导致电影变得公式化和无聊。相比之下，过去的电影不需要满足这么多条件。
-
-• [sgentle] 以《穆赫兰道》为例，指出该电影实际上是对英雄旅程的批判和解构，揭示了自我服务叙事和好莱坞神话的虚构性。
-
-• [blackbear_] 引用了法兰克福学派的观点，认为大众文化通过大众传播媒体提供的简单娱乐使人们变得温顺和满足，具有政治意义。
-
-• [blueflow] 提到了“trope”的概念，并提供了相关资源进行进一步分析。
-
-• [kazinator] 指出任何具有序列的作品都难以摆脱三段式结构，但可以通过不同的方式创造冲突和解决，如YouTube上的协作创作视频。
-
-• [PaulHoule] 强调批评容易，找到实际解决方案困难。通过黑格尔式的辩证法分析，指出冲突的解决是叙事的核心，但不同作品对观众的吸引力各异。
-
-• [jari_mustonen] 讨论了荣格的“集体无意识”概念，认为某些故事模式是人类共同的遗传编程结果，如智慧老人形象。
-
-• [sapphicsnail] 通过《伊利亚特》的例子，指出该作品没有传统的好人与坏人，而是聚焦于人物的反应和感受，提供了不同于常规的叙事体验。
-
-• [scajanus] 欣赏《火线》和《绝命毒师》这类具有希腊悲剧色彩的作品，认为它们的成功部分归因于不寻常的叙事结构。
-
-• [RankingMember] 认为当前电影制作的财务现实限制了实验性，期待未来财务稳定能允许艺术家更多地冒险和忠于自己的愿景。
-
-补充讨论：
-- 不同文化和时代对叙事结构的偏好和创新。
-- 全球化和商业化对艺术创作的影响。
-- 英雄旅程和其变种在现代故事创作中的应用和批判。
-- 艺术家在商业利益和创作自由之间的挣扎。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=43986424" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=43971185" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
