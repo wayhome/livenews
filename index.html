@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-21 09:01 (北京时间)
+            最后更新时间: 2025-05-21 11:38 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -116,47 +116,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://jonayre.uk/blog/2022/10/30/the-real-value-isnt-in-the-code/" target="_blank">The Value Isn't in the Code</a>
+                    <a href="https://blog.sunfishcode.online/writingintouninitializedbuffersinrust/" target="_blank">Writing into Uninitialized Buffers in Rust</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: fragmede</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-05-20 23:33</span>
+                    <span>作者: luu</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-05-19 17:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章《The real value isn’t in the code》由Jon Ayre撰写，主要讨论了软件开发中代码的实际价值。作者指出，虽然代码是解决问题的一部分，但其本身并非最具价值的部分。价值主要体现在团队的技能、业务逻辑的制定、设计过程以及团队协作上，而编写代码的时间相对较短。作者通过一个早年参与开发的网络门户项目说明，即便一个被大公司收购的成功项目，其核心价值也不在于代码本身，而在于团队的知识和问题解决能力。最终，作者认为代码是“无价值”的，真正的价值在于开发过程中积累的知识和经验。</p>
+                    <p>本文介绍了Rust中处理未初始化缓冲区的新方法，通过引入`Buffer` trait，使得像`read`这样的函数可以安全地读入未初始化缓冲区。该trait由John Nunley和Alex Saveau提出，现已包含在rustix 1.0中，并作为一个独立库`buffer-trait`发布。
+
+`Buffer` trait定义了如何将缓冲区传递给底层系统调用，并处理读取的字节数。它支持多种类型，包括`&mut [u8]`和`&mut [MaybeUninit<T>]`，后者允许读取到未初始化的缓冲区。此外，`Buffer`还支持通过`Vec`的备用容量进行读取，避免动态分配。
+
+使用示例展示了如何用`Buffer` trait读取文件描述符到缓冲区，并处理初始化和未初始化部分。同时，文章提到`Buffer` trait的通用性，可用于如`epoll::wait`等返回事件记录的函数。
+
+该方法通过封装不安全操作，提供了一个安全且灵活的API来处理未初始化内存。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：代码重构与重写的价值和实践
+                    <div class="comments-summary">主要讨论点：Rust 中使用未初始化数据的问题以及其对开发者编程体验的影响
 
 不同观点：
-• Sebb767认为，在特定情况下（如对原代码缺乏理解或切换技术栈时），重写代码可能不如保留原代码并进行重构。他指出，重写可能带来新的障碍并重复原型的错误，尤其是在需要处理数据迁移和维护生产环境的情况下。
-• Arscan支持Sebb767的观点，指出在职业生涯中，个人可能因为掌握独特的产品知识而变得不可或缺，这既可能是好事也可能是坏事。
-• ChuckMcM通过历史案例（在Sun公司关于ONC的争论）说明，价值在于人而非工具，投资于人的专业知识才能创造价值。
-• Liftyee基于自身经验，认为在组织中如果缺乏有效的知识传递，经验往往无法很好地保留，错误容易重复发生。
-• Cwoolfe强调代码的价值在于其与现实世界的映射关系。
-• Jasonthorsness指出团队内部知识共享的重要性，并认为注释代码可以帮助保留更多价值。
-• Burnt-resistor讨论了时间和效率的非线性关系，认为团队合作可以提高效率。
-• PlunderBunny分享了一个案例，说明即使拥有全部源代码，其他公司也可能无法有效利用，强调了代码之外的价值。
-• 90s_dev明确表示，代码本身的价值很小，真正的价值在于对问题的理解和解决方案的设计。
-• SoftTalker提到“构建第一版以抛弃”的实践，暗示初版代码往往是为了学习而非最终使用。
-• Stevage对文章标题图片中的"ajax"引用表示疑问，暗示文章内容可能过时。
-• Mkoubaa认为代码是负债，软件才是价值，主张通过更优雅的方法以更少代码实现更多功能。
-• Fragmaede强调数据模型的重要性，认为代码重构只是为了更好地匹配现实世界条件。
-• Morkalork以个人感受作结，认为重写代码的讨论在面对职业焦虑时带来了一些安慰。
+• [90s_dev] 认为 Rust 中处理未初始化数据很复杂，尤其是与 C 语言相比。他指出，Rust 中的 `MaybeUninit` 或之前的 `mem::uninit()` 增加了编程复杂性，因为编译器工程的复杂性渗透到了语言本身。他希望有一种方式能让他在声明数组后，无需赋值就能安全地读取数据，就像在 C 语言中那样，尽管 C 语言中这样做也可能导致未定义行为 (UB)，但并不会像在 Rust 中那样频繁地成为困扰。
+
+• 另一方观点可以从潜在的回应中推测出来，即 Rust 设计中对未初始化数据的严格处理是为了提升安全性和避免未定义行为。Rust 语言强调内存安全，因此通过 `MaybeUninit` 或类似机制显式处理未初始化数据是为了帮助开发者避免潜在的错误，即使这增加了代码的复杂性。支持这种设计的人会认为，虽然这种设计让编程变得复杂，但它提供了更强的安全保障。
 
 补充讨论：
-• 争议的焦点在于代码重写与重构的取舍，特别是在理解原代码不足或技术环境变化时。
-• 另一个值得注意的讨论点是，代码之外的价值，包括人的专业知识、设计、数据模型等，这些被认为是创造软件价值的核心。
-• 知识共享和注释代码等实践被认为有助于保留和传递团队中的重要知识，减少错误重复。
-• 历史案例和个人经验的分享为讨论提供了丰富的背景和实例支持。</div>
+• [90s_dev] 提到，在 C 语言中处理未初始化数据虽然也有未定义行为的风险，但并没有像在 Rust 中那样频繁地成为问题。这表明在实际使用中，开发者可能更习惯于 C 语言中的这种风险，而对 Rust 的严格要求感到不适。
+
+• 争议的焦点在于如何在语言设计中平衡安全性与便捷性。Rust 选择通过复杂机制来确保内存安全，而一些开发者则希望有更简单、更直观的方式来处理未初始化数据，即使这意味着在某些情况下放弃一些安全性。
+
+• 另一个值得注意的点是，[90s_dev] 提到编译器优化与语言复杂性之间的关系，暗示编译器层面的复杂性不应该泄露到语言使用层面，这可能是对 Rust 设计哲学的一种批评。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44046955" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44032680" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -235,8 +231,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: cempaka</span> |
-                    <span>评分: 53</span> |
-                    <span>评论数: 8</span> |
+                    <span>评分: 91</span> |
+                    <span>评论数: 9</span> |
                     <span>发布时间: 2025-05-20 22:29</span>
                 </div>
 
@@ -253,25 +249,73 @@ ZLinq 实现了 .NET 10 中所有方法的 100% 覆盖，具有 99% 的行为兼
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：C#中的LINQ功能及其在.NET 10中的应用与改进
+                    <div class="comments-summary">主要讨论点：关于.NET 10的新功能及其对LINQ和性能影响的讨论
 
 不同观点：
-• **zamalek**：理论上，.NET 10的新特性应该会使一些现有的实践变得过时，尤其是其 headline 特性与此相关。然而在实际项目中，由于性能敏感，仍需依赖启发式方法。他还提到C#将LINQ视为一种契约，只要方法名和签名正确，LINQ语法就能自动启用，开发者也可以为自己定义的方法添加类似的LINQ操作。
+• zamalek认为，理论上.NET 10的新功能应使某些现有方法过时，尤其是在性能敏感项目中。他提到C#识别LINQ作为一个契约，只要方法名称和签名正确，LINQ语法会自动启用，并且可以为自己定义的结构添加类似的LINQ操作。
 
-• **jasonthorsness**：支持LINQ的改进，提到在生产环境中的.NET服务中，由于分配问题，开发者往往需要避免在性能关键路径中使用LINQ。手动用for循环等结构重写函数既耗时又容易出错。他希望有更多语言能拥有类似LINQ的功能，认为其链式方法非常强大，类似于JS中的filter、map、reduce，但有更多操作符和优化。
+• jasonthorsness赞同LINQ在生产环境中的强大作用，尤其是在处理热路径时。他指出，虽然LINQ在某些情况下因内存分配问题需被避免，但其链式方法非常强大，类似于JavaScript中的filter、map和reduce，并希望更多语言能有类似功能。
 
-• **bigmattystyles**：对该功能感到兴奋，但也提到自己有15年的.NET开发经验，虽然对语言非常熟悉，但仍觉得这种高级用法超出自己的掌握范围，表明这种技巧需要较高的专业水平。
+• KallDrexx对该方法如何实现零分配表示质疑，指出使用`Func<T,U>`作为谓词可能会导致分配问题，因为`Func<T>`是引用类型，从IL代码看似乎会生成引用类型。
 
-• **HexDecOctBin**：提问C#中哪些特性使得LINQ成为可能，而在其他语言中却无法实现。此评论引发对C#语言设计层面的讨论，关注LINQ的独特性。
+• bigmattystyles表示对该功能的兴奋，但坦承自己在15年的.NET开发经验中，无法轻松理解或实现类似代码，对作者的能力表示赞赏。
 
-• **incoming1211**：询问为何这类改进不能贡献回.NET本身。这个问题涉及到开源贡献和官方框架开发之间的区别，以及为何某些功能改进需要通过外部项目实现。
+• HexDecOctBin提问，C#语言中哪些特性使得LINQ成为可能，而在其他语言中则不行。
+
+• incoming1211建议，这些改进是否可以贡献回.NET本身，以使其成为官方功能。
 
 补充讨论：
-• 讨论中涉及到LINQ在性能敏感路径中的使用问题，以及手动重写函数的困难，表明开发者在使用LINQ时对性能和可维护性的权衡。
-• 对C#和LINQ设计上的独特性提出疑问，表明开发者对语言设计和功能实现的兴趣。
-• 提到开源贡献的问题，反映出开发者对官方框架和社区贡献之间关系的思考。</div>
+• 讨论中涉及.NET 10新功能的实际应用及其在性能敏感项目中的潜力。
+• 对LINQ零分配实现的可行性提出质疑，并深入探讨IL代码及引用类型的问题。
+• 对C#语言特性的独特性及其在其他语言中不可用的原因表示好奇。
+• 提出将社区改进贡献回官方.NET库的开放性建议。
+
+争议焦点：
+• KallDrexx对零分配声明的质疑与zamalek对该功能实现的乐观态度形成对比，焦点在于使用`Func<T,U>`是否会导致不可避免的内存分配。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44046578" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.newyorker.com/magazine/2025/05/26/a-secret-trove-of-rare-guitars-heads-to-the-met" target="_blank">A Secret Trove of Rare Guitars Heads to the Met</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-21 02:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讲述了2007年，拥有乐器历史硕士学位的Jayson Dobney成为大都会艺术博物馆乐器部策展人，他听闻在纽约三州地区存在大量20世纪珍贵吉他的传闻。2011年，Dobney策划了一场关于拱形顶吉他的展览，结识了唱片制作人兼吉他专家Perry Margouleff，后者代表一位匿名收藏家提供了八把吉他。然而，Dobney当时未见到传闻中那个庞大收藏的全貌，该收藏属于出版业继承人兼金融家Dirk Ziff。Ziff与Margouleff合作多年，收集了世界上最顶级的古董吉他。
+
+2019年，Ziff参观了大都会博物馆的“Play It Loud”展览，该展览展示了众多摇滚乐标志性乐器。Ziff和Margouleff出借了11把吉他，并协助借来了Jimmy Page等音乐人的乐器。尽管曾有机构对吉他展品持偏见，最终Ziff和Margouleff于去年将收藏捐赠给大都会博物馆。博物馆计划在2027年开设永久展厅，展示美国吉他的演变和文化影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：美国吉他博物馆将开放永久展馆，展示吉他的演变及其文化影响
+
+不同观点：
+• WorkerBee28474认为博物馆开放的吉他展馆很有趣，展品包括许多重要的原型和早期生产的吉他，显示了其历史和文化价值。
+• bookofjoe提供了有关Ziff Davis的存档链接，但没有直接表达对博物馆的看法，可能暗示对相关人物背景的关注。
+• neom指出博物馆的拥有者是Ziff Davis家族的后代，提供了Ziff Davis的维基百科链接，强调了该家族在电子和科技媒体领域的历史背景。
+• zombiwoof以讽刺的语气评论美国人现在只能拥有两把吉他，可能暗示对文化或社会现状的不满，或对吉他文化衰落的担忧。
+
+补充讨论：
+• 评论中涉及了博物馆展品的价值和意义（WorkerBee28474）。
+• 拥有者背景成为讨论的一部分，neom特别指出了拥有者的家族历史及其在其他领域的影响（neom）。
+• zombiwoof的评论带有讽刺意味，可能反映了对于文化限制或吉他文化变化的批评（zombiwoof）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44047693" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -318,52 +362,6 @@ ZLinq 实现了 .NET 10 中所有方法的 100% 覆盖，具有 99% 的行为兼
 • 未来模型优化和专业化的发展方向及其潜在影响。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44044199" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxivxplorer.com/" target="_blank">Semantic search engine for ArXiv, biorxiv and medrxiv</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 0101111101</span> |
-                    <span>评分: 47</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-05-20 21:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了一款由ttumiel开发的语义搜索引擎——arXiv Xplorer，它利用OpenAI的嵌入技术，帮助用户更有效地搜索和浏览arXiv、bioRxiv和medRxiv上的学术论文。该引擎提供标签、年份筛选、搜索和过滤功能，感谢这些平台的开放获取互操作性使得此类工具的开发成为可能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于搜索工具https://searchthearxiv.com/的评价与功能建议]
-
-不同观点：
-• [sitkack] 认为该搜索工具（searchthearxiv）的搜索结果质量较高，尤其是相比其他类似平台。他通过简单的抽查得出了这一结论，并指出该工具可以通过单词向量或arxiv论文的链接（摘要或pdf）进行嵌入式搜索。
-
-• [elliotec] 对该工具表示赞赏，并表示该工具与自己正在进行的项目高度相关。他进一步询问是否可以提供有关该工具构建的简要说明，显示出对工具技术实现细节的兴趣。
-
-• [madars] 对工具表示肯定，但提出了功能上的建议，询问是否可以加入eprint.iacr.org（Cryptology ePrint Archive）的支持，以扩展该工具的适用范围。
-
-• [bbor] 表示惊讶于medrxiv的存在，并提到chemrXiv这一类似的平台，暗示可能希望将这些平台也纳入搜索工具的支持范围，以增加工具的全面性。
-
-补充讨论：
-• 不同用户对该工具的搜索结果质量、技术实现以及支持的数据源提出了不同看法和建议，显示出用户对该工具的期望主要集中在功能扩展和透明度上。
-
-• [bbor] 的评论还反映出对类似平台的认知差异，表明可能有部分用户对相关学术资源平台的了解有限，因此这种工具的整合可能有助于提升学术资源的可见性和可用性。
-
-争议焦点：
-• 目前没有明显的争议，但用户对工具应支持哪些数据源存在不同期望，尤其是[madars]和[bbor]提到的额外平台是否应被纳入搜索工具的范围。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44046277" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -471,37 +469,42 @@ ZLinq 实现了 .NET 10 中所有方法的 100% 覆盖，具有 99% 的行为兼
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://moxie.org/2024/09/23/a-good-engineer.html" target="_blank">Magic of software; what makes a good engineer also makes a good engineering org</a>
+                    <a href="https://arxivxplorer.com/" target="_blank">Semantic search engine for ArXiv, biorxiv and medrxiv</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kiyanwang</span> |
-                    <span>评分: 30</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-19 05:26</span>
+                    <span>作者: 0101111101</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-05-20 21:49</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章探讨了软件开发中“科学”与“工程”之间的关系，指出尽管软件开发常被视为纯粹的工程实践，但由于我们对计算机系统的全面理解，软件开发中也充满了发现和创造。作者通过早期计算机图形动画中的“色彩循环”技术为例，说明软件开发不仅是简单地实现预先设想的愿景，而是愿景与技术理解相互交织、相互影响的过程。色彩循环利用了图形系统的特性，通过巧妙操作实现动态效果，展示了软件开发中“非显而易见”的创新成果。因此，软件开发不仅是工程实践，更是一种在完全已知领域中的探索与发现。</p>
+                    <p>本文介绍了一款由ttumiel开发的语义搜索引擎——arXiv Xplorer，它利用OpenAI的嵌入技术，帮助用户更有效地搜索和浏览arXiv、bioRxiv和medRxiv上的学术论文。该引擎提供标签、年份筛选、搜索和过滤功能，感谢这些平台的开放获取互操作性使得此类工具的开发成为可能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：电影制作中对摄影器材的理解是否影响影片质量
+                    <div class="comments-summary">主要讨论点：搜索和排序技术，尤其是关于嵌入和相似度计算的替代方法，以及对具体搜索工具的讨论和功能建议。
 
 不同观点：
-• 观点一：电影制作人不需要了解摄影机的构造细节（如何制造摄影机）也能拍出好电影。这个观点认为，正如使用工具不需要了解其制造过程，电影制作人只需专注于创意和叙事，而不必深究技术细节。
-  
-• 观点二：电影制作人需要了解摄影机的工作原理（如何操作摄影机）才能拍出好电影。具体来说，了解镜头选择、光圈、快门速度、曝光、焦平面、灯光和构图等技术要素是创作优秀电影艺术的必要条件，正如小提琴家需要了解他们的乐器才能演奏出优美的音乐。
+• [nblgbg] 认为当前使用的嵌入技术、余弦相似度计算以及排序结果的方法比较简单，询问是否存在其他更复杂或不同的技术。他提到RRF（Relevance Ranking Function）也是一种简单的选择，但依然不够多样化。
 
-• 观点三：术语"电影制作人"（filmmaker）在讨论中可能引起混淆。实际上，操作摄影机的主要责任通常在于摄影指导（cinematographer），而不是所有的电影制作人。有些导演可能具备摄影技能，但总体上，导演和摄影指导的角色和技能是不同的，类似于作曲家和演奏家的区别。
+• [sitkack] 分享了一个具体的嵌入搜索工具（https://searchthearxiv.com/），并通过个人检查认为该工具的搜索结果质量较高。他通过一个Hacker News的链接（https://news.ycombinator.com/item?id=42519487）支持自己的观点，表明该工具优于其他选项。
+
+• [elliotec] 对[sitkack]提到的工具表示兴趣，并询问是否可以提供有关该工具构建过程的简要解释，表明他关注该工具的技术实现细节。
+
+• [madars] 对工具的功能提出了扩展建议，建议将加密学预印本档案（eprint.iacr.org）加入到搜索来源中，以增强工具的适用范围。
+
+• [bbor] 则提到了medrxiv和chemrXiv这两个预印本平台，表示之前不知道medrxiv的存在，提醒其他人注意chemrXiv，显示出对更多预印本资源库的关注。
 
 补充讨论：
-- 评论指出原文在混淆两种不同的概念：了解摄影机的构造与了解摄影机的操作。前者被认为对电影质量影响不大，而后者则是必不可少的技能。
-- 争议的焦点在于对“电影制作人”这一广义角色的定义和具体职责的区分，特别是在摄影机操作方面的专业分工。
-- 例子如小提琴家与摄影师的类比，强调了理解和操作艺术工具的重要性，以达到预期的艺术效果。</div>
+• 一些用户关注具体搜索工具的实际效果和使用体验（如[sitkack]对searchthearxiv的推荐），而另一些用户则关心如何扩展这些工具的功能（如[madars]的建议）或探索不同的搜索排序技术（如[nblgbg]的提问）。
+• 讨论中还涉及对不同学术资源库的提及和提醒（如medrxiv和chemrXiv），反映出用户对学术资源广度的需求。
+
+争议焦点：目前讨论中并未出现直接的争议，但[nblgbg]对现有技术的简单性提出了质疑，暗示可能存在对更复杂或更高效技术的需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44026703" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44046277" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -512,59 +515,48 @@ ZLinq 实现了 .NET 10 中所有方法的 100% 覆盖，具有 99% 的行为兼
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.red-lang.org/p/about.html" target="_blank">Red Programming Language</a>
+                    <a href="https://moxie.org/2024/09/23/a-good-engineer.html" target="_blank">Magic of software; what makes a good engineer also makes a good engineering org</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hotpocket777</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-05-20 18:14</span>
+                    <span>作者: kiyanwang</span> |
+                    <span>评分: 73</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-05-19 05:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Red是一款受REBOL启发的下一代编程语言，具有以下主要特点：人性化语法、同像性（自成元语言和数据格式）、支持函数式、命令式、反应式和符号编程、基于原型的对象支持、多类型、强大的模式匹配、宏系统、丰富的内置数据类型（50多种）、可静态和JIT编译为本地代码、完善的跨平台编译、生成小于1MB的无依赖可执行文件、强有力的并发和并行支持、通过内置的Red/System DSL支持低级系统编程、内置强大的PEG解析DSL、快速紧凑的垃圾回收器、跨平台原生GUI系统、包含UI布局和绘图DSL、支持JVM桥接、高层次脚本和REPL、提供GUI和CLI控制台、包含Visual Studio Code插件、高度可嵌入、低内存占用、单文件（约1MB）包含完整工具链、标准库和REPL。Red的目标是成为首个全栈语言，从系统编程到高层次脚本都能胜任，通过DSL实现灵活的代码编写和高效性能。</p>
+                    <p>文章探讨了软件开发中“科学”与“工程”之间的关系，指出尽管软件开发常被视为纯粹的工程实践，但由于我们对计算机系统的全面理解，软件开发中也充满了发现和创造。作者通过早期计算机图形动画中的“色彩循环”技术为例，说明软件开发不仅是简单地实现预先设想的愿景，而是愿景与技术理解相互交织、相互影响的过程。色彩循环利用了图形系统的特性，通过巧妙操作实现动态效果，展示了软件开发中“非显而易见”的创新成果。因此，软件开发不仅是工程实践，更是一种在完全已知领域中的探索与发现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于编程语言Red及其相关技术（如DSL、API设计、语言特性、应用场景等）的评价与讨论
+                    <div class="comments-summary">主要讨论点：软件工程是否类似于科学、工程实践的本质以及其独特性
 
 不同观点：
-• taylorallred认为，支持创建领域特定语言（DSL）的语言有利有弊。优点是能够根据特定用例定制语言，使其更加清晰和精细化；缺点是需要维护一种缺乏支持的自定义语言，且不能期望其他人提前了解该DSL。相比之下，他更倾向于使用知名语言中设计良好的API。
+• [abdullahkhalids] 认为软件工程与所有其他工程学科相似，都充满了发现和探索。他反驳了文章中关于软件开发独特性的观点，指出其他工程领域如电气和土木工程也同样依赖于发现和抽象层次的使用。他还批评文章暗示计算的复杂性是独一无二的，而实际上如模拟电路的组装也同样复杂。
 
-• kstrauser指出，Red语言是Carl Sassenrath设计的REBOL语言的后继者。虽然他曾多次关注过Red语言，但从未实际编写过代码。
+• [mrandish] 针对文章中关于“电影制作者不需要了解相机工作原理就能拍出好电影”的类比提出异议。他认为，虽然不需要知道如何制造相机，但了解相机的工作原理（如镜头选择、光圈、快门速度等）对于拍出好电影至关重要。他还指出“电影制作者”这个术语过于宽泛，实际上不同角色（如导演和摄影师）有不同的技能要求。
 
-• lagniappe提到，访问Red语言的官方网站时遇到安全警告，网站被标记为恶意网站，并建议提交错误报告以纠正此问题。
+• [austin-cheney] 强调真正的工程师需要进行测量和遵循流程。他认为大多数软件开发者并没有真正进行工程实践，而是在“打字”。他提出，优秀的工程师需要具备 conscientiousness 和 persistence 这两种品质，并认为创造力是通过不断尝试和精确辨别质量来实现的。
 
-• justin66对Red语言的发展方向表示担忧，特别是其涉足加密货币相关内容，并希望Red语言能最终发布1.0版本。
+• [coderintherye] 同意文章中关于不必拘泥于传统常规的观点，但指出如果需要外部资金，大多数情况下还是需要遵循传统的做法和惯例。他提到，尽管有可能绕过常规的融资途径，但这样做会大大缩小成功的路径。
 
-• HexDecOctBin从技术角度分析，认为Red和REBOL类似于基于fexpr的Lisp语言，尽管官方描述不同，但其特性与非严格的fexpr Lisp相似。
-
-• ttoinou表示无法理解Red语言，无法建立对该语言的直观理解。
-
-• bsrkf批评Red语言的官方网站设计不佳，缺乏清晰的代码示例和文档导航，与其他新兴语言的网站相比（如Odin和Zig），Red的网站体验较差。
-
-• croemer认为Red语言的网站设计过时，且难以从网站上找到相关的GitHub资源，但提供了GitHub链接。
-
-• niek_pas指出，Red语言可能错误地将“对人类友好的语法”理解为“缺少符号如<、[、{”。
-
-• zerealshadowban澄清，讨论的Red语言并非Intermetrics在1977-79年为满足DoD要求设计的Red语言，而是另一个不同的项目。
-
-• fuzztester分享了对Rebol和Red语言的使用体验，虽然对Rebol有好感，但对Red语言因涉足加密货币而感到失望，尽管他理解通过这种方式筹集开发资金的必要性。
-
-• ConanRus简单提到Red语言仅支持32位。
-
-• 38抱怨Red语言在2018年时编译速度很慢，至今没有改善，甚至编译一个简单的"Hello World"程序需要36秒，并提供了相关的GitHub问题链接。
+• [0xbadcafebee] 认为软件工程缺乏标准化和确定性，导致其显得“不专业”和“像魔法一样”。他通过与建筑工程的标准化对比，指出软件工程仍有许多需要改进的地方。他还提到，有效的管理策略在其他公司同样适用于软件公司，但软件行业的从业者往往局限于自己的小圈子，没有借鉴更广泛的管理知识。
 
 补充讨论：
-• Red语言的DSL特性及其优缺点是讨论的核心之一。
-• 网站设计和文档质量也是用户体验的重要关注点。
-• Red语言的发展方向，特别是其涉足加密货币领域，引发了部分用户的不满。
-• 技术特性如fexpr和语法设计也是技术讨论的重要部分。
-• 编译速度和平台支持问题是实际使用中遇到的具体技术问题。</div>
+• [eightys3v3n] 对作者排除其网站被Wayback Machine存储表示不满，认为这使得内容难以可靠地保存。
+
+• [jt2190] 提到在软件开发组织中，深层次的理解和创新往往受到传统结构的限制，并指出很少有人能够基于这种理解创造出全新的组织结构。
+
+• [nwlotz] 强调工程与愿景之间的相互作用，通过ARPANET和互联网的例子说明工程提供潜力，愿景推动创新，两者相互促进。
+
+争议焦点：
+• 软件工程是否像文章所描述的那样独特，还是像其他工程学科一样充满了发现和探索。
+• 软件开发者是否需要深入了解工具和系统的工作原理才能取得成功。
+• 软件工程是否缺乏标准化，以及这种缺乏是否导致其显得不专业和神秘。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44044306" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44026703" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
