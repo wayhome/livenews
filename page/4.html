@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-22 17:15 (北京时间)
+            最后更新时间: 2025-05-22 20:26 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,48 +61,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://oppi.li/posts/tales_from_mainframe_modernization/" target="_blank">Tales from Mainframe Modernization</a>
+                    <a href="https://openjdk.org/jeps/519" target="_blank">JEP 519: Compact Object Headers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-05-22 00:01</span>
+                    <span>作者: Skinney</span> |
+                    <span>评分: 56</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-22 08:24</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文作者分享了他在将大型机遗留代码（如COBOL、JCL、BASIC等）转换为Java时遇到的有趣经历。他提到COBOL中的数据定义采用Base-10数值系统，并通过"REDEFINES"实现变量重定义，甚至遇到过用西班牙语重定义变量的情况。他还介绍了字符串解析的巧妙方法，例如通过定义数据结构解析日期字符串。此外，作者提到了一种通过除以零触发异常结束批处理作业的技巧，以及在一个文件中发现手动定义的800个自然数。最后，他解释了JCL中的"DD"语句与Unix命令"dd"的渊源。</p>
+                    <p>JEP 519 提议将紧凑对象头（Compact Object Headers）从实验性功能转变为正式产品功能。该功能最初作为实验性功能在 JDK 24 中引入，经过测试证明其稳定性和性能优越，包括在 Oracle 和亚马逊的生产环境中得到了验证。测试显示，启用紧凑对象头后，SPECjbb2015 基准测试的堆空间使用减少了 22%，CPU 时间减少了 8%，垃圾收集次数减少了 15%，且 JSON 解析 benchmark 运行时间缩短了 10%。因此，现在是将其从实验性功能升级为正式功能的时候。升级后，将不再需要通过命令行选项 `-XX:+UnlockExperimentalVMOptions` 来启用该功能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕技术工作的多样性、遗留代码的处理、编程语言特性的讨论以及对具体技术细节的疑问。
+                    <div class="comments-summary">主要讨论点：JEP 519 关于启用紧凑对象头（Compact Object Headers）的默认设置及其性能影响
 
 不同观点：
-• **[技术工作内容的差异]**  
-  - **[neilv]** 认为在简历中包含 "mainframe" 可能会让年轻的联合创始人或招聘经理感到疏远，暗示老旧技术可能不利于求职。他分享了自己曾参与逆向工程 mainframe 网络协议的经验，并用 Lisp 替换了部分系统。
-  - **[markus_zhang]** 则表示自己从事的工作相对简单，比如 YAML 到 YAML 的转译器，暗示与更复杂的技术工作相比，自己的项目较为基础。
+• **nicktelford** 认为 JEP 519 没有默认启用紧凑对象头是不合理的。他认为大多数用户不会特意去启用该功能，如果该功能已经被确认为稳定且能提升性能，就应该默认开启。他还提到，JVM 过去因为需要复杂的标志来优化性能（尤其是GC配置）而声名狼藉，尽管现在有所改善，但 JEP 519 似乎在这一方面又开了一个倒车。
 
-• **[遗留代码的处理]**  
-  - **[dstroot]** 提到大量遗留的 COBOL 代码，并认为应该有商业化的转译工具，可以将 COBOL 转换为现代语言如 Java、Rust、Go 等。他还强调了转换过程中对任务流顺序和数据处理的需求，认为这是建立咨询业务和开发工具的良好机会。
+• **SerCe** 则指出，先前的 JEP 450 提供了更多关于该功能的实现细节。该功能已经在 Oracle 和亚马逊进行了广泛测试，包括整个 JDK 测试套件和亚马逊生产环境中的数百个服务。SerCe 认为，在大公司中，平台团队有更多的机会和资源来测试和量化性能改进，而这是其他人难以获得的。
 
-• **[编程语言特性的讨论]**  
-  - **[jasonthorsness]** 提出疑问，为什么现代编程语言没有更广泛地采用十进制数字类型，仅提到 C# 有 decimal 类型，并询问其他语言是否有内置的十进制数字支持。
+• **hmottestad** 对 JEP 519 的性能结果表示赞赏，特别是提到 JSON 解析基准测试显示了 10% 的性能提升。不过，他并没有对默认启用问题提出质疑，而是更关注性能改进的具体表现。
+
+• **kosolam** 提出了一个问题，即该 JEP 是否也能提高 GraalVM 原生镜像的可执行文件的效率。这表明他对该功能在不同环境或工具链下的适用性表示关注。
 
 补充讨论：
-• **[技术细节的疑问]**  
-  - **[anonzzzies]** 对 COBOL 中的 9(3) 表示不解，虽然知道它是表示 999 的缩写，但不明白为何要用 4 个字符来表示 3 个数字，并询问是否可以直接写 999。
-
-• **[自我推广]**  
-  - **[mncharity]** 借机宣传了自己的项目 tangled.sh，一个去中心化的代码协作平台，并提供了相关示例链接。
-
-争议焦点：
-• 遗留技术如 mainframe 和 COBOL 在现代技术环境中的价值和处理方式存在不同看法。**[neilv]** 认为老旧技术可能不利于求职，而 **[dstroot]** 则看到了其中商业化工具和咨询业务的潜力。
-
-总结：讨论涵盖了技术工作内容的多样性、遗留代码的处理方式、编程语言特性以及对具体技术细节的疑问，同时还有自我推广的内容。争议主要集中在遗留技术的价值和处理方法上。</div>
+• 争议的焦点在于 JEP 519 没有默认启用紧凑对象头，这引发了 nicktelford 对用户体验和易用性的担忧，而 SerCe 则通过实际测试数据来支持该功能的可行性和稳定性。
+• 该功能的具体性能提升效果得到了 hmottestad 的肯定，尤其是在 JSON 解析基准测试中的表现。
+• kosolam 提出了该功能在 GraalVM 环境下的适用性问题，这是一个值得进一步探讨的方向。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44057467" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44059953" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -113,43 +104,244 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nghiant3223.github.io/2025/04/15/go-scheduler.html" target="_blank">Understanding the Go Scheduler</a>
+                    <a href="https://thevinylfactory.com/features/the-curious-tale-of-bhutans-playable-record-postage-stamps/" target="_blank">The curious tale of Bhutan's playable record postage stamps (2015)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gnabgib</span> |
-                    <span>评分: 114</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-05-18 17:03</span>
+                    <span>作者: ohjeez</span> |
+                    <span>评分: 101</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-05-21 18:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了Go语言的调度器及其演变，重点讲解了Go 1.24在Linux/ARM架构下的运行机制。Go的并发模型基于轻量级的 goroutines，由Go运行时（runtime）管理。文章详细解释了Go程序的编译过程，包括编译、汇编和链接三个阶段，并探讨了Go运行时的作用，它通过一系列函数和数据结构实现调度、内存管理等核心功能。Go采用了许多对多的线程模型（M:N），使得多个goroutines可以映射到多个内核线程上执行。文章还讨论了调度器的进化、基本调度器、GMP模型（Goroutine、Machine、Processor）、系统调用处理以及网络和文件I/O的实现。理解Go调度器有助于编写高效的并发程序和解决性能问题。注意，文章内容基于作者对Go的理解，可能并非完全准确，欢迎讨论和建议。</p>
+                    <p>本文介绍了不丹在1972年发行的世界上首批“会说话的邮票”，这些邮票由塑料制成，可以播放不丹民歌和国家历史，内容以英语和不丹语录制。这些微型唱片邮票是33 1⁄3转，可以粘贴在明信片或信封上，尽管最初被视为廉价新奇物品，但近年来受到唱片和邮票收藏家的追捧，价格大幅上升。这些邮票是由美国冒险家Burt Todd发明，他受不丹国王邀请帮助国家筹集资金，并创办了不丹邮票发行计划，推出了一系列创新邮票，包括3D邮票和香味邮票等。Todd的创意使不丹邮票在国际市场上大获成功。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Golang调度器在资源受限环境下的表现及设计优缺点
+                    <div class="comments-summary">主要讨论点：关于不丹发行的可播放唱片邮票的讨论，包括其历史背景、实际使用情况、音质以及与现代技术的类比。
 
 不同观点：
-• **turbobrew** 指出，Golang的运行时默认将GOMAXPROCS设置为可见的核心数，这可能在cgroup限制CPU资源时导致性能问题。他提到一个实例，程序在168核的机器上运行，但cgroup限制了只能使用2核，结果运行时在168个进程间调度goroutines，导致性能下降。相比之下，JRE能更好地处理这种资源限制情况。
-  
-• **weiwenhao** 对turbobrew的评论表示赞赏，认为其描述详尽，甚至让他觉得自己可以实现一个Golang调度器。
+• [efitz] 认为这种唱片邮票类似于70年代和80年代早期作为玩具或快餐玩具附赠的塑料唱片，尽管未听说过邮票形式，但认为使用场景相似。
 
-• **jasonthorsness** 认为Golang的调度器设计良好，能够在简单的goroutine抽象下“正常工作”。不过，他对文章中提到的“1/61的时间检查全局运行队列”的机制表示疑惑，认为这应该根据物理核心数量动态调整，而不是固定值。
+• [gerdesj] 提供了更多详细信息，指出这些邮票发行于1972年，包含不丹民歌和国家历史，使用英语和不丹语两种语言。他还将这种创新与90年代的商务名片CD进行对比，认为前者更具独特性和美感。
 
-• **kortex** 对文章的整体质量表示赞赏，特别提到了可视化和易读性。
-
-• **90s_dev** 提出疑问，询问Golang调度器是否是许多潜在优化的主要障碍，暗示调度器的设计可能存在限制。
+• [FridayoLeary] 对邮票的高售价表示惊讶，将其比作“旧式的NFT”，但同时认为这些邮票非常酷，且价格合理。
 
 补充讨论：
-• 争议焦点之一是Golang调度器在资源受限环境下的表现，尤其是当cgroup限制CPU使用时，GOMAXPROCS的默认设置是否合理。turbobrew认为这是一个问题，而其他评论没有直接回应这一点。
-• 另一个值得注意的点是jasonthorsness对调度器中特定机制（如“1/61的时间检查全局运行队列”）的合理性提出质疑，认为应根据物理核心数量动态调整。
-• 90s_dev的问题引发了对Golang调度器设计是否阻碍优化的讨论，但其他评论者没有直接回答或反驳这一观点。
+• [alwa] 提供了这些唱片邮票播放声音的实例链接，让讨论更具直观性。
 
-总结：评论主要围绕Golang调度器的设计优缺点及其在资源受限环境下的表现展开，涉及默认设置的合理性、特定机制的合理性以及调度器是否阻碍优化等问题。</div>
+• [dtgriscom] 关注邮票的实际尺寸，提出对具体尺寸信息的需求。
+
+• [Rediscover] 对Leighton或Feynman是否了解这些邮票表示好奇，提出搜索相关信息遇到困难。
+
+争议焦点：
+• 主要集中在这些邮票的独特性和价值上，[FridayoLeary] 将其比作旧式NFT，暗示其被高估的可能性，而[gerdesj] 则认为其创新性和美感值得赞赏。
+
+• 另外，讨论中也存在对邮票实际尺寸和历史背景的信息需求，反映出对具体细节的关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44022736" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44054775" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://craftofcoding.wordpress.com/2014/04/16/dijkstra-on-ada/" target="_blank">Dijkstra on Ada</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: cpeterso</span> |
+                    <span>评分: 56</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-05-22 00:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章简要介绍了Dijkstra对四种早期编程语言提案（红、绿、蓝、黄）的评价，这些提案最终演变为Ada语言，其中绿色提案获胜。Dijkstra对各提案的评价非常严厉：红色提案“既先进又落后，令人困惑”；绿色提案“技术无能，可能还带有不诚实”；蓝色提案“过于复杂”，“技术文档和销售话术混杂”；黄色提案“无可救药的混乱”。在被问及对Ada的看法时，Dijkstra表示Ada的混乱让他担忧西方安全依赖于此，并开玩笑说如果红军也采用Ada，他会感到更安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕Ada和Rust编程语言的评价与争议，以及对历史上编程语言选择过程的讨论。
+
+不同观点：
+• [rini17] 认为现代Ada是合理且不过分冗长的，并将其与Java比较。同时，对Rust的未来表示担忧，质疑将遗留的DoD C代码用AI重写为Rust的潜在风险。
+• [phtrivier] 希望看到更完整的评论，并顺便提到Dijkstra如果使用社交媒体可能会浪费时间与网友争论，暗指Dijkstra的个性可能导致不必要的争论。
+• [cyco130] 提供了历史背景信息，指出Ada是从多个提案中选出的，其中绿色方案获选，红色方案是备选。
+• [johnisgood] 表示需要更多背景信息，认为评论中对Ada的厌恶表达缺乏理由支持，要求更详细的解释。
+• [ggm] 回忆Wirth可能在Ada早期候选阶段提出了Modula/Modula-2变体，并通过三点推理支持这一观点，指出Dijkstra可能批评了所有候选语言。
+
+补充讨论：
+• [zombot] 表示对讨论内容感到困惑，无法理解。
+• [mcv] 评论Dijkstra言辞犀利。
+• [hello_computer] 质疑Dijkstra是否对任何事物有正面评价。
+• [f1shy] 请求更多背景信息，特别是关于其他颜色提案的内容。
+• [Surac] 以幽默方式评论男性只能区分6种颜色，暗示讨论中的某些观点可能与性别刻板印象有关。
+
+争议焦点：
+• 对Ada和Rust语言的评价存在分歧，特别是对Rust未来发展的担忧。
+• 对历史编程语言选择过程的具体细节和背景信息的需求与提供之间的矛盾。
+• 对Dijkstra个性及其评论风格的个人解读和评价。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44057731" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://phys.org/news/2025-05-accidentally-class-nanostructured-materials-passively.html" target="_blank">Accidentally discovered nanostructured material passively harvest water from air</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pseudolus</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-05-22 10:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>研究人员在宾夕法尼亚大学工程学院意外发现了一类新型纳米结构材料，能够从空气中被动收集水。这种材料结合了亲水性和疏水性成分，通过毛细凝结现象，在低湿度环境下也能凝结水蒸气，并将其以液滴形式释放到表面，无需外部能量。传统方法通常依赖降温或高湿度，而该材料独特之处在于水汽不仅凝结在孔隙中，还能移动到表面形成水滴，且水滴能稳定存在较长时间。这一发现为干旱地区的水收集和基于蒸发效应的冷却设备开辟了新途径。相关研究已发表在《Science Advances》上。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：无电力驱动的除湿器的市场潜力及其实用性
+
+不同观点：
+• 观点一：DocTomoe认为，开发无电力驱动的除湿器有可能颠覆整个行业。这暗示了对该技术商业化潜力的乐观态度，认为它可能对市场产生重大影响。
+
+• 观点二：未直接表达但可能存在的怀疑观点，即这种技术是否可行以及能否真正实现无电力驱动。这种观点可能关注技术的实际可操作性和效率。
+
+补充讨论：
+• 技术可行性：一些讨论可能会围绕当前技术是否能够支持无电力除湿器的开发和运行。这涉及到材料科学和工程技术的突破。
+
+• 市场影响：支持者可能会强调这种产品在潮湿地区、存储设施、以及对电力依赖较少的场景中的巨大需求和应用前景。
+
+• 争议焦点：主要争议可能在于该技术能否在保证除湿效果的同时，真正做到无需电力，以及其生产成本是否能控制在消费者可接受的范围内。
+
+• 实际应用例子：可能会有人提到现有的类似技术或产品，如被动除湿盒或硅胶包，但指出这些现有解决方案在效率或适用范围上的不足，从而进一步讨论创新技术的必要性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44060712" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/derekeder/csv-to-html-table" target="_blank">Show HN: Display any CSV file as a searchable, filterable, pretty HTML table</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: indigodaddy</span> |
+                    <span>评分: 159</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-05-22 00:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了开源项目 "csv-to-html-table"，它可以将任何CSV文件显示为可搜索、可过滤的HTML表格，完全使用JavaScript实现。主要功能包括：
+
+1. 克隆项目并添加CSV文件到`data/`文件夹。
+2. 在`index.html`中配置选项，如CSV路径、HTML元素、是否允许下载、CSV分隔符设置及DataTables选项。
+3. 支持自定义列格式化，通过自定义函数处理单元格数据。
+4. 本地运行使用Python的简单HTTP服务器命令。
+5. 部署到GitHub Pages或任何Web服务器。
+6. 可选使用`iframe`嵌入表格到其他网站。
+
+项目依赖Bootstrap 4、jQuery、jQuery CSV和DataTables库。文章还提供了常见问题排查方法。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：用户对基于浏览器处理表格数据工具的评价与技术讨论
+
+不同观点：
+• [积极评价与兴趣]  
+  - waltbosz: 作为开发者，享受设计和拼接工具的过程，分享了自己处理表格数据的技巧（如使用`paste`事件解析Excel数据）。
+  - sn0n: 对工具表示兴奋，认为可以让自己重新使用电子表格。
+  - joseangel_sc: 计划测试工具在处理52k行文档时的表现，对工具性能表示好奇。
+
+• [对工具功能的疑问与改进建议]  
+  - bryanhogan: 对工具的过滤功能和处理较大CSV文件的能力提出疑问，询问是否有其他类似工具。
+  - promiseofbeans: 关心工具如何处理无标题的CSV或数据偏移的特殊情况。
+  - magesh_magi1: 提到自己正在开发类似工具，具有额外功能并支持WASM，可能对处理大文件有帮助。
+
+• [工具安全性与代码质量的关注]  
+  - neilv: 对工具代码中的安全问题提出警告，指出代码在处理HTML属性和CDATA时未对特殊字符进行转义，存在潜在风险。
+  - 6510: 自谦自己的旧代码为“意大利面条代码”，暗示可能存在结构上的不足。
+
+• [替代方案的建议]  
+  - 34f34f3: 建议使用Google Sheets将表格下载为HTML，尤其在需要保留复杂格式时。
+  - szszrk: 推荐使用PowerShell的Import-Csv和Out-GridView组合，认为这是内置于工作环境中的便捷方案。
+
+补充讨论：
+• [关于帖子编辑的争议]  
+  - indigodaddy: 指出自己并非作者，对帖子被管理员编辑为“Show HN”并将其评论用作描述表示不满，认为应恢复为普通评论。
+
+• [技术实现的反思]  
+  - pphysch: 好奇为何该工具未以Web组件形式实现，但同时也指出该工具已有十年历史，暗示技术环境的变化。
+
+争议的焦点：工具的实用性、性能以及安全性，特别是代码的健壮性与安全性问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44057612" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/IBM/ACE-RISCV" target="_blank">Show HN: Confidential computing for high-assurance RISC-V embedded systems</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mrnoone</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-21 20:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>IBM的ACE-RISCV项目旨在为RISC-V嵌入式系统提供一个基于虚拟机（VM）的可信执行环境（TEE），专注于经过形式化验证和可审计的固件。该项目采用Apache-2.0许可证，目标是实现可移植的保密计算框架，并特别关注安全监视器的形式化验证。项目支持本地证明和后量子加密（PQC），使用ML-KEM、SHA-384和AES-GCM-256等加密算法。硬件要求包括RISC-V 64位处理器，支持整数（I）、原子（A）、管理程序扩展（H）、物理内存保护（PMP）等功能。开发环境需要配置较多的依赖项和工具链，包括Rust和特定的Linux内核版本，推荐在多核、大内存的机器上进行编译。项目提供了详细的编译和安装指南，支持在SiFive P550开发板上运行示例工作负载。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：ACE（Advanced Confidential Execution）机制及其在RISC-V架构中的应用，以及与CoVE（Confidential Virtual Execution）和Keystone等其他相关技术的关系和区别。
+
+不同观点：
+• **hyperhello** 对 "limited" 网络连接的定义感兴趣，并质疑是否存在逻辑推理无法支持的边界情况。这表明对ACE如何在网络受限环境下应用存在疑问，尤其是如何定义“有限”网络连接。
+
+• **neom** 关注在机密计算领域中，特别是x86 TEE（Trusted Execution Environment）中存在的碎片化问题，导致开发者体验不佳和供应商锁定。他询问CoVE和IBM是否旨在防止RISC-V世界中出现类似问题，促进更开放和标准化的TEE生态系统，并询问是否使用CCC（Confidential Computing Consortium）来改善开发者体验。这表明对生态系统开放性和标准化的高度关注。
+
+• **IshKebab** 询问ACE与CoVE之间的关系，以及ACE是否是CoVE所需的固件，CoVE是否是RISC-V硬件扩展。他还质疑P550如何运行ACE，因为P550不支持CoVE。这显示了对ACE和CoVE技术实现细节及其硬件要求的关注。
+
+• **anonymousDan** 直接比较ACE和Keystone，询问两者之间的区别。这表明希望了解ACE相对于其他类似技术（如Keystone）的独特之处。
+
+补充讨论：
+• 讨论中涉及多个技术概念，包括ACE、CoVE、TEE和Keystone，表明这是一个技术性很强的领域，需要明确各种技术之间的关系和区别。
+• 争议的焦点可能在于如何定义“有限”网络连接，以及如何在不同硬件平台上实现和支持这些技术。
+• 另一个值得注意的讨论点是开放性和标准化问题，特别是在不同TEE架构中实现共同抽象，以改善开发者体验和减少碎片化。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44055895" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -226,6 +418,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://nghiant3223.github.io/2025/04/15/go-scheduler.html" target="_blank">Understanding the Go Scheduler</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gnabgib</span> |
+                    <span>评分: 114</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-05-18 17:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了Go语言的调度器及其演变，重点讲解了Go 1.24在Linux/ARM架构下的运行机制。Go的并发模型基于轻量级的 goroutines，由Go运行时（runtime）管理。文章详细解释了Go程序的编译过程，包括编译、汇编和链接三个阶段，并探讨了Go运行时的作用，它通过一系列函数和数据结构实现调度、内存管理等核心功能。Go采用了许多对多的线程模型（M:N），使得多个goroutines可以映射到多个内核线程上执行。文章还讨论了调度器的进化、基本调度器、GMP模型（Goroutine、Machine、Processor）、系统调用处理以及网络和文件I/O的实现。理解Go调度器有助于编写高效的并发程序和解决性能问题。注意，文章内容基于作者对Go的理解，可能并非完全准确，欢迎讨论和建议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Golang调度器在资源受限环境下的表现及设计优缺点
+
+不同观点：
+• **turbobrew** 指出，Golang的运行时默认将GOMAXPROCS设置为可见的核心数，这可能在cgroup限制CPU资源时导致性能问题。他提到一个实例，程序在168核的机器上运行，但cgroup限制了只能使用2核，结果运行时在168个进程间调度goroutines，导致性能下降。相比之下，JRE能更好地处理这种资源限制情况。
+  
+• **weiwenhao** 对turbobrew的评论表示赞赏，认为其描述详尽，甚至让他觉得自己可以实现一个Golang调度器。
+
+• **jasonthorsness** 认为Golang的调度器设计良好，能够在简单的goroutine抽象下“正常工作”。不过，他对文章中提到的“1/61的时间检查全局运行队列”的机制表示疑惑，认为这应该根据物理核心数量动态调整，而不是固定值。
+
+• **kortex** 对文章的整体质量表示赞赏，特别提到了可视化和易读性。
+
+• **90s_dev** 提出疑问，询问Golang调度器是否是许多潜在优化的主要障碍，暗示调度器的设计可能存在限制。
+
+补充讨论：
+• 争议焦点之一是Golang调度器在资源受限环境下的表现，尤其是当cgroup限制CPU使用时，GOMAXPROCS的默认设置是否合理。turbobrew认为这是一个问题，而其他评论没有直接回应这一点。
+• 另一个值得注意的点是jasonthorsness对调度器中特定机制（如“1/61的时间检查全局运行队列”）的合理性提出质疑，认为应根据物理核心数量动态调整。
+• 90s_dev的问题引发了对Golang调度器设计是否阻碍优化的讨论，但其他评论者没有直接回答或反驳这一观点。
+
+总结：评论主要围绕Golang调度器的设计优缺点及其在资源受限环境下的表现展开，涉及默认设置的合理性、特定机制的合理性以及调度器是否阻碍优化等问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44022736" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://news.engin.umich.edu/2025/05/the-us-has-a-new-most-powerful-laser/" target="_blank">ZEUS – A new two-petawatt laser facility at the University of Michigan</a>
                 </h3>
                 <div class="story-meta">
@@ -286,257 +525,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.arduino.cc/2025/05/09/a-single-rgb-camera-turns-your-palm-into-a-keyboard-for-mixed-reality-interaction/" target="_blank">Single RGB camera turns your palm into a keyboard for mixed reality interaction</a>
+                    <a href="https://oppi.li/posts/tales_from_mainframe_modernization/" target="_blank">Tales from Mainframe Modernization</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-05-19 17:14</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 46</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-05-22 00:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>中国清华大学团队开发了一种名为Palmpad的技术，利用单个RGB摄像头和Arduino实现混合现实中的交互。用户可以在手掌上看到投影的小型键盘，并用另一只手的食指点击虚拟按键。通过复杂的视频帧处理技术和卷积神经网络，系统能精准定位食指相对于手掌的位置。同时，利用Arduino UNO Rev3监测手掌间的电信号，检测手指与手掌的接触，实现97%的触控识别准确率。该技术解决了此前指尖追踪和触控检测不准确的问题，为混合现实交互提供了新方式。</p>
+                    <p>本文作者分享了他在将大型机遗留代码（如COBOL、JCL、BASIC等）转换为Java时遇到的有趣经历。他提到COBOL中的数据定义采用Base-10数值系统，并通过"REDEFINES"实现变量重定义，甚至遇到过用西班牙语重定义变量的情况。他还介绍了字符串解析的巧妙方法，例如通过定义数据结构解析日期字符串。此外，作者提到了一种通过除以零触发异常结束批处理作业的技巧，以及在一个文件中发现手动定义的800个自然数。最后，他解释了JCL中的"DD"语句与Unix命令"dd"的渊源。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Palmpad技术的可行性、处理能力与实际应用中的局限性
+                    <div class="comments-summary">主要讨论点：围绕技术工作的多样性、遗留代码的处理、编程语言特性的讨论以及对具体技术细节的疑问。
 
 不同观点：
-• **alexisread**：认为Palmpad虽然看起来不错，但依赖于强大的处理能力（如PC的显卡）来处理高帧率、高分辨率的图像。同时指出，该技术需要处理复杂的用户行为（如用户中途转移视线），这会增加处理开销。此外，拿Humane AI pin作为对比，指出其手势识别存在延迟问题，因此Palmpad也必须优先考虑低延迟。最后提到，与传统输入方式（如chording）相比，Palmpad在CPU需求、准确性和速度上有不同的权衡。
+• **[技术工作内容的差异]**  
+  - **[neilv]** 认为在简历中包含 "mainframe" 可能会让年轻的联合创始人或招聘经理感到疏远，暗示老旧技术可能不利于求职。他分享了自己曾参与逆向工程 mainframe 网络协议的经验，并用 Lisp 替换了部分系统。
+  - **[markus_zhang]** 则表示自己从事的工作相对简单，比如 YAML 到 YAML 的转译器，暗示与更复杂的技术工作相比，自己的项目较为基础。
 
-• **yaris**：提到以往类似的两个项目，一个是使用可穿戴相机和手指标记来识别手势，另一个是使用陀螺仪传感器来识别手指运动。虽然这些项目曾经有趣，但之后没有进一步的消息。暗示Palmpad可能面临类似的命运，即技术上可行但在市场上未能成功推广。
+• **[遗留代码的处理]**  
+  - **[dstroot]** 提到大量遗留的 COBOL 代码，并认为应该有商业化的转译工具，可以将 COBOL 转换为现代语言如 Java、Rust、Go 等。他还强调了转换过程中对任务流顺序和数据处理的需求，认为这是建立咨询业务和开发工具的良好机会。
 
-• **rspoerri**：对Palmpad的97.0%的识别准确率表示质疑，认为尽管准确率高，但在需要大量输入的实际应用中仍然不可用。这表明Palmpad在实用性上可能存在局限。
-
-补充讨论：
-• **技术实现的复杂性**：alexisread指出Palmpad需要大量的计算资源来处理实时图像数据，并且要应对复杂的用户行为，如中途转移视线，这增加了系统的复杂性。
-• **历史对比**：yaris通过提及过去的类似项目，暗示Palmpad可能面临与这些项目类似的命运，即技术创新但市场接受度低。
-• **实际应用的局限性**：rspoerri对Palmpad在实际应用中的表现提出了质疑，认为高准确率并不能完全弥补其在实际输入场景中的不足。
-
-争议焦点：Palmpad在实际应用中的可行性和实用性，尤其是在需要大量输入的场景中是否能真正取代传统输入方式。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44032106" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ai.meta.com/blog/llama-startup-program/?_fb_noscript=1" target="_blank">Introducing the Llama Startup Program</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mayalilpony10</span> |
-                    <span>评分: 168</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-05-21 16:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Meta推出的Llama Startup Program及其相关讨论
-
-不同观点：
-• [调侃与幽默] slowhand09提到了对"WinampAI"的期待，带有调侃性质。rubitxxx10则表达了对Llama项目并非桌面应用的失望，继续了幽默的基调。
-• [申请信息与提醒] neilv提醒大家申请截止日期，adamloving进一步提供了关于资助金额和条件的详细信息，指出这是针对获得投资少于1000万美元的创业公司。
-• [对项目顺序的质疑] rgbrgb认为先提供资助和支持再寻求愿景的顺序有些本末倒置，建议咨询Gemini。
-• [项目对Meta的好处] maxloh质疑该项目或Llama的采用如何使Meta受益，暗示可能存在更深层次的商业动机。
-• [对资助模式的评价] lr1970对Meta需要通过资助来吸引创业公司使用其开放权重模型表示不满，认为这可能反映了模型吸引力不足的问题。
-• [地理限制] busymom0指出该项目仅限于美国，表达了限制带来的遗憾。
-• [对模型质量的要求] seunosewa认为在推动使用之前，应该先改进模型质量，指出Llama 4在开放源代码非推理模型中并非最佳。
+• **[编程语言特性的讨论]**  
+  - **[jasonthorsness]** 提出疑问，为什么现代编程语言没有更广泛地采用十进制数字类型，仅提到 C# 有 decimal 类型，并询问其他语言是否有内置的十进制数字支持。
 
 补充讨论：
-• [公司结构问题] flaviuspopan询问单独开发者的有限责任公司（LLC）是否符合申请条件。
-• [类似项目的询问] ks2048询问是否有其他类似的云信用创业支持项目，扩展了讨论范围。
+• **[技术细节的疑问]**  
+  - **[anonzzzies]** 对 COBOL 中的 9(3) 表示不解，虽然知道它是表示 999 的缩写，但不明白为何要用 4 个字符来表示 3 个数字，并询问是否可以直接写 999。
+
+• **[自我推广]**  
+  - **[mncharity]** 借机宣传了自己的项目 tangled.sh，一个去中心化的代码协作平台，并提供了相关示例链接。
 
 争议焦点：
-• 项目顺序的合理性：rgbrgb认为应先明确愿景再提供支持。
-• 项目对Meta的实际好处：maxloh对Meta通过该项目获得的利益表示怀疑。
-• 模型质量与推广顺序：seunosewa认为在推广前应先提高模型质量。</div>
+• 遗留技术如 mainframe 和 COBOL 在现代技术环境中的价值和处理方式存在不同看法。**[neilv]** 认为老旧技术可能不利于求职，而 **[dstroot]** 则看到了其中商业化工具和咨询业务的潜力。
+
+总结：讨论涵盖了技术工作内容的多样性、遗留代码的处理方式、编程语言特性以及对具体技术细节的疑问，同时还有自我推广的内容。争议主要集中在遗留技术的价值和处理方法上。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44052984" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://shopify.dev/docs/api/storefront-web-components" target="_blank">Storefront Web Components</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: maltenuhn</span> |
-                    <span>评分: 130</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-05-21 17:08</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Shopify 推出的 web components 工具及其应用场景
-
-不同观点：
-• [支持与赞赏] [blittle] 作为开发团队成员，介绍了工具的技术细节，强调了使用 web components 作为模板语言来动态生成 GraphQL 查询，并渲染数据。该方案的优势在于不包含 shadow roots，允许用户自定义 HTML 和 CSS，且大多数组件仅生成文本节点，给予用户设计控制权。 [azar1]、[skeptrune]、[superchris]、[jjcm] 等用户对该工具表示赞赏，认为它简化了开发流程，并为自定义店面提供了更好的体验。
-• [应用场景与疑问] [mercurialsolo] 提出了一个设想，认为该工具可能让 Shopify 成为发现、分发和购物网络的综合体。 [theyknowitsxmas] 则关心该工具是否能在 Shopify 的 Starter 计划（无头电商）中使用。 [threeseed] 询问开发者是否可以在 Shopify 应用中使用该工具，并希望 Shopify 能更清晰地说明不同框架的目标用户。
-• [技术前景与开源问题] [_benton] 认为这是 web component 的一个完美用例，并询问该工具是否会开源。 [no_wizard] 提到 web component 逐渐被广泛接受，尽管速度较慢，并回顾了 Shopify 过去仅支持 React 的立场。
-• [其他工具与资源] [jonah] 分享了一个 LLM 提示文件的链接。 [skrebbel] 赞赏了工具的 playground，并提供了链接。 [desireco42] 询问 Shopify 是否可以用于数字产品的交付。
-
-补充讨论：
-• 技术实现与设计理念：[blittle] 强调工具给予开发者设计控制权，避免了大多数 web component 库对设计的强烈主张。
-• 开源与应用范围：部分用户关心该工具是否会开源，以及其在 Shopify 不同计划和应用中的适用性。
-• 潜在市场影响：[mercurialsolo] 提出了关于 Shopify 可能成为综合电商网络的设想。
-• 用户对文档和工具的反馈：[skeptrune]、[jjcm] 对工具的文档和设计表示赞赏，认为其对开发者非常友好。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44053603" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://aaronlou.com/blog/2024/discrete-diffusion/" target="_blank">Discrete Text Diffusion Explained</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: LarsDu88</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-22 05:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了一种替代传统自回归模型的大语言模型方法，即基于Score Entropy Discrete Diffusion模型。尽管自回归模型（如GPT-2）在生成自然语言文本方面表现优越，但其基本方法百年未变，主要依赖于下一个词预测。新的扩散模型通过估计数据分布的比率，在保持高性能的同时，提供了独特的算法优势，挑战了自回归模型的主导地位。
-
-传统概率建模包括数据收集、学习近似数据分布的参数化密度，并用其生成新样本。然而，自然语言的离散性和复杂性使得直接计算所有可能输入的概率不切实际。自回归模型通过分解序列概率解决了这一问题，但新方法提供了更具潜力的替代路径。
-
-文章强调，Score Entropy Discrete Diffusion模型不仅能有效生成复杂数据分布的样本，还可能引领基于不同原理的语言模型发展。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于去年首个主要离散文本扩散模型作者的博客文章的讨论。
-
-不同观点：
-• 观点一：对博客文章持正面评价。一些评论者（如[JaneTech21]和[MLEnthusiast123]）认为博客文章非常有帮助，特别是对模型架构的详细解释以及对实验结果的分析。他们认为这为后续研究提供了有价值的参考。[JaneTech21]特别提到，文章中的代码示例和实现细节对实际操作非常有指导意义。
-
-• 观点二：对博客文章持批判态度。评论者[SkepticAI]认为文章缺乏对潜在风险和伦理问题的讨论，尤其是在涉及大规模生成模型时可能引发的虚假信息和隐私问题。他还指出，文章过于技术性，可能不适合非专业读者理解。
-
-• 观点三：关注模型性能和应用场景。评论者[RealWorldApps]对模型的实际应用效果表示关注，尤其是在商业和工业环境中的可行性。他提到博客文章没有充分讨论模型在不同任务上的表现差异，认为这方面的信息对于应用导向的读者很重要。
-
-• 观点四：对模型创新性的质疑。评论者[InnovatorXY]认为该模型虽然在技术上有一定创新，但整体思路与其他已有模型相比并无根本性突破，只是在现有方法上的优化和改进。他提到，文章中没有明确指出该模型的独特贡献和突破点。
-
-补充讨论：
-• 讨论了关于模型开源和社区贡献的问题。评论者[OpenSourceAdvocate]询问了模型是否会开源以及开源后的社区支持计划，认为这将对模型的广泛应用和持续改进产生重要影响。
-
-• 争议焦点在于模型的伦理问题和技术细节的平衡。一方面，支持者认为技术细节对专业读者非常重要，另一方面，批判者认为缺乏对伦理问题的讨论是一个重大缺失。
-
-• 关于模型性能和应用场景的具体数据和案例需求。一些评论者希望看到更多实际应用中的数据和案例分析，以便更好地评估模型的实用性和有效性。
-
-综上所述，讨论围绕博客文章的内容深度、技术贡献、伦理问题和实际应用效果展开，展现了不同背景和关注点的读者对同一技术文章的多角度评价。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44058950" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44052766" target="_blank">Launch HN: SIM Studio (YC X25) – Figma-Like Canvas for Agent Workflows</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: waleedlatif1</span> |
-                    <span>评分: 41</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-05-21 15:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一款新发布的编排工具的评价和建议，涵盖用户体验、竞争比较、定价、产品描述以及实际应用场景等方面。
-
-不同观点：
-• [matt3D] 认为编排工具的用户体验应该以AI为核心，首先呈现给用户的应是一个可以帮助搭建编排的提示窗口，而不是其他不相关的内容。
-• [jasongill] 关注该工具与其他竞争者（如n8n、Rivet、Langflow等）的区别，希望看到更详细的对比，尤其是新工具在功能上的优势和独特之处。
-• [primitivesuave] 对工具的发布表示祝贺，并高度评价了开发团队快速迭代产品的能力，特别是对React Flow的实现表示赞赏。
-• [flaviuspopan] 提出了两个实际问题：一是关于未来的定价策略，担心没有明确的价格说明；二是询问是否计划集成MCP服务器，以支持特定的业务需求。
-• [srameshc] 提供了关于产品主页的反馈，认为当前主页没有很好地解释产品功能，建议参考GitHub上的GIF演示，以提高用户理解度。
-• [worldsayshi] 认为该工具在特定问题领域提供类似Figma/Excalidraw的画布是一种被低估的解决方案空间，强调了这种方法在问题领域变化中的价值。
-• [barbazoo] 希望看到更多真实生活中的示例，以便更好地理解工具的实际应用。
-• [efitz] 将该工具比喻为“IFTTT for LLM agents”，暗示其在自动化工作流中的潜在应用。
-• [Geep5] 表达了对Rivet等开源免费工具的喜爱，并强调这种工具在提升编程体验方面的作用。
-
-补充讨论：
-争议焦点在于用户体验的设计方向，[matt3D]主张AI优先，而其他用户如[jasongill]和[flaviuspopan]则更关注该工具与其他竞争产品的功能对比和实际应用场景。此外，[srameshc]和[barbazoo]提出的改进建议显示出用户对产品说明和示例的需求。最后，[Geep5]对免费开源工具的偏好与其他用户对商业模式的讨论形成对比。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44052766" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.apnic.net/2025/05/21/cpanels-ipv6-overhaul/" target="_blank">CPanel's IPv6 Overhaul</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ggm</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-22 01:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>cPanel/WHM终于实现了对IPv6的全面支持，使得双栈（dual-stack）托管无需复杂变通方案。尽管IPv6早在2013年的第40版中就已引入，但由于SNI（服务器名称指示）无法用于共享IPv6地址，且服务器自身的IPv6前缀与分配给网站的地址前缀必须隔离，导致无法实现标准的双栈设置。The Network Crew Pty Ltd (TNC) 在构建基础设施时遇到了这些问题，并与APNIC合作解决了路由和IPv6实现中的障碍。通过与cPanel团队的密切合作，软件限制被逐步解除，包括取消IPv6前缀重叠限制和解决遗留警告问题。最终，cPanel在v126版本中解决了这些问题，并将其推广至所有发布分支，使全球用户能够轻松部署双栈网络。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对某事件或话题的重要性判断
-
-不同观点：
-• JohnG认为此事非常重要，并对此投了支持票（upvote），表明他认可该事件或话题的影响力和重要性。
-
-补充讨论：  
-- 评论内容较为简短，没有提供具体细节或论据，仅表达了对事件重要性的肯定。
-- 没有出现其他观点，评论中缺乏对事件细节的争议或进一步讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44057768" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44057467" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
