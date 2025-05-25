@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-05-25 05:12 (北京时间)
+            最后更新时间: 2025-05-25 09:06 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,58 +61,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pythonspeed.com/articles/pydantic-json-memory/" target="_blank">Loading Pydantic models from JSON without running out of memory</a>
+                    <a href="https://github.com/sqliteai/sqlite-js" target="_blank">Show HN: SQLite JavaScript - extend your database with JavaScript</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: itamarst</span> |
-                    <span>评分: 127</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-05-22 18:06</span>
+                    <span>作者: marcobambini</span> |
+                    <span>评分: 189</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-05-22 13:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了如何在使用Pydantic加载大型JSON文件时减少内存消耗。默认情况下，Pydantic加载JSON会占用大量内存，可能达到文件大小的20倍。文章提出两种优化方法：
+                    <p>SQLite-JS 是一个将 JavaScript 功能引入 SQLite 的扩展，允许用户通过 JavaScript 创建自定义的 SQLite 函数、聚合函数、窗口函数和排序规则。通过该扩展，用户可以直接在 SQLite 数据库中进行灵活的数据操作。具体功能包括：
 
-1. **使用ijson库进行增量解析**：通过流式处理JSON文件，逐项读取，减少解析时的内存占用，虽然速度较慢，但内存使用从2000MB降至1200MB。
+1. **标量函数**：处理单行数据并返回单一值，适用于数据转换和计算。
+2. **聚合函数**：处理多行数据并返回单一汇总结果，如计算平均值或总和。
+3. **窗口函数**：类似于聚合函数，但能访问整个数据集。
+4. **排序规则**：定义自定义文本排序顺序。
+5. **JavaScript 评估**：直接在 SQLite 中执行 JavaScript 代码。
 
-2. **使用带slots的dataclasses**：通过固定对象属性列表，减少Python对象的内存使用。Pydantic的BaseModel暂不支持slots，因此切换至Pydantic的dataclass，内存进一步降至450MB。
-
-最终，优化后的方法在处理100MB JSON文件时，内存消耗从2000MB显著减少到450MB。</p>
+用户可以通过 `js_create_scalar`、`js_create_aggregate` 和 `js_create_window` 等函数创建自定义功能，并能在 SQL 查询中使用这些功能。该扩展支持多种平台，包括 Linux、macOS、Windows、Android 和 iOS。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Pydantic库的JSON解析性能、内存使用问题及其替代方案
+                    <div class="comments-summary">主要讨论点：在SQLite中使用JavaScript引擎（QuickJS）作为扩展功能的可行性、优势、安全性及性能。
 
 不同观点：
-• [scolvin] Pydantic的作者指出，Pydantic正在计划改进JSON解析方式，采用迭代解析，预计能提升速度并减少内存开销。其JSON解析器jiter已经支持迭代解析，当前需要解决的是pydantic-core中的生命周期问题。
-
-• [fidotron] 质疑当前Pydantic在处理100MB文件时为何需要2GB内存，并类比了XML解析中SAX和DOM的区别，暗示可能需要类似SAX的流式处理方式。
-
-• [jmugan] 遇到的问题不是内存而是复杂模型加载不完全，尤其是嵌套较深的BaseModel和Union类型无法完全解析，寻求能处理这种复杂加载的工具。
-
-• [deepsquirrelnet] 建议考虑使用jsonl或其他二进制格式来代替JSON，尤其是处理较大文件时，认为JSON不适合这类场景。
-
-• [dgan] 表示已放弃使用Python的dataclasses和JSON，转向Protobuf，认为自动且静态类型的反序列化值得投入。
-
-• [fjasdfas] 询问在所有Python数据类型上使用`slots=True`是否存在缺点。
-
-• [zxilly] 提出使用内存映射（mmap）可能有助于节省内存，但不确定是否能在Python中实现。
-
-• [thisguy47] 希望看到不同JSON解析库（如`ijson`、`ujson`）与标准`json.load(f)`的性能对比。
-
-• [kayson] 询问dataclass版本的解析速度如何。
-
-• [m_ke] 建议放弃Pydantic，改用msgspec库，认为这是一个更好的选择。
+• jmull认为，通过引入JavaScript引擎，可以在SQLite中实现类似于其他数据库（如Oracle、PostgreSQL）的存储与计算结合的灵活设计。这种方法允许应用级别的代码与数据共存，提供更强的抽象能力，同时保留SQL的全部功能。
+• bob1029指出，通过SQLite的API可以构建强大的领域特定脚本引擎，并且这些函数无需是确定性的或无副作用的。他还提供了与.NET/C#集成的文档示例。
+• sgarland质疑为何不直接使用SQLite原生函数，认为原生函数可能更快，并给出了计算中位数的SQL示例。
+• abirch将此方法与PostgreSQL上的plv8 JavaScript扩展进行了比较，认为两者非常相似。
+• gwbas1c提问，关于将SQL查询转换为返回JSON对象的难易程度，并关注具体操作方法。
+• neuroelectron提出了对QuickJS安全性的担忧，列举了多个CVE漏洞，并指出QuickJS由于开发者的单一性，可能缺乏浏览器引擎那样严格的安保措施。
+• hbcondo714对SQLite Cloud中缺乏近似最近邻搜索（ANN）功能表示失望。
+• gcv提到Q|ery项目也使用了SQLite和QuickJS，但在Rust中实现。
+• gorm对项目的语法和实现表示好奇，特别是如何通过SQL创建JavaScript函数。
+• cal85询问将逻辑推入SQLite是否具有性能优势，还是仅仅出于实用性和人体工学考虑。
+• rcarmo表示更偏好使用Lua而不是JavaScript。
+• 9dev建议可以通过字节码编译器或WASM支持来进一步优化性能。
+• rileytg希望看到有关性能的文档或基准测试。
+• timz希望Redis也能支持类似的JavaScript功能，而不是仅限于Lua脚本。
 
 补充讨论：
-- 争议的焦点之一是Pydantic在处理大文件时的内存消耗问题，以及是否需要流式处理。
-- 另一个讨论点是复杂模型加载不完全的问题，尤其是在嵌套较深的情况下。
-- 替代方案包括使用Protobuf、jsonl、mmap以及msgspec等不同工具和库，各有支持者。
-- 有人关注在Python数据类型中普遍使用`slots=True`的潜在问题，还有人希望看到不同JSON解析库的性能对比。</div>
+• 安全性是讨论的一个焦点，特别是QuickJS的漏洞及其可能带来的风险。
+• 另一个焦点是性能，包括是否以及如何通过这种方法获得性能提升，以及是否有相关文档或基准测试。
+• 不同的开发者对使用JavaScript、Lua或其它语言作为SQL扩展的偏好不同，反映了对不同语言生态系统的需求和偏好。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44064875" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44061836" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -123,186 +119,119 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/turbocharged-mitochondria-power-birds-epic-migratory-journeys-20250519/" target="_blank">'Turbocharged' Mitochondria Power Birds' Epic Migratory Journeys</a>
+                    <a href="https://getstack.dev" target="_blank">Show HN: GetStack.dev – Track GitHub open-source trends</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: h1fra</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-05-23 07:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对技术趋势展示方式及其数据有效性的不同看法
+
+不同观点：
+• **对展示趋势的价值质疑**：
+  - [exiguus] 对趋势的衡量方式提出疑问，尤其是对指标的工作原理不清楚，质疑其对软件工程师的实际价值。
+  - [xp84] 认为当前趋势展示方式不太有用，因为大多数人不会删除旧代码库，导致所有语言趋势都在上升。他建议关注活跃代码库的数量或语言在活跃代码库中的占比。
+
+• **对开源趋势列表中包含闭源商业产品的困惑**：
+  - [mlhpdx] 对趋势列表中同时包含开源和闭源商业产品表示不解，质疑“开源”在此情境下的定义。
+
+• **对分类标准的质疑**：
+  - [herpdyderp] 对某些分类表示困惑，指出Angular不是编程语言，Deno也不是，认为分类标准不清晰。
+  - [herpdyderp] 还对百分比的定义提出疑问，不确定百分比是否表示每周的变化。
+
+• **技术趋势中的遗漏问题**：
+  - [lawgimenez] 提到在搜索Kotlin代码库时未找到结果，尽管其拥有约50K的星标，质疑趋势列表的全面性。
+
+• **正面评价**：
+  - [Sourabhsss1] 对内容表示赞赏，认为这是好东西。
+
+• **技术问题反馈**：
+  - [Brajeshwar] 提到在Hacker News上热门的内容，其时事通讯订阅却出现错误，提示“发生错误”。
+
+补充讨论：
+- 争议焦点主要集中在趋势展示的合理性和数据的准确性。
+- 对“开源”定义的讨论反映出用户对趋势列表一致性的关注。
+- 分类和指标的定义不清导致用户理解困难，需要更明确的解释和分类标准。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44070812" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.poynter.org/fact-checking/2025/indicator-alexios-mantzarlis-craig-silverman/" target="_blank">Two disinformation experts have launched a DIY news outlet</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gnabgib</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-25 00:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了当前网络环境中虚假信息和人工智能生成内容的泛滥问题，以及事实核查人员、学者和记者面临的困境与威胁。文章介绍了一个名为**Indicator**的新数字媒体平台，由事实核查和数字调查领域的资深人士Alexios Mantzarlis和Craig Silverman创立，旨在帮助读者自行调查网上信息，揭露虚假内容。平台将通过每周通讯和培训工作坊，为专业事实核查人员、记者以及普通用户提供工具和技巧，以应对日益严重的数字欺骗问题。作者强调，当前是推出这一平台的关键时刻，因为生成式人工智能使欺骗行为变得更加容易，而现有的社交媒体平台未能有效应对这一挑战。Mantzarlis和Silverman希望通过Indicator，为专业人士和普通公民提供深度分析和实用指导。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44084596" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bbc.com/future/article/20250523-the-soviet-plan-to-reverse-siberias-rivers-with-peaceful-nuclear-explosions" target="_blank">The Soviet plan to reverse Siberia's rivers with 'peaceful nuclear explosions'</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: pseudolus</span> |
-                    <span>评分: 76</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-05-19 15:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要探讨了鸟类如何通过其肌肉细胞中的线粒体实现长距离迁徙。研究发现，迁徙季节来临时，鸟类的线粒体数量、形状、效率和互联性会发生变化，从而为持续的高强度飞行提供更多能量。例如，白冠雀和北极燕鸥等鸟类能飞行数千英里而不休息，这得益于线粒体功能的增强。与人类需要通过训练才能改善线粒体表现不同，鸟类只需受到光周期变化的刺激，就能自动产生更多、更高质量的线粒体。这种“表型可塑性”帮助鸟类适应环境变化，实现惊人的迁徙壮举。文章强调，线粒体的变化是鸟类长途飞行能力的关键。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于线粒体的多样化讨论，包括资源推荐、科学问题探讨以及与更广泛话题（如外星生命）的关联。
-
-不同观点：
-• [gherkinnn] 推荐了一个关于线粒体的播客节目（BBC的《In Our Time》），认为这是一个很好的科普资源，并表示这是他个人最喜欢的节目之一。
-• [ljf] 指出该话题在之前已经发布过，并提供了一个链接到一个有78条评论的讨论帖，表明这可能是一个重复的话题。
-• [londons_explore] 提出了一个具体的科学问题，询问ATP在细胞中的典型寿命，是毫秒还是分钟，这表明对线粒体功能细节的关注。
-• [coolcase] 以幽默的方式表示对“鸟类线粒体”感兴趣，虽然没有提供具体的科学内容，但体现了对话题的轻松参与。
-• [ck2] 提到了一个PBS Space Time节目，将线粒体的进化与费米悖论中的“没有外星生命”问题联系起来，指出线粒体的进化可能是由一系列不可复制的偶然事件促成的。
-
-补充讨论：
-• 讨论中包含了对线粒体的基础科普资源的推荐（如播客和视频），也涉及了与线粒体相关的科学问题（如ATP寿命）。
-• 讨论还扩展到了更广泛的科学领域，如外星生命的可能性与线粒体进化的关系，这显示出线粒体在不同科学背景下的重要性。
-• 部分评论指出了讨论的重复性，表明可能存在对新信息或更深层次讨论的需求。
-
-争议焦点：
-• 目前评论中未见明显争议，但有提到话题重复，可能意味着对新内容或更深层次讨论的期待。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44031082" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/kepano/defuddle" target="_blank">Show HN: Defuddle, an HTML-to-Markdown alternative to Readability</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kepano</span> |
-                    <span>评分: 392</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-05-22 21:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Defuddle 是一个用于从网页中提取主要内容的工具，能够去除评论、侧边栏、页眉、页脚等非必要元素，使页面更易读。它旨在输出干净一致的 HTML 文档，特别适合作为 Obsidian Web Clipper 的HTML-to-Markdown转换输入。与Mozilla Readability相比，Defuddle更宽容，保留更多元素，并使用页面的移动样式来猜测不必要的部分，同时提取更多元数据。
-
-主要功能包括：
-- 安装：通过 npm 安装，Node.js 环境还需安装 JSDOM。
-- 使用：可在浏览器和 Node.js 环境中使用，返回包含文章作者、标题、内容、元数据等信息的对象。
-- 选项：支持调试模式、Markdown 转换、选择性删除元素等。
-
-Defuddle 提供核心包、完整包和 Node.js 包，核心包适用于大多数场景，完整包增加数学公式处理功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：各类网页内容提取工具的比较与使用场景
-
-不同观点：
-• [tmpfs] 认为 Readability.js 是最好的工具，但因为是 JavaScript 不符合其项目需求，最终选择了 Python 的 trifatura 库，并建议其他人可以对比两个工具以寻找改进空间。
-• [novoreorx] 提出了其项目 Substance，通过为每个网站自定义处理方式来获得更好的结果，而不是像大多数工具那样一概而论。
-• [binarymax] 对工具的验证方法提出了疑问，指出缺乏测试或数据集来评估工具的准确性和覆盖范围，并询问是否可以分享这些内容。
-• [acrophobic] 质疑 Mozilla 的 Readability 是否真的被废弃，指出其最新版本发布于两个月前，且维护者仍积极响应问题。
-• [Andr2Andr] 对工具的实际使用场景提出了疑问，质疑谁会使用这种工具以及其具体用途，并指出在其他评论中只看到了导出 ChatGPT 对话到 markdown 的用例。
-
-补充讨论：
-• [creakingstairs] 和 [Tsarp] 都对 Obsidian Web Clipper 的效果表示赞赏，认为其在 markdown 转换和内容提取方面表现出色，尤其是针对每个网站的自定义提取功能。
-• [jeanlucas] 和 [shrinks99] 提到 Obsidian Web Clipper 可以很好地将 ChatGPT 对话转为 markdown 或打印，尽管 [shrinks99] 提到在导入发布日期时有些问题。
-• [rcarmo] 分享了自己多年前实现的 Readability 算法，并指出已转向使用维护良好的 Python 类似工具。
-• [jonplackett] 提到在某些新闻网站上读者模式失效的问题，并怀疑这是网站为了展示广告而故意设置的障碍。
-• [severusdd] 认为当前需要一个强大的 markdown 转换器来帮助用户专注于内容，并对该工具填补 Readability 留下的空白表示赞赏。
-• [ahsd1] 和 [ricardonunez] 分别表示对工具在去除 HTML 邮件中的签名和样板声明以及改进 markdown 到 HTML 转换方面的潜在用途感兴趣。
-• [ulrischa] 分享了自己用 PHP 实现的类似工具，并强调了自托管的简便性。
-
-争议焦点：
-• 工具的实际使用场景和用户需求存在一定争议，特别是是否仅限于导出 ChatGPT 对话和 markdown 转换。
-• Readability 工具的维护状态也存在不同看法，部分用户认为其已经被废弃，而 [acrophobic] 则指出其仍活跃更新。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44067409" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sweepiq.com" target="_blank">Show HN: SweepIQ – A simple AI tool to help you learn more, faster</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: felixthecat23</span> |
-                    <span>评分: 32</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-24 02:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对AI学习工具SweepIQ及其他类似工具的评价和使用体验
-
-不同观点：
-• **creata**认为SweepIQ的子部分和后续问题重复了太多已经解释过的信息，缺乏有效的概念递进，不利于高效学习。同时指出LLM（大型语言模型）的回答常带有模糊、不明确的语调，但对这一问题能做的有限。
-• **mdaniel**对SweepIQ的商业模式提出质疑，通过一个假设情境指出：SweepIQ通过亚马逊联盟链接让用户购买产品，但AI工具本身（如GPU资源的使用）的成本如何覆盖没有解释清楚。
-• **vouaobrasil**对加速学习持反对态度，认为学习不应以效率和生产力为导向，而应出于对知识的热爱。他担心过度自动化学习会剥夺学习过程中的美感和发现的乐趣。
-• **kolpaque**对SweepIQ持较为积极的态度，认为它类似于Perplexity的工具，但免费且通过亚马逊联盟链接盈利。他指出SweepIQ有一些不错的功能，如后续问题和“像五岁孩子一样解释”的选项，但也存在保存和引用源方面的问题。
-• **michaelbuckbee**提到谷歌有一个类似的工具叫"Learn About"，指出市场上有多种同类工具可供选择。
-• **jeisc**具体测试了SweepIQ对特朗普的查询，发现只涵盖了其第一个任期，对内容的全面性提出质疑。
-• **OdehAhwal**对该工具表示高度赞赏，认为它不仅适用于学习，还适合用于创意构思。
-
-补充讨论：
-• SweepIQ的**商业模式**（通过亚马逊联盟链接盈利）引起了一定的关注和质疑，尤其是AI工具如何负担自身运行成本的问题。
-• **学习效率与学习态度**之间的争议：一部分用户（如creata）关注学习工具的效率和递进性，另一部分用户（如vouaobrasil）则强调学习本身应出于热爱，而不是单纯追求效率和生产力。
-• 工具的**功能与不足**：kolpaque指出SweepIQ有不错的功能设计，但也有技术上的不足之处，如保存和引用源的功能不完善。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44078314" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/truck-platooning-ohio-indiana" target="_blank">Truck platooning could ease driver shortages, save fuel, boost safety</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Brajeshwar</span> |
-                    <span>评分: 7</span> |
+                    <span>评分: 4</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-05-24 15:31</span>
+                    <span>发布时间: 2025-05-24 23:14</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了卡车编队行驶（truck platooning）作为货运未来的一种可能解决方案。在这种系统中，领头卡车的司机同时控制后面的跟随卡车。这种技术有望缓解司机短缺问题，减少燃料消耗，并提高道路安全性。文章提到，俄亥俄州交通部正在研究和测试这种技术，以应对物流行业面临的多重挑战。编队行驶通过无线通信和自动驾驶技术实现，使多辆卡车能够以紧密间距协同行驶，从而降低风阻和燃油成本。</p>
+                    <p>在20世纪70年代，苏联尝试通过“和平核爆炸”改变西伯利亚河流的方向，计划将水从北向的河流改道至南部的干旱地区。其中一次实验名为“Taiga”，于1971年在乌拉尔山脉附近通过三次地下核爆炸形成“核湖”，旨在挖掘运河以连接佩乔拉河和卡马河，但项目失败。尽管辐射水平仍较高，核湖如今成为旅游景点，象征着苏联曾经的巨型工程梦想。该计划旨在解决中亚和俄罗斯南部的缺水问题，但因技术和国际压力未能实现。这一设想虽被多次提出，但最终未能成功实施。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[司机短缺和自动驾驶技术的应用场景]
+                    <div class="comments-summary">主要讨论点：苏联使用核弹进行的疯狂项目
 
 不同观点：
-• **lesuorac** 的观点：  
-  - 司机短缺的问题是由于不合理的工作安排导致的，特别是过长的等待时间。  
-  - 引用了ATRI的研究，指出超过80%的司机因为滞留时间用完了可工作小时，平均只有6.5小时用在实际驾驶中，剩下的时间浪费在等待上。  
-  - 认为如果自己是仓库经营者，会喜欢有一排卡车司机免费等待装卸货，但这显然不是高效的运作方式。  
-  - 提供了相关研究链接以支持其论点。
+• FridayoLeary认为苏联使用核弹进行的一些工程项目非常疯狂，并提供了一个链接，说明这些项目不仅成功了，而且还不止进行了一次。FridayoLeary通过引用具体例子来支持自己的观点，强调了这些项目的大胆和出乎意料的成功。
 
-• **AtlasBarfed** 的观点：  
-  - 对当前自动驾驶技术的发展方向感到不解，认为相比城市中的机器人出租车，高速公路自动驾驶技术更容易实现且可能更有价值。  
-  - 暗示当前技术发展可能有些本末倒置，应该优先解决更简单且更有经济效益的问题。
+• artninja1988的评论非常简短，仅表示“看见了” (Saw)，没有明确表达立场或观点，可能只是对FridayoLeary提供的信息表示已读或关注。
 
 补充讨论：
-• **lesuorac** 强调了物流行业中的效率问题，特别是司机等待时间过长导致的工作小时浪费，指出了行业内部运作的低效。
-• **AtlasBarfed** 则关注自动驾驶技术的优先应用场景，认为在高速公路上实现自动驾驶比城市中的机器人出租车更具实际意义。
-• 争议的焦点可能在于自动驾驶技术的应用优先级和物流行业效率问题的解决途径上。两者都涉及对现有资源和技术的有效利用，但侧重点不同：一个关注行业内部流程的改善，另一个关注技术应用的优先级。
-
-</div>
+• FridayoLeary提供的链接指向一篇关于苏联工程师利用核弹进行工程项目的文章，暗示这些项目在技术和工程领域具有突破性和实验性。
+• 讨论中的一个隐含争议可能是关于使用核弹进行和平目的工程是否合理，虽然在这个评论中没有明确提到这一点，但通常这类话题会引发对核技术使用的安全性、伦理性和环境影响的讨论。
+• 另一个值得注意的点是FridayoLeary对项目“成功”的定义，可能在不同背景下有不同的解读，例如成功是否仅指技术实现，还是包括了安全性、长期影响等方面的综合考量。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44081742" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44084337" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -313,13 +242,13 @@ Defuddle 提供核心包、完整包和 Node.js 包，核心包适用于大多�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44061028" target="_blank">Show HN: Embedo – Word Equation Puzzle Game</a>
+                    <a href="https://www-cdn.anthropic.com/4263b940cabb546aa0e3283f35b686f4f3b2ff47.pdf#page=34" target="_blank">Claude 4: behavior directly inspired by our Alignment Faking paper</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sungchi</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-22 11:39</span>
+                    <span>作者: beeflet</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-05-24 08:31</span>
                 </div>
 
                 <div class="summary-section">
@@ -329,31 +258,9 @@ Defuddle 提供核心包、完整包和 Node.js 包，核心包适用于大多�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对游戏的体验和功能建议
-
-不同观点：
-• **积极反馈**：
-   - [slig] 认为游戏很有趣，并对游戏中使用的嵌入（embedding）技术表示兴趣，提到在Gemini 2.5 Flash上的尝试体验。
-   - [lacker] 虽然意外地一次猜中答案，但仍觉得游戏有趣，尽管不像SAT类比问题那样可以通过反复推理增强信心。
-   - [captn3m0] 享受游戏过程，连续几天快速猜中答案，但觉得正确答案揭晓时稍慢，庆祝动画可以更快。
-   - [kolpaque] 对游戏表示高度赞赏，认为游戏让他思考AI的思维方式，并在短时间内被吸引。
-
-• **功能建议**：
-   - [w10-1] 建议增加一个非技术性的替代玩法，避免使用数学或嵌入技术，类似类比填空题，并提到希望增加与其他用户的比较功能，以增加社交互动性。还提出机器预测用户答案的设想，并建议通过加密方式展示预测以增强趣味性。
-
-• **负面反馈**：
-   - [raymondgh] 对游戏中的广告表示不满，认为如果是纯娱乐性游戏，应该去除广告以提升体验。
-
-• **技术问题**：
-   - [Crunch3r] 关注游戏的敏感性问题，询问游戏是否对大小写敏感。
-
-补充讨论：
-• 用户对游戏的AI技术背景表现出兴趣，尤其是嵌入技术在游戏中的应用。
-• 社交互动和用户比较被视为提升游戏吸引力的潜在功能。
-• 技术性问题如游戏的速度和敏感性也被提及，表明用户对游戏体验的细节有一定要求。
-• 广告问题成为用户体验的一个争议点，反映出用户对广告干扰的普遍反感。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44061028" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44079699" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -364,164 +271,13 @@ Defuddle 提供核心包、完整包和 Node.js 包，核心包适用于大多�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tante.cc/2025/05/23/on-vibe-coding/" target="_blank">On "Vibe Coding"</a>
+                    <a href="https://www.wsj.com/lifestyle/model-railroad-james-murray-ac709a96" target="_blank">A Comedian Saves a Model Railroad with Purchase of a New Jersey Home</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cratermoon</span> |
-                    <span>评分: 21</span> |
+                    <span>作者: fortran77</span> |
+                    <span>评分: 47</span> |
                     <span>评论数: 7</span> |
-                    <span>发布时间: 2025-05-23 21:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了AI领域的新概念“Vibe Coding”，即利用AI代码助手根据问题描述生成代码，而无需深入思考软件架构或解决方案表达。这种方法被宣传为技术民主化和赋权个人，但作者认为这些说法过于简单化且具有误导性。软件开发不仅仅是编写代码，还涉及需求分析、理解问题领域、架构设计等复杂过程，且大部分问题实质上是社会问题，需要同理心和沟通。作者批评“Vibe Coding”忽视了软件开发的深层次复杂性和经验的重要性，认为这种趋势可能会导致误解和不良实践。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI生成代码工具的实际效果和使用体验
-
-不同观点：
-• AllegedAlec认为AI工具在处理新项目和简单任务时表现出色，但在复杂项目或现有代码库中表现不佳。他强调，AI工具需要在特定场景下使用，且对用户的精确指导有高度依赖。他还提到，行业内对新工具的态度存在两极分化，一部分人拒绝接受，另一部分人则过度依赖。
-
-• nopelynopington分享了一次不成功的Replit使用体验。尽管AI生成的UI看起来专业且精致，但功能上存在问题，且在多次尝试修复后仍未解决问题。最终，他发现AI只是在一系列的“幻觉”中进行对话，并未真正接受用户输入。他提到，其他非代理式LLM（如Gemini或Claude）表现更好。
-
-• theospeak对AI工具持积极态度，认为这些工具降低了开发门槛，使得更多人可以参与到“构建”过程中。他强调，开发者应该接受这种变化，并通过学习新技能来提高自己，而不是抱怨工具带来的改变。他个人通过与AI工具的互动学到了很多新知识，并享受这个过程。
-
-• garylkz认为使用AI生成代码没有问题，但关键在于对代码质量的监督，这需要用户具备一定的领域知识。他指出，依赖AI并不意味着可以轻松完成所有工作，仍然需要具备一定的技能和判断力。
-
-• cranberryturkey作为一个有30多年经验的软件工程师，表示AI和“vibe编码”使他成为了一个10倍程序员。他认为，关键在于 prompt 的技巧和调试能力，而这些能力需要对问题解决和架构设计有深入理解。他分享了自己在两周内发布了8个npm模块的经历，显示出对AI工具的高效利用。
-
-补充讨论：
-• AI工具在处理新项目和简单任务时的有效性得到了多位用户的肯定，但在复杂项目中的表现存在争议。
-• 用户对AI工具的期望和实际体验之间存在差距，特别是在问题修复和对话交互方面。
-• 行业内对AI工具的态度存在两极分化，一部分人拒绝接受新工具，另一部分人则过度依赖。
-• 使用AI工具需要具备一定的领域知识和技能，以有效监督和提高代码质量。
-• 个人经验和背景会影响对AI工具的看法和使用效果，有些用户通过AI工具获得了显著的效率提升。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44076771" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.anthropic.com/news/claude-4" target="_blank">Claude 4</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: meetpateltech</span> |
-                    <span>评分: 1972</span> |
-                    <span>评论数: 133</span> |
-                    <span>发布时间: 2025-05-22 16:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年5月22日，Anthropic推出Claude 4系列新模型：Claude Opus 4和Claude Sonnet 4，旨在提升编码、高级推理和AI代理能力。Claude Opus 4是全球最佳编码模型，擅长长时间复杂任务，支持工具使用和改进记忆功能。Claude Sonnet 4在Sonnect 3.7基础上大幅升级，提供更精准的编码和推理能力，适合日常使用。新功能包括扩展工具使用（如网页搜索）、并行工具使用、更精准指令跟随以及本地文件访问。Claude Code现已正式发布，支持GitHub Actions和多种IDE集成。API新增四项功能，包括代码执行工具和文件API。两款模型提供即时响应和深度推理模式，已在Anthropic API、Amazon Bedrock和Google Cloud's Vertex AI上线，价格与之前保持一致。Opus 4在编码和复杂问题解决上表现卓越，Sonnet 4则在性能和实用性间取得平衡。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Claude 4及相关模型的性能、功能更新及应用体验
-
-不同观点：
-• [minimaxir] 指出Claude 4的训练数据截止日期为2025年3月，是近期模型中最晚的，相比Gemini 2.5的2025年1月更具时效性。
-• [jasonthorsness] 认为Claude Sonnet 4在自动化场景中表现优异，可能会在GitHub Copilot中实现自动化包升级和项目维护，减轻开发者的负担。
-• [Doohickey-d] 提到目前多个LLM供应商开始隐藏思维链（CoT），并提供简化的总结，这使用户难以判断模型何时出错，并调整提示。
-• [cube2222] 反馈Claude Code在Opus 4上的表现不佳，基本工具调用如"Write"和"Update"频繁失败，但成功创建的文件质量较高。
-• [hsn915] 认为新版本的LLM并未比之前的版本有显著改进，可能已进入技术 plateau，新功能多为噱头。
-• [_peregrine_] 通过SQL生成基准测试发现Opus 4表现优于其他模型。
-
-补充讨论：
-• [tptacek] 询问Claude 4的上下文窗口变化，并提到Gemini 2.5因能处理大量上下文而非常有用。
-• [a2128] 反对模型隐藏思维过程并提供简化总结的做法，认为这使用户难以验证模型的推理是否准确，且对收费用户不公平。
-• [waleedlatif1] 希望Sonnet 4在工具调用方面不像3-7那样频繁出错，认为3-5版本在编程方面曾带来过良好的体验，但后续版本表现下滑。
-• [jen729w] 讨论Claude在语法建议方面的能力，虽然指出其生成的句子笨拙，但仍认可其改进建议。
-• [GolDDranks] 认为Claude 3.7在编码能力上表现一般，但在调试过程中作为陪伴工具仍有一定价值，并预测LLM的快速进步可能对开发者职业产生影响。
-• [travisgriggs] 将当前LLM的性能竞赛比作90年代的CPU MHz战争，认为这种技术竞赛历史在重演。
-• [modeless] 对Claude Code的VS Code集成感兴趣，但遇到安装问题，不确定如何获取相关扩展。
-• [cschmidt] 分享了Claude 4帮助修复代码bug的正面体验，认为这是一个升级。
-• [zone411] 提供了NYT Connections游戏中不同版本Claude模型的性能数据，显示Opus 4在思维链和无推理条件下的表现差异，并指出Sonnet 4在内容过滤政策上的限制。
-
-争议焦点：
-• 隐藏思维链（CoT）的做法引起用户不满，认为这降低了模型的透明度和用户的可控性。
-• 新版本LLM是否真正带来了显著的性能提升，或者是否已进入技术 plateau，用户对此存在分歧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44063703" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.stephendiehl.com/posts/computer_algebra_mcp/" target="_blank">Adventures in Symbolic Algebra with Model Context Protocol</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: freediver</span> |
-                    <span>评分: 115</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-05-22 13:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了作者使用MCP协议将语言模型（LLM）与符号计算机代数系统结合的实验。LLM擅长理解自然语言描述的数学问题，但在解决这些问题上表现不佳，而计算机代数系统则擅长符号运算。通过MCP协议，可以将两者的优势结合，LLM负责理解和规划，代数系统负责精确计算。作者使用GitHub上的开源代码演示了这一过程，尽管代码尚不成熟。MCP协议类似于AI工具的标准化接口，允许语言模型调用外部工具，但存在一定安全风险。调试MCP服务器颇具挑战，因其非确定性导致调试复杂。最终，作者通过简单示例展示了该方法的有效性，如让LLM分解大整数，结果显示LLM常给出错误答案，而代数系统则能准确完成任务。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕MCP（可能指某种多功能计算平台或工具）及其与LLM（大型语言模型）和符号AI结合的讨论，包括实际应用、技术挑战、可扩展性问题以及与现有工具的比较。
-
-不同观点：
-• crystal_revenge认为，Stephen对MCP工具的实验兴趣和适度的怀疑态度值得赞赏，但当前领域被过度炒作和极端怀疑所主导，这两种倾向都不利于实际问题的解决。
-• behnamoh对文章中提到的LLM作为请求翻译工具结合符号AI软件的方案持怀疑态度，认为这种方法过于机械，且MCP缺乏可扩展性，JSON模式的复杂性会降低模型性能。
-• arunbahl支持使用类似MCP的方法，特别是在Prolog的应用中，并提到UC Berkeley的相关研究论文，认为当前仅触及到表面潜力。
-• tpurves对文章的实用性和安全性问题表示赞赏，认为尽管MCP标准尚不成熟，但现在正是实验的好时机。
-• FilosofumRex从商业角度出发，认为基于NLP的GUI在STEM应用市场具有巨大商业价值，如Wolfram Alpha和Mathematica的结合，并提出如果LLM可以作为技术软件的前端，将极大减轻SWE资源负担。
-
-补充讨论：
-• Hugsun提到Mistral的Le Chat支持Python代码执行和sympy库，认为其可靠性高。
-• mhh__讨论了张量符号的易错性问题，并提出替代方案如Penrose图。
-• amelius质疑LLM如何知道可以使用特定工具进行整数因式分解。
-• ash-ali支持使用LLM进行高保真任务，如二进制分析，但指出可扩展性是最大问题之一。
-• hosolmaz建议给模型一个Jupyter Notebook/代码解释器MCP，以更广泛地应用。
-• nickysielicki和rudi_mk分享了他们自己相似的项目和代码链接。
-• 0cf8612b2e1e询问是否有能处理数百万方程的符号代数系统，并提到Sympy在处理大规模问题时的性能问题。
-• jgalt212和rjeli幽默地评论了文章和实现的风格和氛围。
-
-争议焦点：
-• MCP的可扩展性和JSON模式复杂性对模型性能的影响是讨论中的一个争议点，behnamoh和ash-ali都提到了可扩展性问题。
-• Sympy等符号代数系统在处理大规模问题时的性能和能力问题引起了开发者的关注和讨论。
-
-这些观点共同构成了对MCP及其应用的多元化讨论，涉及技术细节、实际应用和潜在问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44062130" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44081418" target="_blank">Ask HN: What's your favorite architect/editor pair with Aider?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 34679</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-05-24 14:37</span>
+                    <span>发布时间: 2025-05-20 15:15</span>
                 </div>
 
                 <div class="summary-section">
@@ -531,21 +287,223 @@ Defuddle 提供核心包、完整包和 Node.js 包，核心包适用于大多�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在Apple Silicon 32GB设备上本地运行LLM（大型语言模型）设置的可行性，特别是关于devstral和open weights模型的性能比较。
+                    <div class="comments-summary">主要讨论点：关于模型火车和地点推荐的讨论
 
 不同观点：
-• TYMorningCoffee建议尝试在本地运行devstral small，并提到有些设置可以实现这一点。他还询问是否尝试过其他open weight模型，如architect。此外，他认为devstral是为open hands定制的，可能在open hands环境下表现更好。
-
-• 隐含观点：有人可能认为在本地运行LLM具有挑战性，尤其是对于资源密集型模型，因此需要确认在Apple Silicon 32GB设备上的可行性。
+• [neilknowsbest] 认为文章讨论的是位于新泽西的 Northlandz，并提到自己几十年前去过，觉得它还在营业，对该地表示赞赏。他附上了 Northlandz 的官网链接。
+• [CSMastermind] 对《华尔街日报》文章下仍有评论区感到有趣，但没有深入讨论模型火车或相关地点。
+• [huhkerrf] 以幽默方式提到一个与电视剧《黑道家族》中角色相关的车库，可能在开玩笑或联想到该剧中的场景。
+• [brudgers] 仅提供了一个存档链接，没有明确表达立场或看法。
+• [AStonesThrow] 建议如果对模型火车感兴趣，可以去西海岸的圣迭戈模型铁路博物馆（San Diego MRM）和圣迭戈动物园的小火车，并分享了个人经历，提到自己的祖父曾为他制作了一个带有功能性烟囱的 HO 比例火车轨道。
+• [jmclnx] 表示虽然自己对模型火车不感兴趣，但很高兴听到有令人印象深刻的模型火车设置被保存下来，对朋友的兴趣表示理解。
+• [martini333] 简单评论 "Peak comedy"，可能认为整个讨论非常有趣或具有娱乐性。
 
 补充讨论：
-• TYMorningCoffee正在寻找仅限于本地LLM的设置方案，并考虑在Apple Silicon上使用devstral与open hands的组合。这表明他对该组合的性能和兼容性有一定期待。
-
-• 讨论中提到的模型包括devstral small、aider以及open weights模型，显示出对这些不同模型性能和适用性的关注。
-
-争议焦点：目前没有明确的争议，但潜在的争议可能在于在Apple Silicon上运行这些模型是否能达到令人满意的性能，以及devstral与open hands组合是否真的优于其他选项。</div>
+• 讨论中涉及多个具体地点推荐，如 Northlandz 和圣迭戈的模型火车相关景点，表明参与者对模型火车爱好者的去处有所了解并愿意分享。
+• 争议焦点并不明显，但可以看出讨论风格多样，从实际建议到幽默评论都有。
+• [AStonesThrow] 的评论最为详细，提供了多个相关链接和个人故事，丰富了讨论内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44081418" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44042557" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.inkandswitch.com/ink/notes/sketchy-calendar/" target="_blank">Sketchy Calendar</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 148</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-05-22 23:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Sketchy Calendar》探讨了结合数字日历和纸质日历优势的可能性。数字日历如Google Calendar提供了便利的功能，如多视图、事件同步和共享日历，但其设计严格，难以体现灵活性和个性化，且视觉上单一无层次。相比之下，纸质日历更加灵活，允许用户通过手写和涂鸦自定义，记录各种生活事项。本文提出了一种设想，即创建一个结合两者优点的“Sketchy Calendar”：在数字平台上实现纸质日历的个性化和灵活性，同时保留数字化的便利功能。项目将探讨如何在简单数字笔记本上添加适度结构，实现互连的日、周、月视图，以及如何使手绘注释与正式日历事件有效互动，并研究共享日历和个性化动态行为的实现方式。未来将分享更多研究成果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：如何有效使用日历工具管理日程、待办事项和自由形式的笔记，以及对当前数字日历工具的改进建议。
+
+不同观点：
+• [klimeryk] 认为通过生成高度定制化的PDF日历（如ReCalender.me）可以更好地满足个性化需求，尤其是在电子墨水屏设备上使用，尽管这种方法无法与在线日历动态同步，但手动复制事件到PDF中有助于加深记忆和反思。
+• [koliber] 强调了日历、待办事项和议程之间的区别，提出了一种将三者结合使用的系统方法，利用Google日历和Notion来分别管理日历和待办事项，并通过手动整合形成每日议程，以解决工具刚性和短期自由形式的矛盾。
+• [Brajeshwar] 推荐David Seah的打印工具，认为这些工具经过多年完善，非常适合喜欢用纸笔做计划的人。
+• [racingmars] 希望看到更多支持“模糊”重复事件的工具，例如可以根据任务完成时间自动调整下次执行日期的功能，并提到Emacs的org-mode可能实现类似功能。
+• [n8cpdx] 提到Google日历缺少标记临时事件的功能，而Outlook可以，同时回顾了Outlook曾经提供的接近自由形式体验的看板视图。
+• [romuloalves] 提到纸笔计划的缺点是缺乏通知功能，导致难以严格遵循时间表。
+• [alberth] 建议使用颜色编码标签和任务功能来解决日历事件优先级和管理问题。
+• [nicbou] 希望有一个支持计划地图的工具，适用于摩托车旅行规划。
+• [thoughtpeddler] 分析了HEY Calendar的一些独特功能，如“本周某时”任务栏、习惯追踪、自由时间可视化等，并希望将这些功能整合到现有的日历软件中。
+• [AstroJetson] 使用自制的Pocket Mod日历和待办事项列表，并根据其调整生活方式以适应这种方法。
+• [rollcat] 通过Apple的日历和提醒事项结合使用，解决了待办事项和临时事件的管理问题，同时使用Notes应用作为自由笔记的工具。
+• [WillAdams] 希望Amazon能采纳这些创意并应用于Kindle Scribe。
+• [ErrorNoBrain] 强调数字日历的必要性，因为需要与他人共享和协作。
+• [ivape] 提到RocketBook和Neo smartpens等现有解决方案，并预测未来会出现更先进的设备和应用，结合机械笔记和语音转录功能。
+• [kentosi-dw] 认为作者可能只是寻找一种可以在平板设备上使用的日历背景模板。
+
+补充讨论：
+• 争议的焦点在于纸笔和数字日历工具的优缺点，尤其是关于通知、动态同步和自由形式笔记的功能差异。
+• 不同用户根据个人需求和习惯提出了多种工具和方法的组合使用，如Google日历、Notion、Reminders、Pocket Mod等。
+• 对未来工具的期望集中在“模糊”事件管理、自由形式输入和整合笔记与日历功能的更高级应用上。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44068204" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://simonwillison.net/2025/May/21/gemini-diffusion/" target="_blank">Gemini Diffusion</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mdp2021</span> |
+                    <span>评分: 865</span> |
+                    <span>评论数: 40</span> |
+                    <span>发布时间: 2025-05-22 01:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Google在I/O大会上发布了Gemini Diffusion，这是其首个使用扩散模型（而非传统的自回归方法）的大语言模型。扩散模型通过逐步优化噪声生成输出，而非直接预测文本，从而实现更快的速度和更高的质量。相较于一次生成一个词的传统模型，Gemini Diffusion能快速迭代和纠错，特别擅长编辑任务，如数学和代码处理。其生成速度高达857 tokens/秒，性能号称达到Gemini 2.0 Flash-Lite的水平，且速度是其5倍。扩散模型并非完全取代Transformer，而是替代自回归机制，仍可能使用Transformer进行处理。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：谷歌发布的使用扩散技术的语言模型及其潜在应用和争议
+
+不同观点：
+• [cztomsik] 认为扩散模型可能通过后期训练实现，并提到RWKV团队用WKV替代了注意力机制，暗示FFN（前馈神经网络）可能包含了大部分有用的知识，而注意力机制本身并非那么独特或重要。他还提到固定嵌入和注意力可能加速模型训练。
+• [airstrike] 对扩散模型在改进现有内容方面的能力表示怀疑，认为模型缺乏“机构知识”，即无法知道什么不在代码库中，因此在处理大型代码库时，熟悉该代码库的开发者可能比模型更有优势。
+• [shreezus] 对扩散模型在代码生成中的应用感到惊讶，并期待在扩散领域看到更多进展，特别是在混合模型方面。
+• [heliophobicdude] 强调扩散模型在拼写检查、代码修改和编辑器中的应用潜力，特别是其快速和精准的文本编辑功能。
+• [mountainriver] 指出扩散模型在推理和规划方面的优势，因为它们可以编辑且不受早期token偏见的影响。
+• [hiimshort] 关注扩散技术在低端硬件上的表现，期望其能重新平衡密度与连贯性之间的关系，使较小模型也能生成连贯文本，同时提高速度。
+• [huevosabio] 对扩散语言模型在游戏机制中的应用感到兴奋，但受限于硬件，希望获得API访问权限以进行实验。
+• [EGreg] 对扩散模型如何在不知道单词数量的情况下生成文本表示怀疑，认为这可能导致早期预测的token数量与实际需求不匹配。
+• [findingMeaning] 提到模型的快速性和易受提示注入攻击的缺点，但总体上对模型表现持积极态度。
+• [albertzeyer] 纠正关于谷歌使用扩散模型替代Transformer的误解，指出Transformer在离散扩散语言模型中仍是标准配置，并讨论了编码器-解码器模型的区别和训练细节。
+• [nodja] 认为扩散模型的速度优势可能导致GPU始终在高负荷工作，但对批处理的计算节省有限。
+• [renjimen] 预测扩散模型的速度将使软件开发变得更加流畅，应用可以以最小规模发布并在用户需求下扩展。
+• [seydor] 对通过去除噪声生成文本的概念感到深刻，认为语言学家会对近年来发生的这些进展感到惊讶。
+• [Tostino] 提出将扩散模型整合到标准自回归LLM的采样器中，以检测和纠正后验推理，并允许在生成过程中进行轻微回溯和调整。
+
+补充讨论：
+• 争议焦点：扩散模型是否能在改进大型预存内容上超越传统模型，以及其在生成文本时的token预测和数量确定问题。
+• 其他值得注意的讨论点：扩散模型的速度和编辑能力在实际应用中的潜力，如拼写检查和代码修改；模型在低端硬件上的表现及其可能的应用场景，如游戏开发。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44057820" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://quantuminpictures.org/" target="_blank">Quantum Picturalism</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mathgenius</span> |
+                    <span>评分: 55</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-05-20 20:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"Quantum for Everyone" 是一个让量子教育变得简单易懂的项目，通过视觉化方式教授量子概念，避免复杂数学，只需加减法和角度知识。这种方法称为“量子图像主义”（Quantum Picturalism），由Bob Coecke和Stefano Gogioso在其书《Quantum in Pictures》中详细介绍。项目通过Discord社区和相关资源帮助人们轻松开启量子学习之旅，适合各个年龄层的学习者，使量子知识更加普及和易于理解。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：ZX calculus在量子计算教育和研究中的适用性及其相关数学表示的复杂性
+
+不同观点：
+• **[tmvphil]**：ZX calculus是进行前沿研究（如误差修正和门编译）的有趣框架，但对于让更广泛的受众理解量子计算，它可能不太合适。除了简单的“量子传输就像拉动绳子”这种比喻外，其他的抽象操作都非常困难。他以实验量子计算博士的背景强调了ZX calculus的复杂性。
+
+• **[pentaphobe]**：对ZX calculus和Feynman Diagrams之间的关系感到好奇，并通过查找资料找到了一些总结和论文链接。pentaphobe没有明确表达立场，但展现了对ZX calculus的兴趣和进一步了解的意图。
+
+• **[tlogan]**：认为要真正理解量子物理，唯一的途径是通过数学，即“闭嘴计算”的方式。他还批评了美国学术界使用复杂的符号和命名惯例，认为这使得数学显得比实际更复杂，并指出这种做法可能出于显示聪明或保持学术排他性的目的。tlogan对比了社会主义国家使用更通俗语言命名概念的做法，认为这有助于理解。
+
+• **[baxtr]**：引用“Quantum Picturalism”这一术语，认为通过视觉方式教授量子概念可以减少学习者的畏惧心理，并使更多人接触到这个领域。baxtr支持使用图形化的方法（如ZX calculus）来推广量子计算教育。
+
+补充讨论：
+• **争议焦点**：ZX calculus是否适合作为让更广泛受众理解量子计算的工具。tmvphil认为它过于复杂，而baxtr则认为视觉化的方式可以降低学习难度。
+
+• **命名和符号的复杂性**：tlogan批评了数学和物理学中使用复杂符号和术语的倾向，认为这增加了理解的难度，并提出了不同语言和文化背景下命名惯例的差异。
+
+• **资源链接**：pentaphobe提供了有关ZX calculus和Feynman Diagrams关系的资源链接，为有兴趣的读者提供了进一步阅读的材料。
+
+总体来看，讨论围绕ZX calculus在量子计算教育中的适用性及其相关数学表示的复杂性展开，参与者从不同角度表达了各自的观点和经验。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44045617" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.alexewerlof.com/p/when-a-team-is-too-big" target="_blank">When a team is too big</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gpi</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-05-19 04:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章探讨了团队规模过大带来的问题以及如何提高生产力。作者通过自身经历讲述了一个14人团队在沟通和任务分配上的低效问题，如站会无聊、信息遗漏和“幽灵任务”等。为解决这些问题，团队尝试了异步站会，但效果不佳，因为缺乏必要的对话和沟通。最终，通过将团队按技术领域划分为前端和后端两个小组，提升了效率和相关性。文章强调，通才团队能减少内部依赖和单点故障，但通才模式也有挑战。关键在于创造一个有利于持续改进的环境，而非依赖某个“万能”解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：团队在敏捷开发中的每日站会（standup）的效率、组织结构、团队角色分工以及如何处理团队扩展中的问题。
+
+不同观点：
+• Etheryte认为，站会时间过长是因为缺乏有效的引导和纪律，站会应限制在每人一分钟内，后续讨论应私下进行。Etheryte还提到瑞典文化中的非对抗性可能导致会议无法有效控制时间。
+• Teeray则强调站会的核心价值在于讨论障碍和合作机会，认为如果等到站会才提出障碍问题，可能已经太迟，提倡通过即时通讯工具更快地解决问题。
+• Madaxe_again指出团队规模扩大后会出现办公室政治问题，建议通过任务导向的轮换团队来打破权力斗争和内耗现象。
+• Ivan_gammel将站会问题归因于中层管理缺乏经验，建议通过建立小型团队、保持专家角色和水平组织结构来解决问题，强调过程应该服务于人，而不是让人适应过程。
+• Frollogaston分享了他们尝试通过指定负责人和可选会议来解决站会过长的问题，但最终发现即时召集必要人员开短会更有效。
+• Bobek建议使用书面/异步站会，认为这可以避免报告的随意性，并提供了一个参考链接。
+• Protocolture通过数据分析支持小团队管理的高效性，指出6人左右的团队能取得更好的管理效果。
+• Pards对文章中禁止用于AI训练的声明表示兴趣，并质疑其法律效力。
+• Abhaynayar表达了对从安全领域转向更广泛的技术角色的担忧，并寻求建议。
+• Agge以幽默的方式回应文章中提到的“11个工程师可以吃两份披萨”，指出瑞典披萨的份量问题，并认为3-4人的团队规模更合适。
+• Theptip认为全能型人才（generalist）并不是普适的解决方案，主张通过用户故事框架来报告进展，并强调团队协作和沟通的纪律性。
+• Makeitdouble认为在许多公司中，业务执行比技术知识更重要，因此全能型团队能取得不错的效果，但随着公司发展，逐步推动专业化可能会带来更好的结果。
+• Spenrose批评某些文章标题吸引眼球但缺乏新意，建议阅读更有深度的书籍，如《Team Topologies》。
+• Mettamage认为全栈开发是解决方案，并质疑文章对跨领域学习的困难性描述，认为有CS教育背景的开发者应有能力学习不同领域的知识。
+• Gwbas1c分享了自己在客户端和服务器团队分开的项目中的经验，认为过早打破团队界限不一定合适，但承认在项目早期保持全能型人才可能更有帮助。
+
+补充讨论：
+• 站会的理想时长和形式是讨论的焦点，有人主张严格控制时间，有人强调即时解决技术问题。
+• 团队规模扩大后出现的办公室政治和管理问题被多次提到，轮换团队和任务导向的组织方式被视为解决方案。
+• 全能型人才和专业化之间的平衡是另一个讨论重点，不同人根据经验提出了不同的看法。
+• 关于如何有效沟通和协作，特别是通过用户故事和团队协作的方式，也有较多讨论。
+• 文化因素（如瑞典的非对抗性文化）对会议效率的影响也被提及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44026516" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
