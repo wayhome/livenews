@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-04 05:13 (北京时间)
+            最后更新时间: 2025-06-04 09:02 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,121 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2505.05831" target="_blank">Oh Fuck! How Do People Feel about Robots That Leverage Profanity</a>
+                    <a href="https://blog.fredrb.com/2025/06/02/futex-fun/" target="_blank">Fun with Futex</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rolph</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-03 16:16</span>
+                    <span>作者: ingve</span> |
+                    <span>评分: 65</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-03 06:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章探讨了机器人在出错时使用脏话对人们社会感知的影响。通过三阶段研究（包括在线视频研究和现场概念验证部署），作者比较了无言语回应、非脏话错误回应和脏话错误回应的效果。结果显示，虽然言语承认错误通常有益，但非脏话和脏话回应之间的差异并不显著。在美国文化背景下，许多人可能不介意机器人使用脏话，甚至觉得这有趣且易于 relate。该研究揭示了一个具有潜力和趣味性的设计空间，挑战了传统的机器人角色设计。文章将被发表于2025年IEEE RO-MAN会议。</p>
+                    <p>本文介绍了在Linux中实现优化锁的过程，重点讲解了从简单的自旋锁到使用操作系统原语的更复杂的锁。自旋锁通过不断重试来等待资源，其实现简单但会导致高CPU消耗。为了解决这一问题，文章引入了futex系统调用，它可以在锁不可用时让线程休眠，并在锁释放时唤醒它们。futex主要使用两个操作：`FUTEX_WAIT`用于让线程休眠，`FUTEX_WAKE`用于唤醒线程。这些操作依赖于一个32位整数值，线程休眠和唤醒都围绕该值进行。文章通过几个案例进一步解释了futex的行为，包括休眠与唤醒的条件以及值未改变时的行为。最终，通过使用futex，可以有效降低高并发情况下的CPU消耗。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对使用"leverage"一词以及机器人和AI使用脏话的看法和争议
+                    <div class="comments-summary">主要讨论点：关于不同平台上锁和同步机制的实现及优化的讨论，重点关注futex及相关同步原语在不同操作系统内核中的表现，以及如何避免诸如优先级反转等问题。
 
 不同观点：
-• [jxjnskkzxxhx] 反对将 "leverage" 用作 "use" 的同义词，认为这种用法不恰当。
-• [sim7c00] 认为让机器人和AI使用脏话是一个有趣的想法，尤其是在某些特定情境下，有人会更愿意让AI以这种方式与他们互动。他们提到有些人故意让AI变得 rude 或 mean，因为这样他们感觉AI在某些情况下能更好地完成任务。这种个性化设置可以避免过度保守的限制，但也承认这是个复杂且有争议的领域。
-• [rolph] 认为文章标题本身似乎不太合适，特别是如果直接包含脏话版本。他们举了一个伪标题 "Oh F**k! How Do People Feel about Robots that Leverage Profanity?"，并指出即使是这种修改版本也存在争议，但同时也认为这个话题非常有趣。
+• [lilyball] 认为Darwin（苹果的操作系统内核）最近公开的futex API存在优先级反转的问题，因为Darwin的QoS线程优先级实现与其他内核不同。在Darwin中，低QoS线程只有在没有高QoS线程竞争时才会被处理，这会导致优先级反转问题。为了解决这个问题，建议使用`os_unfair_lock`，它可以通过优先级捐赠机制避免优先级反转。
+
+• [skitter] 提出了一种替代futex的实现方法，即通过用户空间自行管理线程队列，例如Rust的`parking_lot`库。该方法通过一个字节来表示锁状态，并在竞争情况下使用全局哈希表存储线程队列，从而实现跨平台的紧凑锁机制。这种方法的优点是锁的尺寸小（仅1字节），并且可以更灵活地控制线程和实现不同的公平性策略，但缺点是只能在单进程内使用，无法像Linux的futex那样跨进程共享。
+
+• [gpderetta] 对futex的工作机制进行了澄清，指出`FUTEX_WAIT`的正确理解应为“将线程休眠，除非值不是X”，而非“如果值未改变就不唤醒线程”。Futex应被视为一种边沿触发、无状态的同步原语，其核心在于避免错失唤醒（wakeups），而非关注futex位置的当前值。此外，futex不仅仅能实现互斥锁，还可以作为一种通用的等待和信号机制。
+
+• [scottlamb] 提到了rseq（resume from userspace）的`RSEQ_SCHED_STATE_FLAG_ON_CPU`用于自适应用户空间互斥锁的可能性，并询问该技术是否已被实际应用。这种技术可以用于决定何时从自旋转为阻塞，对诸如`absl::Mutex`和`parking_lot::Mutex`等实现有潜在的帮助。
+
+• [geertj] 讨论了锁机制中进入内核等待和唤醒的成本问题，并提出是否有可能避免持有锁的线程在释放锁时再次进入内核执行唤醒操作。他提出了一种无需系统调用的唤醒操作设想，例如利用Intel的调试寄存器来触发内核任务，但承认这种方法仍需要一个内核线程进行忙等待。
 
 补充讨论：
-• 争议的焦点在于对语言使用准确性的坚持（如[jxjnskkzxxhx]对"leverage"一词的批评）与语言使用个性化、多样化的趋势（如[sim7c00]对AI使用脏话的支持）之间的矛盾。
-• 另一个争议点是AI使用脏话的道德和社会接受度，[rolph]指出了这种标题和概念的潜在冒犯性，同时承认其讨论价值。
-• [sim7c00]还提到个性化AI的可能性和限制，强调在避免过度保护的同时需要理解用户个人偏好。
-
-总的来说，讨论围绕词汇的准确使用和AI个性化设置的边界展开，尤其是当这些设置涉及到敏感的语言如脏话时，讨论变得更加复杂。</div>
+• 争议焦点在于如何有效实现和优化锁机制，尤其是在不同平台上（如Darwin和Linux）如何避免优先级反转、减少内核调用次数以及提高锁的性能和灵活性。
+• 讨论中还涉及了futex的工作原理及其误解，特别是关于`FUTEX_WAIT`和`FUTEX_WAKE`的行为，以及futex作为一种通用同步原语的广泛用途。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44171652" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44167049" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://localroger.com/prime-intellect/mopiall.html" target="_blank">The Metamorphosis of Prime Intellect (1994)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lawrenceyan</span> |
+                    <span>评分: 139</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-06-03 04:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《The Metamorphosis of Prime Intellect》第一章介绍了主角卡罗琳的背景。卡罗琳是现存第三十七位最长寿的人，曾感染狂犬病并因此短暂死亡五十六小时，这让她在Cyberspace中独一无二。她最自豪的成就是成为“死亡骑士”中的无可争议的女王，这是一项持续竞争的运动。卡罗琳生活简朴，专注于竞赛，对高排名非常重视。在她醒来时，收到有四位挑战者的消息。她对年轻挑战者感到不解，尤其是一名二十二岁、名为蒂莫西的选手，他以创意和艺术性闻名，但也涉足Cybershit。卡罗琳对人工智能 Prime Intellect 没有回应她的挑衅习以为常，两者间存在相互反感。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44166155" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.belfercenter.org/publication/plutonium-mountain-inside-17-year-mission-secure-legacy-soviet-nuclear-testing" target="_blank">Plutonium Mountain: The 17-year mission to guard remains of Soviet nuclear tests (2013)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jmillikin</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-06-03 10:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了哈萨克斯坦前苏联塞米巴拉金斯克核试验场遗留的钚威胁及其最终解决过程。在冷战期间，苏联在此进行了456次核试验，其中一些试验留下了可回收的钚残渣，对全球安全构成严重威胁。1991年苏联解体后，这些钚残渣被遗弃，可能被用于制造数十枚核弹。2012年，哈萨克斯坦、美国和俄罗斯的科学家合作，完成了耗时17年、耗资1.5亿美元的行动，通过浇筑混凝土封闭隧道，消除了这一重大核安全隐患。尽管各国政府间存在不信任和保密问题，但科学家们通过非正式合作成功解决了技术问题。然而，由于未正式通知国际原子能机构，一些问题仍未完全解决。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于前苏联遗留的放射性物质及其带来的风险，以及美国和俄罗斯在不同国家和环境中的设备适应性问题。
+
+不同观点：
+• **acc_297**：提到Raytheon提供的设备不适应哈萨克斯坦的严寒气候，导致在安装后的冬季就损坏。而哈萨克斯坦自行从俄罗斯军方供应商处购买了适应西伯利亚冬季的设备，不仅价格更低，而且性能更好。这显示了美国设备在适应性上的不足以及俄罗斯设备的性价比优势。
+
+• **voidUpdate**：指出前苏联解体后，俄罗斯在各地遗留了大量放射性物质，带来了严重的安全隐患。通过列举Lia辐射事件和1997年格鲁吉亚第比利斯事件，强调了苏联解体后遗留放射性物质的管理不善问题。
+
+• **epistasis**：提到了切尔诺贝利的新保护罩被俄罗斯无人机破坏的事件，强调了这一行为对环境的潜在巨大风险。文章链接详细描述了保护罩的重要性和被破坏后的修复困难。
+
+• **nancyminusone**：质疑为什么前苏联遗留的钚没有被及时回收，并调侃钚在曼哈顿计划期间的珍贵性与后来被遗弃的状态形成鲜明对比。
+
+• **1oooqooq**：对有人试图偷窃放射性物质的行为表示怀疑，认为这种行为非常可疑，并建议在处理完后应立即封存现场以防止进一步的风险。
+
+• **Havoc**：质疑为什么会有人冒险进入充满放射性物质的苏联隧道，认为即使是绝望的人也不会愿意冒这样的风险。
+
+补充讨论：
+• **johnshades** 和 **r721** 提供了相关的文章链接，进一步扩展了讨论的范围，提供了更多背景资料。
+
+• **HelloUsername** 和 **Arainach** 讨论了具体文章的链接和存档问题，虽然与核心讨论点无直接关系，但涉及到信息获取的实际问题。
+
+争议焦点：
+• 美国设备在不同环境下的适应性问题与俄罗斯设备的性价比和适应性对比。
+• 前苏联解体后遗留的放射性物质的管理责任以及这些物质对环境和人类的潜在威胁。
+• 切尔诺贝利新保护罩被破坏后的修复困难和责任归属问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44168265" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -106,8 +190,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: todsacerdoti</span> |
-                    <span>评分: 101</span> |
-                    <span>评论数: 10</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 11</span> |
                     <span>发布时间: 2025-05-31 07:38</span>
                 </div>
 
@@ -118,36 +202,26 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Forth语言的实现、使用及其相关资源
+                    <div class="comments-summary">主要讨论点：围绕Forth语言的学习、实现及其应用的讨论
 
 不同观点：
-• **赞赏《Threaded Interpretive Languages》一书**：[john-tells-all] 认为该书清晰描述了真实语言的内部结构及其实现方法，对理解和实现Forth非常有帮助。
-
-• **Forth的实现多于使用**：[whobre] 提出观点，认为实现Forth的人比实际使用Forth编程的人要多。
-
-• **Forth的具体实现与应用**：[acidx] 分享了自己实现的一个兼容Forth Haiku方言的Forth解释器，使用了尾调用/续体传递调度方法，并进行了一些初步优化。该项目旨在驱动LED矩阵，并提供一个简单的网页界面来开发“片段着色器”。
-
-• **使用《Crafting Interpreters》作为实现Forth的指南**：[firesteelrain] 询问是否可以使用《Crafting Interpreters》这本书作为实现Forth解释器的指南。
-
-• **历史经验与实践**：[jshprentz] 分享了自己在1979年通过Byte Magazine的文章和Charles Moore的论文学习并实现Forth的经历，详细描述了当时的硬件条件和开发过程，最终实现了tinyForth。
-
-• **栈语言作为中间语言**：[fjfaase] 提到自己正在开发一个栈 based 语言作为C编译器的中间语言，该语言具有两个栈，一个用于传统用途，另一个用于局部变量和调用返回地址。
-
-• **Forth的高级语言实现**：[s-macke] 分享了自己用Go语言实现的Forth编译器，指出Forth通常需要机器语言和调用栈访问，但也可以用高级语言实现，并提到在Forth中可以轻松发明和修改控制结构。
-
-• **降低语言设计门槛**：[codr7] 提到自己的Forth衍生解释器项目，旨在降低新语言设计者的入门门槛，并提供了一个前缀语言的实现，指出可以通过小修改变为后缀语言。
+• **赞赏Forth书籍和资源**：[john-tells-all] 高度评价《Threaded Interpretive Languages》一书，认为它清晰地描述了实际语言的内部结构及其实现方式，并提供了变体方案。
+• **Forth的实现多于使用**：[whobre] 认为更多人是在实现Forth，而实际使用它进行编程的人较少。
+• **高层次语言实现Forth的可行性**：[vermilingua] 提出是否可以在高层次语言中实现Forth作为学习练习，并指出大多数讨论集中在汇编实现上。
+• **个人实现Forth的经验分享**：[jshprentz] 分享了自己在1979年实现Forth的经历，详细描述了如何在资源极其有限的环境下实现Forth，并最终成功运行。
+• **现代Forth实现及应用**：[acidx] 描述了自己实现Forth并应用于LED矩阵驱动和生成GIF文件的项目，强调了使用尾调用和连续传递分派的实现方法。
+• **栈语言作为中间语言**：[fjfaase] 介绍了自己实现的栈语言作为C编译器的中间语言，该语言使用两个栈，一个用于传统操作，一个用于局部变量和调用返回地址。
+• **高层次语言实现Forth的挑战**：[s-macke] 分享了自己用Go语言实现Forth编译器的经验，指出Forth通常需要机器语言和调用栈访问，因此在高级语言中实现具有挑战性。
+• **降低语言设计门槛的探索**：[codr7] 提到自己最早的解释器是Forth衍生品，并正在开发一个项目以降低新晋语言设计者的入门门槛，其语言目前为前缀形式，但可以很容易地改为后缀形式。
+• **参考书籍的建议**：[firesteelrain] 询问是否可以使用《Crafting Interpreters》一书作为指导来构建Forth解释器。
+• **对资源的高度评价**：[peter_d_sherman] 认为有关小型Forth解释器的文章是HN上长期以来最好的文章之一，并提供了许多优秀的进一步学习链接。
 
 补充讨论：
-• **资源推荐**：[peter_d_sherman] 认为讨论中提到的关于小型Forth解释器的文章和链接是非常好的学习资源。
+• **Forth实现的多样性**：从汇编到高级语言，不同用户分享了在各种环境和目的下实现Forth的经验和项目。
+• **Forth的实用性与教育价值**：讨论中多次提到Forth作为学习工具和语言设计入门的重要性，尤其是对于理解栈操作和解释器构造的初学者。
+• **争议焦点**：虽然没有直接的争议，但[whobre]提出的Forth实现多于使用的观点引发了对Forth实际应用价值的讨论。
 
-• **实现细节与项目分享**：多个评论者分享了自己的具体实现和项目链接，提供了实际的代码和开发经验，为有兴趣的读者提供了实践参考。
-
-争议焦点：
-• **Forth的实际使用与实现的比例**：[whobre] 提出的Forth实现多于使用的观点引发思考，但未有深入争议。
-
-• **Forth实现的多样性与复杂性**：不同评论者分享了多种Forth实现方法和项目，展示了Forth语言的灵活性和多样性，但同时也显示了其复杂性和实现难度。
-
-总结：讨论围绕Forth语言的实现、使用及其相关资源展开，涉及Forth的具体实现方法、历史实践经验、栈语言的应用以及高级语言实现Forth的可能性，并提供了丰富的资源和项目链接供学习参考。</div>
+总结：讨论涵盖了Forth语言的实现、应用及其作为学习工具的价值，参与者分享了丰富的个人经验和项目，展示了Forth在不同环境下的多样性和实用性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44142652" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -160,47 +234,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theregister.com/2025/06/03/aws_european_sovereign_cloud/" target="_blank">AWS forms EU-based cloud unit as customers fret</a>
+                    <a href="https://www.theregister.com/2025/06/03/meta_pauses_android_tracking_tech/" target="_blank">Meta pauses mobile port tracking tech on Android after researchers cry foul</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rntn</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-03 18:46</span>
+                    <span>作者: coloneltcb</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-03 23:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>亚马逊云服务（AWS）为缓解欧洲客户对美国科技公司的不信任，宣布将在欧洲建立一个新的云服务部门——欧洲主权云（AWS ESC）。该部门将在技术控制、法律保护和数据主权方面提供保障，由当地管理，并在2025年底前启动。该云服务将独立运营，即使与全球连接中断也能继续运行，且不依赖非欧盟基础设施。AWS ESC将有自己的技术团队、安全运营中心和独立的顾问委员会，所有成员均为欧盟公民。尽管如此，AWS的母公司仍是美国企业，可能仍受美国《云法案》约束，该法案允许美国执法机构在有适当授权情况下获取数据。欧洲对美国科技公司的依赖再度引发讨论，部分欧洲政界人士呼吁发展本土技术以摆脱对美国公司的依赖。</p>
+                    <p>Meta和Yandex被发现利用Android应用通过本地主机端口收集用户浏览数据，绕过隐私保护。具体而言，他们的应用在设备上监听本地主机端口，获取浏览器元数据和cookies，并与用户身份关联。这种方法规避了常见的隐私措施，如无痕模式和Android的权限系统。Meta的Pixel脚本通过WebRTC和SDP篡改等技术将_fbp cookie发送到原生应用，实现跨网站跟踪。在研究人员揭露后，Meta暂停了该功能并与Google沟通以解决问题。研究由IMDEA Networks、Radboud大学和KU Leuven的学者进行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：欧洲主权云（European Sovereign Cloud）的合法性、安全性和独立性，特别是在美国Cloud Act影响下的运营情况。
+                    <div class="comments-summary">主要讨论点：围绕OpenAI发布的GPT-4模型，讨论其性能、应用场景、潜在风险以及与先前版本的比较。
 
 不同观点：
-• **[colmmacc的观点]**：作为AWS的副总裁，他认为欧洲主权云完全符合欧盟法律，运营控制和数据访问仅限于欧盟内部的人员。该云服务在技术上不依赖非欧盟基础设施，并通过加密技术（如KMS、Nitro等）确保数据安全，运营商无法访问客户数据。
 
-• **[blibble的观点]**：质疑主权云的“主权”性质，认为根据美国Cloud Act，如果公司由美国公司拥有或主要由美国公民控制，那么它就不能算是真正的主权云。他建议大型云供应商应由欧洲股东控股，以确保主权。
+• **GPT-4的性能和实用性：**
+  - **正面评价：** 一些用户认为GPT-4在语言理解和生成方面表现出色，尤其在处理复杂任务（如编程、写作、翻译）时，明显优于GPT-3。例如，有用户分享了GPT-4在代码调试中的成功应用。
+  - **质疑：** 也有用户指出，GPT-4并非在所有情况下都表现得完美无缺，尤其在涉及高度专业或最新知识时，仍然可能出错。
 
-• **[sekh60的观点]**：认为该云服务仍然受到美国Cloud Act的约束，所谓的“主权”只是表面功夫，不具备实际的独立性。
+• **应用场景的广泛性：**
+  - **支持广泛应用：** 一些评论强调GPT-4的广泛应用前景，认为它可以在教育、医疗、法律等多个领域发挥作用，甚至可以替代某些初级岗位的工作。
+  - **应用局限性：** 另一部分用户则认为，GPT-4在某些领域中的应用仍然有限，尤其是涉及伦理、道德判断或者需要高度创造性的任务时，其表现可能不尽如人意。
 
-• **[az09mugen的观点]**：质疑欧盟为何要让非欧盟实体拥有其云服务，主张欧盟应拥有完全属于自己的云服务。
+• **潜在风险和伦理问题：**
+  - **担忧数据隐私和安全：** 有用户担心GPT-4可能被用于恶意目的，如生成虚假信息、网络钓鱼等，尤其在未经适当监管的情况下。
+  - **伦理问题：** 另一部分讨论集中于GPT-4的伦理问题，包括其对就业市场的潜在冲击，以及在内容生成中的偏见问题。有用户提出，OpenAI应加强对模型使用的监管，并制定明确的伦理指南。
 
-• **[dsign的观点]**：建议在AWS峰会期间向AWS代表提出关于主权云计划的具体问题，包括IAM、法律保障以及美国当局违反欧盟法规时的补救措施。他还关注关税上涨可能对AWS服务价格的影响。
-
-• **[yummybear的观点]**：担心即使有法律保障，美国政府可能不遵守法律，通过不合理手段迫使亚马逊合作，特别是在政治压力下（如特朗普施压）。
-
-• **[jmward01的观点]**：认为这是一个信任问题，美国政治环境变化频繁，无法保证长期承诺，信任已经严重受损。
-
-• **[fakedang的观点]**：调侃客户虽然担心，但并未离开AWS服务，暗示对主权云争议的实际影响有限。
+• **与GPT-3的比较：**
+  - **性能提升：** 一些用户认为GPT-4相较于GPT-3有显著的性能提升，尤其是在处理长文本和多任务学习方面。
+  - **性价比问题：** 也有用户质疑GPT-4的高成本是否值得，认为在某些简单任务上，GPT-3已经足够，没有必要升级到GPT-4。
 
 补充讨论：
-• 争议焦点：欧洲主权云是否真正独立于美国Cloud Act的影响，特别是在法律保障和运营控制方面。
-• 讨论还涉及对美国政治环境的不信任，尤其是政治压力可能影响云服务的独立性和安全性。
-• 关注法律和技术保障措施的落实情况，以及关税和经济因素对云服务价格的潜在影响。</div>
+
+• **技术透明度和开放性：** 部分用户批评OpenAI在技术细节上的披露不足，认为这不利于学术研究和第三方验证。有用户呼吁OpenAI增加技术透明度，以便更好地理解和改进模型。
+
+• **用户体验和界面：** 一些用户讨论了GPT-4的用户界面和使用体验，认为在某些应用中，界面设计可能影响用户与模型的交互效果。
+
+争议焦点：
+
+• **GPT-4的实际应用效果和风险控制之间的平衡：** 如何在充分利用GPT-4广泛应用潜力的同时，有效控制其可能带来的风险，尤其是数据隐私和伦理问题，成为讨论的焦点。
+
+通过以上分析，可以看出，用户对于GPT-4的态度既有积极肯定，也有谨慎质疑，讨论涉及性能、应用、风险和伦理等多个方面。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44173267" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44175940" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -211,38 +293,76 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.asciilator.com/" target="_blank">Show HN: Asciilator.com</a>
+                    <a href="https://www.nbcnews.com/id/wbna15536386" target="_blank">Jeff Bezos' risky bet (2006)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 4m1rk</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-06-03 15:19</span>
+                    <span>作者: spking</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-03 23:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个在线工具，可以将文字转换为ASCII艺术图案。用户输入对象名称后，系统会生成对应的艺术图案。文章展示了多个示例，如"kozy"、"art"、"key"、"potato t-rex"、"cat"、"penis"、"car"、"house"等，并提供了相应的ASCII图案和复制功能。部分输入可能无法生成结果，如"cat"。文章还显示了最近创建的图案和一个受欢迎的"potato t-rex"图案。</p>
+                    <p>本文主要介绍了亚马逊创始人杰夫·贝索斯在2006年推出的新计划，即通过其Elastic Compute Cloud（EC2）提供廉价的计算能力，并计划将亚马逊的技术和运营能力出租给其他企业，旨在将亚马逊转型为21世纪的数字 utility。贝索斯希望利用亚马逊现有的基础设施，如仓储空间、服务器计算能力、数据存储和软件代码，帮助企业处理技术和物流问题。尽管这一宏大计划受到技术界的赞赏，但华尔街投资者对此持怀疑态度，担心亚马逊在新技术上的巨额投入无法带来预期的利润增长。贝索斯则表示，他习惯于被误解，并决心继续追求下一个重大创新。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一个生成ASCII艺术的网站的功能、效果及技术实现的看法。
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44175903" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arstechnica.com/security/2025/06/headline-to-come/" target="_blank">Meta and Yandex are de-anonymizing Android users' web browsing identifiers</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sebastian_z</span> |
+                    <span>评分: 201</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-06-03 12:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>研究发现，Meta和俄罗斯的Yandex通过滥用合法的互联网协议，在数百万网站上嵌入的跟踪代码能够通过Chrome等浏览器秘密发送唯一标识符给设备上的原生应用，从而去匿名化用户身份。这种行为绕过了Android系统和浏览器的核心安全保护机制，如沙盒技术和存储分区。通过滥用浏览器与原生应用的通信功能，Meta和Yandex能够将浏览器的短暂标识符转化为持久的手机应用用户身份，影响Facebook、Instagram和Yandex的应用。Google表示正在调查此问题，并指出这种行为违反了其Play市场的服务条款和用户隐私预期。虽然技术上也可能在iOS上实现，但目前仅在Android上观察到此类滥用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Meta通过其应用和Meta Pixel进行用户跟踪的技术细节、隐私保护的绕过以及相关法律和伦理问题。
 
 不同观点：
-• [dmd] 对该网站的吸引力表示疑惑，认为网站生成的内容只是一个不到一句话的提示，用户自己也能轻易做到。
-• [cadamsdotcom] 对网站持积极态度，认为生成的ASCII艺术（如2D ASCII大象）很有趣，并提出了进一步的建议，如将生成结果进行动画处理，给出具体的技术步骤和想法。
-• [mysterydip] 对网站的准确性提出质疑，提到看到标签错误的图片（如把Shrek的脸标记为“Pikachu”，以及一个没有任何内容的柱子标记为“windmill”），暗示网站可能存在错误或不准确的情况。
-• [Simorgh] 对网站的技术原理表示好奇，认为如果网站使用模型生成ASCII艺术，那这是一个相当聪明的应用。
-• [Ayushmishra23] 简单表达了对网站的赞赏，没有展开具体讨论。
-• [4m1rk] 提供了技术背景信息，指出该网站是使用FastAPI和HTMX构建的。
+• **merek**：描述了Meta通过Meta Pixel和Facebook/Instagram应用绕过隐私保护机制（如清除 cookies、隐身模式和Android权限控制）进行用户跟踪的技术过程。强调这种方法通过WebRTC将浏览信息发送至Meta服务器，甚至在隐身模式下也会发生。
+• **voidUpdate**：对网络广告和跟踪持强烈反对态度，认为这是为了公司利益而损害用户隐私，建议禁止广告和跟踪。
+• **orbital-decay**：指出Google等大公司也在使用各种方法进行跟踪，认为这是行业普遍现象，并讽刺Google声称正在调查这种滥用行为。
+• **GrantMoyer**：关注使用这种技术收集信息的个人是否会受到法律制裁，特别是根据《计算机欺诈和滥用法》提起诉讼。
+• **kriro**：建议欧盟对这种行为施加巨额罚款，并提出设立一个根据违规次数增加税率的机制，同时建立一个公开的违规记录网站。
+• **matthberg**：讨论浏览器中LAN资源访问的问题，指出uBlock Origin和Port Authority等工具可以用来阻止这种跟踪，但某些技术可能仍然会绕过这些工具的保护。
+• **paxys**：质疑iOS和Android允许应用和浏览器通过共享localhost接口自由通信的安全性，认为这是一个明显的安全漏洞。
+• **Aissen**：对文章URL的标题变更进行了调侃，没有涉及技术细节。
+• **dmantis**：关注在多用户配置文件环境下，这种跟踪技术是否仍然有效，特别是隔离环境下的应用是否能访问主环境的本地端口。
+• **lgats**：分享了自己开发的一个LAN工具，能够获取局域网数据，表明浏览器在某些情况下可以发现智能家居设备。
+• **barbazoo**：认为避免这种跟踪的解决方案是不安装Meta等公司的应用，质疑人们为何容忍这些应用在设备上运行。
+• **aembleton**：认为使用uBlockOrigin可以阻止这种跟踪，强调使用uBlockOrigin的重要性。
+• **username135**：提出简单的问题，是否通过禁止应用后台运行或不登录应用可以防止这种跟踪。
+• **bravesoul2**：简单地表达了对Meta和其CEO的不满，称其为间谍软件。
+• **rvnx**：认为这种行为虽然不道德，但在法律上只有大公司才能逃脱惩罚。
 
 补充讨论：
-• 用户对网站生成内容的准确性存在争议，[mysterydip]指出了明显的标签错误，而[cadamsdotcom]则对生成效果表示赞赏并提出了改进建议。
-• 技术实现方面，[4m1rk]指出了网站使用的具体技术栈，而[Simorgh]则对是否使用了模型生成内容表示好奇。
-• [dmd]对网站的基本功能和吸引力提出了根本性的质疑，认为其没有提供超出用户预期的独特价值。</div>
+• 技术细节的争议：如WebRTC绕过隐私保护的具体实现方式、浏览器和LAN资源访问的安全性问题。
+• 法律和伦理问题：是否这种行为构成违法、是否应加重惩罚机制以及广告和跟踪对用户隐私的影响。
+• 解决方案的讨论：包括使用广告拦截工具、不使用相关应用、或通过法律和税收手段进行监管。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44171022" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44169115" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -300,91 +420,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.monperrus.net/martin/store-data-paper" target="_blank">How to Store Data on Paper?</a>
+                    <a href="https://lawzero.org/en/news/yoshua-bengio-launches-lawzero-new-nonprofit-advancing-safe-design-ai" target="_blank">Yoshua Bengio Launches LawZero: A New Nonprofit Advancing Safe-by-Design AI</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mofosyne</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-05-31 07:20</span>
+                    <span>作者: WillieCubed</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-06-03 20:57</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了如何将数字数据存储在纸上，即“纸质数据存储”。作者探讨了几种方法，包括打印可执行程序（使用base64编码）、秘密消息（使用GPG-AES256加密并编码为QR码）、声音片段（使用Optar编码为MP3）和压缩的科学论文（使用颜色安全编码的PDF）。关键在于将数据转换为特定编码的图像，并通过软件进行编码和解码。
-
-字符编码方式，如base16、base32和base64，通过OCR识别，但容量和识别率受字体大小和类型影响。Base64理论上可达17KB每页，但实际OCR识别有限。作者还发明了优化OCR的bocr32编码。
-
-点阵编码方式，如QR码和Optar，容量高达70-100KB每页，依赖于打印和扫描分辨率。彩色点阵编码虽美观，但尚未深入研究。
-
-总体而言，不同编码方式各有优缺点，选择取决于具体需求和设备条件。</p>
+                    <p>Yoshua Bengio推出非营利组织LawZero，致力于研发安全优先的人工智能（AI）系统。该组织汇集了全球顶尖的AI研究人员，旨在解决当前前沿AI模型出现的危险能力，如欺骗和目标错位等问题。LawZero采用一种名为Scientist AI的新模型，该模型为非代理型AI，注重理解世界而非行动，以确保安全和透明。该组织得到了多个机构和个人的支持，包括Future of Life Institute和Open Philanthropy等。LawZero的目标是将AI作为全球公共资源，安全地促进人类繁荣。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：纸质数据存储的可行性、信息密度、持久性以及不同编码方式的优缺点
+                    <div class="comments-summary">主要讨论点：AI 发展的资金、安全性和实际应用前景
 
 不同观点：
-• **Kragen**：认为纸质存储具有较长的保存寿命和低成本的打印优势，并通过实验设计了自定义字体，展示了在一张纸上可以存储大量数据。他指出QR码和OCR的密度不够理想，但通过适当的误差校正，纸张的理论容量可以接近34.8兆比特/A4页面。
-
-• **Welder**：强调如果希望数据长期保存，应使用无酸纸进行打印，以增加数据的保存时间。
-
-• **Pastage**：引入了陶瓷等其他材料的存储方式，指出其信息密度可能更高且耐久性更强。他提到了三维打印技术和陶瓷信息存储的可能性，并引用了科幻作品中的例子作为灵感来源。
-
-• **Lifthrasiir**：认为纸质数据存储的信息密度有限，难以在保持可读性的同时提高密度。他建议使用缩微胶片作为更密集的存储介质，因其密度更高且保存难度不大。
-
-• **Account-5**：提出使用颜色编码来增加数据密度，并设想在建筑物结构中嵌入数据，以实现长期保存和增加解码难度。
-
-• **Ryukoposting**：分享了20世纪80年代杂志通过纸质介质分发软件的历史，指出当时使用长条形码进行数据存储的实例。
-
-• **Bn-l**：通过实验发现大尺寸且具有高冗余度的QR码具有良好的耐久性和易读性，认为QR码是普遍且易于识别的格式。
-
-• **Tocs3**：认为字符编码的最大优势在于人类可读性，并讨论了在未来情况下通过字符编码恢复数据的可能性。同时，提出使用颜色编码增加信息密度的想法，并探讨了基于颜色的编码效率问题。
-
-• **Zvr**：质疑为何在OCR应用中使用通用字体而非专门设计的OCR字体，并建议使用专门设计的字体和位图字体以提高编码效率。
-
-• **Calrain**：建议将数据编码为图像，并通过实验找出最佳的打印和扫描图像设置，以实现纸质数据存储。
-
-• **KWxIUElW8Xt0tD9**：提到曾有研究使用高密度金属化光学纸带进行档案存储，并询问该技术的发展现状。
-
-• **Bob1029**：推荐使用PDF417条码作为物理存储的解决方案，因其具有良好的纠错能力和物理布局，适合在低信息密度情况下使用。
+• [Sytten] 认为某些 AI 企业家依赖政府资金支持，但之前的项目基本失败，却因其在 AI 领域的“英雄”地位仍能获得更多资助，这对其他创业公司不公平，影响了整个蒙特利尔的创业生态。
+• [delichon] 引用了阿西莫夫的机器人第零定律，提出如果 AI 发展到替代人类决策的程度，可能会对人类造成威胁，主张应避免加速这种趋势，而不是推动它。
+• [nemomarx] 质疑当前的 AI 模型是否可以真正嵌入严格的安全规则，认为目前的安全措施似乎仅依赖于对模型的提示强化，而非内在的保障。
+• [Animats] 讨论了一项 AI 研究提案，指出其中对“基于模型的 AI”的设想虽好，但如何构建“世界模型”仍是未解决的难题，并提到历史上如 Cyc 等项目也未能成功解决这个问题。
+• [didibus] 表示对 AI 模型的安全性及其对社会和个人生活的影响都感到担忧，尤其是后者可能涉及人类法律的范畴。
+• [moralestapia] 对“安全 AI”的概念持怀疑态度，认为一些非营利组织如 OpenAI 虽获得巨额投资，但未见实际成果，对 Ilya 领导的团队究竟能推出什么产品表示困惑。
 
 补充讨论：
-• 讨论中多次提到信息密度和人类可读性之间的权衡，以及不同编码方式（如QR码、颜色编码、字符编码）的优缺点。
-• 争议的焦点之一是如何在保持可读性的前提下最大化纸质存储的信息密度。
-• 另一个讨论要点是不同存储材料（如纸张、陶瓷、缩微胶片）的持久性和适用性。
-• 实验和实际应用案例（如20世纪80年代的软件分发和自定义字体设计）为讨论提供了具体论据和实例。</div>
+• 争议焦点之一是 AI 发展的资金分配及其合理性，尤其是政府资金的使用效果。
+• 另一个焦点是 AI 安全性的实际可行性，包括如何在技术上实现硬性安全规则以及 AI 对人类社会的长远影响。
+• 对“世界模型”构建的讨论反映了 AI 研究中一个长期存在的技术难题。
+• 对“安全 AI”运动的整体怀疑态度，尤其在实际成果不明显的情况下，进一步加剧了对 AI 发展方向和透明度的担忧。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44142565" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cl.cam.ac.uk/~jgd1000/afghan.html" target="_blank">How the Afghan Girl Was Identified by Her Iris Patterns</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wyuenho</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-03 18:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了阿富汗女孩Sharbat Gula的故事，她于1984年由摄影师Steve McCurry在巴基斯坦难民营中拍摄，并在18年后被重新找到和拍摄。为了确认两张照片中的人是同一人，作者使用了虹膜识别算法对1984年和2002年照片中的虹膜进行了分析。通过计算虹膜代码并比较其汉明距离，结果显示其左右眼的相似度极高，统计上几乎不可能是不同的虹膜。该结论被《国家地理》接受并发表，同时还推动了帮助穆斯林女童教育的慈善基金。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44173339" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44174643" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -442,82 +510,6 @@
 • 游戏难度的合理性是讨论中的一个争议点，部分玩家如[bluefirebrand]认为难度曲线不合理，而其他玩家如[vitesse_oblige]则通过策略应对了挑战，并享受了游戏乐趣。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44142343" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.mosaique.info" target="_blank">Show HN: Mosaique.info – Global news in context (solo dev, no ads, no tracking)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: msqinfo</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-03 17:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44172340" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44172465" target="_blank">Ask HN: What's with the repeated job posts on "Who's hiring"?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rafavento</span> |
-                    <span>评分: 22</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-06-03 17:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：招聘过程中拒绝大量候选人的原因及相关问题
-
-不同观点：
-• [samcheng] 认为招聘帖多年来帮助其公司招聘到许多工程师，虽然拒绝了大多数候选人，但这并不意味着无法找到合适的候选人。如果真的无法招聘到，他们会停止发布招聘信息。
-• [TheMongoose] 指出一些公司可能在"独角兽狩猎"（寻找完美候选人），并分享了自己被拒后看到岗位重新发布的经历，质疑公司是否真的想招聘合适人选。
-• [ipaddr] 认为公司发布招聘信息可能是为了收集简历，然后向求职者推销其他服务。
-• [prmph] 提到有些招聘者要求候选人直接联系他们，但之后却不再回复，暗示招聘过程缺乏透明度和尊重。
-• [quintes] 认为拒绝大量候选人的原因可能是技术能力和文化契合度不达标，同时提出岗位是否真实的问题。
-• [nickpsecurity] 分析了多个因素，包括技术公司大量裁员增加了人才 pool，使公司更挑剔，以及招聘过程中面临的假申请和AI生成代码等问题，导致招聘更加困难。同时提到公司可能更注重文化契合度和地位。
-
-补充讨论：
-• 招聘过程中公司是否真的想找到合适的候选人，还是仅仅在进行简历收集或其他目的（如推销服务）。
-• 招聘过程中的透明度和沟通问题，例如候选人直接联系招聘者后被忽略的情况。
-• 技术公司裁员潮对招聘市场的影响，使得公司可以更挑剔，同时招聘过程变得更加复杂和困难。
-• 岗位真实性的质疑，以及招聘过程中可能存在的欺诈行为。
-
-争议焦点：
-• 公司发布招聘信息的目的：是真的想招聘合适候选人，还是为了其他目的（如收集简历或推销服务）。
-• 招聘过程中的沟通问题，特别是招聘者与候选人之间的互动是否透明和尊重。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44172465" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
