@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-09 17:15 (北京时间)
+            最后更新时间: 2025-06-09 20:25 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,327 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://rkyv.org/rkyv.html" target="_blank">Rkyv (archive) is a zero-copy deserialization framework for Rust</a>
+                    <a href="https://www.cyberark.com/resources/threat-research-blog/poison-everywhere-no-output-from-your-mcp-server-is-safe" target="_blank">Poison everywhere: No output from your MCP server is safe</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ChadNauseam</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-08 18:16</span>
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-06-08 22:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《rkyv文档》介绍了一款用于Rust的零拷贝反序列化框架。本文涵盖了rkyv的动机、架构及主要功能，是学习和理解rkyv的最佳途径，但未深入具体细节，建议结合官方文档学习。相关资源包括：在rkyv Discord获取帮助，在GitHub查看源码及项目进展，以及通过Rust序列化基准测试对比包括rkyv在内的多种方案。此外，rkyv依赖一些相关库，如rend（支持无序端处理）、bytecheck（数据验证）、rancor（错误处理）和ptr_meta（指针操作）。</p>
+                    <p>本文介绍了Anthropic推出的开放标准项目——模型上下文协议（MCP），它简化了大型语言模型（LLM）与外部工具的交互过程。过去，开发者需要手动配置工具描述、解析输出并执行功能，而MCP通过标准化协议和自动化流程解决了这些问题。文章还讨论了一种**工具中毒攻击（TPA）**，现有研究主要关注描述字段的漏洞，但文章揭示攻击面实际上涵盖整个工具模式，称为**全模式中毒（FSP）**。文章进一步介绍了一种更高级的攻击——**高级工具中毒攻击（ATPA）**，通过操纵工具输出使其更难通过静态分析检测。作者强调该研究仅用于教育和研究目的，呼吁负责任地使用这些信息。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：MCP工具的安全性以及如何防范潜在风险
+
+不同观点：
+• simonw认为MCP工具可能带来安全风险，例如参数中毒（如读取敏感文件）。他强调用户需要谨慎选择安装的工具，因为这些工具可能执行有害操作。他认为这个问题并不是MCP独有的，而是所有可安装工具的普遍问题。
+• alkonaut建议通过限制LMM与外部世界的通信以及限制其访问敏感数据来避免问题。这种简单限制（通信 xor 敏感数据）可以有效防止风险。
+• catlifeonmars指出，MCP面临的问题并非新颖，类似问题在浏览器、安卓应用、GitHub Actions等其他技术中也曾出现。解决方案通常包括权限细分、最小权限原则和整体威胁模型分析。他认为操作系统和编程语言未能将权限作为首要概念是问题的根源。
+• calrain认为，任何第三方代码安装都存在类似风险，控制自己的MCP服务器和供应链可以避免这些问题，并将风险映射到组织的风险矩阵中进行评估。
+• gogasca希望看到新的安全模式或推荐模式出现，因为当前的新技术工作流设计上并不安全，不适合处理敏感数据。
+• fitzn指出，攻击场景依赖于MCP服务器上是否存在读取本地硬盘的工具，建议不要安装此类工具，尤其是在非沙盒环境中（如容器、虚拟机）。
+• noident认为恶意MCP工具导致的安全问题并不新颖或令人惊讶，因为这是任何可调用外部工具的系统都会面临的问题。
+• quantadev提到地缘政治因素可能影响模型的安全性，预测如果中美关系恶化，模型可能被“武器化”，且无法通过逆向工程模型权重来检测这种风险。
+• akoboldfrying认为，允许外部控制输入的系统存在风险是显而易见的，建议对工具输出进行严格控制，以防止工具调用链中的安全隐患。
+
+补充讨论：
+• 多个评论（如apazzi、moonlion_eth、rvz）调侃“MCP中的S代表安全”，暗示对MCP安全性的一种讽刺或怀疑态度。
+• coderinsan分享了一个用于检测MCP服务器漏洞的工具链接，展示了如何通过自动化手段识别潜在安全问题。
+
+争议焦点：
+• MCP工具的安全性是否是新问题，以及现有安全措施是否足够。部分评论认为这仅仅是已有问题的延伸，而其他人则强调需要更细致的权限控制和新的安全模式。
+
+总结：
+讨论围绕MCP工具的安全风险展开，包括具体攻击案例和防范措施。参与者普遍认为这是已有问题的再现，强调权限控制和安全模式的重要性，并对现有技术和操作系统未能充分解决这些问题表示失望。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44218618" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44219755" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nature.com/articles/s41467-025-60001-2" target="_blank">Efficient mRNA delivery to resting T cells to reverse HIV latency</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: matthewmacleod</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-05 09:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一种利用mRNA-脂质纳米颗粒（LNP）技术逆转HIV潜伏期的方法。研究人员开发了一种新型LNP配方（LNP X），能够在不引起细胞毒性或激活的情况下，将mRNA高效递送到难以转染的静息CD4+ T细胞中。通过封装编码HIV Tat蛋白的mRNA，LNP X增强了来自HIV感染者的CD4+ T细胞中HIV的转录。此外，LNP X还可以递送CRISPR激活机制，调节病毒和宿主基因的转录。这种方法为开发基于核酸的T细胞疗法提供了潜力，可能有助于清除HIV潜伏病毒库。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：mRNA疗法在治疗潜伏性病毒（如疱疹、水痘/带状疱疹）方面的潜在应用及公众教育问题
+
+不同观点：
+• [sroussey] 提出问题，询问mRNA疗法是否可以用于治疗其他嵌入细胞的潜伏病毒，例如疱疹和带状疱疹。这一观点表达了对mRNA技术应用范围的兴趣和潜在期待。
+
+• [Zigurd] 强调mRNA疗法的巨大潜力，并指出由于公众缺乏相关知识，容易被不科学的言论误导（即“quackery”）。他认为需要更多的公共教育和宣传，以防止人们被误导。他还提到，这种误导行为可能对社会造成严重危害，甚至可能被敌对国家利用，从而具有国家安全层面的影响。
+
+补充讨论：
+• [Jalad] 提供了另一个讨论的链接（https://news.ycombinator.com/item?id=44202664），表明关于mRNA疗法及其应用的讨论在其他平台上也在进行，暗示该话题具有广泛的关注度和讨论价值。
+
+争议焦点：
+• 主要争议在于公众对mRNA疗法的理解不足，导致容易受到不实信息的误导，这一问题可能具有广泛的社会影响，甚至可能涉及国家安全问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44189966" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/yuuki/tcpulse" target="_blank">tcpulse: A TCP/UDP load generator that provides fine-grained, flow-level control</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: y_uuki</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-08 21:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>**tcpulse** 是一个高性能的 TCP/UDP 连接负载生成和性能测量工具，用 Go 编写。它支持两种模式：服务器模式（作为回显服务器）和客户端模式（生成可配置负载并测量性能）。主要用途包括负载测试、连接性能测量、协议对比、基础设施验证和性能回归测试。它提供持久连接和短暂连接两种模式，支持实时指标、速率限制、多目标测试、TCP/UDP 协议以及平台优化。安装方式包括下载预构建二进制文件或从源码构建。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：该工具的功能及其与类似工具（如iperf）的比较
+
+不同观点：
+• bwen认为该工具很有用，并询问是否可以增加一个功能，即服务器能够输出与其连接的每个节点的性能指标。这表明用户对工具的性能监控功能有进一步期待，关注点在于性能数据的展示。
+
+• defenestrated对该工具与iperf的区别感到疑惑，提出了两者功能上的比较问题，表明用户可能在考虑是否存在功能重叠，或者该工具是否提供了不同于iperf的独特价值。
+
+补充讨论：
+• bwen关注的是工具的扩展功能，尤其是性能指标的监控能力，表明用户可能在使用该工具时有特定的性能调优需求。
+
+• defenestrated的评论则指向工具的核心定位和差异性问题，表明用户可能正在评估该工具是否值得使用，或者是否能替代已有的类似工具如iperf。
+
+争议焦点：
+• 该工具与iperf的区别尚未明确，defenestrated的提问暗示了对工具独特卖点或差异化功能的需求。
+
+• 用户bwen提出的性能指标功能可能尚未实现，但这是其关注的重点功能之一，显示出用户对该工具未来功能扩展的期望。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44219563" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="http://oldvcr.blogspot.com/2025/06/theres-not-much-point-in-buying.html" target="_blank">There's not much point in buying Commodore</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-08 21:48</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文简要回顾了Commodore品牌在公司破产后的混乱历史，特别关注了多次尝试复兴该品牌的失败经历。作者本人是Commodore电脑的忠实用户和专家，认为如今购买Commodore品牌并无太大意义。文章提到，Commodore的知识产权和品牌曾有价值，但在1994年公司破产后，其剩余价值逐渐消失。许多公司尝试利用Commodore品牌推出产品，如1999年的Commodore 64 Web.it、2007年的Commodore Gaming PC游戏主机和2010年的Commodore USA LLC键盘电脑，均未成功。唯一成功的例外是2004年的C64DTV游戏机，由Tulip授权，设计精良并受到欢迎。总体来看，Commodore品牌的复兴屡次失败，显示出其市场前景黯淡。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕老品牌名称的商业利用和商标转让的讨论
+
+不同观点：
+• vintermann认为，老品牌名称经常被拍卖给出价最高的买家，而这些买家往往只是为了利用品牌的剩余商誉进行贪婪的变现，而非真正建立或维护品牌声誉。他认为，这种情况在老电脑品牌中尤为常见，建议可能需要通过法律手段（如禁止商标转让或施加严格限制）来保护消费者。
+• unwind则表达了对老品牌（如Amiga）历史和未实现技术（如Hombre RISC芯片组）的怀旧情感，并从中获得了一种怀旧的乐趣，没有对品牌商业化利用表达直接的反对或担忧。
+
+补充讨论：
+• vintermann的观点中隐含了对品牌名称商业化的批判，认为这是对老品牌情感和历史的“背叛”，并提出了可能的法律或政策解决方案。
+• unwind的评论则侧重于个人对老品牌技术历史的兴趣和怀旧，没有涉及商业化利用的负面影响。
+• 争议的焦点在于老品牌名称的商业化利用是否构成对品牌历史和情感的“背叛”，以及是否有必要通过法律手段加以限制。
+
+总结：评论中一方对老品牌的商业化持批评态度，认为这是对品牌情感的利用和背叛，并提出可能的法律限制；另一方则专注于老品牌的技术和历史，表达怀旧之情，未涉及商业化利用的负面影响。争议点集中在老品牌商业化是否合理以及是否需要法律干预。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44219692" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://taras.glek.net/posts/focus-and-context-and-llms/" target="_blank">Focus and Context and LLMs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tarasglek</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-08 09:09</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了大语言模型（LLM）在软件工程任务中的应用，特别是复杂编码任务的完成能力。作者指出，尽管LLM能够完成一些人类工程师难以应对的编码任务，但这种能力高度依赖于提供的上下文质量和严格的算法监督。文章批评了当前对“代理编码”工具的过度炒作，认为这些工具无法如宣传那样自动生成大量有用的软件。作者通过一个HTTP/2服务器项目的例子说明，LLM在编写代码时需要大量人工干预和精细的上下文管理，且生产JSON等格式时表现不佳。最终，作者强调，LLM的有效性取决于输入的上下文质量，目前仅在优秀工程师手中才能展现出真正 impressive 的结果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）代理在编程开发中的实际应用及其局限性
+
+不同观点：
+• **tptacek的观点**：认为当前的LLM代理无法独立完成复杂的端到端开发任务，但可以显著加速开发过程。他分享了自己使用LLM的实际经验，指出LLM在辅助开发时并不需要过度优化提示技能，且在项目中可以通过人为调整和重组代码来提高效率。他强调，LLM的真正价值在于加速开发，而非完全替代人类开发者。
+
+• **artembugara的观点**：关注帮助开发者向LLM提供正确上下文的工具。他提出了是否有创业公司专注于解决这一问题的疑问，暗示在实际开发中，向LLM输入适当的上下文是关键挑战之一。
+
+• **summarity的观点**：分享了自己使用不同LLM工具的经验，指出某些工具在特定任务中表现出色，但在其他场景中表现不佳，尤其是涉及过多工具调用时模型容易混淆。他还提到，增加提示的上下文虽然有效，但回报率不高，目前尚未找到完美的解决方案。
+
+• **mathgeek的观点**：批评了某些人对于LLM使用的自大态度，强调最好的教学应具备谦逊的态度。他认为， mediocre的开发者使用LLM得到平庸的结果，反映出人的因素在LLM应用中的重要性。
+
+• **jmward01的观点**：提出需要一种具有无限上下文能力的LLM结构，认为当前的变压器模型虽然带来了进步，但其限制也日益显现，尤其是在处理大规模上下文时。
+
+• **emorning3的观点**：从文章中得到的启示是“上下文就是一切”，并强调人类助理的必要性。他认为，尽管LLM在开发中起到重要作用，但人类辅助仍然是不可或缺的。
+
+• **jumploops的观点**：推荐使用Claude Code，认为它是目前最有用的LLM工具之一，尽管难以解释其相对于其他工具的优势，但使用后能显著提升工作流效率。
+
+• **__mharrison__的观点**：通过一个YouTube视频展示LLM在无需编码和少量提示的情况下构建复杂软件的可能性，认为LLM的潜力比许多人想象的要大。
+
+• **briian的观点**：幽默地指出“vibe编码”中的自我认知差异，认为有些开发者高估了自己的随意态度。他同意需要更好的方式让LLM选择适当的上下文，但认为这不是一个难以解决的问题。
+
+• **quantum_state的观点**：简洁地强调了上下文的重要性，暗示LLM的成功应用依赖于正确的输入和环境。
+
+• **Workaccount2的观点**：指出LLM的编程能力不仅限于专业开发者使用，对于没有编程背景但需要计算机实现想法的人同样有用。他将LLM比作翻译软件，认为专业人士的批评忽视了这些工具对普通用户的实际价值。
+
+补充讨论：
+• 争议的焦点在于LLM在编程开发中的实际效用和局限性。一部分人认为LLM目前无法完成复杂的端到端任务，另一部分人则认为LLM已经显著加速了开发过程，并且在某些场景下表现出色。
+• 另一个值得注意的讨论点是关于“上下文”的重要性，以及如何有效地向LLM提供适当的上下文，以提高其生成代码的准确性和效率。
+• 最后，关于LLM是否主要为专业开发者设计，还是更适合没有编程背景的用户，存在不同的看法。这反映了LLM应用的广泛性和多样性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44215726" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://rsadowski.de/posts/2025/fio_simple_benckmarking/" target="_blank">OpenBSD IO Benchmarking: How Many Jobs Are Worth It?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-08 22:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文通过fio基准测试探讨OpenBSD 7.7-current在随机读取、随机写入和延迟方面的I/O性能。测试使用1TB Crucial P3 Plus SSD，64GB测试文件，4KiB块大小，I/O深度32，作业数从1到32。结果显示，OpenBSD的I/O扩展在达到6到8个作业数时表现最佳，之后由于争用和CPU开销增加，性能下降。随机读取在8个作业时接近峰值性能，随机写入对并发更敏感。与Linux相比，OpenBSD在某些配置下表现不如Linux，但仍有提升潜力。结论建议在调优OpenBSD的I/O性能时，应避免过度增加作业数，以6到8个作业为佳。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同操作系统（OpenBSD与Linux）在存储IO性能测试中的表现，以及测试方法和硬件选择的合理性。
+
+不同观点：
+• **wtallis** 认为，测试中使用的硬盘是低端消费级产品（QLC NAND和无DRAM控制器），其性能有限，不能很好地反映操作系统IO栈的可扩展性。他指出测试方法可能未考虑SLC缓存对写入测试的影响，建议限制测试数据量并确保驱动器在测试前有一致的起始状态。他还提到Linux的fio默认设置具有显著的性能优势，并建议进一步分析fio在不同操作系统上使用的IO引擎及默认缓存机制。
+
+• **dfc** 对测试图表的准确性提出质疑，指出图表中X轴并非从原点开始，并且在Linux与OpenBSD对比图中，Linux在job=1时的数据缺失，认为这影响了测试结果的可信度。
+
+• **synack** 对测试使用的CPU型号和核心数量的影响表示关注，并提出FreeBSD在相同测试中的表现值得探讨，暗示不同操作系统在相同硬件条件下的性能对比应更加全面。
+
+补充讨论：
+• 测试硬件的选择对结果的影响，尤其是低端硬盘是否适合用来评估操作系统IO性能。
+• 测试方法的改进建议，包括测试数据量和缓存状态的管理。
+• fio工具在不同操作系统上的默认配置及其对性能的影响。
+• 图表数据的完整性和准确性问题。
+• 其他操作系统（如FreeBSD）在相同测试条件下的表现。
+
+争议焦点：测试方法的科学性与结果的准确性，尤其是硬件选择和图表数据的完整性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44219871" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ziglang.org/devlog/2025/#2025-06-08" target="_blank">Self-hosted x86 back end is now default in debug mode</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: brson</span> |
+                    <span>评分: 252</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-06-08 22:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文总结了Zig编程语言的最新开发进展。2025年6月8日，Andrew Kelley宣布在调试模式下，Zig的x86后端已成默认，取代了LLVM后端，提升了编译速度。实验显示，使用Zig自带后端的编译时间比LLVM减少了约70%，内存使用也显著下降。目前，Windows平台暂未切换默认后端。此外，Zig团队正致力于完全并行化代码生成，并计划改进增量编译稳定性。未来，团队还将关注aarch64架构的优化。另一篇文章中，Loris Cro介绍了Zig构建系统的入门视频。Alex Rønne Petersen则报告了Zig对FreeBSD和NetBSD交叉编译的支持进展。这些更新可以在Zig的Devlog页面查看，并鼓励用户通过捐赠支持Zig软件基金会的持续发展。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Zig语言的开发进展、当前痛点、未来潜力及与其它语言的比较
+
+不同观点：
+• Retro_Dev：认为Zig的开发进展迅速，特别是像热代码替换和新的后端功能等正在积极开发中。但也提到`comptime`速度较慢，这是一个痛点，期待编译器在这方面有所改进。总体上对Zig的新功能非常期待。
+• bgthompson：赞赏Zig在编译时只修改必要部分的创新功能，认为这是一个巨大的成就，并对Zig的未来充满期待。
+• d3ckard：关注Zig的1.0版本时间线，希望Zig能尽快达到稳定版本，虽然对目前的进展表示欣赏。
+• 9d：关注Zig的编译速度和包管理，提到在使用C++时遇到困难，转向Rust后体验更好，但对Zig也表示兴趣，希望能在Zig中尝试类似项目。
+• txdv：提到编译Zig的时间过长，希望有方法能加快编译速度以提高开发效率，表达了贡献代码的困难。
+• whinvik：作为新手，询问Zig相比其他语言的优势，特别是“现代C语言”的具体现代特性是什么。
+• treeshateorcs：指出Zig编译后的HelloWorld程序体积过大，相比优化后的版本，体积差异巨大。
+• mirekrusin：建议Julia语言可以考虑使用Zig以获得性能提升，提到Julia作者曾担心LLVM的性能问题。
+• candrewlee：赞赏Zig的发展方向，认为这将是与Rust竞争中的主要区别点，并提到自己参与了一些相关工具的开发。
+• xmorse：询问macOS是否会支持自托管后端。
+• foresto：提到热代码替换功能可能是Zig中async/await功能回归的前提条件。
+• fjnfndnf：质疑编译速度提升是否包括所有分析和类型检查，建议通过解释器调试Zig以提高生产力。
+• WhereIsTheTruth：呼吁支持不依赖LLVM的项目，认为编译器的研发因依赖LLVM而停滞，强调快速迭代和良好调试功能应该是新语言的标配。
+
+补充讨论：
+• 9d对Zig的包管理表示关注，并询问如何实现20秒内编译Zig的方法。
+• foresto提到Zig的FAQ中关于async/await功能的现状，暗示热代码替换可能是其前提。
+• fjnfndnf对编译速度提升的具体内容提出质疑，并建议通过解释器调试来解决一些开发效率问题。
+• WhereIsTheTruth强调支持自研编译器后端的重要性，认为这是打破LLVM垄断的关键。
+
+争议焦点：
+• Zig编译速度和`comptime`的慢速问题是否能得到有效解决。
+• Zig编译后的二进制文件体积过大问题是否能得到有效优化。
+• Zig的包管理和自托管后端支持问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44219857" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -128,117 +430,6 @@
 • 游戏开发者特别关注语言和框架的未来维护和模块化能力，C/C++的长期主导地位受到Zig等新语言的挑战。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44208060" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44216123" target="_blank">Ask HN: How to learn CUDA to professional level</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: upmind</span> |
-                    <span>评分: 136</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-06-08 10:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：学习CUDA编程的方法、资源推荐以及应用场景和职业发展
-
-不同观点：
-• [indianmouse] 认为通过阅读NVIDIA的CUDA编程指南和书籍，结合实际编写小程序，可以在6-8周内掌握CUDA编程。强调C语言基础和利用现有项目代码学习。
-• [throwaway81523] 指出CUDA编程本身与C++类似，但若为了从事AI编程工作，需要深入学习AI相关知识。同时提到3D图形编程也是一个复杂领域。
-• [imjonse] 推荐了多个资源链接和社区，强调系统学习高性能计算（HPC）方法，而不仅是CUDA本身。
-• [lokimedes] 将学习CUDA分为三个方面：CUDA框架本身、高性能计算方法和应用领域知识，强调高性能计算技能的可迁移性。
-• [elashri] 分享个人经验，强调通过NVIDIA官方课程入门，但后续学习主要靠试错。特别提到调试和优化是学习中的难点。
-• [sputknick] 分享了一个用于教学的YouTube视频链接，适合初学者。
-• [fifilura] 认为学习CUDA可以借鉴Spark和SQL的编程思路，强调避免使用for循环的编程方式。
-• [gdubs] 喜欢通过项目学习，推荐了GPU Gems系列，并分享了自己将CUDA转换为Metal的经验。
-• [SoftTalker] 开玩笑地建议利用AI助手Claude来学习CUDA。
-• [ForgotIdAgain] 推荐了一个在线平台leetgpu.com用于学习CUDA。
-• [mekpro] 强调学习CUDA的核心是理解GPU硬件架构和并行算法，而不仅是CUDA语言本身。
-• [math_dandy] 询问是否有GPU模拟器可以在普通笔记本上运行CUDA程序，以便熟悉工具链。
-• [weinzierl] 提到NVIDIA有付费课程系列，计划在假期学习。
-
-补充讨论：
-• 争议焦点：CUDA编程是否需要深入的AI知识。例如，[throwaway81523] 认为从事CUDA相关AI编程需要深入的AI知识，而[lokimedes] 则强调高性能计算技能的可迁移性。
-• 学习路径：不同用户提供了不同的学习路径，有的强调官方指南和书籍（[indianmouse], [weinzierl]），有的强调通过项目和试错学习（[elashri], [gdubs]）。
-• 资源推荐：多个用户分享了有用的资源链接和社区，如NVIDIA官方文档、GitHub项目、GPU Gems系列书籍和在线课程。
-• 实际应用：有用户提到CUDA在AI和高性能计算领域的应用（[throwaway81523], [lokimedes]），以及图形编程的复杂性（[gdubs]）。
-• 职业发展：有用户询问CUDA相关的职业机会（[mekpro]），并讨论了直接CUDA开发和使用CUDA衍生工具（如PyTorch）的公司和岗位。
-
-总结：学习CUDA编程涉及多个方面，包括语言本身、硬件架构、并行算法和高性能计算方法。不同用户提供了丰富的资源和学习路径建议，并讨论了CUDA在AI和图形编程领域的应用及职业发展机会。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44216123" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.railway.com/p/introducing-railpack" target="_blank">Why We're Moving on from Nix</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 257</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-06-07 11:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章宣布了Railpack的发布，这是Railway构建工具的升级版，旨在解决前代工具Nixpacks的局限性。Nixpacks在80%的情况下表现良好，但仍有20万用户面临日常使用限制。为支持从100万到1亿用户规模的增长，Railpack引入了多项改进：
-
-1. **细粒度版本控制**：支持major.minor.patch版本，取代Nix的近似版本。
-2. **更小的构建镜像**：Node镜像减少38%，Python镜像减少77%。
-3. **更好的缓存机制**：通过BuildKit实现更高效的缓存，跨环境共享。
-
-Railpack还解决了Nixpacks在版本管理、镜像大小和缓存方面的问题，改用Go语言编写以更好地集成Buildkit。其构建过程分为分析代码、制定构建计划和执行计划三个步骤。Railpack现已可选使用，并已用于railway.com和central station的构建。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对Nix及其使用中的问题的不同看法和讨论
-
-不同观点：
-• jchw：认为Nix本身并不是问题，问题在于Nixpkgs的版本管理方式。指出可以通过其他Nix工具来解决特定版本的问题，并反驳了一些对Nix的批评，认为它们缺乏解释。对Railpacks和Nixpacks之间的技术选择变化也表示了兴趣。
-• viraptor：支持Nixpkgs的版本选择机制，认为对于提供运行时和编译器的平台来说，版本选择应由工具如devenv来处理，而不是依赖Nixpkgs。
-• alexpotato：从DevOps/SRE的角度，认为每种依赖管理系统都有其优缺点，没有完美的解决方案。他通过Python的例子说明了两种常见策略及其各自的优缺点。
-• mrbluecoat：指出Nix对于某些用例很好，但对于其他用例则不理想。认为Nix的学习曲线高，导致人们在投入太多时间后不愿改变方向。
-• kesor：强烈批评那些对Nix不熟悉的人试图使用Nix，并认为他们的解决方案注定会失败。
-• lewo：指出nix2container工具可以解决一些提到的问题，如分割依赖层，并提供了具体例子和工具链接。
-• ris：认为问题在于“定制版本汤”的态度，并指出Mise缺乏版本约束和测试能力。
-• setheron：解释了Nix提供的是提交保证而非任意版本，并表示愿意提供咨询帮助解决问题。
-• jchook：讽刺那些自称专家并批评他人对Nix使用不当的人。
-• Cloudef：认为可以自己制作derivations而不是依赖nixpkgs的hashes。
-• Aurornis：认为从Nixpacks到Railpacks的转变似乎不仅仅是增量变化，而是一个完整的项目重写，并对切换编程语言表示不解。
-• lloydatkinson：对批评Nix的观点表示不解，认为可以通过自动化来解决一些提到的问题。
-• rcarmo：提到自己用docker-compose和caddy在做类似的事情，但对依赖管理的方式不同。
-• eviks：质疑最初选择Nixpacks时是否已经清楚其问题，并询问好处是什么以及现在如何处理这些问题。
-
-补充讨论：
-• 对Nixpkgs版本管理的争议是讨论的焦点，特别是如何处理特定版本和依赖层分割的问题。
-• 对Nix的学习曲线和高门槛的讨论，以及如何在组织中有效使用Nix的问题。
-• 对整个项目从Nixpacks到Railpacks的彻底转变的动机和背景的猜测。
-• 不同工具和方法之间的比较，如devenv、nix2container等，如何在实际中解决Nix的一些问题。
-• 对版本管理和依赖管理的根本态度和策略的讨论，反映出不同背景和需求下的多样化观点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44208968" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -338,270 +529,54 @@ Railpack还解决了Nixpacks在版本管理、镜像大小和缓存方面的问�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.paavo.me/radiant-ai/" target="_blank">What was Radiant AI, anyway?</a>
+                    <a href="https://blog.railway.com/p/introducing-railpack" target="_blank">Why We're Moving on from Nix</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: paavohtl</span> |
-                    <span>评分: 218</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-06-07 13:22</span>
+                    <span>作者: mooreds</span> |
+                    <span>评分: 257</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2025-06-07 11:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了《上古卷轴4：湮灭》中的**Radiant AI**技术，及其在Bethesda游戏中的演变与影响。文章回顾了Radiant AI的最初承诺、实际表现及粉丝和玩家之间的争议，指出该技术在2006年游戏发售时因过于雄心勃勃而未能完全实现。文章深入探讨了Radiant AI的设计理念、实际应用及其在后续游戏如《辐射3》、《上古卷轴5：天际》中的演变，还提及了与GOAP（目标导向行动计划）等其他AI系统的对比。随着《湮灭》高清重制版的发布，Radiant AI再次成为讨论热点，文章通过分析旧论坛、模组教程和游戏源代码，试图澄清有关该技术的误解。文章最后提到Radiant AI虽未完全实现初衷，但对后续游戏的动态世界构建产生了深远影响。</p>
+                    <p>文章宣布了Railpack的发布，这是Railway构建工具的升级版，旨在解决前代工具Nixpacks的局限性。Nixpacks在80%的情况下表现良好，但仍有20万用户面临日常使用限制。为支持从100万到1亿用户规模的增长，Railpack引入了多项改进：
+
+1. **细粒度版本控制**：支持major.minor.patch版本，取代Nix的近似版本。
+2. **更小的构建镜像**：Node镜像减少38%，Python镜像减少77%。
+3. **更好的缓存机制**：通过BuildKit实现更高效的缓存，跨环境共享。
+
+Railpack还解决了Nixpacks在版本管理、镜像大小和缓存方面的问题，改用Go语言编写以更好地集成Buildkit。其构建过程分为分析代码、制定构建计划和执行计划三个步骤。Railpack现已可选使用，并已用于railway.com和central station的构建。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对游戏中Radiant AI的实现、期望与现实以及对未来AI在游戏中应用的讨论
+                    <div class="comments-summary">主要讨论点：对Nix及其使用中的问题的不同看法和讨论
 
 不同观点：
-• **Radiant AI的实现现状与初衷的偏离**：
-  - [flohofwoe] 认为Radiant AI在像Dwarf Fortress这样的游戏中得到了最好的体现，但在故事驱动的游戏中，完全不可预测的AI可能与游戏的确定性结局和玩家作为英雄的角色相冲突。
-  - [weitendorf] 指出Bethesda对Radiant AI的实现逐渐偏离了初衷，从创造独特和复杂的游戏特性转向了提供可预测的、 bland的内容，使得游戏世界缺乏生气。
-
-• **对Bethesda游戏中AI表现的具体案例分析**：
-  - [kibwen] 提到了《Oblivion》中关于skooma商人谋杀传闻的具体例子，揭示了由于AI和游戏机制的bug，NPC行为会出现不合理的情况。
-  - [devstar] 分享了在《Fallout 3》中观察到的NPC在特定情况下获取玩家物品的行为，质疑AI的实现是否如官方所述。
-
-• **对未来AI在游戏中应用的期待**：
-  - [hyperman1] 强调了希望看到AI在开放世界中的更多实时互动，如NPC根据环境自发行动。
-  - [ednite] 和 [Mistletoe] 都表达了对现代AI技术在游戏中创造更智能、更有反应性的NPC和环境的期待，而不仅仅是在图形上的提升。
-
-• **对游戏AI的不同期望和需求**：
-  - [nxobject] 提出了在开放世界游戏中模拟真实世界行为与保持游戏趣味性之间的潜在矛盾，指出如果每个角色都有独立行为，可能会导致关键角色消失或城镇失去活力。
-  - [dedicate] 认为不需要NPC通过图灵测试，而是希望看到一个有生命脉搏的世界，NPC能基于游戏世界的事件做出反应，而不是仅仅对玩家做出反应。
-
-补充讨论：
-• **对AI技术在其他游戏中的成功案例的讨论**：
-  - [YeGoblynQueenne] 提到了Rain World作为一个成功模拟独立于玩家行为的游戏世界的例子，并引用了对该游戏的评论来说明玩家对这种AI表现的复杂反应。
-
-• **对Bethesda及其游戏开发历史的反思**：
-  - [netruk44] 赞赏了帖子对Bethesda从《Oblivion》到现代游戏开发历程的深入研究，并对Bethesda如何从E3 2005的演示转变到现在的实现表示感慨。
-
-争议焦点：
-• **Bethesda是否背离了Radiant AI的初衷**：
-  - 一部分评论认为Bethesda的Radiant AI逐渐失去了原本的创新性和复杂性，转向了更可预测和简单的内容生成，而另一部分则对Bethesda的实现表示理解和接受。
-
-• **游戏AI的未来发展方向**：
-  - 玩家对AI的期望不仅限于NPC的智能对话，而是希望看到一个更具生命力和反应性的游戏世界。这种期望与当前游戏AI技术的实现之间存在一定差距。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44209497" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/arduinocelentano/cdimage" target="_blank">A tool for burning visible pictures on a compact disc surface (2022)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: carlesfe</span> |
-                    <span>评分: 196</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-06-07 08:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>CDImage 是一个用于在光盘表面烧录可见图片的工具，灵感来源于十多年前其他开发者的类似尝试。该项目使用C++编写，并已更新至Qt6，提供图形用户界面和视觉预览模式。用户可以加载高对比度图像并调整其位置和大小，选择光盘型号以生成音轨。然而，由于每种光盘的几何差异，未列出的光盘需要手动输入参数，且校准过程复杂耗时。最终生成的音频文件大小约为800MB，需使用音频CD刻录工具进行烧录。校准过程涉及多目标优化问题，建议通过多次迭代试验来获得最佳效果。Windows用户可直接使用提供的二进制文件，但需自行测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在光盘上烧录图像和文本的技术及其相关挑战和应用
-
-不同观点：
-• Cockbrand分享了自己使用Yamaha刻录机上的"DiscT@2"功能烧录光盘的经历，认为这是一项有趣的技术。
-• Molitor5901提到了LightScribe技术，认为这也是一种很棒的技术，暗示两种技术有相似之处。
-• ungawaykt详细描述了自己尝试类似项目的经验，指出不同光盘的参数选择非常复杂且敏感，需要大量实验才能获得理想结果。
-• axoltl提到了tmbinc的一个更复杂的项目，能够将任意图片烧录到DVD表面，提供了进一步的技术参考。
-• extraduder_ire认为这种技术是LightScribe的更易实现的版本，并质疑是否适用于DVD或蓝光光盘，因为这些光盘的凹坑更小。
-• eahm表达了对这种技术的兴奋之情，显示出对新奇技术的好奇和兴趣。
-• HPsquared认为这种烧录技术可以制作非常详细的图案，并提出了其潜在应用的问题。
-• londons_explore分享了自己过去尝试类似项目但失败的经历，强调了预测激光状态以避免图像损坏的技术挑战。
+• jchw：认为Nix本身并不是问题，问题在于Nixpkgs的版本管理方式。指出可以通过其他Nix工具来解决特定版本的问题，并反驳了一些对Nix的批评，认为它们缺乏解释。对Railpacks和Nixpacks之间的技术选择变化也表示了兴趣。
+• viraptor：支持Nixpkgs的版本选择机制，认为对于提供运行时和编译器的平台来说，版本选择应由工具如devenv来处理，而不是依赖Nixpkgs。
+• alexpotato：从DevOps/SRE的角度，认为每种依赖管理系统都有其优缺点，没有完美的解决方案。他通过Python的例子说明了两种常见策略及其各自的优缺点。
+• mrbluecoat：指出Nix对于某些用例很好，但对于其他用例则不理想。认为Nix的学习曲线高，导致人们在投入太多时间后不愿改变方向。
+• kesor：强烈批评那些对Nix不熟悉的人试图使用Nix，并认为他们的解决方案注定会失败。
+• lewo：指出nix2container工具可以解决一些提到的问题，如分割依赖层，并提供了具体例子和工具链接。
+• ris：认为问题在于“定制版本汤”的态度，并指出Mise缺乏版本约束和测试能力。
+• setheron：解释了Nix提供的是提交保证而非任意版本，并表示愿意提供咨询帮助解决问题。
+• jchook：讽刺那些自称专家并批评他人对Nix使用不当的人。
+• Cloudef：认为可以自己制作derivations而不是依赖nixpkgs的hashes。
+• Aurornis：认为从Nixpacks到Railpacks的转变似乎不仅仅是增量变化，而是一个完整的项目重写，并对切换编程语言表示不解。
+• lloydatkinson：对批评Nix的观点表示不解，认为可以通过自动化来解决一些提到的问题。
+• rcarmo：提到自己用docker-compose和caddy在做类似的事情，但对依赖管理的方式不同。
+• eviks：质疑最初选择Nixpacks时是否已经清楚其问题，并询问好处是什么以及现在如何处理这些问题。
 
 补充讨论：
-• zapp42和ziofill对GitHub用户名表示赞赏，属于非技术性评论。
-• ashoeafoot提出了是否可以编码全息图的疑问，类似于刮刮 holograms。
-• danjc希望这种技术能够编码数据，提出了技术应用的新思路。
-• grishka对某项目使用KOI8编码表示惊讶，属于对编码方式的评论。
-• amelius关心这种技术是否会影响光盘的数据存储能力，提出了实用性问题。
-• meindnoch将这种技术与LightScribe进行比较，提出了是否为LightScribe技术重现的疑问。
-
-争议焦点：
-• 不同光盘介质（CD、DVD、蓝光）对烧录图像技术的适用性存在争议，尤其是对于更小凹坑的介质，技术可行性受到质疑。
-• 该技术是否会影响光盘的数据存储能力，用户对其实用性表示关注。</div>
+• 对Nixpkgs版本管理的争议是讨论的焦点，特别是如何处理特定版本和依赖层分割的问题。
+• 对Nix的学习曲线和高门槛的讨论，以及如何在组织中有效使用Nix的问题。
+• 对整个项目从Nixpacks到Railpacks的彻底转变的动机和背景的猜测。
+• 不同工具和方法之间的比较，如devenv、nix2container等，如何在实际中解决Nix的一些问题。
+• 对版本管理和依赖管理的根本态度和策略的讨论，反映出不同背景和需求下的多样化观点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44208283" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lifehacker.com/health/ai-powered-calorie-counting-apps-worse-than-expected" target="_blank">I used AI-powered calorie counting apps, and they were even worse than expected</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gnabgib</span> |
-                    <span>评分: 72</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-06-08 23:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文作者Meredith Dietz测试了几款声称通过AI分析食物照片来计算卡路里的应用，如Cal AI和SnapCalorie AI。这些应用承诺通过消除人为误差来精确估算卡路里。然而，作者的测试结果令人失望。例如，应用将一个222克的苹果误认为印度料理tikka masala，且低估了其卡路里。在处理复杂餐食时，应用将炸豆腐误认为面包丁，且严重低估了沙拉的卡路里含量。尽管应用提供了详细的拍摄建议，但其识别和估算能力在现实中表现不佳，显示出AI在处理真实食物复杂性方面的不足。作者认为，这类AI卡路里计算应用并不如宣传般有效。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI在食物卡路里和营养追踪应用中的有效性和实用性
-
-不同观点：
-• **质疑AI照片识别的准确性**：
-   - [duskwuff] 指出，很多食物的营养成分无法通过照片判断，例如无法区分全脂牛奶和脱脂牛奶，或者判断蔬菜上的光泽是由于水分还是黄油。
-   - [senko] 认为CalAI的AI功能非常不准确，甚至会将沙拉误认为汤，并且用户体验差。
-   - [Kiyo-Lynn] 也提到AI工具多次出错，最后选择更注重饮食的传统方式。
-
-• **支持文本输入的便捷性**：
-   - [surfmike] 提到ParrotPal通过文本或语音描述来追踪食物，比照片更准确且用户更喜欢。
-   - [cowanon2222] 认为Macrofactor结合文本和照片的效果不错，并且能调整结果，还具备基础代谢率的估算功能。
-
-• **对AI应用的不同体验**：
-   - [muratsu] 认为这些应用尽管看起来像噱头，但增长迅速，希望有人能从中获得实际价值。
-   - [Sleepthinker] 认为对于追求精确的健身爱好者来说，这些应用目前不够准确，但对于寻求便利的普通人可能有帮助。
-
-• **手动输入的优越性**：
-   - [nvahalik] 认为手动输入是唯一能保证精确度的方式，他们的应用通过AI和验证数据库结合，提高了查找的准确性，但仍有改进空间。
-   - [tjpnz] 强调手动输入和习惯追踪的重要性，认为使用不准确的工具会破坏卡路里计数的努力。
-
-• **对文章和应用的批评**：
-   - [senko] 批评CalAI的整体用户体验差，功能缺失，像是一个追逐AI热潮的快速捞钱工具。
-   - [tunesmith] 认为文章提到的三个应用没有经过全面测试，且结论过于草率。
-
-• **对AI应用可行性的根本怀疑**：
-   - [solumunus] 根本上怀疑这些AI应用的价值，认为有智力的人不会期望这些工具能有好的表现。
-
-补充讨论：
-• **应用中的技术实现和用户体验**：
-   - [TeaVMFan] 自建了一个Java应用来手动追踪食物和运动，强调本地存储和隐私控制的重要性。
-
-• **关于参考物的讨论**：
-   - [jaronheard] 提到在照片中加入参考物（如硬币或手）可能提高准确性，但对实际效果表示好奇。
-
-争议焦点：
-• **AI照片识别的局限性与用户期望之间的矛盾**：用户希望通过便捷的方式获得准确的营养信息，但AI技术目前无法满足这一需求。
-• **手动输入与AI自动识别的优劣对比**：部分用户认为手动输入虽然繁琐但更准确，而AI工具尽管便捷却不够可靠。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44220135" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://quarter--mile.com/Startup-Equity-101" target="_blank">Startup Equity 101</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-06-05 03:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章名为《初创公司股权基础》，旨在帮助在科技行业工作的人理解股权和股票期权等财务概念。文章强调，虽然人们加入初创公司不是为了学习财务术语，但了解这些概念可能会对个人财富产生重大影响。文章详细解释了股权、股票期权和限制性股票单位（RSU）等不同形式的股权补偿，以及如何在公司内部获得和处理这些股权。作者提醒，选择加入哪个初创公司是影响回报的最大因素，且股权可能变得毫无价值。文章还介绍了股票期权的行使、 vesting（归属）等具体操作，并提醒读者即使完全“优化”股权，公司失败仍可能导致损失。文章最后建议读者谨慎对待网络上的非专业财务建议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：创业公司股权的实际价值和风险
-
-不同观点：
-• TuringNYC认为，股权的实际价值取决于公司是否发生流动性事件（如上市或收购）。即便有409A估值，如果没有流动性事件，股权价值只是理论上的。此外，普通员工通常无法查看公司的资本表和优先股结构，因此无法准确了解股权的真实价值。
-• vrosas指出，如果创始人在之前已经有过成功的退出经验，他们可能会利用各种手段将公司价值保留在自己手中，而不是员工手中。
-• mvkel强调，409A估值并不能完全反映股权的真实价值，因为不同股份类别和清算优先权会影响最终收益。员工在未获得资金之前，无法得知股权的真实价值，股权激励更多地是对雇主有利。
-• dakiol建议，除了在硅谷（SV）以外的地区，员工应将股权视为彩票，不太可能兑现，因此基本薪酬更为重要。
-• PopAlongKid解释了AMT（替代性最低税）的计算其实并不复杂，只是因为与普通税计算方式不同，显得复杂。
-• takklz观察到，创始人及早期投资者通常会在普通员工之前套现，普通员工没有同样的机会。
-• strangelove026分享了个人经验，认为在公司即将上市时提前行权可能是有利的，并提到之前公司上市后股价下跌的经历。
-• fluorinerocket认为股权是一种骗局，自己多次拥有但从未兑现。
-• Oarch担心随着AI技术的发展，自己所在创业公司的股权未来可能不值钱。
-• ldjkfkdsjnv强调，联合创始人的股权价值在于控制权，而非百分比。如果离开公司早，股份可能会被稀释到几乎没有价值。
-• bradlys不建议早期行使期权，除非有充足的资本和明确的IPO计划，认为对于大多数员工来说，股权风险太大，建议专注于基本薪酬。
-
-补充讨论：
-• 讨论中涉及了股权的实际价值、流动性事件的重要性、不同股份类别和优先权的影响、AMT的计算复杂性、AI技术对创业公司未来的威胁、以及控制权在股权中的重要性等多个方面。
-• 争议的焦点在于股权作为激励措施的实际价值，以及员工是否应在早期行权以获取潜在收益。部分人认为股权风险过大，基本薪酬更为可靠。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44188178" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://neilmadden.blog/2025/06/06/a-look-at-cloudflares-ai-coded-oauth-library/" target="_blank">A look at Cloudflare's AI-coded OAuth library</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: itsadok</span> |
-                    <span>评分: 185</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-08 08:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>CloudFlare的新OAuth提供者库主要借助Anthropic的Claude大语言模型编写，并经过CloudFlare工程师的严格审查，确保安全性和合规性。尽管代码整体结构良好，但测试不够全面，尤其在安全性测试方面有所欠缺。代码中存在一些可疑的选择，比如广泛允许CORS头，但这是人为决定而非Claude的建议。此外，代码缺乏标准的安全头配置，比如未设置"X-Content-Type-Options: nosniff"和HTTP严格传输安全。还有一些对OAuth规范不熟悉的迹象，例如错误地实现了OAuth 2.1中已移除的隐式授权。尽管如此，Claude在某些方面仍提供了有价值的帮助，但整体仍需更多人工审查和改进。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在编程中的应用及其潜在问题和局限性
-
-不同观点：
-• afro88认为，使用LLM时需要具备足够的知识才能有效交互。经验丰富的工程师能发现LLM输出的问题，但对于不熟悉相关领域的人来说，可能会忽略一些关键错误。因此，使用LLM的效率提升依赖于用户的审查能力和领导力。
-• sarchertech分享了使用AI辅助编写代码的实际经验，认为AI在一次性项目和不熟悉的语言上能显著提升效率，但在复杂和长期项目中提升有限。同时，担忧中级技术人员可能因依赖AI而忽视潜在的细微错误，进而对代码质量产生负面影响。
-• aiono强调了人类在代码审查中的认知偏见，指出自己编写代码更能发现潜在问题。通过编写工具的学习效果优于仅阅读相关材料。
-• HocusLocus建议通过AI引入和修复漏洞的游戏化方法来提高代码安全性。
-• max2he对将提示提交到Git仓库的做法表示好奇，并质疑其是否会成为普遍接受的做法。
-• epolanski怀疑“LLM编写”可能是一种吸引关注和获得免费审查的策略，同时追求其他目标如AI效率展示和实验。
-• kentonv作为库的作者回应了一些批评，解释了代码设计背后的考虑，并指出如果知道代码会受到如此多关注，可能会更仔细地审查代码。
-• dweekly提出使用不同模型的代理来互相审查和测试代码，以捕捉一些简单的错误，但承认不能替代人类的参与。
-• roxolotl担心LLM会冻结社会知识，因为模型可能依赖于过时或错误的信息源。
-• menzoic将LLM比作电动工具，强调理解架构和正确应用技术的重要性。
-• djoldman通过个人经验说明OAuth实现中的复杂性和潜在问题。
-• kcatskcolbdi关注LLM输出中的明显错误和开发人员对LLM输出的过度依赖。
-• OutOfHere描述了一种通过多次迭代和多个LLM审查规格文档和代码的方法，以解决大部分专业知识问题。
-
-补充讨论：
-• 争议焦点之一是LLM生成代码的可靠性和安全性，尤其是中级技术人员可能因依赖AI而引入错误。
-• 另一个讨论点是LLM对代码质量和知识发展的长期影响，包括对中级技术人员和初级到高级工程师培养的影响。
-• 使用多个LLM进行代码审查和测试的方法被提出作为提高代码质量的一种潜在策略。
-• 对于将提示提交到Git仓库的做法是否会被广泛接受，存在疑问和讨论。
-
-这些观点共同描绘了LLM在编程应用中的潜力和挑战，强调了人类审查和专业知识在确保代码质量方面的重要作用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44215667" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44208968" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
