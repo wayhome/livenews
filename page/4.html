@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-09 11:49 (北京时间)
+            最后更新时间: 2025-06-09 14:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,41 +61,237 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://rsadowski.de/posts/2025/fio_simple_benckmarking/" target="_blank">OpenBSD IO Benchmarking: How Many Jobs Are Worth It?</a>
+                    <a href="https://www.netfort.gr.jp/~dancer/software/binfmtc.html.en" target="_blank">Binfmtc – binfmt_misc C scripting interface</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-08 22:26</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 86</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-06-08 12:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文通过fio基准测试探讨OpenBSD 7.7-current在随机读取、随机写入和延迟方面的I/O性能。测试使用1TB Crucial P3 Plus SSD，64GB测试文件，4KiB块大小，I/O深度32，作业数从1到32。结果显示，OpenBSD的I/O扩展在达到6到8个作业数时表现最佳，之后由于争用和CPU开销增加，性能下降。随机读取在8个作业时接近峰值性能，随机写入对并发更敏感。与Linux相比，OpenBSD在某些配置下表现不如Linux，但仍有提升潜力。结论建议在调优OpenBSD的I/O性能时，应避免过度增加作业数，以6到8个作业为佳。</p>
+                    <p>**binfmtc** 是一个让 C 语言用于脚本编写的工具，解决了因编译步骤繁琐而选择解释型语言的问题。通过在 C 脚本中添加特定注释标记 `/*BINFMTC: ...*/` 并赋予执行权限，每次调用脚本时，系统会自动编译并执行程序。该工具利用 Linux 的 **binfmt_misc** 机制，在调用 C 脚本时自动调用编译器（如 gcc）生成临时二进制文件并运行。此外，还提供了一个类似 C shell 的 "real csh" 示例，用于日常系统管理任务。安装可通过添加特定源并使用 `apt-get` 完成，未来计划包括支持更多语言如 gcj、g77、mono 等。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同操作系统（OpenBSD与Linux）在存储IO性能测试中的表现，以及测试方法和硬件选择的合理性。
+                    <div class="comments-summary">主要讨论点：通过不同方法实现C脚本或类似功能
 
 不同观点：
-• **wtallis** 认为，测试中使用的硬盘是低端消费级产品（QLC NAND和无DRAM控制器），其性能有限，不能很好地反映操作系统IO栈的可扩展性。他指出测试方法可能未考虑SLC缓存对写入测试的影响，建议限制测试数据量并确保驱动器在测试前有一致的起始状态。他还提到Linux的fio默认设置具有显著的性能优势，并建议进一步分析fio在不同操作系统上使用的IO引擎及默认缓存机制。
-
-• **dfc** 对测试图表的准确性提出质疑，指出图表中X轴并非从原点开始，并且在Linux与OpenBSD对比图中，Linux在job=1时的数据缺失，认为这影响了测试结果的可信度。
-
-• **synack** 对测试使用的CPU型号和核心数量的影响表示关注，并提出FreeBSD在相同测试中的表现值得探讨，暗示不同操作系统在相同硬件条件下的性能对比应更加全面。
+• [rwmj] 提出了一种不使用 binfmt 的方式，通过条件编译和 shell 脚本结合，直接编译和运行 C 文件。他提到虽然可以用临时文件实现，但给出了一个无需 binfmt 的简单示例。
+• [zx2c4] 提到了自己过去的一个类似项目，提供了一个链接，展示如何通过外部工具实现脚本化的 C 编译和执行。
+• [monocasa] 提出了另一种方法，使用 tcc（tiny C compiler），其具有 shebang 兼容性，可以直接用于脚本。
+• [radiospiel] 也分享了一个类似的方法，通过指向 C 编译器和运行器的 shebang 行实现。他质疑了通过 binfmt_misc 注册扩展的必要性。
+• [kazinator] 强调这种方法完全可以在没有 Linux 特定的 binfmt-misc 黑科技的情况下实现，并提供了一个 Rosetta Code 上的多行 shebang 示例。
+• [codr7] 分享了自己为书籍编写的一个简单黑科技，通过 C 程序内部实现类似的功能，并提供了 GitHub 链接。
+• [rurban] 仅提到了一个年份 (2006)，可能暗示这种方法或类似想法早已存在。
+• [elitepleb] 提到了一个类似的旧网页，展示了一种早期的实现方式。
+• [enriquto] 惊讶地发现通过简单的包安装（binfmtc）就能在 Linux Mint 上实现类似的功能。
+• [JSR_FDED] 表达了对 C 语言的喜爱，强调了 C 语言的简洁和直接，以及编程中的责任感。
+• [Surac] 简短地表达了对这种方法的喜爱。
 
 补充讨论：
-• 测试硬件的选择对结果的影响，尤其是低端硬盘是否适合用来评估操作系统IO性能。
-• 测试方法的改进建议，包括测试数据量和缓存状态的管理。
-• fio工具在不同操作系统上的默认配置及其对性能的影响。
-• 图表数据的完整性和准确性问题。
-• 其他操作系统（如FreeBSD）在相同测试条件下的表现。
+• 争议焦点之一是是否需要使用 binfmt_misc 注册扩展。部分评论者质疑其必要性，认为有其他更简单和跨平台的方法。
+• 各种方法的优劣被间接讨论，包括条件编译、外部工具、shebang 兼容性等不同实现方式。
+• 一些评论者分享了个人项目或发现，提供了具体的示例和资源链接，丰富了讨论。
 
-争议焦点：测试方法的科学性与结果的准确性，尤其是硬件选择和图表数据的完整性。</div>
+总体来看，讨论围绕着多种实现 C 脚本化编译和执行的方法展开，涉及到具体技术细节和个人偏好。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44219871" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44216630" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://danq.me/2020/11/11/blink-and-marquee/" target="_blank"><Blink> and <Marquee> (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ghssds</span> |
+                    <span>评分: 95</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-06-08 04:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章回顾了1990年代网页开发中两个有趣的HTML标签——`<blink>`和`<marquee>`。`<blink>`标签让文本闪烁，常被视为玩笑，由Netscape在1995年引入，尽管其发明者Lou Montulli声称这是他在酒吧聊天时的戏言。`<marquee>`标签则由微软的Internet Explorer引入，用于创建滚动效果，被认为是有意设计的难看且不accessible的设计。当时，一些开发者甚至会同时使用这两个标签来确保在不同浏览器中实现动画效果。尽管这些标签早已过时，但它们代表了早期网页设计中实验性和不规范的阶段。文章还提到，现代网页设计应注重渐进增强，确保不同浏览器用户都能访问内容。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：早期网页开发技术及其实践，尤其是对过时HTML标签（如<blink>、<marquee>等）的回忆和看法。
+
+不同观点：
+• 一些开发者对早期网页技术充满怀旧情感，如donatj回忆使用HTTP 204、图像地图、Dreamweaver模板等，强调了技术演变的过程以及当时面临的挑战。
+• 另一部分开发者分享了他们对特定过时标签的创造性使用，例如ajdude展示的纯HTML marquee动画页面，以及TapamN描述的嵌套marquee技巧。
+• 部分开发者对过时标签持批评态度，认为这些标签导致了不良的用户体验，如blink标签因其令人讨厌的效果而备受诟病（如timpark通过修改浏览器二进制文件去除blink效果的实验）。
+
+补充讨论：
+• 一些评论提到了现代浏览器对旧技术的支持情况，如jameslk提到的blink标签因维护困难而被移除，但通过社区的努力提供了polyfill解决方案。
+• 有评论指出某些政府网站仍然使用这些过时标签，如HnUser12提到的印度政府网站。
+• 还有评论探讨了早期网页开发中的安全问题，如adamcik使用<blink>标签来测试XSS漏洞。
+• 最后，一些评论以幽默的方式表达了对Mozilla浏览器命运的感慨，如flomo引用《Mozilla之书》中的文字来比喻Mozilla的现状。
+
+争议焦点：
+• 早期网页技术的实用性与美观性之间的平衡。一部分开发者认为这些技术有其历史价值和教育意义，而另一部分则认为它们导致了不良的用户体验。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44214522" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lifehacker.com/health/ai-powered-calorie-counting-apps-worse-than-expected" target="_blank">I used AI-powered calorie counting apps, and they were even worse than expected</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gnabgib</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-06-08 23:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文作者Meredith Dietz测试了几款声称通过AI分析食物照片来计算卡路里的应用，如Cal AI和SnapCalorie AI。这些应用承诺通过消除人为误差来精确估算卡路里。然而，作者的测试结果令人失望。例如，应用将一个222克的苹果误认为印度料理tikka masala，且低估了其卡路里。在处理复杂餐食时，应用将炸豆腐误认为面包丁，且严重低估了沙拉的卡路里含量。尽管应用提供了详细的拍摄建议，但其识别和估算能力在现实中表现不佳，显示出AI在处理真实食物复杂性方面的不足。作者认为，这类AI卡路里计算应用并不如宣传般有效。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI在食物热量和营养追踪应用中的有效性和准确性
+
+不同观点：
+• [质疑AI准确性]  
+duskwuff和Kiyo-Lynn认为，单凭照片无法准确判断食物的营养成分，例如无法区分全脂牛奶和脱脂牛奶，或蔬菜上的光泽是水还是黄油。Kiyo-Lynn还提到，AI曾将沙拉误认为汤，最终回归手动记录和更加用心的饮食方式。
+
+• [支持AI但承认局限]  
+surfmike指出，ParrotPal等应用通过文本或语音描述比照片更准确，且用户更喜欢这种方式。虽然AI并非完美，但提供了足够准确的估计，帮助其成功减重并保持。nvahalik从开发者角度说明，AI的主要目的是简化查找而非保证精确度，但手动输入仍是唯一能保证精度的方法。
+
+• [关注用户体验和便利性]  
+cowanon2222对Macrofactor的混合文本和照片功能感到满意，认为尽管不完美，但可以轻松微调结果。Macrofactor还根据用户代谢率进行调整，提供更加个性化的体验。tjpnz则强调，通过习惯性食物的精确记录，可以有效覆盖大部分热量计算需求。
+
+• [质疑应用的实用性和动机]  
+muratsu对AI应用的快速增长持怀疑态度，担心其可能只是市场驱动而非真正有价值。fullshark担心用户可能因AI错误而误解食物的热量，特别是对于垃圾食品和舒适食物。solumunus直接质疑使用这些应用的合理性，认为其效果显而易见地差。
+
+补充讨论：
+• [对AI应用开发的探讨]  
+jaronheard关注到文章中缺少参照物的问题，并好奇加入参照物是否能改善体验。TeaVMFan偏好手动输入，并开发了自己的Java应用以更好地控制敏感信息。
+
+• [对文章测试方法的批评]  
+tunesmith批评文章开头提到三个应用，但实际测试了另外两个未提及的应用，并草率地宣称所有应用都失败。smartgamer112和TeaVMFan也表达了对cal AI的不满。
+
+争议焦点：
+• AI在食物热量和营养追踪中的准确性和实用性是否足够可靠，以及这些应用是否只是市场驱动而非真正有价值。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44220135" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://phys.org/news/2024-06-cheap-ultrapure-titanium-metal-enable.amp" target="_blank">Cheap yet ultrapure titanium might enable widespread use in industry (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: westurner</span> |
+                    <span>评分: 76</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-06-04 22:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>研究人员在东京大学工业科学研究所开发了一种有效去除钛中氧气的方法，从而降低了生产高纯度钛的成本。传统上，由于从钛矿石中去除氧气的成本高昂，钛产品的应用受到限制。该团队使用基于稀土金属的创新技术，将钛的氧含量降低到0.02%。关键步骤是将熔融钛与钇金属或其化合物反应，生成低成本、无氧的钛合金，且钇可回收利用。尽管该方法产生的钛合金中含有最多1%的钇，可能影响其机械和化学性质，但该技术简化了生产流程，有助于钛在工业和消费品中的广泛应用。这项研究发表在《Nature Communications》上。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：新型钛金属提纯方法的科学价值、应用前景及其局限性
+
+不同观点：
+• Aurornis认为该研究尽管有趣，但并未完全解决问题，因为去除氧的同时引入了钇，影响了钛合金的机械和化学性能，本质上是用一个问题替换了另一个问题。
+• digdugdirk指出，即使解决了技术问题，钛金属在工业应用中仍面临加工难题，因为钛的加工非常困难且成本高，导致其难以广泛应用，即便材料成本降低，加工成本依然高昂。
+• duffpkg支持digdugdirk的观点，引用了历史文献说明钛加工的难度，并强调即使原材料便宜，规模化生产仍然面临巨大挑战。
+• zafka转向了另一个钛合金材料Nitinol的讨论，分享了个人经历，指出尽管新材料有趣且有潜力，但个人应用开发仍然困难。
+
+补充讨论：
+• westurner引用了研究文章，强调生产超纯钛的高成本问题，指出研究旨在解决这一难题，并提供了相关文献链接。
+• LasEspuelas强调了开发低成本钛生产方法的紧迫性，指出当前存在对高效精炼方法的迫切需求。
+• foota指出该技术已经申请了专利，提供了相关链接，关注研究的知识产权问题。
+• jjcm则乐观认为，随着能源成本下降（如太阳能和核聚变技术的发展），钛的生产成本也将下降，并对当前的中间步骤必要性提出质疑。
+• eth0up以个人使用体验为切入点，表达了对钛制品（如SnowPeak杯子）的喜爱，强调了钛制品的实际优点，如耐用和非反应性，但未直接讨论研究本身。
+
+争议焦点：
+- 主要争议在于该新方法是否真正解决了钛提纯的实际问题。Aurornis认为钇污染问题仍未解决，而digdugdirk和duffpkg则强调钛金属加工本身的困难，即便提纯技术进步也难以改变其高成本和低可加工性。
+- jjcm和westurner等人对未来能源成本下降是否能降低钛生产成本持不同看法，jjcm乐观认为能源成本下降将解决问题，而westurner则关注当前的高成本现实。
+
+总结：讨论围绕新型钛提纯方法的科学进展和实际应用展开，涉及技术局限、加工难题、成本问题及未来发展前景等多方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44186008" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="http://testou.free.fr/www.beatjapan.org/mirror/www.be.com/support/guides/hitachi_boot.html" target="_blank">Launching the BeOS on Hitachi Flora Prius Systems (1999)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: doener</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-06-08 14:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文是一份指南，介绍如何在Hitachi FLORA Prius 330J系统上启动BeOS操作系统。该电脑预装了BeOS和Windows 98，但默认仅启动Windows。启动BeOS有三种方法：
+
+1. 使用BeOS启动软盘。
+2. 在Windows 98桌面上安装BeOS启动器（BeLaunch）来启动BeOS。
+3. 安装BeOS的启动管理器Bootman，以在开机时选择操作系统。
+
+Bootman需要手动安装，且不建议在已有工作正常的启动管理器时安装。所有必要软件都包含在随附的BeOS备份CD-ROM中。通过上述方法，用户可以在多系统间方便切换。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：BeOS的历史、技术细节及其后续发展
+
+不同观点：
+• AshamedCaptain认为，BeOS未能在大型OEM电脑上预装的主要原因在于微软的政策，这阻止了电脑厂商提供可以启动BeOS的选项。他引用了Be公司与微软之间的法律纠纷，并提到Hitachi等公司由于与微软的协议而无法提供预装BeOS的电脑，只能通过软盘启动。
+• jonah-archive提出了一个技术问题，询问关于BeBox主板上的逻辑分析仪接口的引脚配置，并提到重建BeBox相关硬件的过程，显示出对BeOS硬件技术细节的关注。
+• protocolture回忆起在Windows 95时代曾见过与BeOS相关的软件或系统，并提到其与显示器品牌相关联，暗示可能存在与硬件捆绑的特殊版本。
+• codr7认为BeOS在尝试与Windows竞争时已经处于劣势，并分享了个人的使用体验，表达了对BeOS的怀念，将其与Amiga系统相比较。
+• doublerabbit提到BeOS的精神通过Haiku操作系统得以延续，并提供了Haiku OS的链接，认为Haiku是一个不涉及X或Wayland复杂性的良好操作系统选择。
+• yjftsjthsd-h将BeOS启动问题与GRUB4DOS和Wubi软件类比，指出在Windows环境下启动其他操作系统的技术相似性。
+
+补充讨论：
+• AshamedCaptain与codr7的观点在某种程度上相互呼应，都提到微软对BeOS市场推广的限制及其竞争劣势。
+• jonah-archive的技术问题虽然未得到直接回应，但其关注点与其他评论者的技术背景讨论相关。
+• doublerabbit提供了Haiku OS作为BeOS的现代延续，这为对BeOS感兴趣的用户提供了一个新的探索方向。
+• 总体而言，讨论围绕BeOS的历史、技术挑战及其在现代的传承展开，并涉及与微软及Windows系统的竞争关系。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44217322" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -197,115 +393,6 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://taras.glek.net/posts/focus-and-context-and-llms/" target="_blank">Focus and Context and LLMs</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tarasglek</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-06-08 09:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了大语言模型（LLM）在软件工程任务中的应用，特别是复杂编码任务的完成能力。作者指出，尽管LLM能够完成一些人类工程师难以应对的编码任务，但这种能力高度依赖于提供的上下文质量和严格的算法监督。文章批评了当前对“代理编码”工具的过度炒作，认为这些工具无法如宣传那样自动生成大量有用的软件。作者通过一个HTTP/2服务器项目的例子说明，LLM在编写代码时需要大量人工干预和精细的上下文管理，且生产JSON等格式时表现不佳。最终，作者强调，LLM的有效性取决于输入的上下文质量，目前仅在优秀工程师手中才能展现出真正 impressive 的结果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）代理在编程开发中的实际应用及其局限性
-
-不同观点：
-• **tptacek的观点**：认为当前的LLM代理无法独立完成复杂的端到端开发任务，但可以显著加速开发过程。他分享了自己使用LLM的实际经验，指出LLM在辅助开发时并不需要过度优化提示技能，且在项目中可以通过人为调整和重组代码来提高效率。他强调，LLM的真正价值在于加速开发，而非完全替代人类开发者。
-
-• **artembugara的观点**：关注帮助开发者向LLM提供正确上下文的工具。他提出了是否有创业公司专注于解决这一问题的疑问，暗示在实际开发中，向LLM输入适当的上下文是关键挑战之一。
-
-• **summarity的观点**：分享了自己使用不同LLM工具的经验，指出某些工具在特定任务中表现出色，但在其他场景中表现不佳，尤其是涉及过多工具调用时模型容易混淆。他还提到，增加提示的上下文虽然有效，但回报率不高，目前尚未找到完美的解决方案。
-
-• **mathgeek的观点**：批评了某些人对于LLM使用的自大态度，强调最好的教学应具备谦逊的态度。他认为， mediocre的开发者使用LLM得到平庸的结果，反映出人的因素在LLM应用中的重要性。
-
-• **jmward01的观点**：提出需要一种具有无限上下文能力的LLM结构，认为当前的变压器模型虽然带来了进步，但其限制也日益显现，尤其是在处理大规模上下文时。
-
-• **emorning3的观点**：从文章中得到的启示是“上下文就是一切”，并强调人类助理的必要性。他认为，尽管LLM在开发中起到重要作用，但人类辅助仍然是不可或缺的。
-
-• **jumploops的观点**：推荐使用Claude Code，认为它是目前最有用的LLM工具之一，尽管难以解释其相对于其他工具的优势，但使用后能显著提升工作流效率。
-
-• **__mharrison__的观点**：通过一个YouTube视频展示LLM在无需编码和少量提示的情况下构建复杂软件的可能性，认为LLM的潜力比许多人想象的要大。
-
-• **briian的观点**：幽默地指出“vibe编码”中的自我认知差异，认为有些开发者高估了自己的随意态度。他同意需要更好的方式让LLM选择适当的上下文，但认为这不是一个难以解决的问题。
-
-• **quantum_state的观点**：简洁地强调了上下文的重要性，暗示LLM的成功应用依赖于正确的输入和环境。
-
-• **Workaccount2的观点**：指出LLM的编程能力不仅限于专业开发者使用，对于没有编程背景但需要计算机实现想法的人同样有用。他将LLM比作翻译软件，认为专业人士的批评忽视了这些工具对普通用户的实际价值。
-
-补充讨论：
-• 争议的焦点在于LLM在编程开发中的实际效用和局限性。一部分人认为LLM目前无法完成复杂的端到端任务，另一部分人则认为LLM已经显著加速了开发过程，并且在某些场景下表现出色。
-• 另一个值得注意的讨论点是关于“上下文”的重要性，以及如何有效地向LLM提供适当的上下文，以提高其生成代码的准确性和效率。
-• 最后，关于LLM是否主要为专业开发者设计，还是更适合没有编程背景的用户，存在不同的看法。这反映了LLM应用的广泛性和多样性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44215726" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44220110" target="_blank">Ask HN: In 15 years, what will a gas station visit look like?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thomassmith65</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 31</span> |
-                    <span>发布时间: 2025-06-08 23:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：未来加油站（2040年）的可能变化与发展
-
-不同观点：
-• **渐进变化观点**：[codegeek] 认为2040年的加油站与2010年和2025年相比不会有太大变化，可能只会增加一些电动汽车充电桩。
-• **悲观预测观点**：[buildsjets] 对未来持悲观态度，预测第三次世界大战后加油站可能类似于《辐射》游戏中的废土风格。
-• **加油站衰退观点**：[danpalmer] 认为随着电动汽车普及，传统加油站将逐渐衰退，新加油站不会新建，旧的也不会翻新，可能变成提供更多商品和广告的地方，而充电站将出现在其他场所如咖啡馆等。
-• **科技进步观点**：[karar01] 预测未来加油站将变得更加现代化和高科技，包括自动清洁、机器人服务、无现金支付以及更简洁的设计。
-• **多功能运营观点**：[protocolture] 认为加油站将继续多样化运营，包括出售商品、提供充电、换气瓶等服务，并且短时间内不会淘汰燃油车。
-• **城乡差异观点**：[mhandley] 提出城市内加油站将大量关闭，充电主要在家里或工作场所完成，而高速公路上的加油站将继续提供燃油和充电服务，且通常附带餐厅。
-
-补充讨论：
-• **支付方式变革**：[toomuchtodo] 提到未来可能通过VIN码和加密技术进行支付，传统加油站将大量关闭。
-• **重型车辆依赖燃油观点**：[Bender] 强调柴油在重型卡车和工业设备中的不可替代性，因此加油站不会很快消失。
-• **生物燃料与技术改进观点**：[anenefan] 认为未来可能会出现更多使用植物油裂解生产的燃料，同时对未来技术改进持谨慎乐观态度。
-• **AI与无人服务观点**：[byoung2] 提到AI技术可能让加油站实现无人值守，自动化销售和支付。
-• **现有趋势延续观点**：[fasthands9] 认为加油站大体上会保持现状，可能只会稍微提升商品和充电设施。
-• **国家政策影响观点**：[pkulak] 指出不同国家政策将影响加油站的发展，例如挪威已经大量安装充电桩，而美国可能由于政策限制仍会保持现状。
-• **商品变化观点**：[kylecazar] 预测未来加油站内可能会销售更多网红产品。
-• **隐私与广告担忧观点**：[andy99] 担心未来加油站会涉及更多广告和个人信息追踪，支付方式也会更加强制性和数字化。
-
-争议焦点：
-• 加油站是否会因为电动汽车的普及而大量消失。
-• 加油站是否会演变为多功能服务场所，还是继续保持传统燃油销售模式。
-• 未来技术（如AI、自动化、支付技术）对加油站运营模式的影响程度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44220110" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://diwank.space/field-notes-from-shipping-real-code-with-claude" target="_blank">Field Notes from Shipping Real Code with Claude</a>
                 </h3>
                 <div class="story-meta">
@@ -362,25 +449,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/yuuki/tcpulse" target="_blank">tcpulse: A TCP/UDP load generator that provides fine-grained, flow-level control</a>
+                    <a href="https://rsadowski.de/posts/2025/fio_simple_benckmarking/" target="_blank">OpenBSD IO Benchmarking: How Many Jobs Are Worth It?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: y_uuki</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-08 21:19</span>
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-08 22:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>**tcpulse** 是一个高性能的 TCP/UDP 连接负载生成和性能测量工具，用 Go 编写。它支持两种模式：服务器模式（作为回显服务器）和客户端模式（生成可配置负载并测量性能）。主要用途包括负载测试、连接性能测量、协议对比、基础设施验证和性能回归测试。它提供持久连接和短暂连接两种模式，支持实时指标、速率限制、多目标测试、TCP/UDP 协议以及平台优化。安装方式包括下载预构建二进制文件或从源码构建。</p>
+                    <p>本文通过fio基准测试探讨OpenBSD 7.7-current在随机读取、随机写入和延迟方面的I/O性能。测试使用1TB Crucial P3 Plus SSD，64GB测试文件，4KiB块大小，I/O深度32，作业数从1到32。结果显示，OpenBSD的I/O扩展在达到6到8个作业数时表现最佳，之后由于争用和CPU开销增加，性能下降。随机读取在8个作业时接近峰值性能，随机写入对并发更敏感。与Linux相比，OpenBSD在某些配置下表现不如Linux，但仍有提升潜力。结论建议在调优OpenBSD的I/O性能时，应避免过度增加作业数，以6到8个作业为佳。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：不同操作系统（OpenBSD与Linux）在存储IO性能测试中的表现，以及测试方法和硬件选择的合理性。
+
+不同观点：
+• **wtallis** 认为，测试中使用的硬盘是低端消费级产品（QLC NAND和无DRAM控制器），其性能有限，不能很好地反映操作系统IO栈的可扩展性。他指出测试方法可能未考虑SLC缓存对写入测试的影响，建议限制测试数据量并确保驱动器在测试前有一致的起始状态。他还提到Linux的fio默认设置具有显著的性能优势，并建议进一步分析fio在不同操作系统上使用的IO引擎及默认缓存机制。
+
+• **dfc** 对测试图表的准确性提出质疑，指出图表中X轴并非从原点开始，并且在Linux与OpenBSD对比图中，Linux在job=1时的数据缺失，认为这影响了测试结果的可信度。
+
+• **synack** 对测试使用的CPU型号和核心数量的影响表示关注，并提出FreeBSD在相同测试中的表现值得探讨，暗示不同操作系统在相同硬件条件下的性能对比应更加全面。
+
+补充讨论：
+• 测试硬件的选择对结果的影响，尤其是低端硬盘是否适合用来评估操作系统IO性能。
+• 测试方法的改进建议，包括测试数据量和缓存状态的管理。
+• fio工具在不同操作系统上的默认配置及其对性能的影响。
+• 图表数据的完整性和准确性问题。
+• 其他操作系统（如FreeBSD）在相同测试条件下的表现。
+
+争议焦点：测试方法的科学性与结果的准确性，尤其是硬件选择和图表数据的完整性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44219563" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44219871" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -391,147 +494,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44216123" target="_blank">Ask HN: How to learn CUDA to professional level</a>
+                    <a href="https://taras.glek.net/posts/focus-and-context-and-llms/" target="_blank">Focus and Context and LLMs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: upmind</span> |
-                    <span>评分: 136</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-06-08 10:52</span>
+                    <span>作者: tarasglek</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-08 09:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章讨论了大语言模型（LLM）在软件工程任务中的应用，特别是复杂编码任务的完成能力。作者指出，尽管LLM能够完成一些人类工程师难以应对的编码任务，但这种能力高度依赖于提供的上下文质量和严格的算法监督。文章批评了当前对“代理编码”工具的过度炒作，认为这些工具无法如宣传那样自动生成大量有用的软件。作者通过一个HTTP/2服务器项目的例子说明，LLM在编写代码时需要大量人工干预和精细的上下文管理，且生产JSON等格式时表现不佳。最终，作者强调，LLM的有效性取决于输入的上下文质量，目前仅在优秀工程师手中才能展现出真正 impressive 的结果。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：学习CUDA编程的方法、资源推荐以及应用场景和职业发展
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）代理在编程开发中的实际应用及其局限性
 
 不同观点：
-• [indianmouse] 认为通过阅读NVIDIA的CUDA编程指南和书籍，结合实际编写小程序，可以在6-8周内掌握CUDA编程。强调C语言基础和利用现有项目代码学习。
-• [throwaway81523] 指出CUDA编程本身与C++类似，但若为了从事AI编程工作，需要深入学习AI相关知识。同时提到3D图形编程也是一个复杂领域。
-• [imjonse] 推荐了多个资源链接和社区，强调系统学习高性能计算（HPC）方法，而不仅是CUDA本身。
-• [lokimedes] 将学习CUDA分为三个方面：CUDA框架本身、高性能计算方法和应用领域知识，强调高性能计算技能的可迁移性。
-• [elashri] 分享个人经验，强调通过NVIDIA官方课程入门，但后续学习主要靠试错。特别提到调试和优化是学习中的难点。
-• [sputknick] 分享了一个用于教学的YouTube视频链接，适合初学者。
-• [fifilura] 认为学习CUDA可以借鉴Spark和SQL的编程思路，强调避免使用for循环的编程方式。
-• [gdubs] 喜欢通过项目学习，推荐了GPU Gems系列，并分享了自己将CUDA转换为Metal的经验。
-• [SoftTalker] 开玩笑地建议利用AI助手Claude来学习CUDA。
-• [ForgotIdAgain] 推荐了一个在线平台leetgpu.com用于学习CUDA。
-• [mekpro] 强调学习CUDA的核心是理解GPU硬件架构和并行算法，而不仅是CUDA语言本身。
-• [math_dandy] 询问是否有GPU模拟器可以在普通笔记本上运行CUDA程序，以便熟悉工具链。
-• [weinzierl] 提到NVIDIA有付费课程系列，计划在假期学习。
+• **tptacek的观点**：认为当前的LLM代理无法独立完成复杂的端到端开发任务，但可以显著加速开发过程。他分享了自己使用LLM的实际经验，指出LLM在辅助开发时并不需要过度优化提示技能，且在项目中可以通过人为调整和重组代码来提高效率。他强调，LLM的真正价值在于加速开发，而非完全替代人类开发者。
+
+• **artembugara的观点**：关注帮助开发者向LLM提供正确上下文的工具。他提出了是否有创业公司专注于解决这一问题的疑问，暗示在实际开发中，向LLM输入适当的上下文是关键挑战之一。
+
+• **summarity的观点**：分享了自己使用不同LLM工具的经验，指出某些工具在特定任务中表现出色，但在其他场景中表现不佳，尤其是涉及过多工具调用时模型容易混淆。他还提到，增加提示的上下文虽然有效，但回报率不高，目前尚未找到完美的解决方案。
+
+• **mathgeek的观点**：批评了某些人对于LLM使用的自大态度，强调最好的教学应具备谦逊的态度。他认为， mediocre的开发者使用LLM得到平庸的结果，反映出人的因素在LLM应用中的重要性。
+
+• **jmward01的观点**：提出需要一种具有无限上下文能力的LLM结构，认为当前的变压器模型虽然带来了进步，但其限制也日益显现，尤其是在处理大规模上下文时。
+
+• **emorning3的观点**：从文章中得到的启示是“上下文就是一切”，并强调人类助理的必要性。他认为，尽管LLM在开发中起到重要作用，但人类辅助仍然是不可或缺的。
+
+• **jumploops的观点**：推荐使用Claude Code，认为它是目前最有用的LLM工具之一，尽管难以解释其相对于其他工具的优势，但使用后能显著提升工作流效率。
+
+• **__mharrison__的观点**：通过一个YouTube视频展示LLM在无需编码和少量提示的情况下构建复杂软件的可能性，认为LLM的潜力比许多人想象的要大。
+
+• **briian的观点**：幽默地指出“vibe编码”中的自我认知差异，认为有些开发者高估了自己的随意态度。他同意需要更好的方式让LLM选择适当的上下文，但认为这不是一个难以解决的问题。
+
+• **quantum_state的观点**：简洁地强调了上下文的重要性，暗示LLM的成功应用依赖于正确的输入和环境。
+
+• **Workaccount2的观点**：指出LLM的编程能力不仅限于专业开发者使用，对于没有编程背景但需要计算机实现想法的人同样有用。他将LLM比作翻译软件，认为专业人士的批评忽视了这些工具对普通用户的实际价值。
 
 补充讨论：
-• 争议焦点：CUDA编程是否需要深入的AI知识。例如，[throwaway81523] 认为从事CUDA相关AI编程需要深入的AI知识，而[lokimedes] 则强调高性能计算技能的可迁移性。
-• 学习路径：不同用户提供了不同的学习路径，有的强调官方指南和书籍（[indianmouse], [weinzierl]），有的强调通过项目和试错学习（[elashri], [gdubs]）。
-• 资源推荐：多个用户分享了有用的资源链接和社区，如NVIDIA官方文档、GitHub项目、GPU Gems系列书籍和在线课程。
-• 实际应用：有用户提到CUDA在AI和高性能计算领域的应用（[throwaway81523], [lokimedes]），以及图形编程的复杂性（[gdubs]）。
-• 职业发展：有用户询问CUDA相关的职业机会（[mekpro]），并讨论了直接CUDA开发和使用CUDA衍生工具（如PyTorch）的公司和岗位。
-
-总结：学习CUDA编程涉及多个方面，包括语言本身、硬件架构、并行算法和高性能计算方法。不同用户提供了丰富的资源和学习路径建议，并讨论了CUDA在AI和图形编程领域的应用及职业发展机会。</div>
+• 争议的焦点在于LLM在编程开发中的实际效用和局限性。一部分人认为LLM目前无法完成复杂的端到端任务，另一部分人则认为LLM已经显著加速了开发过程，并且在某些场景下表现出色。
+• 另一个值得注意的讨论点是关于“上下文”的重要性，以及如何有效地向LLM提供适当的上下文，以提高其生成代码的准确性和效率。
+• 最后，关于LLM是否主要为专业开发者设计，还是更适合没有编程背景的用户，存在不同的看法。这反映了LLM应用的广泛性和多样性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44216123" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://quarter--mile.com/Startup-Equity-101" target="_blank">Startup Equity 101</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-06-05 03:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章名为《初创公司股权基础》，旨在帮助在科技行业工作的人理解股权和股票期权等财务概念。文章强调，虽然人们加入初创公司不是为了学习财务术语，但了解这些概念可能会对个人财富产生重大影响。文章详细解释了股权、股票期权和限制性股票单位（RSU）等不同形式的股权补偿，以及如何在公司内部获得和处理这些股权。作者提醒，选择加入哪个初创公司是影响回报的最大因素，且股权可能变得毫无价值。文章还介绍了股票期权的行使、 vesting（归属）等具体操作，并提醒读者即使完全“优化”股权，公司失败仍可能导致损失。文章最后建议读者谨慎对待网络上的非专业财务建议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：创业公司股权的实际价值和风险
-
-不同观点：
-• TuringNYC认为，股权的实际价值取决于公司是否发生流动性事件（如上市或收购）。即便有409A估值，如果没有流动性事件，股权价值只是理论上的。此外，普通员工通常无法查看公司的资本表和优先股结构，因此无法准确了解股权的真实价值。
-• vrosas指出，如果创始人在之前已经有过成功的退出经验，他们可能会利用各种手段将公司价值保留在自己手中，而不是员工手中。
-• mvkel强调，409A估值并不能完全反映股权的真实价值，因为不同股份类别和清算优先权会影响最终收益。员工在未获得资金之前，无法得知股权的真实价值，股权激励更多地是对雇主有利。
-• dakiol建议，除了在硅谷（SV）以外的地区，员工应将股权视为彩票，不太可能兑现，因此基本薪酬更为重要。
-• PopAlongKid解释了AMT（替代性最低税）的计算其实并不复杂，只是因为与普通税计算方式不同，显得复杂。
-• takklz观察到，创始人及早期投资者通常会在普通员工之前套现，普通员工没有同样的机会。
-• strangelove026分享了个人经验，认为在公司即将上市时提前行权可能是有利的，并提到之前公司上市后股价下跌的经历。
-• fluorinerocket认为股权是一种骗局，自己多次拥有但从未兑现。
-• Oarch担心随着AI技术的发展，自己所在创业公司的股权未来可能不值钱。
-• ldjkfkdsjnv强调，联合创始人的股权价值在于控制权，而非百分比。如果离开公司早，股份可能会被稀释到几乎没有价值。
-• bradlys不建议早期行使期权，除非有充足的资本和明确的IPO计划，认为对于大多数员工来说，股权风险太大，建议专注于基本薪酬。
-
-补充讨论：
-• 讨论中涉及了股权的实际价值、流动性事件的重要性、不同股份类别和优先权的影响、AMT的计算复杂性、AI技术对创业公司未来的威胁、以及控制权在股权中的重要性等多个方面。
-• 争议的焦点在于股权作为激励措施的实际价值，以及员工是否应在早期行权以获取潜在收益。部分人认为股权风险过大，基本薪酬更为可靠。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44188178" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://neilmadden.blog/2025/06/06/a-look-at-cloudflares-ai-coded-oauth-library/" target="_blank">A look at Cloudflare's AI-coded OAuth library</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: itsadok</span> |
-                    <span>评分: 185</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-08 08:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>CloudFlare的新OAuth提供者库主要借助Anthropic的Claude大语言模型编写，并经过CloudFlare工程师的严格审查，确保安全性和合规性。尽管代码整体结构良好，但测试不够全面，尤其在安全性测试方面有所欠缺。代码中存在一些可疑的选择，比如广泛允许CORS头，但这是人为决定而非Claude的建议。此外，代码缺乏标准的安全头配置，比如未设置"X-Content-Type-Options: nosniff"和HTTP严格传输安全。还有一些对OAuth规范不熟悉的迹象，例如错误地实现了OAuth 2.1中已移除的隐式授权。尽管如此，Claude在某些方面仍提供了有价值的帮助，但整体仍需更多人工审查和改进。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在编程中的应用及其潜在问题和局限性
-
-不同观点：
-• afro88认为，使用LLM时需要具备足够的知识才能有效交互。经验丰富的工程师能发现LLM输出的问题，但对于不熟悉相关领域的人来说，可能会忽略一些关键错误。因此，使用LLM的效率提升依赖于用户的审查能力和领导力。
-• sarchertech分享了使用AI辅助编写代码的实际经验，认为AI在一次性项目和不熟悉的语言上能显著提升效率，但在复杂和长期项目中提升有限。同时，担忧中级技术人员可能因依赖AI而忽视潜在的细微错误，进而对代码质量产生负面影响。
-• aiono强调了人类在代码审查中的认知偏见，指出自己编写代码更能发现潜在问题。通过编写工具的学习效果优于仅阅读相关材料。
-• HocusLocus建议通过AI引入和修复漏洞的游戏化方法来提高代码安全性。
-• max2he对将提示提交到Git仓库的做法表示好奇，并质疑其是否会成为普遍接受的做法。
-• epolanski怀疑“LLM编写”可能是一种吸引关注和获得免费审查的策略，同时追求其他目标如AI效率展示和实验。
-• kentonv作为库的作者回应了一些批评，解释了代码设计背后的考虑，并指出如果知道代码会受到如此多关注，可能会更仔细地审查代码。
-• dweekly提出使用不同模型的代理来互相审查和测试代码，以捕捉一些简单的错误，但承认不能替代人类的参与。
-• roxolotl担心LLM会冻结社会知识，因为模型可能依赖于过时或错误的信息源。
-• menzoic将LLM比作电动工具，强调理解架构和正确应用技术的重要性。
-• djoldman通过个人经验说明OAuth实现中的复杂性和潜在问题。
-• kcatskcolbdi关注LLM输出中的明显错误和开发人员对LLM输出的过度依赖。
-• OutOfHere描述了一种通过多次迭代和多个LLM审查规格文档和代码的方法，以解决大部分专业知识问题。
-
-补充讨论：
-• 争议焦点之一是LLM生成代码的可靠性和安全性，尤其是中级技术人员可能因依赖AI而引入错误。
-• 另一个讨论点是LLM对代码质量和知识发展的长期影响，包括对中级技术人员和初级到高级工程师培养的影响。
-• 使用多个LLM进行代码审查和测试的方法被提出作为提高代码质量的一种潜在策略。
-• 对于将提示提交到Git仓库的做法是否会被广泛接受，存在疑问和讨论。
-
-这些观点共同描绘了LLM在编程应用中的潜力和挑战，强调了人类审查和专业知识在确保代码质量方面的重要作用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44215667" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44215726" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
