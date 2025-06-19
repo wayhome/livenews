@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-20 02:18 (北京时间)
+            最后更新时间: 2025-06-20 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,38 +61,257 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.pi.website/research/real_time_chunking" target="_blank">Real-time action chunking with large models</a>
+                    <a href="https://wangjunfei.com/2025/06/18/Rewriting-Kafka-in-Rust-Async-Insights-and-Lessons-Learned/" target="_blank">Rewriting Kafka in Rust</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pr337h4m</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-17 19:39</span>
+                    <span>作者: chuckhend</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-19 09:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了如何使大型视觉-语言-动作模型（VLA）在机器人中实现实时操作。与聊天机器人或图像生成器不同，机器人在执行任务时必须实时响应，因为延迟会显著影响性能。VLAs虽在开放世界泛化中表现良好，但因模型庞大，运行缓慢，尤其在移动机器人等边缘设备上，延迟更为明显。为此，文章提出了一种称为“实时分块执行”（RTC）的算法，允许机器人在执行上一个动作 chunk 的同时生成下一个动作，从而避免动作不连贯和不安全加速。RTC 通过类似“图像修复”的方式，填补新旧 chunk 间的动作重叠部分，确保实时执行的连续性和模型反应性。实验表明，RTC 显著加快了任务执行速度，并能承受高达300毫秒的人为延迟，成功完成动态且精确的任务。</p>
+                    <p>本文讨论了用Rust重写Kafka的优势和设计经验。Rust不仅提供了语言本身的优势，还能通过重新设计提升性能和效率。关键设计经验包括：
+
+1. 尽可能避免将函数变为`async`，以减少状态机和任务的开销。
+2. 最小化Tokio任务数量，避免过度使用异步操作。
+3. 在性能关键路径上谨慎使用`unsafe`代码。
+4. 通过分离可变和不可变数据优化锁的粒度。
+5. 分离异步和同步数据操作，优化锁的使用。
+6. 在性能关键路径上尽可能使用静态分发。
+
+作者选择Rust开发StoneMQ，经过一年迭代开发，解决了多个难题，目标是超越Kafka的性能并保持代码清晰。Rust学习曲线陡峭，但其系统编程能力强大，得到了Google、微软和亚马逊等公司认可。StoneMQ项目代码库可在其GitHub页面查看。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：机器人项目中的技术细节及其实现方式
+                    <div class="comments-summary">主要讨论点：编程语言的发展与函数异步化的必要性
 
 不同观点：
-• [fennecbutt] 对项目整体表示非常积极的态度，强调项目的酷炫和完成度，但未涉及具体技术细节。
-• [b0a04gl] 对项目的实时控制回路（rtc）处理延迟的能力表示惊讶，特别是它在处理300毫秒以上延迟时仍能完成插入网线等任务。同时提出疑问，项目是如何在不需要重新训练的情况下保持控制回路的稳定，猜测可能采用了某种潜在的计划缓存机制。
-• [jauntywundrkind] 没有直接评论项目，而是询问关于VLA（变量长度数组）的入门推荐资源，可能与项目中涉及的技术相关。
-• [UltraSane] 对机器人能够插入网线这一功能表示赞赏，特别是对其潜在应用含义表示兴趣。
+• Zamalek对文章中关于将函数改为异步（async）的建议提出质疑。他们认为作者所举的例子中，开发者手动处理状态的方式可能是不必要的，因为编译器已经在await边界上处理了状态分割。Zamalek质疑是否有必要手动优化，并提出是否有基准测试数据支持作者的建议。
+
+• Dkersten则讨论了C/C++作为编程语言的未来，认为C/C++正在逐渐过时，步入“暮年”。同时，dkersten指出Rust是C/C++潜在的继任者之一，但并非唯一的竞争者。他还提到C++可能会比C更持久，暗示C++有更强的适应性和生命力。
 
 补充讨论：
-• [b0a04gl] 对技术细节提出具体疑问，显示出对项目实现方式的深入思考，尤其是关于控制回路的稳定性和潜在的技术机制。
-• [jauntywundrkind] 的提问表明对VLA技术有学习需求，可能暗示这一技术在类似项目中的重要性。
-• 争议焦点：目前评论中没有明显的对立观点或争议，但[b0a04gl] 对技术稳定性的疑问可能暗示出对项目某些技术细节的质疑或好奇。
+• Zamalek关注的是具体编码实践中的性能优化问题，特别是对异步函数的不必要使用，强调编译器优化的有效性。
+• Dkersten的评论则更多聚焦于编程语言的宏观发展趋势，讨论C/C++是否会在未来被其他语言（如Rust）取代，以及这种演变对开发者的潜在影响。
 
-总结：讨论围绕一个机器人项目的技术细节展开，参与者对项目的酷炫功能表示赞赏，同时对具体实现方式，特别是控制回路的稳定性提出疑问和思考。此外，有参与者对相关技术资源提出需求。</div>
+争议焦点：
+• 争议的核心在于，是否应该手动将函数改为异步以优化性能（Zamalek的观点），还是默认依赖编译器优化即可。
+• 另一个争议点是关于C/C++是否真的在走向过时，以及Rust等新兴语言是否真的能够取代C/C++。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44303021" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44317061" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://meri.garden/a-deep-dive-explainer-on-beekem-protocol/" target="_blank">A deep-dive explainer on Ink and Switch's BeeKEM protocol</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: erlend_sh</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-18 22:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了Ink & Switch的BeeKEM协议，该协议旨在为本地优先应用程序提供隐私保护和去中心化的授权机制。文章首先强调本地优先应用不仅是技术架构，更是一种社会和政治立场，强调个人和社区对数据的控制权。Ink & Switch的Keyhive项目通过基于能力的系统为CRDT（无冲突复制数据类型）提供同步和授权支持，解决隐私问题。然而，加密CRDT操作面临效率挑战，因为大多数CRDT实现依赖于批量处理细粒度操作。
+
+BeeKEM协议通过形式化去中心化系统中的密钥交换和管理，解决了这些问题。它借鉴了Signal协议的双棘轮算法，但扩展到群组消息加密。通过"发送者密钥"方法，每个群组成员使用对称密钥加密消息，并实现前向安全。BeeKEM进一步优化了密钥管理，使其在去中心化环境中更加高效。本文还提到在Roomy项目中的应用计划，并提供了BeeKEM的详细解释和Rust实现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44313652" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.lwionline.org/sites/default/files/2016-09/v5%20White.pdf" target="_blank">Law as Rhetoric, Rhetoric as Law: The Arts of Cultural and Communal Life (1985) [pdf]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: akkartik</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-17 02:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44295333" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.smithsonianmag.com/articles/carnivorous-plants-have-been-trapping-animals-for-millions-of-years-so-why-have-they-never-grown-larger-180986708/" target="_blank">After millions of years, why are carnivorous plants still so small?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gmays</span> |
+                    <span>评分: 200</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-06-13 20:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p> carnivorous plants have been trapping animals for millions of years, but they have never evolved to become larger. These plants, which obtain nutrients by consuming insects and other small creatures, have independently evolved at least ten times in history. Despite their ability to thrive in nutrient-poor environments, carnivorous plants remain small. This is likely due to the trade-offs between the energy invested in capturing prey and the energy required for growth and survival. The limited size may also be a result of their specialized habitat requirements and the need to maintain efficient trapping mechanisms. Overall, their small stature persists as a successful evolutionary strategy.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点： carnivorous plants的生物学特性、进化及其潜在的捕食能力
+
+不同观点：
+• IAmBroom认为，维纳斯捕蝇草适应了贫瘠的土壤环境，失去了对真菌的防御能力。当人类在土壤中添加营养物质时，这些植物因真菌感染而死亡。这种适应性使得它们在营养丰富的环境中反而无法生存。
+• _tom_则提出反例，如能够困住羊的荆棘，表明有些植物确实能够从大型生物的死亡中获益，并用椰子树的例子进一步支持这一观点。
+• jcalx引用了一个世界构建网站上的回答，描述了一种名为“骨草”的假想食肉植物，通过与真菌共生实现对动物的大规模捕杀，强调了植物与真菌或细菌共生的可能性。
+• TheOtherHobbes分享了一个个人经历，维纳斯捕蝇草能够释放强烈吸引力，即使在封闭环境中也能吸引大量苍蝇，最终因捕食过量而死亡。
+• bell-cot指出，当食肉植物大到足以捕食小型哺乳动物时，会遇到“妈妈熊障碍”，即母熊等动物会为了保护幼崽而摧毁植物，限制了植物的捕食能力。
+• Nevermark认为植物间直接以物理结构为食的现象应该有特定的名称，并提出植物间竞争的例子，如榕树。
+• almosthere提到许多食肉植物失去了部分或大部分叶绿体基因组，因为它们从动物中获取养分，不再需要光合作用，并认为食肉性可能是进化的“死胡同”。
+• leoedin认为，随着猎物智商的提高，它们更容易识破植物的陷阱，因此食肉植物的捕猎效率受到限制。
+• imoreno从进化角度分析，认为食肉植物的进化适应涉及多个因素，提出了“适应度超曲面”的概念，指出不同的小生态环境导致多样化的捕猎机制。
+• Noelia-认为小型食肉植物通过巧妙的策略在贫瘠环境中生存，本身就是一种惊人的进化成就，而非必须变得巨大。
+• chrisco255和mmsc以幽默的方式提及流行文化中的食肉植物，如《超级玛丽》中的蘑菇王国和《The Day of the Triffids》小说。
+• phkahler补充，大型动物能够通过观察其他动物被捕食而学会避开陷阱，这限制了食肉植物捕猎大型猎物的能力。
+
+补充讨论：
+• 讨论中涉及的争议焦点包括食肉植物是否能够在营养丰富的环境中生存，以及它们是否有可能进化出捕食大型动物的能力。
+• 进化上的“死胡同”概念被提出，认为食肉植物可能因为失去光合作用能力而在长远进化中处于不利地位。
+• 植物与真菌或细菌共生的可能性被视为一种扩展食肉植物捕猎能力的方式，尽管这在自然界中尚未广泛观察到。
+• 个人经历和假设性场景被广泛引用，以支持对食肉植物捕猎能力和生存策略的不同看法。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44271760" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/nirw4nna/dsc" target="_blank">Show HN: I built a tensor library from scratch in C++/CUDA</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: nirw4nna</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-06-18 15:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>DSC是一个兼容PyTorch的张量库和机器学习推理框架，具有直观的Python API，类似于NumPy和PyTorch，并支持内置的神经网络模块。DSC支持CPU和CUDA后端，用户可以通过简单指令切换后端，且不依赖外部库。其核心操作采用可移植的C++编写，具有自定义内存分配器，避免运行时动态分配。安装时需从源码构建，支持C++20的编译器和GNU Make。DSC使用pytest进行单元测试，确保与NumPy的兼容性，并采用BSD-3-Clause许可证。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于项目技术选择的讨论，包括接口选择、性能对比、硬件需求以及项目目标。
+
+不同观点：
+• [aklein] 认为通过 ctypes 接口原生代码不如使用 cffi，并提到如果构建自己的 Python 扩展模块（如使用 pybind），可以获得更多灵活性，摆脱简单/严格的 ABI 限制。他还对 C 和 Python 严格分离的设计选择表示好奇。
+
+• [revskill] 提出使用 Zig 语言的建议，但没有展开具体理由。
+
+• [kajecounterhack] 对项目目标提出疑问，询问项目是为了个人学习还是为了提升推理性能，并表示希望看到其推理速度与 llama.cpp 的对比结果。
+
+• [helltone] 认为项目中的一些模板和 switch 语句可以通过引入中间表示和类似编译器的架构来改进，并表示对该项目与 Jax 和 zml 的比较感兴趣。
+
+• [rrhjm53270] 关注项目的张量库和神经网络库的序列化与反序列化问题，询问是否有相关计划。
+
+• [amtk2] 作为一个新手，询问了进行此类项目所需的笔记本电脑配置，特别是关于是否可以使用 Mac 或者是否需要专门的 Linux 笔记本。
+
+• [einpoklum] 指出代码风格非常类似 C 语言，大量使用宏、前缀而非命名空间，以及使用原始指针等，并提到尽管技术上是在编译 C++，但实际上并不完全是 C++ 的风格。他没有对此做出正面或负面的评价，并声明自己不是机器学习/神经网络模拟领域的专家。
+
+补充讨论：
+• 项目的技术实现细节（如接口选择、代码风格）是讨论的焦点，特别是不同工具和语言（如 ctypes、cffi、pybind、Zig）的优劣。
+• 性能对比（如与 llama.cpp、Jax、zml）和硬件需求（Mac 与 Linux）也是重要的讨论点。
+• 项目的设计选择（如 C 和 Python 的分离、代码风格）引发了关于其合理性和可改进性的讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44310678" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arstechnica.com/gadgets/2025/06/framework-laptop-12-review-im-excited-to-see-what-the-2nd-generation-looks-like/" target="_blank">Framework Laptop 12 review</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: moelf</span> |
+                    <span>评分: 258</span> |
+                    <span>评论数: 44</span> |
+                    <span>发布时间: 2025-06-18 15:09</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要介绍了Framework Laptop 12，这是一款模块化、可修复、可升级的笔记本电脑。其采用塑料外壳，提供五种双色选项，包括独特的紫色和泡泡糖色，使其外观更加亲和和与众不同。尽管塑料常被认为廉价，但Framework通过结合ABS塑料和TPU塑料，使机身坚固且耐冲击。键盘和触控板颜色选择有限，只有紫色款配有颜色匹配的触控板。该笔记本使用独特的扩展卡系统，允许用户自定义端口配置，但目前只有USB-C扩展卡有颜色选项。屏幕质量良好，但边框较厚，设计上仍有改进空间。总体而言，Laptop 12以其定制性和耐用性吸引特定用户群体。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Framework 笔记本电脑的价值、性能、适用性以及与其他品牌（如MacBook、ThinkPad）的对比
+
+不同观点：
+• **nucleardog**：认为Framework笔记本虽然质量不错，但在纯金钱价值上并不是最佳选择。其优势在于可持续性和可修复性，而非性价比。高配置版本的价格更具竞争力。
+• **Lammy**：赞赏Framework的定制和可修复性，提到13代Intel规格中的内存限制问题，并分享个人对"轻度游戏"的理解，认为Framework在某些使用场景中表现不差。
+• **criddell**：质疑Framework为何无法在性能和电池寿命上与5年前的MacBook Air M1竞争，希望看到更高效能的无风扇机型。
+• **0000000000100**：公司购买的Framework 13出现多种问题，如驱动问题和USB端口故障，最终换回HP笔记本，认为Framework不适合企业使用。
+• **ItCouldBeWorse**：认为购买笔记本不如桌面终端，桌面设备更具升级和重复使用的潜力。
+• **keb_**：比较后选择购买翻新的ThinkPad T14，认为其性价比和可修复性更佳。
+• **butz**：希望有更多10"-12"的小尺寸笔记本。
+• **daft_pink**：认为在当前价格水平上，MacBook Air更具吸引力。
+• **GardenLetter27**：认为Framework的定价过高，需要降价以与Apple、Lenovo和ASUS竞争。
+• **caycep**：考虑寻找2025年适合Linux的最佳笔记本，包括Thinkpad、Framework、System76或运行UTM的MacBook。
+• **WillAdams**：虽然欣赏Framework的理念，但考虑自制基于Raspberry Pi和Wacom的便携设备。
+• **class3shock**：购买Framework 16遇到一些初期问题，如主板和键盘故障，但总体上仍会推荐尝试Framework 13。
+• **wpm**：希望Framework推出带有倒T型箭头键的小型笔记本，认为当前12和13型号在键盘设计上差强人意。
+• **cjcenizal**：赞赏Framework的配色设计，觉得有科技感和怀旧感。
+• **UncleOxidant**：关注屏幕表面处理，确认Framework提供不额外收费的磨砂屏幕选项。
+
+补充讨论：
+- Framework的价值更多体现在其可修复性和定制性，而非性价比。
+- 用户对性能、电池寿命和特定功能（如Thunderbolt端口、屏幕尺寸、键盘设计）有不同需求和期待。
+- 一些用户对Framework在企业环境中的表现持怀疑态度，而另一些用户则欣赏其在小众市场中的独特定位。
+- 定价问题和与其他品牌（如MacBook、ThinkPad）的竞争是讨论的焦点之一。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44310583" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -168,49 +387,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://sopghreporter.com/2025/06/01/dr-demento-announces-retirement/" target="_blank">Dr. Demento Announces Retirement After 55-Year Radio Career</a>
+                    <a href="https://www.pi.website/research/real_time_chunking" target="_blank">Real-time action chunking with large models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: coloneltcb</span> |
-                    <span>评分: 114</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-19 03:27</span>
+                    <span>作者: pr337h4m</span> |
+                    <span>评分: 82</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-06-17 19:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文讨论了在机器人实时操作中使用大型视觉-语言-动作模型（VLA）的挑战和解决方案。与聊天机器人或图像生成器不同，机器人必须实时运行，延迟会影响其表现。VLAs虽然能很好地泛化到开放世界，但因模型庞大、参数多，运行速度较慢，尤其在边缘设备上延迟更明显。为解决此问题，文章提出“动作分块”（Action Chunking）方法，即每次推理调用时输出并执行一系列动作。然而，简单分块可能导致动作不连续和不安全加速。为此，作者开发了“实时分块算法”（RTC），通过“冻结”部分前一块动作并填补新块剩余部分，解决了不连续性问题。实验表明，RTC显著加快了执行速度，即使在人为延迟情况下也能完成动态精确任务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对Dr. Demento节目及其影响的回忆和评价
+                    <div class="comments-summary">主要讨论点：机器人项目的技术细节与应用前景
 
 不同观点：
-• dizlexic：Dr. Demento的节目对童年有着深刻影响，尤其是在父母离婚后，通过节目与父亲保持了一种特殊的联系。节目带来了许多欢笑和快乐，对成长中的困难时期有重要意义。
-• technofiend：分享了自己与朋友尝试向Dr. Demento投稿的经历，尽管出了差错（寄去了空白磁带），但Dr. Demento依然给予了回复和修复，展现了他的友善和耐心。
-• pugworthy：通过远程电台收听到了Dr. Demento的节目，与其他未接触过此类内容的小镇居民不同，节目带来了新奇的体验，也提到了Firesign Theater专辑的影响。
-• tkgally：作为Dr. Demento早期节目的听众，提到他在1970年代初期的影响力，特别是在学校中流行的歌曲"Shaving Cream"。
-• blonky：回忆起与朋友们一起收听Dr. Demento节目的特别时刻，特别是在假期中完整收听的经历，节目成为了朋友间交流和欢笑的源泉。
-• Isamu：提到Dr. Demento节目中介绍了Weird Al Yankovik，认为这是该节目对音乐界的重要贡献。
-• miesman：分享了与Dr. Demento本人的一次偶遇，印象中他非常友善，与在电台上的表现一致。
-• Aeolun：对人们数十年来对Dr. Demento的热情表示感动，但也感到遗憾，往往只有在停止时才得知这些热情。
-• jakedata：通过请求被播放获得了Dr. Demento的T恤，尽管错过了节目播出，但依然在校园中获得了“名誉”，多年后成功获取了当年的节目录音。
-• cl0ckt0wer：提供了Dr. Demento的网站链接，指出了其在线资源的丰富性。
-• anonymousiam：拥有1970年代早期录制的Dr. Demento节目录音，惊讶于他依然活跃，并对他的珍贵黑胶收藏的未来表示好奇。
-• Triphibian：强调了通过电台收听特殊音乐的体验，提到通过Dr. Demento节目首次听到了Camper Van Beethoven，这种体验不同于MTV。
-• cafard：回忆了1970年代在丹佛或博尔德电台收听Dr. Demento节目的经历，认为其长达五十多年的播出是一个了不起的成就。
-• WarOnPrivacy：Dr. Demento节目介绍的艺术家如The Residents、Negativland和The Rutles，如今自己的孩子也在听这些音乐，显示了节目对不同代际的影响。
-• SirFatty：在1980年代早期通过录制方式收听Dr. Demento节目，尽管因为上学原因无法实时收听，但依然珍视这些录音。
+• **对项目整体的积极评价**：
+   - [fennecbutt] 对整个机器人项目表示高度赞赏，认为项目非常酷，并对自己终于开始这个项目感到兴奋。
+
+• **技术细节探讨：VLA 推荐**：
+   - [jauntywundrkind] 关注技术细节，询问是否有关于VLA（可能是可变长度数组）的入门推荐，显示出对项目中具体技术实现的兴趣。
+
+• **技术细节探讨：控制回路稳定性**：
+   - [b0a04gl] 对机器人处理300ms以上延迟并完成任务（如插入以太网线）的能力表示惊讶，并提出疑问，即在没有重新训练的情况下，机器人如何保持控制回路的稳定性。暗示可能存在潜在的计划缓存机制。
+
+• **应用前景的讨论**：
+   - [UltraSane] 表达了对机器人能够插入以太网线这一能力的深层次含义的兴趣，暗示这种能力在实际应用中的巨大潜力。
 
 补充讨论：
-• Dr. Demento节目的影响力不仅限于某一年代或地区，而是跨越了多个年代和地区，影响了几代听众。
-• 听众们通过各种方式（如磁带录制、请求播放、偶遇Dr. Demento本人）与节目互动，展现了节目对个人生活的深远影响。
-• 争议焦点：没有明显的争议，更多的是对Dr. Demento节目和其本人友善态度的共同赞美和怀念。
+• 讨论中涉及的技术问题包括VLA的推荐、控制回路的稳定性及其实现机制（如计划缓存），显示出社区对技术细节的关注。
+• 对机器人项目应用前景的讨论，特别是其在实际生活中的潜在用途，也引起了参与者的兴趣和想象。
 
-总结：评论主要围绕Dr. Demento节目对不同听众在不同年代的深远影响，以及听众与节目互动的各种有趣经历，展现了该节目在广播史上的独特地位和文化意义。</div>
+争议焦点：
+• 目前评论中没有明显的争议，但[b0a04gl]对控制回路稳定性的疑问可能暗示了对项目技术细节的潜在质疑或好奇，尤其是如何在不重新训练的情况下保持性能。
+
+总结来看，讨论围绕着对机器人项目本身的赞赏、具体技术实现的探讨以及对应用前景的展望展开。参与者们从不同的技术角度和应用前景进行了交流。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44315185" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44303021" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -225,36 +442,43 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: danboarder</span> |
-                    <span>评分: 270</span> |
+                    <span>评分: 332</span> |
                     <span>评论数: 12</span> |
                     <span>发布时间: 2025-06-18 06:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>MiniMax-M1是全球首个开源权重的大规模混合注意力推理模型，采用混合专家系统（MoE）架构和闪电注意力机制。该模型基于此前拥有4560亿参数的MiniMax-Text-01模型，支持长达100万 tokens的上下文，且在推理效率上优于DeepSeek R1等模型。通过强化学习（RL）训练，MiniMax-M1在数学推理、编码、软件工程等任务中表现优异，超越了Qwen3-235B和DeepSeek-R1等模型。特别是在长上下文和复杂软件工程任务中，MiniMax-M1展示了强大的能力，为下一代语言模型打下坚实基础。实验结果表明，MiniMax-M1在多个基准测试中取得了领先成绩。</p>
+                    <p>MiniMax-M1是全球首个开放权重的大规模混合注意力推理模型，采用混合专家架构（MoE）和闪电注意力机制，支持长达100万 tokens的上下文长度。该模型在多项任务中表现出色，尤其在复杂软件工程、工具使用和长上下文处理方面，优于DeepSeek R1和Qwen3-235B等模型。MiniMax-M1通过大规模强化学习训练，提出CISPO算法，有效提升了强化学习效率。模型在数学、编码、长文本理解和工具使用等基准测试中表现优异，为下一代语言模型奠定了基础。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：MiniMax公司的技术发布、技术细节、市场定位及相关争议
+                    <div class="comments-summary">主要讨论点：MiniMax公司及其M1模型的发布与技术分析
 
 不同观点：
-• [reedlaw] 提到运行MiniMax模型所需的硬件成本极高，引用了具体配置和价格链接，暗示该技术在实际应用中的成本可能非常昂贵。
-• [swyx] 对MiniMax的技术发布持积极态度，指出MiniMax在短时间内发布了多个重要模型，并分享了M1模型的技术报告链接，认为其在技术上有独特之处，如闪电注意力机制和GRPO变种（CISPO），但承认其并非目前最先进的开源权重模型。
-• [vintermann] 对MiniMax公开发布技术报告表示赞赏，特别指出其代码库并非空仓库，显示出对该公司诚信的认可。
-• [killerstorm] 对MiniMax的注意力机制设计提出了技术性疑问，认为其"线性注意力"的术语和实际功能容易引起混淆，并解释了"softmax注意力"和"线性注意力"的区别，质疑后者是否能真正算作注意力机制。
-• [npteljes] 提到MiniMax是一家中国公司，但未在官方页面明确说明，暗示可能存在信息透明度问题。
-• [noelwelsh] 认为MiniMax作为一个新加坡公司，进入大型语言模型（LLM）领域的门槛似乎不高，并对未来本地运行优秀LLM的成本下降持乐观态度，提到开放权重模型和硬件发展的潜力。
-• [markkitti] 对MiniMax模型的命名方式提出批评，认为其名称缺乏创意且容易混淆。
-• [htrp] 暗示MiniMax正在为上市造势，引用了相关新闻链接，可能在讨论该公司商业策略的背后动机。
-• [b0a04gl] 对MiniMax在不使用西方云基础设施情况下训练模型的能力表示关注，特别提到其token吞吐量设置可能有独特之处，暗示对技术细节和基础设施的好奇。
+• **swyx**：MiniMax正在进行"发布周"活动，连续推出了M1和Hailuo 2模型。虽然这些模型在LLM和视频模型方面有很大进展，但能否保持这种发布速度还有待观察。同时，分享了M1的技术报告链接，并指出其在闪电注意力机制和GRPO变种（CISPO）方面的创新。
+
+• **reedlaw**：指出运行M1模型需要昂贵的硬件设备（8块H200 141GB显卡，约25万美元），暗示高性能LLM的实际应用成本可能很高。
+
+• **vintermann**：赞赏MiniMax公开发布M1模型的做法，并对非空代码库表示认可，表现出对MiniMax团队的初步好感。
+
+• **noelwelsh**：认为LLM的开发似乎没有很高的进入壁垒，并提到开放权重模型和未来硬件的发展可能使本地运行优秀LLM变得经济。同时指出MiniMax是一家位于新加坡的公司。
+
+• **npteljes**：纠正noelwelsh，指出MiniMax是一家中国公司，并提供了维基百科链接作为证据。
+
+• **markkitti**：对模型的命名提出批评，认为其名称容易与硬件设备（如Mac Studio处理器）混淆。
+
+• **killerstorm**：对M1模型中的注意力设计进行了详细分析，解释了"线性注意力"和"softmax注意力"的区别，并指出"线性注意力"并非真正的注意力机制，而是一种与逐层计算兼容的机制。
+
+• **htrp**：提到MiniMax可能正在为IPO制造声势，并提供了相关新闻链接。
+
+• **b0a04gl**：对MiniMax在没有西方云基础设施的情况下进行大规模模型训练表示好奇，并希望了解其Token吞吐量设置的具体情况。
 
 补充讨论：
-• 争议焦点之一是MiniMax模型的注意力机制设计是否合理及其命名问题。
-• 另一个讨论点是MiniMax的技术发布是否具有足够的创新性和实用性，以及其市场定位和商业策略。
-• 参与者对MiniMax的技术报告和实际应用成本也存在不同看法，部分人对其技术前景持乐观态度，而另一些人则对其高昂的硬件成本表示担忧。
-• 信息透明度和公司背景也成为讨论中的一部分，有参与者质疑MiniMax是否充分披露了其公司信息和模型细节。</div>
+• 评论中涉及MiniMax的背景信息（如公司国籍、IPO传闻）和模型运行成本（硬件需求）引发了对实际应用中的经济性和技术可行性的讨论。
+• 技术细节（如注意力机制）的讨论反映了社区对创新技术实现方式的关注和理解深度。
+• 对命名和市场策略的批评则显示出用户对品牌和产品定位的关注。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44307290" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -267,265 +491,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pontus.granstrom.me/scrappy/" target="_blank">Scrappy - make little apps for you and your friends</a>
+                    <a href="https://pontus.granstrom.me/scrappy/" target="_blank">Scrappy – Make little apps for you and your friends</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: 8organicbits</span> |
-                    <span>评分: 364</span> |
-                    <span>评论数: 49</span> |
+                    <span>评分: 437</span> |
+                    <span>评论数: 53</span> |
                     <span>发布时间: 2025-06-18 05:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了John和Pontus开发的工具Scrappy，旨在让普通人为自己和亲友制作个性化软件应用（Scrapps）。这些应用不必精美，但能满足特定需求，如算术练习、会议成本计时器、参会人数计数器等。Scrappy提供一个无限画布，用户可以通过拖放交互对象并附加简单代码来构建应用，类似于Figma等工具。Scrappy应用是多人在线的，状态持久且同步，用户可在朋友使用时编辑。该项目旨在重新构想软件创作，赋予普通用户表达自我的能力，而无需成为专业程序员。</p>
+                    <p>本文介绍了John和Pontus创建的原型工具Scrappy，旨在推动“自制软件”的理念，让个人能够为自己和亲友制作个性化、不求精美但满足特定需求的应用程序。Scrappy提供一个无限画布，用户可以通过拖放交互对象并附加简单代码来构建应用，类似于Figma等工具。文章通过几个例子展示了Scrappy的用途，如算术练习、参会人数计数器、会议成本计时器和家务分配表。Scrappy应用支持多人协作、持久化状态和选择性共享，且编辑和运行无明显区分。该项目旨在重新构想软件创作，鼓励普通用户通过“轻量编程”和“自制软件”表达自我，而不必成为专业程序员。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对Scrappy等低代码/无代码工具的评价与讨论，涉及长期使用、移动端支持、开源与闭源解决方案的比较，以及用户对易用性和成本的期望。
+                    <div class="comments-summary">主要讨论点：关于Scrappy及类似工具的可行性、使用场景、技术实现和社区影响的讨论
 
 不同观点：
-• al_borland认为Scrappy的托管性质使其对长期项目不适用，依赖SaaS工具意味着项目需要不断重制。他倾向于使用简单的HTML/CSS/JS或PHP来构建项目，因为这些技术不依赖特定平台且维护成本低。
-• RodgerTheGreat推荐了CardStock和Decker作为Scrappy的替代品，它们是开源的并且可以本地运行，解决了对托管服务依赖的问题。
-• simonw指出Scrappy在移动端编辑功能的缺失，并认为不应低估移动用户的需求，因为对很多人来说，手机是唯一的计算设备。
-• tokioyoyo分享了一个个人项目经历，展示了制作简单应用程序并与朋友分享的成就感，即便没有经济回报。
-• selcuka认为"vibe coding"（利用LLM生成代码）不会在短期内取代开发者，但会成为简单系统的重要竞争者，因为LLM已经能够生成相对复杂的应用。
-• nilirl认为电子表格仍然是最好的终端用户编程环境，暗示Scrappy等工具在易用性和普及性上仍有不足。
-• indyjo对Scrappy的UI设计和编程体验提出批评，认为缺乏代码补全、视觉编程和AI支持等问题影响了使用体验。
-• blips对AI生成内容的消费持负面态度，认为这种内容缺乏吸引力，并质疑Scrappy宣传文案的原创性。
-• feeley推荐了CodeBoot作为Scrappy的替代方案，强调其无需安装和使用Python创建Web应用的便利性。
-• ge96分享了学习Microsoft的Touch Develop的经历，指出封闭环境的学习限制，并转向传统编程语言。
-• zupa-hu认为Scrappy的反馈过于苛刻，可能是因为进入市场太晚，未来发展道路会更加艰难。
-• Peteragain建议从社区和家庭应用角度出发，考虑类似家族式应用商店的模式，强调无安全限制和邀请制的分享。
-• riffraff支持"scriptable components"而非块编程，并指出用户对零成本和易分享的需求是关键因素。
-• hiAndrewQuinn展示了利用LLM和简单技术（如GitHub Pages和localStorage）创建实用工具的例子，强调新技术带来的便利。
-• p2hari正在开发一个类似的单文件HTML/JS项目，并考虑开源或Freemium模式。
+• RodgerTheGreat认为Scrappy与CardStock和Decker有相似之处，但CardStock是开源且可以本地运行的，Decker则提供了更强大的功能如表格数据处理和可重用的组件抽象。
+• al_borland不看好Scrappy的托管解决方案，担心其长期依赖性和维护问题，倾向于使用HTML/CSS/JS和PHP等传统技术来实现简单项目，并强调工具的长期可用性。
+• tokioyoyo分享了自己通过简单应用获得的成就感，认为即使没有经济收益，开发这样的应用也是值得的。
+• simonw指出Scrappy在移动端编辑功能的缺失，并认为不应低估手机用户的需求，移动设备可能是他们唯一的计算工具。
+• nilirl认为电子表格是最实用的终端用户编程环境，对Scrappy等新工具持保留态度。
+• selcuka认为LLM（大语言模型）生成的简单应用可能会成为Scrappy等工具的强力竞争者，并提到LLM在生成简单HTML/JS应用上的潜力。
+• Peteragain建议从家庭运行的小型应用商店入手，强调社区和朋友间的非正式分享，而不是追求商业化。
+• blips对AI生成内容持负面态度，认为其影响了内容的吸引力，并表示不愿消费此类内容。
+• riffraff支持“可脚本化的组件”而不是块状编程，并指出用户希望应用易于分享且零成本。
+• indyjo对Scrappy的UI设计和编程支持提出质疑，认为缺乏代码补全和API帮助是其不足之处。
+• feeley介绍了一个名为CodeBoot的替代工具，允许用户通过Python创建封装在URL中的Web应用，强调其易用性和无安装需求。
+• zupa-hu认为Scrappy的演示很棒，但反馈过于苛刻，可能是因为其进入市场的时间较晚。
+• hiAndrewQuinn分享了自己使用LLM和JavaScript等技术创建简单工具的经验，强调其跨平台性和易用性。
+• kakamiokatsu认为Scrappy与Visual Basic有相似之处，特别是在简单原则和UI设计方面。
+• s_ting765认为如果缺乏源代码分享功能，Scrappy的应用分享价值将大打折扣。
 
 补充讨论：
-• 争议焦点在于Scrappy等工具的长期使用价值、移动端支持的必要性以及开源与闭源解决方案的选择。
-• 不同用户对易用性、成本和分享功能的期望影响了他们对工具的选择和评价。
-• LLM生成代码的兴起被视为一种重要趋势，可能改变简单系统和终端用户编程的未来发展方向。</div>
+- 争议焦点在于Scrappy等工具的长期可用性和维护问题，特别是托管解决方案的依赖性。
+- 用户对移动端支持和易用性的需求被提出，特别是移动设备作为唯一计算工具的用户场景。
+- 不同工具的对比，如CardStock、Decker和CodeBoot，提供了其他实现类似功能的选择。
+- LLM在简单应用开发中的潜力被多次提及，可能成为未来竞争的一个重要因素。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44306859" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://haskellweekly.news/issue/477.html" target="_blank">Haskell Weekly Issue 477</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: amalinovic</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-19 10:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本期《Haskell Weekly》新闻简报 highlights 了 Haskell 社区的最新动态。主要内容包括：
-
-1. **Esqueleto 教程**：介绍如何在 Haskell 中使用 Esqueleto 库进行复杂的数据库操作，补充 Persistent 库的不足。
-2. **Haskell 竞争性编程介绍**：Brent Yorgey 分享了在竞争性编程中使用 Haskell 的基本技巧和乐趣。
-3. **GHCi 兼容多单元**：Hannes Siebenhandl 和 Matthew Pickering 宣布 GHCi 将完全支持多单元，提升实际项目的反馈速度。
-4. **Monad 不像卷饼**：Brent Yorgey 重申学习 Monad 需要具体实例和主动参与，而不仅仅是直觉和类比。
-5. **双指针算法**：Monday Morning Haskell 讨论了如何解决“ trapped rain water”问题。
-6. **编写 Redis 客户端包**：Magnus Therning 分享了编写 Redis 客户端包的动机和经验。
-7. **ZuriHac 2025 参会报告**：Tristan de Cacqueray 报告了参加 ZuriHac 2025 黑客松的经历。
-
-此外，还有职位招聘、技术发布和社区活动信息。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44317117" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2505.12514" target="_blank">Reasoning by Superposition: A Perspective on Chain of Continuous Thought</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: danielmorozoff</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-18 12:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了连续思维链（Chain of Continuous Thought, CoT）在推理任务中的理论基础，特别是针对有向图可达性问题。作者证明，两层Transformer模型使用连续CoT可以在图的直径步数内解决该问题，而离散CoT则需要更多的解码步骤。连续CoT通过超位置状态同时编码多个搜索前沿，实现了并行广度优先搜索，从而在实际应用中表现更优。实验结果验证了该理论构造与训练过程中的实际解决方案相吻合，且这种多路径探索能力在训练中自然出现，无需显式监督。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一篇与FAIR（Facebook AI Research）相关的论文的讨论
-
-不同观点：
-• [积极支持观点] **danielmorozoff** 提到这篇论文延续了FAIR的一些非常有趣的工作，并附上了论文链接（https://arxiv.org/pdf/2412.06769）。这表明他认可FAIR的研究质量，并对这篇论文持积极态度，暗示论文具有一定的学术价值和创新性。
-
-补充讨论：
-• [提供资源] **danielmorozoff** 的评论主要是为对该论文感兴趣的人提供资源链接，并没有直接评价论文的具体内容或贡献，但通过提供链接，他实际上是在引导他人去阅读和探讨该论文。
-
-• [潜在争议] 虽然评论本身没有直接的争议，但可以推测，在某些学术圈中，FAIR的工作有时可能会引起争议，尤其是在其研究方法或结论上与其他学术机构有分歧时。然而，在此评论中，争议并不明显。
-
-• [读者反应] 其他读者可能会对该论文的具体内容、实验设计或结论提出不同看法，特别是在其实际应用效果或理论创新性方面，但这些讨论并未在当前评论中直接出现。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44309345" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tesk.page/2025/06/18/its-true-we-dont-care-about-accessibility-on-linux/" target="_blank">It's true, “we” don't care about accessibility on Linux</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 95</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-06-19 00:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了Linux桌面社区在无障碍功能方面面临的挑战，特别是来自特权群体的虚伪“美德信号”行为。作者指出，这些人在批评无障碍功能差劲的同时，并未真正关心残障人士的需求，反而通过错误的信息和指责增加了开发者的压力。作者对社区的沉默和忽视无障碍功能的进步感到愤怒和失望，尤其在庆祝无障碍里程碑时，社区对无偿贡献者缺乏认可。文章还提到，一些公司从开源项目中获利，但对无障碍功能的贡献微乎其微。作者强调，无障碍工作不应被付费墙或专有许可阻挡，并呼吁对真正贡献者给予更多认可和支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：社交媒体账户被盗后的恢复经历与Wayland在无障碍功能上的不足
-
-不同观点：
-• Dachmwr分享了自己社交媒体账户被盗后，通过Santoshi Hackers Intelligence成功恢复的经历。他表达了对该团队专业性和同情心的高度赞赏，并呼吁遇到类似情况的人寻求Santoshi Hackers Intelligence的帮助。
-• MBCook指出，Wayland在视觉障碍用户的无障碍功能方面落后于X11，且目前进展不足。他担心如果X11的支持继续减少而Wayland无法及时赶上，可能会迫使一些用户放弃Linux。
-• Exiguus从开发者角度讨论了GNOME/OS级别的无障碍开发，指出在软件设计和构建完成后再改进无障碍功能非常困难，需要多个团队的协作。
-• Commandersaki认为，良好的无障碍功能需要大量资金支持，尤其是在调查和测试方面，而FOSS项目在这方面难以与Apple等公司竞争。
-• Its-summertime以假设自己突然失明的情境，描述了Linux系统在无障碍功能上的不足，强调了用户在登录和使用过程中可能遇到的困难。
-• Hysan认为文章作者将最近关于Linux无障碍功能不足的讨论视为个人攻击，这种反应令人难以同情，并增加了对受影响用户的同情。
-• NewJazz表示无法阅读文章，因为已经有许多真正的残疾和视障人士指出了Linux无障碍工具的不足。
-• Eviks质疑免费贡献的合并请求对那些因无障碍功能损坏而无法登录的用户的价值。
-• Aitchnyu分享了自己使用不同桌面环境的经历，认为Gnome在某个时间点达到了巅峰。
-• Stonogo质疑谁通过Gnome间接赚取了巨额财富。
-• Socalgal2抱怨项目中出现的“让AI读屏”的借口，认为这种态度忽视了无障碍功能的实际需求。
-• SuperNinKenDo分析了非营利组织中常见的对慷慨人士的攻击行为，并解释了这种行为的心理动机。
-• Anthk指出Emacs的Emacspeak对盲人用户非常优越，涵盖了多种功能，如电子书、网页、邮件、播客、编程等。
-
-补充讨论：
-• 争议的焦点之一是Wayland在无障碍功能方面的进展缓慢，以及由此引发的对用户体验的影响。
-• 另一个值得注意的讨论点是对FOSS项目在无障碍功能上的资金和资源不足的批评，以及对商业公司如Apple在这一领域表现的认可。
-• 不同用户对Gnome和Wayland等开源项目的无障碍功能有不同的体验和评价，反映了这些项目在无障碍功能上的复杂性和多样性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44314372" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://polyhedra.tessera.li/" target="_blank">Polyhedra Viewer</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: HellsMaddy</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-06-17 04:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在提供的资源上是否可以添加字母和数字
-
-不同观点：
-• robotguy认为：他想要知道是否可以在资源的面部添加字母和数字。这表明他可能希望对现有资源进行文本自定义，但不确定是否被允许或技术上可行。
-• mikebannister认为：对资源本身表示赞赏，并提到自己已经在未完成的项目中使用了这些模型，但没有提到任何关于修改或添加字母和数字的问题。
-
-补充讨论：
-• robotguy的关注点集中在资源的自定义可能性，尤其是添加字母和数字的具体操作。
-• mikebannister的评论主要表达了对资源的赞赏，并通过分享自己的项目来展示这些资源的使用情况，但未涉及自定义或修改的问题。
-• 争议焦点：目前没有直接的争议，但robotguy的问题暗示了对资源使用限制或技术可行性的潜在不确定性。如果资源有明确的许可或技术限制，这可能成为讨论的焦点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44295878" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mjg59.dreamwidth.org/72095.html" target="_blank">Locally hosting an internet-connected server</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pabs3</span> |
-                    <span>评分: 100</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-06-18 04:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章简要描述了一个CAPTCHA验证过程。用户被随机选中需完成CAPTCHA验证以确认请求。页面提供登录选项，包括输入账户名和密码，以及"记住我"功能。此外，还有找回密码和使用OpenID登录的替代选项。用户需完成验证才能继续操作。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何解决ISP在IPv6支持不足的情况下进行网络配置，以及各种工具和方法的比较与选择。
-
-不同观点：
-• JdeBP指出，许多北美和西欧的ISP在2025年仍然对IPv6支持不佳，用户不得不采取各种措施绕过这一问题。他提到有些ISP多年未兑现提供IPv6的承诺，用户只能通过复杂的方式自行解决。
-• Daviey建议使用Tailscale或Headscale来处理Wireguard和低层网络配置，并通过Caddy或Nginx进行代理。他认为这种方法简化了管理，并且可以轻松扩展设备。
-• PeterStuer分享了他使用Pangolin和Hetzner VPS进行Traefic Wireguard隧道设置的经验，认为这种方法简单易用。
-• DougN7提出使用动态DNS服务（如dyn.com）来解决静态IP问题，指出许多路由器内置支持该功能。
-• KronisLV表示自己选择Tailscale以避免手动管理WireGuard和iptables，并提到SSH隧道不够稳定。
-• chazeon担心将IP暴露在互联网上会带来DDoS攻击风险，建议使用Tailscale进行内部使用，并结合Cloudflare进行外部访问。
-
-补充讨论：
-• yusina提到拥有静态IP后仍需考虑多方面问题，如电力冗余、IP连接、硬件故障、DDoS攻击和安全补丁应用等，这些问题在本地托管时尤为重要。
-• zokier建议使用集中式Wireguard网关，并提到一些自动化脚本和相关工具资源。
-• bzmrgonz提出在VPS上安装反向代理并使用Wireguard重定向家庭服务，询问这种方法的可行性和潜在风险。
-• anonymousiam分享了20年前使用vtun绕过住宅静态IP限制的经验，并计算了成本节约。
-• nurettin表示懒得设置Wireguard，只使用SSH隧道进行连接。
-• xiconfjs引用了一个关于ISP成功安装因素的幽默链接。
-• politelemon建议使用Cloudflare隧道，无需打开外部端口。
-• eqvinox推荐使用VRFs以改进策略路由，认为其更具封装性。
-• v5v3提醒在开放服务器前需进行基本的安全设置，并建议在文章中添加免责声明。
-
-争议焦点：
-• 使用Tailscale等工具简化管理与手动配置Wireguard和iptables之间的选择。
-• 是否应将IP暴露在互联网上，考虑到DDoS攻击的风险。
-• 使用动态DNS服务与设置Wireguard等隧道技术的优劣比较。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44306792" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
