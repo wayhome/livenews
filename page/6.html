@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-20 14:20 (北京时间)
+            最后更新时间: 2025-06-20 17:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,61 +61,226 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://endof10.org/" target="_blank">End of 10: Upgrade your old Windows 10 computer to Linux</a>
+                    <a href="https://stephenberry.github.io/glaze/stencil-mustache/" target="_blank">String Interpolation in C++ Using Glaze Stencil/Mustache</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: doener</span> |
-                    <span>评分: 184</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-06-19 13:14</span>
+                    <span>作者: npalli</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-16 19:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要介绍如何通过安装Linux操作系统延长Windows 10电脑的使用寿命。微软将于2025年10月14日停止支持Windows 10，但作者建议无需购买新电脑，特别是2010年后购买的电脑。通过安装免费的Linux系统，用户可以继续安全、高效地使用旧电脑，且无需担心硬件兼容性和软件许可费用。Linux还提供更好的隐私保护，减少能耗和碳排放，对环境更友好。此外，用户可以通过社区和专业支持获得帮助。文章最后鼓励用户寻找本地维修点或参与相关活动，以继续使用旧电脑。</p>
+                    <p>Glaze库通过`stencil`和`mustache`格式为C++结构体提供了字符串插值功能，允许将结构化数据格式化为字符串。其模板机制受Mustache模板语言启发，可以结合预定义模板和C++结构体生成动态输出。
+
+### 基本用法
+定义结构体并使用模板进行插值，例如：
+```cpp
+struct person {
+    std::string first_name;
+    std::string last_name;
+    uint32_t age;
+    bool hungry;
+    bool employed;
+};
+
+std::string_view layout = R"({{first_name}} {{last_name}} is {{age}} years old)";
+person p{"Henry", "Foster", 34};
+auto result = glz::stencil(layout, p);
+// 结果: "Henry Foster is 34 years old"
+```
+
+### 模板语法
+- **变量插值**: `{{key}}` 替换为结构体字段值，`{{{key}}}`为不转义输出（仅mustache格式）。
+- **布尔节**: `{{#boolean_key}}`显示内容如果布尔值为true，`{{^boolean_key}}`为false时显示。
+- **容器迭代**: `{{#container_key}}`迭代容器元素，`{{^container_key}}`容器为空时显示内容。
+- **注释**: `{{! This is a comment}}`。
+
+### 示例
+- **布尔节示例**:
+    ```cpp
+    std::string_view layout = R"({{first_name}} {{last_name}} {{#employed}}Status: Employed, Age: {{age}}{{/employed}})";
+    person p{"Carol", "Davis", 30, true, true};
+    auto result = glz::stencil(layout, p);
+    // 结果: "Carol Davis Status: Employed, Age: 30"
+    ```
+
+- **容器迭代示例**:
+    ```cpp
+    struct TodoList { std::string title; std::vector<TodoItem> items; bool has_items; };
+    std::string_view layout = R"({{title}}: {{#items}}{{text}} ({{priority}}) {{/items}})";
+    TodoList list{"My Tasks", {{"Buy milk", false, "normal", 1}, {"Call mom", true, "high", 2}}, true};
+    auto result = glz::stencil(layout, list);
+    // 结果: "My Tasks: Buy milk (normal) Call mom (high) "
+    ```
+
+### Mustache格式
+`glz::mustache`与`glz::stencil`接口相同，但提供HTML转义：
+- 双括号 `{{key}}` 输出HTML转义内容。
+- 三括号 `{{{key}}}` 输出原始HTML内容。
+
+### 错误处理
+`stencil/mustache`函数返回`std::expected<std::string, glz::error_ctx>`，常见错误如引用不存在的字段。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux桌面系统的普及与使用中的用户体验问题
+                    <div class="comments-summary">主要讨论点：结构体字段名称的反射实现方法
 
 不同观点：
-• [pentagrama] 认为Linux（如Ubuntu）在安装过程中需要使用外部工具（如Rufus）制作USB启动盘，这对普通用户来说是个障碍。建议Ubuntu提供一个Windows应用程序，能够自动处理ISO下载、U盘格式化以及与Windows双系统安装等步骤，并清晰解释每一步骤。
-
-• [frollogaston] 指出普通用户可能不理解“Linux distribution”的含义，建议推出一个统一的、品牌化的“Linux”操作系统，而不是让用户在众多发行版中选择，以此降低入门门槛。
-
-• [etbebl] 表达了对在工作环境中因微软政策变化而被迫更换操作系统的担忧，特别是当现有Windows 10工作站成本高昂且无法升级时，更换硬件和软件会带来不必要的开支和时间消耗。
-
-• [bearjaws] 提到希望Linux上能运行反作弊系统，因为Windows系统变得越来越臃肿且充满广告，体验不佳。
-
-• [xnx] 推荐ChromeOS Flex作为易于安装的替代方案，但指出其安装说明对普通用户不够友好。
-
-• [p_ing] 引用了过去两个月的一个相关讨论链接，未明确表达立场但提示读者参考其他资源。
-
-• [timetraveller26] 分享了自己使用Linux超过10年的经验，认为尽管存在诸如界面丑陋、游戏不兼容等问题，Linux仍然在不断进步，且有不少用户成功迁移。
-
-• [sgt] 对Windows 10失去安全更新后的使用情况提出疑问，认为用户可以选择继续使用旧版Windows 10并承担一定风险，或者通过切换到Windows LTSC版本或绕过限制升级到Windows 11来延长使用寿命。
-
-• [mrweasel] 提到其所在地区二手硬件价格上涨，且Windows 10专用硬件正在被报废而非降价处理，暗示硬件更换成本增加。
-
-• [eviks] 建议通过切换到Windows 10 LTSC版本或绕过限制升级到Windows 11来延长Windows 10的使用寿命，而不是立即更换操作系统。
-
-• [gadders] 担心Linux安装过程中会覆盖所有数据，建议更显著地提示用户备份数据，并讨论是否能保留“Documents”目录，将其归因于文件系统差异。
-
-• [npteljes] 认为通过草根推广无法实现Linux桌面系统的普及，建议参考Valve的做法，提供预装Linux的设备，而不是直接与微软的“后门捆绑”竞争。
-
-• [Jaxan] 分享了自己在Surface Pro 4上安装Ubuntu的失败经历，指出触摸和手写笔支持不佳以及关机问题，表明硬件兼容性仍是个问题。
-
-• [dave333] 询问是否有可能升级现有硬件以支持Windows 11，以此避免更换整个设备。
-
-• [cosmicgadget] 提到尽管自己有Linux启动选项，但仍然需要Windows启动选项，表明双系统需求仍然存在。
+• jorkingit认为可以通过一些方法实现结构体字段名称的反射，并引用了Stack Overflow上的一个回答（https://stackoverflow.com/a/77464529）来解释这一想法。这表明jorkingit相信通过一定的技术手段可以实现字段名称的反射。
 
 补充讨论：
-• 争议焦点在于普通用户从Windows迁移到Linux的难度，特别是安装过程中的用户体验问题，以及对硬件兼容性和双系统需求的讨论。
-• 讨论中多次提到硬件升级和操作系统更换的成本问题，特别是对企业和研究机构而言，更换操作系统或硬件的代价是一个重要考虑因素。
-• 有用户认为通过推出统一的Linux品牌或设备预装Linux可能是更有效的推广方式，而非依赖草根推广。</div>
+- jorkingit的评论中提到了具体的技术资源（Stack Overflow回答链接），这表明在开发者社区中已经有相关的讨论和技术解决方案。
+- 评论中隐含了对技术实现的信心和积极态度，即“有志者事竟成”（Where there's a will, I guess...），暗示了即使存在技术挑战，开发者仍然有办法克服。
+- 没有明显的争议，更多的是对技术可行性的探讨和信息分享。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44318420" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44292460" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cnn.com/2025/06/20/world/video/israel-iran-missile-strike-tech-park-microsoft-digvid" target="_blank">Iranian missile strikes tech park housing Microsoft office in southern Israel</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: t0lo</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-20 06:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>2025年6月20日，伊朗导弹袭击了位于以色列贝尔谢巴市一个科技园区附近，该园区内有微软办公室。根据以色列紧急服务机构Magen David Adom的消息，急救人员正在搜寻受伤人员。此次袭击是伊朗与以色列持续冲突的一部分，导致紧张局势升级。与此同时，相关视频还展示了其他地区如加沙的空袭后果以及伊朗对以色列其他目标的攻击。双方的军事行动造成了严重的人员伤亡和基础设施破坏，国际社会对此表示关注。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44325337" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/psviderski/unregistry" target="_blank">Show HN: Unregistry – “docker push” directly to servers without a registry</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: psviderski</span> |
+                    <span>评分: 646</span> |
+                    <span>评论数: 52</span> |
+                    <span>发布时间: 2025-06-18 23:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"Unregistry" 是一个轻量级工具，允许直接通过 SSH 将 Docker 镜像从本地推送到远程服务器，无需外部注册表。它通过创建临时容器来传输缺失的镜像层，从而实现快速高效的传输。相比于使用 Docker Hub 或自建注册表，"unregistry" 更简便，且避免了完整镜像重复传输的问题。它适用于 macOS、Linux，暂不支持 Windows。典型应用场景包括生产服务器部署、CI/CD 管道优化以及在隔离网络中分发镜像。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Docker设计及其在容器部署中的改进建议
+
+不同观点：
+• shykes（Docker创始人）认为理想的设计应将Docker引擎和Docker注册表合并为一个服务器，具备存储、传输和运行容器的能力，避免引擎和注册表在存储镜像上的差异。他还建议使用推送至集群的部署方式，以替代当前的推送镜像到注册表、配置集群、节点从注册表拉取镜像的脆弱和低效流程。
+
+• richardc323提到曾在2015年尝试通过PR将此功能添加到Docker主线，但被引导到其他领域贡献，认为这可能是因为不需要注册表的设计对Docker的商业模式影响过大。
+
+• nine_k赞赏`pussh`命令的命名，认为其易记且自明。
+
+• alisonatwork认为此设计可以很好地与现有工具（如Ansible）集成，并提到其作为热修复部署机制的潜力。同时关注是否能与OCI工具（如buildah）无缝集成，或是否需要完整的Docker安装。
+
+• metadat表示Docker注册表过于复杂，支持简化设计，认为其违背了黑客精神。
+
+• lxe发现此讨论启发其寻找类似于dokku但更强大的解决方案，用于项目服务器设置。
+
+• amne描述其复杂管道流程，认为此设计能简化其工作流。
+
+• modeless认为Docker未默认采用这种设计是愚蠢的，对此设计表示赞赏。
+
+• matt_kantor将其与自己写的docker-pushmi-pullyu进行比较，好奇为何psviderski要实现自己的注册表。
+
+• revicon质疑此方法与使用远程Docker上下文的区别，描述其通过SSH管理远程服务器的简单方法，认为可能比Docker Swarm和Kubernetes更简单。
+
+• scott113341自我托管Zot以替代昂贵的注册表服务，询问是否存在易配置、价格合理且基于使用的私有注册表服务。
+
+• fellatio认为此设计可能将部署与服务耦合，提出扩展或红/绿部署的挑战，但随后发现uncloud项目解决了这些问题。
+
+• actinium226和larsnystrom提到使用`docker save | ssh`的方法，认为传输仅改变的层是此设计的优势，但对他们而言，目前的方案已经足够。
+
+• bradly提到当前使用Docker注册表进行Kamal部署，询问此设计是否能移除第三方依赖。
+
+补充讨论：
+• 关于是否需要完整的Docker安装以及如何与现有OCI工具集成是部分用户关注的重点。
+• 讨论中多次提到现有Docker设计中的复杂性和效率问题，用户对简化设计和降低成本的方案有明显兴趣。
+• 不同的用户根据自身经验提出了多种替代方案和工具，如self-hosting Zot、使用远程Docker上下文和`docker save | ssh`方法等。
+• 争议的焦点在于Docker设计是否应简化以及如何在不同场景中实现高效的容器部署。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44314085" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://rjp.io/blog/2025-06-17-unreasonable-effectiveness-of-fuzzing" target="_blank">The unreasonable effectiveness of fuzzing for porting programs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 224</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-06-18 16:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了利用大型语言模型（LLM）来自动化将C语言项目移植到Rust的潜力，特别是通过模糊测试（fuzzing）生成代码并按拓扑顺序逐步移植的策略。作者反思了LLM生成代码的趋势，预测未来计算机可能会生成大部分代码，从而改变代码库维护和API管理的方式。LLM可以处理API不一致问题，甚至自动迁移代码到新版本，减轻人工负担。文章还以TensorFlow为例，说明大型项目因技术债务和快速开发导致的维护困难，并提出通过LLM逐步移植和重构代码的设想，以降低重构成本和复杂性。这种方法有望简化传统上难以在维护模式项目中进行的激进更新和重构任务。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在代码移植和测试生成中的应用及其局限性和潜力
+
+不同观点：
+• [nyanpasu64] 认为通过测试大量输入可以验证代码的正确性，并举例提到Timsort中的细微排序错误，暗示排序等常见逻辑可能存在潜在问题。
+• [comex] 指出文章中对LLM的期望与实际结果存在差距。虽然LLM可以进行代码移植，但结果与机械翻译工具c2rust类似，且过程更慢、更不可靠。不过，仍承认LLM在代码移植中的潜力。
+• [amw-zero] 强调在生成测试中的两个主要问题：输入数据生成和正确性声明。在代码移植过程中，正确性声明可以简化为与源程序行为一致，从而简化测试过程。
+• [zie1ony] 分享了自己在测试生成方面的工作经历，尝试通过AI生成测试和属性测试，并认为最佳工作方式是10%人工和90%AI的结合，同时探索AI与变异测试的结合。
+• [namanjain01] 作为Syzygy工作的作者之一，感谢文章的撰写并分享了自己在LLM与测试结合方面的研究，特别是在代码优化和GSO项目中的探索。
+• [DrNosferatu] 建议将类似方法用于将Matlab库移植到Octave，认为这是一种“清洁室逆向工程”，并提到Matlab手册的公开性。
+• [e28eta] 认为LLM使得过去不可能的大规模代码更新成为可能，例如库的移植和API的更改，但强调仍需详细记录变更以供用户理解，避免无文档的情况。
+
+补充讨论：
+• [oasisaimlessly] 指出文章中的链接损坏问题。
+• [maxjustus] 分享了自己通过类似方法将cityHash64从Golang移植到JS的经验，认为这种方法在移植纯函数时特别有效。
+• [lhmiles] 建议通过并行多次初始生成步骤来加速和提高结果质量。
+• [DinoNuggies45] 询问在适应新架构时最小化误报的建议。
+• [rcthompson] 建议进一步应用相同原则，告诉AI最小化使用不安全代码等，同时保证结果与原程序一致。
+• [punnerud] 对TensorFlow的使用减少感到高兴，并希望ML使得框架切换更加容易，避免大公司吞噬开源社区。
+• [gaogao] 认为模糊测试有用的领域通常也是形式验证的好候选，并看好LLM与形式验证的结合，特别是在通过归纳推理等方法证明不需要测试某些组合方面。
+
+争议焦点：
+• LLM在代码移植中的实际效果与期望之间的差距，以及与传统机械翻译工具的比较。
+• LLM在生成测试和代码优化中的潜力和局限性，特别是在大规模应用和文档记录方面的挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44311241" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -187,25 +352,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://astera.org/wp-content/uploads/2025/06/founders-guide-to-funding.pdf" target="_blank">The founder's guide to funding health and science organizations [pdf]</a>
+                    <a href="https://shawnharris.com/reversed-roles-when-ai-becomes-the-user-and-humanity-becomes-the-tool/" target="_blank">Reversed Roles: When AI Becomes the User and Humanity Becomes the Tool</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: walterbell</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-19 22:29</span>
+                    <span>作者: shawnjharris</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-19 22:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文探讨了人工智能（AI）从工具向自主代理的角色转变，以及这一转变对人类自主性的影响。传统上，人类使用工具来扩展自身能力，但随着AI技术的发展，AI系统逐渐具备独立决策和行动的能力，甚至开始主导和优化过程，而人类则可能沦为执行其目标的资源。文章引用了海德格尔、阿伦特等哲学家的思想，指出技术可能将人类“工具化”的风险。现代社会的监控资本主义和AI的工具化驱动加剧了这种 dehumanization（去人性化）。为应对这些挑战，文章介绍了联合国教科文组织和IEEE等提出的伦理框架，旨在重申人类的主体性，并提出在AI驱动的世界中保持人类目的性的实际路径。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：AI从工具转变为具有代理能力的实体，对人类社会、工作意义及自主性的影响。
+
+不同观点：
+• Shawnjharris认为，AI已经不再是单纯的工具，而是开始扮演具有代理能力的角色，例如设置议程、优化工作流程和影响人类选择。作者引用了哲学家Heidegger、Arendt、Borgmann和Habermas的观点，探讨了这种转变带来的风险：人类可能失去自主性、目的性和工作的意义。
+
+• Shawnjharris同时提出，企业中AI的采用正在加速这种角色逆转，并与“监控资本主义”和“工具收敛”等现象相关联。这暗示了对企业和资本主义体系利用AI扩大其影响力的担忧。
+
+• 作者最后提出了保持“人在回路”的实际方法，认为重新获得目的性不是可选的，而是必要的。这表明作者认为尽管AI带来了挑战，但人类仍有能力和责任去应对这些挑战，并采取措施防止完全的角色逆转。
+
+补充讨论：
+• 评论中提到的“代理AI”（Agentic AI）的概念是讨论的核心，涉及到AI是否以及如何从被动工具转变为主动影响人类活动的实体。
+
+• 争议焦点可能在于AI是否真的已经具备足够的代理能力来威胁人类的自主性和工作的意义。有些人可能认为AI仍然只是工具，而shawnjharris则认为这种转变已经开始。
+
+• 另一个值得注意的点是“ surveillance capitalism”（监控资本主义）和“instrumental convergence”（工具收敛）等概念的引入，这些概念将AI的发展与更广泛的社会经济结构联系起来，提示了技术与资本之间的复杂关系。
+
+• 最后，shawnjharris呼吁批判和反论，表明作者希望推动关于这一主题的进一步讨论，并探索不同的观点和解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44323123" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44323033" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -216,39 +397,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.science.org/doi/10.1126/sciadv.adv4951" target="_blank">Geochronology supports LGM age for human tracks at White Sands, New Mexico</a>
+                    <a href="https://tedium.co/2025/06/19/peri-fractic-retro-recipes-commodore-profile/" target="_blank">A Retro YouTuber Wants to Take over Commodore. Yes, He's Serious</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gametorch</span> |
-                    <span>评分: 29</span> |
+                    <span>作者: shortformblog</span> |
+                    <span>评分: 10</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-19 15:27</span>
+                    <span>发布时间: 2025-06-20 02:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文介绍了YouTuber Christian "Peri Fractic" Simpson尝试收购传奇电脑品牌Commodore的故事。作为一名复古科技爱好者，Simpson不仅对Commodore充满热情，还与商业伙伴一起认真计划接管该品牌。尽管YouTube上常有博人眼球的噱头，但Simpson的尝试是严肃的。他通过抵押房屋二次贷款来筹集资金，并与当前品牌持有者探讨购买可能性。他提出了三个合作策略，包括品牌授权、担任公司高管角色以及最终直接购买。尽管过程复杂且不确定，但Simpson的决心显示了他对复兴Commodore品牌的真诚愿望。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于人类何时以及如何首次到达美洲的争论
+                    <div class="comments-summary">主要讨论点：Commodore 品牌及其相关知识产权的现状与复兴可能性
 
 不同观点：
-• [WalterGR] 引用了亚利桑那大学的一篇文章，提供了关于人类在美洲早期居住的证据链接。该证据显示了早期人类存在的足迹化石，试图为该问题提供新的见解。
+• **bni的观点**：认为Commodore品牌如今已毫无价值，因为与其相关的知识产权分散在不同实体手中，有些甚至存在争议或所有权不明。这暗示了复兴该品牌的实际困难。
 
-• [octaane] 认为，关于人类在美洲早期居住的证据早已存在，但一直被忽视，倾向于支持一个更整洁、更传统的假设，即人类通过欧亚大陆的冰原到达美洲。然而，octaane 质疑这种假设的合理性，提出人类更可能通过沿着资源丰富的海岸线航行到达美洲，这样的路径不仅更快，而且比穿越冰原消耗更少的能量，同时食物来源也更丰富。
+• **shortformblog的观点**：提供了更多背景信息，提到与Perifractic的访谈，强调了复兴项目的努力和时间投入（如抵押房屋和长达八个月的工作）。同时讨论了复兴Commodore与现有相关项目（如Amiga Forever和Commander X16）的互动，以及新硬件的可能性，显示出对该项目的积极态度。
 
-• [gametorch] 对证据的真实性表示了一定程度的认可，但对具体到达时间提出了疑问。gametorch 指出，根据文章中提到的足迹化石的年代（约2万年前），那时北美北部因冰川覆盖而无法通过陆路到达。因此，gametorch 推测人类可能通过北美的太平洋海岸航行到达，然后向东移动。
+• **andrewstuart的观点**："You can’t go home again"暗示了对Commodore品牌复兴的悲观态度，认为过去无法重现，可能暗指品牌复兴难以成功。
+
+• **gnabgib的观点**：仅提供了一个链接，指向一个有更多评论的讨论，没有直接表达立场，但可能意在引导读者查看更广泛的讨论。
+
+• **mattl的观点**：对项目持怀疑态度，提到在复古YouTube社区中，曾有多个众筹项目未能实现承诺。同时提到对Perifractic近期视频质量（如AI生成的缩略图）的不满，暗示对项目主创人员的信心不足。
 
 补充讨论：
-• 争议焦点在于人类到达美洲的时间和路径。传统观点认为人类通过白令陆桥和冰原到达美洲，而新的证据和观点则支持沿海航行到达的假设。
+• **争议焦点**：Commodore品牌复兴的可行性及其实际执行能力。一方面是复兴项目的巨大努力和潜在可能性，另一方面是对过去失败案例的怀疑及对项目主创的信心不足。
 
-• 证据的可靠性和解释的多样性是另一个讨论要点。octaane 强调了早期证据被忽视的问题，而 gametorch 则关注时间线与地理条件的匹配。
+• **技术对比**：shortformblog特别提到使用20世纪的传真技术和21世纪的Zoom进行访谈，形成有趣的技术对比，也反映了不同时代技术的融合与应用。
 
-• 讨论还涉及不同路径的合理性，包括能量消耗、资源获取和地理障碍等实际问题，这些都影响了人类迁移路径的可行性。</div>
+• **社区反应**：gnabgib提供的链接指向了一个更广泛的社区讨论，显示出该话题在社区中引发了较多关注和讨论。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44319585" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44324243" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -259,52 +446,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.printables.com/model/1325533-smallest-telescope-kit-for-150750" target="_blank">3D printable 6" f/5 compact travel telescope model</a>
+                    <a href="https://howdnssec.works/why-do-we-need-dnssec/" target="_blank">Why do we need DNSSEC?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: chantepierre</span> |
-                    <span>评分: 80</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-06-16 13:23</span>
+                    <span>作者: gpi</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-06-19 17:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章简要介绍了为什么我们需要DNSSEC。DNS最初设计时并未 prioritize 安全性，其主要功能是将人类易读的域名转换为设备所需的IP地址。由于DNS解析器无法验证权威服务器响应的真实性，可能存在数据被篡改的风险。DNSSEC（DNS安全扩展）通过为DNS提供认证功能来解决这一问题，确保响应未被 tamper 过，但它不像HTTPS那样加密数据。DNSSEC只验证数据完整性，不提供数据保密性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：6" f/5望远镜转换套件的实用性、设计和材料选择
+                    <div class="comments-summary">主要讨论点：DNSSEC的价值和实用性
 
 不同观点：
-• [petee] 提到在阿巴拉契亚山俱乐部的小屋中使用望远镜的经历，并强调球状星团的观测效果非常出色，眼睛适应后可以看到越来越多的星星，还可以拍到不错的照片。
+• **[tptacek]**：认为DNSSEC并不重要，声称如果它重要的话，早就被广泛采用了。他还提到DNSSEC的名称听起来比实际作用更有影响力，并对网站使用绿色塔可作为主角感到不解。
 
-• [chantepierre] 介绍了该望远镜转换套件的设计背景，指出它结合了多年来与朋友在自制望远镜方面的经验，并且比市面上的产品更轻便，适合徒步旅行和露营时携带。同时，提及该设计在运动和调焦器方面优于商业产品。
+• **[1vuio0pswjnm7]**：提出可以使用迭代查询代替依赖DNS解析器（递归解析器），并指出迭代解析可能比递归解析更快。同时提到权威服务器通常不对其响应进行加密，并认为这比DNSSEC更有用。
 
-• [leetrout] 提到了Bahtinov Mask这种用于小望远镜对焦的 clever device，提供了一种实用的对焦方法。
+• **[anonymousiam]**：支持DNSSEC，认为它能防止中间人攻击和网络流量欺骗，指出某些政府会阻碍DNSSEC的全面采用。还提到即使像Network Solutions这样的注册商对DNSSEC的支持也不充分。
 
-• [aquir] 对构建说明和材料选择提出疑问，特别关注如果不用PLA材料，PETG是否可行，并计划尝试使用PLA-CF材料。
+• **[Avamander]**：反对依赖DNSSEC，认为它只是另一种PKI系统，且运营者无法被替换，如果他们行为不当，这会成为一个安全隐患。
 
-• [tregoning] 对望远镜的实际观测效果提出疑问，强调虽然构建过程的资料很多，但实际观测月亮和星星的效果如何才是最重要的。
+• **[Zaylan]**：对DNSSEC持中立态度，表示普通用户很难感知到DNSSEC的存在和作用，因为浏览器不会提示用户缺少DNSSEC，用户也很难去检查。
 
-• [incomingpain] 分享了自己以前3D打印114 Hadley望远镜的经验，指出观测土星和木星比较容易，但不够清晰，认为6英寸的望远镜可能会更合适。
+• **[coretx]**：认为DNSSEC对国家行为体无效，无法提供保护。
 
-• [jxjnskkzxxhx] 对3D打印物品的脆弱性表示关注，询问设计中的杆件是否容易损坏，无论是意外还是故意为之。
+• **[burnt-resistor]**：指出可选的、替代的标准因为缺乏可见性而很少被使用，且没有衡量手段就难以推动变革。提到曾经有一些不友好的DNSSEC和DANE浏览器扩展，但都不成功。
 
-• [tanvach] 表示正在寻找适合背包携带的望远镜，并对该帖子表示感谢。
+• **[UltraSane]**：认为在AWS Route53上设置DNSSEC非常简单，且非常有用，可以用来签署任何TXT记录。
 
-• [mhb] 对设计中使用四组支撑架提出疑问。
+• **[aspbee555]**：支持DNSSEC，认为可以通过DNS记录拥有证书颁发机构，应用程序可以验证CA证书是否来自可信来源。
 
-• [ajsnigrutin] 询问更多关于所需材料的信息，特别是除了一卷非PLA材料外还需要什么，以及成本和材料来源的问题。
+• **[jongjong]**：提出可以建立一个基于区块链的加密安全DNS系统，绕过传统的DNS系统，并通过区块链节点进行查询。提到像Ethereum和Unstoppable Domains这样的项目已经部分实现了这种设想。
 
 补充讨论：
-• 望远镜的便携性和实际观测效果是讨论的核心，许多人关注其在户外活动中的实用性。
-• 材料的选择和3D打印物品的耐用性是另一个讨论重点，特别是不同材料对望远镜性能的影响。
-• 一些人对设计细节和技术实现提出了具体问题，如支撑架的数量和对焦装置的实用性。
-• 总体来看，讨论的焦点在于该望远镜转换套件的实际应用价值和构建过程中可能遇到的问题。</div>
+• DNSSEC的争议焦点在于其实际效用和重要性，一些人认为它对防止网络攻击至关重要，而另一些人则认为它不重要或有更好的替代方案。
+• 对DNSSEC的设置复杂性和用户体验也有不同的看法，一些人认为设置简单且有用，而另一些人则认为用户难以感知其存在和作用。
+• 提出了区块链技术作为传统DNS系统的替代方案，讨论了其可行性和潜在优势。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44289276" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44320497" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -315,37 +501,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://texashighways.com/travel-news/the-history-of-juneteenth-in-photos/" target="_blank">Juneteenth in Photos</a>
+                    <a href="https://www.pgrs.net/2025/06/17/double-entry-ledgers-missing-primitive-in-modern-software/" target="_blank">Double-Entry Ledgers: The Missing Primitive in Modern Software</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ohjeez</span> |
-                    <span>评分: 197</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-06-19 17:41</span>
+                    <span>作者: pgr0ss</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-19 16:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章主要讨论了双 entries 记账模型在软件开发中的未充分利用，并介绍了一个名为 "pgledger" 的纯 PostgreSQL 实现。双 entries 记账包含几个核心概念：当前余额、余额变化的历史记录以及资金来源。这种模型通过原子性的记录确保数据的一致性和错误检查，同时提供审计日志功能。
+
+文章以在线业务为例，展示了如何使用双 entries 记账来记录订单、付款和退款。通过这种方法，可以明确记录每个资金转移，并方便地回答如“我们还在等多少钱？”或“为什么余额不对？”等问题。相比传统单表记录方式，双 entries 记账能更清晰地追踪资金流动，减少自定义错误检查逻辑的需要。
+
+总的来说，文章提倡在更多系统中使用双 entries 记账，以提高数据一致性和可追溯性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕“Juneteenth”这一节日的合法性、名称和意义的讨论
+                    <div class="comments-summary">主要讨论点：双栏账簿实现的复杂性及技术工具的支持
 
 不同观点：
-• smeeger认为Juneteenth是一个人为创造的、不真实的节日，暗示其缺乏历史根基。
-• macrael对Juneteenth持积极态度，认为这是一个提醒国家变革的节日，并表达了对不再通过战争获得解放的愿望。
-• moomoo11支持庆祝Juneteenth，认为美国自1776年以来一直在推动社会进步，尽管个人可能出于私利行动，但整体上社会在向前发展。同时指出美国比独裁政权或腐败的“民主”国家要好。
-• juddlyon批评那些争论节日名称的人，认为他们忽略了节日的真正意义和历史价值，赞赏那些分享照片和故事的人。
-• sfblah更喜欢使用“Emancipation Day”这一名称，认为“Juneteenth”不是一个真正的词，容易让人困惑。
+• GianFabien 认为实现双栏账簿的复杂性很高，每个项目都有其独特的细节，尤其在处理成千上万笔交易以确定当前余额时非常繁琐。他还提到历史上使用的"结账"流程作为时间检查点。最复杂的例子是处理多种货币以及现货和远期合约汇率混合的账簿。
+
+• euroderf 则关注技术工具的支持，特别提到如果SQLite支持WASM用户自定义函数（UDFs），可能会对处理此类复杂账簿有所帮助。
 
 补充讨论：
-• 争议的焦点之一是Juneteenth这个名称的合法性和清晰度。一部分人认为这个名称不够明确，而另一部分人则认为争论名称会忽略节日的深层意义。
-• moomoo11的评论中提到了对美国历史和社会进步的积极评价，并与其他政治体制进行了对比，这为讨论增加了一个比较宏观的视野。
-• 关于名称的讨论（Juneteenth vs. Emancipation Day）反映了对节日认知和传播的不同看法，部分人关注名称的易懂性和历史准确性。</div>
+- GianFabien 提供了具体项目实例中的技术挑战，特别是在多货币和不同汇率合约下的账簿处理，强调了实际操作中的困难。
+- euroderf 的评论暗示了对现有技术工具的改进期望，认为技术进步可以缓解部分复杂性问题。
+- 两者之间的讨论焦点在于技术实现的难度与技术工具的局限性，euroderf 似乎提出了一种潜在的解决方案，而GianFabien 基于实际经验描述了问题的复杂性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44320851" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44320050" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -356,176 +544,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.marginalia.nu/log/a_122_dead_websites/" target="_blank">Finding Dead Websites</a>
+                    <a href="https://www.caltech.edu/about/news/missing-matter-in-universe-found" target="_blank">Missing Matter in Universe Found</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-17 12:03</span>
+                    <span>作者: frankish</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-06-20 03:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了Marginalia Search引擎实现的一个新功能，用于检测网站的可用性和重大变更，以避免提供死链接并提高数据质量。该系统通过HEAD请求和DNS查询检测网站是否在线，并通过分析DNS历史、证书信息、网站安全状态及其他头部信息（如X-Powered-By和Server）来识别网站所有权变更或重大改版。
-
-系统将数据分为两类表格：一类存储当前快照，另一类存储历史事件数据。可用性信息和网站指纹分别存储在不同表格中，以优化性能。DNS信息则单独存储在第三张表中。
-
-为应对事件数据增长过快的问题，系统采用按月分区的策略，将旧数据导出并压缩存储，以避免表格过大影响性能。通过这些措施，Marginalia Search能够有效维护数据质量并优化爬虫行为。</p>
+                    <p>天文学家利用加州理工学院的DSA-110射电望远镜，通过快速射电暴（FRBs）成功探测到了宇宙中此前失踪的普通物质。这些物质以弥散状态存在于星系之间，约占宇宙中普通物质的76%。研究团队通过分析69个FRBs的光线传播，测量其色散程度，从而确定了这些失踪物质的分布。结果显示，这些物质大部分位于星系间介质中，少部分在星系晕和星系内部。这一发现验证了宇宙学模拟的预测，并有助于理解星系成长及中微子质量等问题。未来，更先进的DSA-2000射电望远镜将进一步推动FRBs在宇宙学研究中的应用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕网页存档、证书验证、域名变更及SEO影响的讨论
+                    <div class="comments-summary">主要讨论点：对暗物质及相关科学解释的质疑和讨论
 
 不同观点：
-• [atribecalledqst] 认为将Wayback Machine的结果整合进搜索引擎结果中会很有用，可以解决寻找历史网页困难的问题，特别是对于一些已经失效的网页（例如90年代的日本Tamagotchi博客）。该用户强调了搜索历史网页的实际需求和目前体验上的不足。
+• [philipov] 认为，如果新的研究成立，是否就不再需要弱相互作用大质量粒子（WIMPs）及其他奇异的暗物质解释。这表明他对现有理论的质疑，并关注新发现是否能取代传统假设。
 
-• [zinekeller] 讨论了TLS验证的解决方案，提出了一种技术性工作around，即仿效Firefox跳过AIA（Authority Information Access）并依赖已知的中间证书。同时指出Chrome的处理方式非常复杂且难以模拟。该评论更偏向技术层面，关注证书验证和浏览器行为。
+• [someothherguyy] 提供了一篇论文链接（https://arxiv.org/pdf/2409.16952），可能试图引导讨论走向具体科学文献，但未明确表达个人立场。
 
-• [JdeBP] 以自身经历为例，讨论了由于重大事件（如Brexit）导致的域名和网络基础设施变动，可能引发搜索引擎错误地将有效网站判定为失效（“假阳性”）。该用户强调了在处理网站变动时需要考虑外部因素和突发变化，如国际政治事件对域名的影响。
+• [ChrisArchitect] 提供了一个早期讨论的链接（https://news.ycombinator.com/item?id=44302414），暗示相关话题早有讨论，可能是提醒其他参与者关注之前的观点。
 
-• [55555] 提出了一种边缘情况：如果一个域名过期后被重新注册，并用于SEO目的，搜索引擎可能难以区分这是原作者恢复的网站还是其他人为了链接权重（link juice）而重新启用域名。该评论关注的是SEO和域名过期后的处理问题。
+• [wewewedxfgdf] 以幽默方式评论“总是最后才找到”，但没有明确表达对暗物质讨论的立场，可能只是对讨论进展的调侃。
 
-• [renegat0x0] 讨论了其爬虫如何处理域名失效和内容变动，强调了域名权威性（domain authority）对搜索结果排名的影响。该用户提到目前采取了30天的观察窗口期，过期域名会被移除，但有价值的域名即使失效也会保留更长时间。同时指出了有些过期域名仍会提供内容，尽管带有“已过期”的提示。
+• [throwaway290] 对暗物质作为事实的陈述提出质疑，认为它只是一个假设，并进一步质疑快速射电暴（FRBs）通过“星际介质减速光速”的描述。这表明他对科学报道中的措辞和理论基础持怀疑态度。
 
-补充讨论：
-• [mlhpdx] 对文章中关于ASN 16509的部分表示困惑，质疑 parked domains 和 Amazon IPs 之间的关系，以及迁移到Amazon是否是域名parked的强烈信号。这部分讨论涉及技术细节和对文章某些论点的理解问题。
-
-• [l5870uoo9y] 和 [koprocezar] 没有提出具体的技术或观点讨论，只是对文章或网站设计表达了赞赏。
-
-争议焦点：
-• 主要争议点在于如何处理失效域名、域名过期后的SEO影响，以及搜索引擎如何有效整合历史网页（如Wayback Machine）来改善用户体验。不同用户提出了技术性解决方案、实际案例和边缘情况的讨论，但没有形成直接的对立观点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44298087" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.tbray.org/ongoing/When/202x/2025/06/17/More-C2PA" target="_blank">June 2025 C2PA News</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: timbray</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-19 16:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了C2PA（内容认证协议）技术的最新进展，特别是Adobe的相关贡献和不足。C2PA由内容真实性倡议（Content Authenticity Initiative）推动，通常称为“内容凭证”。文章提到目前有两个Chrome扩展程序（ContentLens C2PA Validator和Digimarc的C2PA Content Credentials）可以验证内容凭证。验证后，用户可看到图片的创建者信息、使用的设备、是否使用AI工具等。文章肯定了Adobe在这一领域的贡献，但也指出其不足，如未涵盖Fediverse和Bluesky等平台的身份验证。作者强调C2PA在打击假信息（如假战争图片）方面的潜在作用，认为验证内容的来源至关重要。文章最后提出了一些改进建议，以增强C2PA的实用性和适用范围。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44320099" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://zed.dev/blog/debugger" target="_blank">The Zed Debugger Is Here</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: SupremumLimit</span> |
-                    <span>评分: 329</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-19 02:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Zed编辑器现已推出调试功能，聚焦三大核心：快速、熟悉和可配置。支持Rust、C/C++、JavaScript、Go、Python等语言，通过Debug Adapter Protocol (DAP)扩展可支持更多语言。Zed引入locators系统，自动将构建配置转换为调试配置，简化设置过程。调试界面可自定义，支持键盘操作，方便用户无鼠标操作。调试器由社区发起，历时8个月开发，包含977次提交和超过25,000行代码。Zed的调试器采用双层架构，数据层负责与调试适配器通信并缓存响应，UI层负责渲染界面，确保高效和必要的数据请求。该架构为协作调试奠定了基础。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Zed 编辑器的功能、性能、调试器、兼容性以及与竞争产品（如 VSCode、Neovim）的对比
-
-不同观点：
-• laserbeam 认为 Zed 的调试功能仍处于测试阶段，缺少监视窗口、堆栈跟踪视图和数据断点等关键功能，无法满足大多数调试需求。此外，对多线程调试和同时调试多个会话的功能也有期待。
-• candrewlee 对 Zed 非常满意，特别是从 Neovim 迁移过来后体验很好，尤其是 Vim 绑定和 Agent 模式的集成，虽然扩展生态不如 VSCode，但已足够使用。
-• mort96 对 Zed 引入 "AI" 功能感到厌倦，决定继续使用 Neovim，等待 "AI" 泡沫破裂后再考虑其他工具。
-• AbuAssar 高度评价 Zed 对 Debug Adapter Protocol (DAP) 和 Language Server Protocol (LSP) 的支持，认为这是过去十年编程工具的最佳发展。
-• eddythompson80 对 Zed 长期不支持普通屏幕分辨率（非 Retina/LoDPi）感到失望。
-• writebetterc 发现 Zed 的文件切换和输入延迟较长，性能不如 Emacs 和 VSCode，与其宣传的“快速”不符。
-• Andrew_nenakhov 尝试 Zed 几个月后，觉得 VSCode 更符合他的需求，尤其是小问题的修复和颜色方案的应用。
-• lordofgibbons 对 Zed 的快速启动时间和修复 Linux 下的字体模糊问题表示赞赏。
-• 90s_dev 希望找到一个比 VSCode 更轻量的编辑器，但觉得 Zed 闭源且过于模仿 Copilot，让他不太愿意切换。
-• Rucadi 因为 Zed 未支持 Windows 系统而无法在工作电脑上使用。
-• tomjuggler 因为 Zed 不支持 PlatformIO 而继续使用 VSCode，认为扩展支持问题会阻碍 Zed 的普及。
-• rvz 认为软件工程师应了解调试器和编辑器集成的技术细节，并对 Zed 的 Debug Adapter Protocol (DAP) 实现给予高度评价，期待 Zed 扩展生态的改进。
-• taminka 希望 Zed 改进 C 和 C++ 文件的语言检测配置，避免误识别。
-• tdhz77 对 Zed 支持 Claude 表示赞赏。
-• sureglymop 因为 Zed 不支持 ctrl+scroll 缩放字体功能而暂时不考虑切换，习惯于非美国键盘布局使得常规键绑定不方便。
+• [verisimi] 以幽默回应[wewewedxfgdf]，但没有提供实质性观点或论据，属于轻松的互动。
 
 补充讨论：
-• Zed 的调试功能，尤其是多线程调试和数据断点的支持，是用户关注的焦点，存在一定争议。
-• Zed 的性能表现，特别是与 Emacs 和 VSCode 的对比，也是用户讨论的重要话题。
-• 扩展生态和兼容性问题（如 PlatformIO 支持）是用户切换到 Zed 的主要障碍之一。
-• 用户对 Zed 的 "AI" 功能和闭源性质存在不同看法，部分用户对此持保留态度。
-• 界面和操作细节（如字体缩放、语言检测）也是用户体验的重要组成部分，影响用户切换编辑器的决定。</div>
+- 争议焦点在于暗物质是否已经被证实为事实，还是仅仅是一个尚未证实的假设。
+- 另一个值得注意的讨论点是对“光速减慢”描述的困惑，这涉及对天文学和物理学概念的不同理解。
+- 参与者提供的链接为讨论提供了进一步的文献和背景资料，但未直接解决核心争议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44314977" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://meodai.github.io/poline/" target="_blank">Poline – An enigmatic color palette generator using polar coordinates</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 281</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-14 23:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>"Poline"是一个神秘的调色板生成工具，利用极坐标技术创造出独特的色彩组合。其方法打破了传统的色彩科学，借鉴了20世纪早期的深奥知识。通过在锚点之间绘制线条，生成令人惊叹的色彩 palette，是现代生成艺术家的必备工具。
-
-"Poline"通过锚点生成色彩，锚点是固定的点，用HSL值表示。锚点之间的连线数量决定了生成色彩的丰富程度。用户可以自定义锚点或让工具随机生成。通过调整"numPoints"属性，可以改变生成的色彩数量。
-
-该工具提供了多种位置函数（如线性、指数、正弦等）来控制色彩分布。用户可以通过"addAnchorPoint"和"updateAnchorPoint"方法动态添加或调整锚点，实现精细调整。Poline为用户提供了高度的自由和创造空间，是色彩生成和调整的强大工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个名为"poline"的神秘色彩调色板生成器，其独特的设计和神秘主题引发的不同看法和使用反馈。
-
-不同观点：
-• **支持并欣赏神秘主题**：一些用户如[jonathaneunice]和[james_marks]对该工具的神秘主题表示赞赏，认为这种设计增添了趣味性和独特性，尽管他们不完全理解背后的概念。
-• **对神秘主题感到困惑**：[nemomarx]和[ChrisMarshallNY]表示对神秘和炼金术主题的描述感到困惑，不确定该工具与传统色彩科学调色板生成器的具体区别。
-• **技术问题反馈**：[onli]和[drewbeck]提到了在使用不同浏览器（Firefox和Arc）时遇到的技术问题，包括模块导入错误和不同平台上的表现差异。
-
-补充讨论：
-• **功能建议**：[pseudocomposer]建议在用户首次加载页面时增加默认演示轮的动画效果，以提升第一印象。
-• **应用场景设想**：[__MatrixMan__]提出了将此工具应用于编辑器中以生成独特语法高亮色彩方案的设想。
-• **色彩生成效果**：[rambambram]和[kazinator]对该工具生成优质调色板的能力表示赞赏，指出其在色彩搭配上的有效性。
-• **用户界面反馈**：[bogdanoff_2]对工具的颜色命名印象深刻，而[basisword]认为该工具很难生成令人不悦的调色板。
-
-争议焦点：该工具的神秘主题和描述是否增加了其价值和吸引力，还是造成了理解上的困惑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44279569" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44324547" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
