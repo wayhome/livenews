@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-20 09:01 (北京时间)
+            最后更新时间: 2025-06-20 11:44 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,54 +61,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.tobyord.com/writing/half-life" target="_blank">Is there a half-life for the success rates of AI agents?</a>
+                    <a href="https://www.cybertec-postgresql.com/en/select-for-update-considered-harmful-postgresql/" target="_blank">Select FOR UPDATE considered harmful in PostgreSQL</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: EvgeniyZh</span> |
-                    <span>评分: 233</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-06-18 10:53</span>
+                    <span>作者: samokhvalov</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-19 17:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Toby Ord基于Kwa等（2025）的实证研究，提出AI代理在长时间任务中的表现可以通过一个简单的数学模型来解释：在人类完成任务所需的每分钟内，失败的概率是恒定的，导致成功率呈指数下降，每个AI代理可以用其“半衰期”来表征。该模型帮助估计不同任务时长下AI的成功率。研究发现，AI在可解决任务的时长上每7个月翻倍，50%成功率的任务时长每7个月翻倍，80%成功率则需要约14个月翻倍。尽管该方法提供了一种衡量AI能力随时间进展的新方式，但其适用性可能受限于特定任务类型，未必全面反映AI的实际性能。</p>
+                    <p>本文讨论了在PostgreSQL中使用`SELECT FOR UPDATE`可能导致数据库并发问题，尤其是在涉及外键约束时。作者解释了PostgreSQL如何使用不同类型的行级锁（如`FOR KEY SHARE`、`FOR UPDATE`、`FOR NO KEY UPDATE`等）来维护数据一致性。大多数情况下，`UPDATE`语句并不会使用`FOR UPDATE`锁，因为它们不会与外键引用的`INSERT`操作冲突。然而，不当使用`SELECT FOR UPDATE`会过度锁住行，阻止其他事务的`INSERT`操作，导致性能问题和死锁。作者建议开发者了解这些锁机制，避免在不必要的情况下使用`SELECT FOR UPDATE`，以减少并发问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在多步骤任务中的表现和局限性，包括错误处理、记忆问题、自我修正能力以及未来发展。
+                    <div class="comments-summary">主要讨论点：PostgreSQL中的锁机制，特别是在使用DELETE、UPDATE操作时对行加锁的行为。
 
 不同观点：
-• **LLM在多步骤任务中的局限性**：
-  - [mikeocool] 指出LLM在遇到错误时，会重复尝试相同的解决方案或随意切换方向，而不是修复问题。
-  - [prmph] 补充了LLM在长时间处理问题时，可能会删除关键测试或编造不存在的库。
-  
-• **记忆与上下文窗口的限制**：
-  - [kosh2] 认为LLM没有真正的记忆，类似于电影《Memento》中的情况，导致它们在长时间任务中表现不佳。
-  - [Leo-thorne] 将LLM比作初级开发人员，需要频繁重置和检查以确保正确性。
+• [gmcabrita的观点] 提到PostgreSQL在以下情况会对行加FOR UPDATE锁：1) 在删除行之前；2) 在更新操作涉及到唯一索引的列时，且该索引不包含表达式或部分索引。此外，如果同一事务中对同一行更新两次，也会发生这种情况。他提供了一个博客链接，详细讨论了跨表锁的问题。
 
-• **自我修正和复杂问题解决能力**：
-  - [Aziell] 观察到LLM在长时间运行后会偏离初始目标，并质疑是否存在自我修正机制。
-  - [klabb3] 提出LLM的局限性在于奖励函数的质量，并认为复杂问题空间的改进将是边际的。
-
-• **计算和开发中的错误来源**：
-  - [PaulHoule] 分享了人类在复杂计算中也会犯错的经历，并指出即使有测试集也可能无法发现所有错误。
-  - [jongjong] 怀疑网上有缺陷的代码被训练进了LLM，导致错误率增加，并质疑现代开发人员的代码质量。
+• [rickette的观点] 则简明指出，除非计划删除行或修改关键列，否则应始终使用"SELECT FOR NO KEY UPDATE"。这一观点强调了在不需要加锁的情况下，应采用更轻量级的锁机制，以避免不必要的锁竞争和性能问题。
 
 补充讨论：
-• **LLM的未来发展**：
-  - [adverbly] 推测LLM在未来6年左右可能达到ASI（人工超级智能），并提出时间线的合理性。
-  - [ldjkfkdsjnv] 乐观地认为LLM在6到12个月内可能解决当前的许多问题。
+- [gmcabrita] 的评论中隐含了对事务中锁的细节关注，特别是在复杂操作（如多次更新同一行）时的锁行为。
+- [rickette] 的评论则更倾向于提供一个实用建议，指导开发者在大多数情况下如何选择适当的锁策略以优化性能。
+- 争议的焦点可能在于对锁的必要性的判断。一方面，[gmcabrita] 详细列举了需要加锁的情况；另一方面，[rickette] 建议默认使用较弱的锁，除非有明确的删除或关键列更新需求。
 
-• **对LLM使用的不同看法**：
-  - [deadbabe] 认为精心构造提示和上下文无助于解决问题，强调人类介入的必要性。
-  - [__MatrixMan__] 认为成功率的半衰期与AI无关，可能涉及其他因素。
-
-争议焦点：
-• LLM在多步骤任务中的可靠性和错误处理能力是主要争议点，特别是它们是否能实现自我修正以及如何提高在复杂问题上的表现。</div>
+这两个观点反映了在数据库性能优化和数据一致性之间的权衡，具体选择取决于实际应用场景的需求和开发者的判断。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44308711" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44320847" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,13 +102,112 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://sopghreporter.com/2025/06/01/dr-demento-announces-retirement/" target="_blank">Dr. Demento Announces Retirement After 55-Year Radio Career</a>
+                    <a href="https://pontus.granstrom.me/scrappy/" target="_blank">Scrappy – Make little apps for you and your friends</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: coloneltcb</span> |
-                    <span>评分: 114</span> |
+                    <span>作者: 8organicbits</span> |
+                    <span>评分: 437</span> |
+                    <span>评论数: 53</span> |
+                    <span>发布时间: 2025-06-18 05:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了John和Pontus创建的原型工具Scrappy，旨在推动“自制软件”的理念，让个人能够为自己和亲友制作个性化、不求精美但满足特定需求的应用程序。Scrappy提供一个无限画布，用户可以通过拖放交互对象并附加简单代码来构建应用，类似于Figma等工具。文章通过几个例子展示了Scrappy的用途，如算术练习、参会人数计数器、会议成本计时器和家务分配表。Scrappy应用支持多人协作、持久化状态和选择性共享，且编辑和运行无明显区分。该项目旨在重新构想软件创作，鼓励普通用户通过“轻量编程”和“自制软件”表达自我，而不必成为专业程序员。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于Scrappy及类似工具的可行性、使用场景、技术实现和社区影响的讨论
+
+不同观点：
+• RodgerTheGreat认为Scrappy与CardStock和Decker有相似之处，但CardStock是开源且可以本地运行的，Decker则提供了更强大的功能如表格数据处理和可重用的组件抽象。
+• al_borland不看好Scrappy的托管解决方案，担心其长期依赖性和维护问题，倾向于使用HTML/CSS/JS和PHP等传统技术来实现简单项目，并强调工具的长期可用性。
+• tokioyoyo分享了自己通过简单应用获得的成就感，认为即使没有经济收益，开发这样的应用也是值得的。
+• simonw指出Scrappy在移动端编辑功能的缺失，并认为不应低估手机用户的需求，移动设备可能是他们唯一的计算工具。
+• nilirl认为电子表格是最实用的终端用户编程环境，对Scrappy等新工具持保留态度。
+• selcuka认为LLM（大语言模型）生成的简单应用可能会成为Scrappy等工具的强力竞争者，并提到LLM在生成简单HTML/JS应用上的潜力。
+• Peteragain建议从家庭运行的小型应用商店入手，强调社区和朋友间的非正式分享，而不是追求商业化。
+• blips对AI生成内容持负面态度，认为其影响了内容的吸引力，并表示不愿消费此类内容。
+• riffraff支持“可脚本化的组件”而不是块状编程，并指出用户希望应用易于分享且零成本。
+• indyjo对Scrappy的UI设计和编程支持提出质疑，认为缺乏代码补全和API帮助是其不足之处。
+• feeley介绍了一个名为CodeBoot的替代工具，允许用户通过Python创建封装在URL中的Web应用，强调其易用性和无安装需求。
+• zupa-hu认为Scrappy的演示很棒，但反馈过于苛刻，可能是因为其进入市场的时间较晚。
+• hiAndrewQuinn分享了自己使用LLM和JavaScript等技术创建简单工具的经验，强调其跨平台性和易用性。
+• kakamiokatsu认为Scrappy与Visual Basic有相似之处，特别是在简单原则和UI设计方面。
+• s_ting765认为如果缺乏源代码分享功能，Scrappy的应用分享价值将大打折扣。
+
+补充讨论：
+- 争议焦点在于Scrappy等工具的长期可用性和维护问题，特别是托管解决方案的依赖性。
+- 用户对移动端支持和易用性的需求被提出，特别是移动设备作为唯一计算工具的用户场景。
+- 不同工具的对比，如CardStock、Decker和CodeBoot，提供了其他实现类似功能的选择。
+- LLM在简单应用开发中的潜力被多次提及，可能成为未来竞争的一个重要因素。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44306859" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jakelazaroff.com/words/homomorphically-encrypted-crdts/" target="_blank">Homomorphically Encrypting CRDTs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jakelazaroff</span> |
+                    <span>评分: 236</span> |
                     <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-19 03:27</span>
+                    <span>发布时间: 2025-06-18 12:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了本地优先软件中的一个加密问题：如何在保证文档内容保密的前提下实现远程协作。解决方案之一是端到端加密，即用户在发送文档更改前用密钥加密，接收时解密，以防止中间人窃听。然而，这种方法要求双方同时在线才能同步更改。为解决此问题，文章提出了同态加密，一种能在数据加密状态下进行运算的加密技术。使用同态加密的CRDT，同步服务器可以在不解密的情况下合并用户更改。文章还提供了使用THFE-rs库实现同态加密的示例，并探讨了其在本地优先软件中的应用及其局限性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：全同态加密（FHE）的现状、应用及其局限性
+
+不同观点：
+• plopilop：认为FHE虽然目前速度慢且效率低下，但作为一个2009年才出现的新领域，已经取得了显著进展。例如，密钥大小和引导时间大幅减少，未来有望变得更加实用。
+• NetRunnerSu：赞同FHE的进展，提到bootstrapping速度提高了数千万倍，并引用具体项目（如tfhe-rs）展示FHE在实际应用（如AI推理/训练）中的潜力。
+• teleforce：通过实验数据强调FHE的运行性能问题，指出加密后的操作比未加密操作慢了数十亿倍，表达了对实际应用中性能的担忧。
+• hoppp：提到THFE-rs的商业许可问题，推荐使用openFHE和lattigo等免费商用库作为替代方案。
+• Joker_vD：认为FHE在性能和带宽方面难以满足实际需求，引用了一个极端例子（1 Hz的虚拟CPU）来说明FHE的局限性，建议对于小数据直接本地计算，对于大数据则购买硬件。
+• somezero：认为FHE不适用于该场景，建议使用多方计算（MPC），其在分布式数据上更高效。
+
+补充讨论：
+• GRBurst：长期关注FHE领域，希望在速度上有所突破，并认为FHE与CRDTs结合很有趣，但目前仍偏理论。
+• mihau：对博客的UI/UX设计表示赞赏，并询问技术栈，暂时偏离了讨论主题。
+• chrisweekly：为新手解释同态加密的定义，帮助理解讨论背景。
+• scyclow：提出使用区块链来管理加密数据差异的排序问题，避免使用HME（同态加密）。
+
+争议焦点：
+• FHE的实际应用可行性：一方强调其进展和潜力，另一方则担心其性能和效率问题。
+• 技术选择的适切性：somezero认为MPC比FHE更合适，而其他评论主要讨论FHE的具体实现和优化。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44309520" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://justsendrecord.com" target="_blank">Show HN: I made an app that lets you save audio to your Cameral Roll</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zahirbmirza</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-06-18 15:43</span>
                 </div>
 
                 <div class="summary-section">
@@ -135,138 +217,23 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对Dr. Demento节目及其影响的回忆和评价
+                    <div class="comments-summary">主要讨论点：一款新型录音转换视频工具的反馈与功能讨论
 
 不同观点：
-• dizlexic：Dr. Demento的节目对童年有着深刻影响，尤其是在父母离婚后，通过节目与父亲保持了一种特殊的联系。节目带来了许多欢笑和快乐，对成长中的困难时期有重要意义。
-• technofiend：分享了自己与朋友尝试向Dr. Demento投稿的经历，尽管出了差错（寄去了空白磁带），但Dr. Demento依然给予了回复和修复，展现了他的友善和耐心。
-• pugworthy：通过远程电台收听到了Dr. Demento的节目，与其他未接触过此类内容的小镇居民不同，节目带来了新奇的体验，也提到了Firesign Theater专辑的影响。
-• tkgally：作为Dr. Demento早期节目的听众，提到他在1970年代初期的影响力，特别是在学校中流行的歌曲"Shaving Cream"。
-• blonky：回忆起与朋友们一起收听Dr. Demento节目的特别时刻，特别是在假期中完整收听的经历，节目成为了朋友间交流和欢笑的源泉。
-• Isamu：提到Dr. Demento节目中介绍了Weird Al Yankovik，认为这是该节目对音乐界的重要贡献。
-• miesman：分享了与Dr. Demento本人的一次偶遇，印象中他非常友善，与在电台上的表现一致。
-• Aeolun：对人们数十年来对Dr. Demento的热情表示感动，但也感到遗憾，往往只有在停止时才得知这些热情。
-• jakedata：通过请求被播放获得了Dr. Demento的T恤，尽管错过了节目播出，但依然在校园中获得了“名誉”，多年后成功获取了当年的节目录音。
-• cl0ckt0wer：提供了Dr. Demento的网站链接，指出了其在线资源的丰富性。
-• anonymousiam：拥有1970年代早期录制的Dr. Demento节目录音，惊讶于他依然活跃，并对他的珍贵黑胶收藏的未来表示好奇。
-• Triphibian：强调了通过电台收听特殊音乐的体验，提到通过Dr. Demento节目首次听到了Camper Van Beethoven，这种体验不同于MTV。
-• cafard：回忆了1970年代在丹佛或博尔德电台收听Dr. Demento节目的经历，认为其长达五十多年的播出是一个了不起的成就。
-• WarOnPrivacy：Dr. Demento节目介绍的艺术家如The Residents、Negativland和The Rutles，如今自己的孩子也在听这些音乐，显示了节目对不同代际的影响。
-• SirFatty：在1980年代早期通过录制方式收听Dr. Demento节目，尽管因为上学原因无法实时收听，但依然珍视这些录音。
+• **产品展示不足**：多个用户（jasonshen、cwizou、jccalhoun、ninjastar99）提到网站上缺乏实际产品效果的展示。他们建议添加示例视频或gif，以帮助用户更好地理解产品功能。
+• **产品用途的困惑**（fennecfoxy、al_borland）：一些用户（fennecfoxy、al_borland）对产品的实际用途感到困惑。fennecfoxy质疑iOS是否缺乏文件浏览器，而al_borland则对产品的核心问题陈述感到不解，并询问是否产品是为了在社交网络上分享音频。
+• **视觉效果和用户体验**（Liftyee、jjcob）：Liftyee对网站上的AI动画角色表示反感，而jjcob则对网站设计和AI生成的内容表示不满，认为不如人工设计真实。
+• **技术细节与格式**（encom、mistersquid）：encom关注MP4格式的技术细节，指出MP4只是容器格式，未说明具体编解码器。mistersquid则询问水印是否可以在应用内去除。
 
 补充讨论：
-• Dr. Demento节目的影响力不仅限于某一年代或地区，而是跨越了多个年代和地区，影响了几代听众。
-• 听众们通过各种方式（如磁带录制、请求播放、偶遇Dr. Demento本人）与节目互动，展现了节目对个人生活的深远影响。
-• 争议焦点：没有明显的争议，更多的是对Dr. Demento节目和其本人友善态度的共同赞美和怀念。
-
-总结：评论主要围绕Dr. Demento节目对不同听众在不同年代的深远影响，以及听众与节目互动的各种有趣经历，展现了该节目在广播史上的独特地位和文化意义。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44315185" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="http://terpstrakeyboard.com/web-app/keys.htm" target="_blank">Terpstra Keyboard</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: xeonmc</span> |
-                    <span>评分: 220</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-06-18 10:31</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Terpstra Keyboard WebApp是一个用于调音和布局的在线工具，支持多种音律系统和布局方式，如Jankó、Harmonic Table、Wicki-Hayden、B-System、C-System等。用户可以选择预设，调整参数如基本频率、步长、旋转角度等，并使用不同的乐器音色。该应用还支持自定义音阶、颜色布局和空白键等功能。著名的31-ed2 Bosanquet/Wilson/Terpstra音律也在支持之列，包含详细的音阶和音名列表。该WebApp由Siemen Terpstra设计，James Fenn等开发，并以GPL-3.0协议开源发布。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：微分音音乐及非标准调音的探索与实践
-
-不同观点：
-• joshlemer 推荐 Kyle Gann 的专辑 *Hyperchromatica*，认为该专辑展示了非标准调音的潜力，提供了全新的音色和情感体验，值得一听。
-• gtani 提到了21世纪弦乐四重奏及一些作曲家如 Ben Johnston、Caroline Shaw 等，并讨论了这些音乐的记谱法，还提到自己对无品贝斯和踏板钢棒吉他的探索。
-• nayuki 分享了 Janko 键盘的资源，表示这种键盘让他可以更容易地演奏音乐，并提供了相关链接。
-• awongh 对 DIY 硬件 MIDI 键盘感兴趣，特别是使用机械霍尔效应开关，提到目前市场上的物理键盘大多价格昂贵。
-• _joel 开玩笑说这种音乐适合 Klingon 歌剧，并附上了相关视频链接。
-• addandsubtract 提到发现 MacBook 键盘一次只能发送6个按键按下的信号。
-• pugworthy 提出了一些有趣的应用场景，比如打字时听到不同音调，并建议使用浏览器的缩放功能来体验极高或极低的音符。
-• satiric 尝试使用 QWERTY 键盘演奏音乐，但发现系统只能响应键盘或鼠标输入之一，希望能同时使用两者。
-• gbuk2013 指出音高 C## 和 D 之间有细微差别，认为音准有问题。
-• beefman 分享了 Lumatone 的链接，并提到 Mike Battaglia 用 31 平均律演奏 Scarborough Fair。
-• bluGill 正在设计一种可以用脚演奏的键盘，希望能同时演奏其他乐器，成为一人乐队，并寻求设计建议。
-• steveBK123 简单表示觉得这个想法很酷。
-• Aachen 对系统响应速度印象深刻，分析了音频渲染代码的工作原理，并提供了详细的技术解释。
-• Cthulhu_ 分享了一个有趣的事实，关于姓氏以 -stra 或 -sma 结尾的人的起源，并附上了相关维基百科链接。
-• squircle 提到自己用 LLMs 玩虚拟乐器的经历，鼓励大家自己动手制作。
-
-补充讨论：
-• 讨论中涉及了多种非标准调音和键盘设计的实际应用和理论探讨，包括 Janko 键盘、Lumatone、以及 DIY 硬件 MIDI 键盘等。
-• 技术细节如音频渲染代码的实现和 MacBook 键盘的按键限制也被深入讨论。
-• 一些评论带有幽默性质，如 Klingon 歌剧的提及，为讨论增添了轻松的氛围。
-• 争议焦点不明显，但 satiric 提到系统对键盘和鼠标输入的响应限制，可能是一个需要改进的功能点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44308558" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mjg59.dreamwidth.org/72095.html" target="_blank">Locally hosting an internet-connected server</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pabs3</span> |
-                    <span>评分: 173</span> |
-                    <span>评论数: 36</span> |
-                    <span>发布时间: 2025-06-18 04:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章提到用户被随机选中进行CAPTCHA验证以确认请求。页面提供了一个登录表单，包括账号、密码输入框以及“记住我”选项。此外，还有找回密码和使用OpenID登录的替代选项。用户需完成CAPTCHA验证才能继续。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何解决ISP在IPv6支持不足的情况下进行网络配置，以及使用不同工具和方法实现网络路由和IP分配。
-
-不同观点：
-• [JdeBP] 认为许多北美和西欧的ISP在2025年仍不擅长提供IPv6支持，用户不得不自行解决此问题，例如通过复杂的设置来绕过ISP的限制。他还指出，一些ISP多年来一直承诺提供IPv6但未实现。
-• [Daviey] 建议使用Tailscale或Headscale处理WireGuard和低层网络配置，而不是手动管理iptables和低层组件，并分享了自己的成功经验，包括可以轻松添加设备和使用出口IP池。
-• [DougN7] 提出使用动态DNS服务（如dyn.com）作为解决方案，并指出许多家庭路由器内置支持动态DNS。
-• [KronisLV] 表示自己选择了Tailscale以避免手动管理WireGuard和iptables，并提到SSH隧道的不足之处。
-• [PeterStuer] 分享了自己使用Pangolin和Traefik进行Wireguard隧道设置的经验，并提供了一个参考链接。
-
-补充讨论：
-• [varenc] 对Monkeybrains ISP用户能获得对称600Mbps的连接表示好奇，并分享了自己的多WAN网关设置以提高连接稳定性，同时提供了自己的网络延迟日志对比。
-• [zokier] 建议如果不希望在所有服务器上运行Wireguard，可以设置一个集中式的Wireguard网关，并提供了一些自动化脚本的参考链接。
-• [xiconfjs] 引用Monkeybrains ISP的安装条件，提到安全访问屋顶是成功安装的一个因素。
-• [anonymousiam] 分享了自己20年前使用vtun绕过住宅静态IP限制的经验，并比较了当时FiOS和VPS的费用。
-• [politelemon] 提出Cloudflare隧道作为另一种选择，通过在其控制面板上设置DNS和安装其Daemon来避免打开外部端口。
-• [zrm] 认为大多数情况下不需要多个公共IPv4地址，可以通过端口映射和反向代理来实现多个服务的公开，并讨论了使用VPN的方案。
-• [eqvinox] 建议了解VRFs并应用于策略路由，认为这是更好的一种封装方式。
-• [dismalpedigree] 分享了自己使用Nebula网络和haproxy进行加密数据传输的设置，强调了无密钥的vps设置和跨地域的节点部署。
-• [v5v3] 建议在文章中添加警告，提醒新手在开放服务器之前需要进行基本的网络安全设置。
-• [bzmrgonz] 提出安装反向代理和使用Wireguard重定向非静态IP服务的可能性，并询问潜在风险。
+• **安全与不可逆录制**（Xeoncross）：Xeoncross提出增加不可逆录制和实时广播功能的需求，以确保录制的证据不会被删除或破坏。
+• **网站设计相似性**（voidUpdate）：voidUpdate提到该网站设计看起来像某种默认模板，与其他AI产品网站相似。
+• **市场前景**（eitally、user9999999999）：eitally认为这是一个很有潜力的创意，可能会被Apple整合到其相机应用中。user9999999999则从历史角度讨论了音频分享的困难，认为该产品解决了长期存在的问题。
 
 争议焦点：
-• ISP在IPv6支持上的不足以及用户自行解决的必要性。
-• 使用不同工具（如Tailscale、动态DNS、Cloudflare隧道）的优劣比较。
-• 是否需要多个公共IPv4地址以及如何通过反向代理和端口映射来优化配置。</div>
+• **产品展示和用户理解之间的差距**：用户普遍认为网站缺乏足够的视觉示例，导致对产品功能和用途的理解困难。这涉及到产品展示的设计和用户体验问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44306792" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44310877" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -277,276 +244,218 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://kirancodes.me/posts/log-lang-design-llms.html" target="_blank">LLMs pose an interesting problem for DSL designers</a>
+                    <a href="https://blog.cr.yp.to/20231003-countcorrectly.html" target="_blank">The inability to count correctly: Debunking Kyber-512 security calculation(2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gopiandcode</span> |
-                    <span>评分: 213</span> |
-                    <span>评论数: 48</span> |
-                    <span>发布时间: 2025-06-17 19:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了在LLM（大型语言模型）时代，编程语言设计（尤其是领域特定语言DSL的设计）面临的挑战和未来可能性。作者指出，精心设计的编程语言或DSL可以减少样板代码，降低错误风险，并让开发者专注于解决更复杂的问题。然而，随着LLM的广泛应用，开发者开始依赖这些模型自动生成代码，从而可能减少对DSL设计和创新的需求。文章提到，LLM在常见语言（如Python）上表现优异，但在小众或特定领域语言上表现较差。作者担心LLM的发展可能会削弱DSL的吸引力，并呼吁探讨如何让语言设计与LLM协同发展，而不是被其取代。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在编码中的应用及其对DSL（领域特定语言）的影响
-
-不同观点：
-• **LLM引发技术栈固化的担忧**：
-  - [romaniv] 认为LLM在编码中的推广基于一系列承诺，但这些承诺在技术被社会采用后迅速被推翻。例如，LLM最初声称每个人都可以轻松编码，但现在要求用户学习专门的提示技巧和测试生成代码。此外，LLM被认为能够理解现有代码，但现在却要求用户改变代码以适应LLM。
-  - [NiloCK] 也观察到LLM可能导致技术栈固化，特别是在处理不同版本的API时，LLM倾向于使用训练数据中更常见的版本，而不是最新的API。
-  
-• **DSL的价值与必要性**：
-  - [darepublic] 对DSL持怀疑态度，认为DSL的泛滥增加了复杂性，LLM可以帮助抑制一些不必要的DSL的增长。
-  - [jo32] 认为在LLM时代，构建新的DSL是不必要的，因为现代语言模型已经能够处理主流语言，并且这些语言的工具链更为成熟。
-  - [efitz] 直言不讳地表示不喜欢DSL，认为它们给新加入项目的成员带来了学习负担，并可能成为“只写”语言。
-  
-• **LLM对DSL的潜在帮助**：
-  - [furyofantares] 认为LLM可以很好地处理DSL，只要提供简洁的描述和示例，LLM就能在DSL中编写代码。此外，LLM在DSL的创作上也能提供帮助。
-  - [maybevoid] 通过实验发现LLM能够翻译熟悉的概念到DSL中，并修复常见问题，这表明LLM可以帮助提高DSL的可用性。
-  - [aaronvg] 分享了他们使用LLM处理DSL（BAML）的经验，发现LLM能够很好地遵循语法规则。
-
-• **LLM对编程语言设计的影响**：
-  - [kibwen] 提出LLM可能像高级语言对汇编语言的影响一样，消除改进高级语言的动机。
-  - [adsharma] 讨论了通过Python等语言教导LLM关于DSL的可能性，并提出了一种从需求到低级编译语言的编程扩散模型。
-  - [MoonGhost] 建议为LLM设计一种介于自然语言和严格编程之间的高级语言，以便后端模型可以将其翻译成API调用。
-
-补充讨论：
-• **技术栈固化的解决方案**：
-  - [NiloCK] 提出两种可能的解决方案：一是模型能够“放下”内部化的知识，二是基于特定依赖版本的微调模型，以便每个工作空间可以调用定制化的LLM。
-
-• **新编程语言的接受度**：
-  - [amterp] 提到在推广新编程语言时遇到人们的接受度下降的问题，部分原因是LLM可以生成虽然不完美但足够使用的代码，从而减少了人们学习新语言的动机。
-
-争议焦点：
-• LLM是否会导致DSL的消亡或抑制新编程语言的发展，以及这是否是一件好事。
-• LLM对DSL的帮助是否足以抵消其带来的额外复杂性和学习成本。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44302797" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://monroeclinton.com/counting-all-yurts-in-mongolia/" target="_blank">I counted all of the yurts in Mongolia using machine learning</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: furkansahin</span> |
-                    <span>评分: 242</span> |
-                    <span>评论数: 32</span> |
-                    <span>发布时间: 2025-06-18 07:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了作者利用机器学习技术统计蒙古国境内所有蒙古包（ger）数量的过程。作者受到一篇关于蒙古帝国历史的播客启发，对当代蒙古社会产生兴趣，尤其是通过Google Maps卫星视图观察到首都乌兰巴托周围大量蒙古包。由于缺乏现成的数据，作者决定自行统计，设计了一个通过训练机器学习模型来识别和计数蒙古包的方案。他使用Google Maps下载卫星图像瓦片作为训练数据，手动标注蒙古包位置，并尝试训练模型进行自动识别。最终，作者详细描述了数据下载、标注过程及模型训练的基本步骤，并计划进一步探究这些蒙古包背后的社会故事。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于在城市中设立蒙古包（ger/yurt）区域的讨论，包括文化、经济、技术等多方面因素。
-
-不同观点：
-• [furyg3] 强调蒙古包的文化意义和情感价值。他认为，许多人从游牧生活转向城市生活是由于气候变化和经济压力，但他们仍然希望保持与传统的联系，因此选择在城市边缘设立蒙古包。这种选择不仅是由于住房短缺，还因为搬进公寓或永久性建筑被视为放弃游牧生活方式的最后一步。
-
-• [snickerer] 则指出，选择蒙古包居住不仅是文化传统，也是一种理性选择。标准化和可移动的蒙古包在某些情况下比租房更经济实惠，特别是在城市以外的地区，人们可以自由定居而不需支付租金。
-
-补充讨论：
-• [shpx] 提到在OpenStreetMap上已经有标记的蒙古包，质疑为何不利用这些数据，并指出在边境或图块边缘的蒙古包可能存在对齐问题。
-
-• [decimalenough] 提醒下载Google Maps卫星影像违反服务条款，并对原贴如何获取这些数据表示质疑。
-
-• [icameron] 关注模型识别的准确性，提出是否有其他结构（如储罐、泳池）被误认为蒙古包，询问假阳性的比例。
-
-• [ludicity] 回顾机器学习项目，表达对当前技术发展的一些感慨，并提到澳大利亚相关工作的对比，质疑政府项目的效率和质量。
-
-• [danhodgins] 和 [michaelhoffman] 都对标题产生误解，最初以为讨论的是使用机器学习的蒙古包，而非通过机器学习来计数。
-
-• [sorokod] 和 [amelius] 对模型的技术细节感兴趣，包括预测分数的解释和深度学习模型的架构。
-
-• [tboyd47] 和 [Andr2Andr] 的评论较为简短，前者表示对游牧民族的关注，后者关心租用大量GPU和服务器的大致成本。
-
-• [unholyguy001] 批评模型缺乏验证和训练数据的局限性，认为模型可能不够准确。
-
-• [proxysna] 赞赏文章的写作和Docker Swarm的使用。
-
-争议焦点：
-• 蒙古包居住的选择是否仅出于文化和情感原因，还是更多出于经济和理性考虑。
-• 机器学习模型在识别蒙古包时的准确性和技术实现细节。
-• 使用Google Maps数据的合法性和技术实现的可行性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44307629" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kumo.ai/research/time-series-forecasting/" target="_blank">Time Series Forecasting with Graph Transformers</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: turntable_pride</span> |
-                    <span>评分: 127</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-17 18:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了基于图结构数据的时序预测，特别关注利用图变换器（Graph Transformers）进行预测，并区分预测性范式和生成性范式。与传统方法不同，本文方法不仅关注单一的时间序列，还结合了相关数据源的信息，如营销活动、竞争对手定价和经济指标等，这些信息通过关系数据库中的表间关系自然形成图结构。文章介绍了一种从关系数据库自动发现和利用跨表关系的方法（RDL），将关系数据转化为图结构，从而将时序预测任务转化为图学习任务。文中详细描述了图预测框架，包括节点特征、时间频率编码、日历特征等输入信号，并通过多层感知机（MLP）等模型进行预测。这种方法能够更好地捕捉季节性效应和特殊日期特征，适用于实际业务中的多种预测任务。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于博客文章中提出的图变换器（graph transformers）在时间序列任务中有效性的争论，以及相关商业应用和学术推广的潜在冲突。
-
-不同观点：
-• **cye131** 认为博客文章中将图变换器作为标准或有效的时间序列方法是不准确的。他们指出，变换器（transformers）在时间序列任务中表现不佳，而图深度学习在缺乏真实行为或物理边界的任务中效果也不好。因此，将两者结合用于商业应用（如销售预测）的有效性存疑。cye131 提供了相关研究论文（https://arxiv.org/pdf/2205.13504）作为证据，并提到许多研究表明基于变换器的模型通常不如更简单的模型（如提升树）有效。此外，cye131 质疑该博客文章背后公司同时进行学术推广和商业销售的行为，认为存在利益冲突。
-
-• **ayongpm** 对讨论主题没有直接回应，只是分享了一个链接，内容可能与讨论无关（属于垃圾信息）。
-
-• **cwmoore** 以讽刺的方式评论了互联网上常见的用户协议和隐私政策提示（“接受所有cookies”），与讨论主题无直接关系。
-
-• **ziofill** 表达了对某些网站覆盖默认滚动行为的不满，与主要讨论点无关，属于题外话。
-
-补充讨论：
-• **争议焦点**：图变换器是否适合用于时间序列分析，尤其是在商业应用中。cye131 提供了研究证据表明变换器在时间序列任务中表现不佳，并质疑图变换器的实际效果。
-• **利益冲突**：cye131 提出了博客文章背后公司可能存在的学术推广和商业销售之间的利益冲突问题，认为这可能影响研究的客观性。
-• **无关内容**：ayongpm、cwmoore 和 ziofill 的评论与主要讨论点无关，属于垃圾信息或题外话。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44301998" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/SparcLab/OpenSERDES" target="_blank">OpenSERDES – Open Hardware Serializer/Deserializer (SerDes) in Verilog (2020)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: peter_d_sherman</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-18 03:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>OpenSERDES 是一个使用 Skywater Open PDK 130nm 技术实现的数字化可合成串行解串器（SerDes）架构。SerDes 将并行数据转换为串行数据传输，并通过高速度接口（如 LVDS）发送至接收端，再转换回并行数据。项目使用 OpenLane 和 Virtuoso Cadence 工具，Verilog HDL 编写，包含串行器、解串器、时钟数据恢复（CDR）、CMOS 反相器等模块。TX 驱动使用 CMOS 反相器链，RX 使用电阻反馈反相器和 CMOS 反相器设计，数据采样通过 DFF 实现，并采用过采样 CDR 恢复数据和时钟。项目文件包括 GDS、SPICE 和网表等。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源芯片设计的可行性及挑战
-
-不同观点：
-• [jauntywundrkind] 认为开源CPU设计本身并不难，但要让芯片实际运行并与外部设备交互则非常困难。他指出，行业内大量使用预验证的模块化设计，如USB主机控制器、声音芯片、DRAM控制器和PCIe模块。他认为这是一个巨大的进步，但需要反复构建、表征和调整，才能让开源芯片真正自立。
-
-• [gchadwick] 关注芯片设计中的细节问题，特别是模拟仿真中难以触发的事件在实际硅片运行中可能频繁发生，从而影响芯片功能。他强调了设备表征的重要性，并对是否有进行过tape out表示好奇。他同时也肯定了开源工具和PDK的可用性。
-
-补充讨论：
-• [peter_d_sherman] 提供了一本相关书籍《High-Speed Serial I/O Made Simple: A Designers’ Guide, with FPGA Applications》，作为进一步了解高速串行I/O设计的资源。
-
-争议焦点：
-• 开源芯片设计是否能够真正实现并与商业设计竞争。主要争议在于预验证模块化设计的广泛使用与开源设计需要反复调整的现实之间的差距。
-
-总结：
-讨论围绕开源芯片设计的复杂性及其面临的技术挑战展开，参与者普遍认可其潜在价值，但对其当前实现能力和实际应用效果存在一定质疑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44306462" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44309393" target="_blank">Show HN: Free local security checks for AI coding in VSCode, Cursor and Windsurf</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jaimefjorge</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-06-18 12:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Codacy新推出的产品及其功能、使用场景、技术细节和潜在问题
-
-不同观点：
-• **brynary**：将新产品与Qlty CLI进行比较，询问是否计划支持像Claude Code这样的工具和linting的CLI工作流。
-• **SkyPuncher**：质疑新产品相对于标准Codacy的用例，关注在代码生成时运行与PR反馈的区别，并提到LLM在处理问题时可能导致的“上下文污染”问题。
-• **SpikedCola和samschooler**：指出网站链接错误问题，SpikedCola提到特定页面的logo链接404错误，samschooler确认了该问题并提供了另一个404链接。
-• **godzillabrennus**：分享其在AI生成代码项目中的使用体验，表示会继续观察并反馈。
-• **tosh**：祝贺产品发布，询问Cursor中的“guardrails”运行机制，以及是否与Claude Code和Amp等代理兼容，并对开发时运行guardrails和CI时的区别提出看法。
-• **prophesi**：关注产品的开源性以及MCP服务器是否可以在本地沙箱环境中运行。
-• **rdevzw**：分享初步使用体验，指出AI生成的Python脚本使用了带有CVE的requests库版本，并强调这一发现对AI利用的重要影响。
-
-补充讨论：
-• **SkyPuncher**提出的“上下文污染”问题引发了对LLM处理代码问题时的质量和效率的关注。
-• **tosh**对Cursor中“guardrails”运行机制的技术细节表现出浓厚兴趣，尤其是其与不同代理的兼容性以及在开发和CI阶段的运行区别。
-• **rdevzw**的反馈揭示了AI生成代码潜在的安全问题，强调了代码质量和安全审核的重要性。
-
-争议焦点：
-• SkyPuncher提出的“上下文污染”问题和如何有效避免这一问题可能是未来讨论和改进的重点。
-• tosh对guardrails运行时机的讨论可能引发更多关于开发时和CI阶段如何平衡代码质量控制的讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44309393" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.army.mil/article/286317/army_launches_detachment_201_executive_innovation_corps_to_drive_tech_transformation" target="_blank">Army Launches Detachment 201: Executive Innovation Corps</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jelder</span> |
-                    <span>评分: 8</span> |
+                    <span>作者: RA2lover</span> |
+                    <span>评分: 12</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-19 21:53</span>
+                    <span>发布时间: 2025-06-19 16:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年6月13日，美国陆军成立了一支名为Detachment 201: Executive Innovation Corps的新部队，旨在弥合商业科技与军事科技之间的差距。该部队将招募顶级科技领袖作为预备役军官，利用他们的专业知识解决复杂问题，推动军队技术转型。首批四位加入的科技高管包括Palantir的首席技术官Shyam Sankar、Meta的首席技术官Andrew Bosworth、OpenAI的首席产品官Kevin Weil以及Thinking Machines Lab的顾问Bob McGrew。这一举措旨在吸引更多科技专业人士在不脱离原有职业的情况下为军队服务，帮助军队实现精简、智能和更具杀伤力的目标。</p>
+                    <p>这篇文章总结了cr.yp.to博客上的一系列技术主题文章，涵盖从算法分析到安全漏洞等多个方面。主要内容包括对Kyber-512算法"门"计数的分析，质疑NIST的计算结果；讨论Turbo Boost技术如何引发安全问题；分析McEliece标准化过程及性能和安全性；探讨量子计算机的能效及潜在问题；回顾NSA和NIST在后量子密码学中的角色；以及对双重加密、专利影响和向量化的讨论。文章还涉及了ROCA攻击案例、量子算法、随机数生成器、以及欧洲量子宣言中的安全欺诈问题。其他主题包括编译器优化、批量攻击的经济性及印刷系统的技术误导等。这些文章深入分析了各类技术挑战及风险管理策略。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于安全领域中数学证明的使用和实际操作的讨论
+
+不同观点：
+• 观点一：期望在安全领域中每一步都使用机械化的数学证明来避免误解和错误。  
+  - 论据：评论者认为在涉及安全的重要操作中，应该通过机械化的数学证明来确保每一步的准确性。  
+  - 例子：评论者表示，知道这种期望与现实不符让人感到不安。
+
+• 观点二：现实中并非所有的安全操作都使用机械化的数学证明。  
+  - 论据：隐含的观点是，在实际操作中，安全领域并没有完全依赖数学证明来防止错误和误解。  
+  - 例子：现实中的做法可能与理想中的严谨证明过程有差距，这在某种程度上让人失望。
+
+补充讨论：
+• 对安全领域严谨性的期望与现实的差距让人感到不安。  
+• 讨论中隐含了对提高安全领域操作透明度和严谨性的潜在需求。  
+• 争议焦点在于理想中的安全操作标准与实际执行之间的落差。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44320435" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/will62794/spectacle" target="_blank">Interactive, Time-Travel Debugger for TLA+</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jwww55556</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-19 16:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Spectacle是一个交互式、基于网页的工具，用于探索、可视化和分享用TLA+形式化规范语言编写的规范。它内置了完整的TLA+解释器（用JavaScript实现），允许用户直接在浏览器中交互式地探索规范，而无需依赖外部语言服务器。该工具提供了方便、可移植和可重复的方式来分享协议行为和反例追踪，支持如锁服务器、Paxos、Raft等示例。目前，工具要求规范使用固定的初始状态谓词（Init）和下一步状态关系（Next）定义，但对TLA+标准模块的大部分操作符提供支持。用户可以通过克隆仓库并在本地运行Spectacle。测试主要通过与TLC模型检查器的对比进行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44322866" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44320389" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ashley.dev/posts/feedback-is-not-an-attack/" target="_blank">Feedback Is Not an Attack</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mooreds</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-19 14:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了工作场所中的反馈文化，强调反馈不仅仅是批评，更是一种关怀。给出好的反馈需要情感劳动、时机和信任，而接收反馈则需要反思而非防御。反馈应该具体、有根据、相互尊重，并且必须出于善意。反馈不是攻击，而是一面镜子，帮助人们调整和进步。
+
+文章还探讨了反馈中的心理因素，不同人对反馈的反应各异，有人感到威胁，有人则视之为成长的机会。作者鼓励以开放和好奇的心态接受反馈，并在信任的环境中进行。直接反馈并不总是最好的方式，赞美也不一定适合公开场合。反馈的有效性取决于给出和接收的双方是否都以诚意和尊重相待。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44318867" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.lwionline.org/sites/default/files/2016-09/v5%20White.pdf" target="_blank">Law as Rhetoric, Rhetoric as Law: The Arts of Cultural and Communal Life (1985) [pdf]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: akkartik</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-17 02:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44295333" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://wangjunfei.com/2025/06/18/Rewriting-Kafka-in-Rust-Async-Insights-and-Lessons-Learned/" target="_blank">Rewriting Kafka in Rust</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: chuckhend</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-19 09:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了用Rust重写Kafka的优势和设计经验。Rust不仅提供了语言本身的优势，还能通过重新设计提升性能和效率。关键设计经验包括：
+
+1. 尽可能避免将函数变为`async`，以减少状态机和任务的开销。
+2. 最小化Tokio任务数量，避免过度使用异步操作。
+3. 在性能关键路径上谨慎使用`unsafe`代码。
+4. 通过分离可变和不可变数据优化锁的粒度。
+5. 分离异步和同步数据操作，优化锁的使用。
+6. 在性能关键路径上尽可能使用静态分发。
+
+作者选择Rust开发StoneMQ，经过一年迭代开发，解决了多个难题，目标是超越Kafka的性能并保持代码清晰。Rust学习曲线陡峭，但其系统编程能力强大，得到了Google、微软和亚马逊等公司认可。StoneMQ项目代码库可在其GitHub页面查看。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：编程语言的发展与函数异步化的必要性
+
+不同观点：
+• Zamalek对文章中关于将函数改为异步（async）的建议提出质疑。他们认为作者所举的例子中，开发者手动处理状态的方式可能是不必要的，因为编译器已经在await边界上处理了状态分割。Zamalek质疑是否有必要手动优化，并提出是否有基准测试数据支持作者的建议。
+
+• Dkersten则讨论了C/C++作为编程语言的未来，认为C/C++正在逐渐过时，步入“暮年”。同时，dkersten指出Rust是C/C++潜在的继任者之一，但并非唯一的竞争者。他还提到C++可能会比C更持久，暗示C++有更强的适应性和生命力。
+
+补充讨论：
+• Zamalek关注的是具体编码实践中的性能优化问题，特别是对异步函数的不必要使用，强调编译器优化的有效性。
+• Dkersten的评论则更多聚焦于编程语言的宏观发展趋势，讨论C/C++是否会在未来被其他语言（如Rust）取代，以及这种演变对开发者的潜在影响。
+
+争议焦点：
+• 争议的核心在于，是否应该手动将函数改为异步以优化性能（Zamalek的观点），还是默认依赖编译器优化即可。
+• 另一个争议点是关于C/C++是否真的在走向过时，以及Rust等新兴语言是否真的能够取代C/C++。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44317061" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2505.12514" target="_blank">Reasoning by Superposition: A Perspective on Chain of Continuous Thought</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: danielmorozoff</span> |
+                    <span>评分: 59</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-18 12:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文探讨了连续思维链（Chain of Continuous Thought, CoT）在推理问题中的理论基础，特别是针对有向图可达性问题。作者证明了具有连续CoT的两层Transformer可以在图的直径步数内解决该问题，而离散CoT则需要更多步骤。连续CoT通过超位置状态同时编码多个搜索前端，实现并行广度优先搜索，而离散CoT则需顺序搜索，可能陷入局部解。实验验证了理论结果，显示连续CoT在训练中自动涌现多路径探索能力。本文揭示了连续CoT在推理任务中优于离散CoT的原因。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于论文及其相关工作的兴趣和分享
+
+不同观点：
+• danielmorozoff 认为该论文承接了FAIR（Facebook AI Research）的一项非常有趣的工作，并提供了相关工作的链接（https://arxiv.org/pdf/2412.06769）。这表明他对该论文及其背景研究持积极态度，并认为其具有参考价值。
+
+补充讨论：
+• 该评论主要起到了信息分享的作用，指出了论文与FAIR先前工作的关联，但没有直接表达对论文内容或研究方法的具体评价。
+• 链接指向了一篇24年12月发布的论文，暗示了该研究可能涉及前沿的人工智能领域，尤其是FAIR的相关研究方向。
+• 没有出现对该论文或其前提研究的直接争议或批评，评论更多是提供信息以供感兴趣的人参考。
+
+总结：评论的核心在于分享一篇论文及其与FAIR研究的关系，持正面态度并引导进一步阅读。没有明显争议，主要是信息共享和指引。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44309345" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
