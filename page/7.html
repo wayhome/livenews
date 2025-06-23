@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-23 17:17 (北京时间)
+            最后更新时间: 2025-06-23 20:28 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,70 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2506.15674" target="_blank">Companies should be liable for the serious privacy concerns of LLMs</a>
+                    <a href="https://tgmatos.github.io/allocators-are-for-monkeys-with-typewriters/" target="_blank">I was surprised by how simple an allocator is</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mrharoon</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-23 06:41</span>
+                    <span>作者: gilgamesh3</span> |
+                    <span>评分: 89</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-06-19 06:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了大型推理模型在作为个人代理时存在的隐私泄露问题，特别是推理痕迹中可能包含敏感用户数据。尽管这些痕迹通常被认为是内部且安全的，但研究表明，通过提示注入或意外泄露，敏感信息可能被提取。增加推理步骤虽提升了模型回答的准确性，但也增加了隐私泄露的风险。文章强调，安全措施需涵盖模型的内部思考过程，而不仅限于其输出结果。</p>
+                    <p>本文介绍了编写内存分配器的基础知识，并以简单的分配器实现为例，特别提到了伙伴系统（Buddy System）。文章首先指出开发者希望在mimalloc中预分配内存的需求，并通过自行实现一个简单的内存分配器来解决该问题。作者解释了内存分配器的作用，包括内存的分配、重新分配和释放，并讨论了内存碎片化问题，包括内部和外部碎片化。伙伴系统作为一种简单可靠的分配技术被详细介绍，其通过递归地将内存块一分为二来满足分配请求。分配和释放内存的操作都相对直接，主要是分裂和合并内存块。最终，作者对其简单实现感到惊讶，并计划将其用于mimalloc的预分配内存功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：内存分配器的设计与使用在不同系统中的重要性及其实现难度
+
+不同观点：
+• [b0a04gl] 认为内存分配器的选择对系统性能至关重要，特别是在像Unity和嵌入式系统中，选择不当可能导致帧丢失或严重bug。不同的场景（如实时系统、基础设施）需要不同的分配策略，通用分配器无法满足所有需求。Rust中的分配抽象主要是为了处理内存生命周期和所有权问题，且如`Bumpalo`这样的分配器在特定场景下非常有用。
+• [romesmoke] 指出，分配器的设计，尤其是策略和政策部分，非常复杂。尽管编写一个简单的分配器不难，但设计一个在各种情况下都能高效运行的分配器非常具有挑战性。特别是面对不确定的对象大小和生命周期时，分配器可能表现不佳。因此，通用解决方案在实践中往往不够理想。
+• [wavemode] 对原文试图传达的观点（编写分配器不难）表示怀疑，认为虽然像mimalloc这样的分配器代码量不大，但这并不能充分证明编写一个好的分配器是容易的。
+• [GuB-42] 认为编写一个基础的分配器不难，但编写一个好的分配器则需要丰富的实际系统知识和经验。
+• [the__alchemist] 分享了在嵌入式Rust项目中不使用分配器而遭遇内存不足的问题，指出大多数流行的protobuf库和ESP都依赖分配器，而使用无分配器的方案（如Heapless）可能导致内存紧张。
+• [jasonthorsness] 主张应用更多专用内存分配器，因为针对特定使用模式设计分配器可以简化内存管理，特别是在使用模式可预测的情况下。然而，在高层次语言中实现这一点非常困难。
+• [AndyKelley] 提供了一个简短的线程安全分配器示例，展示了编写一个简单的分配器是可行的。
+• [notepad0x90] 关注内存管理内核子系统的复杂性，特别是关于固定页面大小的使用，并提问是否存在不使用固定页面大小的简单内存管理方案。
+• [userbinator] 赞同分配器可以很简单，并指出一个基础的first-fit分配器可以非常短小高效，利用空闲空间存储元数据也是一种简单有效的优化。
+
+补充讨论：
+• 争议焦点之一是编写一个好的内存分配器是否困难。虽然基础分配器的实现不难，但设计一个能在各种实际场景中高效运行的分配器需要深厚的专业知识和经验。
+• 另一个值得注意的点是专用分配器和通用分配器之间的对比，专用分配器在特定场景下表现更好，而通用分配器则难以应对所有情况。
+• 讨论中还涉及了内存管理内核子系统的设计，特别是关于动态页面大小的可行性和复杂性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44315968" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://urpal.com.au/" target="_blank">Show HN: Urpal – An AI-powered productivity canvas for file notes and tasks</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lovetobuild</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-23 03:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44353071" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44352307" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,69 +164,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://semianalysis.com/2025/06/23/nvidia-tensor-core-evolution-from-volta-to-blackwell/" target="_blank">Nvidia Tensor Core Evolution: From Volta to Blackwell</a>
+                    <a href="https://longreads.com/2025/06/12/blm-land-enduring-wild-josh-jackson/" target="_blank">There's Gold in the Hills</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pella</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-23 06:55</span>
+                    <span>作者: gmays</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-19 12:33</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章详细介绍了NVIDIA Tensor Core从Volta到Blackwell的演变过程。文章首先讨论了性能工程的基本原则，包括Amdahl定律、强扩展与弱扩展，以及数据移动对性能的影响。接着，文章回顾了Tensor Core的架构演变，从Volta首次引入Tensor Core到Turing、Ampere、Hopper，以及最新的Blackwell架构。每一代Tensor Core都在异步执行、内存加速、数据类型精度和MMA指令等方面进行了改进。文章强调了Tensor Core对AI和深度学习性能提升的关键作用，并指出随着GPU架构和编程模型的快速演变，理解这些变化对研究人员和工程师越来越具挑战性。文章最后感谢了多位合作者的贡献，并表示希望为读者提供对NVIDIA GPU架构演变的深入理解。</p>
+                    <p>本文是Josh Jackson所著《The Enduring Wild: A Journey into California’s Public Lands》的节选，介绍了美国土地管理局（BLM）管理的2.45亿英亩公共土地的历史与现状。这些土地虽然为公众所有，但其历史涉及对原住民的掠夺和暴力。BLM土地曾被认为不适合开发或无利可图，导致其长期遭受过度放牧和资源开采的破坏。目前，这些公共土地面临预算削减和出售的风险。作者希望通过亲身探访，讲述这些“剩余土地”的故事，让公众更加了解和珍惜这些资源。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44353146" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theguardian.com/film/2025/jun/22/lauren-greenfield-social-studies-documentary-film-adolescence-teenagers-phones" target="_blank">What I learned recording hours of teens on their phones</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sandebert</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-23 04:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>纪录片制作人劳伦·格林菲尔德通过拍摄25名青少年的线上和线下生活，揭示了一个充满性暗示图片、强奸文化、霸凌和自杀倾向的世界。她的五集系列《Social Studies》展示了这一代社交媒体原住民的生活，捕捉到青少年偷偷外出、发布露骨图片、经历网络霸凌和自杀念头等现象。该系列有望获得艾美奖。格林菲尔德最初在洛杉矶的高中进行了200多次小型采访，最终选定了25名青少年，他们同意分享屏幕录制，使她能够实时了解他们的在线生活。这一项目不仅让她作为家长的观念发生了变化，也使她更加关注青少年面临的不安全环境，呼吁社会采取行动。格林菲尔德表示，拍摄这个系列让她意识到需要提高 awareness，并推动集体行动。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：现代社会中父母应如何控制孩子接触手机和社交媒体
+                    <div class="comments-summary">主要讨论点：对公共土地的历史所有权和当前政策提案的看法
 
 不同观点：
-• 观点一：支持严格限制孩子使用手机和社交媒体。  
-  - 论据：现代社会中手机和社交媒体对孩子的注意力和心理健康有负面影响，类似于香烟对健康的危害。  
-  - 例子：延迟接触手机和社交媒体可以让孩子保持更长的注意力 span，从而在同龄人中具备优势。  
-  - 观点延伸：父母应该以身作则，避免在孩子面前使用手机。
+• JKCalhoun认为当前美国提议出售公共土地给富人并非巧合，暗示这一行为与历史上的不公正土地掠夺存在关联。其论据是，历史上土地从原住民手中被夺走，而现在再次面临出售给富人的风险，可能继续损害公共利益。
 
-• 观点二：完全禁止或延迟使用手机和社交媒体可能导致孩子与同龄人脱节。  
-  - 论据：在现代社会中，手机和社交媒体是重要的社交工具，完全避免使用可能导致孩子在社交方面遇到困难。  
-  - 例子：孩子可能会因为无法参与同龄人之间的在线交流而感到孤立，影响社交能力的发展。
+• sQL_inject反对将所有原住民浪漫化为和平的自然守护者，指出这种叙述并不准确。他以科曼奇族为例，认为该部落曾进行过残酷的掠夺和奴役行为，并非出于高尚的环保理念来管理土地。其论据基于历史事实，指出科曼奇族通过暴力控制了大量土地，且没有私有财产的概念。
 
 补充讨论：
-• 技术对孩子成长的双刃剑效应：一方面，手机和社交媒体可能对孩子的注意力和心理健康产生负面影响；另一方面，它们也是重要的学习和社交工具。  
-• 争议焦点：严格限制孩子使用手机和社交媒体是否会对孩子的社交能力造成负面影响，还是能够真正保护他们的注意力和心理健康。  
-• 平衡策略：一些评论可能会讨论寻找平衡的方法，例如设定合理的使用时间、筛选有益的内容，而不是完全禁止。</div>
+• 争议的焦点在于原住民的历史角色以及如何看待他们过去对土地的管理。JKCalhoun隐含了对原住民作为土地原初守护者的认同，而sQL_inject则挑战了这种理想化的看法，提供了具体的反例。
+
+• sQL_inject引用了《Empire of the Summer Moon》一书，试图通过历史叙述来支持其对科曼奇族的看法，表明某些原住民部落也曾通过暴力手段扩展领土，而非出于环保或和平的目的。
+
+• 讨论还涉及到对土地所有权概念的理解，sQL_inject指出科曼奇族没有私有财产的概念，这与现代土地出售的概念形成对比。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44352496" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44318050" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -192,31 +205,242 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://apenwarr.ca/log/20110228" target="_blank">Insufficiently known POSIX shell features (2011)</a>
+                    <a href="https://henryhmko.github.io/posts/tpu/tpu.html" target="_blank">TPU Deep Dive</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: thunderbong</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-23 03:35</span>
+                    <span>作者: transpute</span> |
+                    <span>评分: 380</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-06-22 02:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一些常被忽视的POSIX shell功能，强调了这些功能在编写可移植脚本时的优势，并避免依赖bash特有的特性。主要内容包括：
+                    <p>本文简要介绍了谷歌TPU（Tensor Processing Units）的设计理念和内部结构，强调其可扩展性、高吞吐量和能效。TPU是谷歌为满足人工智能计算需求而开发的专用集成电路（ASIC），特别擅长处理大规模矩阵乘法和神经网络计算。TPU的强大性能得益于硬件（如能量效率和模块化设计）和软件（如XLA编译器）的协同设计。
 
-1. **去除前缀和后缀**：使用`${SRC%.c}.o`语法可以方便地将`.c`文件名转换为`.o`，比`basename`和`dirname`命令更高效，因为它们不会创建新进程。还介绍了使用`#`和`%`进行字符串操作的技巧。
+TPU的单芯片包含两个TensorCore，每个TensorCore具有共享内存和专门的计算单元，如矩阵乘法单元（MXU）、向量单元（VPU）等。TPU采用脉动阵列设计，通过流水线技术实现高吞吐量，特别适合矩阵乘法和卷积操作。然而，脉动阵列对稀疏矩阵的处理效率较低。
 
-2. **变量的默认值**：讨论了在变量未赋值或为空时，如何使用不同的替换语法提供默认值。例如，使用`${a:-1}`可以在变量未设置时使用默认值，而`${a:=1}`则会同时赋值。建议使用`:=`以确保默认值只在顶部定义一次。
+相较于GPU，TPU拥有更大的片上内存和更少的计算核心，但通过优化设计实现了极高的计算效率。例如，TPUv5p单芯片可达500 TFLOPs/秒，而TPUv7整个计算单元可达42.5 ExaFLOPs/秒。
 
-这些技巧有助于编写更高效、可移植性更强的shell脚本。</p>
+总体而言，TPU通过独特的设计选择，在处理AI任务上展现了出色的性能和能效。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：TPU与其它芯片的竞争、技术细节、商业策略及其它相关讨论
+
+不同观点：
+• lanthissa认为TPU是Nvidia芯片的强劲竞争对手，但对谷歌不销售TPU表示困惑，质疑其市场策略，并提出如果TPU真的那么好，销售它们可能也是一个好的商业机会。
+• Neywiny提到未讨论到FPGA的比较，指出FPGA可以实现无内存、缓存、解码等开销的全流水线系统，并强调其独立工作能力，例如240个DSP切片可作为240个核心使用。
+• RossBencina关注TPU适用于哪些算法，询问诸如矩阵分解、SVD、矩阵指数、线性方程求解等算法是否适合TPU。
+• mdaniel分享了一个关于OpenTPU的链接，提到一个开源的TPU重新实现。
+• serf对TPU冷却系统中的NEMA步进电机表示惊讶，认为这可能是过度设计。
+• wkat4242幽默地提到最初以为讨论的是3D打印材料，指出TPUs在3D打印中的难度。
+• trostaft对文章表示赞赏，认为其益处部分很有启发性。
+• b0a04gl强调TPU在规模化情况下的可预测延迟，指出谷歌通过控制编译器、运行时、互连和芯片消除了很多变异性，并质疑为何其他人没有复制这种垂直整合栈。
+• almostgotcaught解释了TPU与GPU在缓存和内存管理上的区别，指出TPU没有MMU，并且是推送架构而非拉取架构。
+• sgt101请求用简单易懂的方式解释GPU和TPU优化如何影响LLM的确定性。
+• frays对非谷歌员工如何获得如此多的TPU知识表示好奇。
+• cdg007提出竞争对手会如何看待这个问题。
+• ariwilsون简单地对文章表示赞赏。
+
+补充讨论：
+- 对TPU技术细节的深入探讨，包括其架构优势和适用算法。
+- 关于TPU商业策略的讨论，特别是谷歌不销售TPU的原因。
+- 对OpenTPU项目的提及，显示了对开源硬件实现的兴趣。
+- 对冷却系统等硬件设计的具体技术细节的关注。
+- 关于知识获取来源的轻松提问，显示了对专业知识的兴趣。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44352258" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44342977" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://aeon.co/essays/how-french-merveilleux-scientifique-fiction-reframed-reality" target="_blank">French 'merveilleux-scientifique' fiction reframed reality</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-21 16:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Le docteur Lerne, sous-dieu》是莫里斯·雷纳德于1908年创作的一部著名小说，讲述主人公尼古拉斯发现他的叔叔——科学家兼外科医生弗雷德里克·莱尔恩博士——实际上是个冒名顶替者，其助手通过脑移植窃取了真实叔叔的身体。莱尔恩一直在进行可怕的科学实验，包括将动植物怪异地嫁接在一起，甚至试图将尼古拉斯的意识移植到公牛体内。这部小说开创了“科学奇妙”（merveilleux-scientifique） genre，强调在科学合理性基础上进行大胆设想，与儒勒·凡尔纳的传统科幻不同。该 genre 探索科学与伪科学之间的界限，反映了20世纪初欧洲的科学文化背景，并对科学 fiction 的历史提出了新的解读视角。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于H.G. Wells的出现以及《The Encyclopedia of Science Fiction》的推荐和使用
+
+不同观点：
+• [sherr]认为H.G. Wells的出现让讨论变得有趣，表明了对H.G. Wells相关内容的关注和兴趣。
+• [sherr]推荐了《The Encyclopedia of Science Fiction》这本书，特别是提到它以前是厚书，现在可以在线查阅，显示了对资源形式变化的关注。
+• [sherr]特别提到该百科全书包含关于Maurice Renard的条目，表明对特定科幻作家信息的重视。
+• [sherr]表达了对非英语作品翻译质量的担忧，暗示了对不同语言文学作品在翻译过程中可能失去原意的关切。
+
+补充讨论：
+• 评论中提到了对科幻文学有广泛兴趣的读者可能会对《The Encyclopedia of Science Fiction》感兴趣，强调了其作为参考资料的价值。
+• 在线百科全书的出现替代了原来的厚书形式，反映了科技和互联网对知识传播方式的影响。
+• 对翻译质量的担忧可能引发关于如何确保不同语言文学作品在翻译中保持原汁原味的进一步讨论，尤其是在科幻文学这种充满想象力的文类中。
+
+争议焦点：
+• 主要争议在于非英语作品的翻译质量问题，这涉及到文化交流中如何准确传达原著思想和风格的挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44338976" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://hackers.pub/@hongminhee/2025/logtape-for-libraries" target="_blank">If you're building a JavaScript library and need logging, you would love LogTape</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dahlia</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-23 02:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了在构建JavaScript库时处理日志记录的挑战，以及一个名为LogTape的解决方案。当前的主要方法包括使用debug包、自定义日志系统、应用聚焦的日志库（如winston、Pino）、不记录日志以及依赖注入。这些方法各有优缺点，但都未能完全解决在不强加用户选择的情况下提供有价值的诊断功能的核心问题。LogTape通过“库优先设计”来应对这些挑战，其核心原则是：如果未配置日志记录，则什么都不发生。这样，库的日志记录功能是可选的，用户可以根据需要选择启用，并且所有使用LogTape的库可以通过统一的配置系统进行管理，从而实现一致的日志格式和输出目标。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：用户对大语言模型（LLM）输出风格的看法和感受
+
+不同观点：
+• [消极观点] insin 表示非常厌恶LLM的“语气”，特别是Gemini Pro从展示完整的“推理”输出转变为使用过于简化、看似可爱的标题和摘要。他认为这种变化令人难以忍受，尤其是对于那些希望看到详细推理过程的用户来说，这种调整削弱了信息的价值和深度。
+
+• [支持观点] jonathankoren 支持 insin 的观点，认为这种风格转变可能是为了迎合那些不需要深入理解、只需要快速获取信息的用户，但对于需要详细推理和分析的专业用户来说，这种改变非常不利。他还提到，这种“可爱化”的语气给人一种不专业的感觉，降低了内容的严肃性和可信度。
+
+• [中立/分析观点] SomeGuyOnTheInternet 指出，LLM的输出风格转变可能是出于商业化考虑，试图吸引更广泛的用户群体，尤其是在消费级市场中。但他同时承认，这种改变确实可能让那些依赖详细推理的专业用户感到不满。
+
+补充讨论：
+• 争议焦点在于LLM输出风格的改变是否适合所有用户群体。一方面，简化的标题和摘要可能更适合快速阅读和一般用户；另一方面，这种改变可能损害需要详细推理和分析的专业用户的使用体验。
+• 另一个值得注意的点是，LLM的这种“可爱化”语气可能影响内容的可信度和专业性，进而影响用户对LLM的整体评价和使用意愿。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44351881" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/EmenstaNougat/ESP32-BlueJammer" target="_blank">Bluetooth Jammer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: yeknoda</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-06-22 21:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>ESP32-BlueJammer是一个基于ESP32和nRF24模块的干扰设备，能够干扰2.4GHz频段的通信，包括蓝牙、BLE、WiFi、遥控无人机等。它通过产生噪声和发送不必要的包来中断设备间的通信，适用于安全测试和受控干扰。设备有效范围超过30米，可使用更大天线或放大器增强信号。注意，干扰通信在许多地方是违法的，该项目仅用于教育目的。使用时需准备ESP32开发模块、两个nRF24L01+PA+LNA模块等硬件，并通过按键切换不同干扰模式，OLED显示当前通道，状态LED指示当前干扰类型。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：RF干扰设备的合法性与使用场景
+
+不同观点：
+• [InTheBarn] 认为这类项目通常以“教育目的”为名，实际上用户是在通过违法行为了解法律后果，比如被抓后适用的法律和罚款。
+• [amatecha] 表示支持使用RF干扰设备，尤其是在自然环境中遇到有人大声播放音乐时，认为这种干扰是合理的反击，因为自己不想在自然环境中被迫听别人的音乐。
+• [pixelpoet] 对[amatecha]的评论语气进行了调侃，指出其评论风格较为激动，但没有深入讨论核心问题。
+• [Havoc] 关注RF干扰设备是否会影响WiFi，暗示该设备可能带来更广泛的干扰问题。
+• [mfkp] 提出RF干扰设备在防止蓝牙信标跟踪（如在超市中）方面可能有实际用途，或者建议通过其他方式（如现金支付）保护隐私。
+• [wtcactus] 认为在某些国家尽管此类设备非法，但相关法律执行不力，因此考虑自制干扰设备在特定场合使用（如在海滩）。
+• [BonoboIO] 认为这种设备是解决公共场合蓝牙音箱噪音问题的“暴力”解决方案。
+• [lgleason] 明确指出在大多数国家此类设备是非法的，暗示讨论的设备不应被随意使用。
+
+补充讨论：
+• 争议的焦点在于RF干扰设备的合法性与道德性。一些评论者支持其在特定场景下的使用（如自然环境中的噪音问题），而另一些评论者指出其在法律上的明确禁止，并提醒可能带来的广泛干扰问题。
+• 另一个讨论点是个人隐私与公共利益的平衡。例如，[mfkp]提到使用干扰设备可以防止蓝牙信标对购物习惯的跟踪，但这种做法也可能影响其他合法设备的运行。
+• 评论中还涉及法律执行不力的问题，如[wtcactus]提到的某些国家即使有法律禁止，但实际执法不严，这可能促使个人自行制作干扰设备。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44350448" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://leetsys.dev" target="_blank">LeetCode for System Design</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbajp</span> |
+                    <span>评分: 69</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-23 04:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：用户对LeetSys平台的体验和功能反馈
+
+不同观点：
+• **隐私和服务条款问题**：
+  ◦ [nelsonfigueroa] 提到平台没有提供服务条款和隐私政策链接，且必须通过Google登录。
+  ◦ [captainzidgel] 也指出，虽然提到同意条款，但没有提供实际的条款链接。
+
+• **技术问题**：
+  ◦ [flare_blitz] 提到遇到“No response from Gemini”错误，且在首次使用时就被提示使用完免费面试机会，要求升级到高级版。
+  ◦ [jedberg] 同样遇到了“no response from gemini”的问题，无法正常使用。
+
+• **使用门槛**：
+  ◦ [dsab] 表示由于没有Google账号，导致无法使用该平台。
+
+• **营销和实际效果争议**：
+  ◦ [nelsonfigueroa] 质疑平台宣传语中的“受工程师信任”是否属实，尤其是考虑到平台较新。
+  ◦ [fermentation] 担心平台会促使招聘经理增加更多不合理的系统设计问题。
+
+• **平台独特性**：
+  ◦ [eranation] 质疑LeetSys与使用OpenAI API生成系统设计面试问题的区别，认为其缺乏独特性。
+
+• **面试过程的争议**：
+  ◦ [tayo42] 表达了对软件工程师面试过程的不满，认为这种面试越来越脱离实际工作需求，变成了一种遵循特定规则和使用特定术语的游戏。
+
+• **平台质量质疑**：
+  ◦ [low_tech_punk] 认为项目本身展示了AI系统设计可能出错的情况，暗示平台质量不高。
+  ◦ [dartharva] 甚至打赌说该网站是AI生成的，质疑其质量。
+
+补充讨论：
+• [rbajp] 提供了替代方案，建议用户在遇到语音模式问题时可以切换到聊天模式。
+
+争议焦点：
+• 平台的技术问题和服务条款透明度是主要争议点。
+• 面试过程是否合理和LeetSys的独特性也是讨论中的争议焦点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44352430" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -260,210 +484,6 @@
 • 不同语言在类型系统建模中的优劣成为讨论中的一个隐含主题，特别是Python的灵活性与传统静态类型语言的对比。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44307667" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://apps.apple.com/us/app/lungy-breathing-exercises/id1545223887" target="_blank">Show HN: I'm a doctor and built a responsive breathing app for anxiety and sleep</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lukko</span> |
-                    <span>评分: 79</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-06-22 09:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Lungy是一款由医生开发的呼吸应用，通过识别和回应用户的呼吸来帮助他们感到更平静和放松。该应用已在40多个国家推广，拥有超过10万名用户，被誉为“最美的呼吸应用”。它提供独特的呼吸练习，无需网络连接，并支持个性化进度和反馈。免费版提供日常呼吸练习，而付费版Lungy Deluxe则提供全部练习、自定义和详细报告。最新版本集成了HealthKit，支持Apple Watch的健康指标。用户评价积极，认为其设计简洁美观，对睡眠和放松有帮助。隐私和数据安全也得到了保障。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕Lungy应用的功能、定价模式、技术实现及医疗效用的讨论
-
-不同观点：
-• [abcd_f] 对订阅制的质疑：质疑为何一个无服务器成本的应用要采用订阅模式，并对用户界面中的灰色状态表示困惑。
-• [tetha] 对哮喘发作支持功能的建议：分享了一次帮助他人应对哮喘发作的经历，建议应用增加对突发哮喘的支持，如呼吸技巧，并提供了一个关于呼吸练习的参考链接。
-• [spondylosaurus] 对Android版本的需求：表示对Android版本的期待，因为目前仅能在Apple App Store上使用。
-• [fao_] 对之前类似项目的失败表示遗憾：提到一个类似的项目两年前因技术问题而失败，但对当前项目表示欣慰。
-• [its-summertime] 对医疗效用的质疑及数据隐私的担忧：质疑应用基于的医学研究，并对应用收集数据用于广告表示反感。
-
-补充讨论：
-• [ChrisCinelli] 提到一个类似的应用，提供参考。
-• [subharmonicon] 分享了自己使用激励式肺活量计的经历，认为让呼吸练习更有趣是积极的。
-• [admiralrohan] 对V2版本中链接焦虑和压力的功能表示不解，并提到早期版本未提及此功能。
-• [zackify] 将Lungy与冥想应用“Waking Up”进行比较，询问两者差异。
-• [hinkley] 用“生物反馈”来描述Lungy的功能，并幽默地表达对技术名称变化的不满。
-• [biglung420] 对应用的积极使用体验，并提出增加憋气功能的建议。
-• [r0fl] 对应用早期版本的体验反馈：认为早期版本感觉有些花哨，但计划再次尝试。
-• [amelius] 询问应用是否正在等待FDA批准。
-• [prox] 对应用麦克风权限的要求表示不满，并询问新版本是否解决了此问题。
-• [mromanuk] 提到自己正在开发一个使用LLM和摄像头跟踪心率的冥想应用，计划加入呼吸跟踪功能。
-
-争议焦点：
-• 订阅模式的合理性：[abcd_f] 对无服务器成本应用的订阅模式表示质疑。
-• 应用的医疗效用：[its-summertime] 对应用的医学研究基础和数据隐私表示担忧，[tetha] 则基于个人经历建议增加哮喘支持功能。
-• 新功能的理解：[admiralrohan] 对V2版本新增的焦虑和压力链接功能表示不解。
-
-其他值得注意的讨论点：
-• 对Android版本的需求：[spondylosaurus] 和其他潜在Android用户表示期待。
-• 权限问题：[prox] 对应用权限要求表示不满，建议更灵活的设置选项。
-• 类似技术和竞争：多个评论提到与其他类似技术和应用的比较，如[ChrisCinelli] 和 [mromanuk]。
-
-这些观点和讨论展示了用户对Lungy应用的功能、定价、技术实现及医疗效用的多方面关注和建议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44345451" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.neowin.net/news/end-of-an-era-kubuntu-is-removing-default-support-for-x11-in-new-installs/" target="_blank">Kubuntu finally removes support for X11 in new installs</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bundie</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-23 00:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Kubuntu决定在即将发布的25.10版本中，对全新安装仅支持Wayland，放弃X11。这一变化反映了Linux开发者普遍认为Wayland是未来趋势，如Linux Mint正在改善Cinnamon对Wayland的支持。Kubuntu开发者希望提前做出改变，以避免在长期支持版26.04中引发更多问题。他们认为维护X11代码阻碍了安全性和新功能的进展，且同时支持两个显示服务器任务繁重。不过，用户仍可通过安装plasma-session-x11来恢复X11会话。并非所有Ubuntu分支都跟进，Xubuntu等预计仍将提供X11选项。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对从X11环境迁移到Wayland的强制性举措的态度
-
-不同观点：
-• [反对迁移观点] DaSHacka认为，从X11迁移到Wayland是“强制性”的，并批评Wayland为“半成品解决方案”。该评论者显然对现有X11环境感到满意，且认为向Wayland的迁移是不成熟和被迫的，表现出对现有工作环境被改变的不满。
-   
-• [支持迁移观点] 此观点未在评论中直接呈现，但可以从反对者的言论中推测出可能存在支持迁移的群体。这类用户可能认为Wayland是未来趋势，具备技术优势（如更好的性能、安全性或对现代图形硬件的支持），并希望社区能够更快地过渡到这一新环境。
-
-补充讨论：
-• 争议焦点在于Wayland是否已经成熟到足以替代X11。DaSHacka明确表示Wayland仍是一个“半成品”，暗示其功能或稳定性可能存在问题，而支持者可能认为这些问题是过渡期正常的，长期来看Wayland会更加优越。
-
-• 另一个讨论点是用户选择的自由。反对者认为这种迁移并非用户自愿，而是被技术发展“逼迫”所致，反映出对技术决策过程中用户自主权受限的不满。
-
-• 例子方面，DaSHacka提到“用户不愿意从现有的X11环境切换”，这表明在实际使用中，X11仍然能够满足大多数用户需求，而Wayland的必要性或优势尚未被所有用户认可。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44351347" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44317242" target="_blank">Show HN: I'm building an app to replace Overleaf and Notion</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: WolfOliver</span> |
-                    <span>评分: 61</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-06-19 10:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：该应用的评价与潜在改进
-
-不同观点：
-• [MDWolinski] 认为该应用类似于 Notion 的替代品，但这些替代品通常忽略了 Notion 将数据库集成到文档中的独特功能。他还提到，如果 Notion 提供自托管版本，将会是一个杀手级功能。目前，他正在等待一个开源替代品出现。
-
-• [diziet] 关注 Notion 及其替代品在离线使用方面的不足，并询问该应用是否支持离线功能。
-
-• [roetlich] 提到了 Typst，并询问该应用与 Typst 的比较，暗示对不同工具间功能对比感兴趣。
-
-• [prezjordan] 对应用的文本编辑器表示关注，建议使用现成的文本编辑器以处理跨段选择和并发编辑问题，认为这样可以减少开发痛苦。
-
-• [blural] 对应用的名称不满意，并提出了几个替代名称建议，如 Tenet、Glossom 和 Meridian。
-
-• [rishabhdev2700] 对应用的界面表示赞赏，但对是否为一次性购买表示关注，担心存在隐藏的付费升级条款。
-
-• [johnecheck] 认为该应用不是他所期待的开源 Notion 或 Obsidian 竞争者，并指出应用在 Android Firefox 上的显示问题，附带了一个展示问题的链接。
-
-• [jkhdigital] 分享了自己作为博士生的使用体验，解释了为何需要创建类似的应用，列举了在研究过程中需要的多个功能，如收集和优先排序研究论文、跨阅读笔记整合想法、将笔记汇编成原创写作、以及无缝迁移到 LaTeX 文档等，并提到最终选择了 Obsidian。
-
-补充讨论：
-• 争议的焦点之一是应用的功能完整性和独特性，特别是与 Notion 等工具的对比，以及是否能真正替代 Notion。
-• 另一个值得注意的点是用户对开源和自托管版本的需求，反映了对数据控制和成本的关注。
-• 技术实现方面，如文本编辑器的选择和离线功能，也是讨论的重要内容。
-• 用户体验和界面设计，如应用名称和跨平台显示问题，也被提及并讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44317242" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://7goldfish.com/articles/Requiem_for_a_solar_plant.php" target="_blank">Requiem for a Solar Plant</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: akkartik</span> |
-                    <span>评分: 131</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-21 22:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《太阳能电厂挽歌》一文讲述了作者投资建设太阳能电厂项目从希望到破灭的过程。最初，作者希望通过将加密货币利润转化为可再生能源基础设施，以实现可持续回报和税收优惠。项目原计划容量为4.54MW，预计总成本约870万美元，但因互联研究报告显示容量需削减至3MW，且需支付近80万美元的线路升级费用，导致项目经济效益崩溃。尽管前期做了详尽分析，但因德州矿权问题、变电站距离过远及“噪音使用”等意外因素，项目无法继续。最终，作者无奈决定关闭项目，承受巨大经济损失。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：能源项目中的传输成本和相关问题，包括法律、经济、技术等多个层面的讨论。
-
-不同观点：
-• NAHWheatCracker描述了一个实际项目，旨在加速确定传输成本是否会破坏大型可再生能源项目的可行性。他指出，ISO（独立系统运营商）的分析过程缓慢，且数据保密，限制了市场竞争。他还对这种分析作为SaaS产品的市场潜力表示怀疑。
-• stego-tech将问题归因于美国体制的系统性失败，包括政府和公共事业公司在能源基础设施和商业环境上的不足，导致好的项目因繁文缛节而失败。
-• barnabyjones对文章中提到的税务建议和项目财务估算提出质疑，认为项目参与者过于关注经济利益，且对税务规划不透明。
-• stevenzzzzzzz补充了另一个实例，说明互联成本如何阻碍了多个能源项目的进展，特别是SPP（西南电力联营）区域的项目。
-• hackernudes简要总结了作者的经历，认为矿物权和互联费用是项目失败的主要原因。
-• nick238对德州的矿物权法律提出疑问，并讨论了通过购买矿物权来干扰竞争对手的可行性，同时引用了《Abundance》一书对德州建设环境的积极评价。
-• kragen赞扬了作者对美国反可再生能源监管制度的批评，认为文章本身比任何评论都更具说服力。
-• travisgriggs表达了对德州复杂法律和商业环境的失望，但承认德州仍有值得称道的地方，如Dr Pepper。
-• wglb认为文章与商业复杂性相关，强调了在项目启动过程中许多必要的小细节。
-• codingbot3000质疑美国在“营商便利度”排名中的高分，指出立法在财产和互联方面的模糊性和诉讼风险。
-• abetusk提出了一种“显而易见”的解决方案，即在城市附近建设新的太阳能发电设施，以避免传输基础设施的限制，并询问这一想法的可行性。
-• gwern质疑文章中引用的真实性，特别是对使用LLM（如ChatGPT）生成内容的怀疑，认为这可能影响文章的可信度。
-• pshirshov建议考虑将项目转向高能耗产业，如铝冶炼，而不是单纯放弃项目。
-• joeblubaugh批评了德州电网的私人盈利模式，认为这导致了不良的激励结构，并与加州的能源问题进行了比较。
-
-补充讨论：
-• 争议的焦点包括传输成本和矿物权的法律问题、税务规划的透明性以及文章内容的真实性。
-• 讨论中多次提到德州的法律和商业环境对大型能源项目的影响，包括矿物权、互联费用和电网稳定性。
-• 一些评论者对美国整体的监管和法律框架提出批评，认为其阻碍了可再生能源项目的发展。
-• 有评论者对技术解决方案（如SaaS产品和城市附近的太阳能设施）表示兴趣，但也对其市场潜力和可行性持怀疑态度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44341281" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
