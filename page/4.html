@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-26 02:20 (北京时间)
+            最后更新时间: 2025-06-26 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,42 +61,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://devblogs.microsoft.com/oldnewthing/20250625-01/?p=111308" target="_blank">Information has been permanently deleted, for small values of permanently</a>
+                    <a href="https://sigma-star.at/blog/2025/06/deep-down-the-rabbit-hole-bash-overlayfs-and-a-30-year-old-surprise/" target="_blank">Deep Down the Rabbit Hole: Bash, OverlayFS, and a 30-Year-Old Surprise</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Tomte</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-06-25 15:29</span>
+                    <span>作者: Deeg9rie9usi</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-06-25 13:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文讲述了一次涉及Bash、OverlayFS及30年前遗留问题的调试过程。最初，客户报告在切换到OverlayFS后，OpenSSH的scp命令失败，错误信息显示为"shell-init: error retrieving current directory: getcwd: cannot access parent directories: Inappropriate ioctl for device"。调查发现，该问题源于Bash使用了自定义的getcwd()函数，而非glibc提供的版本。这是因为在交叉编译环境中，系统错误地认为getcwd()存在问题，导致Bash回退到古老的实现。该实现与OverlayFS不兼容，导致错误。最终，通过模拟Yocto项目中的处理方法，明确声明getcwd()行为，问题得以解决。根本原因在于OverlayFS的某些特性与Bash过时的getcwd()实现不匹配。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户数据是否真的被永久删除，以及企业在数据删除过程中的透明度和诚信问题。
+                    <div class="comments-summary">主要讨论点：POSIX API中errno的使用问题及其相关的历史性bug，尤其是与Bash、getcwd()、$PWD等相关的技术细节，以及跨编译中的注意事项。
 
 不同观点：
-• JohnFen认为企业普遍存在欺骗行为，因此不相信数据会被真正删除。他选择尽量减少个人数据的外泄。
-• clickety_clack通过讽刺语气指出，用户协议通常措辞复杂且含糊，用户难以明确理解数据处理方式。
-• codeplea质疑公司告知用户数据被删除的做法，指出某些数据由于法律要求可能必须保留，如用于税务目的的发票。
-• SoftTalker提出数据删除可能不包括用户的邮件地址，该地址可能仍存在于第三方邮件列表中，但不一定意味着个人账户或资料仍然存在。
-• ecshafer解释技术上“删除”数据常通过标记为“已删除”来实现，数据并未真正从磁盘上移除，只是被忽略。
-• therobot24指出由于缺乏有效监管，公司缺乏说实话的动力，并感叹个人数据被过度采集和商业化。
-• andrewflnr倾向于认为某些数据处理不当是由于 incompetence（无能）而非恶意，但承认无能和恶意在结果上可能难以区分。
-• kps的评论偏离主题，表示期待物理学上的突破，而非讨论数据隐私问题。
-• petercooper提到GDPR（通用数据保护条例）中的“删除权”存在多种条件，某些数据由于法律要求仍需保留，例如用于法律情境的证明。
+• chubot认为POSIX API中errno的使用规则令人困惑，特别是在某些情况下（如readdir()返回NULL表示错误和EOF），需要手动设置errno=0。他提到了Oils项目修复了一个与$PWD相关的历史性bug，该bug在AT&T ksh中也存在了30多年。他还解释了为何shell不能直接使用getcwd()，因为需要同时考虑继承的$PWD值和符号链接问题。
+
+• jwilk提供了有关该bug的公开报告链接，方便进一步查阅相关讨论。
+
+• pogopop77认为这是一个有趣的调查，并指出新范式（如覆盖文件系统）可能会以复杂的方式影响行为，增加调试难度。
+
+• saurik则关注跨编译中的问题，认为不应忽视警告，而应更仔细地处理autoconf配置，确保在目标系统上正确运行，而不是盲目进行跨编译。
+
+• akoboldfrying以幽默的方式提醒大家注意各种潜在问题，暗示了系统和软件环境中的复杂性。
+
+• x0x0强调了软件开发的难度，指出历史性语义变化对现有软件的影响，以及一些软件未能及时升级所带来的问题。
 
 补充讨论：
-• 争议的焦点在于公司是否真正删除了用户数据，以及用户对数据删除过程的信任问题。
-• 另一个值得注意的讨论点是技术实现上的细节，例如“标记删除”和数据在不同数据库中的分布。
-• 法律和法规（如GDPR）在数据删除过程中的影响也被提及，强调了法律要求对数据保留的限制。
-• 总体上，用户对企业的透明度和诚信度持怀疑态度，并希望有更明确的监管和执行机制来保护个人隐私。</div>
+• 争议焦点之一是POSIX API的设计是否过于复杂和容易出错，尤其是在errno的使用上。
+• 另一个讨论点是关于历史性bug的修复，尤其是那些存在了几十年的bug，反映出软件维护中的挑战。
+• 跨编译中的注意事项也被提及，强调了在不同环境下进行软件开发和测试的重要性。
+• 覆盖文件系统等新范式带来的复杂性也被认为是调试和维护中的一个重要因素。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44378444" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44377274" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -107,85 +109,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://cpsi.media/p/thoughts-on-asuncion-paraguay" target="_blank">Thoughts on Asunción, Paraguay</a>
+                    <a href="https://codeberg.org/politebot/elelem" target="_blank">Show HN: Elelem, a tool-calling CLI for Ollama and DeepSeek in C</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Michelangelo11</span> |
-                    <span>评分: 70</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-06-23 07:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了作者对巴拉圭首都亚松森的印象，特别是其城市美学的一致性问题。作者将城市美学一致性定义为城市设计的规划程度、建筑风格的相似性、道路和步行道的维护情况以及路牌的设计统一性。作者将亚松森与马德里、圣彼得堡等高一致性城市对比，发现亚松森更接近于金边或科钦等低一致性城市，城市规划缺乏系统性，私人建筑随意而建，缺乏政府主导的整体规划。尽管亚松森有一些现代化的高层建筑，但总体上城市发展不均衡，市中心多为破旧建筑。此外，巴拉圭的政府支出占GDP的比例仅为19%，是南美最低，导致公共基础设施投资不足。文章还提到巴拉圭的非正规就业率高，税收制度不完善，导致政府收入有限，进一步影响城市规划和发展。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对巴拉圭及周边国家的不同看法与讨论
-
-不同观点：
-• **[zubiaur]** 以个人经历描述了从玻利维亚经过巴拉圭前往巴西的经历。他提到巴拉圭的基础设施比玻利维亚好，但也提到在阿松桑遇到的不友好待遇，并将此与三国同盟战争的历史创伤联系起来。
-• **[paulvs]** 从正面角度介绍了巴拉圭作为远程工作地点的优势，包括友善的人民、美食、低租金、低税收和经济稳定。他指出只要不依赖公共服务业，生活会很舒适。
-• **[sombragris]** 作为巴拉圭本地人，对[zubiaur]的描述进行了补充，指出阿松桑市中心的复杂性，尤其是历史建筑的管理问题，并纠正了一些关于当地商业习惯的误解。
-• **[aunty_helen]** 批评西方人往往忽视自己国家的问题，而对其他国家过于苛刻，指出他们的批评可能源于对自己国家问题的不满。
-• **[steviedotboston]** 提到了巴拉圭历史上因争夺资源而发动的战争，如查科战争，指出这些战争的后果至今仍影响着巴拉圭。
-• **[hermitcrab]** 通过一本旅行书籍介绍了巴拉圭的奇特历史和现状，并提到该国经济部分依赖走私，以及前独裁者斯特罗斯纳的丑闻。
-• **[cjo_dev]** 对巴拉圭的基础设施和环境问题提出了批评，指出河流污染和基础设施不足的问题，并提到当地人推荐去商场消遣。
-• **[rurban]** 建议先了解阿松桑的历史背景，提供了一个参考链接，强调历史知识对理解当前状况的重要性。
-• **[SchwKatze]** 提到巴西人特别是自由主义者对巴拉圭公民身份的兴趣增加，主要是由于巴拉圭的财政政策与巴西相反，并表达了对巴西未来的悲观看法。
-• **[andrepd]** 将巴拉圭的住房问题与全球资本主义的投资现象联系起来，指出住房作为投资工具是全球性的问题。
-• **[zabzonk]** 以极端的语言描述了对巴拉圭的负面印象，提到了历史上的纳粹战犯藏匿问题。
-
-补充讨论：
-• 争议的焦点之一是对巴拉圭及阿松桑的印象，特别是历史创伤和现代对待外国人的态度。
-• 对巴拉圭基础设施和经济问题的讨论，尤其是与历史和政治背景相关的部分，也反映了该国在全球经济中的特殊位置。
-• 不同国籍的人对巴拉圭的看法差异明显，本地居民与外来者之间的视角存在显著不同。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44353383" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.thebeliever.net/logger/cracking-the-mondrian-code/" target="_blank">Cracking the Mondrian Code (2017)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jstrieb</span> |
-                    <span>评分: 14</span> |
+                    <span>作者: atjamielittle</span> |
+                    <span>评分: 32</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-22 20:44</span>
+                    <span>发布时间: 2025-06-25 15:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讲述了荷兰画家彼埃·蒙德里安（Piet Mondrian）的未完成作品《胜利布吉伍吉》（Victory Boogie Woogie）。这是他生前投入超过一年时间创作的最后一幅重要画作，直至因病去世时仍未完成。蒙德里安在生命的最后十天里，尽管身患重病，仍专注于这幅作品，用彩色胶带不断调整画面。他去世后，艺术史学家和评论家将这幅钻石形画布视为其最后的伟大未竟之作。
-
-多年来，人们试图推测这幅画如果完成会是什么样子，有人基于色彩逻辑公式或数学算法提出假设，但博物馆馆长汉斯·詹森（Hans Janssen）指出，蒙德里安的作品其实是直觉性的，无法用公式解码。文章还探讨了未完成艺术作品的魅力，以及它们在文化传承中的特殊地位。</p>
+                    <p>这篇文章介绍了Elelem，一个基于C语言的命令行聊天客户端，支持AI模型通过工具调用系统执行实际操作。它提供了安装指南、构建步骤以及使用不同API（如DeepSeek和Ollama）的配置方法。Elelem支持多种工具，如文件搜索、代码分析、文件操作和系统命令执行，用户可以通过交互命令控制会话和工具使用。文章详细列出了工具的功能、使用示例以及核心代码架构，展示了如何在不同场景下利用AI执行任务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Mondrian和De Stijl的作品推荐及分析
+                    <div class="comments-summary">主要讨论点：工具调用功能及其潜在风险
 
 不同观点：
-• [推荐观点] a4isms强烈推荐对Mondrian和De Stijl感兴趣的人阅读《Inside out Victory Boogie Woogie: A Material History of Mondrian's Masterpiece》一书。该书对Mondrian未完成的作品进行了详细的分析。
-  - 支持论据：作为Mondrian的长期粉丝，a4isms认为这本书对Mondrian未完成杰作的分析非常吸引人。
-  - 例子：具体提到书中对《Victory Boogie Woogie》的材料历史分析。
+• **对工具调用功能的担忧**：abeyer表达了对工具调用功能的担忧，特别是将其与MCP（可能指某种复杂系统或协议）进行类比。他们认为工具调用功能可能会带来类似于MCP的风险，尤其是还伴随内存安全漏洞的问题。这暗示了对引入新功能可能带来的技术债务和安全隐患的警惕。
+
+• **对新功能的态度**：尽管评论的语气略带讽刺，但也可以看出abeyer对新功能（工具调用）持谨慎态度。这种观点可能代表了一部分开发者对新技术或新功能快速引入的保守立场，尤其是在安全性尚未得到充分验证的情况下。
 
 补充讨论：
-• [书籍链接] a4isms提供了该书的链接，方便感兴趣的读者获取更多信息。
-  - 链接：https://www.aup.nl/en/book/9789089643735/inside-out-victory-boogie-woogie
+• **内存安全漏洞**：评论特别提到了内存安全漏洞，这是许多编程语言和系统中常见的严重问题。abeyer认为工具调用功能可能会增加这种风险，显示出对系统稳定性和安全性的关注。
 
-此评论主要围绕对Mondrian及其作品《Victory Boogie Woogie》的深入分析书籍的推荐，强调了该书对艺术爱好者的吸引力，并提供了进一步阅读的资源。评论中没有出现直接的争议或不同意见，主要是单方面的推荐和赞赏。</div>
+• **类比MCP的风险**：通过将工具调用功能与MCP类比，评论者暗示了对复杂系统中潜在问题的深刻认识。这种类比可能意味着对复杂系统中相互依赖的功能模块间的潜在漏洞和风险的担忧。
+
+• **争议焦点**：争议的焦点在于工具调用功能是否真的会引入类似MCP的风险以及内存安全问题。部分开发者可能认为新功能带来的好处大于风险，而另一部分开发者则可能持谨慎态度，强调需要更多的安全验证和测试。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44350135" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44378254" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -196,51 +152,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://xbow.com/blog/top-1-how-xbow-did-it/" target="_blank">XBOW, an autonomous penetration tester, has reached the top spot on HackerOne</a>
+                    <a href="https://www.newyorker.com/magazine/2025/06/30/do-we-need-another-green-revolution" target="_blank">Do We Need Another Green Revolution?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: summarity</span> |
-                    <span>评分: 218</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-24 15:53</span>
+                    <span>作者: mitchbob</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-25 19:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《XBOW如何登上HackerOne美国排行榜第一》
-
-XBOW是一个全自主的AI渗透测试工具，无需人为干预，能像人类测试员一样工作，但速度更快。我们通过两个阶段测试XBOW：首先使用现有的CTF挑战，然后创建独特的真实场景模拟。尽管这些测试结果令人鼓舞，但仍是人工环境。为了进一步验证，我们转向开源项目中的零日漏洞挖掘，并在HackerOne的众测项目中实战。
-
-在HackerOne上，XBOW像外部研究员一样独立运行，发现并报告漏洞，逐步提升排名。我们面临的挑战包括在海量目标中识别高价值对象，为此开发了基础设施和评分系统，以优化测试效率。通过使用大语言模型和手动整理，我们解析了漏洞悬赏项目的范围和政策。
-
-为解决重复域名问题，我们使用SimHash和图像hash技术进行相似性分析，集中精力处理独特的高影响目标。为了提高漏洞发现的准确性，我们引入了“验证器”机制，自动进行同行评审，减少误报。通过这些努力，XBOW最终登上了排行榜第一。</p>
+                    <p>文章主要讲述了绿色革命的早期挑战及诺曼·布劳格的贡献。1944年，布劳格赴墨西哥开展小麦育种计划，面对严重的真菌病害和贫困的农民，他致力于培育抗病和高产的小麦品种。经过多年努力，他成功培育出抗锈病且耐肥的矮秆小麦，显著提高了墨西哥和巴基斯坦的小麦产量。然而，布劳格也认识到新品种的局限性，并在1970年获得诺贝尔和平奖时警告，人口增长可能再次导致粮食需求超过供应。如今，全球人口持续增长，是否需要第二次绿色革命成为焦点，两本新书探讨了这一问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：XBOW在HackerOne上的表现及AI在安全漏洞检测中的作用和局限
+                    <div class="comments-summary">主要讨论点：全球农业压力来源及粮食生产能力
 
 不同观点：
-• [hinterlands] 认为XBOW在HackerOne上的排名有营销成分，因为许多项目难度低且报酬少，主要吸引的是信息安全爱好者而非顶尖人才。同时，作者认为LLM（大型语言模型）在查找低级漏洞方面有潜力，但其能力不应被夸大。
-• [tecleandor] 质疑XBOW自称的“最佳”标准，并指出如果XBOW不是自己审查报告，那么称其为“dogfooding”是不准确的。
-• [vmayoral] 强调人类在设计和指导AI系统中的核心作用，并警告不要夸大AI能力，以免误导公众和买家。他还分享了自己在AI安全领域的实际项目经验。
-• [mellosouls] 对XBOW的声明持怀疑态度，指出其提供的证据可能经过挑选，不完全可信。
-• [martinald] 认为AI在安全漏洞检测中的应用是紧迫且必要的，尤其是在大量未经过安全检查的代码和设备存在的情况下。
-• [Sytten] 认为AI工具不会取代人类，而是帮助人类专注于更具创造性的工作，但当前的自动化检测在分类和复现方面仍面临挑战。
-• [mkagenius] 抱怨由于大量提交的漏洞报告，手动提交的漏洞需要更长时间才能得到处理。
-• [moktonar] 指出XBOW的工作并非完全自动化，人工参与仍然不可或缺。
-• [chc4] 对XBOW的成就表示赞赏，认为其在AI安全研究领域表现突出，尽管对AI安全研究整体持怀疑态度。
-• [jp0001] 关注XBOW在漏洞奖金与计算成本之间的经济效益，认为不参与游戏才是赢家。
-• [skeptrune] 困惑于XBOW是否真的在表现上超越了人类，并认为比较其与顶级黑客的收入更有意义。
-• [ryandrake] 担心大量AI生成的漏洞报告会给开发者带来负担，并认为需要工具来过滤低质量报告。
-• [TZubiri] 认为XBOW项目的某些声称存在矛盾，特别是在自动化程度方面，并建议不应夸大其自动化能力以吸引投资。
+• bryanlarsen 认为农业的压力主要不是来源于人口增长，而是全球贫困人口向更富裕的西方饮食过渡，特别是对肉类和大规模反季节果蔬的需求增加，这将对农业资源造成压力。
+• mlindner 反对所谓“人口炸弹”的担忧，认为地球并没有面临人口过剩的问题，食物生产能力充足。他指出目前有大量多余的粮食被用于牲畜饲料和生物燃料生产，并且发达国家的农业生产力每年都在提高，而贫困国家的生产力提升空间仍然很大。他还提到，由于粮食生产过剩，有些地方甚至讨论将农田用于安装太阳能板以获取更多收益。
 
 补充讨论：
-• 争议焦点在于XBOW的自动化程度及其在漏洞检测中的实际表现是否如其声称的那样出色。
-• 讨论还涉及AI在安全领域中的实际应用价值和局限性，尤其是在低级漏洞检测和经济效益方面。
-• 人工参与的程度和作用也被广泛讨论，多数观点认为AI无法完全取代人类，特别是在复杂的漏洞分析和决策过程中。</div>
+• mitchbob 提供了一个链接，该链接指向一个可能支持其观点的外部资源，但具体内容未详细展开。
+• 争议的焦点在于对未来农业压力的来源和粮食生产能力的判断。bryanlarsen 强调饮食习惯变化带来的压力，而 mlindner 则认为生产力提升和粮食过剩足以应对未来的需求变化。
+• mlindner 还指出了技术进步（如太阳能板的应用）对传统农业的潜在替代作用，提出了农业用地多样化利用的可能性。
+
+总结：评论主要围绕全球农业压力的成因及粮食生产能力展开讨论，具体争议在于是否应担忧人口增长及饮食变化对农业的影响，以及粮食生产过剩和技术进步对未来农业的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44367548" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44381260" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -251,43 +192,41 @@ XBOW是一个全自主的AI渗透测试工具，无需人为干预，能像人�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://developer.mozilla.org/en-US/docs/Web/API/Translator" target="_blank">Web Translator API</a>
+                    <a href="https://www.eff.org/deeplinks/2025/06/californias-corporate-cover-act-privacy-nightmare" target="_blank">California's Corporate Cover-Up Act Is a Privacy Nightmare</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kozika</span> |
-                    <span>评分: 85</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-06-25 08:02</span>
+                    <span>作者: hn_acker</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-25 18:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了实验性的翻译和语言检测API中的Translator接口。该接口提供创建翻译实例、检查AI模型可用性、执行翻译等功能。主要属性包括inputQuota（输入配额）、sourceLanguage（源语言）和targetLanguage（目标语言）。静态方法如availability()检查模型可用性，create()创建翻译实例。实例方法包括destroy()销毁实例，translate()进行文本翻译，以及translateStreaming()生成翻译流。文章还提供了JavaScript代码示例，展示如何创建翻译实例和执行翻译操作。注意，该技术仍处于实验阶段，使用前需仔细检查浏览器兼容性。</p>
+                    <p>加州立法者正推动一项名为S.B. 690的提案，被称为“企业掩盖法案”。该法案将大幅削弱加州的隐私保护法（CIPA），允许大科技公司和数据经纪人未经同意秘密记录和监控用户的点击、通话和在线行为，并以“商业用途”为由分享或出售这些数据。这将合法化企业窃听，授权使用追踪工具，且无需告知或承担法律后果。该法案特别威胁到移民、LGBTQ+群体、寻求堕胎者以及抗议者和工人的隐私和安全。这是一次对数字隐私的公然攻击，必须立即采取行动阻止其通过。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否应该开发一个用于翻译API的polyfill，以及该API的实现和使用场景是否合理。
+                    <div class="comments-summary">主要讨论点：加州一项新法案对企业和隐私保护的影响，特别是对IP地址记录和数据收集的合法性问题。
 
 不同观点：
-• [支持观点] vitonsky认为开发一个polyfill是可行的，能够帮助那些尚未实现该API的浏览器用户通过Linguist使用翻译功能，确保网站正常工作。sandstrom也表示这种API非常有用，可以方便开发者为他们的Web应用添加翻译功能。minus7同样支持该API，尤其是对于用户脚本的应用场景。
+• **nostrademons**：认为法案只是明确排除了将IP地址记录视为窃听的行为，以避免对科技公司高管进行巨额罚款。他指出，公司收集IP地址已有30年历史，是维持互联网服务所必需的。因此，他不理解为何EFF（电子前沿基金会）对此表示强烈反对，觉得现状没有实质性改变。
 
-• [质疑API必要性] pwdisswordfishz质疑为什么必须使用JavaScript API，建议使用`lang=`属性让用户自行选择要翻译的文本。这种观点认为现有HTML特性可能已经足够。
+• **delichon**：认为该法案实际上是在悄悄地废除CIPA中对大数据公司不利的部分，特别是如果数据处理是出于商业目的，则不允许私人诉讼。这相当于对现行法律的回溯性豁免，对隐私保护有负面影响。
 
-• [技术细节讨论] seabass关注JavaScript的垃圾回收机制，质疑destroy方法的必要性和好处。indeyets则关注浏览器应提供选择翻译引擎的机制，并建议通过插件API实现。
+• **sundarurfriend**：建议大家直接阅读法案文本，而不是依赖EFF的文章。他认为通过直接对比法案的不同版本，可以更清楚地了解其变化和影响。
 
-• [反对自动翻译] lynx97强烈反对自动翻译功能，认为目前的自动翻译质量不佳，影响用户体验。
+• **esbranson**：带有政治倾向地评论民主党成功推动了法案的通过，但主流媒体对此保持沉默。支持者包括加州新闻出版商协会和新闻媒体联盟。
 
-• [对API标准化状态的担忧] troupo提醒大家该API仍处于实验阶段，尚未进入标准化的轨道，并指出Chrome将其作为标准API推出可能会引发争议。rhabarba和lofaszvanitt则对浏览器兼容性问题表达了幽默的嘲讽。
-
-• [对浏览器垄断的担忧] nachomg将此API与IE时代的垄断行为相比较，暗示对浏览器垄断的担忧。
+• **phendrenad2**：认为EFF对该法案的描述有误导性，特别是使用"Corporate Cover-Up Act"这一非正式名称来引发公众恐慌。他详细列举了法案中的例外情况，指出这些例外并非允许“任何理由”的数据收集，批评EFF没有全面说明这些限制条件。
 
 补充讨论：
-• 关于浏览器兼容性和标准化问题， troupo和rhabarba等人认为当前API的标准化程度不够，主要由Chrome推动，可能导致其他浏览器厂商的抵制。
-• 自动翻译的用户体验问题被lynx97提出，反映出用户对当前翻译质量的不满，这为API的实际应用提出了挑战。
-• 技术实现上，seabass和indeyets分别对destroy方法和翻译引擎选择机制提出了具体的技术疑问和建议。</div>
+• 争议的焦点在于EFF对该法案的描述是否准确和公正。部分评论者认为EFF夸大了法案的负面影响，特别是关于数据收集的例外情况。
+• 另一个值得注意的点是，评论者普遍对法案的商业豁免条款表示关注，认为这可能对隐私保护产生不利影响。
+• 讨论中还涉及到对现行法律（如CIPA）的理解以及其在现代互联网环境下的适用性问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44374748" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44380610" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -298,38 +237,194 @@ XBOW是一个全自主的AI渗透测试工具，无需人为干预，能像人�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theregister.com/2025/06/25/fujitsu_public_sector_contracts/" target="_blank">Brit politicians question Fujitsu's continued role in public sector contracts</a>
+                    <a href="https://lwn.net/SubscriberLink/1025971/73f269ad3695186d/" target="_blank">Libxml2's "no security embargoes" policy</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jwilk</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-25 19:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Libxml2是一个广泛使用的开源XML解析工具包，自2000年发布以来，被众多开源项目、商业软件和政府采用。然而，尽管许多组织乐于使用开源软件，却很少有人愿意为其持续维护做出贡献。这导致libxml2的当前维护者拒绝接受安全禁运（security embargoes）政策，引发了对自由和开源软件项目维护条款的讨论。
+
+Libxml2由Daniel Veillard为GNOME项目开发，后在2000年代初被广泛采用，支持多种编程语言和操作系统。随着时间推移，Veillard的维护工作逐渐减少，Nick Wellnhofer在2013年开始贡献代码并承担大部分发布工作。2021年，由于Veillard忙于工作，加之安全漏洞修复延迟，Wellnhofer一度暂停维护，但随后在谷歌捐赠下于2022年恢复，并计划通过Open Source Collective获得资助。
+
+文章反映了开源项目在长期维护和资金支持方面的挑战。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44381093" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.gamingonlinux.com/2025/06/bazzite-would-shut-down-if-fedora-goes-ahead-with-removing-32-bit/" target="_blank">Bazzite would shut down if Fedora goes ahead with removing 32-bit</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: speckx</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-25 19:54</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了Fedora计划放弃对32位架构支持对Bazzite项目的影响。Bazzite是一个专注于游戏的Linux发行版，尤其在手持设备上受欢迎。其创始人Kyle Gospodnetich在Fedora论坛上表示，若Fedora真的取消32位支持，Bazzite将不得不关闭。这是因为许多游戏相关的软件，如Steam和OBS Studio，仍然依赖32位库。Gospodnetich认为，这一改变不仅会损害Fedora的声誉，还会对Bazzite等项目造成无法弥补的伤害。他建议Fedora可以考虑单独处理32位包的构建，而不是全面取消支持。目前，提案尚未通过，但如果Fedora坚持取消32位支持，可能需要Valve将Steam客户端转向64位来解决这一问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Linux与FreeBSD作为桌面操作系统的可行性及图形界面的重要性
+
+不同观点：
+• pbohun认为Linux作为桌面操作系统不具备长期可行性。他指出，Linux在图形和窗口管理方面存在不足，仍停留在以文本为主的交互方式，而现代计算设备需要更加集成化的图形界面。他以Sony为PlayStation使用的FreeBSD为例，认为FreeBSD可以被开发为适合游戏的操作系统，并且需要在操作系统级别提供图形和窗口API。
+
+• 隐含的对立观点（可能代表Linux支持者）：虽然没有明确表达，但基于pbohun的评论，可能存在一种对立观点，即认为Linux已经具备足够的图形支持，或者通过开源社区的努力能够逐步完善图形界面，从而继续作为可行的桌面操作系统。
+
+补充讨论：
+• pbohun提到FreeBSD在PlayStation上的成功应用，暗示FreeBSD具有潜力成为优秀的游戏操作系统，但需要专门的开发和改进。
+• 关于图形界面与操作系统整合的讨论，pbohun认为现代操作系统必须深度整合图形功能，而不是仅仅依赖附加组件或第三方软件来实现图形功能。
+• 争议焦点在于Linux是否需要在操作系统层面更加深度整合图形功能以保持其桌面操作系统的竞争力，以及FreeBSD是否是一个更合适的选择。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44381265" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.swissinfo.ch/eng/swiss-democracy/how-swiss-direct-democracy-works/89073820" target="_blank">How Swiss direct democracy works</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: giuliomagnifico</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-25 19:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章总结了2025年迄今为止发生的一系列重大事件和变化。技术领域取得了显著进展，人工智能和量子计算的突破正在重塑各个行业。自动驾驶汽车逐渐普及，改变了交通和城市规划。气候变化问题愈发紧迫，各国加大了对绿色能源和环保政策的投入。地缘政治局势紧张，多国间的关系面临挑战。经济方面，数字货币和区块链技术应用扩大，金融体系正经历深刻变革。总体而言，2025年是一个充满变革和挑战的年份，各领域的快速发展正在重新定义未来的方向。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44381157" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=Qg0mHFcB510" target="_blank">Bill Atkinson: Polaroids Showing the Evolution of the Lisa GUI [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-21 15:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>该页面提供了多个链接，涵盖关于平台的信息、新闻发布、版权声明、联系方式、创作者资源、广告、开发者信息以及使用条款等。同时包含隐私政策、安全指南以及YouTube的功能测试和新特性。此外，页面提及NFL Sunday Ticket和Google LLC的版权信息（© 2025）。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于现代软件开发管理以及对历史技术的评价
+
+不同观点：
+• [fidotron] 认为现代软件开发管理过于局限，开发者难以像过去那样跨越多个领域（如Bill Atkinson从底层编程到用户体验设计都精通）。现代开发中，这种综合能力被认为是不可能的。
+• [oersted] 则关注了计算机历史博物馆及其志愿者，强调了博物馆由退休的行业老兵运营，他们有着丰富的经验和故事，认为这是博物馆的亮点。
+
+补充讨论：
+• [mprovost] 提到了Bill Atkinson的发明之一——Atkinson dithering，并提供了相关的维基百科链接，强调了Atkinson的技术贡献。
+• [JKCalhoun] 对拖放操作在Finder中出现较晚表示惊讶，指出这是为了解决用户发起的文件复制操作。
+• [smallduck] 反驳了Apple只是抄袭Xerox Parc的看法，指出应该看看这段历史以了解Apple的原创性。
+• [nxobject] 讨论了视频中展示的技术细节，认为这些演示是在Apple II驱动Lisa的帧缓冲到CRT子系统上生成的。
+• [HarHarVeryFunny] 分享了个人经历，回忆了1980年在伦敦的一个计算机展会上看到Lisa的演示，虽然当时引起了很大关注，但设备速度慢且价格昂贵。
+• [musicale] 对视频内容和Bill Atkinson的讲述表示赞赏，并提到与Andy Hertzfeld的记录相辅相成，还表示想观看有关Lisa源代码的视频。
+
+争议焦点：
+• 关于Apple是否抄袭Xerox Parc的讨论，[smallduck] 提出Apple有其原创性，反驳了简单的抄袭观点。
+
+其他值得注意的讨论点：
+• 评论中多次提到Bill Atkinson的技术贡献和个人经历，反映出他在计算机历史中的重要地位。
+• 对计算机历史博物馆的评价，特别是其志愿者运营模式的赞赏。
+• 对技术细节的关注，如拖放操作的开发时间点和演示系统的技术实现。
+
+总结来看，评论主要围绕对现代软件开发管理的批评、对历史技术贡献的认可、以及对具体技术细节的讨论展开。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44338182" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.jalopnik.com/1895759/nyc-mayor-election-zohran-mamdani-won-non-car-owners/" target="_blank">NYC's Upset Election Was Drawn Along an Odd Line: Car Ownership</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: rntn</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-25 13:12</span>
+                    <span>评分: 26</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-25 19:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>英国政界人士对富士通在Post Office Horizon丑闻后继续竞标公共部门合同表示质疑。尽管富士通曾承诺在公众调查完成前停止投标，但该公司仍赢得了北爱尔兰新土地注册系统价值1.25亿英镑的合同。多位议员要求政府澄清富士通的角色，尤其是在公司尚未对受害者进行赔偿的情况下。保守党议员Mark Garnier和前国防大臣Gavin Williamson等人都对富士通重新竞标价值3.7亿英镑的Trader Support Service合同表示关切。政府回应称，合同机会对符合2015年公共合同法规的公司开放，但未具体回答富士通的竞标资格问题。此事引发了对政府采购程序公正性的广泛讨论。</p>
+                    <p>在2025年纽约市长初选中，民主社会主义者Zohran Mamdani意外击败前州长Andrew Cuomo。数据分析显示，Mamdani的胜利与他获得无车选民的支持密切相关。Mamdani在不依赖汽车、公共交通发达的高密度地区获胜，而Cuomo则在汽车拥有率较高的地区表现较好。Mamdani的竞选重点包括改善公共交通和增加自行车道，而Cuomo则提议在地铁增加警力，这一计划不受通勤者欢迎。汽车拥有率和交通方式选择反映了纽约不同城区的居住状况和政治倾向。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：政府是否应该禁止像Fujitsu这样的公司参与投标，以及此举对政府和经济的影响。
+                    <div class="comments-summary">主要讨论点：纽约市拥车情况与政治倾向、社会阶层之间的关系
 
 不同观点：
-• [hbrav] 认为政府应该直接禁止Fujitsu参与投标，理由是该公司表现出严重的不称职和傲慢，这种行为有可能再次发生。禁止其投标还可以对其他公司起到威慑作用。不过，该用户也承认自己不了解采购规则是否允许这种做法。
-
-• [axus] 关注的是对第三方造成的损害可能需要10到20年才能得到惩罚，暗示现行制度下追究责任的效率低下，可能无法及时保护受害者利益。
-
-• [tiahura] 反对禁止Fujitsu投标，认为如果他们是最佳投标者就应该使用，但应要求其支付适当的赔偿。该观点强调实用主义，主张通过经济手段解决问题，而不是一刀切的禁止。
-
-• [pjbster] 提出政府IT支出不同于普通家庭预算，政府通过私人部门的交易获得税收收入。如果政府选择效率更高的供应商，虽然表面上节省了开支，但实际上会减少税收，影响政府财政。该用户认为像Fujitsu这样的大公司对驱动经济增长和税收有重要作用，因此不应轻易排除在外。
+• [anonymousiam] 认为纽约市正在试验的“拥堵收费”政策可能与讨论的现象有关，并提供了相关链接。
+• [kemayo] 指出，在纽约市，汽车拥有权常常是社会阶层和生活状况的标志，因此这种现象并不奇怪。
+• [jjk166] 推测，任何其他反映人口密度的指标也可能产生类似的地图分布。
+• [bko] 批评文章缺乏具体数据支持，例如没有提供关于不同社区选民汽车拥有率及其投票倾向的统计数据，认为文章仅凭一张地图说服力不足。
+• [avoutos] 认为汽车拥有率与选举结果之间的相关性并不高。
+• [cuuupid] 指出，汽车在纽约市是一个极具分裂性和 polarizing 的话题，汽车拥有与否往往与个人的舒适感或恐惧感有关，且这种情感具有很强的持久性，影响政治态度。
+• [freejazz] 提到，汽车、自行车和行人之间的道路使用冲突是纽约市日常烦恼的来源之一，并指出不同政治候选人在交通政策上的立场差异。
+• [esalman] 简短地提到相关性不等于因果性。
+• [aadhavans] 认为新闻来源有明显的党派倾向，可能影响其客观性。
 
 补充讨论：
-• 争议的焦点在于是否应通过禁止投标来惩罚和预防不称职行为，还是通过其他手段如经济赔偿或改善监管来解决问题。
-• 另一个值得注意的点是政府采购和经济之间的关系，特别是大公司在创造税收和推动经济增长中的角色，这为讨论增加了宏观经济层面的复杂性。</div>
+• 争议焦点在于文章是否充分证明了汽车拥有率与选举结果之间的关联，特别是缺乏具体数据支持。
+• 不同评论者对相关性和因果关系的理解存在差异，部分人认为文章过于简单化。
+• 汽车拥有在纽约市被视为社会阶层和生活状况的标志，影响政治倾向和社会态度。
+• 交通政策和道路使用冲突也是评论中提到的影响因素。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44376939" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44381176" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -340,196 +435,47 @@ XBOW是一个全自主的AI渗透测试工具，无需人为干预，能像人�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://multiverseemployeehandbook.com/blog/temporal-resources-managing-time-when-time-doesnt-exist/" target="_blank">Managing time when time doesn't exist</a>
+                    <a href="https://www.qodo.ai/blog/introducing-qodo-gen-cli-build-run-and-automate-agents-anywhere-in-your-sdlc/" target="_blank">Introducing Qodo Gen CLI: Build and Run Coding Agents Anywhere in the SDLC</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: TMEHpodcast</span> |
-                    <span>评分: 116</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-25 00:28</span>
+                    <span>作者: benocodes</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-25 12:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了现代职场中的生产力悖论：我们致力于优化时间管理，但科学，尤其是量子物理学， increasingly怀疑时间可能只是一种幻觉。文章回顾了人类对时间管理的 obsession，从古代文明使用日历和时钟管理农业和生活，到牛顿提出绝对时间概念，使时间成为可管理、可测量的资源。然而，爱因斯坦的相对论打破了这一观念，指出时间是相对的，受运动和引力影响。进一步的量子力学研究甚至表明时间可能根本不存在于最基本的物理方程中。因此，现代职场的生产力优化方法可能是在组织一种“幻觉”，使得时间管理变得愈加复杂和具有哲学意味。</p>
+                    <p>Qodo Gen CLI 是一个强大的命令行工具，用于构建、管理和运行 AI 代理，帮助开发者自动化整个软件开发生命周期（SDLC）中的工作流。它允许开发者创建自定义代理，定义其触发条件、输入、操作和输出，支持在终端和浏览器中交互使用，并将 AI 功能带入任何 IDE。该工具提供灵活的部署选项，适用于 SaaS 和企业环境。
+
+主要功能包括：
+- 自定义代理：控制代理的行为、运行时间及使用工具。
+- 工作流自动化：从 CI/CD、webhooks 触发代理。
+- 浏览器和终端交互：通过终端或浏览器 UI 使用代理。
+- 智能代码审查：自动审查 PR，生成摘要、识别问题并建议修复。
+
+开发者可以用 Qodo Gen CLI 自动化诸如可访问性检查、测试运行和性能优化等任务。该工具现已开放 alpha 测试，可通过 `npm install -g @qodo/gen` 免费试用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：时间的本质及其在物理学中的解释
+                    <div class="comments-summary">主要讨论点：围绕软件开发过程中的术语、工具宣传以及新发布的技术资源的讨论
 
 不同观点：
-• [TMEHpodcast] 认为时间可以通过量子纠缠“涌现”出来，并引用了Page-Wootters机制和Wheeler-DeWitt方程作为支持。该观点强调时间可能像温度一样，是从更基本的量子信息过程中涌现出来的现象，但并不意味着时间是“假的”。同时指出，“意识创造时间”的观点比量子力学本身更具推测性。
-• [gus_massa] 对时间涌现的观点持怀疑态度，指出虽然Wheeler-DeWitt方程中没有时间变量，但广义相对论和量子力学的部分融合（如Dirac方程）已经实现了时间变量的应用。他还批评了关于原子钟通过量子纠缠“创造时间”的说法，认为这些技术只是测量频率，并不能证明时间由量子纠缠产生。
-• [xivzgrev] 以讽刺的语气指出，如果时间是由量子关联创造的，那么浪费时间就意味着未能参与创造时间的量子过程，以此调侃对时间管理的过度关注。
-• [roywiggins] 附和时间涌现的观点，但用岩石的例子类比，暗示无生命物体也通过物理过程参与时间的“创造”。
-• [Raphell] 认为如果时间可能不存在，那么对时间管理的焦虑就变得毫无意义，建议将注意力转向更实际的资源如“专注力”。
-• [chipsrafferty] 认为时间的持续性是显而易见的，对文章试图探讨时间是否存在表示不屑。
-• [netfortius] 推荐了Carlo Rovelli的书《The Order of Time》，表明对时间问题的深入探讨是有价值的。
-• [KolibriFly] 提出反思，现代社会对“生产力”的过度关注是否基于对时间的错误理解，尤其在物理学新发现下。
-• [kazinator] 认为时间即便作为一种“幻觉”涌现出来，也与其他抽象概念（如形象和地位信号）类似，人类社会一直在优化这些抽象概念。
-• [bravesoul2] 坚持时间存在，认为即便时间是涌现的，也如同足球一样是真实存在的现象。
-• [satisfice] 以幽默的方式回应文章内容，特别提到会议安排在量子叠加态的建议，暗示对时间涌现观点的轻松接受。
-• [jayrot] 指出时间至少在熵增加的方向上是存在的，对时间不存在的观点提出质疑。
-• [LoganDark] 分享个人观点，认为即便时间不存在，个人仍能通过变化感知时间，并讨论了时间旅行的不可能性。
-• [atemerev] 提供了一个关于空间不存在的链接，扩展了讨论范围至空间的本质问题。
+• [kyt] 认为自己在软件开发行业有25年经验，但仍然需要查阅SDLC（软件开发生命周期）的定义，暗示该术语可能并不广泛为人熟知或经常使用。这反映出对某些行业术语或概念的实用性存在不同看法。
+
+• [mdaniel] 对工具宣传中的视觉元素（如“性感的食蚁兽”）表示困惑，质疑这种图像在传达技术工具如何整合到工作流中的有效性。这表明在技术产品的市场宣传方式上存在不同意见，尤其是图像选择是否恰当。
+
+• [summarity] 提供了一个相关的技术资源链接，介绍了微软和GitHub发布的GenAIScript，这是一个用于构建AI工作流的开源SDK。该评论者关注的是实际技术工具和资源的发布，并分享了进一步的阅读材料（Continuous AI项目），展示了对新技术的积极关注和分享态度。
 
 补充讨论：
-- 争议的焦点在于时间是否真正“涌现”以及其作为物理维度的本质。
-- 对时间涌现的支持者引用量子力学和实验结果作为依据，而反对者则质疑这些解释的有效性和推论的合理性。
-- 讨论还涉及到时间管理和生产力等社会议题与物理学新发现的关联。</div>
+• 争议焦点之一是技术术语的使用和理解，[kyt]的经验表明即使在行业内，某些术语也可能不为人所熟知。
+• 另一个争议点是技术产品宣传的方式，[mdaniel]对视觉元素的有效性提出质疑，反映出对技术产品宣传材料的不同期待。
+• [summarity]的评论引入了一个新的技术工具讨论，提供了一个实际的资源链接，展示了如何在AI工作流中应用这些工具，为讨论带来了实质性的技术内容。
+
+总结：讨论主要围绕技术术语的理解、技术工具宣传的有效性以及新发布技术资源的实际应用，展现了不同参与者对技术和宣传的不同关注点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44372528" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://flak.tedunangst.com/post/forbidden-secrets-of-ancient-X11-scaling-technology-revealed" target="_blank">Ancient X11 scaling technology</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 231</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-06-24 18:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了作者尝试在不同屏幕和分辨率下使用X11技术实现DPI缩放，特别是绘制一个两英寸的圆圈，使其在不同显示器上保持相同物理尺寸。通过使用OpenGL和GLX上下文，作者实现了这一目标，并处理了多显示器和分辨率差异的问题。关键在于监听X服务器的配置通知事件，以动态调整圆的大小。尽管遇到一些硬件不准确的问题，作者最终成功地在多个显示器上展示了相同大小的圆。文章最后指出，很多被认为不可能的事其实是可以实现的，鼓励人们不要轻信他人的否定。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：X11与Wayland在像素缩放、DPI处理和UI渲染上的技术差异及其实际应用中的问题
-
-不同观点：
-• **buster**：认为对终端字符的像素级完美摆放过于吹毛求疵，因为人眼在不放大情况下很难察觉细微差别。
-• **pedrocr**：支持Wayland的渲染方式，认为直接在目标分辨率渲染比OSX的“先2倍渲染再缩小”的方式更好，能避免性能损失和模糊输出。
-• **wmf**：指出UI元素（如光标图标和1px细线）的非模糊渲染才是缩放的难点，而非简单绘制几何图形如圆形。
-• **kunzhi**：关注X11的客户端/服务器解耦特性，尤其是通过SSH进行X11转发功能，认为这在某些情境下仍然有用。
-• **amiga386**：提出跨屏幕不同DPI的窗口渲染问题，认为这是用户真正关心的难点。
-• **creatonez**：指出对整个GUI库生态系统进行缩放处理的复杂性，尤其是处理不同图标、文本和线条绘制方式时会遇到很多麻烦。
-• **jchw**：提醒大家不要忘记X11在DPI虚拟化上的不足，这导致窗口在不同显示器上看起来不一致，用户需要手动调整环境变量或X属性。
-• **erlkonig**：认为Wayland在设备独立缩放方面不如PostScript和NeWS，指出这些老技术已经提供了很好的能力。
-• **lelandbatey**：指出X11的标准API（如Xlib）缺乏缩放意识，而RandR扩展提供了缩放信息，解释了为何很多人认为X11不支持DPI缩放。
-• **jekwoooooe**：抱怨Linux在2025年仍无法轻松输出自定义分辨率，相比之下Windows在这方面表现更好。
-• **GranPC**：关注在不同DPI显示器上跨屏放置窗口时的处理能力。
-
-补充讨论：
-• **cpach**：赞赏帖子，认为这种对细节的关注有助于解决问题。
-• **kragen**：提到有人认为GLX不能通过网络工作。
-• **rwmj**：认为X11的视频撕裂问题被夸大，并强调X11的SSH远程运行程序能力是Wayland目前无法提供的优势。
-
-争议焦点：
-• Wayland和X11在处理DPI缩放、UI渲染和跨屏幕显示上的能力差异，尤其是不同DPI显示器上的窗口处理问题。
-• X11的缩放支持是否如大家所说的那样不足，还是因为其历史包袱和复杂性导致这些问题难以解决。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44369646" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://docs.rs/subsecond/0.7.0-alpha.1/subsecond/index.html" target="_blank">Subsecond: A runtime hotpatching engine for Rust hot-reloading</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: varbhat</span> |
-                    <span>评分: 204</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-06-24 18:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Subsecond是一个用于Rust应用程序的热补丁库，允许在不重启应用的情况下更改运行中的代码，特别适用于游戏引擎和服务器等长时间运行的应用。它通过跳转表实现函数调用重定向，不修改进程内存，确保安全性。使用时需配合第三方工具如Dioxus CLI，通过`dx serve`命令启用热重载。当前版本仅支持对主crate的补丁，不支持跨工作区和结构体热重载，且对全局变量、静态变量和线程局部变量的处理存在限制。未来计划增加完整工作区支持并改进线程局部变量的处理。在调试模式下使用不会影响性能，适合开发阶段应用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Rust热补丁和代码重载工具Subsecond的优缺点及应用场景
-
-不同观点：
-• jkelleyrtp（开发者）介绍了Subsecond工具的实现原理和优点。他们通过手动驱动`rustc`并在链接阶段进行修补，解决了传统dylib重载无法处理的TLS、静态变量、构造函数等问题，支持多平台，并展示了多个演示例子。
-• eigenspace建议参考Julia语言的代码重载机制，特别是通过"world-age"实现的Revise.jl包，可以在不同"world-age"之间重新定义方法和结构，且旧数据不会失效。
-• weinzierl对Subsecond需要在每个想要热补丁的函数调用处修改源代码表示担忧，认为这可能影响代码整洁性，尽管在release版本中这种修改没有额外成本。
-• modeless同样指出，Subsecond需要预先用特殊包装函数标记代码，这比其他不需要特殊注释的语言解决方案吸引力低。
-• schonfinkel联想到Erlang/OTP的热代码重载，并猜测Subsecond可能受其启发。
-• written-beyond表达了对Rust动态库（dylib）实现插件系统的期望，目前需要大量使用unsafe代码，不太安全。
-• cchance好奇其他web框架如Leptos是否会采用Subsecond或开发自己的解决方案。
-• mmastrac打算在Rust服务器工作中尝试Subsecond，尽管它要求选择一个好的"切换点"，并且目前只支持主crate的热补丁，但仍可能带来便利。
-• majke对Subsecond文档中建议在结构变化时丢弃旧状态的做法表示质疑，认为像OTP那样管理状态升级/降级更为合理。
-• prideout更倾向于使用dylib来实现代码重载，而不是Subsecond的方式。
-• cyberax询问是否可以为Go语言实现类似的功能。
-
-补充讨论：
-• 争议焦点在于Subsecond需要修改源代码以支持热补丁，部分用户认为这会影响代码整洁性和可维护性。
-• 不同语言（如Julia和Erlang）的代码重载机制被提及，作为对比和参考。
-• 对Rust动态库和插件系统的需求被提出，特别是希望减少对unsafe代码的依赖。
-• 用户对Subsecond在实际应用中的局限性和优势进行了讨论，包括其对多平台的支持和在不同场景下的适用性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44369642" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://refactoringenglish.com/chapters/release-announcements/" target="_blank">How to Write Compelling Release Announcements</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mtlynch</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-06-25 14:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了如何撰写有效的发布公告，强调应关注用户体验的提升，而非单纯列出新功能或更改日志。文章指出，许多发布公告仅简单描述开发团队的工作，而忽略了这些更改对用户的实际益处。好的公告应说明用户能用软件做什么，以及哪些流程变得更快或更容易。例如，不要只说“添加了复制按钮”，而应强调“创建事件速度提升10倍”。公告应避免使用“各种改进和错误修复”这样的空洞表述，并利用截图和动画演示让用户直观了解变化，同时保持简洁，演示最好不超过5秒。最终目标是让用户对新版本感到兴奋，而非仅仅提供技术细节。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何撰写发布公告和发布说明，以及如何平衡技术细节与市场营销语言
-
-不同观点：
-• lapcat：认为发布说明应该详尽无遗，包括所有重要的改动，哪怕是小bug的修复，而不是用市场营销的语言来包装。他们强调用户希望看到详细的改动，管理层和市场营销不应干预发布说明。
-• deanebarker：更喜欢简洁、直接的发布说明，如“添加了‘复制’按钮”，而不是经过修饰的营销式描述。建议可以同时提供两种版本，一种简洁版，另一种详细版。
-• ednite：同意文章中关于关注用户体验的观点，但认为在发布说明中透明地说明具体bug的修复同样重要。建议为小用户群提供更直接的发布说明，并为内部维护一个详细的技术更新日志。
-• loughnane：认为发布公告应该简短，避免冗长导致读者失去兴趣。建议以用户关心的问题为中心进行描述，如“使用‘复制’功能可以使创建事件速度提高10倍”。
-• ukuina：质疑文章中以用户为中心的发布公告是否短视，认为不应忽视维护和稳定性任务，这些任务虽然不“激动人心”，但对软件健康至关重要。
-• jcalx：认为发布说明应根据用户的具体痛点和使用情境进行撰写，反对盲目使用具体数字来描述改进。建议直接指出bug的修复及其对用户的影响。
-• thewisenerd：对文章中建议在开发过程中规划发布公告感到不安，认为如果无法量化对用户体验的改进，很难证明花费时间在这些任务上的合理性。
-• bravesoul2：质疑用户是否真的在等待新功能发布，认为只要软件稳定运行，没有新功能也可以接受。
-• chapz：认为文章中的例子更像是广告，建议在发布说明和市场营销之间找到一个平衡点，使其更“ subtle”（微妙）。
-• flpm：强调发布邮件的重要性，认为需要选择对用户影响最大的改动进行 spotlight（ spotlight），因为大多数人不会阅读全部内容。
-• awkward：认为带有具体数字的描述需要谨慎处理，不成熟的用户可能会被数字吓退，而成熟的用户能够识别出其中的营销成分。
-• tempodox：喜欢简洁、无修饰的发布说明，认为不需要任何无关的修饰。
-• simonw：认为每次发布都是一次吸引新用户的机会，因此在发布说明中投入更多精力，并开始区分发布说明和发布公告。
-• continuational：建议不要用“Thingie 3.5.27”这样的标题，因为没有传达任何关于新版本的信息。
-
-补充讨论：
-• 争议的焦点在于发布说明的风格和内容：一方认为应该详尽无遗，包括所有技术细节和小bug的修复；另一方认为应该简短，以用户为中心，强调改进带来的实际价值。
-• 一些评论者建议可以同时提供两种版本的发布说明，一种简洁版，另一种详细版，以满足不同用户的需求。
-• 内部技术日志和外部发布公告的区分也被提及，认为内部日志需要更详细的技术信息，而外部公告则应更关注用户体验。
-• 具体数字在描述改进中的作用也存在争议，一些评论者认为数字能提供清晰的量化改进，而另一些评论者则认为数字可能误导或吓退用户。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44377666" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44376353" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
