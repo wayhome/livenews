@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-26 23:15 (北京时间)
+            最后更新时间: 2025-06-27 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bbc.com/future/article/20250625-can-ai-speak-the-language-japan-tried-to-kill" target="_blank">Can AI speak the language Japan tried to kill?</a>
+                    <a href="https://sigma-star.at/blog/2025/06/deep-down-the-rabbit-hole-bash-overlayfs-and-a-30-year-old-surprise/" target="_blank">Deep Down the Rabbit Hole: Bash, OverlayFS, and a 30-Year-Old Surprise</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tellarin</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-26 13:09</span>
+                    <span>作者: Deeg9rie9usi</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-25 13:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讲述了日本原住民阿伊努人的语言几乎消失，但现在通过人工智能技术，利用旧录音带进行语言复兴的努力。阿伊努语言在殖民政策下遭到压制，导致目前仅剩少数母语者，被联合国教科文组织列为“极度濒危”语言。尽管如此，像Maya Sekine这样的年轻一代正在通过创建YouTube频道等方式努力保护和复兴这种语言。阿伊努语言反映了人与自然的紧密联系，拥有丰富的词汇来描述不同事物，如熊。然而，日本的教育体系仍缺乏对阿伊努文化和语言的教授，导致文化认同的困难。尽管如此，越来越多的年轻人正尝试通过各种方式重新定义和保护阿伊努文化，强调语言是连接文化和价值观的重要纽带。</p>
+                    <p>本文讲述了一次涉及Bash、OverlayFS及30年前遗留问题的调试过程。最初，客户报告在切换到OverlayFS后，OpenSSH的scp命令失败，错误信息显示为"shell-init: error retrieving current directory: getcwd: cannot access parent directories: Inappropriate ioctl for device"。调查发现，该问题源于Bash使用了自定义的getcwd()函数，而非glibc提供的版本。这是因为在交叉编译环境中，系统错误地认为getcwd()存在问题，导致Bash回退到古老的实现。该实现与OverlayFS不兼容，导致错误。最终，通过模拟Yocto项目中的处理方法，明确声明getcwd()行为，问题得以解决。根本原因在于OverlayFS的某些特性与Bash过时的getcwd()实现不匹配。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：POSIX API中关于errno和相关文件系统问题的复杂性及其历史遗留bug的讨论
+
+不同观点：
+• chubot认为POSIX API在errno处理上令人困惑，99%的情况下不需要手动设置errno，但在某些情况下（如readdir()返回NULL表示错误或EOF时）却需要。他提到在Oils项目中发现并修复了与$PWD相关的长期未修复的bug，并指出shell不能简单依赖getcwd()来处理符号链接问题。
+
+• JonChesterfield对邮件列表中针对该bug的回应感到失望。他认为修复方法是设置errno=0以确保错误信息合理，但得到的回应却是对文件系统工作方式的质疑，而非感谢或确认修复。
+
+• justincormack指出，许多configure脚本中的检查已经过时，在诸如交叉编译的情况下容易出问题。他认为很多检查在现代系统中不适用，并提到Nix在2017年已经禁用了某些检查。
+
+• saurik强调在交叉编译时应更加注意，不能依赖默认设置和忽略警告，而应手动提供autoconf所需的信息或在目标系统上运行测试，以确保正确性。
+
+• malkia认为autoconf虽然表面上看起来容易使用，但实际上可能会导致难以解开的复杂问题。他主张限制配置集，针对特定平台进行编译，以避免不确定的主机环境猜测。
+
+• jwilk提供了公开的bug报告链接，以便进一步查阅相关讨论。
+
+• pogopop77认为这个讨论展示了新范式（如overlay文件系统）如何微妙地影响复杂的行为，并对此进行了有趣的探讨。
+
+• akoboldfrying以幽默方式提醒大家注意复杂的环境问题，如$PANTS_BROKEN和$SOLARIS。
+
+• x0x0总结认为，软件的复杂性在于历史遗留的语义问题，如inode编号的变化导致支持overlay文件系统时需要改变软件行为，而许多软件尚未升级。
+
+补充讨论：
+• 争议焦点：POSIX API中errno处理的复杂性以及在不同情况下的正确做法。
+• 历史遗留bug的修复与维护问题，尤其是跨时代系统的兼容性。
+• 交叉编译中的挑战及如何正确处理不同系统环境下的配置与编译问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44387074" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44377274" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -90,40 +114,366 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/mozilla/DeepSpeech" target="_blank">DeepSpeech Is Discontinued (2020)</a>
+                    <a href="https://seanhollen.com/1300-2000/" target="_blank">I made a history timeline to learn what events happened around the same time</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: LorenDB</span> |
-                    <span>评分: 33</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-25 17:15</span>
+                    <span>作者: Akranazon</span> |
+                    <span>评分: 47</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-06-25 23:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>DeepSpeech是一个开源的离线语音识别引擎，基于百度深度语音研究论文和Google的TensorFlow实现。它可以在各种设备上实时运行，从Raspberry Pi 4到高性能GPU服务器。该项目已于2025年6月19日被归档，不再活跃。文档和使用指南可在deepspeech.readthedocs.io查看，最新版本和预训练模型在GitHub发布，贡献指南和支持信息分别见CONTRIBUTING.rst和SUPPORT.rst文件。项目使用了MPL-2.0许可证。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同用户对语音识别工具DeepSpeech及其替代品的看法和使用体验
+                    <div class="comments-summary">主要讨论点：对时间线可视化项目的评价与建议
 
 不同观点：
-• **dabinat** 指出DeepSpeech已经在5年前停止维护，并对为何现在才归档其代码库表示不解。这表明对DeepSpeech项目结束的后续处理有所疑问。
-
-• **ipsum2** 分享了自己的使用体验，认为Nvidia的parakeet模型在性能上优于Whisper v3 large和更小的模型，特别是在英语处理上。这表明parakeet在特定语言和性能上具有优势。
-
-• **quentindanjou** 提到DeepSpeech团队后来转向了coqui-ai STT项目，并推荐使用OpenAI的Whisper。这显示了对多个语音识别工具发展脉络的梳理，以及对OpenAI Whisper的认可。
-
-• **msgodel** 表示依然偏好使用festival，认为它速度快、易于获取，并且不喜欢自动化系统使用过于逼真的声音。这反映了对简单、传统工具的偏好，以及对声音真实性的个人偏好。
+• SpectraLeper：称赞项目并提到与《The Timetables of History》一书的相似性，指出该书也通过平行事件激发兴趣，同时肯定了加入维基百科链接的创新。
+• preetsojitra：建议创建一个涵盖所有创新和发现的时间线，并提出建立图表链接以展示发现之间的关联，尽管承认这可能过于复杂。
+• fdw：表达对项目的赞赏，询问源代码是否可用以及是否接受贡献，同时分享了自己类似的项目链接，表示自己的项目不如该项目完善。
+• zejn：分享了自己为伴侣制作的地理区域艺术品时间线的经验，强调了将大致日期映射为具体年份的困难。
+• bigthymer：简单直接地表达了对项目设计的喜爱。
+• jimmydddd：喜欢时间线比较，认为这揭示了历史和科学学习中的孤岛化问题，并通过例子说明不同历史人物的年龄对比如何令人惊讶。
+• devdp430：表示对项目的喜爱，建议将哲学进展和时事纳入时间线，并提到计划为气候变化创建时间线。
+• blueblimp：享受浏览过程，但指出“哲学与艺术”行在1890年后没有内容。
+• sebastianlay：对可视化表示赞赏，建议寻找1800年前的战争死亡数据以进行比较，并提出让图标和标签保持固定的实用建议。
+• LargoLasskhyfv：喜欢快速浏览项目，认为缺少火山活动与战争和流行病的关联，尽管承认只是略读。
 
 补充讨论：
-- **争议焦点**：虽然评论中没有直接的争论，但对不同工具的性能和适用场景有不同的看法，尤其是parakeet与Whisper之间的比较。
-- **工具的多样性**：评论中提到了多种语音识别工具，包括DeepSpeech、parakeet、Whisper和festival，显示出在选择工具时存在多种选项和个人偏好。
-- **语言支持**：ipsum2提到parakeet仅支持英语，这可能是某些用户选择工具时的一个限制因素。
-- **团队和项目的演变**：quentindanjou提到的团队转型和工具推荐为理解语音识别领域的发展提供了背景信息。</div>
+• 项目灵感来源与相似书籍的比较。
+• 时间线复杂度与内容扩展的可能性，包括哲学、事件和气候变化等领域。
+• 时间线实现的技术细节，如源代码可用性和贡献方式。
+• 时间线设计的具体改进建议，如固定图标和标签以提高可用性。
+• 历史事件的跨领域比较与数据完整性问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44379688" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44382813" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://dl.acm.org/doi/10.1145/3728894" target="_blank">LLM Hallucinations in Practical Code Generation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: appwiz</span> |
+                    <span>评分: 65</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-23 07:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）中的“幻觉”问题及其影响和解决方案
+
+不同观点：
+• simonw：认为生成代码中的幻觉问题并不严重，因为错误在运行时会立即显现，而且LLM本身在尝试运行代码时能够发现错误。他还对论文中更多讨论RAG（检索增强生成）解决方案而非基于工具使用的解决方案表示惊讶，认为后者是更为成熟的解决方案。
+
+• tmaly：通过试验和错误得出类似结论，提供一次性代码示例作为上下文能获得最好的结果。
+
+• rbanffy：指出当我们说LLM“幻觉”时，其实和人类犯错类似，只是人类犯错被称为“错误”。
+
+• imiric：认为需要更多研究来解决幻觉这一根本问题，但AI公司更关注追逐基准和推出增值产品。RAG解决方案虽然有趣但有限，因为需要用户提供真实数据，而这对于大多数其他事实信息来说更加困难。依赖网络数据需要人工审查，因此并不是一个普遍适用的解决方案。
+
+• dzikibaz：质疑LLM幻觉与低质量训练数据集或过度随机采样设置导致的随机标记有何不同。
+
+• nerdjon：提到在生成IAM策略时，键常常基于预期被幻觉化，导致错误或不存在的高级条件。
+
+• th0ma5：认为文章很好地讨论了在没有真实信息的情况下面对的许多问题，并对人们开发的各种解决方法表示兴趣。
+
+• dheera：觉得LLM幻觉出一个不存在的Python库很可爱，因为这可能意味着它值得被创造出来。
+
+• cryptica：怀疑LLM幻觉是由于训练集中的矛盾导致的，类似于人类在学习时不仔细处理知识矛盾会导致错误。提出了一种防止矛盾信息更新到模型的复杂训练方法。
+
+补充讨论：
+• simonw和imiric之间存在对RAG解决方案有效性的不同看法。simonw认为基于工具使用的解决方案更成熟，而imiric认为RAG解决方案有限且需要更根本的解决方案。
+
+• cryptica提出了一个复杂的技术方案，通过检测训练中的矛盾信息来防止幻觉，这与其他评论者关注实际应用中的问题形成对比。
+
+• 整体讨论显示出对幻觉问题的多角度理解，包括实际应用中的影响、技术解决方案以及对AI行业趋势的批评。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44353241" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=44352476" target="_blank">I built an app to backup Live Photos from iPhone to external hard drives</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: xmasterdev</span> |
+                    <span>评分: 74</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-06-23 04:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过不同方法和工具实现iPhone照片备份到外部硬盘或自建服务
+
+不同观点：
+• gerdemb质疑如何将iPhone备份到外部硬盘，寻求具体方法的链接。
+• gaudat建议使用Synology NAS和其Photos应用来备份iPhone和Android设备的Live Photos，并认为NAS对大多数用户是可行的。
+• mattfrommars推荐使用LocalSend应用作为备份工具。
+• jlarocco认为ifuse和rsync足以满足个人需求，但理解其对家庭成员可能有用。
+• atmosx分享了自己通过PhotoSync将iPhone照片备份到自建的Photoprism服务的经验，使用WebDAV并通过tailscale进行远程访问。
+• polymatter对“终身”支付选项表示赞赏。
+• SwamyM希望有一种方法能方便地仅备份自己拍摄的照片，而非所有来源的图片。
+• 1970-01-01提问这种备份方法与iMazing有何不同。
+• mindwork询问Immich是否适合这种备份需求，并指出可在Docker容器中运行。
+• mfa1999关注备份大型照片库（如150k照片/视频）的可行性，以及是否保留相册/文件夹结构。
+• keroro询问相关工具的成本。
+• er0k简单表示自己使用rsync，效果很好。
+
+补充讨论：
+• 争议的焦点在于NAS方案是否适合大多数用户，gaudat认为可行，而其他用户未明确回应这一观点。
+• 不同工具和方法的适用性被广泛讨论，例如LocalSend、PhotoSync、rsync、Immich和iMazing等。
+• 备份大型照片库的具体需求和实现方式引起了关注，特别是对数据量大和复杂结构的处理能力。
+• 成本问题也被提及，尤其是对终身支付选项的偏好。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44352476" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=44378271" target="_blank">Ask HN: Anyone using augmented reality, VR, glasses, helmets etc. in industry?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: NewUser76312</span> |
+                    <span>评分: 59</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-06-25 15:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AR/VR技术在各行业中的应用、技术限制与未来发展
+
+不同观点：
+• **AR在工业中的实用性**：  
+  - isk517认为Hololens 2在质量检查（QC）中提高了工作效率，特别是在钢铁装配的3D模型叠加方面，但AR技术仍只完成了90%，硬件能力接近极限，且大公司对AR的利润持怀疑态度。
+  - idkwhattocallme则指出，过去十年的AR设备存在过重、昂贵、易碎、电池续航短等问题，且大多数客户面临内容缺乏的问题，很多场景下使用智能手机更为有效。
+
+• **VR在办公和培训中的局限性**：  
+  - edent指出，VR头显在办公室使用时面临健康风险（如共享头显的卫生问题）、设备不适以及部分用户晕动症的问题，且头显使用时很 isolating（孤立），不适合大多数办公场景。
+  - jlarocco提到，虽然VR在CAD数据可视化中有潜力，但其带来的价值是否足以让公司为所有员工配备头显仍存疑。
+  - burnt-resistor甚至认为VR是一个每十年出现一次的“僵尸类别”，没有实际应用价值。
+
+• **AR/VR设备的舒适性与技术改进**：  
+  - j-wags和gavinray讨论了不同AR设备（如Viture Pro XR和Vuzix Z100）的使用体验，指出设备在佩戴舒适性和视野方面的优缺点。
+  - quantumquetzal详细分析了AR/VR设备在重量、电池寿命和社会接受度方面的三大障碍，并提到技术正在逐步改进，特别是通过无线流媒体和电池技术的进步。
+
+• **AR/VR在培训和实际操作中的应用**：  
+  - spookie提到AR在培训（如消防员培训）中的应用，但指出电池寿命和设备防尘防水性能是主要障碍。
+  - ugolino91分享了他们公司通过VR/AR平台帮助工程和建筑公司进行3D BIM审查的案例，但硬件限制仍是一个挑战。
+  - curiouscavalier指出，AR/VR技术在培训（如第一响应者和零售业）中有一定应用，但设备的操作可靠性和工作流改变带来的摩擦使得大规模应用仍受限。
+
+补充讨论：
+• **未来发展与技术整合**：  
+  - 提到了Apple Vision Pro和即将推出的Android XR，这些新设备可能会带来新的创新。
+  - codybontecou分享了Nvidia使用Apple Vision Pro进行人机交互和数据收集的案例，显示了AR/VR技术在机器人领域的潜力。
+
+争议焦点：
+• **AR/VR设备的实用性与市场接受度**：部分评论者（如isk517和ugolino91）认为AR/VR设备在特定行业中非常有用，但整体市场接受度低，主要是由于硬件限制和市场需求不足。相反，edent和burnt-resistor则认为这些设备在办公和日常使用中不切实际，且市场前景不明朗。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44378271" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://simonwillison.net/2025/Jun/24/anthropic-training/" target="_blank">Anthropic wins fair use victory for AI – but still in trouble for stealing books</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: taubek</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-25 20:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Anthropic在涉及使用书籍训练AI模型的版权诉讼中获得了一项重大公平使用胜利，但仍面临盗版书籍问题的法律麻烦。2021年，Anthropic的联合创始人Ben Mann下载了包含196,640本盗版书籍的Books3库，并在之后继续下载了其他盗版书籍。尽管公司在2024年转向购买和扫描数百万本实体书，但之前下载的盗版书籍仍保留在其内部研究库中。法官William Alsup的判决认为，扫描的书籍属于公平使用，因为它们仅在公司内部用于训练模型且未对外分享，而下载的电子书不属于公平使用，将面临陪审团审判。法官强调，训练大型语言模型使用未经授权的数据属于公平使用，因为这类似于人类的阅读和创作过程。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：大型语言模型（LLMs）对书籍内容的使用及其合法性和伦理问题
+
+不同观点：
+• pseufaux认为，要求人们每次阅读、回忆或在创作中运用书籍内容时都要付费是不可想象的。他指出，这种对LLMs行为的拟人化是不合理的，暗示LLMs的使用不应被过度限制。
+
+• gschizas提到了这一讨论可能对Disney、Universal与OpenAI之间的诉讼产生的影响，暗示这类技术使用受版权保护内容的问题可能在法律层面引发更多争议。
+
+• roywiggins通过引用Vinge的小说《Rainbows End》中的情节，类比当前对书籍的数字化处理，指出这种行为与小说中的情节相似，可能引发对技术滥用和版权侵犯的担忧。
+
+• Am4TIfIsER0ppos以讽刺的口吻质疑书籍内容被盗用的具体情况，询问是否涉及书店或出版社的仓库被盗，以此来质疑所谓“偷窃”的定义和实际情形。
+
+补充讨论：
+- 评论中的讨论涉及到LLMs对书籍内容的使用是否构成盗窃或侵犯版权，以及这种使用在法律和伦理上的正当性。
+- 争议的焦点在于，LLMs对书籍内容的数字化和利用是否应该被视为侵犯版权，或者这些行为是否属于合理使用和技术进步的一部分。
+- 讨论还涉及到拟人化LLMs的问题，即是否应该以人类的道德标准来评判机器行为。
+- 法律层面的潜在影响，特别是对正在进行的诉讼可能产生的影响，也被认为是这一问题的重要方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44381639" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://brevzin.github.io/c++/2025/06/26/json-reflection/" target="_blank">Reflecting JSON into C++ Objects</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-26 12:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了C++26中通过反射机制将JSON文件在编译时转换为C++对象的技术。C++26包含多个与反射相关的提案，如P2996R13和P3394R4等。文章通过一个示例展示了如何利用反射在编译时读取JSON文件并生成相应的C++对象。具体做法是使用`constexpr`和元编程技术，通过解析JSON文件生成对应的C++结构体，并用静态断言验证对象的值。文章还详细描述了如何逐步实现这一过程，包括从简化版JSON对象开始，通过反射生成数据成员和初始化器，最终构建出完整的C++对象类型。这一技术利用了C++26中的新特性，使得编译时处理JSON成为可能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过JSON配置文件在运行时编译程序的设想及其可行性和应用场景
+
+不同观点：
+• **支持并认为具有潜力的观点**：
+  - [squirrellous] 认为，在运行时通过JSON配置文件动态生成和优化程序是非常 exciting（令人兴奋的）。这种方法可以根据具体配置优化程序，实现高度定制化的软件。
+  - 支持者认为，这种方法特别适用于需要高度灵活性和定制化的应用场景，比如自动化工具、云服务配置等。
+  - 示例：通过GCC在运行时编译，可以避免预先编译多种不同配置的二进制文件，减少开发和维护成本。
+
+• **质疑其实际应用的可行性和性能问题**：
+  - 一些讨论者指出，在运行时进行编译可能会导致性能问题，尤其是在资源有限的设备上。每次根据配置动态编译程序可能带来较大的延迟。
+  - 示例：在大规模分布式系统中，每次接收到新的配置文件都要进行编译，可能会导致系统响应变慢，影响用户体验。
+
+• **安全性担忧**：
+  - 有观点认为，允许通过外部配置文件动态生成和编译代码，可能会引入安全漏洞，尤其是当配置文件来自不可信的来源时。攻击者可能通过恶意构造的JSON文件，导致编译出具有安全隐患的程序。
+  - 示例：配置文件如果未经过严格验证，可能会导致代码注入或其他类型的攻击。
+
+补充讨论：
+• **实现难度**：
+  - 一些讨论者提到，要实现这种运行时编译和优化的系统，可能需要解决一系列技术问题，比如跨平台支持、编译器依赖等。
+  - 示例：如何确保在不同操作系统和硬件平台上都能顺利编译和运行生成的程序，是一个需要解决的问题。
+
+• **与预编译二进制文件的对比**：
+  - 有观点指出，预编译多种配置的二进制文件虽然会增加存储和维护成本，但可以避免运行时编译的开销，在某些场景下可能更合适。
+  - 示例：一些高性能应用场景中，预先编译并优化好的二进制文件，能够确保在运行时提供最佳性能。
+
+争议焦点：运行时编译的实际可行性与性能、安全性之间的平衡。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44387007" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.cloudflare.com/defending-the-internet-how-cloudflare-blocked-a-monumental-7-3-tbps-ddos/" target="_blank">How Cloudflare blocked a monumental 7.3 Tbps DDoS attack</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: methuselah_in</span> |
+                    <span>评分: 254</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-06-20 18:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>2025年5月中旬，Cloudflare成功阻止了一次创纪录的7.3 Tbps DDoS攻击。此次攻击针对一家使用Cloudflare Magic Transit服务的托管服务提供商，攻击持续了45秒，传输了37.4 TB数据。攻击主要通过UDP洪水攻击实现，伴随少量QOTD反射、Echo反射等攻击。Cloudflare的系统自动检测并缓解了这次攻击，保护了客户网络。此次攻击规模空前，比之前记录高出12%。Cloudflare建议通过云端DDoS防护、智能限速和过滤异常流量来防御此类攻击，同时避免对合法流量造成影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Cloudflare应对DDoS攻击的有效性及其相关技术和安全问题
+
+不同观点：
+• ripberge认为Cloudflare的自动检测系统（包括机器学习技术）在应对大规模DDoS攻击时表现不佳，需要手动设置规则来阻止攻击，并且部分攻击流量来自Cloudflare自身的服务（如Cloudflare Workers或WARP客户端），这让人感到失望。
+
+• jakub_g对QOTD协议被用于DDoS攻击表示惊讶，认为这种老旧协议在现代操作系统中已不常见，将其比喻为过时的技术（如“IP over Avian Carriers”）。
+
+• password4321指出Cloudflare在保护提供DDoS攻击服务的网站，存在利益冲突，即同时销售防护服务和保护攻击源。
+
+• dangoodmanUT认为讨论这类攻击可能正是攻击者想要的，因为这为他们的能力提供了免费的宣传和验证。
+
+• kevmo314对学习到QOTD协议表示感兴趣，认为它是互联网历史的一个有趣遗留物。
+
+• sparrish好奇“Cloudflare客户，一个 hosting provider”是谁，以及攻击的目标和原因是什么，想要了解攻击背后的动机。
+
+• losthobbies认为不可靠的物联网设备是导致此类攻击的主要原因，并担忧其最终影响。
+
+• londons_explore指出随着互联网用户和设备增加，DDoS攻击的规模相对单个连接的容量会变得更大，并质疑是否有解决方案。
+
+• pariainterpares对攻击的真实性提出质疑，询问是否有其他组织观察到类似的攻击，而不仅仅依赖Cloudflare的说法。
+
+• candiddevmike好奇当这个7.3 Tbps的僵尸网络没有进行DDoS攻击时在做什么，以及什么因素会触发攻击，并假设如此大规模的攻击应该会被注意到。
+
+• slt2021认为L4层的DDoS攻击容易防护，但应用层的DDoS攻击通过绕过Cloudflare的系统直接攻击目标服务器，并提醒不要依赖Cloudflare防护所有攻击，尤其是应用层防护不佳时。
+
+• AngryData认为这类文章更多是营销和公关，只是挑选成功案例来展示。
+
+• lordnacho表示喜欢这种信息丰富且不过度推销的广告形式。
+
+• wrs质疑仅持续45秒的攻击的目标和意义是什么。
+
+补充讨论：
+- 对Cloudflare技术和服务的不同评价，从失望到赞赏。
+- 对DDoS攻击背后动机的猜测，包括经济利益或纯粹的破坏。
+- 对物联网设备在网络安全中扮演角色的关注。
+- 对攻击真实性的怀疑与验证需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44330585" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -203,351 +553,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://shkspr.mobi/blog/2025/06/reading-nfc-passport-chips-in-linux/" target="_blank">Reading NFC Passport Chips in Linux</a>
+                    <a href="https://www.rxjourney.net/a-few-thoughts-on-extraterrestrial-intelligence" target="_blank">A Few Thoughts on Extraterrestrial Intelligence</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: robin_reala</span> |
-                    <span>评分: 274</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-06-25 07:33</span>
+                    <span>作者: burabusayo</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-26 10:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章描述了如何使用Linux系统读取护照NFC芯片中的数据，重点介绍了利用Python脚本重建机器可读区（MRZ）作为NFC芯片密码的过程。护照的NFC芯片受密码保护，密码由护照号码、出生日期和到期日组成，每个数据段都有校验码。由于作废护照的MRZ部分被剪掉，文章提供了生成MRZ的Python代码，利用已知的护照信息计算出完整的密码。
-
-文章还探讨了护照NFC芯片的安全性，指出由于芯片没有计时器，无法记录读取次数，理论上可以通过暴力破解尝试密码。尽管破解过程可能需要几天时间，但并非不可能。此外，文章提到大多数NFC芯片支持无限次读取，这增加了被破解的风险。最终，文章提醒用户护照的安全性依赖于物理和密码学的多重保护。</p>
+                    <p>本文探讨了外星智慧生命的可能性及其对人类的潜在影响。作者首先表达了对地外文明存在的高度兴趣，设想如果一个公元10世纪的人看到今天的科技进步，会视现代人为神明。同理，比人类先进得多的外星文明可能也会被我们当作神崇拜。文章接着讨论了外星生命可能与人类想象大不相同，因为它们在不同环境下的演化会导致其拥有独特的生物特征。作者还提醒，人类与外星文明的接触可能带来冲突，类似于历史上先进文明对落后地区的剥削。最后，引用亚瑟·克拉克的话指出，无论人类是否孤独存在于宇宙中，都令人感到畏惧。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：机器可读旅行证件（Machine Readable Travel Documents, eMRTDs）的技术实现、验证过程、实际应用中的问题以及潜在的安全隐患。
+                    <div class="comments-summary">主要讨论点：对“生命”定义的扩展以及生命可能存在的条件
 
 不同观点：
-• [tauntz] 指出ICAO 9303规范详细描述了如何读取和验证旅行证件数据，但实际应用中存在很多对规范的“创造性解释”以及实现上的漏洞，导致软件开发者在处理不同国家颁发的证件时会遇到许多调试问题。
-• [nemoniac] 分享了一段Python代码用于生成MRZ（机器可读区），并提到其荷兰驾照上的MRZ样式的编码部分难以解读，寻求帮助。
-• [alexrsagen] 提供了Rust代码示例，说明如何读取护照照片和处理eMRTD，并表示对ICAO 9303规范的细节很感兴趣，认为其非常详细。
-• [privacyking] 提出使用Proxmark 3 rdv4设备可以轻松读取MRZ数据，暗示这是获取此类信息的简便方法。
-• [wkat4242] 提到护照中还包含数字化的指纹信息，但这些信息更难获取，因为需要政府持有的私钥才能解锁。
-• [stavros] 质疑是否有遗漏关于如何处理缺失校验和的信息，尤其是是否能轻易通过已有信息计算校验和，或者是否有人成功解密护照。
-• [extraduder_ire] 推荐了一款安卓应用，可以在没有NFC读取器的情况下读取护照数据，但用户需要手动输入部分信息。
-• [SXX] 提出疑问，规范中是否包含护照颁发机构的数字签名，否则各国如何验证护照的真伪。
-• [ape4] 对日期格式不兼容Y2K表示惊讶，难以相信在2025年还会遇到这种问题。
-• [frelp] 担心有人可能会制造出能够破坏护照读取系统的芯片，从而引发安全隐患。
-• [criddell] 询问这些技术是否仅适用于Linux系统，或者是否也适用于Windows和macOS。
-• [dzhiurgis] 质疑是否可以通过在假护照中植入自定义照片和元数据来欺骗系统，并对系统的安全性表示担忧。
+• **传统定义**：传统上，生命被定义为一种由有机金属化学物质在水溶液中形成的自催化网络，能够处理信息并耗散特定的非平衡态。这种定义主要基于地球生物化学的理解，集中在液态水、自由能和基本化学元素（CHNOPS）的基础上。
+
+• **扩展定义 ("lyfe")**：Dr. Michael L. Wong提出了一种更广泛的生命定义，即“lyfe”。这个定义包括：1) 通过耗散保持低熵状态，2) 利用自催化网络增长，3) 使用稳态机制保持稳定，4) 获取和处理有关环境的功能信息。这一定义允许生命在更广泛的环境条件下存在，而不仅限于地球的物理化学条件。
+
+• **传统行星宜居性**：传统观点认为行星宜居性主要依赖于液态水、自由能和基本化学元素的存在。这种观点将生命可能的存在范围限制在与地球类似的环境中。
+
+• **扩展宜居性概念**：根据Wong的扩展定义，只要有足够的自由能梯度和驱动信息处理及学习行为的环境复杂性，“lyfe”就可以繁盛。这意味着生命可能存在于远超出地球物理化学边界的地方，使用与地球生物不同的生化机制。例如，机械营养体（mechanotrophs）和热营养体（thermotrophs）等假想生命形式，分别通过流体流动或热梯度获取能量。
 
 补充讨论：
-• 争议的焦点之一是实际应用中的技术实现与规范的偏差，以及由此带来的调试和验证困难。
-• 另一个值得注意的讨论点是关于护照数据的访问和安全问题，包括如何防止伪造和未经授权的访问。
-• 不同用户提供了多种工具和代码示例，展示了如何读取和处理MRZ数据，并分享了实际操作中的经验和建议。
-• 安全性和隐私问题也是讨论的重点，包括对数字签名、校验和以及潜在安全漏洞的关注。</div>
+• **争议焦点**：扩展生命定义的主要争议在于其过于宽泛，可能会涵盖非生物现象。传统定义的支持者可能认为这种扩展定义模糊了生命与非生命之间的界限。
+
+• **实例与想象**：评论中提到了具体例子，如机械营养体和热营养体，这些假想生命形式展示了扩展定义下生命可能的多样性。这些例子挑战了传统观念，并激发了对生命本质的进一步思考。
+
+• **对外星生命的启示**：扩展定义对寻找外星生命有重要启示，提示科学家在探索生命时应考虑更广泛的条件和环境，而不仅限于类似地球的条件。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44374574" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://refactoringenglish.com/chapters/release-announcements/" target="_blank">How to Write Compelling Release Announcements</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mtlynch</span> |
-                    <span>评分: 58</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-06-25 14:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了如何撰写有效的发布公告，强调应关注用户体验的提升，而非单纯列出新功能或更改日志。文章指出，许多发布公告仅简单描述开发团队的工作，而忽略了这些更改对用户的实际益处。好的公告应说明用户能用软件做什么，以及哪些流程变得更快或更容易。例如，不要只说“添加了复制按钮”，而应强调“创建事件速度提升10倍”。公告应避免使用“各种改进和错误修复”这样的空洞表述，并利用截图和动画演示让用户直观了解变化，同时保持简洁，演示最好不超过5秒。最终目标是让用户对新版本感到兴奋，而非仅仅提供技术细节。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：发布公告与发布说明的区别及其写作方式
-
-不同观点：
-• lapcat：反对将发布公告置于发布说明之上，认为详尽的发布说明对用户更有帮助。他强调透明度和细节，如具体修复的bug，并认为不应让管理和营销干预发布说明。
-• deanebarker：不太喜欢经过修饰的发布公告例子，认为这些像是营销练习，偏好简单明了的描述，如“在事件菜单中添加了‘复制’按钮”。他建议可以同时提供简单版和详细版。
-• ednite：同意文章的观点，但指出对于小用户群，透明地说明具体bug修复同样重要。建议保持详细的内部分类账，以供将来参考。
-• ukuina：质疑文章的观点，认为过度关注用户可见的改进可能忽视维护和稳定性任务，这是一种短视的做法。
-• loughnane：同意告知用户重要的内容，但强调文字要简短，避免冗长导致用户失去阅读兴趣。他提供了一个简化例子的方法。
-• chapz：认为文章更像是发布营销，而不是真正的发布公告，建议在发布说明和广告之间找到一个平衡点。
-• bravesoul2：质疑用户是否真的在等待新功能，认为只要软件稳定工作，没有新功能也是可以接受的。
-• directevolve：同意更新作为营销手段，但认为文章的例子过于注重“辛劳”而不是功能本身，建议简化文字。
-• flpm：强调发布邮件的重要性，认为需要精选出对用户影响最大的内容，并 spotlight 最重要的三项。
-• awkward：认为文章建议总体不错，但对具体数字应谨慎处理，特别是对不老练的用户。
-• jcalx：同意文章观点，但认为过于规范的建议不一定有用，应根据用户实际使用情况和痛点进行调整，反对盲目使用数字描述。
-• simonw：认识到每次发布新版本都是一次曝光机会，因此尝试在发布说明中投入更多精力，以吸引新用户。
-• tempodox：庆幸自己不需要做发布公告，认为0%无关修饰的发布说明最好。
-• continuational：反对无意义的版本号命名，如“Thingie 3.5.27”，建议标题应说明新的或有趣的内容。
-
-补充讨论：
-• 发布公告和发布说明的平衡：许多评论者认为需要在详尽的技术说明和简短的用户导向公告之间找到平衡。
-• 透明度和信任：一些评论者强调透明度和具体bug修复的说明对建立用户信任的重要性。
-• 营销与技术：部分评论者对发布公告的营销化倾向持批评态度，认为技术细节不应被忽视。
-• 数字描述的使用：对使用具体数字描述改进的效果存在争议，部分人认为需要根据具体情况谨慎使用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44377666" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.cloudflare.com/defending-the-internet-how-cloudflare-blocked-a-monumental-7-3-tbps-ddos/" target="_blank">How Cloudflare blocked a monumental 7.3 Tbps DDoS attack</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: methuselah_in</span> |
-                    <span>评分: 254</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-06-20 18:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年5月中旬，Cloudflare成功阻止了一次创纪录的7.3 Tbps DDoS攻击。此次攻击针对一家使用Cloudflare Magic Transit服务的托管服务提供商，攻击持续了45秒，传输了37.4 TB数据。攻击主要通过UDP洪水攻击实现，伴随少量QOTD反射、Echo反射等攻击。Cloudflare的系统自动检测并缓解了这次攻击，保护了客户网络。此次攻击规模空前，比之前记录高出12%。Cloudflare建议通过云端DDoS防护、智能限速和过滤异常流量来防御此类攻击，同时避免对合法流量造成影响。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Cloudflare应对DDoS攻击的有效性及其相关技术和安全问题
-
-不同观点：
-• ripberge认为Cloudflare的自动检测系统（包括机器学习技术）在应对大规模DDoS攻击时表现不佳，需要手动设置规则来阻止攻击，并且部分攻击流量来自Cloudflare自身的服务（如Cloudflare Workers或WARP客户端），这让人感到失望。
-
-• jakub_g对QOTD协议被用于DDoS攻击表示惊讶，认为这种老旧协议在现代操作系统中已不常见，将其比喻为过时的技术（如“IP over Avian Carriers”）。
-
-• password4321指出Cloudflare在保护提供DDoS攻击服务的网站，存在利益冲突，即同时销售防护服务和保护攻击源。
-
-• dangoodmanUT认为讨论这类攻击可能正是攻击者想要的，因为这为他们的能力提供了免费的宣传和验证。
-
-• kevmo314对学习到QOTD协议表示感兴趣，认为它是互联网历史的一个有趣遗留物。
-
-• sparrish好奇“Cloudflare客户，一个 hosting provider”是谁，以及攻击的目标和原因是什么，想要了解攻击背后的动机。
-
-• losthobbies认为不可靠的物联网设备是导致此类攻击的主要原因，并担忧其最终影响。
-
-• londons_explore指出随着互联网用户和设备增加，DDoS攻击的规模相对单个连接的容量会变得更大，并质疑是否有解决方案。
-
-• pariainterpares对攻击的真实性提出质疑，询问是否有其他组织观察到类似的攻击，而不仅仅依赖Cloudflare的说法。
-
-• candiddevmike好奇当这个7.3 Tbps的僵尸网络没有进行DDoS攻击时在做什么，以及什么因素会触发攻击，并假设如此大规模的攻击应该会被注意到。
-
-• slt2021认为L4层的DDoS攻击容易防护，但应用层的DDoS攻击通过绕过Cloudflare的系统直接攻击目标服务器，并提醒不要依赖Cloudflare防护所有攻击，尤其是应用层防护不佳时。
-
-• AngryData认为这类文章更多是营销和公关，只是挑选成功案例来展示。
-
-• lordnacho表示喜欢这种信息丰富且不过度推销的广告形式。
-
-• wrs质疑仅持续45秒的攻击的目标和意义是什么。
-
-补充讨论：
-- 对Cloudflare技术和服务的不同评价，从失望到赞赏。
-- 对DDoS攻击背后动机的猜测，包括经济利益或纯粹的破坏。
-- 对物联网设备在网络安全中扮演角色的关注。
-- 对攻击真实性的怀疑与验证需求。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44330585" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://thick-coins.net/?_bhlid=8a5736885893b7837e681aa73f890b9805a4673e" target="_blank">Thnickels</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jxmorris12</span> |
-                    <span>评分: 532</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-06-25 00:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Theodore Nichols创建了一个网站来推广他的"厚硬币"（thnickels），这些硬币比他认为是"太薄"的普通镍币更厚重。他讲述了自己因遭遇盗贼而萌生制作厚硬币的想法，这些硬币不仅用于交易，还可以用于自卫。Theo将车库改造成铸币厂，并开始接受首批厚硬币的预订单。他还提到与邻居的争执以及如何传播对厚硬币的认识。网站包含硬币的设计草图，正面是他的头像和标语"In Mass We Trust"、"Respect Me"，背面强调硬币的坚固和独特性。Theo邀请公众参与预订并帮助宣传。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对网页设计、内容以及隐藏信息的 various 反应和解读
-
-不同观点：
-• [theden] 发现了网页源代码中的隐藏信息，包括Theo留下的秘密留言和与硬币相关的ASCII艺术。这引发了对Theo及其项目的关注。
-• [theodorenichols] 确认自己是Theo，并说明暂停了硬币的销售以处理预订单，表示未来还有剩余硬币，感谢了大家的兴趣。
-• [atomic_cowprod] 提到尝试联系Theo但未能成功，暗示Theo的BBS系统出现问题，希望Theo能回复他。
-• [Aardwolf] 对网页设计的复古风格表示赞赏，特别是其模仿1998年的设计风格，同时指出某些技术细节（如jpg artifacts）的处理方式。
-• [velcrovan] 建议管理员删除链接中的特定ID参数，可能是出于安全或隐私考虑。
-
-补充讨论：
-• [Chant-I-CRW] 以幽默的方式表达了对"thnickles"的兴趣，并提到自己生活中的实际问题（风大，需要重物压住打孔卡），增加了讨论的趣味性。
-• [jcattle] 引用了Theo对自己铸币设施的描述，对其幽默感和自我描述表示赞赏。
-• [waltbosz] 认为这可能是Alan Wagner的一个玩笑，并提供了其网站链接，暗示这可能是一场艺术行为。
-• [lqet] 强调了网页使用FrontPage 98构建，呼应了复古设计的话题。
-• [lordleft] 表达了对过去互联网时代的怀念，与[Aardwolf]的观点形成呼应。
-• [schoen] 从语言学角度对网页上的拉丁文标语提出质疑，认为语法可能有误。
-• [seniortaco] 和 [IAmGraydon] 的简短评论表达了对硬币和过去互联网时代的感慨。
-• [kshehab1] 表示错过了"thnickle"的预订机会，但期待未来的"thennies"，同时提到“雾”可能阻碍其参与，增加了神秘感。
-• [nsb1] 对"Thickel"这个命名未被使用表示疑问，认为这是一个错失的机会，带有调侃意味。
-
-争议焦点：
-• 对于网页和隐藏信息是否为艺术玩笑的看法存在分歧。一部分人如[waltbosz]认为这是某个艺术家的作品，而其他人如[theodorenichols]则确认了Theo的真实存在及其商业行为。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44372424" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.jsbarretto.com/post/software-is-joy" target="_blank">Writing toy software is a joy</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bundie</span> |
-                    <span>评分: 752</span> |
-                    <span>评论数: 58</span> |
-                    <span>发布时间: 2025-06-24 15:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章探讨了编写“玩具软件”（toy software）的乐趣和益处，强调通过亲手创建来加深理解，呼应了理查德·费曼的名言：“我不能创造的，我便不曾理解。” 文章批评了当前软件开发过度商品化、工业化的趋势，提倡通过简单的玩具程序找回编程的乐趣。玩具程序遵循80:20法则，重点不在于构建生产级软件，而是通过简化工程、避免过度设计来学习核心原理。作者分享了自己通过玩具项目获得的意外收获，如在工作中提前识别问题、理解软件约束等。文章还列举了一些玩具项目示例及其难度和所需时间，如正则表达式引擎、x86操作系统内核、GameBoy/NES模拟器等，鼓励开发者通过实践提升技能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕使用LLMs（大型语言模型）和玩具软件项目在编程学习与实践中的作用和价值展开的讨论。
-
-不同观点：
-• **支持LLMs作为学习工具**：dakiol认为LLMs是一个有用的工具，可以快速获取信息并提供参考链接，避免依赖错误信息。LLMs帮助节省搜索时间，特别是在需要快速概览时非常有效。
-• **反对过度依赖LLMs**：purplesyringa警告不要让LLMs剥夺了从错误中学习的机会。通过尝试、失败、再研究的过程才能真正理解问题，并认为LLMs无法替代这个学习过程。
-• **LLMs的正确使用方式**：oconnor663指出，不应完全拒绝LLMs的帮助，但需要明确所需的帮助类型，将其视作专家朋友一样引导自己，而不是单纯获取答案。
-• **玩具软件项目的价值**：roughly和diegomacario分享了自己通过玩具项目获得职业自信和技能提升的经历，认为这种方法有助于突破职业瓶颈。
-• **玩具软件项目的乐趣**：notepad0x90强调玩具项目纯粹出于兴趣，不应被职业压力和外界评价所影响。
-
-补充讨论：
-• **配置引擎的陷阱**：ravenstine提醒避免在玩具项目中过度设计灵活的配置引擎，这样会浪费时间且不一定有用。
-• **发布玩具项目**：hu3建议将玩具项目发布到GitHub，可能会发现对其他人也有用，并获得反馈。
-• **简化技术栈**：_benton享受使用最小技术栈编写软件的乐趣，认为这样可以保持项目的简单和直接。
-• **LLMs对学习的不同影响**：rybosome指出，LLMs的使用方式决定了其学习效果，提出应使用促进思考和讨论的提示，而不是单纯获取解决方案。
-• **AI对编程的影响**：rubicon33和josefresco提到AI正在改变编程的乐趣，强调通过玩具项目找回编程的初心和乐趣。
-
-争议焦点：
-• **LLMs是否剥夺了学习过程的乐趣和价值**：一方认为LLMs加速了学习过程，另一方担心其剥夺了从错误中学习的机会。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44367084" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44383524" target="_blank">Show HN: AI Phone Interviewer – get a call in 30 seconds</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: OlehSavchuk</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-26 01:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI电话应用在进入市场和使用中的潜在问题，包括法律隐私保护和伦理问题。
-
-不同观点：
-• [karambahh] 认为进入欧盟市场时需要非常谨慎，因为隐私保护机构会对不符合规定的客户进行罚款。这表明对法律合规性和隐私保护的关注。
-
-• [marethyu] 提出这种技术可能会被用于歧视听障申请人，暗示了对技术滥用和伦理问题的担忧。
-
-• [ungreased0675] 以幽默的方式回应，提出"我的AI能否打电话给你的AI"，可能在调侃AI互动的未来场景或对人际互动的影响。
-
-• [OlehSavchuk] 提供了一个链接，可能是在展示或推广一个具体的AI电话产品，未直接参与到讨论的争议点中。
-
-补充讨论：
-- 法律和隐私问题：[karambahh]强调了在欧盟市场中隐私保护的重要性，指出如果不谨慎处理，可能会导致客户被罚款。
-- 伦理问题：[marethyu]指出了技术可能被滥用来歧视特定群体，特别是听障人士，这涉及到AI应用的伦理道德。
-- 技术互动的未来：[ungreased0675]通过幽默提出了AI之间互动的可能性，暗示了AI技术在未来交流中的潜在影响。
-- 产品推广：[OlehSavchuk]的链接可能是在展示实际的AI电话产品，但未直接涉及讨论中的争议点。
-
-争议焦点：AI电话技术在法律合规性、隐私保护和伦理问题上的潜在风险与挑战。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44383524" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://wok.oblomov.eu/tecnologia/mixed-dpi-x11/" target="_blank">Mixed DPI in X11</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: somat</span> |
-                    <span>评分: 22</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-26 11:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了X Window System（X11）对混合DPI（每英寸点数）配置的支持情况，澄清了一些常见的误解。X11是一种用于创建和管理图形用户界面的系统，通过客户端和服务器之间的协议进行通信。尽管核心协议在过去30年中没有重大变化，但通过各种扩展，它依然能跟上技术进步，比如支持多显示器的Xinerama和XRANDR扩展。
-
-混合DPI配置是指同一显示服务器控制的多台DPI不同的显示器。例如，一个高DPI的笔记本电脑屏幕和一个低DPI的外接显示器共同工作时，若软件不考虑DPI差异，界面元素会出现不一致。
-
-文章介绍了通过XRANDR等方法设置混合DPI的解决方案，并解释了参考像素和设备像素比率的概念，以确保界面元素在不同DPI显示器上的一致性。最终，文章希望澄清事实，避免人们受到其他来源的误导。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同操作系统和桌面环境在处理混合DPI显示（不同分辨率的多个显示器）时的表现和问题
-
-不同观点：
-• horsawlarway认为，虽然在技术上可以配置多个不同DPI的显示器，但实际操作中问题很多。他指出，配置过程复杂，许多应用程序无法正确处理DPI差异，跨显示器移动应用程序时会出现缩放问题。即便一些应用在启动时能正确处理，重新定位后又会出问题。他认为，尽管可以实现混合DPI设置，但体验不佳。
-
-• baobun提到，混合DPI在X11上表现不佳的一个主要原因是Gnome阻止了Gtk对这方面的支持。
-
-• the_mitsuhiko不认同近期关于“X11其实很棒”的观点，认为X11在DPI问题上并没有得到解决。他鼓励阅读一篇评论以了解实际情况。
-
-• encom分享了长期使用混合DPI设置的经验，指出不同操作系统在这方面的表现。他提到KDE Plasma在Wayland下表现较好，而X11的体验不佳。Windows也有很多问题，比如应用程序在低DPI显示器上模糊，鼠标光标处理不一致等。他最后提到已经两年不用Windows，并好奇OS X的处理情况，认为苹果可能会更注重这方面。
-
-补充讨论：
-• 讨论中提到了多个操作系统和桌面环境，包括X11、Gnome、KDE Plasma、Wayland和Windows，比较了它们在处理混合DPI显示时的优缺点。
-• 争议的焦点在于X11是否能有效处理混合DPI问题，以及不同桌面环境和操作系统在实际使用中的表现差异。
-• 用户普遍认为混合DPI设置在实际应用中存在较多问题，尽管技术上可以实现，但体验并不理想。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44386149" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44386021" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
