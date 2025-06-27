@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-27 09:03 (北京时间)
+            最后更新时间: 2025-06-27 11:47 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,38 +61,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://utcc.utoronto.ca/~cks/space/blog/programming/CZeroSizeMallocSomeNotes" target="_blank">Some bits on malloc(0) in C being allowed to return NULL</a>
+                    <a href="https://www.category.xyz/blogs/raptorcast-designing-a-messaging-layer" target="_blank">RaptorCast: Designing a Messaging Layer</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 41</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-25 06:15</span>
+                    <span>作者: wwolffrec</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-06-23 06:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章指出，由于大量高流量的爬虫程序（特别是用于LLM训练的数据采集）使用旧版浏览器用户代理（尤其是Chrome），作者在其博客"Wandering Thoughts"和wiki "CSpace"中实施了反爬虫措施。如果用户使用被认为可疑的旧浏览器访问，可能会被阻止。若用户确实在使用当前浏览器版本却被误拦，可以联系作者提供浏览器信息以解决问题。特别提到，使用archive.*（如archive.today, archive.ph）的用户也会被误认为恶意爬虫，建议使用行为更规范的archive.org进行存档访问。</p>
+                    <p>这篇文章讨论了在权益证明（Proof of Stake）区块链中，如何通过设计一个高效的消息层——RaptorCast，来解决区块提案快速传播的问题。主要挑战包括性能、安全性和稳健性。为了解决这些问题，文章提出了三个关键设计选择：数据传输协议、编码系统和广播策略。
+
+在数据传输协议上，选择了UDP而非TCP，因为UDP速度更快，适合低延迟场景，但需要解决UDP的丢包和数据完整性问题。为此，采用R10（Raptor码的一种）作为编码系统，通过增加10%的冗余包来应对可能的丢包问题，同时引入符号级认证确保数据完整性。
+
+通过这些设计选择，RaptorCast能够在保证安全和稳健的前提下，实现区块提案的快速传播，从而提升区块链的整体性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：malloc(0) 的行为及其合理性
+                    <div class="comments-summary">主要讨论点：网络协议和编码设计的性能与优化
 
 不同观点：
-• [bobmcnamara] 支持 malloc(0) 返回 -1 并增加计数器，认为这有助于检测内存泄漏。这种实现方式通过 free(-1) 来减少计数器，从而追踪内存分配问题。
-• [Lvl999Noob] 质疑为何需要多次分配大小为 0 的内存，并建议如果需要唯一地址，可以使用 malloc(1) 代替。同时认为 malloc(0) 应返回常量值如 NULL 或 -1。
-• [randomNumber7] 认为分配 0 字节内存没有实际用例，且不关心返回的指针值，因为无法解引用。因此觉得 malloc(0) 应返回 NULL。
-• [tptacek] 认为可以通过封装 malloc 来实现所需语义，例如返回 NULL 或某个哨兵指针，以解决标准复杂性问题。
-• [AaronDinesh] 主张 malloc(0) 应始终返回 NULL，质疑返回有效指针的合理性。
-• [a-dub] 对 0 页在不同系统中的处理方式感兴趣，暗示可能存在不同的行为。
-• [eesmith] 提到曾在 AIX 系统上遇到 malloc(0) 返回 NULL 导致程序失败的问题，并通过总是分配 size+1 来解决。
+• [klabb3] 认为在多样化平台和高吞吐量的环境下，UDP协议相比TCP更容易遇到性能问题，即使在理想网络条件下（零延迟和高带宽）。他指出，UDP的包交换更难优化，尤其在非高度控制的环境中。不过，在处理间歇性消息且能接受无序消息和重传逻辑的情况下，UDP是有优势的，比如实时多人游戏。他还表示对新设计在不同环境和流量模式下的表现非常好奇，并建议进行基准测试和压力测试。
+
+• [toolslive] 则讨论了在线编码（或类似算法）的解码过程，建议直接使用高斯消元法来解决方程组，而不必在意方程的复杂度。同时，他指出系统非常稀疏，最好使用稀疏集的表示方式，而不是位向量或矩阵表示，以避免扫描大部分为零的行，从而提高效率。
+
+• [yangl1996] 指出博客文章中未提到一篇论文中提出的"两级广播"想法，并提供了论文链接。这表明讨论的技术方案可能已有学术基础，但未被充分引用或说明。
+
+• [wwolffrec] 提到Monad使用RaptorCast协议来快速、可靠地向全球验证者发送区块提案，并表示在Category Labs设计高性能消息协议的过程中学到了很多。这暗示RaptorCast协议能有效满足高性能需求，并提供了进一步阅读的链接。
 
 补充讨论：
-• [carra] 对标题中使用 "some bits" 感到困惑，认为容易引起误解。
-• 争议焦点在于 malloc(0) 的合理行为，包括是否应返回 NULL、有效指针或常量值，以及是否有必要支持多次分配大小为 0 的内存。</div>
+• 争议焦点之一是UDP和TCP在不同应用场景下的性能表现。[klabb3] 认为TCP在多样化硬件和平台上表现更优，而UDP只在特定场景（如实时游戏）下有优势。
+• [toolslive] 对在线编码解码过程中的优化方法提出了具体建议，强调了稀疏集表示的重要性，这与其他评论关注协议层面的讨论形成对比。
+• [yangl1996] 指出的文献补充为技术方案提供了学术背景，但未深入讨论其实际应用效果。
+• [wwolffrec] 提供的实际案例（Monad和RaptorCast）展示了高性能网络协议的应用，但未直接比较UDP和TCP。
+
+总体而言，讨论围绕协议选择（UDP vs TCP）和算法优化（高斯消元与稀疏集表示）展开，并涉及具体应用案例和技术文献补充。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44374114" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44353098" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -103,72 +111,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44378271" target="_blank">Ask HN: Anyone using augmented reality, VR, glasses, helmets etc. in industry?</a>
+                    <a href="https://www.sciencedaily.com/releases/2025/06/250616040233.htm" target="_blank">Tiny orange beads found by Apollo astronauts reveal Moon's explosive past</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: NewUser76312</span> |
-                    <span>评分: 78</span> |
-                    <span>评论数: 32</span> |
-                    <span>发布时间: 2025-06-25 15:12</span>
+                    <span>作者: anigbrowl</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-22 22:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>阿波罗宇航员曾在月球上发现闪亮的橙色玻璃珠，这些珠子形成于约33至36亿年前的火山喷发，熔岩滴在月球寒冷的真空中迅速冷却凝固。借助现代先进技术，科学家们对这些珠子进行了详细分析，揭示了月球过去剧烈的地质活动和火山喷发模式的变化。研究使用了一系列显微分析技术，包括NanoSIMS 50离子束分析仪，发现珠子表面矿物成分独特，记录了月球内部的化学环境和喷发历史。这些珠子如同月球火山学家的日记，为理解月球的演化提供了重要线索。研究成果发表在《Icarus》期刊上。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AR/VR技术在各行业应用的现状、挑战与前景
+                    <div class="comments-summary">主要讨论点：对ScienceDaily未提供图片的批评以及对月球发现的不同反应
 
 不同观点：
-• **AR技术在工业质量控制中的应用**：
-   - isk517认为Hololens 2在质量控制(QC)中表现出色，能够提升工作效率和准确性。
-   - 然而，他指出大公司对AR兴趣不足，Hololens 2硬件能力接近极限，技术尚未完全成熟。
-   - 他还提到AR的核心价值是提升人工操作的效率，但科技公司更关注AI而非实用工具。
+• [pixelpoet的观点]
+  - 认为ScienceDaily作为一个出版物质量低，具体批评其在报道重大科学发现时没有包含任何图片。
+  - 举例说明科学发现本应伴随视觉材料（如“令人惊叹的水晶样品”），但ScienceDaily仅提供了数据表和学术参考。
+  - 提供了一个指向原始来源的链接，暗示该来源可能有更好的视觉和详细内容。
 
-• **AR/VR设备在实际工作中的局限性**：
-   - idkwhattocallme指出过去十年AR/VR设备存在重量、价格、易碎性、电池寿命短等问题。
-   - 许多客户发现这些设备在实际操作中不如智能手机方便，主要用于查阅手册或通话。
-   - 近期语音技术(LLMs)和Meta的“眼镜形态”设备重新引发了大公司的兴趣，正在探索新的应用场景如检查和表格填写。
-
-• **VR设备在办公环境中的不适与健康风险**：
-   - edent认为即使忽略费用和卫生问题，VR头戴设备仍会导致部分用户不适，且长时间佩戴不舒适、孤立感强。
-   - 这些因素限制了VR在办公环境中的广泛应用。
-
-• **AR技术在远程协助和培训中的成功案例**：
-   - lormayna分享了在能源服务公司使用VR进行远程协助和培训的成功案例，显著节省了时间和成本。
-
-• **消费级AR设备的使用体验**：
-   - gavinray和j-wags分享了个人使用Viture Pro XR和TCL Rayneo Air 2显示眼镜的体验，指出了设备设计和舒适度方面的问题。
-   - 他们期待未来AR设备的改进和更多市场选择。
-
-• **AR/VR在工程和建筑行业中的应用挑战**：
-   - ugolino91提到AR/VR平台在工程和建筑行业中仍面临硬件限制，不能完全替代传统PC工作流。
-   - 这些设备只能在特定场景下使用，尚需与2D显示器配合。
-
-• **特定场景下的AR需求与设备限制**：
-   - wiseleo指出在复杂工作场景（如高空作业）中，AR技术有实际需求，但目前设备尚未普及。
-   - spookie提到AR设备在特殊职业培训（如消防员）中面临电池寿命和耐用性的挑战。
+• [shayway的观点]
+  - 对月球发现表现出积极和感性的反应，特别是提到阿波罗17号宇航员发现月球上的橙色物质。
+  - 强调宇航员在发现时的纯真和喜悦是具有感染力的，并提供了一段视频链接作为例子。
 
 补充讨论：
-• **企业对AR/VR设备的接受度与投资回报**：
-   - SomeUserName432提到Equinor（挪威石油公司）使用Hololens的成功案例。
-   - curiouscavalier指出AR/VR在培训中的应用比公众认知的要广泛，但在实际操作中面临设备可靠性和工作流程改变的阻力。
-   - 企业对AR/VR的ROI（投资回报）和设备适应性仍持观望态度，许多决策者缺乏实际使用经验。
+• pixelpoet对科学传播中缺乏视觉吸引力的不满，认为这影响了读者对科学发现的兴趣和理解。
+• shayway则通过具体的历史例子展示了科学探索中的情感和人性化的一面，试图通过视频来补充缺失的视觉体验。
 
-• **远程工作与便携式虚拟桌面环境的探索**：
-   - geocrasher提到正在考虑使用Oculus 3作为便携式虚拟桌面环境，以替代大型显示器，适应远程工作需求。
-
-• **AR/VR在CAD数据可视化中的潜力与挑战**：
-   - jlarocco指出其公司在CAD数据翻译工具中尝试支持VR眼镜，但后续进展不大，主要挑战在于是否能为客户带来足够的价值。
-
-争议焦点：
-• **AR/VR设备是否能在实际工作中广泛应用**：
-   - 一方面，支持者认为AR/VR在特定行业和场景中能显著提升效率和降低成本。
-   - 另一方面，批评者指出设备的技术限制、使用不便和市场接受度低等问题，认为科技公司应更关注实用性而非创新噱头。</div>
+争议焦点：科学传播中视觉材料的必要性以及如何有效传达科学发现的兴奋和重要性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44378271" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44350717" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -179,25 +156,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arstechnica.com/science/2025/06/researchers-develop-a-battery-cathode-material-that-does-it-all/" target="_blank">Researchers develop a battery cathode material that does it all</a>
+                    <a href="https://www.huntington.org/verso/ea-spitzkas-studies-exceptional-and-deviant-brains" target="_blank">E.A. Spitzka's Studies of Exceptional and Deviant Brains (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: LorenDB</span> |
-                    <span>评分: 12</span> |
+                    <span>作者: Hooke</span> |
+                    <span>评分: 3</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-26 20:02</span>
+                    <span>发布时间: 2025-06-26 18:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>研究团队开发了一种新型电池电极材料，能够同时满足导电、离子移动和存储等多项功能。该材料使用廉价常见的元素，具有自愈特性，可以平滑掉充放电循环中的损伤。具体而言，这种材料为氯化铁锂（Li1.3Fe1.2Cl4），通过预载锂和机械化学合成法制备。尽管初始导电性不高，但添加少量碳可改善导电性。实验显示，该材料在快速充电条件下能保持高容量，经过3000次充放电循环后仍保留90%以上的容量。其自愈能力源于充放电过程中发生的相变和延展性变化，有效减缓了电池容量的衰减。这种材料有望简化电池设计，提高耐用性和性能。</p>
+                    <p>本文介绍了美国神经解剖学家Edward Anthony Spitzka（1876–1922）的生平及其对异常大脑的研究。Spitzka因对刺杀总统William McKinley的凶手Leon Czolgosz进行尸检而闻名，他试图通过研究极端个体的大脑结构来理解异常行为和天才的生理基础。他的研究对象包括著名地质学家John Wesley Powell、行为怪异的商人George Francis Train以及诗人Walt Whitman。此外，Spitzka还研究了多位死刑犯的大脑，包括谋杀孕妇的Chester Gillette和杀害船长的Frank Henry Burness等，探索犯罪行为的生物学根源。The Huntington图书馆收藏了Spitzka的大量个人和专业文件，为神经科学和美国历史的研究提供了宝贵资料。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44390746" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44389816" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -208,13 +185,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44352476" target="_blank">I built an app to backup Live Photos from iPhone to external hard drives</a>
+                    <a href="https://www.allciphers.com" target="_blank">AllCiphers – An online toolkit to encrypt/decrypt popular ciphers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: xmasterdev</span> |
-                    <span>评分: 74</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-06-23 04:36</span>
+                    <span>作者: zorbzster</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-26 18:09</span>
                 </div>
 
                 <div class="summary-section">
@@ -224,29 +201,30 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：通过不同方法和工具实现iPhone照片备份到外部硬盘或自建服务
+                    <div class="comments-summary">主要讨论点：用户对某工具或平台的广告体验及其功能与安全性比较
 
 不同观点：
-• gerdemb质疑如何将iPhone备份到外部硬盘，寻求具体方法的链接。
-• gaudat建议使用Synology NAS和其Photos应用来备份iPhone和Android设备的Live Photos，并认为NAS对大多数用户是可行的。
-• mattfrommars推荐使用LocalSend应用作为备份工具。
-• jlarocco认为ifuse和rsync足以满足个人需求，但理解其对家庭成员可能有用。
-• atmosx分享了自己通过PhotoSync将iPhone照片备份到自建的Photoprism服务的经验，使用WebDAV并通过tailscale进行远程访问。
-• polymatter对“终身”支付选项表示赞赏。
-• SwamyM希望有一种方法能方便地仅备份自己拍摄的照片，而非所有来源的图片。
-• 1970-01-01提问这种备份方法与iMazing有何不同。
-• mindwork询问Immich是否适合这种备份需求，并指出可在Docker容器中运行。
-• mfa1999关注备份大型照片库（如150k照片/视频）的可行性，以及是否保留相册/文件夹结构。
-• keroro询问相关工具的成本。
-• er0k简单表示自己使用rsync，效果很好。
+• **jenoer的观点**：  
+  - 对该工具的广告体验非常不满，尤其是无法关闭且重新弹出的广告，认为这是无法接受的。  
+  - 更倾向于使用Cyberchef，原因在于Cyberchef是开源的，能够在本地运行（浏览器客户端侧），并且支持大量编码、解码和哈希选项。  
+  - 强调了工具的安全性和透明度，认为开源和本地运行是Cyberchef的优势。
+
+• **als0的观点**：  
+  - 讨论了该工具的加密功能，指出其中只有AES是真正的加密算法，其他都不是。  
+  - 对工具的加密能力提出质疑，暗示用户在选择工具时应注意其加密算法的有效性和安全性。
 
 补充讨论：
-• 争议的焦点在于NAS方案是否适合大多数用户，gaudat认为可行，而其他用户未明确回应这一观点。
-• 不同工具和方法的适用性被广泛讨论，例如LocalSend、PhotoSync、rsync、Immich和iMazing等。
-• 备份大型照片库的具体需求和实现方式引起了关注，特别是对数据量大和复杂结构的处理能力。
-• 成本问题也被提及，尤其是对终身支付选项的偏好。</div>
+• **争议的焦点**：  
+  - **广告问题**：jenoer对广告体验的强烈不满，表明用户对工具的广告策略有较大意见，可能会影响用户的使用选择。  
+  - **加密算法的有效性**：als0指出工具中只有AES是真正的加密算法，暗示其他选项可能不具备相同的加密强度，这可能误导用户选择不安全的选项。
+
+• **工具功能比较**：  
+  - jenoer对比了Cyberchef和该工具的功能，强调Cyberchef的开放性、本地运行和多功能性是其主要优势。  
+  - als0则专注于工具的加密功能，特别是AES的唯一性，指出了功能上的局限性。
+
+总体来看，讨论涉及了广告体验、工具功能和安全性等多个方面，用户在这些方面有不同的关注点和意见。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44352476" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44389803" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -257,51 +235,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://dl.acm.org/doi/10.1145/3728894" target="_blank">LLM Hallucinations in Practical Code Generation</a>
+                    <a href="https://www.alexkesin.com/p/the-hollow-men-of-hims" target="_blank">The Hollow Men of Hims</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: appwiz</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-06-23 07:14</span>
+                    <span>作者: quadrin</span> |
+                    <span>评分: 167</span> |
+                    <span>评论数: 31</span> |
+                    <span>发布时间: 2025-06-25 22:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章批评了美国公司Hims & Hers通过利用监管漏洞和虚假宣传进行医疗欺诈的行为。文章描述了该公司如何将性功能障碍、脱发和肥胖等问题转化为盈利机会，表面上声称提供可负担的医疗服务，实际上却销售中国制造的仿制药，甚至在指责大型制药公司价格欺诈的同时，与其中一家公司短暂合作。这种虚伪的商业模式在短时间内暴露无遗，体现了企业的双重标准和贪婪本质。文章将Hims的做法比作通过伪善获利的典型案例，揭示了其表面改革实则牟利的本质。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）中的“幻觉”问题及其影响和解决方案
+                    <div class="comments-summary">主要讨论点：Hims等远程医疗平台的兴起及其在医疗系统中的角色和影响
 
 不同观点：
-• simonw：认为生成代码中的幻觉问题并不严重，因为错误在运行时会立即显现，而且LLM本身在尝试运行代码时能够发现错误。他还对论文中更多讨论RAG（检索增强生成）解决方案而非基于工具使用的解决方案表示惊讶，认为后者是更为成熟的解决方案。
+• **观点一：Hims的成功源于现有医疗系统的失败**  
+  - 支持者认为，Hims等平台的兴起是因为传统医疗系统过于繁琐、费用高昂且 paternalistic（家长式）的医疗模式让患者难以获得及时和个性化的治疗。[jackdeansmith], [mlsu], [n8cpdx]等评论指出，患者选择Hims是因为现有医疗系统难以满足他们的需求，例如预约难、保险复杂、药品获取困难等。
+  
+• **观点二：Hims的运营模式合法且合规**  
+  - [DoingSomeThings]和[yold__]等人认为，Hims的药品供应链是合法且经过FDA检验的，文章中关于Hims使用未经审查的中国供应商的指控缺乏证据。他们认为，Hims的算法医疗和药品组合是现有医疗体系不足下的有效补充，尤其是在便利性和可及性方面。
 
-• tmaly：通过试验和错误得出类似结论，提供一次性代码示例作为上下文能获得最好的结果。
+• **观点三：Hims提供了价格和隐私上的实际好处**  
+  - 一些评论如[VeninVidiaVicii]和[alphazard]强调，Hims等平台提供了廉价且有效的治疗选择，且患者愿意为避免尴尬和麻烦而支付溢价。然而，[deathanatos]提到GoodRx等平台在隐私保护方面存在问题，例如未经用户明确同意分享数据，这引发了对数据安全的担忧。
 
-• rbanffy：指出当我们说LLM“幻觉”时，其实和人类犯错类似，只是人类犯错被称为“错误”。
+• **观点四：文章的写作风格和内容存在问题**  
+  - [scifi]和[nmca]等评论者认为，文章的写作风格过于 antagonistic（对抗性）且内容混乱，缺乏对关键问题的深入探讨。例如，文章对Hims的批评缺乏实质证据，且在讨论药品价格和供应链问题时不够清晰。
 
-• imiric：认为需要更多研究来解决幻觉这一根本问题，但AI公司更关注追逐基准和推出增值产品。RAG解决方案虽然有趣但有限，因为需要用户提供真实数据，而这对于大多数其他事实信息来说更加困难。依赖网络数据需要人工审查，因此并不是一个普遍适用的解决方案。
-
-• dzikibaz：质疑LLM幻觉与低质量训练数据集或过度随机采样设置导致的随机标记有何不同。
-
-• nerdjon：提到在生成IAM策略时，键常常基于预期被幻觉化，导致错误或不存在的高级条件。
-
-• th0ma5：认为文章很好地讨论了在没有真实信息的情况下面对的许多问题，并对人们开发的各种解决方法表示兴趣。
-
-• dheera：觉得LLM幻觉出一个不存在的Python库很可爱，因为这可能意味着它值得被创造出来。
-
-• cryptica：怀疑LLM幻觉是由于训练集中的矛盾导致的，类似于人类在学习时不仔细处理知识矛盾会导致错误。提出了一种防止矛盾信息更新到模型的复杂训练方法。
+• **观点五：法律和技术细节的争议**  
+  - [giantg2]和[raspasov]指出，文章在法律和技术细节上存在误解或误导。例如，Hims利用法律技术性（regulatory arbitrage）进行创新是合法的，且文章中提到的一些药品组合并非如其所述是非法的。
 
 补充讨论：
-• simonw和imiric之间存在对RAG解决方案有效性的不同看法。simonw认为基于工具使用的解决方案更成熟，而imiric认为RAG解决方案有限且需要更根本的解决方案。
+• **争议焦点**：文章对Hims及其运营模式的批评是否合理，特别是在供应链合规性、药品质量和价格透明性等方面。  
+• **患者隐私和数据安全**：评论中对GoodRx和Hims等平台的数据共享行为提出了隐私保护的担忧，尤其是患者信息被用于广告目的。  
+• **传统医疗体系的缺陷**：多位评论者提到，美国现有的医疗体系难以满足患者的需求，导致他们转向远程医疗和复合药物平台。  
+• **药品价格和可及性**：评论讨论了药品价格过高的问题，尤其是通过GoodRx等平台获得折扣的实际成本和隐私代价。
 
-• cryptica提出了一个复杂的技术方案，通过检测训练中的矛盾信息来防止幻觉，这与其他评论者关注实际应用中的问题形成对比。
-
-• 整体讨论显示出对幻觉问题的多角度理解，包括实际应用中的影响、技术解决方案以及对AI行业趋势的批评。</div>
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44353241" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44382582" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -347,6 +323,104 @@
 • LLMs是否剥夺了学习者从错误中学习的机会，以及是否应该在学习过程中依赖这些工具。一部分人认为LLMs提供了便捷性，另一部分人则担心其对深入学习的影响。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44367084" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://kevingal.com/blog/collisions.html" target="_blank">The probability of a hash collision (2022)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: subset</span> |
+                    <span>评分: 139</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-22 03:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要讨论了哈希碰撞的概率问题。哈希函数将复杂输入映射为一个数字，用于数据存储和加密等领域。当两个不同输入被哈希函数映射到同一值时，就会发生哈希碰撞，这可能导致问题。文章通过“生日问题”来解释碰撞概率：即使有大量盒子（或可能性），随着物品数量增加，碰撞概率也会上升。例如，在有365个可能生日的情况下，30个人中有两人同生日的概率约为70.6%。计算无共享生日的概率后取其补集，即可得到至少一个碰撞的概率。文章提供了具体计算方法，并指出即使物品数不超过盒子数，碰撞概率也会随数量增加而上升。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕写作风格、数学近似、实际应用和哲学思考的讨论
+
+不同观点：
+• [spit2wind] 认为作者采用了Joel Spolsky提出的写作技巧，虽然幽默感尚未达到Joel的水平，但整体风格仍然有效，使主题更加易懂，阅读体验有趣。
+• [meindnoch] 对文章中关于1-x与e^-x近似的数学推导提出质疑，指出正确的方法应通过泰勒展开来验证两函数在0点附近的一阶近似。
+• [perihelions] 提出使用Stirling近似来解决数值溢出问题，并说明如何基于此构建对数空间下的组合函数近似，强调其可组合性和数值稳定性。
+• [j-pb] 将上述近似应用于2^n的情境，讨论碰撞概率，指出128bit的UUID在64bit分布下具有"足够好"的自动增量特性。
+• [krackers] 提供了除生日悖论计算外的其他推导碰撞概率的方法，强调期望值的线性特性和联合边界的使用。
+• [senderista] 认为在实际应用中，简单的近似通常已经足够好，因为对于p=0.5的情况，不同近似方法之间的差异很小，足以满足实际需求。
+• [Simon_O_Rourke] 分享了在实际工作中遇到哈希冲突的经验，增加了讨论的实践背景。
+• [rienbdj] 提出UUID v4的可能取值数量及其在发生碰撞前的生成数量问题，引发了对实际应用场景的讨论。
+• [rurban] 提供了多种哈希冲突概率的计算实现，展示了不同算法的优缺点，并指出某些实现的高误差问题。
+• [kleiba] 从贝叶斯角度提出应考虑对象本身的先验概率，指出在实际情境中，通常无法事先知道需要哈希的对象。
+
+补充讨论：
+• [permalac] 提出了一个哲学性的问题，询问写作和技术探讨是出于爱好还是允许的副业，表达了对生活意义的困惑，希望得到哲学上的指导。
+• 争议焦点主要集中在数学近似的正确性和实用性上，[meindnoch] 和 [senderista] 对近似方法的有效性和适用性有不同看法。
+• 讨论还涉及到实际应用中的数值稳定性和算法选择，[rurban] 提供了多个实现示例，展示了不同方法的优缺点。
+
+整体来看，讨论涵盖了从写作技巧、数学推导到实际应用和哲学思考的多方面内容，展示了不同背景下的多样观点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44343293" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://thick-coins.net/?_bhlid=8a5736885893b7837e681aa73f890b9805a4673e" target="_blank">Thnickels</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jxmorris12</span> |
+                    <span>评分: 532</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2025-06-25 00:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Theodore Nichols创建了一个网站来推广他的"厚硬币"（thnickels），这些硬币比他认为是"太薄"的普通镍币更厚重。他讲述了自己因遭遇盗贼而萌生制作厚硬币的想法，这些硬币不仅用于交易，还可以用于自卫。Theo将车库改造成铸币厂，并开始接受首批厚硬币的预订单。他还提到与邻居的争执以及如何传播对厚硬币的认识。网站包含硬币的设计草图，正面是他的头像和标语"In Mass We Trust"、"Respect Me"，背面强调硬币的坚固和独特性。Theo邀请公众参与预订并帮助宣传。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对网页设计、内容以及隐藏信息的 various 反应和解读
+
+不同观点：
+• [theden] 发现了网页源代码中的隐藏信息，包括Theo留下的秘密留言和与硬币相关的ASCII艺术。这引发了对Theo及其项目的关注。
+• [theodorenichols] 确认自己是Theo，并说明暂停了硬币的销售以处理预订单，表示未来还有剩余硬币，感谢了大家的兴趣。
+• [atomic_cowprod] 提到尝试联系Theo但未能成功，暗示Theo的BBS系统出现问题，希望Theo能回复他。
+• [Aardwolf] 对网页设计的复古风格表示赞赏，特别是其模仿1998年的设计风格，同时指出某些技术细节（如jpg artifacts）的处理方式。
+• [velcrovan] 建议管理员删除链接中的特定ID参数，可能是出于安全或隐私考虑。
+
+补充讨论：
+• [Chant-I-CRW] 以幽默的方式表达了对"thnickles"的兴趣，并提到自己生活中的实际问题（风大，需要重物压住打孔卡），增加了讨论的趣味性。
+• [jcattle] 引用了Theo对自己铸币设施的描述，对其幽默感和自我描述表示赞赏。
+• [waltbosz] 认为这可能是Alan Wagner的一个玩笑，并提供了其网站链接，暗示这可能是一场艺术行为。
+• [lqet] 强调了网页使用FrontPage 98构建，呼应了复古设计的话题。
+• [lordleft] 表达了对过去互联网时代的怀念，与[Aardwolf]的观点形成呼应。
+• [schoen] 从语言学角度对网页上的拉丁文标语提出质疑，认为语法可能有误。
+• [seniortaco] 和 [IAmGraydon] 的简短评论表达了对硬币和过去互联网时代的感慨。
+• [kshehab1] 表示错过了"thnickle"的预订机会，但期待未来的"thennies"，同时提到“雾”可能阻碍其参与，增加了神秘感。
+• [nsb1] 对"Thickel"这个命名未被使用表示疑问，认为这是一个错失的机会，带有调侃意味。
+
+争议焦点：
+• 对于网页和隐藏信息是否为艺术玩笑的看法存在分歧。一部分人如[waltbosz]认为这是某个艺术家的作品，而其他人如[theodorenichols]则确认了Theo的真实存在及其商业行为。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44372424" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -408,13 +482,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://seanhollen.com/1300-2000/" target="_blank">I made a history timeline to learn what events happened around the same time</a>
+                    <a href="https://news.ycombinator.com/item?id=44352476" target="_blank">I built an app to backup Live Photos from iPhone to external hard drives</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Akranazon</span> |
-                    <span>评分: 47</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-06-25 23:37</span>
+                    <span>作者: xmasterdev</span> |
+                    <span>评分: 74</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-06-23 04:36</span>
                 </div>
 
                 <div class="summary-section">
@@ -424,119 +498,29 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对时间线可视化项目的评价与建议
+                    <div class="comments-summary">主要讨论点：通过不同方法和工具实现iPhone照片备份到外部硬盘或自建服务
 
 不同观点：
-• SpectraLeper：称赞项目并提到与《The Timetables of History》一书的相似性，指出该书也通过平行事件激发兴趣，同时肯定了加入维基百科链接的创新。
-• preetsojitra：建议创建一个涵盖所有创新和发现的时间线，并提出建立图表链接以展示发现之间的关联，尽管承认这可能过于复杂。
-• fdw：表达对项目的赞赏，询问源代码是否可用以及是否接受贡献，同时分享了自己类似的项目链接，表示自己的项目不如该项目完善。
-• zejn：分享了自己为伴侣制作的地理区域艺术品时间线的经验，强调了将大致日期映射为具体年份的困难。
-• bigthymer：简单直接地表达了对项目设计的喜爱。
-• jimmydddd：喜欢时间线比较，认为这揭示了历史和科学学习中的孤岛化问题，并通过例子说明不同历史人物的年龄对比如何令人惊讶。
-• devdp430：表示对项目的喜爱，建议将哲学进展和时事纳入时间线，并提到计划为气候变化创建时间线。
-• blueblimp：享受浏览过程，但指出“哲学与艺术”行在1890年后没有内容。
-• sebastianlay：对可视化表示赞赏，建议寻找1800年前的战争死亡数据以进行比较，并提出让图标和标签保持固定的实用建议。
-• LargoLasskhyfv：喜欢快速浏览项目，认为缺少火山活动与战争和流行病的关联，尽管承认只是略读。
+• gerdemb质疑如何将iPhone备份到外部硬盘，寻求具体方法的链接。
+• gaudat建议使用Synology NAS和其Photos应用来备份iPhone和Android设备的Live Photos，并认为NAS对大多数用户是可行的。
+• mattfrommars推荐使用LocalSend应用作为备份工具。
+• jlarocco认为ifuse和rsync足以满足个人需求，但理解其对家庭成员可能有用。
+• atmosx分享了自己通过PhotoSync将iPhone照片备份到自建的Photoprism服务的经验，使用WebDAV并通过tailscale进行远程访问。
+• polymatter对“终身”支付选项表示赞赏。
+• SwamyM希望有一种方法能方便地仅备份自己拍摄的照片，而非所有来源的图片。
+• 1970-01-01提问这种备份方法与iMazing有何不同。
+• mindwork询问Immich是否适合这种备份需求，并指出可在Docker容器中运行。
+• mfa1999关注备份大型照片库（如150k照片/视频）的可行性，以及是否保留相册/文件夹结构。
+• keroro询问相关工具的成本。
+• er0k简单表示自己使用rsync，效果很好。
 
 补充讨论：
-• 项目灵感来源与相似书籍的比较。
-• 时间线复杂度与内容扩展的可能性，包括哲学、事件和气候变化等领域。
-• 时间线实现的技术细节，如源代码可用性和贡献方式。
-• 时间线设计的具体改进建议，如固定图标和标签以提高可用性。
-• 历史事件的跨领域比较与数据完整性问题。</div>
+• 争议的焦点在于NAS方案是否适合大多数用户，gaudat认为可行，而其他用户未明确回应这一观点。
+• 不同工具和方法的适用性被广泛讨论，例如LocalSend、PhotoSync、rsync、Immich和iMazing等。
+• 备份大型照片库的具体需求和实现方式引起了关注，特别是对数据量大和复杂结构的处理能力。
+• 成本问题也被提及，尤其是对终身支付选项的偏好。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44382813" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kevingal.com/blog/collisions.html" target="_blank">The probability of a hash collision (2022)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: subset</span> |
-                    <span>评分: 139</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-06-22 03:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了哈希碰撞的概率问题。哈希函数将复杂输入映射为一个数字，用于数据存储和加密等领域。当两个不同输入被哈希函数映射到同一值时，就会发生哈希碰撞，这可能导致问题。文章通过“生日问题”来解释碰撞概率：即使有大量盒子（或可能性），随着物品数量增加，碰撞概率也会上升。例如，在有365个可能生日的情况下，30个人中有两人同生日的概率约为70.6%。计算无共享生日的概率后取其补集，即可得到至少一个碰撞的概率。文章提供了具体计算方法，并指出即使物品数不超过盒子数，碰撞概率也会随数量增加而上升。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕写作风格、数学近似、实际应用和哲学思考的讨论
-
-不同观点：
-• [spit2wind] 认为作者采用了Joel Spolsky提出的写作技巧，虽然幽默感尚未达到Joel的水平，但整体风格仍然有效，使主题更加易懂，阅读体验有趣。
-• [meindnoch] 对文章中关于1-x与e^-x近似的数学推导提出质疑，指出正确的方法应通过泰勒展开来验证两函数在0点附近的一阶近似。
-• [perihelions] 提出使用Stirling近似来解决数值溢出问题，并说明如何基于此构建对数空间下的组合函数近似，强调其可组合性和数值稳定性。
-• [j-pb] 将上述近似应用于2^n的情境，讨论碰撞概率，指出128bit的UUID在64bit分布下具有"足够好"的自动增量特性。
-• [krackers] 提供了除生日悖论计算外的其他推导碰撞概率的方法，强调期望值的线性特性和联合边界的使用。
-• [senderista] 认为在实际应用中，简单的近似通常已经足够好，因为对于p=0.5的情况，不同近似方法之间的差异很小，足以满足实际需求。
-• [Simon_O_Rourke] 分享了在实际工作中遇到哈希冲突的经验，增加了讨论的实践背景。
-• [rienbdj] 提出UUID v4的可能取值数量及其在发生碰撞前的生成数量问题，引发了对实际应用场景的讨论。
-• [rurban] 提供了多种哈希冲突概率的计算实现，展示了不同算法的优缺点，并指出某些实现的高误差问题。
-• [kleiba] 从贝叶斯角度提出应考虑对象本身的先验概率，指出在实际情境中，通常无法事先知道需要哈希的对象。
-
-补充讨论：
-• [permalac] 提出了一个哲学性的问题，询问写作和技术探讨是出于爱好还是允许的副业，表达了对生活意义的困惑，希望得到哲学上的指导。
-• 争议焦点主要集中在数学近似的正确性和实用性上，[meindnoch] 和 [senderista] 对近似方法的有效性和适用性有不同看法。
-• 讨论还涉及到实际应用中的数值稳定性和算法选择，[rurban] 提供了多个实现示例，展示了不同方法的优缺点。
-
-整体来看，讨论涵盖了从写作技巧、数学推导到实际应用和哲学思考的多方面内容，展示了不同背景下的多样观点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44343293" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://forums.swift.org/t/announcing-the-android-workgroup/80666" target="_blank">Announcing the Android Workgroup</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: desertmonad</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-26 13:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Swift 在非苹果平台（如 Android 和 Windows）上的应用及其工具的支持情况
-
-不同观点：
-• **支持使用 Swift 开发 Android 应用的观点**：[dfabulich] 提到可以使用 Skip Tools 在 Android 上运行 Swift，指出 Skip Tools 的开发者是 Swift on Android 工作组的创始成员。他们的工具可以将 Swift 代码编译为 100% 原生的 Android ARM 代码，并且已经重新实现了约 60% 的 SwiftUI，提供名为 SkipUI 的开源库。此外，SkipUI 是可选的，开发者可以直接使用 Swift 针对原生 Android API 进行开发。
-
-• **对 Windows 平台的支持疑问**：[zerr] 提出问题，询问 Swift 的核心库是否已完全移植到 Windows 平台，暗示对 Windows 平台支持的关注，但未提供明确立场。
-
-• **对 LiveView Native 的潜在帮助**：[4b11b4] 提出一个疑问，询问 Skip Tools 是否能够帮助 LiveView Native 项目，尽管问题被标记为“天真”的提问，但反映了社区对不同工具之间协作潜力的兴趣。
-
-• **反对使用非原生技术开发应用的观点**：[bestouff] 表示反对意见，认为非原生应用显得格格不入，主张在 iOS 上使用 Swift，在 Android 上使用 Kotlin，以保持各平台的原生开发方式。
-
-补充讨论：
-• Skip Tools 提供的 SkipUI 库被描述为功能强大且可选，这表明它为开发者提供了灵活性，可以在 Android 平台上更轻松地使用 Swift，而不必完全依赖 SkipUI。
-• 讨论中提到了不同平台（Android 和 Windows）对 Swift 的支持情况，反映了 Swift 社区对跨平台开发工具的兴趣和需求。
-• 争议的焦点可能在于是否应该使用非原生技术开发跨平台应用，[bestouff] 的观点代表了一部分开发者对原生开发的坚持。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44387409" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44352476" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>

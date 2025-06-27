@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-27 09:03 (北京时间)
+            最后更新时间: 2025-06-27 11:47 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,50 +61,144 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cubic.dev/blog/learnings-from-building-ai-agents" target="_blank">Learnings from building AI agents</a>
+                    <a href="https://blog.brakmic.com/structured-output-with-langchain-and-llamafile/" target="_blank">Structured Output with LangChain and Llamafile</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pomarie</span> |
-                    <span>评分: 128</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-26 12:45</span>
+                    <span>作者: brakmic</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-22 17:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了构建AI代码审查工具的过程和经验，特别是如何减少噪音问题。最初的AI代理产生了过多的低价值评论和误报，导致开发者忽略其反馈。通过三次重大架构修订和大量离线测试，团队成功将误报减少了51%，且不影响召回率。关键改进包括：1）要求AI在反馈前明确陈述理由，以便追踪决策过程并减少任意性结论；2）简化工具集，专注于核心工具以减少错误；3）采用专门的微代理代替通用规则，每个代理处理特定问题（如安全、重复代码等）。这些改进在实际项目中显著提升了工具的精确度和开发者信任度。</p>
+                    <p>本文介绍了如何使用Llamafile处理结构化输出（如JSON）。虽然像OpenAI这样的模型通过LangChain提供了`with_structured_output`方法，但Llamafile目前不支持此功能。本文讲解了在本地环境中使用Llamafile的基础步骤，包括如何使其可执行并启动本地服务器。为了实现结构化输出，需定义一个代表预期JSON输出的`Answer`类，并使用LangChain的`JsonOutputParser`和`PromptTemplate`。最后，通过将`prompt`、`llm`和`parser`串联起来，实现从LLM获取格式化的JSON输出。完整代码可在相关代码库中找到。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在代码审查中的应用及其有效性和局限性
+                    <div class="comments-summary">主要讨论点：关于使用Langchain与Llamafile等工具处理LLM输出时的效率、可靠性及复杂用例的适用性
 
 不同观点：
-• Oras认为，LLM总是会尝试返回一个结果，即使使用"micro-agents"作为营销术语，LLM的反馈在某些情况下是合理的，比如在代码审查中对注释掉的代码提出疑问。
-• elzbardico指出，LLM提供的置信度值（confidence value）并不准确，可能具有误导性。
-• singron认为，文章中给出的例子过于简略，没有提供足够的背景信息，尤其是对于注释掉代码的情境，可能存在更复杂的原因，值得进一步探讨。
-• nico分享了自己的经验，提到使用大型系统提示（system prompts）来处理边缘情况，并提出是否存在使巨型提示有效工作的技巧。
-• jstummbillig对多代理（multi-agent）系统持怀疑态度，认为AI应在提供足够描述和上下文的情况下自行解决问题，而不需要人为拆分任务。
-• h1fra指出，使用多个工具进行代码审查时，PR描述通常无用，且大部分评论是错误或无关的，认为这种方法可能不值得。
+• Hugsun认为Llamafile使用的llama.cpp版本已经支持结构化输出，不需要使用像Langchain这样臃肿的工具。Hugsun指出Langchain有许多适配器针对自称与OAI兼容的服务，包括Llamafile，并认为如果正确实现，这些结构化输出可以做到100%可靠，而在文章中并没有实现好。
+
+• Pcwelder讨论了在解析失败时再次调用LLM的问题，认为直接调用API而不使用Langchain可以避免这种低效问题。Pcwelder提供了一段代码示例，展示了如何直接处理原始JSON输出并避免重复调用。
+
+• Reedlaw提到文章中的用例相对简单，对于更复杂的结构，建议使用BAML作为更好的选项，并提供了一个链接供参考。
+
+• Dcreater对继续使用Langchain表示质疑，暗示其可能已经过时或不必要。
+
+• Kristjansson指出结构化输出的定义其实就在博客文章的截图中，并以讽刺的语气暗示对持续讨论这个基础概念的不耐烦。
 
 补充讨论：
-• mattas提到，非确定性软件（如AI代理）的开发更多依赖于试错和结果评估，与确定性软件开发不同。
-• kurtis_reed引用了一篇关于如何减少LLM无效评论的博客文章，认为文章为限制问题范围提供了实用建议，但缺乏数据支持。
-• nzach同意限制问题范围可以提高LLM的实用性，并提到虽然经验上简单问题比复杂问题反馈更好，但缺乏数据支持。
-• shenberg对"51% fewer false positives"和"Median comments per pull request cut by half"的数据表示怀疑，认为需要更多关于真阳性率的信息。
-• jangletown质疑如何测量"51% fewer false positives"的数据，询问是否使用了内部或基准数据集。
-• b0a04gl分享了实验结果，显示即使输入相同，LLM的推理路径和解释也可能有所不同，提示需要更严谨的提示设计。
-• vinnymac基于自身经验认为，经过几个月的测试，LLM的表现有所改善，变得更安静且更有用。
-• N_Lens认为文章内容模糊，缺乏细节，更像是一种营销宣传。
-• EnPissant质疑文章的专业性，认为更像是营销博客，并指出某些模型默认就会进行推理解释，即使没有明确输出。
+• Hugsun和Pcwelder的观点都指向了对Langchain效率和必要性的质疑，而Reedlaw提供了一个替代方案BAML，适用于更复杂的用例。
+• Dcreater和Kristjansson的评论则反映了对当前讨论主题的基本理解和态度，认为讨论的内容可能已经过时或过于基础。
+• 争议的焦点在于是否需要使用Langchain这样的工具来处理LLM输出，尤其是在有其他更直接或更高效的方法时。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44348415" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://sharnoff.io/blog/why-rust-compiler-slow" target="_blank">"Why is the Rust compiler so slow?"</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-06-26 19:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了Rust编译器在Docker中构建项目时速度较慢的问题，特别是针对作者网站的Rust二进制文件构建。通常，每次修改后重新构建需要约4分钟，其中大部分时间花费在编译最终二进制文件上。作者尝试通过使用工具`cargo-chef`来缓存依赖项以加速构建过程，但效果有限，最终编译仍需近3分钟。通过分析`rustc`的编译过程，作者发现大部分时间消耗在LLVM相关的优化步骤上，例如`LLVM_module_optimize`和`InlinerPass`。尽管增量编译在本地有效，但在Docker中效果不明显。作者尚未找到完美的解决方案，但指出可以通过优化LLVM或调整编译选项来尝试提升速度。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：编译速度和编译/部署过程的效率
+
+不同观点：
+• [taylorallred] 认为C语言编写的RAD调试器能在1.5秒内完成干净编译，质疑为什么Rust和Swift等语言无法实现类似速度。
+• [namibj] 支持增量编译，建议使用增量缓存来降低中间状态对缓存的破坏风险，并结合Docker进行部署，以提高效率。
+• [MangoToupe] 认为Rust的编译速度并不慢，相比C++和Scala的15分钟编译时间，Rust已经很快。
+• [ahartmetz] 对使用容器管理部署的复杂性提出质疑，认为直接安装静态链接的二进制文件更简单。
+• [adastra22] 作为 former C++ 开发者，对Rust编译慢的说法表示不解。
+• [kenoath69] 提到LLVM的编译速度慢，推荐使用Cranelift，并分享了其显著提升编译速度的个人经验。
+• [ecshafer] 承认Rust编译器慢，但认为这是为了提供更多编译器功能所不可避免的，同时指出原文的主要问题在于部署二进制文件的方式而非编译速度。
+• [aappleby] 对比了之前简单直接的部署过程（编译-复制-重启）和现在的复杂过程。
+• [gz09] 指出在大多数情况下，去除调试符号并不是一个好的/有用的选项。
+• [senderista] 认为C/C++编译独立翻译单元并行编译的模式在编译效率上优于Rust，但这也限制了全程序优化的机会。
+• [tmtvl] 建议设置构建服务器，让Docker容器从中获取预构建的二进制文件。
+• [b0a04gl] 解释Rust优先考虑构建时的正确性，所有检查（类型、traits、所有权）在执行前完成，因此对上游更改敏感，且Docker的层缓存机制可能导致Rust完全重新编译。
+• [AndyKelley] 分享了使用Zig语言的极快编译经验，强调了其静态站点生成器在毫秒级完成编译和运行。
+• [ic_fly2] 认为本地构建速度快，无需为小改动重构Docker，并对个人页面使用大量Rust和依赖表示不解。
+• [kelnos] 认为简单的部署过程是最理想的，Docker不会使部署过程更简单，并对原文深入分析编译时间表示赞赏。
+
+补充讨论：
+• 争议焦点主要集中在Rust编译速度是否真的慢，以及如何通过增量编译、缓存、Docker等技术提高编译和部署效率。
+• 不同开发者根据自身经验提供了不同的优化建议，例如使用Cranelift、Zig语言、预构建二进制文件等方法。
+• 部分开发者对使用容器的必要性提出质疑，认为对于简单项目，直接安装二进制文件或使用简单的编译-复制-重启过程更为高效。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44390488" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bfl.ai/announcements/flux-1-kontext-dev" target="_blank">FLUX.1 Kontext [Dev] – Open Weights for Image Editing</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: minimaxir</span> |
+                    <span>评分: 122</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-06-26 15:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Black Forest Labs发布了FLUX.1 Kontext [dev]，这是一个开放权重的生成式图像编辑模型，能够在消费级硬件上运行，提供与专有工具相媲美的性能。该模型依据FLUX.1非商业许可证发布，供研究和非商业用途免费使用，并兼容ComfyUI、HuggingFace Diffusers和TensorRT等框架。技术报告已在arXiv发布，模型权重可在HuggingFace获取。该模型针对NVIDIA Blackwell架构进行了优化，提供了BF16、FP8和FP4等权重变体以平衡速度和质量。此外，还推出了自助许可门户，简化商业使用授权，更新了非商业许可证的条款以防止非法内容传播。相关资源和代码可在指定链接获取。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：开放权重模型的发布及其应用和限制
+
+不同观点：
+• [支持观点] **rushingcreek** 对BFL（Black Forest Labs）发布权重模型表示赞赏，认为这种对学术界免费、对初创公司收费的模式有助于保证开放源模型的可持续性，并支持未来更多模型的发布。
+  
+• [技术前景] **vunderba** 期待发布的[Dev]模型能在性能上与更大的pro/max模型竞争，认为它有可能取代Stable Diffusion中较为传统的图像修复技术，并提供了相关实验链接以展示其实际效果。
+
+• [功能扩展] **treesciencebot** 强调开放权重模型的一大特点是可以轻松添加新功能（任务），这些模型在少量样本下也能很好地泛化，并提供了博客链接进一步解释相关技术。
+
+• [许可限制] **b0a04gl** 指出，非商业许可的意图可能会预先筛选谁能构建模型，虽然这能防止滥用，但也限制了潜在的实验和创新，逐渐重新定义了什么是“有效的实验”。
+
+• [许可批评] **popalchemist** 直接表示对许可的失望，暗示这种限制影响了使用体验。
+
+• [实际体验] **kristopolous** 分享了自己在BFL举办的黑客松上使用该系统的体验，认为系统表现不错。
+
+• [创意应用] **whatevsmate** 表达了对AI在艺术创作中作为合作工具的兴趣，希望AI能像聊天一样通过笔触与用户互动，而不仅仅是生成最终结果。
+
+• [技术细节] **thetoon** 关注模型的硬件需求，询问该模型需要多少VRAM才能运行。
+
+补充讨论：
+• [潜在滥用] **oTsanony** 提到了一种可能绕过限制的方法，暗示在ComfyUI上使用FLUX1-Context生成NSFW内容，这可能引发对模型滥用的担忧。
 
 争议焦点：
-• LLM在代码审查中的实际效果和可靠性，尤其是置信度值的准确性和注释掉代码的处理方式。
-• 多代理系统的实用性以及是否需要人为拆分任务。
-• 巨型系统提示的有效性及其应用技巧。
-• 数据支持的缺乏，尤其是在减少误报和评论数量方面的具体测量方法和结果。</div>
+• 许可的限制性：虽然开放权重模型在技术上开放，但非商业许可的条款引发了一些用户对谁可以实际使用和构建模型的讨论，限制性许可既防止了滥用，但也限制了潜在的创新应用（**b0a04gl**, **popalchemist**）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44386887" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44388387" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -265,57 +359,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/qemu/qemu/commit/3d40db0efc22520fa6c399cf73960dced423b048" target="_blank">Define policy forbidding use of AI code generators</a>
+                    <a href="https://mmapped.blog/posts/41-box-combinators" target="_blank">Box Combinators</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 264</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-06-25 23:26</span>
+                    <span>作者: tempodox</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-26 18:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>QEMU项目当前政策拒绝接受包含或 derived from AI生成内容（如ChatGPT、Copilot等）的贡献。由于大型语言模型（LLM）生成的内容在版权和许可状态上不明确，存在法律风险，贡献者无法确保这些内容符合开发者原产证书（DCO）的要求。因此，QEMU要求贡献者避免在提交的补丁中使用AI内容生成工具。该政策不适用于AI在研究API、算法、静态分析或调试等非提交相关用途。该政策可能会随着AI工具和法律环境的发展而调整，但目前违规使用AI的贡献将被拒绝。例外情况需经项目维护者个案审核。</p>
+                    <p>本文介绍了一种用于处理ASCII字符块的组合子库，特别适用于可视化数据。组合子是一种通过组合程序片段构建新片段的函数。文中以OCaml为例，展示了如何通过基本构造函数（如`of_string`、`fill`等）创建文本框，并利用组合子（如`beside`、`above`等）将它们水平或垂直堆叠。为确保组合框的尺寸兼容，较小的框会被填充空格。文章还展示了更高级的组合操作，如`hconcat`、`vconcat`和`grid`，并通过绘制Sierpinski三角形示例展示了组合子的强大应用。这种方法直观且灵活，适合调试和探索数据。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源软件和自由软件在面对AI生成代码时的版权和法律问题，以及技术实践中的挑战。
-
-不同观点：
-• **benlivengood**：认为开源和自由软件在AI生成代码的版权问题上非常脆弱。如果AI生成的代码被视为侵权或公共领域，可能会导致法律纠纷。具体而言，AI生成的代码与人类编辑混合后，可能引发关于后续人类编辑是否构成侵权衍生作品的争议。此外，如果AI生成代码被视为公共领域，则开源项目的许可限制可能不再适用，增加项目被滥用的风险。
-
-• **JonChesterfield**：对AI生成的代码持谨慎态度，不希望评审作者不理解的代码，也不希望合并双方都不理解的代码。相比LLVM的政策更加保守。
-
-• **acedTrex**：指出AI生成的代码打破了传统开源项目依赖的隐性能力标志，提出社会证明等其他方式可能变得更为重要。
-
-• **ants_everywhere**：认为RedHat等大公司关注的是AI生成代码可能包含来自其他项目的版权代码，尤其是涉及闭源和易诉讼公司的代码。
-
-• **abhisek**：质疑如何区分AI生成代码和受未知来源影响的人类编写代码，认为AI生成代码目前只是人类工具，没有独立身份。
-
-• **Havoc**：怀疑一些项目对AI生成代码的反感是否真的出于法律考虑，可能只是不喜欢评审低质量的AI提交。
-
-• **hughw**：希望区分使用AI作为IDE中的超级自动完成功能和高层次指导生成实质性代码的区别，认为应允许使用AI节省劳动力的功能，但避免复制开源代码。
-
-• **wyldfire**：认为拒绝AI生成内容的政策可能是个错误，建议指出AI生成内容可以使用的场景，例如非核心内容的CI设置等。
-
-• **sysmax**：希望根据AI生成部分的大小和范围进行区分，认为小部分AI生成内容可以视为合理使用，类似于视频版权的5秒原则。
-
-• **Aeolun**：认为这些政策无法执行，因为所有编辑器都提供AI辅助代码提示，无法区分代码是否由AI生成。
-
-• **naveed125**：对讨论内容表示赞赏。
-
-• **N1H1L**：使用LLM生成文档，自己编写代码。
-
-• **BurningFrog**：建议包括生成代码的完整提示，以增加透明度。
-
-补充讨论：
-- 争议焦点在于AI生成代码的版权归属及其对开源项目的影响。
-- 技术社区对如何有效管理和评审AI生成代码存在分歧。
-- 一些讨论者关注AI生成代码在实际开发中的应用和效率提升，而另一些则担心其法律和质量问题。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44382752" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44389961" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -326,47 +388,115 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/boltgolt/howdy" target="_blank">Howdy – Windows Hello style facial authentication for Linux</a>
+                    <a href="https://www.cubic.dev/blog/learnings-from-building-ai-agents" target="_blank">Learnings from building AI agents</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: LorenDB</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-23 18:34</span>
+                    <span>作者: pomarie</span> |
+                    <span>评分: 128</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-06-26 12:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Howdy 是一个为 Linux 提供类似 Windows Hello™ 面部认证功能的软件。它利用内置的红外发射器和摄像头进行面部识别，通过 PAM 系统实现登录、锁屏、sudo 等场景下的密码替代。Howdy 支持 Debian/Ubuntu、Arch Linux、Fedora 和 openSUSE 等发行版，安装方式各有不同，部分需要额外配置。它依赖于 Python 3.6+、meson、ninja 等工具构建，并可通过命令行管理面部模型。安装后需运行 `sudo howdy add` 进行面部录入。如遇问题，可通过查看 Wiki 或 GitHub 上的类似问题进行排查。用户还可以通过贡献代码或提交功能请求参与项目。</p>
+                    <p>本文介绍了构建AI代码审查工具的过程和经验，特别是如何减少噪音问题。最初的AI代理产生了过多的低价值评论和误报，导致开发者忽略其反馈。通过三次重大架构修订和大量离线测试，团队成功将误报减少了51%，且不影响召回率。关键改进包括：1）要求AI在反馈前明确陈述理由，以便追踪决策过程并减少任意性结论；2）简化工具集，专注于核心工具以减少错误；3）采用专门的微代理代替通用规则，每个代理处理特定问题（如安全、重复代码等）。这些改进在实际项目中显著提升了工具的精确度和开发者信任度。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源面部识别认证项目的质量和功能与商业版本的比较，以及技术实现和应用场景的讨论
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在代码审查中的应用及其有效性和局限性
 
 不同观点：
-• **[bsimpson]** 认为开源项目的面部识别认证可能会有更多的误报/漏报，因为商业版本需要支持所有人使用，经过了大量测试，而开源项目可能在广泛适用性上有所欠缺。
-
-• **[aitchnyu]** 关注用户体验问题，希望在系统处理面部识别时有提示，特别是当识别失败时，可以有一个重试按钮。同时，也对红外照片是否会欺骗模型提出了疑问，并对红外摄像头的实验表示兴趣。
-
-• **[joelthelion]** 表示希望能有更好的指纹识别支持，暗示面部识别并不是其首选的认证方式。
-
-• **[charcircuit]** 指出该开源项目与Windows Hello的不同之处，包括它仅通过2D图像提取特征，缺乏深度重建，容易被纸张等简单手段欺骗。此外，还提到该项目在功能上不如Windows的面部识别广泛，仅用于用户认证，且保存面部特征点文件时使用明文，存在安全问题。
-
-• **[mouse_]** 表达了对预桌面认证功能的期待，认为这是一个非常吸引人的特性，希望能看到其实现。
-
-• **[seany]** 关注开源面部识别模型在NIST/iBeta排名中达到较好性能所需的条件，暗示开源项目在性能上与商业模型存在差距。
-
-• **[deafpolygon]** 对项目依赖Python2表示不解，可能在考虑技术更新和维护的必要性。
-
-• **[fsateler]** 注意到项目虽然活跃，但最后一个版本发布于2020年，质疑为何没有新的版本发布。
+• Oras认为，LLM总是会尝试返回一个结果，即使使用"micro-agents"作为营销术语，LLM的反馈在某些情况下是合理的，比如在代码审查中对注释掉的代码提出疑问。
+• elzbardico指出，LLM提供的置信度值（confidence value）并不准确，可能具有误导性。
+• singron认为，文章中给出的例子过于简略，没有提供足够的背景信息，尤其是对于注释掉代码的情境，可能存在更复杂的原因，值得进一步探讨。
+• nico分享了自己的经验，提到使用大型系统提示（system prompts）来处理边缘情况，并提出是否存在使巨型提示有效工作的技巧。
+• jstummbillig对多代理（multi-agent）系统持怀疑态度，认为AI应在提供足够描述和上下文的情况下自行解决问题，而不需要人为拆分任务。
+• h1fra指出，使用多个工具进行代码审查时，PR描述通常无用，且大部分评论是错误或无关的，认为这种方法可能不值得。
 
 补充讨论：
-• 项目在技术实现上的局限性（如2D图像 vs 深度重建）以及安全性问题（明文保存特征点）是主要的技术争议点。
-• 用户体验和多因素认证方式（如指纹识别与面部识别的对比）也是讨论的重要内容。
-• 开源项目与商业版本在性能、可靠性及功能广泛性上的对比是潜在的争议焦点。</div>
+• mattas提到，非确定性软件（如AI代理）的开发更多依赖于试错和结果评估，与确定性软件开发不同。
+• kurtis_reed引用了一篇关于如何减少LLM无效评论的博客文章，认为文章为限制问题范围提供了实用建议，但缺乏数据支持。
+• nzach同意限制问题范围可以提高LLM的实用性，并提到虽然经验上简单问题比复杂问题反馈更好，但缺乏数据支持。
+• shenberg对"51% fewer false positives"和"Median comments per pull request cut by half"的数据表示怀疑，认为需要更多关于真阳性率的信息。
+• jangletown质疑如何测量"51% fewer false positives"的数据，询问是否使用了内部或基准数据集。
+• b0a04gl分享了实验结果，显示即使输入相同，LLM的推理路径和解释也可能有所不同，提示需要更严谨的提示设计。
+• vinnymac基于自身经验认为，经过几个月的测试，LLM的表现有所改善，变得更安静且更有用。
+• N_Lens认为文章内容模糊，缺乏细节，更像是一种营销宣传。
+• EnPissant质疑文章的专业性，认为更像是营销博客，并指出某些模型默认就会进行推理解释，即使没有明确输出。
+
+争议焦点：
+• LLM在代码审查中的实际效果和可靠性，尤其是置信度值的准确性和注释掉代码的处理方式。
+• 多代理系统的实用性以及是否需要人为拆分任务。
+• 巨型系统提示的有效性及其应用技巧。
+• 数据支持的缺乏，尤其是在减少误报和评论数量方面的具体测量方法和结果。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44358667" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44386887" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/qemu/qemu/commit/3d40db0efc22520fa6c399cf73960dced423b048" target="_blank">Define policy forbidding use of AI code generators</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 506</span> |
+                    <span>评论数: 37</span> |
+                    <span>发布时间: 2025-06-25 23:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>QEMU项目当前政策拒绝接受包含或衍生自AI生成内容（如ChatGPT、Copilot、Llama等工具）的贡献。这是因为AI生成内容的版权和许可状态不明确，存在法律风险。QEMU贡献者需根据开发者原产地证书（DCO）规则，确保对提交内容的版权和许可有完全理解。由于AI工具的输出无法满足DCO要求，项目不允许在提交的补丁中使用这些工具生成的内容。不过，AI工具在研究API、算法、静态分析或调试等非提交相关用途上仍可使用。此政策可能随AI工具和法律情况成熟而调整，但目前需逐案申请例外并证明输出内容的版权和许可状态。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI生成代码对开源和自由软件的影响，尤其是在版权和法律问题、代码质量审查、项目管理等方面的挑战。
+
+不同观点：
+• **benlivengood**：认为开源和自由软件特别容易受到AI生成代码的版权问题影响。如果AI生成的代码被判定为侵权或公共领域，项目可能会陷入法律诉讼，且开源项目通常没有足够资金应对。此外，AI生成的代码经过人类修改后是否仍属于侵权衍生作品存在不确定性。如果AI生成代码被视为公共领域，则开源许可的约束力会削弱。
+
+• **JonChesterfield**：对AI生成代码持批评态度，认为不应接受开发者自己都不理解的代码，也不愿意合并这种代码。这种立场比LLVM项目的政策更加严格。
+
+• **acedTrex**：指出AI生成代码打破了传统上通过隐藏能力标记判断贡献质量的方式。AI生成的代码虽然看起来专业，但缺乏实际经验支撑，可能对经验丰富的开发者造成困扰。未来，可能需要更多依赖社交证明等方式来评估贡献者。
+
+• **ants_everywhere**：认为RedHat等大公司关注AI生成代码的风险，主要是因为AI可能输出属于其他项目的代码，尤其是涉及闭源和可能引发诉讼的代码。
+
+• **Havoc**：质疑一些项目反对AI生成代码的动机，认为可能不仅仅是因为法律问题，而是因为对低质量AI提交感到厌烦。
+
+• **saurik**：指出QEMU项目由于其仿真器性质，已经面临较大的法律 scrutiny，因此需要比其他项目更加保守地对待AI生成代码，以避免增加法律风险。
+
+• **hughw**：希望能够在使用LLM作为IDE的自动补全工具和生成实质性代码之间做出区分。虽然这是一个灰色地带，但希望使用AI工具节省劳动力的同时，不涉及版权问题。
+
+• **bgwalter**：认为反对AI生成代码的政策可能只是为了在使用AI生成代码时有合理的否认权，实际上这些政策可能根本无法执行。
+
+• **Aeolun**：认为执行反对AI生成代码的政策几乎不可能，因为现代编辑器普遍提供AI辅助代码提示，且无法区分这些提示和手动输入的代码。
+
+• **daeken**：分享了自己使用Claude Code工具调试代码的经验，发现AI工具在复杂项目中目前还不能提供实际价值，虽然未来可能有潜力。
+
+• **flerchin**：认为使用AI生成代码的贡献者需要对其代码负责，并深入理解代码，以应对审查中的质疑。
+
+• **wyldfire**：认为除了拒绝AI生成代码外，还可以指定某些部分允许使用AI生成内容，并设立防护措施。
+
+• **tqwhite**：认为担心AI生成代码是合理的，但政策不应禁止使用AI，而是确保不留下使用痕迹。同时，AI生成的程序未来可能会像从前一样具有版权。
+
+• **zoobab**：暗示RedHat等大公司现在控制了QEMU项目，可能影响项目的独立性。
+
+• **randomNumber7**：认为AI生成代码仍然比手动编写快，开发者可以阅读和检查AI生成的代码以确保其符合需求。
+
+补充讨论：
+• 争议焦点在于AI生成代码的版权归属和质量问题，以及如何在开源项目中有效管理AI生成代码的使用。
+• 不同项目对AI生成代码的态度和政策有所不同，部分项目采取严格禁止的立场，而其他项目可能允许在特定条件下使用。
+• 实际操作中，如何区分和监管AI生成代码的使用仍然是一个复杂且未完全解决的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44382752" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -419,140 +549,6 @@
 - 对谷歌等大公司在解决机器人流量问题上的动机的质疑。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44378127" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://origamiusa.org/thefold/article/art-hanakami-or-flower-petal-folding" target="_blank">The Art of Hanakami, or Flower-Petal Folding</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: s4074433</span> |
-                    <span>评分: 43</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-22 22:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了使用花瓣作为折纸材料的独特创意，提出了“花纸”（hanakami）这一术语，意指用花瓣代替纸张进行折纸。作者Michael Lai分享了自己多年尝试用各种花瓣折叠不同模型的经验，强调选择合适的花瓣至关重要，需考虑花瓣的形状、大小、颜色、厚度和纹理等因素。由于花瓣不规则且易碎，折叠过程颇具挑战，尤其是压制和干燥环节。工具包括花压器、锋利刀具、切割垫和细头工具等。最终，花瓣能被折成精致的折纸作品，赋予花瓣新的艺术生命。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：评论者对 bougainvillea 花的辨识及其在折纸中使用自然材料的可行性进行了讨论。
-
-不同观点：
-• [carlob 的观点]  
-   他认为图片中的花非常漂亮，但指出那些不是 bougainvillea 的花瓣。他解释说，bougainvillea 的实际花朵是白色且非常小，无法用于折纸。
-
-• [CuriouKoala 的观点]  
-   他对使用自然材料进行折纸表现出浓厚的兴趣，并幽默地提到自己需要一个缩小射线枪来缩小手指以处理这些材料。他表示，用自然材料做折纸是一种有趣的体验，并计划尝试。
-
-补充讨论：
-• [对 bougainvillea 花的认知差异]  
-   carlob 强调了对于 bougainvillea 花的正确认知，指出许多人可能误解了它的外观，因为它的颜色鲜艳部分其实是苞片，而不是花瓣。
-
-• [对自然材料用于折纸的兴趣]  
-   CuriouKoala 更关注于如何将自然材料应用到折纸艺术中，显示出对创新和实验的开放态度。他对于缩小手指的幽默评论也反映了对精细手工操作的挑战意识。
-
-争议焦点：
-• 争议的焦点在于对 bougainvillea 花的正确辨识上。carlob 强调了花的实际特征，而原始评论可能误解了花的性质。这种认知差异引发了对自然材料在折纸应用中的实际操作性和视觉效果的不同看法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44350655" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://theworld.org/stories/2025/06/20/out-of-eden-walk-getting-by-on-the-generosity-of-strangers" target="_blank">Getting by on the Generosity of Strangers in Japan</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ilamont</span> |
-                    <span>评分: 67</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-23 22:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讲述了国家地理探险家Paul Salopek在“走出伊甸园徒步旅行”项目中，于日本工业城市周南市一家传统民宿（Migita guesthouse）的经历。这家民宿由84岁的Yoshiko Yamana经营，已有百年历史。Yoshiko在二战期间度过艰难的童年，经历被迫婚姻后离开村庄，来到城市开设了这家民宿。Paul感受到Yoshiko的热情好客，认为这里更像祖母的家，而不是单纯的商业旅馆。Yoshiko的故事反映了日本老一辈人坚韧和隐忍的特质，以及她对客人的深切关怀。Paul在全球徒步旅行中，多次遇到类似的热情款待，这种跨越文化的 hospitality 让他得以完成项目。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对日本旅游业中“待客之道”（hospitality）的看法以及游客和本地居民之间的互动
-
-不同观点：
-• forgotoldacc 认为，随着“日本待客之道”广为人知，越来越多的游客带着过高期望来到日本，希望获得“ magical experience”。这种期望导致了一些游客表现出“应得权利”的态度，比如未经允许使用当地居民的厕所，给居民带来困扰。他认为，这种现象已经导致居民对游客的厌倦和反感，尤其是面对长期停留且要求过多的游客。
-
-• gwd 则主要针对住宿问题发表看法，认为“陌生人”让游客使用其厕所或房间的说法具有误导性。他认为，当游客通过租赁协议入住时，房主不应被视为“陌生人”，提供住宿也不应被视为“慷慨之举”。相反，这是一种商业交易，用“享受小型民宿和私人房主的待客之道”来描述会更准确。
-
-补充讨论：
-• forgotoldacc 提供了具体例子，说明一些游客如何因期望过高而做出不恰当的行为，比如敲门借用厕所，这种行为对当地居民的生活造成了干扰。
-• gwd 的评论更侧重于语言使用和描述的准确性，认为在商业租赁背景下，使用“待客之道”这个词可能误导游客对房主和住宿性质的理解。
-• 争议的焦点在于如何定义和理解“待客之道”以及游客对当地居民的合理期待。forgotoldacc 强调了游客过度期望带来的负面影响，而 gwd 则关注描述和实际交易性质之间的差异。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44360651" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://turtleware.eu/static/paste/wecl-test-gl/main.html" target="_blank">Web Embeddable Common Lisp</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-06-25 15:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在浏览器中使用Lisp等语言进行WebAssembly（WASM）开发的可行性、进展和挑战。
-
-不同观点：
-• **jackdaniel** 提到正在进行改进浏览器集成和移植到WASI的工作，分享了一个被接受的资助提案链接。
-• **deosjr** 分享了自己使用Sprtiely研究所的Hoot项目，该项目使用Guile Scheme编译成WASM，并提供了一个项目演示链接。
-• **feeley** 提供了Gambit Scheme的相关资源，包括支持浏览器线程和JavaScript外部函数接口（JS FFI）的REPL，以及在浏览器中使用Emacs运行Gambit。
-• **jinlisp** 提到自己正在实验WASI和GC扩展，并引用了四个月前关于Maxima（符号计算系统）是否可以在浏览器中实现的讨论。
-• **bevr1337** 对LISP未能成为首批编译成WASM的语言表示好奇，并提到WASM项目使用表情符号跟踪项目进展。
-• **tempodox** 幽默地回应了关于LISP在WASM中实现的问题，确认了CONS函数的存在。
-• **b0a04gl** 认为浏览器字节码运行速度慢不是主要问题，重要的是在网页中实时执行和更新代码，Lisp可以通过WASM互操作直接驱动UI更新。
-• **HexDecOctBin** 对WASM是否适合REPL驱动编程提出疑问，提到WASM的哈佛架构特性可能导致代码在运行时无法更新。
-• **potholereseller** 提供了 fossil 仓库的源代码链接，但指出其最后更新于2025年1月。
-
-补充讨论：
-• **性能问题**：jinlisp 通过具体例子（如循环计数）比较了不同环境下的执行速度，指出在某些情况下速度远不及SBCL。
-• **WASM互操作性**：b0a04gl 强调了WASM互操作的重要性，尤其是在共享内存级别，Lisp可以直接控制UI更新和状态变化。
-• **项目进展**：deosjr 和 feeley 分享了各自的实际项目进展和演示，提供了具体的实例和教程链接。
-
-争议焦点：
-• LISP在WASM中的实现进展缓慢，特别是与其它语言相比，它的编译和运行时性能受到质疑。
-• WASM是否适合作为REPL驱动编程的目标，主要围绕其架构特性和运行时代码更新能力展开讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44378486" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
