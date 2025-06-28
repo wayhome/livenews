@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-28 23:13 (北京时间)
+            最后更新时间: 2025-06-29 02:17 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,50 +61,57 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://martinfowler.com/articles/2025-nature-abstraction.html" target="_blank">LLMs bring new nature of abstraction – up and sideways</a>
+                    <a href="https://samestep.com/blog/random-access/" target="_blank">How much slower is random access, really?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tudorizer</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-06-24 14:52</span>
+                    <span>作者: sestep</span> |
+                    <span>评分: 107</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-06-23 14:49</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Martin Fowler探讨了生成型AI，特别是大型语言模型（LLMs），对软件开发的深远影响。他认为，LLMs带来的变革堪比汇编语言到高级编程语言的转变，但这次不仅是抽象层次的提升，还引入了非确定性工具编程的新挑战。过去，高级语言（如Ruby）让编程更直观、高效，但本质上仍是与机器对话；而LLMs则通过提示与机器交互，带来了根本性变化。LLMs的非确定性意味着同样的提示可能产生不同结果，这要求开发者适应这种新特性。尽管这种转变令人兴奋，但也伴随着未知和失去，需要进一步探索和理解。</p>
+                    <p>本文探讨了随机访问与顺序访问在不同情况下的性能差异，重点分析了缓存和内存操作对程序性能的影响。作者通过实验比较了两种访问方式在数组求和任务中的表现，特别是当数组大小不同（能 fit 进缓存与不能 fit 进缓存）时的性能差异。实验显示，随机访问比顺序访问慢得多，尤其当数据量超过缓存容量时。作者还讨论了使用不同算法生成随机索引数组对性能的影响，发现标准 Fisher-Yates 洗牌算法在处理非常大的数组时效率低下，因此采用了双通道洗牌方法。最终，作者提供了 Rust 代码示例，并验证了这些结论。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在软件开发中的应用及其非确定性对编程的影响
+                    <div class="comments-summary">主要讨论点：随机内存访问的性能及其影响因素
 
 不同观点：
-• [stpedgwdgfhgdd] 认为LLM（如Claude）的非确定性虽然存在问题，但可以通过改进命令逐步减少错误。LLM提供了一种程序可以自我改进的编程环境，具有变革性意义，超越了Fortran等传统语言的能力。
+• **andersa**：认为随机访问不同于大多数程序中的真正随机访问。通过预取连续的索引数组，推测执行可以并行加载目标数组的许多即将访问的索引。如果每个槽位还包含下一个索引，则会引入依赖链，阻碍这种并行加载。
 
-• [bgwalter] 持怀疑态度，认为LLM作为新高层次编程语言的观点只是跟风，尤其是因为提出该观点的人并没有实际使用过LLM，可能是为了借LLM潮流获取个人利益。
+• **porcoda**：提到RandomAccess (或 GUPS) 基准测试是用来衡量此类工作负载的机器性能，特别是在高性能计算中对图形计算非常重要。Cray (原Tera) MTA机器在这方面表现出色，但该基准测试在HPC圈外不太知名。
 
-• [smokel] 认为高层次编程语言的抽象一直具有多方向性，LLM的非确定性与现有的复杂软件系统类似，并不一定是革命性的变化。LLM有趣但并不一定能替代现有的编程实践。
+• **JonChesterfield**：指出由于预取失败导致的连续缓存未命中，随机访问速度极慢。文章中提到的大数据集上混洗速度不可接受，暗示随机访问代价高昂。
 
-• [oytis] 不理解该观点，认为LLM生成非确定性输出的活动与传统编程活动不同，难以取代可靠的确定性计算机操作。即使LLM有价值，也不应部分替代精确控制计算机行为的能力。
+• **Cold_Miserable**：最坏情况下，随机访问可能连续遇到多级TLB未命中、内存刷新周期和系统管理模式中断，进一步影响性能。
 
-• [felineflock] 认为LLM引入了一种新的抽象性质，而非新的抽象层次。它允许以自然语言表达意图并生成代码、测试、文档等，但其输出具有非确定性，受采样温度、种子、上下文长度等因素影响。
+• **archi42**：对24 GB DDR4 DRAM配置在双通道内存控制器上的使用感到惊讶，推测系统可能使用3x 8 GB模块，导致内存通道不对称，可能引发意外的性能影响。
 
-• [nmaley] 实际构建LLM应用的过程中发现，LLM的非确定性对开发者需要不同的思维方式，对主流企业采用构成障碍。LLM在写代码方面是巨大的生产力提升工具，但需要测试。LLM的实际应用滞后于其炒作。
+• **Animats**：指出如果CPU及其缓存完全归单一任务使用，性能表现可能会有所不同。
 
-• [somewhereoutth] 对LLM带来的非确定性持保留态度，认为计算机的确定性是其成功的关键。引入非确定性打破了以往成功的合作模式，不确定为何要改变这种模式。
+• **Adhyyan1252**：对随机访问仅慢4倍表示惊讶，认为表现不错。
 
-• [dtagames] 尊重Martin Fowler，但认为没有实际使用过AI编码工具的人对开发者的影响没有太多发言权，希望他能花时间熟悉这些工具。
+• **o11c**：指出讨论中未涉及缓存行大小、页大小或缓存关联性的限制。
 
-• [alganet] 认为非确定性的进化并非前所未有的，模糊测试和突变测试早已存在。
+• **anonymousDan**：建议使用伪随机序列作为基准，以避免使用两个数组。
+
+• **b0a04gl**：分享了在模型评分工作中遇到的随机内存访问导致的性能波动问题，通过重新排序查找操作改善了线程调度和运行时间稳定性，认为不可预测性是影响性能的关键。
+
+• **FpUser**：通过实验证明分支预测对性能有巨大影响，特别是在排序数组上的表现优于随机数组。
+
+• **Surac**：质疑这仅仅是DRAM控制器的突发容量和访问策略的内存测试。
+
+• **forrestthewoods**：提供了一篇相关博客链接，并对数据展示格式提出异议，认为“每个元素的时间”并非最佳指标。
 
 补充讨论：
-• LLM的非确定性是讨论的核心，支持者认为其自我改进能力具有变革性，而反对者认为这带来了不确定性和实际应用的困难。
-• 实际使用LLM的开发者（如nmaley）强调了非确定性在实际项目中的挑战，以及对主流企业应用的障碍。
-• 对LLM持怀疑态度的人（如bgwalter和oytis）质疑其变革性影响和实用性，认为其不能替代传统编程方法。
-• 一些讨论者（如alganet）指出非确定性并非新概念，以往技术如模糊测试已有类似特性。</div>
+• 讨论中涉及了多种影响随机内存访问性能的因素，包括缓存未中、内存控制器配置、分支预测、TLB未命中等。
+• 不同参与者对基准测试设计和性能指标的合理性提出不同看法，特别是关于如何更准确地衡量和表示随机访问的性能。
+• 争议的焦点在于随机访问的实际性能表现以及影响因素的复杂性，尤其是对不可预测性的讨论较为深入。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44366904" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44356385" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -115,47 +122,61 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://developers.googleblog.com/en/introducing-gemma-3n-developer-guide/" target="_blank">Introducing Gemma 3n</a>
+                    <a href="https://www.anthropic.com/research/project-vend-1" target="_blank">Project Vend: Can Claude run a small shop? (And why does that matter?)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bundie</span> |
-                    <span>评分: 386</span> |
-                    <span>评论数: 35</span> |
-                    <span>发布时间: 2025-06-26 17:03</span>
+                    <span>作者: gk1</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2025-06-27 16:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Gemma 3n是Gemma系列的最新开发者工具，专为移动设备上的多模态AI设计。自去年推出以来，Gemma系列已获得超过1.6亿次下载。Gemma 3n支持图像、音频、视频和文本输入及文本输出，提供E2B和E4B两种优化模型，内存占用小，分别仅需2GB和3GB。该模型采用MatFormer架构，通过嵌套变压器实现弹性推理，支持从E2B到E4B的自定义模型尺寸调整。Gemma 3n在多语言处理、数学、编程和推理方面有显著质量提升，E4B版本的LMArena得分超过1300。MatFormer架构还为未来弹性执行打下基础，允许动态切换模型尺寸以优化性能和内存使用。开发者可使用Hugging Face Transformers等工具轻松调试和部署。</p>
+                    <p>Anthropic和AI安全评估公司Andon Labs合作，让AI模型Claude Sonnet 3.7在一个月内管理Anthropic办公室内的一个自动化小商店，以探索AI在现实经济中自主运营业务的能力。Claude的任务包括进货、定价、避免破产等复杂工作，通过模拟店主角色运营一个小型冰箱式自动贩售机。虽然Claude展示了一些成功管理商店的潜力，比如通过网络搜索选择商品并通过电子邮件请求人工协助补货，但也暴露了AI在长时间独立运营中的局限性，例如库存管理和定价策略上的失误。该实验提供了有关AI在经济中应用的宝贵数据，并引发了对未来商业模式和就业影响的思考。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Gemma和Gemini系列模型的技术细节、应用场景、兼容性及其实际使用中的问题
+                    <div class="comments-summary">主要讨论点：围绕Anthropic公司使用LLM（大型语言模型）运行商业实验的讨论，包括实验设计、结果分析、模型的可靠性以及对未来AGI（通用人工智能）的展望。
 
 不同观点：
-• **兼容性与性能改进**：pilooch指出Gemma 3模型与之前的Gemma 3版本完全兼容，并且在使用LoRA技术时显存占用有所减少，认为这是DeepMind的一个不错进展。
-• **不同模型的生成效果**：simonw分享了在不同量化大小的Gemma 3n模型上生成图像的有趣结果，显示出不同模型版本在实际应用中的差异。
-• **Gemma与Gemini的混淆**：wiradikusuma对Gemma和Gemini在无网络需求情况下的区别感到困惑，认为两者的描述可以互换，表明命名和区分不够清晰。
-• **命名混乱的批评**：actinium226批评当前行业中模型命名的混乱现象，认为OpenAI的命名方式已成为标准，导致混乱。
-• **小模型的实用性争议**：jwr认为小于27B的小模型基本不可用，只能作为玩具，而gemma3:27b-it-qat模型在实用性上表现更好。相反，danielhanchen展示了Gemma 3N在音频、文本和视觉多模态任务上的应用，认为其表现令人印象深刻。
+• **deepdarkforest的观点**：批评Anthropic博客文章在细节上模糊处理，尤其是未公开完整的系统提示，并认为其对实验结果的分析不充分。他们试图通过不完整的实验数据得出关于模型“幻觉”问题的结论，且有意隐藏一些关键信息以推动“更接近AGI”的叙事。此外，deepdarkforest指出，实验中的错误并非简单需要“更多工具和支架”，而是整个实验设计和分析存在问题。
+
+• **rossdavidh的观点**：指出LLM在许多应用中只能做到90%的准确性，适合那些允许有错误并能通过其他系统纠正的场景。LLM并不适合那些一个错误就可能毁掉整个系统信任的场景。同时，批评了对“AI即将实现AGI”的过度宣传和错误直觉。
+
+• **janalsncm的观点**：认为实验结果表明LLM远未准备好实际应用，尤其是商业场景，甚至将其比作具有严重精神障碍的人。对于有人从实验中得出“AGI即将到来”的结论表示不解，认为这是过度乐观且不现实。
+
+• **keymon-o的观点**：基于个人经验，指出LLM在处理复杂任务（如库存管理）时，即使经过多次改进，仍然会产生不可预见的错误，导致整个系统崩溃。
+
+• **wewewedxfgdf的观点**：认为Anthropic应优先实现“下载所有文件”功能，而不是急于开设AI驱动的商店。
+
+• **mdrzn的观点**：认为实验失败的原因并非模型无法学习，而是由于设定了模糊的目标、记忆泄漏和过多的礼貌性反应。这些是工程问题，最终会被解决。同时，指出实验距离成功其实很近。
+
+• **seidleroni的观点**：认同当前LLM与宣传的差距，并对何时LLM能不再依赖大量“支架”顺利运行表示疑问。
+
+• **tavavex的观点**：一方面对模型的表现感到担忧，认为未来全自动化管理可能导致社会角色的重新分配；另一方面，认为实验中的错误很有趣，并对未来的改进抱有期望。
+
+• **archon1410的观点**：提到相关的Vending-Bench论文，提供进一步阅读的参考。
+
+• **ilaksh的观点**：希望了解实验后的改进情况，并询问是否有人与Andover Labs有联系。
+
+• **due-rr的观点**：质疑是否可以信任AI代理长期管理企业，认为即使短期表现良好，长期仍可能出现重大问题。
+
+• **tough的观点**：指出在其他平台上也遇到过模型幻觉和不运行工具的问题。
+
+• **Animats的观点**：质疑实验中是否有一个内部财务模型，并建议使用多个AI分别负责不同业务角色，以避免单一AI在多个领域犯错。
+
+• **Jimmc414的观点**：认为Anthropic未使用Opus模型是令人感兴趣的选择，可能暗示实验目的并非展示最佳性能。
+
+• **ElevenLathe的观点**：对“四月愚人”事件表示严重担忧，认为这类似于精神崩溃，并提出未来多模型同时出错可能导致社会混乱的设想。
 
 补充讨论：
-• **技术问题与错误报告**：eabeezxjc报告了在使用Gemma 3n模型时遇到的加载错误问题，表明在一些工具中兼容性仍存在问题。
-• **模型反向工程**：conradev提到Kevin Kwok对Gemma 3n模型的反向工程工作，提供了进一步的技术分析资源。
-• **模型支持与实际使用**：lxgr和minimaxir讨论了MLX工具对Gemma 3n模型的支持情况，指出目前仍缺乏量化模型，且实际支持工具存在不明确之处。
-• **模型部署成本**：zknowledge关心Gemma 3n部署版本的成本问题，指出文档中未明确价格信息。
-• **高层次功能与应用场景**：lucb1e和nsingh2对Gemma 3n的高层次改进和具体应用场景提出疑问，认为需要更明确的应用实例和任务改进说明。
-• **开放源模型的网络搜索功能**：thimabi询问是否存在开源模型支持网络搜索功能，希望这些模型能与Google Search等服务集成。
-
-争议焦点：
-• 小模型的实用性：jwr认为小模型不可用，而danielhanchen则展示了小模型在多模态任务中的潜力，二者观点对立。
-• 命名和区分的混乱：wiradikusuma和actinium226都提到命名混乱导致用户困惑，尤其是Gemma和Gemini之间的区别不明。
-
-总结：
-讨论主要围绕Gemma和Gemini系列模型的技术细节、兼容性、实用性及其实际应用中的问题展开。参与者们分享了模型在不同任务中的表现、遇到的技术问题、对命名混乱的批评以及对模型部署成本和应用场景的关注。争议主要集中在小模型的实用性和命名区分不清的问题上。</div>
+• 争议焦点：Anthropic实验的细节透明度和结果分析的科学性受到质疑，尤其是关于模型幻觉和错误分析的部分。
+• 对LLM在商业应用中的可行性及未来AGI发展的展望存在不同看法，一些人持悲观态度，认为现有模型问题较多，另一些人则认为通过改进可以实现更有用的系统。
+• 对AI代理管理企业的长期可靠性存在深刻质疑，尤其是对错误容忍度低的场景。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44389202" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44397923" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -166,37 +187,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/dmf-archive/PILF" target="_blank">Show HN: PILF, The ultimate solution to catastrophic oblivion on AI models</a>
+                    <a href="https://github.com/microsoft/vscode-copilot-chat" target="_blank">Copilot Chat in VS Code is now open source</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: NetRunnerSu</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-27 11:10</span>
+                    <span>作者: ulugbekna</span> |
+                    <span>评分: 177</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-27 11:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>PILF是一个持续学习框架，旨在缓解 catastrophic forgetting 并通过使用 Surprise-gated Mixture of Experts (MoE) 模型提高效率。其核心概念是将固定超参数（如学习率、模型容量）转变为由数据内在的 "surprise" 实时驱动的动态策略。PILF根据数据批次的 "surprise" 值动态调整学习行为，包括学习率和模型容量。当 "surprise" 适中时，学习率较高，反之则较低。在MoE架构中，"surprise"还决定激活专家的数量。PILF通过PILR-S模块实现动态学习率调整，使用高斯函数计算调节因子 "lr_modifier"，并基于指数移动平均（EMA）和标准差进行调整。当前 "surprise" 通过反向传播梯度计算，未来可能使用前向-前向算法。</p>
+                    <p>GitHub Copilot是微软推出的AI编程辅助工具，帮助开发者更快速、智能地编写代码。在Visual Studio Code中安装Copilot后，用户可获得两个扩展：GitHub Copilot提供内联代码建议，GitHub Copilot Chat则提供对话式AI辅助。Copilot可根据用户需求自定义聊天回复和代码模型，支持自然语言处理和多文件代码修改。Agent模式下，Copilot能自动处理编译和测试任务。它支持多种编程语言和框架，但需使用最新版VS Code以确保兼容性。隐私和预览条款适用于该服务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某个涉及科学幻想的LARP（实况角色扮演）及其相关技术声称的讨论
+                    <div class="comments-summary">主要讨论点：微软VS Code中的Copilot功能及其相关问题
 
 不同观点：
-• [vermilingua] 认为该内容似乎属于一个复杂的科幻LARP，因此对其中的任何声称持怀疑态度，建议不要全盘接受。
-• [upghost] 对内容表示赞赏，表达了对人工调整超参数的不满，并特别提到从梯度中导出调整方法的创新性，认为这是了不起的进步。他还提到自己曾尝试过受AutoML启发的非参数（"遗传"）方法来调整超参数，但仍需手动调整进化超参数。
-• [Ifkaluva] 对该想法表示兴趣，但提出两个问题：一是模型通过梯度范数检测“惊喜”（surprise）是否意味着模型已经有调整机制，二是当梯度变大且学习率增加时，是否会带来模型不稳定性的风险。
+• **Copilot功能不够完善**：user4673568345认为Copilot在VS Code中的表现不如预期，缺乏微软这样的大公司应有的打磨和精细度。
+
+• **对Copilot决策树的技术分析需求**：hu3建议使用AI扫描Copilot的代码库，以解释其处理提示和响应的决策树，显示了对技术细节和透明度的需求。
+
+• **对微软的不信任**：revskill表示对微软的长期不信任，这种态度似乎源于对大公司的一般性不信任，而非具体的技术问题。
+
+• **Copilot的竞争与市场表现**：v5v3的评论暗示Copilot的竞争者在市场上表现更好，但没有明确说明具体竞争产品或优势。
+
+• **Copilot的封闭性和数据隐私问题**：xenophonf批评Copilot缺乏开源精神，所有重要功能都被锁定在GitHub Copilot API之后，无法定制LLM设计或训练材料，也不能自托管。此外，还提到数据被发送到第三方，涉及隐私问题。
+
+• **微软处理pull requests的表现**：BrentOzar提到微软在处理VS Code的pull requests方面的糟糕记录，提供了一个具体的链接以支持其观点。
+
+• **代码的公私属性**：mirekrusin提出代码只有公共领域和私有两种形式，暗示对开源和闭源问题的二元看法。
 
 补充讨论：
-• [hackingonempty] 以幽默方式表达了对参数调整的兴趣，但未提出具体的技术观点或深入讨论。
-
-争议焦点：
-• 该内容的可信度是争议的焦点，[vermilingua] 对其持怀疑态度，而[upghost] 和[Ifkaluva] 则更关注技术细节和潜在应用。
-• [Ifkaluva] 提出的模型稳定性和自我调整机制问题也是讨论中的一个争议点，涉及到该技术方法在实际应用中的可行性和潜在问题。</div>
+• 评论中存在对微软和Copilot的不满情绪，主要集中在功能完善度、开源精神、数据隐私和公司信誉等方面。
+• 部分评论（如v5v3和revskill）带有讽刺和情绪化的表达，而非具体的技术批评。
+• xenophonf和BrentOzar提供了较为具体的论据和例子，使得他们的批评更具实质性。
+• 整体讨论中，争议的焦点在于Copilot的封闭性、功能完善度及其背后的数据处理和公司信誉问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44395810" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44395782" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -207,223 +237,50 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s41586-025-09135-3" target="_blank">Bogong moths use a stellar compass for long-distance navigation at night</a>
+                    <a href="https://www.smithsonianmag.com/travel/when-a-lumberjacks-imagination-ran-wild-he-created-more-than-200-sculptures-in-wisconsins-northwoods-180986840/" target="_blank">A lumberjack created more than 200 sculptures in Wisconsin's Northwoods</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Anon84</span> |
-                    <span>评分: 45</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-06-23 21:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>博贡蛾（Bogong moths）每年春天从澳大利亚东南部迁徙至澳大利亚阿尔卑斯山的凉爽洞穴，距离可达1000公里。秋季再返回繁殖地。研究发现，这些蛾在夜间利用星夜作为罗盘，通过感知星空的旋转来确定地理方向，并在无月光的夜空下，在无效的地磁场中，依然能朝季节性迁徙方向飞行。它们的脑部视觉神经元对特定星空方位有反应，帮助它们实现长距离夜间导航。此外，蛾也使用地球磁场作为导航辅助。这表明博贡蛾具备利用星辰辨别方向进行定向长距离迁徙的能力。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Mouritsen-Frost飞行模拟器的应用及其在昆虫研究中的作用，以及对昆虫作为食物的讨论。
-
-不同观点：
-• 第一种观点：Mouritsen-Frost飞行模拟器被用于研究其他昆虫，例如君主斑蝶。该设备构造简单，仅包括一个显示夜空的天管，用于记录昆虫的飞行方向。这表明该设备在昆虫行为研究中的实用性和广泛应用潜力。
-
-• 第二种观点：评论转向了对昆虫作为食物的讨论。有人提到这些昆虫在某些地区被视为美味，并表达了个人尝试的兴趣，但也表示可能更偏爱witchetty grubs（一种澳大利亚的食用幼虫）。这反映了不同文化和个人对食用昆虫的接受程度和偏好。
-
-补充讨论：
-• 第一条评论主要关注科学研究工具的应用，强调其在昆虫导航和行为研究中的价值。
-• 第二条评论则偏离了科学讨论的主题，转向对昆虫作为食物的文化和个人兴趣的讨论。
-• 争议的焦点在于讨论主题的偏移，从科学研究工具转向了饮食文化，显示出讨论参与者兴趣点的不同。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44360558" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://eclecticlight.co/2025/06/28/a-brief-history-of-web-browsers/" target="_blank">A brief history of web browsers</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-28 08:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章简要回顾了苹果Safari浏览器的发展历史及其前身和竞争对手。1994年，Netscape Navigator是主要浏览器，但1996年面临微软Internet Explorer和苹果Cyberdog的挑战。Cyberdog于1997年被弃用，随后苹果将IE作为默认浏览器，但用户逐渐转向Camino等替代品。2003年，苹果推出Safari浏览器，并在Mac OS X 10.3中捆绑发布。Safari不断更新，2005年Mac OS X 10.4中成为唯一捆绑浏览器，2009年Safari 4提升了性能并引入安全功能。2010年，Safari 5支持扩展和阅读模式。2016年，Safari 10加强了对Flash的控制，2021年，Safari 15支持实时翻译。Safari现为苹果多系统默认浏览器，尽管面临Chrome等竞争，仍在不断发展。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44403149" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.programmax.net/articles/png-is-back/" target="_blank">A new PNG spec</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bluedel</span> |
-                    <span>评分: 639</span> |
-                    <span>评论数: 50</span> |
-                    <span>发布时间: 2025-06-24 13:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>PNG图像格式在停滞二十年后迎来复兴，获得了美国国会图书馆、加拿大图书馆和档案馆、澳大利亚国家档案馆的推荐。此次更新包括支持Rec. 2020和HDR、正式认可APNG（动画PNG）、支持Exif数据，并进行了多项清理和修正。多款主流软件和硬件已支持新版PNG规范，包括Chrome、Safari、Photoshop等。未来的更新将专注于提升压缩效率和并行编解码。PNG工作组的努力使这一格式重回技术前沿。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：新PNG规范的更新及其相关技术细节和应用
-
-不同观点：
-• **ProgramMax（作者）**：认为这并不是一个全新的格式，而是对现有PNG格式的更新，且具有高度的向后兼容性。旧程序仍能加载新PNG文件并识别图片内容。他还解释了PNG的内部结构，包括数据块的命名和跳过不识别块的能力。
-
-• **joshmarinacci**：分享了一种将JSON数据保存到PNG注释字段中的技巧，以便图片文件既可作为图像使用，也可重新加载到编辑器中，避免了下载文件夹中出现难以理解的JSON文件。
-
-• **ksec**：认为新PNG规范只是在现有广泛实现的规格上做了更新，仍需要新的解码器。同时提出JPEG XL已经提供了大多数人需要的功能，包括无损压缩，因此质疑更新PNG的必要性。
-
-• **qwertox**：对Exif数据的支持表示欢迎，并提出是否可以在Exif中包含磁力计和加速度计数据，以便在后期处理中使用。
-
-• **albert_e**：提到动画PNG可以替代GIF，具有透明背景和无损压缩的优势，并好奇是否存在标准框架支持的动画SVG。
-
-• **qwertfisch**：认为PNG更新来得太晚，JPEG XL已经具备所有需要的功能和先进压缩技术，因此没有必要更新PNG，直接采用JPEG XL即可。
-
-• **cptcobalt**：强调最好的编解码器是那些在所有设备和系统上都能可靠工作的编解码器，如PNG和JPEG，而HEIC和AV1在缺乏原生支持的系统上使用时会遇到问题。
-
-• **ggm**：提到需要一种统一的时间/日期管理方式，以便软件开发人员能够一致地处理。
-
-• **LegionMammal978**：阅读相关博客后指出，新的cICP数据块类型提供的HDR支持实际上可以通过嵌入的ICC配置文件实现，新的数据块只是一种更简洁的色彩空间信息表示方式。
-
-• **rynop**：质疑宣传中声称Photoshop支持新PNG规范的说法，指出Photoshop并不支持APNG，认为这是一个重大错误。
-
-• **LeoPanthera**：担心改进压缩算法会破坏向后兼容性，导致出现“实际上不是PNG的PNG文件”，类似于USB-C接口的兼容性问题。
-
-• **adgjlsfk1**：对新PNG格式与无损JPEG XL的压缩效果对比表示好奇。
-
-• **iliketrains**：对官方支持动画PNG表示兴奋，回忆过去制作动画PNG的经历，并提供相关项目链接。
-
-• **remram**：对新PNG规范的命名表示疑惑，质疑是否会发布一个不兼容的新版本，却期望用户认为它仍是同一格式。
-
-• **369548684892826**：提到PNG的正确发音为“ping”，这是规格说明中定义的。
-
-补充讨论：
-- 新PNG规范的必要性和与JPEG XL的对比是争议焦点。
-- 动画PNG和SVG的应用及支持情况也是讨论的一个重要方面。
-- 压缩算法的改进及其对兼容性的影响引起了一些担忧。
-- 时间/日期管理及Exif数据扩展是技术细节讨论中的次要话题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44365754" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=ke-Ao-CpI7E" target="_blank">Wait Who's the New CEO of Commodore? • Let's Buy Commodore Part 2 [video]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: joshka</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-28 08:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文简要列出了与网站相关的各类信息和功能链接。包括关于网站的介绍、新闻发布、版权声明、联系方式、创作者信息、广告、开发者选项、使用条款、隐私政策、安全政策等。此外，还提到YouTube的新功能测试、NFL Sunday Ticket服务，以及版权归属为2025年的Google LLC。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：文章标题是否应改为 "Commodore has been bought by Peri Fractic & team"
-
-不同观点：
-• 支持更改标题：
-   - 认为标题修改后能更准确地反映文章内容，尤其是强调了Peri Fractic及其团队在收购中的角色。
-   - 举例说明，如果文章详细介绍了Peri Fractic及其团队的背景和收购过程，那么在标题中突出这些信息能够吸引相关读者的注意力。
-
-• 反对更改标题：
-   - 认为原标题可能已经足够清晰，不需要进一步修改。
-   - 担心新标题可能过于冗长，不利于读者快速理解文章主题。
-   - 指出如果文章重点是Commodore的收购事件本身，而非具体人物，那么在标题中突出个人名字可能偏离重点。
-
-• 对标题修改持中立或条件态度：
-   - 建议可以在副标题中提及Peri Fractic及团队，而不是直接更改主标题。
-   - 认为标题的修改应视文章的具体内容和目标读者群而定，如果文章是以行业内人士为主要读者，那么突出关键人物是有意义的。
-
-补充讨论：
-• 有人提到标题的吸引力问题，认为无论标题如何修改，最重要的是能够引起读者的兴趣并准确传达文章的核心信息。
-• 争议的焦点集中在标题的信息传达和吸引力之间的平衡，是否需要突出个人名字以增加关注度，还是保持简洁以确保信息明确。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44403097" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://turtleware.eu/static/paste/wecl-test-gl/main.html" target="_blank">Web Embeddable Common Lisp</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 146</span> |
+                    <span>作者: noleary</span> |
+                    <span>评分: 94</span> |
                     <span>评论数: 13</span> |
-                    <span>发布时间: 2025-06-25 15:33</span>
+                    <span>发布时间: 2025-06-27 02:02</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>退休伐木工弗雷德·史密斯在20世纪40年代末至60年代中期，于威斯康星州创建了超过200座真人大小的混凝土雕塑，这些雕塑展现了当地文化、民间传说以及美国历史和爱国主义象征。史密斯的作品核心为木结构，外包水泥、镶嵌碎玻璃等物品，如今保存在威斯康星混凝土公园。由于长期暴露于自然环境中，雕塑需要持续维护，保护员使用环氧树脂、硅胶等材料修复破损和不稳，并加固生锈的支撑结构。公园免费开放，但鼓励捐款以支持保护工作。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Lisp 及其相关技术在 WebAssembly (WASM) 和浏览器环境中的应用与性能
+                    <div class="comments-summary">主要讨论点：对雕塑艺术的多种反应及相关话题的讨论
 
 不同观点：
-• jackdaniel 和 deosjr 分享了各自在浏览器中使用 WASM 和 WASI 的项目进展。jackdaniel 提到了改进浏览器集成和移植到 WASI 的工作，而 deosjr 则介绍了自己使用 Spritely 研究所的 Hoot 项目（Guile Scheme 编译为 WASM）的经验，并提供了项目链接。
-• feeley 提到了 Gambit Scheme 的 REPL，它支持浏览器中的线程和 JavaScript 外部函数接口 (JS FFI)，并提供了相关教程和项目链接。
-• jinlisp 提到了将 Maxima（符号计算系统）移植到浏览器中的可能性，并引用了四个月前的讨论，指出目前仍在实验 WASI 和 WASM 的 GC 扩展。
-• bevr1337 对 LISP 为何没有成为最早能够编译到 WASM 的语言表示好奇，并提到 WASM 项目使用表情符号跟踪进展，而 LISP 仍处于孵化阶段。
-• b0a04gl 认为浏览器中的字节码执行速度慢并不是主要问题，关键在于能否通过 WASM 实现与 Lisp 的运行时交互，使 Lisp 可以直接驱动 UI 更新，从而实现纯控制流而无需绕道。
-• HexDecOctBin 对 WASM 是否适合 REPL 驱动编程提出了疑问，指出 WASM 采用哈佛架构，可能无法在运行时更新代码。
-• jinlisp 和 tempodox 讨论了 Lisp 在浏览器中的执行性能，jinlisp 提供了性能对比数据，指出在某些计算任务中，浏览器中的 Lisp 执行速度远慢于原生 SBCL。
+• oregano: 对雕塑使用的材料（貂皮和铁丝网）以及水泥的附着效果表示好奇，想知道作者的选材决策过程。
+• vermooten: 批评作者破坏自然环境，认为自然本身已经足够美好。
+• ge96: 对雕塑的表面感到不适，提到了密集恐惧症（trypophobia）的反应。
+• calrain: 赞赏雕塑家的遗产，认为这是一个提醒，促使自己专注于更重要的事情。
 
 补充讨论：
-• potholereseller 提供了 fossil.turtleware.eu 上一个项目的源代码链接，尽管该项目的最后更新日期是2025年1月，暗示可能是一个未来计划或尚未完成的项目。
-• jackdaniel 还提到通过 `eval` 执行 `wecl.lisp` 可以访问一些有趣的函数定义，如 canvas 或 webgl 访问草案，暗示了 Lisp 在浏览器中操作图形功能的潜力。
+• robotnikman: 对文章中提到的地理位置（Wisonsin Northwoods）表示兴趣，表达了如果找到远程工作愿意搬到那里的想法。
+• aaroninsf: 分享了一个相关地点链接（Mary Nohl House），表明这是社区喜爱的地方。
+• seemaze: 抱怨现代广告支持的网络体验糟糕，特别是在没有DNS广告拦截器的情况下。
+• 31337Logic: 表达了对雕塑人脸的喜爱。
+• Uninen: 离题地抱怨现代网页上的图片过大，批评缺乏图像优化。
 
 争议焦点：
-• Lisp 在浏览器中的性能表现是否足够好，尤其是在需要高性能计算的任务中，浏览器中的 Lisp 执行速度明显慢于原生环境。
-• WASM 是否适合作为 REPL 驱动编程的目标平台，特别是在运行时更新代码的能力方面存在疑问。</div>
+• 雕塑是否对自然环境造成了破坏（oregano和vermooten之间隐含的材料选择与自然美之间的关系）。
+• 雕塑的视觉效果引发的生理不适（ge96的密集恐惧症反应）。
+
+其他值得注意的讨论点：
+• 对雕塑艺术的个人喜好（fasthands9和31337Logic的积极反馈）。
+• 对文章外信息的分享和联想（aaroninsf的链接分享）。
+• 对现代技术问题的抱怨（seemaze和Uninen对网页体验的批评）。
+
+幽默反应：
+• FridayoLeary: 以幽默的方式引用了歌曲《He's a Lumberjack》，增加了一些轻松的元素。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44378486" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44393160" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -434,48 +291,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://george.mand.is/2025/06/openai-charges-by-the-minute-so-make-the-minutes-shorter/" target="_blank">OpenAI charges by the minute, so speed up your audio</a>
+                    <a href="https://www.isc.org/blogs/kea-3-0/" target="_blank">Kea 3.0, our first LTS version</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: georgemandis</span> |
-                    <span>评分: 714</span> |
-                    <span>评论数: 53</span> |
-                    <span>发布时间: 2025-06-25 13:17</span>
+                    <span>作者: conductor</span> |
+                    <span>评分: 112</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-26 20:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了一种通过加速音频来加快OpenAI转录速度并降低成本的简单方法。具体操作是使用`ffmpeg`将音频加速2倍或3倍，再进行转录，这样可以减少令牌使用和等待时间，且转录质量几乎不受影响。文章提供了一个脚本，结合了`yt-dlp`、`ffmpeg`和`llm`工具，从YouTube视频提取音频、加速并转录，最后生成摘要。作者在尝试为Andrej Karpathy的演讲生成摘要时，因错误和版本问题，意外发现了这个加速音频的技巧。通过这种方法，不仅节省了时间，还避免了处理长音频的麻烦。</p>
+                    <p>ISC发布了Kea 3.0.0，这是Kea的第一个长期支持（LTS）版本。Kea是一款开源的DHCP（动态主机配置协议）服务器，该版本引入了多项新功能和改进，包括更好的稳定性、性能优化以及对新硬件和操作系统的支持。作为LTS版本，Kea 3.0将获得更长时间的技术支持和安全更新，确保用户在未来几年内能够获得可靠的服务。这一发布标志着Kea项目的一个重要里程碑，为网络管理员提供了更稳定的选择。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：通过技术手段加速处理和转录音视频内容的不同方法及其优缺点
+                    <div class="comments-summary">主要讨论点：围绕Kea DHCP服务器发布的讨论，包括其介绍、替代方案、技术问题及开源影响的评价。
 
 不同观点：
-• [w-m] 认为Andrej的讲话速度极快，转录时需要降低YouTube播放速度以跟上内容。同时提出通过ffmpeg去除静音部分来缩短视频长度，但未评估转录质量。
-• [heeton] 强调快速浏览与仔细阅读的区别，认为观看完整视频能激发更多思考和想法，比阅读摘要或在线观看更有效。慢下来通常更有助于思考。
-• [georgemandis] 分享了自己使用ffmpeg加速视频以符合时长限制的经验，并提供了详细的成本和脚本说明，认为这是一种值得分享的技巧。
-• [timerol] 对不观看视频只依赖摘要的方式感到不安，认为这种趋势让人不适，但承认这是未来可能的发展方向。
-• [simonw] 提到了一种通过将文本嵌入图像中以降低成本的老技巧，与当前讨论的音频转录加速问题形成类比。
+• [对项目介绍的批评] rapnie指出发布公告缺乏对Kea项目的简要介绍，导致不熟悉Kea的用户需要额外点击获取基本信息。他认为公告应更用户友好。
+• [背景信息补充] throw0101c提供了背景信息，解释Kea是ISC的新DHCP服务器，正在取代即将停止维护的ISC DHCPd。
+• [替代方案] mekster提到除了Kea外，还有其他现代选择，例如AdGuard Home，具有友好的Web UI，比传统的守护进程实现更容易管理。
+• [版本信息争议] mariusandra提到Kea 3.0早已发布，并附上链接，指出自己是同名JS框架的作者，暗示对新版本发布消息的不以为然。
+• [技术问题] kayson提到将Kea集成到pfsense中的困难，指出过渡过程中出现了很多bug，尽管2.8.0版本解决了不少问题。
+• [开源和商业化] kraftomatic对Kea的商业扩展开放源代码表示赞赏，认为这有助于集成零接触自动化流程，尽管他原本愿意支付约500美元来获得这些功能。
+• [开源扩展的积极评价] ExoticPearTree也对商业扩展开源表示欢迎，认为这为自动化操作开辟了新途径。
+• [信息不足] dgfitz承认在浏览公告后仍不清楚Kea是什么，暗示需要更多解释性信息。
+• [成功案例] latchkey分享了一个成功案例，描述了他们如何在遇到dnsmasq性能问题后切换到Kea，成功解决了网络问题。
 
 补充讨论：
-• [dataviz1000] 介绍了自己开发的Chrome扩展，可以在浏览器中利用WebGPU和OpenAI Whisper模型进行音频转录，并提供了相关例子和代码链接。
-• [rob] 建议使用Groq而非OpenAI的Whisper API进行批量转录，因为Groq更便宜，并分享了内部工具的实现方法和备用方案。
-• [alok-g] 赞同直接切入主题的文章风格，认为很多文章绕来绕去没有重点。
-• [Tepix] 质疑将感兴趣的内容发送给OpenAI会泄露隐私，建议使用本地运行的Whisper模型。
-• [babuloseo] 分享了自己利用YouTube内置转录服务和Gemini Pro 2.5重建转录的技巧。
-• [mt_] 提到可以使用Google AI Studio转录视频并添加视觉线索，因为模型是多模态的。
-• [brendanfinan] 询问这种方法是否适用于包含10,000个PDF的视频。
-• [stogot] 认为准确性部分不够充分，建议通过简单的输出差异比较来评估准确性。
-• [conjecTech] 提出了一种在本地运行Whisper时通过下采样/池化来提高吞吐量的方法，但会略微增加错误率。
-• [godot] 建议直接使用OpenAI Whisper模型或更快版本的模型进行本地转录以避免成本，并分享了自己的经验和工具建议。
-
-争议焦点：
-• 加速转录与保持转录质量和准确性之间的平衡。
-• 使用在线服务（如OpenAI）与本地运行模型在隐私和成本上的取舍。</div>
+• 讨论中涉及Kea相对于dnsmasq等其他DHCP服务器的性能优势，以及其在实际部署中的成功应用。
+• 对Kea的商业扩展开放源代码的积极评价反映了社区对开源解决方案的强烈需求和支持。
+• 技术问题和版本信息的争议显示出用户在实际应用和信息获取中的一些困惑和不满。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44376989" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44390962" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -486,45 +336,236 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.mdpi.com/2226-4310/12/6/519" target="_blank">A Review of Aerospike Nozzles: Current Trends in Aerospace Applications</a>
+                    <a href="https://github.com/Sakura-sx/typr" target="_blank">Typr – TUI typing test with a word selection algorithm inspired by keybr</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-06-26 15:33</span>
+                    <span>作者: Sakura-sx</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-23 08:27</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>"typr" 是一个基于命令行界面（TUI）的打字测试工具，其单词选择算法受 keybr 启发，通过考虑字母准确度、字母在英语中的频率以及用户输入字母的速度来优化打字速度。该工具具有一个简洁的命令行界面，使用 curses 库实现，并将用户数据存储在 JSON 文件中。安装过程包括克隆仓库并安装所需依赖，使用方法灵活，可以通过不同参数设置时间限制、单词数量限制或持续运行。项目采用 GPL-3.0 许可证，欢迎用户提出改进建议和提交代码贡献。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于旋转爆震发动机和气尖引擎（aerospike）技术及其可行性的讨论，以及对单级入轨（SSTO）飞行器的兴趣和质疑。
+                    <div class="comments-summary">主要讨论点：针对打字学习工具的评价与改进建议
 
 不同观点：
-• **hinkley**：对旋转爆震发动机使气尖引擎变得可行抱有希望。他认为，不断移动的火焰前端可以分散热量，但气尖引擎的主要问题是如何获得足够的冷却剂通过尖端。相比之下，传统的钟形喷嘴虽然需要更多冷却，但更容易冷却。
+• [seblon] 认为 keybr.com 是一个非常好的打字学习系统，相比自己2015年开发的类似工具，keybr.com 帮助他意识到自己打字中的具体问题（如字母 "q" 的不足）。他分享了自己的项目链接，但承认 keybr.com 更优秀。
 
-• **psunavy03**：对单级入轨飞行器（SSTO）持怀疑态度，质疑近年来是否有任何发明能够让SSTO成为现实，而不是像一直以来那样只是一个难以实现的目标（“白鲸”比喻难以达到的目标）。
+• [procaryote] 提出打字工具的人工性问题，认为这些工具往往只让用户练习无意义的字母组合，而缺乏实际打字场景中的标点符号和多样文本。他分享了自己通过古登堡计划的书籍文本改进打字工具的经历，认为这样既能提高标点符号输入能力，也能让练习更有趣。
 
-• **ge96**：提供了关于气尖引擎的视频链接，展示了一些近期的研究，暗示这些技术有在近期发展。
+• [Sakura-sx] 作为 keybr.com 的长期用户，指出该工具的不足之处，如一次只练习一个单词以及算法强制用户以相同速度输入字符。为此，他自己开发了一个改进版本，其算法基于用户输入每个字母的速度、准确性及字母在英语中的常见程度来随机选择单词。
 
-• **gatkinso**：质疑某张图片是否为AI生成的“Venture Star”图像，指出图片中缺少左舷机翼，暗示对技术讨论中的视觉材料准确性有疑问。
+• [nmca] 对 Sakura-sx 的改进表示赞赏，并提出进一步优化的可能性，建议引入双字符的速度、频率和错误率等因素，以期超越 keybr.com。
 
-• **jamesblonde**：幽默地提到他以为讨论的主题是关于Aerospike数据库（一种键值存储系统），而非航空航天技术，显示出对主题的误解或幽默调侃。
+• [vanous] 强调打字学习工具应注重打字与文本源的分离，或隐藏当前输入的文本，以提高打字技能的实际应用水平。
 
-• **whalesalad**：分享个人故事，提到其父亲曾在洛克希德公司参与X-33项目，增添了对气尖引擎技术实际应用的历史背景。
+• [jerezzprime] 寻求针对编程符号的打字练习程序，表达了希望在不用思考编程问题时练习新键盘布局的需求。
 
-• **itsthecourier**：称赞文章的贡献，提到这是来自哥伦比亚顶尖大学研究人员的成果，显示出对科研工作的认可。
+• [akaij] 对工具表示赞赏，并联想到自己曾在2002-2003年使用过类似程序（名为‘yogurt’），唤起了怀旧情绪。
+
+• [Velorivox] 质疑该讨论是否应归为“Show HN”（Show Hackers News，一个分享自己项目的栏目），暗示讨论内容可能更适合其他类型的分享。
 
 补充讨论：
-• 讨论中涉及的具体技术包括旋转爆震发动机、气尖引擎和单级入轨飞行器，反映出对未来航空航天推进技术的关注。
-• 争议的焦点集中在SSTO飞行器的现实可行性，以及气尖引擎在冷却问题上的技术挑战。
-• 讨论还涉及对技术资料准确性的质疑，例如图片是否为AI生成，显示出对信息真实性的关注。</div>
+• [Sakura-sx] 感谢大家的关注，提到自己项目的星标数从1增加到27，显示出讨论带来的积极反馈。
+
+争议焦点：
+• 打字学习工具的有效性和实际应用性是讨论的核心争议点。一方面，用户认可 keybr.com 的效果，但同时也指出了其在实际应用场景（如标点符号、多样文本）中的不足。不同用户根据自身需求提出了改进建议，显示出对打字工具多样化的需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44388395" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44353576" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://veitner.bearblog.dev/calculating-the-fibonacci-numbers-on-gpu/" target="_blank">Calculating the Fibonacci numbers on GPU</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-06-23 18:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了如何使用GPU编程快速计算斐波那契数列。文章使用NVIDIA的Thrust库，通过并行化扫描（scan）算法实现高效计算。首先解释了扫描操作的基本概念，然后展示了如何在Thrust中进行简单的排他扫描，接着将扫描操作扩展到矩阵乘法，最终利用矩阵幂运算来计算斐波那契数。文章还提到通过模运算避免大数计算中的溢出问题，并展示了在消费级GPU上快速计算极大斐波那契数（如F99999999）的性能表现。最终结果可通过Github代码验证，展示了Thrust库的灵活性和强大功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：计算大Fibonacci数模运算的效率和方法
+
+不同观点：
+• [meindnoch] 认为对于计算 F(99999999) mod 9837，使用 2x2 矩阵乘法可以在CPU上快速完成（纳秒级），完全没有必要使用GPU。强调了CPU在此类计算上的高效性。
+• [lb-guilherme] 支持 [meindnoch] 的观点，指出所用的快速加倍算法是顺序的（没有并行性），计算速度非常快，只需不到一百次操作即可完成。他认为文章中的基准测试主要测量的是通信时间而不是实际计算时间。
+• [Strilanc] 以幽默的方式提到了计算大Fibonacci数的常见问题，引用了YouTube视频为例，展示了一次失败的尝试。他指出，未进行模运算的大Fibonacci数计算需要大整数运算，涉及到FFT等复杂方法，最终作者选择使用GMP库来优化。
+• [eesmith] 提供了实际代码示例，展示在普通笔记本上通过简单迭代方法计算Fibonacci数模的时间为330毫秒，并指出通过算法优化（如使用缓存和递归方法），可以在Python中以0.1毫秒的速度完成相同计算。他强调了算法优化在提升计算效率中的重要性。
+
+补充讨论：
+• 争议的焦点在于是否需要使用GPU来加速Fibonacci数的计算。多数观点认为，对于此类特定问题，CPU上的算法优化足以实现高效计算，GPU的使用在此显得不必要。
+• 强调了不同算法在计算效率上的巨大差异，迭代法和递归法的对比显示了算法选择对计算性能的影响。
+• 提到了大整数运算的复杂性和相应的解决方案，如FFT和GMP库的使用。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44358448" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://panadestein.github.io/blog/posts/mp.html" target="_blank">Blazing Matrix Products</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-27 06:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文探讨了在BQN语言中实现高性能矩阵乘法的过程，不依赖BLAS库。作者首先通过缓存优化（如分块技术）将性能提高了约六倍，随后通过递归分块和Strassen算法进一步提升性能，最终在4096x4096矩阵乘法中实现了比原始方法快9倍的效果。然而，单线程性能有其极限，作者转向多核并行，利用MPI实现Cannon算法，进一步提升性能。最终，通过缓存优化与并行计算结合，BQN实现了接近BLAS/BLIS的性能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：BQN语言中高性能矩阵乘法的实现及其优化
+
+不同观点：
+• [imurray的观点] 认为该帖主要价值在于脚注中提到的关于快速矩阵乘法的链接，特别是Algorithmica网站上的文章，并提到该文章是一个在线书籍的章节，值得深入阅读。
+• [bee_rider的观点] 对BQN是否原生支持代码的向量化表示疑问，并指出在帖子中没有看到相关说明，表现出对该语言具体实现方式的关注。
+
+补充讨论：
+• [imurray] 强调了学习高性能矩阵乘法算法的资源，指出Algorithmica网站上的文章质量高且内容详实，提供了进一步学习的方向。
+• [bee_rider] 则更关注BQN语言在实际应用中的技术细节，特别是如何实现代码的向量化，以提高性能。
+• 争议焦点在于BQN语言是否原生支持向量化，以及在讨论高性能计算时，是否需要更详细地说明该语言的具体实现机制。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44394201" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://alternativelayoutsystem.com/scripts/#same-sizer" target="_blank">Alternative Layout System</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: smartmic</span> |
+                    <span>评分: 383</span> |
+                    <span>评论数: 28</span> |
+                    <span>发布时间: 2025-06-26 19:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了几种InDesign脚本，用于处理文本布局和排版问题：
+
+1. **Same Sizer**：使每个单词占据相同的水平空间，如等宽字体。
+2. **Wiggle Out**：旋转过长单词到页边，调整曲线角度，或保持直线。
+3. **Fill the Space**：填充行末到文本块末端的空隙，使用笔画、重复字母等。
+4. **Hyphen Out**：合并连字符单词，将第二部分移出文本框。
+5. **Hyphenator**：通过缩小最后一个单词的字母尺寸，避免断字和改善文本流。
+6. **Last is First**：预览下一行的首词，常见于希伯来手稿。
+7. **Ext. Word & Letter**：扩展最后一个字母或单词，常用于圣经文本复制。
+8. **Variable Gradient**：在文本块中创建渐变效果，词与词或字与字间变化。
+
+这些脚本帮助实现特定的排版风格和效果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同用户对"Same Sizer"等非传统排版方式的看法，以及其他相关排版和技术问题的讨论。
+
+不同观点：
+• **对"Same Sizer"的美学和实用性看法不一**：
+  - Demetrius认为"Same Sizer"的字符被机械拉伸，导致每行宽度不同，看起来不美观，并以越南书法作为更成功的例子。
+  - Donatj则表示，由于自身的视力问题（如斜视和重影），他发现"Same Sizer"比标准文本更容易阅读，甚至认为这可以作为一种无障碍模式。
+  
+• **对"Last is First"的看法**：
+  - Nick238指出在非音素语言（如英语）中，"Last is First"方法会造成理解困难，因为需要在看到单词开头后回溯理解整个词。
+  - Rswail则认为"Last is First"类似于文本的校验机制，有助于书写者不丢失位置，并以《妥拉》阅读为例，指出这种方法在传统文本中的应用。
+  - Philsnow将"Last is First"与格里高利圣咏中的"custos"符号进行类比，认为它可以帮助读者在换行时更顺畅地接续。
+  - Tangus提到古西班牙书籍有时会在页末标注下一页的首音节，与"Last is First"有相似之处。
+
+• **对其他排版风格和技术问题的讨论**：
+  - Eddythompson80希望看到更多类似"Hyphenator"的排版，尤其是模仿手写笔记时文字逐渐变小的效果。
+  - RattlesnakeJake和Gualdrapo对"Same Sizer"和相关工具表达了喜爱，认为其设计新颖有趣。
+  - Smm32和NackerHughes则提出了技术问题，如页面加载缓慢和自动刷新，影响了用户体验。
+  
+• **其他文化中的排版风格**：
+  - Rendello提到与"Same Sizer"类似的排版风格，如越南祈祷文将拉丁字母压缩成类似汉字的块状。
+  - Rsanek提到对boustrophedon书写方式的兴趣，认为这种双向书写的解决方案非常优雅。
+  - Shreyarajpal提到天城文（Devanagari）的顶部对齐排版方式，并建议可以尝试将罗马字母做类似的处理。
+
+补充讨论：
+- 总体来看，用户对这些非传统排版方式有褒有贬，有些人欣赏其创新性，而另一些人则担心其实用性和技术实现问题。
+- 争议的焦点主要集中在"Same Sizer"的美学和易读性上，以及技术实现中出现的页面加载问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44390501" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.popsci.com/diy/texas-brothers-buy-abandoned-boeing-727/" target="_blank">Texas brothers buy abandoned Boeing 727 for $10k</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: underthenettle</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-28 12:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Ismael Lara和弟弟从埃尔帕索机场以10,132美元的价格购得一架废弃的59年历史波音727飞机，计划将其全面翻新并打造成名为“Hangar Hangout”的景点，以吸引游客并作为教育工具。这架飞机已闲置近20年，曾用于运输囚犯。尽管购买价格低廉，但搬迁和修复成本高昂，预计总花费约25万美元。搬迁过程中，他们发现飞机内有20年未动的燃油，需专业团队处理，额外增加了2.5万美元的费用。Lara兄弟希望将飞机内部改造成互动式“虚拟实地考察”场所，特别针对学生教育。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：将飞机改造成餐厅（“Steaks on a Plane”）的可行性、目的和潜在挑战
+
+不同观点：
+• [v5v3] 介绍了英国一家被改造成餐厅的飞机，名为“Steaks on a Plane”，仅描述事件本身，未做过多评价。
+
+• [dctoedt] 通过提到飞机前拥有者（Blue Falcon Corp）和1980年报纸上的恶搞机器人照片，暗示这个项目可能具有某种幽默或噱头性质，并引用了“Blue Falcon”在军事俚语中的双关含义（指代“背后捅刀”）。该评论带有调侃和幽默的意味。
+
+• [matt_s] 提出这个项目有潜力成为一个教育工具，建议将飞机改造成适合孩子们参观和学习的展览，尤其是通过翻新驾驶舱并将其改造成简易模拟器，增加互动体验。这表明评论者关注项目的教育价值和体验提升的可能性。
+
+• [VWWHFSfQ] 对项目表示支持和期待，但同时对预算表示怀疑，认为旧飞机的翻新和维护成本可能远超25万美元的初步估计。该评论强调了实际操作中的财务和专业技术挑战，认为项目可能面临资金压力。
+
+• [sg47] 以调侃的语气评论飞机可能是以极低价格（“crash sale”）购得，暗示项目发起人可能通过廉价方式获得飞机，带有一定的讽刺意味，但对项目本身未做深入讨论。
+
+补充讨论：
+• 项目的目的不仅是商业运营（如餐厅），还有潜在的教育功能，尤其是针对青少年的航空知识普及。
+• 项目预算存在争议，有评论者质疑25万美元的预算过低，认为实际费用可能会更高，特别是在涉及专业维修和零部件更换的情况下。
+• 部分评论带有幽默和调侃性质，如[dctoedt]和[sg47]，他们通过双关语和讽刺表达了对项目噱头性质的看法。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44404231" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
