@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-06-30 20:26 (北京时间)
+            最后更新时间: 2025-06-30 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,41 +61,76 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://halb.it/posts/ebpf-fingerprinting-1/" target="_blank">Implementing fast TCP fingerprinting with eBPF</a>
+                    <a href="http://mcp-clb.markomo.me/" target="_blank">Reverse Engineering the Microchip CLB</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: halb</span> |
-                    <span>评分: 84</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-29 10:59</span>
+                    <span>作者: _Microft</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-29 21:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文记录了作者使用eBPF在Golang web服务器中实现快速TCP指纹识别的过程。TCP指纹识别是一种用于反机器人解决方案中检测异常网络请求的技术，随着对网络内容抓取需求的增加，该技术愈发重要。本文分为两部分，第一部分介绍TCP指纹识别的背景及实现策略，第二部分描述了一个概念验证的Golang web服务器开发过程，该服务器能回显客户端的TCP指纹。
-
-作者首先用C语言实现了一个简单的"Hello World" web服务器，以展示HTTP/1.0的简单性及其直接使用操作系统提供的接口。该服务器通过创建socket、绑定IP和端口、监听连接，并使用`accept()`等待客户端连接。
-
-作者强调，要深入理解网络通信，需借助工具如Wireshark捕获并分析网络流量，特别是TCP三次握手过程。通过该项目，作者展示了eBPF在网络层实现指纹识别的潜力。项目代码已在GitHub开源。</p>
+                    <p>Microchip在新推出的PIC16F13145微控制器系列中加入了一个名为配置逻辑块（CLB）的外设，它类似于一个小型FPGA（32个查找表），可与芯片内部连接。然而，官方并未提供如何自行配置CLB的文档，仅推荐使用在线配置工具。CLB不作为特殊功能寄存器（SFR）出现在寄存器映射中，也无法直接访问，只能通过支持CLB编程的开发环境（如Microchip的MPLAB® IDE）进行配置。作者决定自行逆向工程CLB，并分为三个部分介绍：背景与逆向工程、硬件测试、以及动手尝试。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对网络指纹识别技术的应对方法及其应用（包括反bot和安全防护）
+                    <div class="comments-summary">主要讨论点：Microchip CLB（可配置逻辑块）的应用和特性分析
 
 不同观点：
-• [rkagerer] 认为可以通过标准化或减少独特性的方法来抵御指纹识别，例如调整MTU、MSS、重传计时等TCP选项，类似于某些浏览器通过减少独特性来保护用户隐私。
-• [spense] 指出，指纹识别技术不仅用于bot检测，还被Cloudflare等服务用于快速检测DDoS攻击，并提供了相关博文链接，强调指纹识别在安全防护中的作用。
-• [b0a04gl] 提出疑问，指纹识别通常在连接初期进行，但对于使用静态代理、负载均衡器或移动网络的场景，中途可能改变堆栈行为，从而可能使指纹识别技术过时。
-• [OutOfHere] 批评指纹识别技术及其他反bot措施是“无用且有害的”，认为简单的HTTP 429限流就足够，并暗示指纹识别可能导致误报。
-• [benreesman] 从工作经验出发，讨论了eBPF在穿透TLS加密和识别网络行为中的强大能力，并提到在处理某些LLM（大型语言模型）相关问题时发现了指纹识别技术在实际应用中的复杂性。
+• **Kragen**：Kragen总体上对Microchip的CLB持积极态度，认为快速、确定性的数字逻辑与微控制器的灵活性有很强的协同作用。他指出CLB可以减少查阅繁杂的寄存器和外围设备文档的麻烦，并提到RP2040的pioasm协处理器是类似问题的另一种解决方案。不过，Kragen对Microchip没有利用CLB来替代硬连线外设（如SPI、I²C等）表示失望。他还分析了CLB的延迟性能，认为虽然比一些CMOS逻辑器件慢，但仍比微控制器的中断处理和指令执行速度快得多。
+
+• **RicoElectrico**：RicoElectrico对Microchip没有提供CLB的手动配置文档表示不满，认为依赖在线配置工具是“SaaS-ification”的过度渗透，甚至影响了保守的嵌入式市场。他对这种缺乏自主配置信息的做法表示强烈反对。
+
+• **throwaway81523**：throwaway81523希望看到CLB的实际应用示例，并对CLB只有32个LUT（查找表）的配置表示质疑，认为至少应该有几百个LUT才能实现更有意义的应用，如构建专门的SERDES（串行解串器）。
 
 补充讨论：
-• 争议焦点在于指纹识别技术的有效性和必要性。一方面，支持者认为指纹识别在反bot和安全防护中至关重要，另一方面，批评者认为这种技术可能带来误报，且不如简单的限流措施有效。
-• 讨论中还涉及eBPF技术在指纹识别中的应用，以及其在穿透TLS加密时的能力，显示出技术细节上的深度讨论。
-• 不同评论者对指纹识别技术的态度差异较大，从实用工具到潜在问题都有涉及。</div>
+• **技术细节争议**：Kragen对CLB的延迟性能与不同器件的对比分析，提供了具体的技术数据支持（如232ns的传播延迟，7.5ns每BLE的延迟等），显示了对硬件性能的深入关注。
+
+• **配置工具的争议**：RicoElectrico对配置工具的批评引发了对嵌入式市场SaaS趋势的更广泛讨论，表明对工具链和文档开放性的关注。
+
+• **应用范围的讨论**：throwaway81523对LUT数量的质疑和对具体应用示例的需求，提出了CLB在实际应用中的潜力和局限性问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44412080" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44416589" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2506.21539" target="_blank">WorldVLA: Towards Autoregressive Action World Model</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: chrsw</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-29 23:51</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了一种名为WorldVLA的自动回归动作世界模型，该模型整合了视觉-语言-动作（VLA）模型和世界模型。WorldVLA通过结合动作和图像的理解与生成，预测未来图像并学习环境的基本物理规则，从而改进动作生成。同时，动作模型基于图像观察生成后续动作，帮助视觉理解并促进世界模型的视觉生成。研究显示，WorldVLA的表现优于单独的动作和世界模型，展现了二者之间的相互增强效果。然而，动作模型在以自动回归方式生成动作序列时性能下降，原因是模型对动作预测的泛化能力有限，导致早期动作误差影响后续动作。为此，文章提出了一种注意力掩码策略，通过选择性掩码先前动作来显著提升动作块生成的性能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI模型架构的发展与比较
+
+不同观点：
+• blovescoffee认为当前的**autoregressive action world model**（自回归动作世界模型）可能只是一个局部的最佳选择（local max），其优势可能会被**JEPA**（Joint Empirical Probability Approximation）相关的工作所取代。该评论者对**arch（架构）的细节**有更多期待，希望了解更多具体内容，并暗示JEPA可能在未来成为更优的方案。
+
+补充讨论：
+- **争议焦点**：当前的模型架构是否是最佳选择，或者是否有如JEPA等其他模型架构会在未来占据主导地位。
+- **论据**：blovescoffee指出，**autoregressive action world model**虽然目前表现良好，但可能只是阶段性的最佳方案（local max），未来JEPA等新方法可能会提供更大的突破。
+- **隐含的讨论**：对AI模型的架构选择和未来发展方向存在不同预期，部分人可能更看好新方法（如JEPA）的潜力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44417725" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -150,6 +185,154 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://llimllib.github.io/bloomfilter-tutorial/" target="_blank">Bloom Filters by Example</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 215</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-06-29 11:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Bloom Filter是一种快速且节省内存的数据结构，用于判断元素是否存在于集合中。它是一个概率数据结构，可能出现误报，即错误地判断一个元素可能存在于集合中。其核心是一个位向量，通过多个哈希函数将元素映射到位向量的索引位置，并将这些位置标记为1。测试元素是否在集合中时，再次使用相同的哈希函数，检查对应位是否全为1；若不全为1，则元素一定不在集合中；若全为1，则可能存在。
+
+选择合适的哈希函数和参数（如位向量大小m和哈希函数个数k）可以调整误报率。哈希函数应独立且均匀分布，常用Murmur、FNV等。Bloom Filter的插入和查询时间复杂度为O(k)，空间效率高但存在误报可能。设计时需根据预期元素数量n调整m和k以优化性能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Bloom Filter的介绍、应用、实现和优化
+
+不同观点：
+• alienbaby认为该文章是他寻找的理想介绍，帮助他了解了Bloom Filter。
+• jedberg赞赏文章的互动部分，并建议通过实例演示哈希碰撞，以说明Bloom Filter回答的不确定性。
+• kridsdale3分享了自己在2009年用CUDA实现Bloom Filter的经历，并反思了职业选择。
+• marginalia_nu提出了一种使用64位Bloom Filter的技巧，以在小集合中进行高效的成员检查。
+• 256bit提供了另一个关于Bloom Filter的可视化资源链接。
+• sundarurfriend对文章中的可视化描述感到困惑，指出在不同浏览器中的显示问题。
+• konsalexee分享了另一个关于Bloom Filter的参考文章链接。
+• jedberg再次强调Bloom Filter的重要性，并提及其他相关概念如Random Weight Hashing和Cumulative flow diagrams。
+• clnhlzmn描述了在日志消息反垃圾功能中成功应用Bloom Filter的经历。
+• b0a04gl分享了在Cassandra中调试读取峰值时优化Bloom Filter误报率的经验。
+• costco讲述了自己通过Wikipedia文章理解和实现Bloom Filter的经历。
+• verytrivial比较了Bloom Filter、集合和哈希表的概念，指出它们在理解上的重叠。
+• anon-3988提出了一个特定用例，并寻求低延迟解决方案，认为完美哈希表现最佳。
+• deryilz赞赏文章的互动性，并提到Bloom Filter在流行程序中的应用列表。
+• magician225建议可以通过堆叠Bloom Filter来实现类似树查询的哈希功能。
+
+补充讨论：
+• Bloom Filter的可视化和互动性是读者欣赏的重要方面，但也有人指出可视化描述不清的问题。
+• 关于Bloom Filter的具体实现，读者分享了多种技巧和实际应用案例，如在GPU编程、Cassandra调优和日志反垃圾中的应用。
+• 有人提到Bloom Filter的局限性和替代方案，如完美哈希，在特定用例中的表现更好。
+• 争议焦点在于Bloom Filter的可视化描述不清，以及在不同用例中替代方案的有效性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44412370" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://halb.it/posts/ebpf-fingerprinting-1/" target="_blank">Implementing fast TCP fingerprinting with eBPF</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: halb</span> |
+                    <span>评分: 84</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-29 10:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文记录了作者使用eBPF在Golang web服务器中实现快速TCP指纹识别的过程。TCP指纹识别是一种用于反机器人解决方案中检测异常网络请求的技术，随着对网络内容抓取需求的增加，该技术愈发重要。本文分为两部分，第一部分介绍TCP指纹识别的背景及实现策略，第二部分描述了一个概念验证的Golang web服务器开发过程，该服务器能回显客户端的TCP指纹。
+
+作者首先用C语言实现了一个简单的"Hello World" web服务器，以展示HTTP/1.0的简单性及其直接使用操作系统提供的接口。该服务器通过创建socket、绑定IP和端口、监听连接，并使用`accept()`等待客户端连接。
+
+作者强调，要深入理解网络通信，需借助工具如Wireshark捕获并分析网络流量，特别是TCP三次握手过程。通过该项目，作者展示了eBPF在网络层实现指纹识别的潜力。项目代码已在GitHub开源。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：针对网络指纹识别技术的应对方法及其应用（包括反bot和安全防护）
+
+不同观点：
+• [rkagerer] 认为可以通过标准化或减少独特性的方法来抵御指纹识别，例如调整MTU、MSS、重传计时等TCP选项，类似于某些浏览器通过减少独特性来保护用户隐私。
+• [spense] 指出，指纹识别技术不仅用于bot检测，还被Cloudflare等服务用于快速检测DDoS攻击，并提供了相关博文链接，强调指纹识别在安全防护中的作用。
+• [b0a04gl] 提出疑问，指纹识别通常在连接初期进行，但对于使用静态代理、负载均衡器或移动网络的场景，中途可能改变堆栈行为，从而可能使指纹识别技术过时。
+• [OutOfHere] 批评指纹识别技术及其他反bot措施是“无用且有害的”，认为简单的HTTP 429限流就足够，并暗示指纹识别可能导致误报。
+• [benreesman] 从工作经验出发，讨论了eBPF在穿透TLS加密和识别网络行为中的强大能力，并提到在处理某些LLM（大型语言模型）相关问题时发现了指纹识别技术在实际应用中的复杂性。
+
+补充讨论：
+• 争议焦点在于指纹识别技术的有效性和必要性。一方面，支持者认为指纹识别在反bot和安全防护中至关重要，另一方面，批评者认为这种技术可能带来误报，且不如简单的限流措施有效。
+• 讨论中还涉及eBPF技术在指纹识别中的应用，以及其在穿透TLS加密时的能力，显示出技术细节上的深度讨论。
+• 不同评论者对指纹识别技术的态度差异较大，从实用工具到潜在问题都有涉及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44412080" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ksagar.bearblog.dev/vjepa/" target="_blank">We accidentally solved robotics by watching 1M hours of YouTube</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: alexcos</span> |
+                    <span>评分: 84</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-06-29 16:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了通过观看100万小时的YouTube视频意外解决了机器人技术的问题。传统的语言模型（如Behemoth）尽管在语言处理上非常强大，但在实际物理操作上表现不佳。研究发现，机器人需要理解物理而非语言。为此，V-JEPA 2模型通过预测视频中的下一个时刻来学习物理运动，而不是预测下一个词。该模型使用了一个10亿参数的ViT-g编码器来理解视频本质，并通过掩码策略填补视频中的缺失部分。模型训练数据从2百万个视频扩展到22百万个视频和1百万张图片，并采用了渐进分辨率训练方法。最终，V-JEPA 2-AC通过理解可操作的物理实现了机器人控制，并在不同实验室环境中展示了零样本泛化能力，成功率在特定任务中达到65-100%。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对文章内容及相关研究的评价与争议
+
+不同观点：
+• [rozab] 认为文章像由LLM生成，段落中插入的网络meme笑话不合时宜，且文章中存在表述不一致的问题，比如数据量的描述含糊不清，容易引起误解。
+• [dimatura] 指出文章中提到的利用YouTube数据的想法在机器人学界早已有之，并举例2023年的相关研究。虽然使用YouTube作为数据源是个合理的思路，但如何实现才是关键和难点。
+• [canyp] 质疑仅通过视觉学习物理概念的模型，认为空间意识不仅仅依赖视觉，例如后空翻和接飞盘等活动涉及到更多的感知能力。
+• [imranq] 表示文章难读，建议增加更清晰的解释和结构，以帮助理解。
+• [Voloskaya] 批评文章包含许多谬误和历史改写，阅读体验痛苦。
+• [hahaxdxd123] 认为文章夸大其词，忽略了其他文献中的相关工作，指出文章中的核心见解早已在2014年被提出，且其他研究在规模和方法上也有类似之处。
+
+补充讨论：
+• [daft_pink] 和 [pr337h4m] 的评论带有幽默和推荐性质，前者调侃自己看YouTube不够多，后者推荐VideoMimic作为更好的概念验证。
+• [ErrorNoBrain] 提到影视作品《Devs》，可能暗示文章内容与该作品有相似之处。
+• [richard___] 和 [okdood64] 对文章的某些结论和YouTube数据抓取的合法性提出质疑。
+• [rzzzt] 提供了一个有趣的单位转换，增加了一些轻松的讨论气氛。
+• [contingencies] 认为文章中的研究在广义问题上有趣，但在实际应用中不如专用设备有效，指出目前对人形机器人的过度追求可能不切实际。
+
+争议焦点：
+• 文章的表述是否准确和清晰，尤其是数据量的描述和核心见解的原创性。
+• 利用YouTube数据训练模型的实际效果和可行性。
+• 文章是否夸大了研究成果及其在实际应用中的价值。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44414171" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://garden.bradwoods.io" target="_blank">Brad Woods Digital Garden</a>
                 </h3>
                 <div class="story-meta">
@@ -182,94 +365,6 @@
 • 主要争议点在于[tolerance]对Cyberpunk未来预见性的批评，以及他提出的Cybermod是否真的会成为未来的主流设计趋势。这涉及到对不同艺术运动的理解和未来趋势的预测，具有一定的主观性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44393920" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theverge.com/news/692637/microsoft-windows-kernel-antivirus-changes" target="_blank">Microsoft is moving antivirus providers out of the Windows kernel</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mrcsharp</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-06-27 01:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>微软计划对Windows进行更改，以防止类似CrowdStrike事件再次发生。去年，CrowdStrike的一次错误更新导致全球850万台Windows设备崩溃，促使微软采取行动。微软将与多家安全厂商合作，将杀毒软件（AV）和终端检测与响应（EDR）应用移出Windows内核。这一变化旨在提高系统安全性，减少内核级驱动程序导致的崩溃问题。微软强调，他们与行业伙伴共同制定规则，而非单方面决定。初期改动将专注于AV和EDR，但游戏反作弊引擎等领域仍需进一步讨论。此外，微软还将推出快速恢复功能和重新设计蓝屏死机（BSOD）为黑屏，以提升用户体验。微软预计这些变化将得到广泛采用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Windows操作系统中反病毒软件和反作弊系统的变化及其影响
-
-不同观点：
-• southernplaces7认为反病毒软件大多是骗局和垃圾软件，对反病毒软件供应商表示不满，并延伸讨论到Windows 11也存在类似问题。
-• unaindz关注内核空间与用户空间交互的开销，并提到反作弊引擎对内核的依赖，希望这些引擎也能减少对内核的依赖。
-• steelbrain对反作弊系统移出内核表示兴奋，认为这将促进跨平台游戏的实现，但对此保持谨慎乐观。
-• perching_aix对微软在打印机和WiFi驱动方面的进步表示认可，并对当前的变化表示谨慎乐观。
-• qwertox分享了安装和卸载Avira Free Antivirus后的糟糕体验，对反病毒软件供应商表示不满，并乐见它们减少系统访问。
-• codeulike批评Crowdstrike未充分测试就推出更新，导致问题，但对该公司股价上涨表示不解和不满。
-
-补充讨论：
-• 争议的焦点之一是反病毒软件的质量和信誉问题，多个评论提及其垃圾软件和骗局性质。
-• 另一个讨论点是反作弊系统对内核的依赖及其潜在影响，特别是对游戏行业的影响。
-• 也有评论关注微软在系统安全和驱动改进方面的进展，对其未来变化表示期待。
-• 最后，有评论提到软件公司因不当操作引发问题但未受足够惩罚，引发对公司责任和市场反应的讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44392948" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.zombiezen.com/blog/2025/06/why-go-rocks-for-building-lua-interpreter/" target="_blank">Why Go Rocks for Building a Lua Interpreter</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Bogdanp</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-26 05:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了作者使用Go语言构建自定义Lua解释器的经验。作者发现现有的C Lua和Go Lua解释器都不符合其需求，因此决定自行开发。Lua是一种动态类型语言，支持多种数据类型如nil、布尔值、数字、字符串、用户数据、表和函数。作者的解释器分为三个Go包：lualex（词法分析）、luacode（解析并生成指令）和lua（执行指令）。lualex将源码分解为标记，luacode将源码解析为可执行指令，lua包则执行这些指令。解释器的数据表示和执行模型与C Lua兼容，但实现独立，利用Go的特性提高了开发体验和正确性验证。整体项目结构清晰，兼顾了性能和兼容性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Go语言是否适合用于编写解释器，以及相关技术细节和性能讨论。
-
-不同观点：
-• williamdclt认为，虽然Go的接口和垃圾回收（GC）在编写解释器时有帮助，但这些特性并不是Go独有的。很多其他主流语言也有类似接口和GC机制，因此Go并不是特别突出的选择。
-• skybrian指出，Go在性能方面的表现不如C语言，特别是在需要高度优化的解释器（如Lua解释器）中。由于Go的内存安全特性，无法进行一些低级优化（如NaN-boxing），且接口值占用较多内存，这可能影响性能。
-• ufo表示对作者未解释为何要重新编写Lua解释器感到好奇，并希望了解背后的原因。
-• wavemode对文中未提及通过Go的goroutines实现Lua的协程感到意外。
-• anaempromptu用幽默的方式表达了学习Lua的个人动机，即为了在Minecraft中构建机器人。
-• andrewmcwatters补充了一个关于Lua参考实现命名的小知识，指出在Lua圈内通常称为PUC-Rio Lua。
-• photochemsyn批评了在Hacker News上过度推崇Go和Rust的风气，认为这种现象有些荒谬。
-• jekwoooooe简单表达了对Go的高度赞赏，认为Go适合几乎所有编程任务。
-
-补充讨论：
-• 争议的焦点之一是Go在编写解释器时的适用性，特别是与其他语言（如C）相比的性能问题。
-• 另一个值得注意的点是关于Lua解释器实现的技术细节，如协程的实现方式和内存管理优化。
-• 对作者未详细说明重新编写Lua解释器原因的疑问，显示了读者对背景信息的需求。
-• 关于Go语言在技术社区中的推崇现象也引起了某些不满和批评。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44384425" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -321,35 +416,6 @@
 • **实际挑战**：用户在实际应用中遇到的问题，包括ISP支持不力（hashworks）、VPN配置中的DNS问题（avhception）、以及数据中心IP范围的验证问题（hashworks）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44411273" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/fpco/inline-c/tree/master/inline-c" target="_blank">Inline-C: Write inline C in Haskell</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: burnt-resistor</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-29 20:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了Haskell库`inline-c`，它允许开发者直接在Haskell代码中嵌入C语言代码。这个库简化了Haskell与C的互操作，使得调用C函数和使用C数据结构变得更加方便。通过`inline-c`，开发者可以在Haskell源码中编写C代码片段，并自动处理两者之间的数据转换和内存管理。该库支持GHC编译器，并且适用于需要高性能或与C语言库交互的项目。注意事项包括确保C代码的正确性和处理潜在的跨语言内存管理问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44416159" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -412,75 +478,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://undiscoveredworlds.blogspot.com/2025/04/improving-river-simulation.html" target="_blank">Improving River Simulation</a>
+                    <a href="https://github.com/fpco/inline-c/tree/master/inline-c" target="_blank">Inline-C: Write inline C in Haskell</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Hooke</span> |
-                    <span>评分: 57</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-25 22:37</span>
+                    <span>作者: burnt-resistor</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-29 20:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章描述了在将旧区域绘图功能转换为新的全局上下文过程中，对河流流量追踪方法的改进。以前，程序仅存储每年一月和七月的河流流量，并通过插值估算其他月份的数据。然而，这种方法不够准确，因为河流流量不仅取决于本地气候，还受水源区域的气候影响。为解决此问题，作者更新了程序，使其为每个全球格点计算并存储全年十二个月的河流流量，并逐月将流量信息传递到下游格点。这使得河流流量的季节性变化能够更准确地呈现。文章通过几个例子展示了不同河流在各种气候条件下的流量变化，强调了改进后的系统能更真实地模拟河流在不同月份的动态变化。最终目标是让河流在区域地图上随月份动态显示大小变化，增强模拟的真实性。</p>
+                    <p>本文介绍了Haskell库`inline-c`，它允许开发者直接在Haskell代码中嵌入C语言代码。这个库简化了Haskell与C的互操作，使得调用C函数和使用C数据结构变得更加方便。通过`inline-c`，开发者可以在Haskell源码中编写C代码片段，并自动处理两者之间的数据转换和内存管理。该库支持GHC编译器，并且适用于需要高性能或与C语言库交互的项目。注意事项包括确保C代码的正确性和处理潜在的跨语言内存管理问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个项目的评价和额外信息的提供
-
-不同观点：
-• DannyPage对项目表示赞赏，并表示有兴趣亲自试用，尤其是计划在单独的显示器上进行观察和跟踪其开发进展。这表明了对该项目的发展和实际应用有积极的期待。
-
-补充讨论：
-• DannyPage还提供了项目的下载链接和代码位置，为其他感兴趣的人提供了便利。这表明社区成员之间有信息共享和互助的行为，帮助其他人更容易地参与到项目中。
-• 评论中没有明显的争议或不同意见，整体基调是积极和支持的。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44382419" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/06/25/science/anthropology-ocean-migration-japan.html" target="_blank">Scientists Retrace 30k-Year-Old Sea Voyage, in a Hollowed-Out Log</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: benbreen</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-25 22:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于实验性航行的细节和参与者的性别差异在长途划船活动中的影响
-
-不同观点：
-• [raincom] 引用了Kaifu博士的言论，指出从台湾沿海山脉顶端可以看见这些岛屿，暗示这次航行是故意的、有计划的行动。这表明航行具有目的性和实验性。
-
-• [notfed] 对航行的具体起止点表示疑问，质疑航行是否真的如描述的那样有明确的目的地和计划，并询问是否有图片可以佐证。
-
-• [flowmercent] 提出关于性别在长途划船活动中的影响的不同看法，认为女性由于较低的重心在划船活动中具有优势，并且在长时间的划船过程中，男性比女性更容易出现心理崩溃。他们引用了Texas Water Safari比赛的例子，指出获胜队伍通常包含女性成员，以此支持其关于男女在解剖学和心理差异上的观点。
-
-补充讨论：
-• 争议的焦点在于性别在体力耐力活动中的作用，特别是女性是否在划船活动中比男性更具优势。这一观点通过具体赛事（Texas Water Safari）的例子进行论证。
-
-• 关于航行的具体细节（如起止点和是否故意）也存在一定争议，notfed对航行是否完全如描述那样有计划表示怀疑，并希望得到视觉证据支持。
-
-• flowmercent的观点挑战了传统上认为男性在体力活动中总是占优的看法，通过具体的赛事结果和解剖学/心理学角度进行论证。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44382356" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44416159" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
