@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-01 02:19 (北京时间)
+            最后更新时间: 2025-07-01 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,12 +61,12 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://danielchasehooper.com/posts/typechecked-generic-c-data-structures/" target="_blank">I Write Type Safe Generic Data Structures in C</a>
+                    <a href="https://danielchasehooper.com/posts/typechecked-generic-c-data-structures/" target="_blank">I write type-safe generic data structures in C</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: todsacerdoti</span> |
-                    <span>评分: 39</span> |
-                    <span>评论数: 9</span> |
+                    <span>评分: 150</span> |
+                    <span>评论数: 19</span> |
                     <span>发布时间: 2025-06-30 16:55</span>
                 </div>
 
@@ -85,27 +85,29 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：C语言中的泛型数据结构实现及其类型安全
+                    <div class="comments-summary">主要讨论点：C语言中泛型编程的实现及其相关问题
 
 不同观点：
-• **gritzko**：认为使用C语言可以创建整个 dialect，并提供了一个基于C的通用二进制堆实现作为例子。他指出这种方法的缺点是语法不如C++模板优雅，但优势在于产生的是扁平的C结构体。同时，他批评了基于void*和运行时内存调整的实现方式，认为这是很大的缺点。
-
-• **eqvinox**：提出了一种使用联合（union）和typeof()来实现类型安全的思路，但也表示他们使用了定义包装器的大宏来实现侵入式数据结构。他认为使用联合和typeof可能可行，但不确定如何具体实现。
-
-• **HexDecOctBin**：强调了使用函数指针的类型来实现类型安全，而不是使用类似Sean Barrett的stretchy_buffers的"handle"类型。他还提到了C23标准解决了C语言类型比较的问题，并提供了相关文档链接，指出GCC和Clang已经支持但MSVC尚未支持。
-
-• **asplake**：表示正在开发一个类似ML风格的C语言变体和相关函数的生成器，并计划在完成后检查是否能兼容当前讨论的技巧。
-
-• **uecker**：表示已经在实验性库中使用了类似的技巧，并提供了一个链表实现的链接作为例子。
+• **o11c**：认为在C中实现泛型时，使用`uint64_t data[]`对于对齐要求大于`uint64_t`的类型是不正确的，而对于对齐要求小于`uint64_t`的类型则是浪费内存。此外，指出了在没有`typeof`的情况下，无法安全地返回值，并且现有的解决方法可能会导致`const`相关的错误。同时提到，无法省略`payload`，因为需要它来确定正确的数据大小。
+• **layer8**：指出函数类型的强制转换假设了项目指针类型（如`Foo*`）与`void*`具有相同的表示形式，但C标准并不保证这一点，这会导致未定义行为，并影响编译器的别名分析。
+• **gritzko**：反对上述观点，认为通过一些技巧可以创建一个完整的C方言，并提供了一个通用二叉堆的示例，认为这种方式可以得到非常普通、可预测和可优化的C结构体。
+• **cherryteastain**：质疑为何不直接使用C++来实现“带有泛型的C”，而非要通过各种复杂方法在C中实现泛型。
+• **mfuzzey**：提到Linux内核中使用的嵌入`list_head`的方法，也是一种实现泛型的思路。
+• **eqvinox**：分享了他们使用大型宏定义包装器的方法，认为这是实现侵入式数据结构的必要手段，并提供了一个哈希表包装器的示例。
 
 补充讨论：
-• **notnmeyer**：幽默地表示C语言可能正在成为新的Go语言，暗示C语言在某些方面正重新焕发活力或受到关注。
+• **uecker**：提到已经在实验库中使用了类似的技巧。
+• **HexDecOctBin**：指出C23标准中引入的新特性可以解决部分类型安全问题，并提供了相关文档链接。
+• **hgs3**：好奇这种方法如何应用于哈希表，特别是如何对键进行哈希计算和比较。
+• **monkeyelite**：提出另一种思路，即不尝试编写泛型数据结构，而是根据具体使用情况简化数据结构，认为数组是最重要的数据结构。
+• **ape4**：建议使用CFront翻译成C代码的方式。
+• **asplake**：分享了正在开发的基于ML风格标记变体的C语言生成器的教育项目，并计划未来进行兼容性测试。
+• **b0a04gl**：质疑如果两个类型具有相同的大小和对齐方式但语义不同（如`int` vs `float`），类型标签系统是否能防止意外的重用，即如何防御结构碰撞。
 
 争议焦点：
-• 不同实现方式的优劣比较，如基于宏的方法与联合和typeof()方法的对比。
-• C语言在类型安全和泛型实现上的局限性以及C23标准是否能有效解决这些问题。
-
-总结：评论围绕C语言中实现泛型数据结构的不同方法展开，讨论了各自的优缺点以及可能的改进方向，涉及语法优雅性、类型安全和编译器支持等方面。</div>
+• 对于C中实现泛型的最佳方法存在分歧，一部分人支持使用特定的技巧和宏定义，另一部分人则认为直接使用C++是更优的选择。
+• 关于函数指针类型强制转换是否会导致未定义行为及其对编译器别名分析的影响存在争议。
+• 对于类型标签系统能否有效防御结构碰撞存在疑问。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44425461" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -118,42 +120,212 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/carmax-used-pcs" target="_blank">A CarFax for Used PCs; Hewlett Packard wants to give old laptops new life</a>
+                    <a href="https://www.xfinity.com/support/articles/wifi-motion" target="_blank">Xfinity using WiFi signals in your house to detect motion</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rubenbe</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-06-30 16:38</span>
+                    <span>作者: bearsyankees</span> |
+                    <span>评分: 83</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-06-30 19:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>HP公司正计划通过推出一项类似于CarFax的服务，为二手笔记本电脑注入新的活力。该项目旨在为二手PC创建一个透明的历史记录，包括设备的使用情况、维修记录和性能数据，从而提升二手市场的信任度和产品价值。这项举措不仅能帮助消费者更好地了解所购设备的背景，还能通过延长设备使用寿命来促进环保。HP团队由多位资深专家组成，他们共同致力于开发这一创新解决方案，以推动循环经济和可持续发展。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：HP计划引入类似CarFax的系统，用于记录和存储电脑的遥测数据，以便在二手交易中提供设备历史报告。这一计划引发了关于其实用性、隐私问题以及对设备升级和维修的影响的讨论。
+                    <div class="comments-summary">主要讨论点：ISP（互联网服务提供商）通过Wi-Fi运动检测功能收集用户信息并可能与第三方分享，引发的隐私担忧及技术可行性。
 
 不同观点：
-• [mrweasel] 认为CarFax的类比对美国以外的人没有意义，并质疑将报告存储在SSD上的做法。如果用户更换SSD，数据将丢失，且HP如果不使SSD易于更换，将违背其初衷。此外，提到如果HP真的关心用户，应该让设备更易于维修和升级。
-• [trollbridge] 认为“CarFax for used PCs”的类比不恰当，因为旧机器的当前状态可以快速评估，且大多数维修只是更换整个主板，记录过去的维修历史没有太大意义。同时指出，旧笔记本电脑的价值不高，因为性能较差且设计寿命较短。
-• [stefan_] 批评HP的产品质量，指出其笔记本电脑电池问题频发，暗示对HP能否做好这一系统缺乏信心。
-• [msgodel] 认为HP是最不可能做好这件事的公司，表达了对HP的不信任。
-• [999900000999] 认为这是对隐私的严重侵犯，且收益甚微。指出SSD是易耗品，可以简单更换，企业应有销毁SSD的政策。
-• [bigyabai] 担心这一系统最初可能是为了善意目的开发，但最终可能被用作禁止第三方维修的借口，视为不诚实的日志操纵。
+• [jacobgkau] 指出，根据Comcast的服务条款，在某些情况下（如执法调查或法律诉讼），ISP可能会在未经用户进一步通知的情况下，向第三方披露用户的Wi-Fi运动数据，甚至可以判断某人是否在家。
+
+• [rancar2] 提到了一个与Wi-Fi人体检测相关的开源库（wifi-densepose），表明该技术的源代码已经公开，显示了技术的开源性和可访问性。
+
+• [transpute] 进一步解释，这种Wi-Fi功能是Wi-Fi 7的一部分，并且现代的Intel、AMD或Qualcomm设备，甚至是廉价的ESP32设备，都可能具备检测人体存在的能力，这引发了对隐私泄露的广泛担忧。
+
+• [EvanAnderson] 对ISP收集信息持反对态度，但对自行部署类似功能表现出兴趣，并询问了自建此类功能的技术现状。
+
+• [femiagbabiaka] 认为，ISP（如Xfinity）强制用户使用其路由器以获得无限带宽的做法应被视为非法，尤其在涉及隐私问题时。
+
+• [exabrial] 建议用户关闭任何不由自己控制设备上的Wi-Fi功能，以防止潜在的信息泄露。
+
+• [VariousPrograms] 强调不使用ISP提供的路由器是减少隐私泄露风险的一种方法，但也指出，现代手机的GPS功能已经使运营商能够获取用户的位置信息。
+
+• [yborg] 回忆起一篇早期论文，原本认为该技术无法商业化，但如今已经实现，表明技术发展的速度超出预期。
+
+• [jklinger410] 提到一个阴谋论，认为移除含铅涂料可能与信息收集有关，但同时也承认铅的危害性，认为两者或无关联。
+
+• [chimeracoder] 总结认为，用户应使用自己的路由器，而非ISP提供的路由器，以减少ISP监控用户的机会，强调了保护隐私的技术手段。
 
 补充讨论：
-• 一些评论者对HP的产品质量和设计寿命提出质疑，认为旧设备的价值不高，且维修和升级困难。
-• 隐私问题是一个争议焦点，特别是将数据存储在SSD上的做法被视为潜在的隐私风险。
-• 讨论中还涉及企业社会责任和设备可持续性问题，指出软件公司应努力保持旧设备的可用性。
-• 有人对HP作为品牌的信任度提出质疑，认为其产品和政策不够用户友好。
+• 争议焦点在于ISP是否有权在用户不知情的情况下，将用户的Wi-Fi运动数据用于法律执行或其他目的，用户对这种数据收集行为的知情权和控制权问题引发了广泛讨论。
+
+• 另一个值得注意的点是，该技术不仅限于ISP，普通用户也可以自行部署，这为技术爱好者和隐私保护者提供了不同的视角和选择。
+
+• 部分评论还提到了对ISP强制硬件使用的法律和隐私担忧，以及现代设备自带功能（如GPS）对隐私的潜在威胁。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44426726" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.linaro.org/blog/hidden-jtag-qualcomm-snapdragon-usb/" target="_blank">The hidden JTAG in a Qualcomm/Snapdragon device’s USB port</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: denysvitali</span> |
+                    <span>评分: 62</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-30 18:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了Qualcomm在其SoC中隐藏的EUD（嵌入式USB调试）接口，该接口自2018年起几乎存在于所有Qualcomm SoC中。通过EUD，开发者可以通过USB接口直接进行SWD调试，而无需额外工具或焊接。尽管Qualcomm在今年二月公开了相关源代码，但此前该功能依赖于专有库，仅供内部员工及合作伙伴使用。在Linux内核中的支持也引发了一些讨论，最终Qualcomm公开了代码并更新了openOCD分支。尽管构建过程中遇到一些问题，但经过修复后，成功实现了EUD的构建和使用，并添加了对Hexagon调试的支持。这一功能为内核和DSP调试提供了极大的便利。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Qualcomm芯片调试功能的实现及其安全性
+
+不同观点：
+• **mmastrac的观点**：
+  - 认为新的调试体验比以前的Qualcomm调试体验要好得多，以前的调试接口是通过USB暴露的读/写/执行原语，安全性极差，可以让用户轻松获得root权限。
+  - 指出大多数移动芯片组的调试端口严重不足，MediaTek的设备仍然使用旧的方法，需要通过一些特殊的操作来暴露串行接口。
+  - 认为Qualcomm开始让调试功能变得更易用，但大多数OEM厂商会禁用该功能，尤其是Google不支持在终端用户设备中启用调试功能。
+
+• **tripdout的观点**：
+  - 关注生产设备上该调试功能的实现，提到OnePlus 6虽然禁用了该功能但仍然可以访问。
+  - 提出如何在生产版的OnePlus 6上读取eFuse的问题，并提到Qualcomm签名的EDL加载器。
+  - 提到在SM4350设备的设备树中有eud_enable_reg，并计划通过重新编译内核来访问/dev/mem。
+
+• **dazhbog的观点**：
+  - 对Qualcomm的定制芯片设计表示惊讶，描述了其通过寄存器控制的自定义硅片，当启用时，会重定向ARM的USB引脚，添加一个USB集线器，并在集线器上添加SWD编程器和串行端口，连接回ARM核心的I/O。
+
+补充讨论：
+- 调试功能的实现细节及其在不同设备上的访问方式是讨论的焦点，尤其是如何绕过OEM厂商的限制。
+- 安全性是另一个重要话题，特别是以前调试接口的严重安全性问题，以及未来可能如何被厂商限制或禁用。
+- 技术细节如eFuse的读取、设备树中的特定寄存器、以及内核编译方法是技术爱好者和开发者关注的重点。
 
 争议焦点：
-• 主要集中在HP引入这一系统的实用性和隐私问题上。一方面是其实际应用价值和用户需求是否匹配，另一方面是数据存储和隐私保护的平衡。</div>
+- 调试功能的易用性与安全性之间的平衡，尤其是OEM厂商和Google出于安全考虑可能会禁用该功能，而技术爱好者则希望能够保持访问调试功能的能力。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44425253" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44426428" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.jxmo.io/p/there-are-no-new-ideas-in-ai-only" target="_blank">There are no new ideas in AI only new datasets</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bilsbie</span> |
+                    <span>评分: 199</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-06-30 14:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了人工智能（AI）领域的进展，指出尽管AI在过去十五年中取得了显著进步，但所谓的突破性新想法实际上很少，大部分进展源于新数据集的应用。作者认为，大型语言模型（LLMs）的发展可以归纳为四个关键突破：深度神经网络、Transformer模型、基于人类反馈的强化学习（RLHF）和推理能力。尽管这些技术推动了AI进步，但其基础机制早在1990年代甚至更早就已存在，主要依赖于监督学习和强化学习等已有方法。文章还提到，尽管研究界不断产生增量式进步，但近期的巨大模型如Grok 3和GPT-4.5仅带来边际改善，AI能力的某些宣称可能被夸大。总体而言，AI的持续进步更多依赖于数据集的更新而非全新理念。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：人工智能（AI）的发展现状、局限性、未来潜力和技术进展
+
+不同观点：
+• EternalFury认为，当前的AI模型仅在狭隘的任务中表现出色，但在面对新任务（如未见过的新游戏）时表现不佳，表明它们并不具备真正的智能，仅是在特定任务上具备专长。
+• voxleone指出，尽管AI在语言和视觉领域取得了显著进展，但这些仅仅是人类多模态智能的一部分。AI尚未触及触觉、嗅觉、情感等其他关键认知领域，未来需在这些方面取得突破。
+• strangescript质疑当前AI研究中的创新性，认为许多研究者依赖现有的工具和模型（如PyTorch），可能阻碍了实验性发展的进展。
+• tippytippytango区分了技术和科学进步，指出AI领域中许多进展是基于对已有概念的优化和扩展，而非全新突破。
+• kogus则认为，AI系统若要重现人类智能，改变数据集可能是关键，因为人类的智能也依赖于记忆、教育和背景等因素。
+• jschveibinz反驳前述观点，认为AI创新往往基于旧有概念的重新组合，AI工具能够帮助研究者以新的视角审视旧问题。
+• lsy强调基础设施对AI进展的重要性，指出过去几十年中的技术进步（如摩尔定律、互联网发展）为AI的实际应用创造了条件。
+• seydor乐观地认为，神经网络具备广泛的代表能力，未来会出现更多新想法和数据，推动AI进一步发展。
+• ks2408持怀疑态度，认为当前的LLM仅是基础数学运算的复杂版本，与几千年前的巴比伦人计算无异。
+• LarsDu88提出生物数据集（如基因表达数据）的潜力，认为这些新数据可能带来AI领域的下一波重大突破。
+• ctoth讽刺地指出，自我对弈和强化学习等方法对AI进步的贡献不可忽视。
+• Night_Thastus对当前AI讨论的热度感到厌倦，希望这股热潮能尽快过去。
+• russellbeattie通过iPhone的例子说明，技术进步往往是基于已有概念的微小调整，AI领域也是如此。
+• piinbinary认为，当前AI训练主要是记忆数据集，而非像人类一样思考和得出结论。
+• tantalor回应了关于数据集重要性的质疑，指出新方法能够解锁新的数据集。
+
+补充讨论：
+• 当前AI在语言和视觉领域的进展被广泛认可，但多模态智能、情感和身体感知等方面的进展仍被认为是未来的重要方向。
+• 部分评论者对现有AI工具和框架（如PyTorch）对创新性的潜在限制表示担忧。
+• 基础设施和历史背景对AI技术发展的影响被强调，特别是摩尔定律的放缓和互联网的发展如何推动AI的实际应用。
+• 关于AI创新的来源存在争议，一部分人认为创新基于旧有概念的重新组合，另一部分人则认为未来会出现全新的方法和数据。
+• 对AI的实际智能水平存在怀疑，许多评论者指出当前AI模型在泛化能力上的不足。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44423983" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://kevinboone.me/dtc-700.html" target="_blank">They don't make 'em like that any more: Sony DTC-700 audio DAT player/recorder</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: naves</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-06-30 18:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要介绍了Sony DTC-700 DAT播放/录音机的特点及其历史背景。DAT（数字音频磁带）技术在音质上优于传统卡带，能够提供媲美甚至超过CD质量的录音效果，特别受专业领域欢迎，但在家用市场并未普及。DTC-700是Sony于1990年推出的相对"经济"的Hi-Fi DAT设备，具备多种功能和高质量的构建，但由于高昂的价格和缺乏商业录音支持，DAT技术在家用市场未能广泛流行。最终，Sony于2005年退出DAT市场。尽管如此，DTC-700如今仍被音频爱好者视为高品质录音设备。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：DAT（Digital Audio Tape）技术的历史、使用体验及其在不同领域的应用和衰落
+
+不同观点：
+• **DAT的消费市场表现**：
+  - [larvaetron] 认为VHS播放器逐渐变为一次性物品，但个人或家庭并不会每隔一两年就更换VCR。
+  - [ilamont] 指出DAT尽管在专业市场有一些应用，但在家用市场并未真正流行，因为其定价和定位面向专业用户，且在1990年时，便携式CD播放器更符合普通消费者的需求。
+
+• **DAT的专业应用**：
+  - [rwmj] 提到DAT在录音棚中有一段第二生命，特别是在20世纪90年代末，某些乐队仍然使用DAT作为母带存储。
+  - [dylan604] 强调DAT在DJ和录音社区中的使用，尤其是在录制DJ表演和传递未发行曲目方面。但由于缺乏变调控制，DAT在DJ表演中的应用受限。
+  - [dekhn] 指出DAT在即兴乐队录音社区中很受欢迎，用于现场录音和音频质量的提升。由于其高价格，许多人无法负担，只能使用低质量的模拟磁带。
+  - [te_chris] 分享DAT在广播电台户外录音中的应用，作为计算机不可靠时的备份，并一直使用到2000年代。
+
+• **DAT与其他音频格式的比较**：
+  - [PaulHoule] 更偏爱MiniDisc，认为MiniDisc播放器更容易获取且价格低廉，成功率高，而卡式磁带录音机的成功率较低。MiniDisc还可以通过USB连接电脑录制音乐，更为便捷。
+  - [dylan604] 对比DAT和卡式磁带，认为DAT在音质上优于卡式磁带，因为其几乎没有磁带嘶声。
+
+补充讨论：
+• **技术变迁和怀旧情绪**：
+  - [jerrysievert] 提到自己曾拥有DAT设备，并参与了90年代的创意比赛，但现在设备需要清洁和调整。
+  - [adam_gyroscope] 以幽默的方式回应，认为这篇文章标题可以改为“他们再也不做像DAT这样的设备了”，表达对过去技术的怀旧。
+  - [threeio] 和 [stuartd] 分享了自己使用DAT设备的经历，从DAT设备升级到其他数字录音设备，并逐渐失去对录音爱好的兴趣，或以低价出售设备。
+
+争议焦点：
+• DAT是否在消费市场中失败：[larvaetron] 和 [ilamont] 认为DAT在消费市场并不成功，而[dylan604] 则指出DAT在特定社群（如DJ和录音社区）中有其应用和价值。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44426171" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -168,8 +340,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: matthewolfe</span> |
-                    <span>评分: 191</span> |
-                    <span>评论数: 19</span> |
+                    <span>评分: 216</span> |
+                    <span>评论数: 21</span> |
                     <span>发布时间: 2025-06-30 12:33</span>
                 </div>
 
@@ -180,211 +352,32 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI/ML基础设施中使用C++优化性能的建议及其相关技术细节
+                    <div class="comments-summary">主要讨论点：C++实现的AI/ML基础设施性能优化及其具体应用
 
 不同观点：
-• [npalli] 认为在短期内，通过使用C++优化AI/ML基础设施的关键瓶颈可以大幅提升性能。他提到，这种优化不应是完全重写，而是针对关键瓶颈进行改进，并指出中国工程师在这方面表现突出。
-• [superlopuh] 对LLM（大语言模型）整体性能中tokenizers优化的影响表示关注，并希望了解matmuls操作的成本是否主导整体性能，同时对社区对该帖的积极反应感到鼓舞。
-• [pama] 希望消除在测试中对词汇格式转换的要求，以实现完全兼容的替代方案，并建议提供更多关于如何在不同初始化场景下测试结果一致性的示例。
+• [支持优化] [npalli] 认为通过C++优化AI/ML基础设施的关键瓶颈可以显著提升性能，尤其在短期内。他提到中国工程师擅长此类优化，并且认为这种工程权衡通常能带来显著改进。
+• [实际应用体验] [isjustintime] 表示其团队已经在使用Tiktoken，并期待看到性能影响。他赞赏了将新方案设计为"drop-in"（直接替换）兼容的方式。
+• [功能完善性] [pama] 希望消除vocab格式转换的需求，并建议提供更多示例，展示如何反向操作（即从Tiktoken初始化新的tokenizer）。
+• [性能重要性] [superlopuh] 对LLM整体性能中tokenizer优化的占比表示疑问，并希望了解优化是否能带来显著提升，假设矩阵乘法通常是性能瓶颈。
 
 补充讨论：
-• [chrismustcode] 赞赏通过创建替代方案来显著提高性能的做法，并提到ScyllaDB作为类似案例。
-• [Tiberium] 建议与Hugging Face的tokenizers库进行性能比较，指出tiktoken的基准测试可能已经过时。
-• [p0] 提到BPE crate，指出其支持增量重新标记文本的功能，并询问与tiktoken的性能对比。
-• [kevmo314] 分享了自己之前类似的尝试，并指出运行成本主要由预标记化（regex）主导，建议尝试替换regex引擎以提升性能，并询问是否可以将其改进推向上游。
-• [frabcus] 关注如何获取其他LLM的本地tokenizers，并提到一些LLM（如Gemini）仅提供远程API，询问是否可以通过大量调用推断出token映射。
-• [fkyoureadthedoc] 希望看到WASM绑定或纯JS实现的性能提升。
-• [pamelafox] 好奇性能改进是否可以推送到tiktoken本身。
-• [b0a04gl] 对dagger在处理部分匹配和流输入时的行为表示关注，询问其是否需要缓冲或lookahead。
-• [matrix2596] 担心不同的tokenization方法可能导致对同一字符串的标记化结果不同。
-• [konsalexee] 对简化算法是否会影响标记化质量表示关注。
+• [对比其他工具] [p0] 询问该方案与BPE crate的比较，后者支持增量重新标记文本，并且速度也快于tiktoken。
+• [性能对比] [Tiberium] 建议对比Hugging Face的tokenizers库的性能，指出tiktoken的基准测试已经过时。
+• [其他优化尝试] [kevmo314] 分享了自己以前尝试的类似项目，指出预标记（pretokenization）成本主要由正则表达式（regex）驱动，并询问是否可以仅替换正则表达式引擎以提升性能。
+• [远程与本地tokenizer] [frabcus] 询问是否可以获取其他LLM的本地tokenizer，例如Gemini只提供远程API。他还提出是否可以通过大量调用推断出token映射。
+• [WASM绑定] [fkyoureadthedoc] 建议为该项目添加WASM绑定，或将性能提升移植到纯JS实现中。
+• [质量与算法简化] [pamelafox] 询问性能改进是否可以推送到tiktoken本身。
+• [技术实现细节] [b0a04gl] 对DAG（有向无环图）处理部分匹配和边界情况的方式提出疑问，询问是否需要缓冲或前瞻。
+• [标记一致性] [matrix2596] 担心不同tokenizer对同一字符串的标记化结果是否一致，因为存在多种标记化方式。
+• [质量损失] [konsalexee] 对简化算法是否会导致标记化质量下降表示担忧，特别是在处理特殊token时。
 
 争议焦点：
-• 对不同tokenizers实现之间是否可能存在性能和质量上的差异存在争议，尤其是当涉及到不同模型和API时的兼容性和结果一致性问题。</div>
+• 优化方案是否会影响标记化的质量（例如简化算法是否导致质量下降）。
+• 不同工具（如BPE crate、Hugging Face的tokenizers）之间的性能对比以及实际应用中的优劣。
+
+</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44422480" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.jxmo.io/p/there-are-no-new-ideas-in-ai-only" target="_blank">There Are No New Ideas in AI Only New Datasets</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bilsbie</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-06-30 14:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了人工智能（AI）领域的进展，指出尽管AI在过去十五年中取得了显著进步，但所谓的突破性新想法实际上很少，大部分进展源于新数据集的应用。作者认为，大型语言模型（LLMs）的发展可以归纳为四个关键突破：深度神经网络、Transformer模型、基于人类反馈的强化学习（RLHF）和推理能力。尽管这些技术推动了AI进步，但其基础机制早在1990年代甚至更早就已存在，主要依赖于监督学习和强化学习等已有方法。文章还提到，尽管研究界不断产生增量式进步，但近期的巨大模型如Grok 3和GPT-4.5仅带来边际改善，AI能力的某些宣称可能被夸大。总体而言，AI的持续进步更多依赖于数据集的更新而非全新理念。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人工智能（AI）的现状与未来发展方向
-
-不同观点：
-• voxleone：认为当前AI在语言和视觉领域取得了显著进展，但仅触及了人工智能潜力的表面。人类智能是多模态的，涉及到触觉、味觉、嗅觉、运动感知、情感等多个维度，而当前的AI主要集中在文本和图像上。未来的AI发展需要新的硬件、数据表示和训练方法，以实现从经验中学习，而不仅仅是通过模式识别。
-
-• tippytippytango：指出技术和科学进步的区别。科学进步 unlock 新技术的S曲线，但这些技术在进入收益递减阶段后，进展会放缓。人们往往混淆了快速优化期的技术进步与真正的科学突破。
-
-• kogus：认为如果一个系统能够成功再现人类智能，那么改变数据集可能是实现不同模型的关键。人类的记忆、训练、教育和背景是我们解决问题能力的重要组成部分。
-
-• rar00：不同意kogus的观点，指出已经有一些组织在探索新的路径。虽然沿用旧算法并添加新数据是常见的策略，但也有私人组织在秘密研发新想法。
-
-• jschveibinz：尊重 rar00 的观点，但认为所有新想法都源自旧想法。AI作为工具，可以快速访问旧想法并提供新的视角，创新往往是在识别旧想法的漏洞、交叉点和切线中实现的。
-
-• ks2048：认为最新的LLM只是在进行四则运算，这种技术早在4000年前的巴比伦人就已实现，因此对当前AI的突破性持怀疑态度。
-
-• ctoth：讽刺地指出，通过自我对弈进行强化学习的Alpha系列（如AlphaGo）等成就，不可能只是数据集的功劳。
-
-• luppy47474：仅表示思考（无明确观点）。
-
-• anon291：认为虽然SaaS领域没有新想法，但新应用已经取得了很好的效果。
-
-补充讨论：
-• 争议焦点之一是AI的真正前沿是否在于多模态和经验学习，还是仅仅通过优化现有算法和数据集即可实现突破。
-• 另一个值得注意的讨论点是对科学进步与技术进步之间关系的理解，以及如何定义和识别真正的创新。
-• 不同评论者对AI创新路径的看法存在分歧，有的强调新硬件和数据表示的重要性，有的则认为新想法往往是旧想法的重新应用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44423983" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dirtamericana.com/2025/04/therapy-dogs-business-interior-violations/" target="_blank">Therapy dogs: stop crafting loopholes to fair, reasonable laws</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-06-30 17:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某些行为和文化差异的看法，具体涉及宠物进入室内和情绪不稳定者乘坐飞机的问题。
-
-不同观点：
-• [taeric] 的观点：认为让狗进入室内可能是美国特有的行为，并提到其他国家的人对这种行为感到惊讶。他还对比了人们对宠物和室内穿鞋的双重标准，认为这很有趣。
-  - 论据和例子：提到海外人士对美国让狗进屋的惊讶，以及人们对不让穿鞋进屋却接受宠物的双重标准感到有趣。
-
-• [tiahura] 的观点：认为情绪不稳定的人不应该乘坐飞机。
-  - 论据和例子：虽然没有提供具体例子，但表达了对情绪不稳定者乘机资格的强烈看法。
-
-补充讨论：
-• [taeric] 的评论引发了关于文化差异的讨论，特别是不同国家和地区对宠物进入室内行为的接受程度。
-• [tiahura] 的评论则更关注于公共交通工具上的情绪管理问题，提出了对乘客心理状态的要求。
-• 争议的焦点可能在于文化差异的接受度和对公共场所行为规范的看法，特别是在宠物和心理健康方面。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44426027" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jsgroth.dev/blog/posts/dkc2-open-bus/" target="_blank">Donkey Kong Country 2 and Open Bus</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: colejohnson66</span> |
-                    <span>评分: 124</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-30 15:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《Donkey Kong Country 2》在旧SNES模拟器ZSNES中存在一个知名bug：某些关卡的旋转桶无法正常控制。具体表现为，当角色跳入桶中后，按方向键本应控制桶的旋转，但在ZSNES中，轻触方向键会导致桶无限旋转，直到按反方向键才会停止。这个bug使游戏难度增加，因为旋转桶常出现在尖刺等危险上方。
-
-该问题源于ZSNES未正确模拟"开放总线"行为。这种行为发生在读取无效内存地址时，CPU会重新读取上次在数据总线上的值。SNES的CPU是65816，其复杂的内存分页和地址处理进一步增加了模拟难度。
-
-这个问题曾在ZSNES论坛上讨论，但论坛已下线，而另一个模拟器Snes9x通过硬编码修复了此问题。ZSNES由于长期未更新（最后版本于2007年发布），该bug一直未被修复。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕6502汇编编程中的内存访问与立即数问题、开放总线行为及其在游戏和模拟器中的影响展开的讨论。
-
-不同观点：
-• **deater和nicetryguy**：作为6502汇编程序员，他们都提到忘记在立即数前加#符号是一个常见且容易犯的错误。这会导致意外的内存访问而不是使用立即数，且问题可能在不同机器上表现不同（如不同DRAM芯片导致的不同行为）。nicetryguy进一步提到，即使是有经验的程序员也会犯这种错误，并分享了通过在IDE中高亮#符号来减少错误的个人方法。
-
-• **anonymousiam**：认为原文标题中的"Open Bus"可能会被误解为某种旧的总线协议或标准，而实际上它指的是未连接任何设备的总线状态。此外，他指出修正后的代码因为不需要从内存读取数据，可能会执行得更快（快约2微秒），但这种优化可能仅对裸机环境有意义，而模拟器通常不精确模拟时间。
-
-• **NobodyNada**：详细解释了开放总线的硬件行为，指出未映射或未驱动的地址会导致未定义行为，数据总线上的残余电压可能会导致读取到之前传输的数据。他提到有些游戏会无意中依赖这种开放总线效应，且在速度跑酷中也有利用这种行为的策略。此外，他还讨论了在SNES中HDMA与开放总线读取的复杂交互，以及这种交互对速度跑酷策略的影响，引发了社区内的争议。
-
-补充讨论：
-• **pipes**：提到在使用模拟器玩游戏时，遇到问题常常会怀疑是模拟器的bug，而不是游戏设计本身的问题。他还分享了自己为了解决类似问题而使用FPGA设备（Mister FPGA）的经历。
-
-• **jihadjihad**：虽然与主要讨论点不直接相关，但他表达了对DK Country 2这款老游戏的高度赞赏，认为其在现代仍然表现出色。
-
-• **helf**：简单表达了对这类技术内容的喜爱。
-
-争议焦点：
-• **开放总线行为在不同硬件和模拟器中的表现差异**，特别是在HDMA交互的复杂情况下，是否应在模拟器中精确模拟这些边缘情况以保持与真实硬件一致，还是可以有所妥协。这在速度跑酷社区中引发了一定争议，因为某些策略在模拟器中有效，而在真实硬件上可能导致崩溃。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44424194" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://gustedt.wordpress.com/2025/06/30/the-provenance-memory-model-for-c/" target="_blank">The provenance memory model for C</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: HexDecOctBin</span> |
-                    <span>评分: 166</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-06-30 09:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了C语言中的指针来源（pointer provenance）问题及其对编译器别名分析和程序优化的影响。由多位专家合作推动的努力，促成了国际标准技术规范ISO/IEC TS 6010的发布，该规范为C语言的指针来源提供了明确的数学定义，解决了现有C标准中的 ambiguity。文章通过一个递归函数的例子说明了指针别名对代码优化的影响，指出如果编译器无法正确分析指针是否指向同一对象，可能会导致不理想的优化结果。因此，良好的别名分析对于现代编译器的优化至关重要。文章最后强调了如何通过正确理解和应用指针来源模型来避免优化过程中的问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于C语言相关技术内容及其呈现问题的讨论
-
-不同观点：
-• **关于Unicode变量名**：[smcameron]和[zombot]对C语言是否允许Unicode变量名提出质疑。[smcameron]认为Unicode变量名在C中是不合适的，而[zombot]则不确定这是否是伪代码或者HTML转码错误。
-• **关于文本转换和排版错误**：[tialaramex]和[lioeters]指出文章在转换或排版过程中存在错误，导致代码块和文本显示不正确，影响了可读性。[briandw]进一步提到使用ChatGPT重新编写了更易读的版本。[cenobyte]直接要求修复文章中的代码错误。
-• **关于C语言的现代发展和使用**：[Joker_vD]对文章中关于C语言结构体对齐和表示的描述提出技术性异议，并给出反例。[eqvinox]对现代C代码中使用"register"存储类感到不适。[b0a04gl]讨论了C语言中内存分配模型的发展，认为这将使内存访问更加确定和安全。[jvanderbot]表达了对C语言在现代项目中使用的看法，认为C需要更新以适应现代需求，并提到对使用C语言的生产代码的担忧。
-
-补充讨论：
-• **关于TySan工具的引入**：[gavinray]提到LLVM的Type-Based Aliasing sanitizer工具，为讨论提供了相关的工具资源链接，扩展了讨论的技术背景。
-• **关于文章的可读性和新手友好性**：[tialaramex]特别提到，如果文章目的是引导新手，当前的错误和混乱可能会造成困惑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44421185" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -462,25 +455,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://14.ai/careers" target="_blank">14.ai (YC W24) hiring founding engineers in SF to build a Zendesk alternative</a>
+                    <a href="https://clownacy.wordpress.com/2025/05/24/the-original-lzexe-a-k-a-kosinski-compressor-source-code-has-been-released/" target="_blank">The Original LZEXE (A.K.A. Kosinski) Compressor Source Code Has Been Released</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: michaelfester</span> |
-                    <span>评分: 1</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-30 17:00</span>
+                    <span>作者: elvis70</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-30 19:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>14.ai是一家位于旧金山的紧密团队，服务于各类成长型初创公司和成熟企业，专注于安全性、可靠性和性能，提供实用的解决方案并积极响应客户反馈。公司由Y Combinator等投资支持，正在招聘创始工程师。该职位要求深入了解JavaScript/TypeScript，具备将代码部署到生产环境的丰富经验，热爱从无到有构建产品，希望加入创始团队，并可迁至旧金山。加分项包括有部署大型语言模型的经验或曾创办公司/主导高影响力项目。</p>
+                    <p>文章主要介绍了LZEXE压缩格式（也称为Kosinski）的源代码被其开发者Fabrice Bellard发布，该代码自1990年以来首次公开，采用MIT许可证。LZEXE曾用于90年代DOS可执行文件的压缩，文章详细说明了不同版本（v0.90、v0.91、v0.91e）的获取途径。作者提到自己曾开发过Kosinski压缩器，但无法完全复制Mega CD BIOS中的压缩数据，推测可能是由于Sonic游戏和Mega CD BIOS使用了不同版本的压缩器。尽管现在有了Kosinski和Saxman的源代码，但Enigma和Nemesis格式的压缩器由于是Sega定制的，可能难以找到。文章最后提到有读者正尝试修改WonderMega BIOS中的压缩数据并寻求帮助。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：Fabrice Bellard的软件作品及其贡献
+
+不同观点：
+• 观点一：[johndoe0815] 强调Fabrice Bellard是许多知名软件的作者，包括当前讨论的软件以及qemu、tinyemu、tcc、ffmpeg等，表达了对Bellard在软件开发领域成就的钦佩。该评论者关注Bellard的多产和影响力。
+
+补充讨论：
+• 提到Bellard的个人网站（https://bellard.org），为其他讨论者提供了进一步了解其工作和贡献的资源。
+• 该评论没有直接的反对观点，但潜在的讨论可能涉及Bellard在不同项目中的具体技术贡献程度，或者这些项目在实际应用中的表现和影响。
+
+争议焦点：目前没有明显争议，主要是对Bellard成就的认可和介绍。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44425537" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44426864" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -491,52 +493,101 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tesseral.com/blog/b2b-auth-isnt-that-similar-to-b2c-auth" target="_blank">Auth for B2B SaaS: it's not like auth for consumer software</a>
+                    <a href="https://gustedt.wordpress.com/2025/06/30/the-provenance-memory-model-for-c/" target="_blank">The provenance memory model for C</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: noleary</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-06-30 15:06</span>
+                    <span>作者: HexDecOctBin</span> |
+                    <span>评分: 184</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-06-30 09:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了B2B软件与B2C软件在身份认证（auth）方面的关键区别，指出B2B认证不能简单照搬B2C模式。主要从三个方面进行比较：
-
-1. **逻辑隔离与租户模型**：在B2C中，用户是直接客户，拥有独立账户和数据控制权。而在B2B中，企业客户需要控制其用户访问权限，用户权限不同，租户模型以公司为核心，如Slack的“工作区”。
-
-2. **优先级与权衡**：B2B软件需要考虑企业控制、合规性等，而B2C更注重用户体验和快速增长。
-
-3. **协议与功能**：B2B需要支持复杂的权限管理和跨公司协作功能，而B2C通常只需简单用户管理。
-
-作者建议在设计初期就考虑这些区别，以避免后续复杂重构。B2B认证需要适应企业的多租户和权限管理需求。</p>
+                    <p>这篇文章主要讨论了C语言中的指针来源（pointer provenance）问题及其对编译器别名分析和程序优化的影响。由多位专家合作推动的努力，促成了国际标准技术规范ISO/IEC TS 6010的发布，该规范为C语言的指针来源提供了明确的数学定义，解决了现有C标准中的 ambiguity。文章通过一个递归函数的例子说明了指针别名对代码优化的影响，指出如果编译器无法正确分析指针是否指向同一对象，可能会导致不理想的优化结果。因此，良好的别名分析对于现代编译器的优化至关重要。文章最后强调了如何通过正确理解和应用指针来源模型来避免优化过程中的问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：身份验证与授权系统的复杂性及其解决方案
+                    <div class="comments-summary">主要讨论点：C代码优化、代码转换错误、C语言特性（如Unicode标识符和类型别名问题）、新规范的争议、以及对C语言未来发展的讨论。
 
 不同观点：
-• weitendorf 认为身份验证（Auth）的复杂性源于过度复杂化的设计，实际上只需要关注身份（Identity）和授权模型（Authorization model）两个核心概念。消费者和B2B的Auth差异主要体现在身份管理和授权模型的不同。消费者通常依赖第三方（如Gmail、Facebook）来管理身份，而企业则通过域名和邮箱控制员工身份。此外，消费者默认只能访问自己的数据，而企业中管理员可以访问企业的全部数据，因此需要通过角色和权限来限制访问。最终问题归结为互联网缺乏良好的身份管理系统，导致依赖基于电子邮件和域名的账户体系，这种集中化信息管理模式存在权限升级的漏洞。
-
-• nijave 同意weitendorf的观点，但补充提到OpenIDC作为SAML的前身，具有无需处理证书到期的优点，并且被广泛支持。
-
-• skeptrune 指出处理类似"让所有人使用Yubikey"这种超级烦人的要求是一个痛点，表示愿意购买解决方案来解决这一问题。
-
-• funerr 提问，想了解该方案与better-auth的比较。
-
-• nylonstrung 提问，想了解该方案与zitadel的比较。
+• **hinkley**：认为C编译器无法自动进行某些优化，指出`recip`和`recip⁺`函数不等价，强调优化代码有时能提高可读性和健壮性。同时提到函数式核心代码能避免一些问题，如代码中的未定义行为。
+• **nikic**：对新规范中的对象表示读写规则表示担忧，认为死代码无法被消除，因为可能存在副作用。同时惊讶于C规范在此方面的改动，并认为实现者可能不会广泛采用这些语义。
+• **gustedt**：承认并修复了由于Markdown转HTML时出现的代码转换错误，对带来的不便表示歉意。
+• **b0a04gl**：支持新的内存模型（provenance model），认为这使得内存分配更加确定和安全，不再仅仅是简单的数字生成器，而是类似能力发布者。
+• **Joker_vD**：质疑C规范中关于结构体对齐和表示的某些解释，认为不同结构体成员的对齐可能完全不同，并指出C语言中常见指针处理方式可能导致意外结果。
+• **eqvinox**：对在2025年使用"register"存储类感到过时和不适配。
+• **jvanderbot**：表达了对C语言的喜爱，但也提到在生产代码中使用C存在焦虑。如果C能现代化以适应新项目需求，愿意回归使用。
 
 补充讨论：
-• koakuma-chan 提供了一个链接，但链接似乎出现了客户端异常，无法访问。
+• **gavinray**：提供了与TySan（Type-Based Aliasing sanitizer）相关的资源链接，指出该工具可能对相关开发者有帮助。
+• **zombot & smcameron**：质疑C代码中使用Unicode标识符的可能性，并对这种做法表示困惑和不满。
+• **dsp_person**：指出由于代码转换问题，导致理解代码时出现困难，例如将希腊字母误认为C代码中的符号。
+• **briandw**：提到代码块难以阅读，并使用ChatGPT对文章进行了重新格式化以提高可读性。
 
 争议焦点：
-• 对于身份验证和授权系统的简化方案存在不同实现方式的讨论，例如OpenIDC、better-auth和zitadel等，各有其支持者与应用场景。用户对于如何选择适合的解决方案存在疑问，特别是比较不同工具之间的优劣。
-
-总体来看，讨论的核心在于如何简化身份验证和授权系统，同时有效解决实际应用中的复杂性与安全问题。不同用户对具体工具和实现方式有各自的偏好和疑问。</div>
+• C语言新规范中的对象表示和读写规则是否合理，以及这些改动对现有代码优化和编译器实现的影响。
+• 对C语言现代化（如Unicode标识符支持）的不同看法，部分开发者认为这些改动不必要或令人反感。
+• 文章中代码转换错误导致的阅读困难和理解偏差，影响了技术讨论的有效性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44424256" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44421185" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jsgroth.dev/blog/posts/dkc2-open-bus/" target="_blank">Donkey Kong Country 2 and Open Bus</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: colejohnson66</span> |
+                    <span>评分: 170</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-06-30 15:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Donkey Kong Country 2》在旧SNES模拟器ZSNES中存在一个知名bug：某些关卡的旋转桶无法正常控制。具体表现为，当角色跳入桶中后，按方向键本应控制桶的旋转，但在ZSNES中，轻触方向键会导致桶无限旋转，直到按反方向键才会停止。这个bug使游戏难度增加，因为旋转桶常出现在尖刺等危险上方。
+
+该问题源于ZSNES未正确模拟"开放总线"行为。这种行为发生在读取无效内存地址时，CPU会重新读取上次在数据总线上的值。SNES的CPU是65816，其复杂的内存分页和地址处理进一步增加了模拟难度。
+
+这个问题曾在ZSNES论坛上讨论，但论坛已下线，而另一个模拟器Snes9x通过硬编码修复了此问题。ZSNES由于长期未更新（最后版本于2007年发布），该bug一直未被修复。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕6502汇编编程中的内存访问错误、开放总线（open bus）行为及其对游戏和仿真器的影响展开讨论。
+
+不同观点：
+• **[deater]** 认为忘记在立即值前加`#`符号是一个常见且容易犯的错误，这种错误有时在不同机器上表现不一致，特别是在使用未初始化的RAM时，问题可能只会在特定环境下暴露（如在demo演示时）。
+
+• **[Dwedit]** 分享了自己在处理SNES游戏Puyo Puyo时遇到PPU开放总线的问题，指出在使用RetroArch的RunAhead功能时，状态保存不匹配的问题与开放总线有关。
+
+• **[nicetryguy]** 也认为忘记加`#`符号是常见错误，并提到即便是经验丰富的程序员也会犯这种错误。他还提到通过在IDE中把`#`符号高亮为亮红色来减少这种错误的发生。
+
+• **[anonymousiam]** 最初误以为“开放总线”是某种旧总线标准，后来理解为未映射地址导致的总线浮空状态。他指出修正内存访问错误会加快代码执行速度，但这一点在仿真器中可能不明显。
+
+• **[NobodyNada]** 详细解释了开放总线的硬件行为，描述了当总线未被驱动时出现的“浮动”现象及其对游戏的影响，例如DKC2等游戏依赖开放总线效果。他还提到一些游戏速通策略利用了开放总线行为，以及SNES的HDMA功能对开放总线读取的复杂影响。
+
+补充讨论：
+• **[mock-possum]** 表示对这类技术讨论感兴趣，特别是在有详细解释的情况下，能更好地理解汇编代码。
+
+• **[pipes]** 提到在使用仿真器玩游戏时，遇到问题时会怀疑是否是仿真器的bug，并分享了自己为了解决延迟问题而使用FPGA设备的经验。
+
+• **[jihadjihad]** 离题称赞了《DK Country 2》这款游戏在30年后依然表现出色，并表达了对经典游戏的喜爱。
+
+• **[helf]** 简单表达了对这类技术内容的喜爱。
+
+争议焦点：
+• 主要争议点在于开放总线行为的不可预测性，尤其是在不同硬件或仿真器环境下表现不一致。例如，速通社区对某些策略仅在仿真器中有效而在真实硬件上失败的情况存在争议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44424194" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>

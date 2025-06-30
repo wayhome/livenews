@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-01 02:19 (北京时间)
+            最后更新时间: 2025-07-01 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://andrewpwheeler.com/2025/06/29/using-duckdb-wasm-cloudflare-r2-to-host-and-query-big-data-for-almost-free/" target="_blank">Using DuckDB WASM and Cloudflare R2 to host and query big data (for almost free)</a>
+                    <a href="https://felix-knorr.net/posts/2025-06-29-rust-error-handling.html" target="_blank">Error handling in Rust</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: apwheele</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-29 20:34</span>
+                    <span>作者: emschwartz</span> |
+                    <span>评分: 93</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-06-29 20:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了如何使用DuckDB WASM和Cloudflare R2存储服务以几乎零成本托管和查询大数据。作者Andrew Wheeler描述了通过将150百万行的数据集（约72GB）存储在Cloudflare R2中，并利用DuckDB WASM让用户能够进行即席查询。这种方法避免了传统SQL数据库的高成本，利用静态文件和客户端处理查询，实现了可扩展性和低成本。具体操作包括设置CORS政策、使用自定义域名，以及通过示例代码演示查询过程。整体年成本约为23美元，适用于需要处理大规模数据并向公众提供数据查询服务的场景。</p>
+                    <p>本文讨论了Rust中处理错误的现状和替代方法。目前标准做法是为每个模块或整个包定义一个错误枚举，涵盖所有可能的错误情况。这种方法导致函数返回包含其不会产生的错误变体的枚举，需要手动区分。作者认为这种大错误枚举不理想，提出了一种更细化的方法，即用结构体而非枚举来表示错误，并介绍了一个名为`error_set`的包，它通过宏简化错误枚举的定义和转换。虽然这种方法稍显繁琐，但作者认为在处理复杂错误时更为优雅。文中还提到其他探索类似范式的库，如`SmartErr`，并寻找一种能自动生成错误枚举的宏。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：R2是否支持"Requester Pays"模式及其在处理大数据集方面的可行性
+                    <div class="comments-summary">主要讨论点：Rust中的错误处理机制及其优缺点
 
 不同观点：
-• [支持"Requester Pays"模式] cedws认为R2应该像S3一样支持"Requester Pays"模式，这样可以避免自己承担公开数据集的费用。他提到过去因为不愿自掏腰包，放弃了一些公开数据的计划。
-
-• [对大数据处理的质疑] jrouviere对大数据集的处理提出质疑，特别是针对72GB的数据集。他怀疑DuckDB是否能够在浏览器中加载如此大的数据，暗示这种方法可能不切实际。
-
-• [对DuckDB的兴趣] pranavmalvawala表示之前认为无法免费托管如此大量的数据，但jrouviere的评论让他对DuckDB产生了兴趣，认为这可能是个值得尝试的解决方案。
+• slau认为应为每个函数/操作定义一个单独的错误类型，而不是每个模块或库定义一个。这种方法使得每个函数只关心自己的错误生成，而不需要使用宏。
+• Animats指出Python 2.x的错误异常层次结构较好，能有效区分临时错误和不值得重试的错误。相比之下，Python 3的错误层次有所退步，而Rust在错误处理方面也存在不足，尤其是“Error” trait功能不够强大。
+• pjmlp不希望依赖第三方库进行错误处理和异步运行时管理，认为Rust项目不应过度依赖外部依赖。
+• the__alchemist分享了自己的实践经验，常使用`io::Error`处理多种错误，尤其是在文件和协议相关的工作中。同时考虑使用`anyhow`来简化错误处理。
+• devnullbrain反驳了一种观点，即函数返回的错误类型不应包含函数无法产生的变体，认为函数签名定义的是调用函数的接口，所有错误变体都应有处理路径。
+• xixixao建议像TypeScript一样通过输入类型推断返回类型，并应用于严格的错误类型定义，以减少复杂性。同时指出Rust受Haskell影响，类型声明对运行时行为有影响。
+• kshri24幽默地回应了原文中对“标准”的批评，暗示作者可能是Asterix的粉丝。
+• IshKebab认为Rust的错误处理类似于Java的checked exceptions。
+• metaltyphoon对当前每个模块定义一个错误枚举的标准感到惊讶，并指出这种方法会导致函数返回不相关的错误变体。
+• jppittma不认同为每个库定义自定义错误类型的做法，认为这增加了复杂性，建议使用`anyhow`来简化处理。
+• drewlesueur关注的是文章排版问题，注意到文章与标题栏间距异常。
+• jgilias反对使用过多的“魔法”宏，认为错误枚举是合理的选择，能够清晰表示错误树，不希望在错误表示上花费过多精力。
+• tayo42认为自己可能是少数喜欢Rust错误处理机制的人，习惯于为每个crate或应用定义一个错误枚举，并认为这种方法优于Python和Go的错误处理。
+• andrewmcwatters认为Go和Lua的错误处理机制较好，尤其是Lua能够明确指出错误发生的调用栈位置。同时对宏在多种语言中的滥用提出批评。
+• cute_boi强烈建议Rust应停止在所有地方使用宏。
 
 补充讨论：
-• 争议焦点在于大数据集的处理方式和成本问题。cedws关心的是数据托管的费用，而jrouviere则关注技术上的可行性，特别是浏览器中处理大数据的实际效果。
-
-• 评论之间存在一定的讨论关系，pranavmalvawala的评论是对jrouviere和cedws讨论的回应，显示出社区对新技术解决方案的兴趣和探索精神。</div>
+• 争议焦点在于Rust错误处理是否应使用宏、自定义错误类型以及错误类型的粒度。
+• 对Python、Java、Go、Lua和C的错误处理机制进行了比较，提供了不同语言的参考视角。
+• 对Rust受Haskell影响的设计选择及其对代码可读性的影响进行了讨论。
+• 部分评论者分享了具体的实践经验，提供了实际应用中的见解。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44416216" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44416157" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,57 +113,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.haaretz.com/israel-news/2025-06-27/ty-article-magazine/.premium/idf-soldiers-ordered-to-shoot-deliberately-at-unarmed-gazans-waiting-for-humanitarian-aid/00000197-ad8e-de01-a39f-ffbe33780000" target="_blank">IDF officers ordered to fire at unarmed crowds near Gaza food distribution sites</a>
+                    <a href="https://dl.acm.org/doi/10.1145/3708997" target="_blank">Magnetic Tape Storage Technology: usage, history, and future outlook</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ahmetcadirci25</span> |
-                    <span>评分: 1344</span> |
-                    <span>评论数: 99</span> |
-                    <span>发布时间: 2025-06-28 07:36</span>
+                    <span>作者: matt_d</span> |
+                    <span>评分: 49</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-06-29 06:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章汇总了多条关于以色列和中东地区的新闻。主要内容包括：驻加沙的以色列士兵透露，军方过去一个月故意向援助分发点附近的巴勒斯坦人开火。以色列议会就驱逐一名阿拉伯议员举行二次听证会。有报道称叙利亚政府内部就是否与以色列签署和平协议存在分歧。以色列有意与叙利亚和黎巴嫩建立外交关系。内塔尼亚胡优先处理其刑事审判，导致加沙人质问题被忽视。此外，还有一些关于伊朗导弹袭击对以色列的影响及相关事件的报道。文章还涉及一名以色列作家在拉丁美洲的崛起。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：以色列在加沙的军事行动及其引发的国际和人道主义争议
+                    <div class="comments-summary">主要讨论点：磁带存储技术的现状、发展及其替代方案
 
 不同观点：
-• **the__alchemist**：作为一名在美军服役超过十年的犹太人，他认为以色列的军事行动是战争罪，特别是针对平民的蓄意攻击（CIVCAS）。他对美国支持以色列感到羞愧，并呼吁对相关军事领导人进行类似纽伦堡审判的追责。
+• **dale_glass**：认为现代磁带驱动器通过拉伸磁带以校准轨道，这种技术对于应对温度和湿度等现实环境影响是必要的，特别是随着存储密度的增加。
 
-• **justin66**：指出无辜的加沙人，尤其是儿童，遭到以色列国防军（IDF）攻击的问题早已存在。他认为美国媒体和政治对以色列的偏袒使得追究责任变得困难。他质疑是否有任何IDF士兵因杀害平民而受到追究，并对以色列士兵仅被认为是“粗心”而非“恶意”的结论表示不满。
+• **qurashee**：提到微软的Project Silica项目，正在研究替代磁带存储的未来技术，暗示磁带存储可能逐渐被新技术取代。
 
-• **mhb**：提供了关于哈马斯杀害和折磨以色列当地工作人员的链接，强调了冲突中双方的暴行，暗示讨论不应只关注一方。
+• **marklar423**：分享了其公司几年前将大量数据从磁带迁移走的经验，指出磁带读取速度慢、无法随机访问是主要问题，尽管磁带本身可靠且耐用。
 
-• **alluro2**：曾经对以色列抱有同情，并赞赏其在敌对环境中的韧性。然而，随着加沙冲突的持续和以色列方面的暴行加剧，他感到无法再为以色列的行为找到借口，并认为以色列人民有责任阻止这些行为。
+• **jgalt212**：认为拥有并运营一个磁带库是其业务成功的标志，显示了对磁带存储技术的积极看法，尤其是对于大规模数据存储。
 
-• **austin-cheney**：认为问题的核心不是战争罪本身，而是政府竭尽全力避免追责，这无意中助长了未来犯罪的可能性，并鼓励了更具攻击性的行为。
+• **johnklos**：反驳所谓“磁带已死”的观点，认为那些持此观点的人通常没有实际使用过磁带。他强调磁带在长期存档和可靠性方面的优势。
 
-• **silverliver**：质疑为什么这次加沙事件引发了关注，而之前类似的事件却没有。他提出这可能是因为人们开始意识到每个人内在的价值是相同的，当你允许他人贬低其他人的价值时，你也贬低了自己和关心的人的价值。
-
-• **tkel**：指出从加沙人的证词中早已得知这些暴行，并认为美国和以色列控制的援助组织在援助活动中制造了更多杀戮。他认为现在有内部证据是好事。
-
-• **sdeframond**：作为西方人，他为自己的国家是以色列的盟友感到羞愧，并认为西方世界在纵容以色列犯下这些暴行，通过帮助以色列并对其不当行为视而不见。
-
-• **lucubratory**：认为证据明确显示以色列正在进行蓄意的战争罪，甚至可能是种族灭绝。
-
-• **xg15**：提到以色列军事行动以儿童游戏命名，如“铸铅行动”和“咸鱼行动”，可能是在讽刺或反映其军事策略的冷酷。
-
-• **Myrmornis**：对这一话题能在平台上公开讨论表示赞赏，并对以色列的行为感到震惊，认为西方国家和以色列的行为无法被尊重或原谅。
-
-• **locallost**：认为在这种问题上遵循友善和好奇的讨论原则是困难的，对西方世界对此问题的缺乏反思感到不安。
-
-• **Buttons840**：建议将当前的报道与一年前的“面粉大屠杀”事件进行比较，质疑报道的持久性和真实性。
+• **netbioserror**：提出是否可以重新考虑软盘作为长期存档介质的可能性，并对软盘的稳定性和物理设计提出了疑问，暗示软盘可能有改进空间。
 
 补充讨论：
-• **争议焦点**：以色列在加沙的军事行动是否构成战争罪或种族灭绝，以及国际社会和美国对以色列的支持和纵容。
-• **重要论据**：多位评论者引用了具体事件和报道，如NY Times的文章和面粉大屠杀事件，以支持他们的观点。
-• **讨论关系**：评论者之间存在对以色列行为的不同看法，一些人强调以色列的暴行，另一些人则提醒不要忽视哈马斯的暴行。同时，有人关注国际社会的责任和媒体偏见。</div>
+• **磁带技术的现实挑战**：marklar423指出磁带存储在实际应用中的局限性，如读取速度慢和无法随机访问，这些问题在数据量增长时尤为明显。
+
+• **磁带与新技术的对比**：qurashee和johnklos的观点形成了对比，前者提到新技术（如Project Silica）可能替代磁带，而后者则坚信磁带在长期存档方面的优势。
+
+• **软盘作为存档介质的可行性**：netbioserror提出了一个与主流存储介质不同的观点，即重新考虑软盘，虽然这在当前技术背景下显得不太实际，但引发了对存档介质多样性的思考。
+
+争议焦点：磁带存储是否仍然具有未来发展潜力，或者是否会被新技术完全取代。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44402896" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44410822" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -163,92 +164,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://alexgaynor.net/2025/jun/20/serialize-some-der/" target="_blank">So you want to serialize some DER?</a>
+                    <a href="https://www.psychiatrymargins.com/p/schizophrenia-is-the-price-we-pay" target="_blank">Schizophrenia is the price we pay for minds poised near the edge of a cliff</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: lukastyrychtr</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-27 15:19</span>
+                    <span>作者: Anon84</span> |
+                    <span>评分: 238</span> |
+                    <span>评论数: 36</span> |
+                    <span>发布时间: 2025-06-28 21:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了在Rust中实现DER（ distinguished encoding representation）序列化时遇到的一些技术挑战和优化过程。DER是一种基于类型-长度-值（TLV）的二进制编码格式，其中长度的编码是可变长度的。作者维护了一个Rust库`rust-asn1`用于DER的解析和序列化，最初通过预留1字节来处理长度字段，但这在处理较大数据时效率不高。
-
-作者尝试优化这一过程，让数据在序列化时直接报告其长度，以避免后续的数据复制。特别对于可变长度编码的整数（INTEGER），作者改进了计算其所需字节数的算法，减少了不必要的循环操作，并通过与Claude（AI助手）讨论，得出了一个无分支的计算方法。尽管代码更复杂，但理论上性能更优。最终，作者还研究了汇编代码以评估优化效果，虽然指令数量较多，但逻辑更为直接。</p>
+                    <p>这篇文章讨论了精神分裂症在进化中的持久性问题。尽管精神分裂症是一种降低生育可能性的严重精神疾病，但其终身患病率在全球仍保持在约1%。传统的进化假说无法完全解释这一现象。文章引用了Randolph Nesse的“悬崖边缘适应度函数”概念，以及Philipp Mitteroecker和Giuseppe Pierpaolo Merola在2024年发表的论文，提出精神分裂症可能与某些认知、语言或社交特质的过度表达有关。这些特质在达到临界点前能提高适应度，但超过该点后会导致灾难性后果。自然选择稳定了这些特质，使其保持在临界点之下，但少数个体越过“悬崖”，遭受极大的适应度损失。这种模型解释了精神分裂症为何持续存在于人类群体中。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于代码中不同路径和缓冲区安全性的讨论，以及对帖子标题和内容的评价。
+                    <div class="comments-summary">主要讨论点：精神分裂症及其相关因素（包括遗传、环境触发因素、药物使用等），以及精神分裂症与智力和创造力的潜在关系。
 
 不同观点：
-• [benmmurphy] 认为在测量DER缓冲区长度和写入DER时使用两条非常不同的代码路径是危险的，尤其是在非Rust语言中。他指出，除非使用了安全的缓冲区实现，否则很难相信这两条路径不会因为行为分歧导致缓冲区溢出。
-
-• [PeeMcGee] 则对帖子的标题和内容提出了不同的看法。他认为帖子的标题具有误导性，内容更像是在为Claude做隐性宣传，强调作者为Anthropic工作，并使用Claude来实现LLVM的优化。
-
-补充讨论：
-• [benmmurphy] 的观点集中在代码安全性上，特别是缓冲区溢出的潜在风险。他对于在非Rust语言中实现这种设计表示担忧，强调了安全实现的重要性。
-
-• [PeeMcGee] 对帖子的动机和内容性质提出了质疑，认为帖子更像是一种广告，而非纯粹的技术讨论。这种观点指向了对内容真实性和目的的关注。
-
-争议的焦点：
-• 代码路径设计的安全性和潜在风险。
-• 帖子标题和内容的真实性及动机。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44397482" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://remysharp.com/2025/06/29/unhooking-from-amazon-ebooks" target="_blank">Unhooking from Amazon Ebooks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Timothee</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-06-29 18:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了作者尝试摆脱亚马逊电子书生态系统的经历。尽管全家已逐渐减少使用亚马逊的产品，但在Kindle电子书上仍然依赖亚马逊。作者通过越狱Kindle来支持epub格式，希望将更多资金直接给予作者。越狱过程相对简单，但需要仔细操作。越狱后使用KOReader应用来阅读epub书籍，但亚马逊购买的书籍仍需用原生Kindle阅读器阅读，因为DRM保护限制。
-
-手动同步新购买的书籍和去除DRM是两个主要挑战。虽然Calibre软件可以帮助去除DRM，但过程繁琐且无法完全自动化。此外，亚马逊在电子书市场几乎垄断，许多出版商只通过亚马逊销售书籍，且经常有打折活动，增加了摆脱亚马逊的难度。作者承认Goodreads服务不尽如人意，但仍在使用。总体而言，摆脱亚马逊的体验并不理想，过程复杂且不便。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕亚马逊Kindle及电子书管理、DRM（数字版权管理）、非亚马逊平台替代方案的讨论
-
-不同观点：
-• **亚马逊删除 sideload 书籍的问题**：[pnw] 提到通过Calibre载入的电子书可能会被亚马逊静默删除，即使这些书籍属于公共领域。这被认为与Calibre处理标签的方式有关，但用户认为这种行为非常不妥。
-• **"通过USB传输" 选项的取消**：[Metalnem] 指出亚马逊取消了"下载并通过USB传输"的选项，导致用户无法移除DRM，这促使他停止购买Kindle电子书。
-• **使用开源平台的建议**：[freefaler] 提供了一个开源平台链接，暗示可以作为替代方案。[linotype] 则建议直接购买非亚马逊的电子书阅读器，如Kobo，以避免复杂的破解操作。
-• **DRM的拒绝态度**：[msgodel] 表示任何带有DRM的电子书对他来说都不存在，即他完全拒绝购买和使用DRM保护的内容。
-• **Calibre 的替代使用方法**：[neilv] 建议可以将Calibre用于转换书籍格式，然后在本地或通过USB传输到阅读器，避免直接使用Calibre的GUI。
-• **转换格式与原生阅读器的选择**：[rahimnathwani] 认为无需破解Kindle或安装KOReader，只需将EPUB转换为MOBI格式即可用Kindle原生阅读器阅读。
-• **非亚马逊的同步与发现平台**：[tcoff91] 提到使用Storyteller平台来获得类似Whispersync的体验，并建议使用Libation和Calibre来去除DRM。[mikhailt] 则提到正在开发的Readest平台，可能适合用来同步书籍和阅读进度。[tresni] 推荐了hardcover.app作为同步阅读状态的工具，并提供KOReader插件。
-• **图书馆借阅与非DRM音频书**：[davidw] 提到从图书馆借阅电子书，而[politelemon] 建议使用BookBub等平台寻找电子书优惠，同时提到libgen作为获取电子书的非正规途径。[protocolture] 则直接使用.txt文件和FTP服务器来管理自己的电子书。
+• suzzer99认为，他的朋友可能因长期使用迷幻药（如LSD和蘑菇）而导致精神分裂症或精神病症状。他提到朋友拒绝就医，并表现出类似“楚门的世界”的妄想。他还对当前一些赞美迷幻药好处的观点表示怀疑，认为存在风险。
+• Throwaway42754分享了自己因大麻引发精神分裂情感障碍的经历，强调这种疾病的痛苦和当前治疗方法的局限性。他提到药物副作用严重，且有些人对药物有抗药性。他对未来治疗进展抱有希望，特别是关于精神分裂症作为自体免疫疾病的理论。
+• bettercallsalad描述了与有精神病史的伴侣交往的经历，强调90%的时间里伴侣是令人喜爱的，但发作时情况非常糟糕。他提到睡眠问题和触发因素，并对未来感到不确定。
+• boston_clone建议阅读相关研究论文，指出需要更深入的自我修正和探讨，并提供了一个研究链接。
+• tempestn提出人类智力是否是一个“悬崖边缘”特质的问题，认为智力可能在现代社会中导致了生育率下降，并将其与精神分裂症的演化问题联系起来。
+• natnat提到与Facebook内容审核相关的“自然参与模式”，认为在竞争性信息环境中，很多内容会接近被禁的边缘。
+• JamesBarney质疑精神分裂症相关基因是否真的能提高认知能力，指出缺乏大规模研究支持这一观点，并提出两种可能的解释。
+• alganet分享了自己被诊断后的一些主观体验，包括音乐能力和双手灵活性的提高，但对遗传因素和触发因素持怀疑态度。
+• subpixel提到一个精神分裂症患者在离婚法庭上编造故事并成功获得有利判决的案例，强调精神分裂症患者可能具有极高的说服力。
+• drgo提出精神分裂症基因可能存在其他非神经性好处，例如降低癌症风险。
+• boardwaalk引入“混沌边缘”理论，认为这可能与精神分裂症相关。
+• HarHarVeryFunny讨论了基因的多效性，认为精神分裂症基因可能在其他方面具有进化优势。
+• discoutdynamite介绍“积极解体理论”，认为精神分裂症可能是人格发展失败的结果，并指出相关研究多发表在外国期刊上，主流医学机构不感兴趣。
+• cageface提到精神疾病与创造力之间的关系，认为这可能是精神疾病患者具有较高艺术创造力的原因之一。
 
 补充讨论：
-• **作者与亚马逊的关系**：[dsign] 从作者角度出发，指出亚马逊的高分成比例和低 discoverability（可发现性）问题，认为作者也应脱离亚马逊以获得更好的创作和销售环境。
-• **Goodreads的替代品需求**：[xvilka] 表达了对开放且去中心化的Goodreads替代品的需求。
+• 精神分裂症的遗传和环境触发因素是讨论的核心，特别是药物使用和现代社会环境对疾病发生的影响。
+• 对精神分裂症的治疗和药物副作用的讨论显示出现有治疗方法的局限性和患者的困境。
+• 部分评论者对精神分裂症与智力、创造力的关系表示关注，并提出了一些理论和假设。
+• 讨论中还涉及到对相关研究和理论的推荐和扩展阅读。
 
 争议焦点：
-• **亚马逊删除 sideload 书籍的合法性与合理性**：用户对亚马逊删除未从其平台购买的书籍表示不满，认为即使是公共领域的书籍也不应受到这种限制。
-• **DRM 的使用与拒绝**：部分用户完全拒绝DRM书籍，认为DRM限制了他们的阅读自由，而其他用户则通过各种工具和方法试图绕过DRM。
-
-</div>
+• 迷幻药使用是否会增加精神分裂症风险。
+• 精神分裂症基因是否具有其他进化优势。
+• 精神疾病与智力和创造力之间的关系。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44415388" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44408286" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -259,39 +220,177 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/alaingilbert/agl" target="_blank">Show HN: AGL a toy language that compiles to Go</a>
+                    <a href="https://www.schneier.com/" target="_blank">What LLMs Know About Their Users</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: alain_gilbert</span> |
-                    <span>评分: 79</span> |
+                    <span>作者: voxleone</span> |
+                    <span>评分: 89</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-06-25 18:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了如果在海边发现鱿鱼的“卵团”该如何处理。作者提供了相关建议，并提到读者也可以在这篇关于鱿鱼的文章下讨论其他未涉及的安全新闻。文章还包括博客的管理政策，并标记了发布日期和相关标签，目前有14条评论。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：本地LLM（大型语言模型）的隐私与数据安全问题，以及用户对LLM了解其个人信息的担忧。
+
+不同观点：
+• **对本地LLM使用的质疑**：drillsteps5认为，除非从事非法或不道德行为，否则没有理由使用本地LLM。该评论暗示使用本地LLM可能与不良意图相关。
+• **对LLM了解用户信息的担忧**：多位用户（如rcruzeiro, b0a04gl, bgwalter）表示对LLM能够获取用户个人信息的担忧，尤其是当这些信息被用于调整模型输出时。bgwalter甚至将这种情况比作FBI档案。
+• **LLM不获取个人信息的声明**：BurningFrog和holri通过实际测试（使用Grok和Mistral.ai）表明，这些模型并不直接获取个人信息，除非用户明确分享这些信息。
+• **对LLM隐私风险的理性分析**：nullc指出，人们在LLM时代对隐私的期望往往不准确，LLM可能会通过“推理”得出错误结论，这增加了隐私风险。
+• **隐私保护解决方案的建议**：nonelog提出使用Duck.ai这样的平台，完全保护隐私，不收集用户数据。
+• **对LLM隐私问题的接受与适应**：EGreg表示，对LLM构建用户画像的情况是可控的，且与在公共社交媒体上的行为类似，强调用户自我警觉。
+
+补充讨论：
+• **LLM输出个性化的技术原理**：b0a04gl提到，LLM能够通过用户历史交互生成嵌入，并通过交叉注意力机制影响输出，即使不显式传递历史聊天内容，模型仍能“记住”用户偏好。
+• **对LLM“间谍”角色的调侃**：marcusstorm将LLM比作间谍或FBI特工，暗示其能够揭露用户信息，这与实际LLM行为形成对比。
+• **用户对隐私概念的理解差异**：hardlianotion提到对“integrous”一词的不理解，反映出用户在讨论隐私问题时存在概念混淆。
+• **LLM隐私与实用性的平衡**：simianwords质疑如果没有LLM了解用户信息，模型的实用性是否会下降，提出了隐私与功能之间的权衡问题。
+
+争议焦点：LLM是否应该以及如何获取和使用用户数据以优化输出，以及用户对隐私保护的期望与现实之间的差距。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44380655" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.fundratios.com/" target="_blank">Show HN: Sharpe Ratio Calculation Tool</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: navquant</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-06-29 17:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一个专业级别的夏普比率计算器，用于通过调整风险来评估投资的回报表现。夏普比率通过比较投资组合回报与无风险资产的回报，并根据投资组合的风险（标准差）进行调整，帮助投资者判断回报是否源于明智的投资决策或过度风险。计算公式为：夏普比率 = (投资组合回报 - 无风险利率) / 投资组合标准差。较高的夏普比率表示更好的风险调整后表现。文章还解答了关于如何使用无风险利率、检查频率、良好夏普比率标准以及跨基金比较等常见问题，鼓励投资者利用该工具优化投资组合决策。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Sharpe比率的应用和工具改进建议
+
+不同观点：
+• [rongenre] 认为Sharpe比率仅仅是一个开始，它提供了投资组合的指标，但并没有对该指标的意义进行解释，或提供如何通过特定操作调整Sharpe比率的指导，建议增加更多实用价值。
+
+• [ProjectArcturis] 质疑该工具的目标用户，认为几乎任何人都可以自己计算平均值和标准差，不需要专门的网站来计算。
+
+• [molsson] 提出当前Sharpe比率可能存在的局限性，尤其是在不同时间段的Sharpe比率可能产生误导性。建议考虑绘制3年和5年的Sharpe比率，并让计算器的期限长度可配置。
+
+• [k2enemy] 关注风险免费率的匹配问题，询问是否对所有超额收益计算都使用单一的无风险利率，特别是是否根据回报日期匹配不同的风险免费率。
+
+• [thomasfl] 建议增加一个演示功能，甚至可以为一个不存在的基金（如Acme Fund）做一个演示，以帮助用户更好地理解工具的使用。
+
+• [shabbychef] 认为应该提供对Sharpe比率结果的解释，以帮助终端用户理解，而不是引入一堆复杂难懂的指标。
+
+补充讨论：
+• 不同用户对工具的期望不同，有的希望工具能提供更多解释和实用指导，有的则质疑工具的必要性。
+• 对Sharpe比率在不同时期的表现存在争议，特别是短期和长期Sharpe比率可能对投资决策产生不同影响。
+• 风险免费率的应用和配置在工具中的具体实现方式也是一个讨论焦点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44414848" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jameshaydon.github.io/passport/" target="_blank">Solving `Passport Application` with Haskell</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jameshh</span> |
+                    <span>评分: 295</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-06-28 23:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要描述了一个英国护照申请过程，被戏称为一款在线冒险解谜游戏。这款由“英国皇家护照局”（HMPO）开发的“游戏”要求玩家收集各种文件，以证明“申请人是英国人”。游戏规则复杂，文件要求繁琐，且时常需要通过邮寄和认证翻译等步骤完成“任务”。玩家还可能被要求进行“身份确认”的支线任务，寻找特定职业的人协助填写表格。游戏设计充满谜题和等待，文件请求常常不明确，增加了挑战性。尽管主要面向英国人，但任何人都可以参与。文章作者为女儿申请护照时体验了高难度级别，通过多次与客服沟通和提交文件，最终完成了“游戏”。整个过程耗时数周甚至数月，充满悬疑和困惑。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英国政府系统及护照申请过程的复杂性和相关问题
+
+不同观点：
+• **政府软件开发问题**：[EngineeringStuf] 指出，为政府开发软件涉及将数百年来的法律条文编入系统，当法律变动时，系统需要大规模修改。由于缺乏中央决策机构，外包给高价顾问公司导致成本高昂且效率低下。
+• **Haskell语言的语法问题**：[behnamoh] 认为Haskell的语法在没人解释前不够直观，尤其是各种操作符的使用让人困惑。
+• **护照申请的具体困难**：[dbuxton] 分享了自己为美国出生的女儿申请英国护照时，在文件认证过程中遇到的困难，特别是在国外处理这些事务时更加复杂。
+• **文件提交过程的不清晰**：[new299] 在日本提交护照申请时，遇到了文件要求不明确的问题，只能不断补交文件直到满足要求。
+• **护照申请系统的"可变历史"规则**：[pbhjpbhj] 提到在护照申请过程中，文件中的事实可能会随时间改变，导致需要重新扫描和验证，增加了复杂性。
+• **在线申请的高效性**：[mcsniff] 认为英国护照申请完全可以在线完成，且非常高效，纸笔申请只是为了乐趣而非必需。
+• **英国公民身份验证的复杂性**：[cherryteastain] 对比了英国复杂的公民身份验证流程和其他国家简单的数据库查询方式，认为英国的系统过于复杂。
+
+补充讨论：
+• **跨国护照申请的困难**：[tanh] 和 [throwawayben] 都分享了自己在跨国情况下申请护照时遇到的困难，包括文件匹配问题和法律更新带来的不确定性。
+• **其他国家的官僚化问题**：[franciscop] 描述了在日本办理文件过程的复杂性，特别是"MyNumber"和"驾驶执照"的更新过程变得越来越繁琐。
+• **国际比较**：[ggm-at-algebras] 对比了英国和澳大利亚护照的费用，认为英国护照并不算特别昂贵。
+• **潜在的文化游戏化**：[asimpletune] 和 [sevensor] 提到了将护照申请过程游戏化的可能性，并联想到意大利版本或Douglas Adams参与的文本冒险游戏。
+
+争议焦点：
+• **政府软件开发和外包问题**：[EngineeringStuf] 认为缺乏中央决策机构导致政府服务交付昂贵且低效，而其他观点并未直接回应此问题，但隐含了对系统复杂性的认同。
+• **在线申请的实际效率**：[mcsniff] 认为在线申请非常高效，但其他评论如[dbuxton]和[new299]则强调了实际操作中遇到的困难和不明确之处。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44408872" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://summle.net" target="_blank">Show HN: Summle – A little maths Game</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kirchhoff</span> |
+                    <span>评分: 17</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-25 15:36</span>
+                    <span>发布时间: 2025-06-26 10:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>AGL（AnotherGoLang）是一种编译为Go的语言，使用Go的语法，但进行了修改。主要差异包括函数仅返回单一值，通过引入Option[T]和Result[T]类型以及自动错误传播机制来处理多值返回。AGL引入了元组类型、枚举、错误传播运算符（`?`和`!`）、匿名函数、数组的内置方法（Map/Reduce/Filter/Find/Sum）、操作符重载等特性。它支持编译为Go代码，并提供VSCode扩展和语言服务器协议（LSP）。AGL还支持Shell "shebang"、错误和选项传播、模式匹配、以及简明的匿名函数和解构功能。通过这些特性，AGL旨在提高代码的简洁性和安全性。</p>
+                    <p>《SUMMLE》是一款数学益智游戏，玩家需利用下方数字块在5步内组合出目标数字。每个数字块只能使用一次，可能不必用完所有块，还可以利用中间结果继续计算。游戏每日提供新谜题，设有不同难度模式，如儿童模式、普通模式和极限模式。根据文章描述，昨日的谜题目标是860，解法为：5×4=20，25×2=50，50-7=43，43×20=860。游戏由Nick Nicholaou创建，提供多种模式以满足不同玩家的需求。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一种新编程语言的发布及其特性
+                    <div class="comments-summary">主要讨论点：用户对一个数学益智游戏的评价和功能建议
 
 不同观点：
-• [ben0x539] 认为该语言在解决Go语言痛点的同时，保留了调用现有Go代码的能力，整体很酷且便利。不过，对使用AI设计Logo表示调侃和质疑。
-• [18172828286177] 提到了V语言，并提供了一个相关文档链接，似乎是在比较或引导关注类似语言特性。
-• [lordofgibbons] 对该语言表示赞赏，但关注是否仍然存在nil指针问题，表明这是其主要不满之一。
-• [mayli] 表达了对类似特性（如Result/Option/Err类型）在Python中应用的期望，表明不同语言社区对相似功能的需求。
+• [kirchhoff] 认为该游戏是几年前创建的，但经过了多次优化和功能添加，并希望大家能再次关注。该用户对游戏持正面评价，强调了持续改进。
+• [one-note] 觉得游戏有趣，但提出两点建议：一是当左侧单元格没有数字时，点击运算符能自动填入前一个“黄色”方块的数字；二是现有的专家模式仍然过于简单，建议增加更大的数字以提升难度。
+• [stephenlf] 对游戏的算法提出疑问，好奇引擎如何判断一个解决方案是否为最优解，表明对游戏背后技术逻辑的关注。
+• [bertwagner] 对游戏表示喜欢，但也提出了希望增加键盘快捷键操作的建议，以便减少对鼠标点击的依赖。
+• [pngeez] 非常喜欢该游戏，并计划将其加入日常的游戏列表中，表明对游戏的高度认可和长期使用的意愿。
 
 补充讨论：
-• [LudwigNagasena] 提出了关于设计选择的两个问题：
-  1. 为什么选择可选值的传播设计，而不是像C#、JS、Swift那样使用短路机制？
-  2. 对Go项目中错误包装和堆栈跟踪的复杂性有何看法，是否有意避免添加类似功能？
-
-争议焦点：
-• 主要集中在语言设计的选择上，特别是可选值的传播与短路机制的对比，以及对错误处理机制的复杂性讨论。这些反映了开发者对语言简化与功能性之间的权衡关注。</div>
+• 用户普遍对游戏持正面态度，但一些用户对游戏的操作便捷性和难度设置提出改进建议。
+• 争议焦点不明显，评论主要集中在功能改进和用户体验的提升上，而非对游戏核心玩法的否定。
+• 技术性问题（如最优解的判断）引起部分用户的兴趣，显示出部分玩家对游戏背后的算法有一定的好奇心。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44378517" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44386132" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -302,13 +401,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.science.org/content/article/uv-c-light-kills-nearly-everything-except-unusual-organism" target="_blank">UV-C light kills nearly everything–except this unusual organism</a>
+                    <a href="https://www.science.org/doi/10.1126/sciadv.ads7908" target="_blank">Personal care products disrupt the human oxidation field</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: domofutu</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-29 19:33</span>
+                    <span>作者: XzetaU8</span> |
+                    <span>评分: 182</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-06-29 17:20</span>
                 </div>
 
                 <div class="summary-section">
@@ -318,153 +417,35 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：利用地衣进行火星地球化
+                    <div class="comments-summary">主要讨论点：评论围绕一篇关于乳液和香水可能影响氧化化学的文章展开，讨论了标题党问题、化学品对健康的影响、以及对使用个人护理产品的不同看法。
 
 不同观点：
-• 支持观点：有评论者认为，利用地衣进行火星地球化是一个可行的初步策略。地衣能够在极端环境下生存，适应性强，可能有助于改变火星大气和土壤环境，为后续的生物和人类生存创造条件。例如，有评论提到地衣可以通过光合作用产生氧气，从而逐步改善火星大气。
-
-• 怀疑观点：另一部分评论者对这一想法持怀疑态度。他们指出，火星的极端温度、高辐射和缺乏液态水等问题，即使是适应力强的地衣也未必能够有效生存和繁殖。例如，有人提到火星上的紫外线辐射对生物体有极大的破坏作用，地衣也可能无法承受。
-
-• 中间立场：还有一些评论者持中间立场，认为地衣或许可以作为火星地球化进程中的一个环节，但不能单靠其完成整个地球化过程。他们建议结合其他科技手段，如人造生态环境和先进的生命支持系统，来辅助地衣发挥作用。有评论提到，可以将地衣与其他微生物或植物联合使用，以提高整体生存率和改造效果。
-
-补充讨论：
-• 争议的焦点在于地衣在火星极端环境下的生存能力及其对火星大气改造的实际效果。支持者强调其适应性和潜力，怀疑者则关注其实际操作中的困难和限制。
-
-• 有评论讨论了地衣在地球极端环境中的成功案例，如在南极和沙漠中的生存实例，试图以此证明其在火星上的可行性。而反对者则认为火星的环境比地球的极端环境更为严酷，不能简单类比。
-
-• 还有人提出，在考虑利用地衣之前，需要进行更多的实验和研究，包括在地球上的模拟实验和在火星上的实地测试，以评估其真正的潜力和局限性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44415684" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://theconversation.com/earth-is-trapping-much-more-heat-than-climate-models-forecast-and-the-rate-has-doubled-in-20-years-258822" target="_blank">Earth is trapping much more heat than climate models forecast</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: GeoAtreides</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-06-29 20:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论地球能量收支的不平衡加剧，导致气候变化可能加速。研究发现，过去20年中，地球吸收的热量与散发的热量之间的不平衡翻了一倍多，从约0.6瓦特每平方米增加到约1.3瓦特每平方米。尽管大部分额外热量（约90%）被海洋吸收，但地表温度已上升1.3-1.5°C。这种变化速度超过了气候模型的预测，可能与云层变化有关，例如反射性白云减少、反射性较差的云增加。文章还提到，监测这些变化的资金不确定性可能影响未来的跟踪能力。这一能量失衡表明，气候变化在未来几年可能加速恶化。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：气候变化的原因及其应对措施
-
-不同观点：
-• [bmacho] 认为气候变化的原因尚未完全解释清楚，并引用新研究指出云层变化是重要因素。具体而言，云层覆盖中高反射的白色云减少，而反射性较差的云增多，可能与2020年后航运燃料中硫含量减少有关。此外，他以讽刺语气提出通过释放某种气体即可解决气候问题，暗示对气候变化应对的简单化看法。
-
-• [vardump] 强调应严肃对待气候科学，并指出气候科学与政治无关。他似乎对一些人轻视气候问题的态度感到不满，呼吁更认真地对待科学研究。
-
-• [vivzkestrel] 提出一个假设性问题，询问如果全球人口一夜之间全部转为素食，是否能减少60%的排放。这表明他/她关注饮食习惯对气候变化的影响，特别是畜牧业对温室气体排放的贡献。
+• [muhdeeb] 认为文章标题有故意制造震惊效果的倾向，但内容相对谨慎，并指出文章没有为个人健康建议提供依据。他强调该领域非常复杂，不能简单化为黑白分明的建议，并批评了文章中使用"disrupt"一词，因为其负面含义。
+• [dylan604] 指出许多人转向使用天然成分和无香料产品，因为对专有化学品的信任问题，并表示对产品广告之外的具体效果感兴趣。
+• [8bitsrule] 对个人护理产品中的化学成分测试表示怀疑，并提到洗澡和洗衣服等日常活动对皮肤的影响也可能不被完全理解。
+• [12_throw_away] 强调化学、环境化学和生物化学的复杂性，指出在利益驱动下，许多系统在被充分研究之前就被改变。
+• [parpfish] 认为文章不会导致人们减少使用乳液，但会导致高端乳液添加"OH前体"作为新的市场营销术语。
+• [giantg2] 对普通香料在癌症风险和内分泌干扰方面的影响表示担忧，并指出大多数产品都有无香料替代品。
+• [userbinator] 认为文章相对乐观，与近年来充斥市场的"可怕化学品"文章形成对比，并解读出乳液和香水有抗氧化效果。
 
 补充讨论：
-• 争议焦点之一在于气候变化的成因和应对措施。一方面，[bmacho] 强调云层变化等自然因素的影响，并以讽刺方式质疑人为干预的必要性；另一方面，[vardump] 则希望人们更加重视科学研究，避免将气候问题政治化。
-
-• [vivzkestrel] 的问题引发了对人类生活方式改变（如饮食习惯）在应对气候变化中的潜力的讨论。虽然这是一个假设性问题，但它涉及到实际的减排策略，特别是在农业和畜牧业领域。
-
-• 总体来看，讨论涉及自然因素（如云层变化）和人类活动（如饮食改变、政治化态度）在气候变化中的作用，不同观点之间存在一定的张力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44416051" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://media.defense.gov/2025/Jun/23/2003742198/-1/-1/0/CSI_MEMORY_SAFE_LANGUAGES_REDUCING_VULNERABILITIES_IN_MODERN_SOFTWARE_DEVELOPMENT.PDF" target="_blank">Memory Safe Languages: Reducing Vulnerabilities in Modern Software Development [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 92</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-06-28 17:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于内存安全语言（MSLs）的定义和实际应用的争议
-
-不同观点：
-• **pizlonator**：认为文档将数据竞争保护与内存安全混为一谈且不一致。例如，Java和C#被列为内存安全语言，但它们允许数据竞争。此外，数据竞争在有内存安全的上下文中并不是主要安全问题，文档应更精准地区分这些概念。还指出文档未提到Fil-C，即便有保留意见也应提及。
-• **Animats**：引用2021年的数据说明内存安全漏洞的普遍性，并强调现代攻击者比二十年前更具威胁，多由国家资助的团队发起。
-• **flohofwoe**：以调侃方式暗示Rust在政府项目中的生存，暗示对某些技术在官方项目中存在的态度。
-• **charcircuit**：指出文档未提到用安全语言替代不安全语言的依赖库，如将处理用户数据的模块换成安全语言实现，以及未提及将不安全代码编译为WebAssembly或其它沙箱形式。
-• **andreidd**：质疑Delphi/Object Pascal被列为内存安全语言的原因。
-• **larodi**：对Perl未被视为安全语言表示不解，特别是其有污染数据追踪机制。
-• **awaymazdacx5**：简单提到减少现代软件开发中的安全事件，但未展开具体观点。
-• **timewizard**：质疑文档中关于MSLs的默认保护机制的有效性，指出某些语言需要使用不安全的方式来实现常见数据结构。还对文档声称投资于培训和工具能带来长期回报表示怀疑。
-
-补充讨论：
-• 争议焦点在于内存安全语言的定义及其在实际应用中的有效性，特别是数据竞争和内存安全之间的关系。
-• 对具体语言（如Java、C#、Delphi/Object Pascal、Perl）是否应被归类为内存安全语言存在不同看法。
-• 对文档未提及某些技术（如Fil-C、WebAssembly）表示不满，认为这影响了文档的全面性和实用性。
-• 对投资于培训和工具是否能带来长期收益持怀疑态度，反映出对实际应用效果的担忧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44406711" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arstechnica.com/features/2025/06/trump-budget-kills-nasas-golden-opportunity-to-see-a-killer-asteroid-up-close/" target="_blank">A rare asteroid flyby will happen soon, but NASA may be left on the sidelines</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 30</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-06-30 11:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了近地杀手小行星阿波菲斯将于2029年4月近距离飞越地球，为科学家提供了研究小行星内部的罕见机会，对行星防御具有重要意义。然而，NASA计划取消最有望跟踪阿波菲斯的OSIRIS-Apex任务，且其他替代方案也已被拒绝或搁置，这意味着NASA目前没有计划利用这一重要的小行星 encounter。文章还回顾了NASA在行星防御方面的发展历史，提到尽管有如NEO Surveyor和DART任务的进展，但仍面临资源不足和战略规划不力的挑战。专家呼吁NASA加强小行星威胁探测和防御能力开发，以有效应对未来潜在威胁。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Apophis小行星接近地球的可能性及其潜在影响
-
-不同观点：
-• [southernplaces7] 认为虽然NASA确认Apophis小行星在即将到来的近距离飞越中不会构成威胁，但思考其撞击地球的可能性仍然是一个有趣的假设。他详细描述了如果小行星撞击陆地或海洋可能带来的灾难性后果，包括巨大动能导致的毁灭性破坏、海啸以及对全球气候和社会经济的重大影响。他还对比了不同撞击场景下的可能结果，如人口密集区域与海洋撞击的不同效应。
-
-• [bravesoul2] 则引用了NASA的官方信息，强调Apophis小行星在未来100年内不会对地球构成威胁，并指出天文学家通过密切跟踪已排除了其在近期撞击地球的可能性。这一观点旨在平息对Apophis撞击地球的担忧，强调科学观测带来的信心。
-
-补充讨论：
-• [southernplaces7] 详细描述了小行星撞击陆地时可能产生的直接和间接影响，如瞬间形成的巨大陨石坑、冲击波以及热脉冲对生物的致命烧伤效果。他还讨论了小行星撞击海洋时可能引发的海啸及其破坏力，尽管这些效应较难精确估算。
-
-• [bravesoul2] 的立场基于科学数据和权威来源，旨在提供关于Apophis小行星安全性的准确信息，并通过引用NASA的声明来支持其观点。这种立场强调科学观察和长期监测带来的安全性结论。
+• [flint] 提到每天出汗的自然方式，但没有直接评论文章内容。
+• [peanut_merchant] 请求对文章健康影响的基本解释。
+• [indus] 质疑肥皂等现代个人护理产品的必要性，基于进化论的观点。
+• [maipen] 抱怨人们不阅读文章就评论，并表示应该尽量减少使用复杂和合成的产品，但在必要时可以使用。
+• [drabbiticus] 提供了一个更易理解的相关链接，并认为文章结果在日常生活中不值得担心。
+• [867-5309] 指出了某些香料成分的问题。
+• [fiatjaf] 表示文章难以阅读。
+• [metalman] 对通过皮肤释放的生物杀灭气体表示惊讶，并提到对人类生物化学需要更细致的理解。
 
 争议焦点：
-• 主要争议在于对Apophis小行星潜在威胁的认知和假设。一方关注假设性撞击情景及其可能带来的巨大灾难，另一方则基于科学数据强调其无威胁性。这种对比反映了对潜在天体威胁的不同关注程度和理解方式。</div>
+• 文章标题和内容是否夸大其词，是否有意制造震惊效果。
+• 个人护理产品中的化学成分是否被充分理解和测试。
+• 现代个人护理产品是否必要，以及其对健康的影响。
+
+这些观点反映了公众对化学品和个人护理产品影响的广泛关注和不同理解。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44421784" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44414719" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -475,33 +456,117 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2506.21539" target="_blank">WorldVLA: Towards Autoregressive Action World Model</a>
+                    <a href="https://fuel.edby.coffee/posts/how-we-ported-xv6-os-to-a-home-built-cpu-with-a-home-built-c-compiler/" target="_blank">We ran a Unix-like OS on our home-built CPU with a home-built C compiler (2020)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: chrsw</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-06-29 23:51</span>
+                    <span>作者: AlexeyBrin</span> |
+                    <span>评分: 299</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-06-28 12:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了一种名为WorldVLA的自动回归动作世界模型，该模型整合了视觉-语言-动作（VLA）模型和世界模型。WorldVLA通过结合动作和图像的理解与生成，预测未来图像并学习环境的基本物理规则，从而改进动作生成。同时，动作模型基于图像观察生成后续动作，帮助视觉理解并促进世界模型的视觉生成。研究显示，WorldVLA的表现优于单独的动作和世界模型，展现了二者之间的相互增强效果。然而，动作模型在以自动回归方式生成动作序列时性能下降，原因是模型对动作预测的泛化能力有限，导致早期动作误差影响后续动作。为此，文章提出了一种注意力掩码策略，通过选择性掩码先前动作来显著提升动作块生成的性能。</p>
+                    <p>本文介绍了作者在大学三年级时参与的一个学生项目，他们团队成功在一个自制CPU和自制C编译器上运行了类似Unix的操作系统Xv6。该项目历时四个月，作为东京大学信息科学系的一个著名实验课程的一部分，学生需自行设计CPU架构、在FPGA上实现处理器、构建OCaml子集编译器，并运行一个光线追踪程序。作者的团队（第6组）决定挑战额外目标，在一个联合小组（X组）中尝试在自制CPU上运行操作系统。他们选择了MIT为教育目的开发的简单操作系统Xv6，并克服了包括C编译器工具链、CPU功能（如特权保护、虚拟地址、中断等）以及模拟器不足在内的多重挑战，最终成功实现了目标。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI模型架构的发展与比较
+                    <div class="comments-summary">主要讨论点：大学操作系统项目、自制CPU与操作系统、技术挑战与工具推荐
 
 不同观点：
-• blovescoffee认为当前的**autoregressive action world model**（自回归动作世界模型）可能只是一个局部的最佳选择（local max），其优势可能会被**JEPA**（Joint Empirical Probability Approximation）相关的工作所取代。该评论者对**arch（架构）的细节**有更多期待，希望了解更多具体内容，并暗示JEPA可能在未来成为更优的方案。
+• **boricj** 分享了自己在大学期间进行的一个三人小组项目，原计划是将MINIX3移植到Raspberry Pi上，但遇到了诸多技术困难，例如Raspberry Pi 3启动进入hypervisor模式而非supervisor模式，以及QEMU的Raspberry Pi模拟不准确。最终项目成功完成，并进行了富有创意的展示。
+
+• **dleslie** 提到大约25-30年前在SFU进行过类似实验，但当时并未运行完整的操作系统和编译器。他推荐了一款名为Turing Complete的工具，认为它可以帮助那些希望有指导和可访问工具的人体验这种实验的乐趣。
+
+• **helpfulContrib** 介绍了Oric-1/Atmos微型计算机及其活跃的社区，尤其是Orix系统，这是一个适用于Oric的类Unix环境。虽然功能不如完整的Unix系统，但仍值得Unix爱好者关注。
+
+• **Tepix** 对boricj的项目表示赞赏，指出低端开发工作往往繁琐且耗时，尤其是在缺乏调试工具的情况下。
+
+• **b0a04gl** 强调在自制CPU和操作系统时，所有问题都需要自己解决，每个bug都是系统规则的一部分，而不像通常调试时依赖他人编写的层次。
+
+• **winterqt** 回忆起类似的学术项目，涉及自定义C编译器和操作系统，但具体名称记不清了。
+
+• **_sbrk** 提到了Magic-1和BMOW等之前类似的项目，并提供了相关链接，还指出了自制CPU的网站列表。
+
+• **Jotalea** 表达了希望能够进行类似项目的愿望。
+
+• **absurdo** 询问了项目中使用的FPGA型号，表示对学习FPGA感兴趣，但觉得相关文档和软件不够自由，多为厂商锁定，并对比了STM32、AT、TI等MCUs的易用性。
+
+• **ummonk** 开玩笑地评论说，现在他们需要跑到半导体实验室去制造CPU，而不是在FPGA上配置运行。
 
 补充讨论：
-- **争议焦点**：当前的模型架构是否是最佳选择，或者是否有如JEPA等其他模型架构会在未来占据主导地位。
-- **论据**：blovescoffee指出，**autoregressive action world model**虽然目前表现良好，但可能只是阶段性的最佳方案（local max），未来JEPA等新方法可能会提供更大的突破。
-- **隐含的讨论**：对AI模型的架构选择和未来发展方向存在不同预期，部分人可能更看好新方法（如JEPA）的潜力。</div>
+• 技术挑战的具体细节，如Raspberry Pi 3启动模式问题和QEMU模拟不准确的问题，成为讨论的一个重点。
+• 对自制CPU和操作系统的兴趣和难度，尤其是调试过程中的独立性。
+• 推荐工具和资源，如Turing Complete和自制CPU相关网站，为有兴趣的人提供指导和帮助。
+• 对FPGA学习资源和自由文档的缺乏表示关注，反映出对更开放资源的期望。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44417725" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44404164" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://akr.am/blog/posts/parsing-json-in-forty-lines-of-awk" target="_blank">Parsing JSON in Forty Lines of Awk</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: thefilmore</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-28 15:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一种在POSIX shell中使用awk解析JSON的方法。JSON因其层次结构和无法简单分割的特性，在Unix shell中处理较为困难。虽然有工具如jq可以处理JSON，但需要额外依赖。作者选择使用awk编写一个简洁的JSON解析器，以满足从一个可信来源读取和解析JSON的需求。
+
+该方法实现了一个`get_json_value`函数，接受JSON文档和带点路径的键作为参数，返回对应值。函数处理对象和数组，通过递归和字符遍历解析JSON。为简化处理，假设输入为有效JSON，并进行了基本验证。
+
+以下是函数核心逻辑：
+1. 判断JSON类型（对象或数组）。
+2. 解析键路径，处理嵌套情况。
+3. 遍历字符，识别字符串、对象、数组等，提取键和值。
+4. 处理特殊字符如逗号、括号等。
+
+该方法适用于从一个已知可信来源解析JSON，但在处理任意JSON时需谨慎。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在不同场景下处理JSON、TAP等数据格式时，各种工具和语言的适用性及优缺点
+
+不同观点：
+• **Python的适用性**：  
+   - latexr认为Python在大多数机器上都预装，是个不错的选择，但在macOS上需要处理Xcode工具的安装提示。
+   - ameliaquining则更强调jq在处理JSON数据上的不可或缺性，认为Python等语言虽然可以处理JSON，但与jq相比显得笨重。
+
+• **Awk的优缺点**：  
+   - HappMacDonald通过个人经验展示了Awk在性能和功能上的强大，特别是处理TAP协议时，比bash脚本高效得多。
+   - chaps则指出Awk在某些功能上（如处理列和缺乏便捷功能）的局限性，认为其命令容易变得冗长复杂。
+
+• **Unix生态系统的局限与改进建议**：  
+   - twoodfin认为Unix脚本生态系统缺乏文件类型识别、标记化和解析工具，建议发展类似‘file’、‘lex’、‘yacc’的工具组合。
+   - chubot进一步指出Unix shell在解析JSON上的弱点，认为Awk和shell都不适合处理JSON，推荐使用OSH和YSH等更现代化的工具，这些工具提供了更强大的数据结构和错误处理能力。
+
+• **其他工具和语言的推荐**：  
+   - izabera提到了自己开发的类似jq的工具‘j’。
+   - cAtte_直接推荐使用nushell。
+   - 1vuio0pswjnm7则偏好使用flex，认为其性能和可移植性优于Awk和Python，并提到自己创建了一个比jq更轻量的工具。
+
+补充讨论：
+• **工具选择的多样性和复杂性**：  
+   - wutwutwat引用名言暗示在选择工具和技术时，不仅要考虑技术可行性，还要考虑是否合适。
+   - 评论中也反映了对不同工具的个人偏好，以及在处理实际问题时，工具的选择往往取决于具体需求和环境。
+
+争议焦点：
+• 主要集中在**Awk与jq的优劣对比**，以及是否需要更现代化的工具（如OSH、YSH）来处理JSON等复杂数据格式。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44405342" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
