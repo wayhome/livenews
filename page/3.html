@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-01 20:26 (北京时间)
+            最后更新时间: 2025-07-01 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/openfiletax/openfile" target="_blank">Show HN: A continuation of IRS Direct File that can be self-hosted</a>
+                    <a href="https://blog.snork.dev/posts/abstraction-boundaries-are-optimization-boundaries.html" target="_blank">Abstraction boundaries are optimization boundaries</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: elijahwright_</span> |
-                    <span>评分: 79</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-30 22:08</span>
+                    <span>作者: delifue</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-06-28 14:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>OpenFile 是一个基于 IRS Direct File 的免费税务工具，提供了税务相关文件处理的功能。该项目使用 Docker 运行，通过执行 `docker compose up -d` 命令启动服务，客户端可在 `localhost:3000/df/file` 访问。项目主要使用 JavaScript、TypeScript、Java 等编程语言开发，代码托管在 GitHub 上，目前有 8 个星标和 1 个分支。详细信息和使用指南可访问官方文档：[https://docs.openfile.tax](https://docs.openfile.tax)。</p>
+                    <p>本文讨论了N+1查询问题及其由泄漏的抽象导致的原因，通常是由于ORM（对象关系映射）无法自动优化多次查询为单次查询。常见解决方案是降低抽象边界，明确指示ORM批量获取数据。然而，文章提出另一种思路：通过提升抽象边界，将ORM功能集成到语言中，使其能够通过重写规则（如合并N次查询为一次）进行优化。文章还以Haskell的流融合（stream fusion）为例，说明在声明式、纯函数式语言中，提升抽象边界有助于优化。文章总结了一个有趣的模式：提升抽象边界同时提升了优化边界。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开放税务文件平台的相关技术实现、文档显示问题及功能范围
+                    <div class="comments-summary">主要讨论点：编译器是否能够以及如何对数据库查询进行优化，尤其是在使用ORM（对象关系映射）的情况下。
 
 不同观点：
-• **nxobject的观点**：对开放税务文件平台的实施表示感谢，并希望这些努力能够制度化。同时提到一个技术问题，即在暗色模式下浏览文档页面时，出现黑底黑字导致无法阅读。
-• **onetom的观点**：提出一个关于政府表格填写的改进建议，主张个人可以存储自己的信息，并由软件根据需要自动填写表格，个人只需审核并决定分享哪些信息。进一步建议政府可以标准化所需信息，公民可以通过自托管的事实数据库直接向政府提供所需信息，而不是手动填写表格。
-• **1oooqooq的观点**：对发布的代码功能范围存在疑问，质疑发布的代码是否仅能处理单一W2（薪资报表）且不支持股票等复杂情况。
+• **cogman10的观点**：编译器无法进行期望的优化，因为编译器不了解SQL和数据的存储方式。数据库（如RDBMS）依赖大量统计数据和运行时信息进行优化，而这些信息是编译器无法动态获取的。例如，数据存储在哈希表中时，N+1查询可能反而是正确的选择，以避免过多的读锁。
+
+• **mrkeen的观点**：问题的根源在于ORM等数据库抽象的“泄漏”，这些抽象无法预见需要发送N个查询，因此无法自动优化为单个查询。纯函数式语言（如Haskell）因为其声明式和纯函数特性，能够更好地进行优化，而ORM则不具备这种特性。
+
+• **wavemode的观点**：可以通过提高抽象边界并使ORM成为语言的一部分来解决优化问题。例如，Django ORM通过使用QuerySet实现延迟评估，使调用者能够控制查询的执行方式，从而有机会进行优化。
+
+• **discarded1023的观点**：有些编程语言和编译器（如Haskell、MLton、以及基于JVM的语言）能够在模块或抽象边界之间进行优化。历史上有一些关于链接时优化和全程序优化的研究表明，某些情况下，抽象边界可以对优化器透明。
 
 补充讨论：
-• **onetom的技术问题反馈**：指出了具体文档链接（direct-file.html）返回404错误，页面不存在。
-• **争议焦点**：发布的代码功能范围不明确，1oooqooq对代码是否仅适用于简单税务情况（如单一W2）表示困惑，而onetom则更关注系统对个人信息处理和表格填写的智能化改进。
+• **关于N+1查询问题的具体例子**：cogman10提到，数据存储结构（如哈希表、索引）会影响查询策略，而mrkeen则指出ORM的抽象导致无法自动优化查询。
 
-总结来看，讨论围绕开放税务文件平台的技术实现和改进建议展开，涉及文档显示、代码功能范围以及表格填写的智能化解决方案等问题。</div>
+• **关于声明式和纯函数式语言的优势**：mrkeen和discarded1023都提到声明式和纯函数式语言在优化上的优势，因为这些语言的抽象模型允许编译器进行更广泛的优化。
+
+• **关于提高抽象边界的可行性**：wavemode和discarded1023都讨论了提高抽象边界的可行性，但wavemode更关注于ORM的具体实现（如Django ORM），而discarded1023则引用了历史上关于编译器优化的研究。
+
+争议焦点：
+• 主要争议在于编译器是否能够在抽象边界之间进行有效的优化，特别是在涉及数据库查询和ORM的情况下。cogman10和mrkeen认为当前的ORM和编译器无法有效优化，而wavemode和discarded1023则提出了可能的解决方案和历史上成功的优化案例。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44428438" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44404831" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,39 +109,158 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/topling/toplingdb" target="_blank">Show HN: ToplingDB - A Persistent Key-Value Store for External Storage</a>
+                    <a href="https://proton.me/blog/apple-lawsuit" target="_blank">Proton joins suit against Apple for practices that harm developers and consumers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rockeetterark</span> |
-                    <span>评分: 3</span> |
+                    <span>作者: moose44</span> |
+                    <span>评分: 286</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-06-30 17:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Proton已向加州北区美国地方法院提交文件，加入针对苹果公司的一项现有集体诉讼。作为原告，Proton代表面临类似情况的开发者，挑战苹果的反竞争行为。苹果的App Store政策在全球多个司法管辖区被视为非法，近期欧盟因其违反竞争法罚款5亿欧元，美国Epic Games案中也发现苹果故意违抗法院命令。Proton认为苹果的行为违反了美国反垄断法，若不加以制止，美国消费者和开发者将面临更高价格和更少选择。Proton加入诉讼旨在推动App Store政策的实质性改变，而非仅表面调整，并计划将任何赔偿捐给支持民主和人权的组织。苹果对iOS软件分发的垄断控制损害隐私、自由和民主，亟需通过法律手段纠正。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Apple的App Store政策及其对市场和用户隐私的影响
+
+不同观点：
+• **App Store税对隐私优先企业不公平**：dcow认为，通过订阅盈利的隐私优先企业受到App Store费用的不成比例打击，而通过用户数据盈利的公司则不受影响。这阻碍了隐私优先商业模式的普及，并将问题上升到市场公平性高度。
+
+• **Apple的垄断地位导致开发者被迫妥协**：bitpush指出，Apple对iOS应用分发的垄断使其能够对所有开发者实施不合理的政策，迫使他们成为这种政策的共谋者。
+
+• **Apple对生态系统的控制权**：b0a04gl将Safari比作新的IE6，批评Apple对Web标准的支持不足，导致开发者只能选择原生应用开发，以避免失去大量用户。
+
+• **支持Apple的生态系统控制**：andrewinardeer为Apple的生态系统控制辩护，认为公司投资巨资开发硬件和软件，应该有权控制其交互对象，且用户有其他选择，不必强制Apple开放其生态系统。
+
+• **iMessage的垄断和社交压力**：Workaccount2批评Apple通过iMessage制造社交压力，迫使用户购买其硬件以保持社交联系，认为这种行为是在利用用户的亲密关系来锁定用户，是一种特别恶劣的垄断行为。
+
+• **法律干预的必要性**：mrbluecoat认为，通过法律手段干预Apple的行为是必要的，因为这些行为在美国被认为是违法的，而在国外已经被证明是非法的。
+
+• **支持Apple的封闭生态**：_benton认为，Apple的封闭和安全生态系统是其产品吸引力的一部分，其他公司通过法律手段干预Apple的产品设计是更垄断的做法，且用户有其他手机选择。
+
+• **对Apple政策的批评和呼吁更多参与者**：bowsamic认为，许多评论反对自由，并暗示这种情况在Hacker News上并不令人惊讶。shmerl则呼吁Mozilla加入对抗Apple的行列，因为Apple多年来在iOS上禁止Firefox。
+
+• **对Proton Mail诉讼的疑问**：gregbot和sneak对Proton Mail提起的诉讼具体寻求哪些补救措施以及案件的具体信息表示疑问。MaxPock进一步批评Proton Mail将公司利益置于国家利益之上。
+
+补充讨论：
+• **Apple的封闭生态与市场垄断**：讨论中多次提到Apple的封闭生态和垄断地位，及其对开发者和用户的影响。
+• **隐私与商业模式的冲突**：对通过订阅盈利的隐私优先企业与通过数据盈利的企业之间的冲突进行了深入讨论。
+• **法律与市场公平**：对通过法律手段干预科技公司行为的必要性和合理性存在不同看法。
+
+争议焦点：
+• **Apple是否有权控制其生态系统**：一方认为Apple有权控制其硬件和软件生态，另一方认为这种控制导致了市场不公和用户不便。
+• **iMessage的垄断性**：iMessage被指控利用社交关系迫使用户购买Apple产品，这种行为被认为是特别恶劣的垄断。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44426128" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jsgroth.dev/blog/posts/dkc2-open-bus/" target="_blank">Donkey Kong Country 2 and Open Bus</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: colejohnson66</span> |
+                    <span>评分: 245</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-06-30 15:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Donkey Kong Country 2》在旧SNES模拟器ZSNES中存在一个知名bug：某些关卡的旋转桶无法正常控制。具体表现为，当角色跳入桶中后，按方向键本应控制桶的旋转，但在ZSNES中，轻触方向键会导致桶无限旋转，直到按反方向键才会停止。这个bug使游戏难度增加，因为旋转桶常出现在尖刺等危险上方。
+
+该问题源于ZSNES未正确模拟"开放总线"行为。这种行为发生在读取无效内存地址时，CPU会重新读取上次在数据总线上的值。SNES的CPU是65816，其复杂的内存分页和地址处理进一步增加了模拟难度。
+
+这个问题曾在ZSNES论坛上讨论，但论坛已下线，而另一个模拟器Snes9x通过硬编码修复了此问题。ZSNES由于长期未更新（最后版本于2007年发布），该bug一直未被修复。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕6502汇编编程中的错误、开放总线（Open Bus）行为及其在不同硬件和模拟器中的表现展开的讨论。
+
+不同观点：
+• **deater**：作为6502程序员，经常因为忘记在立即值前加`#`而导致错误，这种错误有时在某些机器或模拟器上不会显现，但在其他机器上会出现，特别是在演示活动（demoparty）中遇到问题时，时间压力很大。
+• **anonymousiam**：最初以为"Open Bus"是一个专有名词，后来明白是指总线未连接任何设备。指出未注意到立即模式的问题，直到使用老旧模拟器时才显现出来。还提到立即模式会加快代码执行速度，这在裸机上可能重要，而在模拟器上不一定。
+• **Dwedit**：提到在SNES游戏Puyo Puyo中遇到PPU开放总线的问题，在处理RetroArch的RunAhead功能时发现存档状态不匹配。
+• **jackettm**：在Parallax Propeller芯片编程中也遇到类似问题，忘记写`JMP #address`而写成`JMP address`，这种错误有时能工作，直到突然出错。
+• **nicetryguy**：承认自己也常犯6502汇编中的类似错误，认为这是很常见且容易犯的错误，建议在IDE中高亮`#`以减少错误。
+• **userbinator**：指出"开放总线"仅存在于早期系统中，现代系统会有默认值或通过协议通知无响应。
+• **NobodyNada**：详细解释开放总线的物理结构和行为，提到游戏和速度运行策略中利用开放总线的行为，并讨论了在Super Metroid速度运行中的一个具体争议案例。
+
+补充讨论：
+• **mock-possum**：对这类汇编代码的讨论感到有趣，并表示解释性文字有帮助，喜欢听那些未被理解或注意的经典软件bug故事。
+• **pipes**：提到在玩模拟游戏时会怀疑是否是模拟器的bug，甚至为此建造了Mister FPGA以解决模拟延迟问题。
+• **jgalt212**：提到DKC1和Vector Man的3D图形在当时是尖端技术。
+• **jihadjihad**：偏题称赞DK Country 2这款30年历史的游戏至今仍然表现出色，比现代游戏如Fortnite更受欢迎。
+• **helf**：表达对这类内容的热爱，认为是在HN上最喜欢的发现。
+
+争议焦点：主要集中在开放总线行为在不同硬件和模拟器中的表现差异，特别是Super Metroid速度运行中利用开放总线行为的具体案例及其在社区中引发的争议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44424194" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blogs.bl.uk/science/2025/06/the-average-chess-players-of-bletchley-park-and-ai-research-in-britain.html" target="_blank">The average chess players of Bletchley Park and AI research in Britain</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: salonium_</span> |
+                    <span>评分: 29</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-01 10:07</span>
+                    <span>发布时间: 2025-07-01 10:31</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>ToplingDB是一个由Topling公司开发和维护的持久化键值存储系统，基于RocksDB构建，具有多项增强功能。其关键特性包括：通过SidePlugin机制允许用户使用JSON或YAML配置数据库，内嵌的HTTP服务器支持在线更改数据库配置和查看信息，性能上有多项优化如多线程IO和协程支持的MultiGet操作，去虚拟化及前缀缓存，零拷贝点查询和迭代器，以及 memtable 作为日志索引等。ToplingDB还支持企业级插件的动态加载，并提供如MyTopling（MySQL on ToplingDB）和Todis（Redis on ToplingDB）等云原生数据库服务。其目录结构包含多个组件，如rockside、topling-zip和各种sideplugin组件，便于功能扩展和分离。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对某个项目或事件的延迟的看法
+                    <div class="comments-summary">主要讨论点：图灵对计算潜力的预见以及当代人工智能（AI）发展现状和未来方向
 
 不同观点：
-• ChocolateGod 对项目延迟表示不满，强调延迟可能带来负面影响，例如打乱计划或影响用户体验。但没有提供具体细节，只提到“延迟”本身是一个问题。
+• [codeulike的观点]  
+  - 图灵在1950年代的著作展现了他对计算潜力的深刻洞察，尤其是他对计算范式转变的预见。  
+  - 通过时间机器将图灵带到现代，向他展示现代技术（如iPhone）、他自己的头像在50英镑纸币上以及维基百科上的公开LGBTQ政府首脑列表，会是非常有趣的体验。
+  - 论据：图灵早期已经认识到计算将带来的巨大变革，并通过其著作展现了这一洞见。
 
-• 另一部分隐含的观点（可能从上下文推断出）认为延迟可能有其合理性，或许是为了确保质量或解决技术问题，因此对延迟持理解态度。这部分观点可能强调在某些情况下，适当的延迟是可以接受的，只要最终结果是好的。
-
-• 还有一种观点可能来自其他用户（假设有回应），认为延迟是由于管理不善或规划不足造成的，指出项目管理团队应该更有效地规划时间表以避免这种情况。该观点可能附带论据，例如提到其他类似项目没有出现类似延迟，或者团队应更透明地说明延迟原因。
+• [PaulRobinson的观点]  
+  - 过去认为AI能下好国际象棋是AI进步的标志，但现在这一观点已经改变。  
+  - 对图灵测试作为AI衡量标准的有效性提出质疑，因为在现代，大量AI内容误导人们，且有些软件在解决CAPTCHA上比人类更有效。  
+  - 提出LLM（大语言模型）可能导致心理障碍的报告，质疑其作为治疗师的替代品。  
+  - 认为即使在大规模投资和改进下，AI在帮助专家提高效率方面表现良好，但无法取代专家。  
+  - 提出当前对AGI（通用人工智能）的追求目标不明确，不再仅仅是下棋好、模仿人类或对人类有用。
 
 补充讨论：
-• 争议的焦点在于延迟本身的价值判断：一方认为延迟不可接受，另一方则认为在某些情况下延迟可以理解，甚至可能是必要的。
+• 图灵的预见与现代AI发展的对比  
+  - [codeulike]认为图灵在早期对计算的潜力有惊人的洞察力，而[PaulRobinson]则指出一些图灵预见的测试标准（如图灵测试、下棋）在现代已不再适用或受到质疑。
 
-• 一些用户可能会进一步讨论如何避免类似延迟的发生，例如通过更精细的项目管理和更透明的沟通机制。
+• 对AI未来方向的疑问  
+  - [PaulRobinson]对AGI的未来发展方向提出疑问，认为当前AI的发展重点不应只是游戏、模仿人类或实用性，而需要新的衡量标准。
 
-• 如果延迟涉及到外部因素（如供应链问题或不可抗力），则可能会有观点认为延迟是不可避免的，责任不应完全归咎于项目团队。</div>
+争议焦点：
+• 图灵测试是否仍然适用于衡量现代AI的发展。
+• AI（尤其是LLM）在心理治疗等领域的适用性和潜在风险。
+• AGI的未来发展目标和衡量标准。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44432322" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44432444" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -144,379 +271,309 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.publichealth.columbia.edu/news/aging-related-inflammation-not-universal-across-human-populations" target="_blank">Aging-related inflammation is not universal across human populations</a>
+                    <a href="https://blog.cloudflare.com/introducing-pay-per-crawl/" target="_blank">Cloudflare to introduce pay-per-crawl for AI bots</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: XzetaU8</span> |
-                    <span>评分: 72</span> |
+                    <span>作者: scotchmi_st</span> |
+                    <span>评分: 160</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-07-01 10:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了一种名为"按爬取付费"（Pay per Crawl）的新机制，旨在让内容创作者对人工智能爬虫访问其内容进行收费。当前，内容发布者只能选择完全开放或完全封锁内容，而这种新机制提供了一个中间选项，允许他们通过收费来授权访问。Cloudflare推出了这一实验性功能，利用HTTP状态码（如402表示需要付费）来实现。内容所有者可以设定统一的收费标准，并根据需要允许某些爬虫免费访问或完全阻止访问。该系统通过Web Bot Auth提案和HTTP消息签名来验证爬虫身份，防止伪造。发布者可以完全控制其内容的货币化策略，并根据现有的安全策略进行调整。这一功能旨在帮助内容创作者从其作品中获得经济回报。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Cloudflare对网络爬虫收费的提议及其潜在影响
+
+不同观点：
+• asimpletune：认为按使用付费是正确的方向，但应根据用途收费，比如用于研究应免费，而用于商业项目则应高收费。同时，表达了对知识产权拥有者补偿的关注，并提出建立世界图书馆的理想愿景。
+• skenderbeu：质疑这种收费模式，担心互联网会变得商业化，甚至出现“按浏览付费”的情况。
+• asim：指出这是微支付的一种实现方式，并提到Coinbase已经引入了相关的加密货币和402状态码的库（x402）。
+• FloatArtifact：关注到使用人工智能爬虫作为无障碍工具的用户可能会遇到验证问题。
+• JimDabell：认为Cloudflare的提议没有增加任何价值，建议各公司合作共享基础设施以减少网站负载，并通过技术手段强制执行robots.txt规则。
+• cedws：提出使用X-Crawl-Key头识别收费请求的简化方案。
+• mhandley：担心新激励机制可能导致大量AI生成内容的涌现，并询问如何防止这种情况。
+• Toritori12：认为绕过Cloudflare可能更便宜，并对大公司如Google可能免费获取数据表示不满，同时提出如何将成本转嫁给用户的疑问。
+• greatgib：理论上支持收费，但担心互联网中立性的破坏，并提出按使用量分级收费和限速的替代方案。
+• suyash：支持解决爬虫流量问题，但建议建立开放源协议来处理权限和支付问题，而非依赖Cloudflare。
+• baq：以幽默方式回应，表示要购买Cloudflare的股票。
+• a_c：建议使用基金来支持LLM爬虫的内容生成。
+• aspemayer：分享相关技术文章链接，提供背景信息。
+• yodon：简单提及该功能目前处于私人测试阶段。
+
+补充讨论：
+• 争议焦点在于收费模式的公平性和有效性，以及对互联网中立性和内容生成泛滥的担忧。
+• 有人建议合作共享和限速等替代方案，以减少网站负载和成本。
+• 对Cloudflare的提议是否真正增加价值存在不同看法，部分用户认为其缺乏创新和吸引力。
+• 技术实现细节如微支付和请求头识别也是讨论的重要方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44432385" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.softwaremaxims.com/blog/not-a-supplier" target="_blank">I am not a supplier (2022)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wofo</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-01 14:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了软件供应链的概念及其问题。作者指出，过去几年中，关于软件供应链的讨论增多，尤其在LeftPad事件后以及一系列安全事件发生以来。软件供应链指的是项目中所使用的各种依赖库及其管理，这些库通常通过开源软件（FOSS）许可证自由使用和重新混合，避免了法律和财务麻烦。现代软件项目可能包含数百甚至数千个依赖项。
+
+供应链概念源于制造业，指生产过程中所需的各级供应商。在软件中，类似问题如库的所有者停止提供访问或引入安全漏洞，可能影响整个互联网。软件供应链的管理工具如软件物料清单（SBOM）用于记录项目使用的库及其信息。
+
+作者认为，将FOSS纳入传统供应链定义是误导的，因为开源库的维护者与商业供应商不同，他们不承担商业供应链中的责任和关系管理。文章呼吁对开源库的维护和安全进行更好的管理，以避免“远程操控”风险。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：开源软件的供应链概念及其责任和补偿问题
+
+不同观点：
+• **[lucasyvas的观点]**：发布软件包的人就是供应商，无论他们是否愿意承认。如果不想成为供应商，就不应发布软件的构建版本，而是让其他人（如分销实体）来构建和发布。这是Linux等系统中软件分发一直以来的运作方式。例如，Debian或Red Hat负责修复他们发布的库中的错误，并可以将其反馈给上游。
+
+• **[stego-tech的观点]**：越来越多的源代码贡献者反对“软件供应链”的概念，认为公司要求他们参与产品供应链却不支付报酬是虚伪的。实际上不存在所谓的“软件供应链”，只有那些期望无偿劳动来持续支持的产品。如果有人支付合理的工资，项目通常不会拒绝合作。
+
+• **[bee_rider的观点]**：质疑“开源软件供应链”概念是否仍有推动力，认为这是一个误导且糟糕的想法。想知道开源社区是否成功将这一点传达给了政策制定者。最近没有听到太多关于这个话题的讨论。
+
+补充讨论：
+• **[gnabgib的补充]**：提到在不同时间点上关于此话题的讨论链接，显示该话题在不同时间段的讨论热度，如2024年和2022年的讨论，可能表明该话题在不同时间有不同的关注度。
+
+争议焦点：开源软件贡献者是否应被视为软件供应链的一部分并承担相应责任，以及他们是否应为此获得补偿。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44434355" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.mdpi.com/2313-4321/10/3/118" target="_blank">Waste into Construction Materials: Geopolymers from Recycled Sources</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-01 12:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过不同材料制作和回收钠硅酸盐及地质聚合物的可行性
+
+不同观点：
+• [tastyfreeze] 认为使用硅胶猫砂可以成功制作钠硅酸盐，并计划下次尝试使用破碎玻璃。这表明他正在探索不同材料在化学实验中的应用，且对使用常见材料（如猫砂和玻璃）进行实验持开放态度。
+   
+• [busssard] 关注的是地质聚合物的回收问题，对如何有效回收新制备的地质聚合物提出疑问。这显示出他对材料的可持续性和环保性有更高的关注，而不仅仅是如何制作这些材料。
+
+补充讨论：
+• [tastyfreeze] 通过实际实验验证了使用猫砂制作钠硅酸盐的可行性，并计划进一步实验（如使用破碎玻璃），表明其对材料科学实验具有实践兴趣。
+
+• [busssard] 的问题揭示了关于地质聚合物生命周期的一个重要问题，即这些材料在使用后的处理和回收问题，这可能引发对可持续材料开发的更深入讨论。
+
+争议焦点：
+• 材料的获取和使用是否可持续：[tastyfreeze] 关注如何从常见材料中制作钠硅酸盐，而 [busssard] 则质疑这些新材料的回收和环保性，提出了材料生命周期管理的问题。
+
+• 实验材料的可行性与环保性的平衡：两种观点反映了对材料选择的两种不同优先级——一种关注实验的可行性与材料的可得性，另一种则关注实验材料在整个生命周期中的环境影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44433433" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://docs.anthropic.com/en/docs/claude-code/hooks" target="_blank">Claude Code now supports Hooks</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ramoz</span> |
+                    <span>评分: 210</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-01 00:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Claude Code hooks是用户定义的shell命令，能够在Claude Code生命周期的各个节点执行，提供对行为的控制。其用例包括通知自定义、自动格式化、日志记录、反馈提供和权限控制等。通过将这些规则编码为hooks，可以确保某些操作每次都按预期执行。用户需自行确保hooks的安全性，Anthropic不对因hook使用导致的数据丢失负责。
+
+快速入门步骤：
+1. 打开hooks配置，运行`/hooks`命令并选择`PreToolUse`事件。
+2. 添加匹配器，选择Bash工具调用。
+3. 添加hook命令，使用`jq`记录Bash命令。
+4. 保存配置到用户设置。
+5. 验证hook配置。
+
+Hooks配置结构基于事件和匹配器，配置文件为JSON格式，支持多种工具事件如`PreToolUse`和`PostToolUse`。Hooks通过stdin接收JSON数据，包含会话和事件特定信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Claude Code的hook功能及其应用和局限
+
+不同观点：
+• **支持hook功能的实现**：
+  - **b0a04gl**：hook功能使工作流更加确定和安全，可以在代码编写、审查和部署等多个步骤中安全交接，每个步骤通过验证hook进行控制。
+  - **ramoz**：hook对于“上下文工程”和运行时验证代理性能非常重要，特别是在企业合规和代理行为监督方面。
+  - **nojs**：可以通过hook设置复杂的规则，限制Claude执行某些命令，例如允许或禁止特定的Docker命令。
+  - **brynary**：hook功能填补了一个重要的功能空白，提供了确定性，相比之前依赖CLAUDE.md的指令更加可靠。
+  - **cheriot**：Claude Code在hook功能上的领先地位令人惊叹，尽管有公司专门做这个，但Claude Code依然走在前面。
+
+• **对hook功能的需求和期望**：
+  - **aantix**：希望hook功能支持回滚。
+  - **petethepig**：希望在Cursor中看到hook功能，目前使用一些规则作为变通方法。
+  - **parhamn**：需要一种在monorepos中匹配目录变化的方法，例如仅在特定目录发生变化时运行特定linter。
+  - **jonstewart**：Claude Code有时会忽略CLAUDE.md中的明确指示，希望通过hook功能限制其执行特定工作流步骤。
+
+• **hook功能的应用场景和实际效果**：
+  - **theusus**：更倾向于实时linting，而不是依赖Claude执行这些任务。
+  - **bearjaws**：Claude Code已经在初始编码工作流中占据主导地位，尽管需要频繁审核和提交，但整体效果很好，特别是在处理多个代码库时。
+  - **rtp4me**：Claude帮助解决了多种语言的语法问题，提高了工作效率，并且在其他领域（如烹饪、汽车维修）也有广泛的知识。
+
+补充讨论：
+• **AI是否会取代编码工作**：
+  - **mkagenius**：即使AI能完成部分编码工作，配置hook和提出新功能等工作仍需要人类参与，除非AI能自主思考并宣布这些功能。
+
+• **具体应用建议**：
+  - **artursapek**：希望添加一个hook，每次自动推送到生产环境。
+
+争议的焦点：
+• **hook功能的局限性和期望**：部分用户对hook功能的实现细节和支持场景有不同期望，例如对回滚功能、目录匹配和Git集成等方面的需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44429225" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.xfinity.com/support/articles/wifi-motion" target="_blank">Xfinity using WiFi signals in your house to detect motion</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bearsyankees</span> |
+                    <span>评分: 242</span> |
+                    <span>评论数: 37</span> |
+                    <span>发布时间: 2025-06-30 19:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Comcast的WiFi Motion功能及其隐私和安全问题
+
+不同观点：
+• **隐私担忧**：
+   - [jacobgkau] 和 [johnklos] 提到，根据条款，Comcast可以在某些情况下向第三方披露用户信息，包括执法调查或诉讼，甚至未付账单的纠纷。这引发了对隐私的担忧，因为ISP可能会向执法机构透露家中是否有人。
+   - [johnklos] 进一步指出，披露信息的范围可能很广，且Comcast保留与任何第三方分享信息的权利，这尤其令人担忧，特别是在当前可能将信息"武器化"的背景下。
+
+• **对ISP提供硬件的不信任**：
+   - [johnklos] 和 [JCM9] 强调，他们从不信任ISP提供的硬件，因为ISP可以通过固件更新随时改变设备的功能或隐私设置。
+   - [amazingman] 建议使用桥接模式并自行配置WiFi，以避免使用ISP的设备，但在某些地区可能因数据上限问题而无法避免使用ISP的设备。
+
+• **技术可行性与实现方式的讨论**：
+   - [snickerbockers] 对Comcast能实现这种功能表示惊讶，并猜测其原理类似于雷达信号的回波检测。
+   - [yborg] 提到这种技术早已被研究，并对其商业化感到意外。
+   - [jrockway] 指出，这种功能如果由用户自行控制会很有趣，但由ISP控制则存在隐私风险。
+   - [transpute] 补充，WiFi 7标准已经支持类似功能，许多现代设备都具备这种能力。
+
+• **商业利益与潜在滥用**：
+   - [femiagbabiaka] 认为，Comcast强制用户使用其设备以获取无限带宽的做法应被视为非法。
+   - [knetl] 提到WiFi Motion技术可能来自Cognitive Systems的授权，且该技术早已商业化。
+   - [nopenopenope88] 分享了其在相关技术开发中的经验，并暗示Comcast可能利用这些技术进行大规模监控，甚至构建全球设备地图，引发对潜在滥用的担忧。
+
+补充讨论：
+• **自我托管解决方案的兴趣**：
+   - [EvanAnderson] 对自行托管类似功能表示兴趣，并询问相关技术现状。
+   - [jrockway] 建议使用开源硬件和软件（如NixOS）来确保隐私和控制权。
+
+• **幽默与讽刺**：
+   - [aurizon] 以幽默的方式提到，如果有宠物喂食器定时工作，可能会为监控者提供一些有趣的场景。
+
+争议焦点：
+• 主要争议在于隐私和安全问题，特别是Comcast在未通知用户的情况下向第三方披露信息的权利及其潜在的技术滥用。用户对ISP提供硬件的不信任和对技术被用于大规模监控的担忧也是讨论的核心。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44426726" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vldb.org/pvldb/vol18/p1919-wang.pdf" target="_blank">GPEmu: A GPU emulator for rapid, low-cost deep learning prototyping [pdf]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: matt_d</span> |
+                    <span>评分: 52</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-01 05:52</span>
+                    <span>发布时间: 2025-06-30 22:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>一项由哥伦比亚大学梅尔曼公共卫生学院开展的研究表明，"炎性衰老"（inflammaging）并非人类普遍的衰老特征，而是与工业化生活方式密切相关，且在不同人群中有显著差异。研究比较了两个工业化群体（意大利InCHIANTI研究和新加坡纵向衰老研究）与两个非工业化土著群体（玻利维亚亚马逊的Tsimane人和马来西亚半岛的Orang Asli人）。结果显示，工业化群体中炎性衰老与慢性疾病相关，而在土著群体中，炎症主要由感染引起，且不会随年龄增加或导致慢性病。这表明，炎症和衰老过程受环境、生活方式和感染等因素影响，可能并不具备普遍性。研究呼吁重新评估跨人群的衰老和炎症测量方法，并强调需要开发更具背景意识的工具。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：炎症与压力的关系及其干预效果
+                    <div class="comments-summary">主要讨论点：GPEmu项目的许可、实用性、活跃度以及与其他GPU模拟方案的区别
 
 不同观点：
-• [kpmcc] 推荐了Sapolsky的《Why Zebras Don't Get Ulcers》一书，认为该书对普通读者来说是一个有趣的读物，可以帮助了解炎症与压力的关系。这暗示了炎症与心理压力可能存在重要关联。
-
-• [adrianN] 则提出不同的看法，指出过去的抗炎干预措施并没有产生明显的效果，因此认为炎症本身可能并不是问题的核心。这表明他对炎症作为主要病因的理论持怀疑态度。
-
-补充讨论：
-• adrianN的观点中提到了实际的干预实验结果，认为抗炎治疗没有帮助，这为他的怀疑态度提供了依据。
-• 争议的焦点在于炎症是否是导致某些健康问题（如溃疡等）的主要原因，kpmcc强调理解炎症的重要性，而adrianN则基于实验结果质疑这一因果关系。
-• 讨论还涉及到科普读物的价值，kpmcc推荐书目可能是为了引发更多非专业人士对该话题的兴趣，尽管实际医学干预效果存在争议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44430984" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.jxmo.io/p/there-are-no-new-ideas-in-ai-only" target="_blank">There are no new ideas in AI only new datasets</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bilsbie</span> |
-                    <span>评分: 199</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-06-30 14:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了人工智能（AI）领域的进展，指出尽管AI在过去十五年中取得了显著进步，但所谓的突破性新想法实际上很少，大部分进展源于新数据集的应用。作者认为，大型语言模型（LLMs）的发展可以归纳为四个关键突破：深度神经网络、Transformer模型、基于人类反馈的强化学习（RLHF）和推理能力。尽管这些技术推动了AI进步，但其基础机制早在1990年代甚至更早就已存在，主要依赖于监督学习和强化学习等已有方法。文章还提到，尽管研究界不断产生增量式进步，但近期的巨大模型如Grok 3和GPT-4.5仅带来边际改善，AI能力的某些宣称可能被夸大。总体而言，AI的持续进步更多依赖于数据集的更新而非全新理念。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人工智能（AI）的发展现状、局限性、未来潜力和技术进展
-
-不同观点：
-• EternalFury认为，当前的AI模型仅在狭隘的任务中表现出色，但在面对新任务（如未见过的新游戏）时表现不佳，表明它们并不具备真正的智能，仅是在特定任务上具备专长。
-• voxleone指出，尽管AI在语言和视觉领域取得了显著进展，但这些仅仅是人类多模态智能的一部分。AI尚未触及触觉、嗅觉、情感等其他关键认知领域，未来需在这些方面取得突破。
-• strangescript质疑当前AI研究中的创新性，认为许多研究者依赖现有的工具和模型（如PyTorch），可能阻碍了实验性发展的进展。
-• tippytippytango区分了技术和科学进步，指出AI领域中许多进展是基于对已有概念的优化和扩展，而非全新突破。
-• kogus则认为，AI系统若要重现人类智能，改变数据集可能是关键，因为人类的智能也依赖于记忆、教育和背景等因素。
-• jschveibinz反驳前述观点，认为AI创新往往基于旧有概念的重新组合，AI工具能够帮助研究者以新的视角审视旧问题。
-• lsy强调基础设施对AI进展的重要性，指出过去几十年中的技术进步（如摩尔定律、互联网发展）为AI的实际应用创造了条件。
-• seydor乐观地认为，神经网络具备广泛的代表能力，未来会出现更多新想法和数据，推动AI进一步发展。
-• ks2408持怀疑态度，认为当前的LLM仅是基础数学运算的复杂版本，与几千年前的巴比伦人计算无异。
-• LarsDu88提出生物数据集（如基因表达数据）的潜力，认为这些新数据可能带来AI领域的下一波重大突破。
-• ctoth讽刺地指出，自我对弈和强化学习等方法对AI进步的贡献不可忽视。
-• Night_Thastus对当前AI讨论的热度感到厌倦，希望这股热潮能尽快过去。
-• russellbeattie通过iPhone的例子说明，技术进步往往是基于已有概念的微小调整，AI领域也是如此。
-• piinbinary认为，当前AI训练主要是记忆数据集，而非像人类一样思考和得出结论。
-• tantalor回应了关于数据集重要性的质疑，指出新方法能够解锁新的数据集。
+• **mdaniel** 指出该项目缺乏明确的许可声明，并对`setup.py`文件中的字段许可权重表示困惑，这可能影响项目的使用和分发。
+• **Retr0id** 质疑使用GPU模拟器（如GPEmu）的经济性，认为租用真实GPU可能更划算，暗示模拟方案在成本上不一定有优势。
+• **Voloskaya** 对项目的实用性表示期待，但指出项目不活跃，最后一次提交已经是10个月前，暗示该项目可能已被废弃或不再维护。
+• **socalgal2** 提问GPEmu与LLVMpipe等其他GPU模拟方案的区别，试图了解GPEmu的独特价值和用途。
+• **almostgotcaught** 批评GPEmu模拟GPU工作负载的方式，认为使用简单的`sleep(T)`调用来模拟GPU步骤是不可靠的，尤其在没有真实GPU进行校准和再校准的情况下。
 
 补充讨论：
-• 当前AI在语言和视觉领域的进展被广泛认可，但多模态智能、情感和身体感知等方面的进展仍被认为是未来的重要方向。
-• 部分评论者对现有AI工具和框架（如PyTorch）对创新性的潜在限制表示担忧。
-• 基础设施和历史背景对AI技术发展的影响被强调，特别是摩尔定律的放缓和互联网的发展如何推动AI的实际应用。
-• 关于AI创新的来源存在争议，一部分人认为创新基于旧有概念的重新组合，另一部分人则认为未来会出现全新的方法和数据。
-• 对AI的实际智能水平存在怀疑，许多评论者指出当前AI模型在泛化能力上的不足。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44423983" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.dolthub.com/blog/2025-06-03-people-keep-inventing-prolly-trees/" target="_blank">People Keep Inventing Prolly Trees</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lifty</span> |
-                    <span>评分: 138</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-06-28 20:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了“多重发现”现象，即科学发现常由不同人在相近时间独立完成，例如牛顿和莱布尼茨同时发明微积分，以及达尔文和华莱士同时提出进化论。文章提出，多重发现可能是常态，发明常是社会条件的产物，当发现的前提条件成熟时，往往会迅速被多次发现。文章还以“概率树”（prolly trees）为例，说明这种数据结构在不同领域和名称下被独立发明了至少四次，显示其是既有概念的创新组合，而非全新创造。概率树结合了内容定义分块和Merkle树等已有技术，其发明是技术发展的自然结果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Prolly Trees及其相关数据结构的起源、应用和特性
-
-不同观点：
-• wmanley认为Prolly Trees的概念并非全新，引用2009年apenwarr和2005年Martin Uecker的描述，指出其与rsync算法及Merkle hash tree的关联。Martin Uecker的邮件表明当时这种想法并不被视为创新。
-• gritzko将Prolly Trees视为Merkle化的B-trees，并提到自己正在研究相关内容，如Merkle化的LSM trees。他还指出，许多数据结构创新可以看作是对早期工作的改进，基础计算机科学概念多源于20世纪70-80年代。
-• compressedgas指出Jumbostore在2007年就使用了类似的内容定义分块技术，认为Prolly Tree的概念并非新颖。
-• ChadNauseam从个人经验出发，讨论了基于滚动哈希的分块技术，并提出一种加密备份方案，同时对下载大文件的体验提出改进建议。
-• elric质疑如何有效发现不熟悉但具有特定属性的数据结构，并询问是否存在按属性搜索数据结构的方法。
-• donatj认为Prolly Trees缺乏足够的网络资源和普及度，建议创建维基百科页面以增加其可见性。
-• iamwil关注Prolly Trees的编辑操作，询问是否需要从叶子节点重新构建整个树，并提到自己的实现经验。
-• zombot对"probabilistically balanced"这一术语感到困惑，寻求解释。
-
-补充讨论：
-• 对Prolly Trees的起源和相似数据结构的历史探讨，包括rsync算法、Merkle hash tree和Causal Tree等。
-• 对Prolly Trees编辑操作的技术细节和实际应用的关注，如是否需要完全重建树。
-• 对数据结构搜索和普及方法的讨论，反映出对更高效学习途径的需求。
-• 对技术术语理解的疑问，体现出对概念清晰性的需求。
+• 关于许可问题的讨论，反映出用户对开源项目中许可条款重要性的关注。
+• 关于项目活跃度的讨论，显示了社区对项目持续发展的期望和担忧。
+• 关于模拟成本和实用性的讨论，提出了模拟方案在实际应用中可能面临的经济性和技术性挑战。
+• 关于技术实现的讨论，特别是almostgotcaught的评论，揭示了在模拟复杂系统时校准和再校准的重要性，并对当前模拟方法提出了质疑。
 
 争议焦点：
-• 关于Prolly Trees是否为新颖概念的讨论，部分评论认为其概念早已存在，只是应用上的改进。</div>
+• GPEmu的实用性和技术实现方式是争议的核心，特别是在没有真实GPU进行校准的情况下，其模拟结果的可靠性受到质疑。
+• 项目的许可问题也可能成为用户使用和贡献的障碍。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44407708" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sbs.com.au/news/article/i-was-shocked-melbourne-mans-unbelievable-find-after-buying-house/m4sksfer8" target="_blank">Melbourne man discovers extensive model train network underneath house</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cfcfcf</span> |
-                    <span>评分: 295</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-06-30 23:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>墨尔本一名男子Daniel Xu在购买的新房屋下意外发现了一个庞大的火车模型网络。Xu是一名火车工程师和火车爱好者，他对这一发现感到非常震惊和欣喜。这个模型布局精巧，已有约60年历史，由前房主建造，但购房时并未提及。Xu计划修复并升级这一模型，尽管这并非他最初的购房计划。他的朋友们的小孩也对这一模型非常着迷。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕一位英国男子秘密建造大型火车模型的故事，评论者们展开了关于爱好、房屋检查以及发现意外事物后的反应的讨论。
-
-不同观点：
-• 一些评论者对该男子秘密建造火车模型的行为表示理解，认为这是个人爱好，可能因为担心被伴侣认为“无聊”而选择保密。例如，[gadders]提到这种秘密可能源于对伴侣反应的担忧。
-• 其他评论者如[alnwlsn]则对将地下室改造成密集火车模型的做法表示惊讶和不解，认为这种行为将房子变成了“死亡陷阱”，并质疑为什么会在公开拍卖中展示这样的房子。
-• [rbanffy]则从自身兴趣出发，希望发现类似但不同类型的“宝藏”，如1970年代的计算机房，同时幽默地表示会先报警确认安全性。
-
-补充讨论：
-• 一些评论者如[wrs]和[ByteDrifter]对房屋买家发现意外“梦想世界”表示感叹，认为这不仅是房产交易，更是一种时间胶囊的发现。
-• [brunker2]对买房时未仔细检查地下室表示质疑，认为房屋检查应该更 thorough，而不是忽略重要部分。
-• 部分评论转向技术性调侃，如[qtwhat]和[darkoob12]将“模型火车网络”误解或调侃为与AI或计算机网络相关的事物。
-• 其他如[freeopinion]和[Kirr]引用数学和文学作品中的概念，为讨论增添了一些文化和科学色彩。
-
-争议焦点：
-• 主要集中在对个人爱好与实际生活空间冲突的看法上，以及在房屋交易中应有的检查程序。一些人认为发现这样的“宝藏”是幸运，另一些人则认为这是潜在危险且不负责任的。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44429182" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://addons.mozilla.org/en-GB/firefox/addon/youtube-no-translation/" target="_blank">YouTube No Translation</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: doener</span> |
-                    <span>评分: 225</span> |
-                    <span>评论数: 45</span> |
-                    <span>发布时间: 2025-06-29 20:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>YouTube No Translation是一款开源插件，旨在防止YouTube自动翻译视频标题和描述，保证内容以其原始语言呈现。主要功能包括：保持视频标题的原语言、默认使用原始音轨、防止描述翻译、以及可选择字幕语言（若无相应字幕则自动禁用）。该插件还支持短视频，并提供问题反馈和功能请求的渠道。用户可以通过捐赠支持其开发，插件需要访问YouTube相关域的数据权限。当前版本为2.4.40，大小为123.22 kB，遵循GNU Affero General Public Licence v3.0协议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：YouTube的多语言功能及其对用户体验的影响
-
-不同观点：
-• 反对YouTube的多语言功能：
-  - 用户[rdtsc]认为YouTube对多语言用户不友好，自动翻译和语言猜测功能常常不符合用户需求，尤其是当用户能流利使用多种语言时。
-  - 用户[littlecranky67]指出，YouTube的翻译质量差，尤其在翻译名称和固定表达时，导致用户体验下降。
-  - 用户[tobi_bsf]和[mdavid626]也表达了对YouTube自动翻译和语言切换的不满，认为这种设计不合理，尤其是对多语言用户而言。
-  - 用户[jacek]提到，他需要多个浏览器插件来使YouTube变得可用，其中包括一个专门用来关闭翻译的插件。
-
-• 对自动翻译和音频切换的强烈反对：
-  - 用户[lajosbacs]强调，无法在设置中关闭自动翻译功能，即使是高级用户也是如此，这令人不解。
-  - 用户[Ezhik]和[martiuk]分享了他们的经历，YouTube错误地将音频切换成其他语言，破坏了原始内容体验。
-  - 用户[goku12]讽刺YouTube需要通过多个浏览器插件才能提供合格的用户体验，并指出YouTube在缺乏竞争的情况下占据了市场主导地位。
-
-• 支持YouTube的自动翻译功能：
-  - 用户[chartered_stack]表示，自动翻译功能帮助他搜索和观看非母语视频内容，尽管翻译质量可能不高，但确实方便了跨语言的内容访问。
-
-补充讨论：
-• 技术问题和解决方案：
-  - 用户[godelski]希望YouTube能利用机器学习技术解决字幕重复和错误显示的问题。
-  - 用户[rjsw]认为，问题可能出在YouTube的用户界面或播放器的自动音轨选择上，而非翻译功能本身。
-
-• 用户对YouTube高级会员体验的抱怨：
-  - 用户[kcaseg]和[11mariom]提到，即使是付费的高级用户，也无法避免被强迫使用某些功能，如Reels和自动翻译。
-
-争议焦点：
-• 自动翻译和音频切换功能的实用性及其对用户体验的影响是主要争议点。一部分用户认为这些功能破坏了观看体验，而另一部分用户则认为它们在跨语言内容访问上提供了便利。
-• 用户对无法关闭这些功能的限制感到不满，尤其是高级用户仍然无法避免这些问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44416009" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://clownacy.wordpress.com/2025/05/24/the-original-lzexe-a-k-a-kosinski-compressor-source-code-has-been-released/" target="_blank">The original LZEXE (A.K.A. Kosinski) compressor source code has been released</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: elvis70</span> |
-                    <span>评分: 80</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-06-30 19:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了LZEXE压缩格式（也称为Kosinski）的源代码被其开发者Fabrice Bellard发布，该代码自1990年以来首次公开，采用MIT许可证。LZEXE曾用于90年代DOS可执行文件的压缩，文章详细说明了不同版本（v0.90、v0.91、v0.91e）的获取途径。作者提到自己曾开发过Kosinski压缩器，但无法完全复制Mega CD BIOS中的压缩数据，推测可能是由于Sonic游戏和Mega CD BIOS使用了不同版本的压缩器。尽管现在有了Kosinski和Saxman的源代码，但Enigma和Nemesis格式的压缩器由于是Sega定制的，可能难以找到。文章最后提到有读者正尝试修改WonderMega BIOS中的压缩数据并寻求帮助。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Fabrice Bellard的软件贡献及其相关技术背景
-
-不同观点：
-• [johndoe0815] 强调Fabrice Bellard对软件领域的巨大贡献，列举了他开发的多个知名软件项目（如qemu, tinyemu, tcc, ffmpeg等），并提供了Bellard个人网站以供参考。该评论主要表达了对Bellard技术成就的赞赏。
-
-• [userbinator] 则将讨论引向PC BIOS中使用的压缩算法，特别是LZ*系列算法（如LZSS, LZARI, LZHUF等）及其演变，提到这些算法对后来广泛使用的压缩技术（如Deflate/Zlib, ZIP等）的影响。该评论还提到Phoenix公司对LZSS的专利，并指出Okumura代码的巨大影响，尽管其相对不为人知。
-
-补充讨论：
-• [userbinator] 的评论提供了一个技术细节的扩展，探讨了LZ*系列压缩算法在PC BIOS中的应用及其历史背景，引用了Phoenix的专利作为例子，进一步说明了这些算法对后续技术发展的影响。
-
-• 争议焦点：虽然评论中没有直接的争议，但可以看出[johndoe0815]更关注个人贡献者（Fabrice Bellard）的影响，而[userbinator]则更注重具体技术（如LZ*算法）及其在不同应用中的历史和发展。两者的关注点不同，一个侧重个人成就，另一个侧重技术演变及其影响。
-
-• 值得注意的例子：[userbinator] 提到的Phoenix专利（US5836013A）为讨论提供了一个具体的参考，展示了LZSS算法在PC BIOS中的应用及其法律保护的历史背景。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44426864" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kevinboone.me/dtc-700.html" target="_blank">They don't make 'em like that any more: Sony DTC-700 audio DAT player/recorder</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: naves</span> |
-                    <span>评分: 73</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-30 18:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了Sony DTC-700 DAT播放/录音机的特点及其历史背景。DAT（数字音频磁带）技术在音质上优于传统卡带，能够提供媲美甚至超过CD质量的录音效果，特别受专业领域欢迎，但在家用市场并未普及。DTC-700是Sony于1990年推出的相对"经济"的Hi-Fi DAT设备，具备多种功能和高质量的构建，但由于高昂的价格和缺乏商业录音支持，DAT技术在家用市场未能广泛流行。最终，Sony于2005年退出DAT市场。尽管如此，DTC-700如今仍被音频爱好者视为高品质录音设备。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：DAT及其他老式音频格式的技术、市场表现及现状
-
-不同观点：
-• **DAT的市场表现**：
-  - **[wombatpm]** 和 **[ilamont]** 指出DAT由于价格高、主要针对专业市场，未能在消费市场普及，且因法律诉讼和媒体价格昂贵，进一步限制了其普及。
-  - **[nakedneuron]** 反驳DAT便携性差的观点，指出某些DAT设备（如Sony TCD-D100）实际上是便携的，只是价格不便宜。
-
-• **DAT的技术优势和应用场景**：
-  - **[harel]** 和 **[dylan604]** 分享了DAT在音乐制作和DJ圈中的实际应用，尤其是其高质量的音频录制和在现场录音中的使用。
-  - **[dekn]** 提到DAT在即兴乐队录音社区中的流行，但由于价格高，未能广泛使用，许多人仍使用模拟磁带。
-
-• **DAT与其他音频格式的比较**：
-  - **[nayuki]** 提到DAT与VHS在数字音频存储上的相似性，并解释了44100 Hz采样率的来源。
-  - **[PaulHoule]** 更偏好MiniDisc，认为其价格更低、便携性更好，且在二手市场更常见。
-
-• **DAT的文化和收藏价值**：
-  - **[comprev]** 提到DAT在复兴老派舞曲中的作用，特别是Deep Jungle厂牌通过DAT挖掘90年代音乐。
-  - **[rwmj]** 提到DAT在录音棚中的二次生命，一些90年代末的乐队仍然保存着DAT母带。
-
-补充讨论：
-• **DAT设备的现状和维护**：
-  - **[jerrysievert]** 和 **[dylan604]** 提到拥有DAT设备的实际问题，如设备老化需要维修，以及难以访问存储在DAT中的音频内容。
-
-争议焦点：
-• DAT是否便携及其市场失败的原因。一方认为其价格和复杂性限制了普及，另一方则认为其在特定领域表现出色。
-
-总的来说，评论主要围绕DAT的技术特点、市场表现、实际应用及其在音乐文化中的地位展开讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44426171" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2506.02153" target="_blank">Small language models are the future of agentic AI</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: favoboa</span> |
-                    <span>评分: 72</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-01 03:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了小型语言模型（SLM）在代理AI系统中的未来潜力。作者认为，尽管大型语言模型（LLM）在广泛任务中表现出色，但对于执行少量专门任务的代理系统而言，SLM更加适合且经济。文章从SLM的能力、代理系统的架构及语言模型部署的经济性等方面论证了这一点。在需要通用对话能力的场景中，作者建议使用异构代理系统。文章还讨论了SLM应用的潜在障碍，并提出LLM到SLM转换的算法。作者呼吁讨论如何有效利用AI资源，并希望推动降低AI成本的努力。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SLM（Small Language Model，小语言模型）与LLM（Large Language Model，大语言模型）在实际应用中的优劣比较，特别是在客户服务、计算效率、能耗及技术实现等方面的讨论。
-
-不同观点：
-• **bryant**：认为在客户服务等特定任务中，SLM比LLM更具经济意义。LLM的强大能力在这些任务中被浪费了，而SLM更适合特定角色，并且从伦理和安全风险的角度看，SLM可能更优。
-• **mike_hearn**：对SLM的实际可行性持怀疑态度。他认为SLM的实现涉及复杂的项目，需要较高的数据科学技术，而公司更倾向于购买硬件而非投入开发资源。他还指出，目前的趋势是依赖外包的LLM服务，而不是创建定制的SLM。
-• **flowerthoughts**：质疑SLM是否优于混合专家模型（MoE）。他认为SLM在需要综合语言理解的任务中并不具备明显优势，并提出可能需要一种搜索引擎来寻找合适的代理模型。
-• **mg**：从能耗角度分析本地与远程模型的使用，认为服务器在计算效率和能耗方面可能更优，但需要具体的数学计算来验证。
-• **iagooar**：强调LLM的多功能性和灵活性，认为除非在非常大规模的任务中，否则使用现成的LLM可能更划算，且避免了微调模型带来的风险。
-• **rayxi271828**：认为SLM适用于少量重复性任务，类似于简单的编码和RPA（机器人流程自动化），并建议在路径明确后将其固定以提高可预测性。
-• **janpmz**：提出可以在开发阶段使用大模型进行探索，然后将其精简为适合特定任务的小模型，以提高效率和便携性。
-• **eric-burel**：提到大模型和小模型（传统ML）的合作，提供了一篇相关论文作为参考。
-• **moqizhengz**：质疑SLM是否是AI的未来，认为在LMs本身还未确定为AI未来的情况下，讨论SLM为时尚早。
-• **sReinwald**：批评论文忽略了上下文窗口限制这一关键技术障碍，认为这是SLM在代理系统中应用的主要障碍。他还指出SLM在实际任务中的失败率和基础设施效率问题，质疑论文中关于SLM经济效率的主张。
-• **ewuhic**：质疑这篇文章的学术性，认为其更像是一篇博客文章，而不是正式的学术论文。
-
-补充讨论：
-• 讨论中涉及到的技术细节包括SLM的实现复杂性、能耗比较、上下文窗口限制以及在不同任务中的适用性。
-• 争议的焦点在于SLM是否真的比LLM更具经济性和技术可行性，特别是在实际应用中的表现和能耗问题。
-• 另一个值得注意的讨论点是SLM与MoE模型的比较，以及如何在不同任务中选择合适的模型。
-• 对论文的批评主要集中在其简化了SLM的实际实现难度和忽略了关键技术障碍。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44430311" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44428674" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
