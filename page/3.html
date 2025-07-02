@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-02 17:16 (北京时间)
+            最后更新时间: 2025-07-02 20:25 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,54 +61,409 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.john-rush.com/posts/ai-20250701.html" target="_blank">Building a Personal AI Factory</a>
+                    <a href="https://johnnysswlab.com/performance-debugging-with-llvm-mca-simulating-the-cpu/" target="_blank">Performance Debugging with LLVM-mca: Simulating the CPU</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: derek</span> |
-                    <span>评分: 199</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-07-01 21:14</span>
+                    <span>作者: signa11</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-06-29 13:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种个人AI工厂的构建方法，通过多个AI代理（如Claude、Sonnet、o3等）自动生成、执行和验证代码，实现自我改进。作者使用Claude Code处理高层次任务，o3生成计划，Sonnet 4执行和验证计划，并通过反馈机制不断优化输入模板，而非手动修改输出代码。代码提交时自动生成，方便回滚。通过并行运行多个实例，作者同时开发多个功能，并逐步构建复杂的自动化工作流。最终目标是建立一个能自我改进的AI工厂，通过迭代输入实现持续优化，使代理从代码生成器转变为自我改进的助手。</p>
+                    <p>本文主要介绍如何使用LLVM的性能分析工具llvm-mca调试和优化ARM NEON矢量化的卷积内核代码。文章首先提到两个即将举办的矢量化工作坊，然后以一个简单的C语言卷积核为例，展示如何将其外层循环矢量化以提升性能。通过使用ARM NEON指令，如`vld1q_f32`和`vmlaq_laneq_f32`，作者对代码进行了优化，并尝试通过减少内存加载次数进一步提升性能。然而，优化后的代码运行速度反而变慢。作者使用llvm-mca工具分析发现，尽管减少了加载指令，但其他指令的延迟导致性能下降。最终，作者通过具体案例演示了如何使用llvm-mca来深入分析和调试性能问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕使用AI生成代码工具（如Claude Code）的实用性、优缺点及应用场景的讨论。
+                    <div class="comments-summary">主要讨论点：LLVM-MCA工具的局限性和使用体验
 
 不同观点：
-• **支持观点（simonw等）**：
-   - 认为AI工具（如Claude Code）在处理复杂问题时表现出色，特别是在处理繁琐任务时能提高效率。simonw分享了其通过Claude成功编译和调试Mandelbrot生成器的经验。
-   - webprofusion进一步提出，AI工具可以帮助从需求直接生成和维护系统，避免人为偏见，最终实现从需求自动构建系统。
+• Pornel认为LLVM-MCA工具潜力大，但在实际代码优化中存在限制。他指出该工具的问题包括：仅支持最内层循环的连续指令，无法处理函数的设置/拆解成本，不支持分支比较，且无法直接用于比较不同版本的代码。他提到在比较有无分支的算法版本时，需要手动删除分支，这增加了工作量并可能影响分析结果。此外，不同版本的代码可能有不同的循环展开次数或每次迭代处理不同数量的元素，导致需要手动重新调整度量标准。总体而言，他认为这对于优化高层次的C或Rust代码来说非常费力且效果不佳。
 
-• **实用性存疑（photon_garden等）**：
-   - photon_garden认为AI工具在个人项目或简单任务中表现可信，但在复杂生产系统中编写高质量代码则存疑。
-   - dgunay分享了自己在Go语言大型项目中的使用经验，指出AI工具在处理小型任务时有效，但在更复杂的任务中仍需人工干预，且对生成代码的质量负全责。
-
-• **输入与输出讨论（nilirl等）**：
-   - nilirl质疑“修正输入而非输出”的假设，认为不存在完美的输入能确保获得理想结果，尤其在旧代码和大规模代码库中。
-   - 强调开发者仍需理解系统，并负责代码的修改和重构。
-
-• **具体应用与结果质疑（caporaltito, mmarian, namuol等）**：
-   - caporaltito和namuol要求展示具体代码和实际成果，质疑这些工具在实际应用中的有效性。
-   - mmarian分享了自己使用Claude创建搜索栏失败的经历，认为手写代码更高效。
-   - namuol将vibe-coding类比为3D打印，认为其只是昂贵的爱好，而非实用工具。
+• Camel-cdr则关注LLVM-MCA中处理器调度模型的准确性问题。他指出并非所有处理器都使用自己的调度模型，不同模型的准确性各有差异。例如，Cortex-A72、Cortex-A76和Cortex-A78都使用Cortex-A57模型。此外，neoverse系列中的V1模型具有15的issue宽度，而V2和V3则为6。这表明不同处理器的模型选择和配置可能对工具的分析结果产生影响。
 
 补充讨论：
-• **工具与自动化（dkdcio, hamish-b等）**：
-   - dkdcio认为尽管AI工具前景广阔，但目前仍需专注于单一任务以提高效率。
-   - hamish-b鼓励公开分享AI工具的使用实例，以促进社区迭代和改进。
+• Pornel的观点更侧重于工具在实际代码优化中的使用体验和功能局限性，特别是手动操作和比较不同代码版本时的困难。
+• Camel-cdr则关注工具在不同处理器架构下的技术细节和潜在的不准确性，强调了不同处理器模型之间的差异对工具分析的影响。
 
-• **成本与责任（barrenko, am17an等）**：
-   - barrenko关注Azure OpenAI与ChatGPT的成本比较。
-   - am17an对完全依赖AI工具持怀疑态度，认为开发者应拥有并负责自己的代码，而非完全依赖AI生成。
-
-争议焦点：AI生成代码工具在复杂生产环境中的实际有效性和开发者责任。</div>
+争议焦点：LLVM-MCA工具在处理分支比较和不同处理器模型支持方面的局限性以及如何改进以提升实用性和准确性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44438065" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44413083" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.romanroads.org/" target="_blank">The Roman Roads Research Association</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bjourne</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-01 20:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>罗马道路研究协会（RRRA）致力于推进对罗马道路网络的研究，特别是在不列颠群岛地区。协会继承了Ivan D. Margary的研究，利用现代技术如LiDAR来揭示隐藏的古道。协会出版学术期刊《Itinera》，接受关于罗马道路及交通基础设施的研究投稿，第六卷将于2025年11月15日截稿。协会还举办系列在线讲座，涵盖罗马道路及相关考古发现。协会正开发新网站，以提升功能和现代感。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英国道路与古罗马道路的关系，以及现代和古代道路建设的对比
+
+不同观点：
+• [ggm] 认为许多英国现代道路，如A68和A1部分路段以及Watling Street，是沿着或靠近罗马时代道路修建的。他提出，罗马人选择直线建造道路更多是出于实际 genius（实用天才）而非诅咒，因为这在当时的测量工具条件下是可行的，且易于传达给工人和劳力。他还用现代澳大利亚丛林道路中存在不明原因的弯曲为例，戏谑地推测可能是修路工人感到无聊所致。
+
+• [mkarliner] 对[ggm]的观点表示赞同和共鸣，提到自己住在距离Watling Street几百米的地方（Cricklewood Broadway），表明亲身体验了这些历史道路的存在和影响。
+
+• [car] 提供了一个额外的信息来源，指出通过Lidar技术也识别出了史前田地，并附上一个关于凯尔特田地的网站链接，将讨论扩展到古罗马道路之外的史前遗迹。
+
+• [nvader] 对讨论持怀疑态度，质疑这些讨论是否仅属于Roads Research Association（道路研究协会）的范畴，暗示这可能是一个专门领域的兴趣话题，而非大众关注点。
+
+• [hjrnunes] 提供了另一个资源，推荐了一个名为Isaac Moreno的西班牙YouTube频道，认为对罗马道路和罗马工程感兴趣的人值得一看，将讨论引向具体的媒体资源。
+
+补充讨论：
+• 讨论中涉及的具体例子和资源链接，如Watling Street的现代位置、Lidar技术识别史前田地的网站以及YouTube频道，提供了进一步探索的途径。
+• 争议的焦点可能在于这些道路建设历史和技术的讨论是否仅限于特定领域的研究，以及现代道路设计中存在的不规则性是否真的如[ggm]所戏称的是由于工人主观因素。
+
+总的来说，讨论围绕古代罗马道路对现代道路的影响，以及如何利用现代技术识别和研究古代遗迹展开，同时提供了具体的实例和资源供进一步探索。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44437758" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.josh.ing/hn-slop" target="_blank">HN Slop: AI startup ideas generated from Hacker News</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: coloneltcb</span> |
+                    <span>评分: 155</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-07-01 15:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了名为"HN Slop"的工具，它能够从当前Hacker News首页提取信息，自动生成新鲜的AI创业点子。文章描述了该工具的运行过程，包括从分析Hacker News帖子到生成创意想法的步骤，突出了其创新性和即时性。该工具旨在为创业者和创新者提供灵感，帮助他们发现基于最新技术趋势的潜在商业机会。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI生成创业点子的平台及其相关功能、潜力和局限
+
+不同观点：
+• **支持和兴趣**：
+   - [jpl56]: 认为AI生成个性化创业点子是可行的，并表现出兴趣。
+   - [BiraIgnacio]: 对平台表示感谢和赞赏。
+   - [trevor-e]: 认为将科学研究转化为易懂内容的平台会很有价值，有助于解决研究人员的推广问题。
+
+• **功能和扩展建议**：
+   - [wanderingstan]: 建议增加选择年份的功能，以获取特定年代的创业点子。
+   - [mittermayr]: 建议连接到一个域名注册平台，以便为生成的点子提供可用域名。
+   - [amelius]: 提到一个生成专利的AI可能是一个下一步的发展方向。
+
+• **幽默和创意反应**：
+   - [ForgotMyUUID]: 分享了一个复杂且有趣的创业点子，结合了多种技术元素。
+   - [redsparrow]: 提供了一个幽默且夸张的点子，结合了个性化脏话和建筑稳定技术。
+   - [piotraleksander]: 惊讶于没有包含"vibe"这个词的点子。
+   - [butz]: 分享了一个详细且有趣的点子，并以幽默方式表示不浪费微小的经济价值。
+
+• **批评和反思**：
+   - [amelius]: 将平台与Halfbakery.com对比，认为人类生成的点子更有趣。
+   - [shannifin]: 认为一些点子过于模糊，只是常见短语的组合，但仍觉得有趣。
+   - [tdiff]: 认为点子本身没有太大价值，提醒人们注意这一点。
+
+补充讨论：
+- 评论中提到的各种AI生成点子的质量和实用性引发了关于创意和人类参与价值的讨论。
+- 评论还展示了用户对特定功能和扩展的兴趣，以及对AI生成内容的幽默和创意反应。
+- 争议的焦点可能在于AI生成点子的实际价值和创新性，以及人类创意在其中的作用。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44434938" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/stan-smith/OpenFLOW" target="_blank">OpenFLOW – Quickly make beautiful infrastructure diagrams local to your machine</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: x0z</span> |
+                    <span>评分: 245</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-01 06:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>OpenFLOW是一个开源的渐进式网页应用（PWA），用于创建等距3D风格的技术图表。它使用React和Isoflow库构建，完全运行于浏览器中，支持离线使用。主要功能包括自动保存、隐私保护（数据存储在本地浏览器）、图表的导入导出、以及无网络连接时仍可使用。用户可以通过拖放组件、连接关系、自定义样式和属性来创建图表，并能管理多个保存的图表。该工具还提供快捷键操作和生产环境构建部署的指南。技术栈包括React、TypeScript、Isoflow等，并采用MIT许可证。贡献和反馈欢迎通过Pull Request提交。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Isoflow及其相关工具的功能、应用和限制
+
+不同观点：
+• **对Isoflow的正面评价**：
+   - [gtirloni] 认为Isoflow是静态网站生成器中支持最好的图表工具之一，但觉得Mermaid.js的语法难看且易出问题，希望Isoflow能嵌入Markdown。
+   - [pjbk] 提到Isoflow的等距图有助于理解复杂的非平面电路，尤其是像FPGA架构这样的技术。
+   - [donatj] 虽然对Isoflow的具体功能不太清楚，但承认Isoflow在项目中承担了重要工作。
+   - [x0z] 表示自己只是将Isoflow社区版进行了封装，并增加了导出和加载JSON备份的功能，使得设置和运行更加容易。
+
+• **工具和项目的结合应用**：
+   - [mmastrac] 提到自己开发的轻量级家庭状态服务器Stylus可以与Isoflow很好地结合使用，并提供了项目的GitHub链接。
+   - [kingnothing] 指出Snowflake最近推出了类似的Openflow产品，认为新项目的可发现性可能会面临挑战。
+
+• **对项目未来和挑战的关注**：
+   - [martypitt] 称赞图表的美观，并提到一个类似项目因 monetization 问题而失败的例子，不过指出当前项目是MIT开源协议下的，短期内 monetization 不是问题。同时指出Isoflow链接404错误。
+   - [Yesman85] 建议如果Isoflow能消费Terraform状态并进行可视化，将会非常棒。
+   - [progx] 提到在Linux上使用Node 22或24无法运行项目，询问所需的Node版本。
+
+补充讨论：
+• **对功能和扩展性的需求**：
+   - [Animux] 询问是否可以在GH页面托管，并询问是否有演示链接。
+   - [wooptoo] 提到diagrams.mingrammer.com作为一个很棒的工具。
+   - [zero0529] 询问是否可以导出除JSON以外的其他格式。
+
+争议的焦点：
+• **工具的可发现性和市场竞争**：[kingnothing] 提到Snowflake的Openflow产品可能会对新项目的可发现性造成影响。
+
+• **工具的扩展性和功能需求**：用户对工具能否支持Terraform状态的可视化、导出格式以及运行环境存在不同的需求和疑问。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44431178" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=44434574" target="_blank">Ask HN: Who wants to be hired? (July 2025)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: whoishiring</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 118</span> |
+                    <span>发布时间: 2025-07-01 15:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：求职者背景、技术技能、职业目标和求职意向
+
+不同观点：
+• [vmsp] 强调其作为首席工程师的丰富经验，尤其是从公司初创阶段开始的参与，现在希望转换行业。他精通多种技术栈（Ruby, Rails, Python, Django等），并寻求远程工作机会。
+• [rhines] 则关注个人生活的平衡，之前为了家庭和个人兴趣暂时退出工作，现在希望找到一份能推动自己交付高质量工作的新岗位。他具有ETL管道和REST API集成的经验，并希望在工作中继续成长。
+• [scalewithlee] 强调其在大公司（如Autodesk和Apple）的工作经验，特别是在数据平台和DevOps方面的技能。他列举了丰富的技术栈（如Kubernetes, AWS, Python等），并表明希望在分布式系统和基础设施领域继续发展。
+• [fpmatwork] 目前在公共高性能计算中心工作，并攻读博士学位，希望在学术界和工业界找到发展机会。他对高性能计算和AI/ML有深厚兴趣，并希望深入研究CUDA编程和ML编译器。
+• [sss111] 是一位具有分布式系统和边缘计算经验的软件工程师，曾参与创业并拥有丰富的技术背景（Go, Python, Kubernetes等）。他乐于接受在美国境内的任何工作机会。
+• [tomjuggler] 是一位自学成才的物联网开发者，拥有丰富的嵌入式开发经验，并希望在AI集成物联网领域找到新机会。他强调了自己在Flask和MQTT等技术上的经验。
+• [fouronnes3] 对新技术充满热情，喜欢学习新东西，特别是在Torch Lens Maker项目上的工作，并希望在开源项目或新技术研究中找到机会。
+• [thdn] 是一位具有20年经验的系统工程师，寻求后台和平台工程角色，特别关注Kubernetes集群的设计和开发。他对Go和Zig语言有浓厚兴趣，并希望找到与自己时区相符的工作机会。
+• [b8] 目前对任何能够利用其技术技能的岗位都感兴趣，尤其是安全分析和咨询角色。他拥有丰富的安全咨询经验和一些公开的安全漏洞发现记录，并表示愿意从事政府工作。
+• [nikkwong] 是一位具有丰富领导经验的工程管理者，曾在FAANG公司工作，并领导过大型工程团队。他强调自己的技术和管理能力，特别是在产品设计和实施方面的经验。
+• [ibarrajo] 拥有超过10年的后端和平台工程经验，曾在Uber和DoorDash等公司工作，并希望找到一个能够让他回到一线系统工作的岗位。他对基础设施和开发者平台有浓厚兴趣。
+• [jnpn] 是一位全栈开发者，拥有超过11年的经验，目前寻求一份兼职工作。他喜欢高效的工作环境，并愿意在FP或逻辑编程等领域工作。
+• [marc_abonce] 是一位有7年经验的软件工程师，精通前后端开发，并希望继续学习和成长。他强调自己对用户体验的重视，并积极参与开源软件贡献。
+• [_hfqa] 是一位具有创业背景的CTO，曾在YCombinator和Techstars工作。他现在希望找到新的挑战和机会，特别是在AI和ML领域的工作。
+• [codeforafrica] 是一位具有丰富国际经验的开发者，希望在非洲找到具有社会影响力的工作机会。他强调自己的教育和培训经验，并希望在非洲建立技术团队和支持本地开发者。
+
+补充讨论：
+• 求职者的技术背景和经验各异，从物联网开发到高性能计算，再到AI/ML和分布式系统，体现了多样化的技术兴趣和专长。
+• 大多数求职者希望找到远程工作机会，部分求职者对特定地区的工作机会持开放态度，尤其是那些希望在具有社会影响力的项目中工作的求职者。
+• 争议焦点可能在于求职者对远程工作和现场工作的偏好不一，以及对职业发展和生活平衡的不同追求。部分求职者（如[rhines]）更关注生活质量和工作平衡，而其他求职者（如[nikkwong]）则更注重职业发展和领导机会。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44434574" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bullseye2d.org/" target="_blank">Show HN: I made a 2D game engine in Dart</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: joemanaco</span> |
+                    <span>评分: 64</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-06-28 13:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Bullseye2D是一个为Dart语言设计的高性能2D游戏库，具有简单易用的API和快速的WebGL渲染器，开发者可以快速上手制作游戏。它支持2D图形渲染、多种输入处理（键盘、手柄、触屏等）、音频播放与控制、资源管理等功能，并且提供核心版（MIT许可）的免费使用和高级版（开发中）的赞助计划。核心版包含制作和发布游戏的所有基本功能，而高级版将引入场景管理、精灵动画、高级碰撞检测等强大特性。赞助者可获得高级版的早期访问权及其他特权。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：针对一个新的Dart游戏引擎的看法及潜在优势的讨论
+
+不同观点：
+• **支持与期待**：[sgt] 表示对该平台的看好，并愿意考虑赞助，显示出对该引擎未来发展的信心和积极态度。
+• **对比其他引擎**：[_stillmind] 对Flame引擎有一定了解，希望了解该引擎相对于Flame的优势，并建议通过具体教程或示例展示其独特之处。
+• **游戏开发乐趣**：[voidUpdate] 对“游戏开发再次变得有趣”的说法提出质疑，认为这种说法缺乏具体解释，并指出团队合作问题才是影响开发体验的关键。
+• **性能声明质疑**：[leecommamichael] 认为引擎宣传中的“易用、高性能”等描述过于笼统，缺乏具体的衡量标准或对比数据，无法有效解除开发者的顾虑。
+• **兼容性问题**：[devrandoom] 指出Boing游戏在移动端无法运行的问题，质疑这是否是设计上的有意安排。
+• **Dart语言的优势**：[socalgal2] 对Dart语言的独特之处表示好奇，并希望了解如何向他人有效推荐Dart。
+• **缺乏示例展示**：[zxexz] 批评主页上缺乏截图或演示，认为这不利于用户对引擎功能的直观理解。
+
+补充讨论：
+• 评论中反映出用户对新引擎的具体优势、性能表现及实际应用示例的高度关注。
+• 部分用户如[_stillmind]和[leecommamichael]希望通过具体的对比和数据来验证引擎的优越性。
+• [socalgal2]提出的关于Dart语言本身的优点讨论，显示出用户在选择开发工具时对语言特性影响的关注。
+• [zxexz]的评论指出了一个实际的用户体验问题，即主页缺乏直观的展示，这可能是影响用户初步印象的重要因素。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44404447" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=44412726" target="_blank">Show HN: A modern C++20 AI SDK (GPT‑4o, Claude 3.5, tool‑calling)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: cauchyk</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-06-29 12:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：C++中JSON库的功能及其实现技巧，以及C++与C之间代码转换的可能性
+
+不同观点：
+• [bergesenha] 认为'glaze'库在MSVC、Clang和GCC编译器上通过聚合初始化结构体实现运行时反射功能，并且该库性能优越，还提供了glz::apply和glz::to_tie函数用于工具调用，可以直接从反序列化的JSON中调用。
+
+• [pjmlp] 指出虽然C++26才会实现真正的反射功能，但目前可以利用C++现有的概念、constexpr和类型特性来实现部分反射功能，并提供了Boost PFR和reflect-cpp两个库作为示例，赞扬了使用现代C++的做法。
+
+• [rubymamis] 对'glaze'库表示赞赏，并提到可能会在自己的Qt C++ LLM客户端中获得灵感，询问是否计划添加流式Markdown解析功能，分享了自己在Vox项目中的实现经验，该实现目前与Qt的C++绑定，但计划使其更通用并开源。
+
+• [sylware] 提出了一个不同的问题，询问是否有人尝试使用人工智能将C++代码转换为C代码，这涉及到跨语言的自动化代码转换问题。
+
+补充讨论：
+• 讨论中提到了具体库和工具的链接（Boost PFR和reflect-cpp），为希望实现反射功能的开发者提供了参考。
+
+• 针对JSON库的讨论中，涉及到了性能优化和实用功能的结合，特别是glz::apply和glz::to_tie函数的应用。
+
+• 对于C++到C的代码转换，目前没有具体方案或工具被提及，但这是一个开放性的问题，可能涉及到AI和机器学习技术的应用。
+
+争议焦点：
+• 目前讨论的主要争议不明显，但[sylware]提出的AI辅助代码转换问题可能涉及到转换的准确性和可行性，这在技术实现上可能存在挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44412726" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cshandley.co.uk/portable/" target="_blank">PortablE</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: BruceEel</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-06-29 10:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Portabl E是AmigaE编程语言的改进版，旨在实现跨平台兼容。最新版本r6b支持AmigaOS4、AROS、MorphOS，并为AmigaOS3、Linux和Windows提供不同程度的支持。提供多种示例代码、截图及预编译程序。下载时需输入用户名"user"和密码"password"以防止机器人滥用带宽。文档和手册可在作者网站查阅，另有论坛、邮件列表等支持渠道。作者还提供了AmigaE的初学者指南及对C++的批评文章。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Amiga E 编程语言中的"but"操作符的用途及其独特性
+
+不同观点：
+• postexitus认为Amiga E中的"but"操作符不常见，虽然记得其语法，但一直不理解其具体用途。他提到自己曾经以为这是Amiga领先于其他竞争对手的一个特点，因为其他系统使用的是C或D语言。这暗示他认为"but"操作符可能是Amiga独有或先进的特性，但其具体作用不明确。
+
+• 一些回复者（从链接中推测）解释了"but"操作符的实际用途。根据提供的链接内容，"but"操作符用于执行一个语句，但返回另一个值。例如，它可以用于在执行一个副作用的同时，保留另一个表达式的值。这表明"but"操作符实际上是一种语法糖，旨在提供更灵活的编程方式，但可能在实际使用中不太直观。
+
+补充讨论：
+• postexitus的编辑补充确认了他的记忆是正确的，并提供了进一步的参考链接（https://cshandley.co.uk/JasonHulance/beginner_93.html）。这表明他通过查找外部资料验证了自己的记忆，并且该链接可能对其他有相似疑问的人有帮助。
+
+• 争议焦点在于"but"操作符的实用性和理解难度。对于不熟悉Amiga E的程序员来说，这种操作符的语义和用途可能显得不直观，从而引发对其存在价值的疑问。然而，对于熟悉该语言的用户，它可能提供了一种简洁的表达方式。
+
+• 总体来看，讨论反映了对特定编程语言特性的记忆和理解之间的差距，以及通过外部资源验证和澄清的过程。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44411825" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://publicdomainreview.org/collection/blemmyes/" target="_blank">Off with Their Heads: Illustrations of Blemmyes (ca. 1175–1724)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Thevet</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-06-29 04:57</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要介绍了历史和传说中的无头人部落“Blemmyes”或“Akephaloi”，其形象出现在公元前4世纪的希罗多德著作中，描述其眼睛和嘴巴长在胸部。这种无头人也在中世纪的旅行文学和动物寓言中频繁出现，如《约翰·曼德维尔游记》和《亚历山大传奇》。尽管这些生物从未真正存在，但它们的形象在不同历史时期和地域被不断重塑，从恐怖的战士到奇异的幻想生物，甚至在16世纪的探险文献如《圭亚那的发现》中再次被提及。这些描述反映了古代和中世纪人们对未知世界和奇异生物的想象。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44410464" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -123,8 +478,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: PaulHoule</span> |
-                    <span>评分: 123</span> |
-                    <span>评论数: 15</span> |
+                    <span>评分: 141</span> |
+                    <span>评论数: 17</span> |
                     <span>发布时间: 2025-07-01 20:59</span>
                 </div>
 
@@ -135,411 +490,34 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：种植树木在沙漠等炎热地区的有效性、环境影响及替代方案
+                    <div class="comments-summary">主要讨论点：树木在炎热或沙漠环境中的降温效果及其可行性，以及相关的环境和水资源问题。
 
 不同观点：
-• **树木提供清凉环境的有效性**：
-  - [tomcam] 提到 The Aspens South Coast 地区树木密集，曾经在炎热环境中提供显著的清凉效果，尽管春季会引发过敏。
-  - [hervature] 质疑树木的冷却效果，认为树木的冷却作用主要来自蒸发冷却，且树木需要大量水资源，询问树木与蒸发冷却设备（如大沼泽冷却器）相比的效率。
+• **支持树木降温的观点**：
+  - **[tomcam]**：回忆30年前住在加州南部的一个树木密集的地方，称其为沙漠中难得的凉爽之地，尤其在夏季打开大门时能感受到显著的凉意。尽管春天有过敏问题，但整体认为值得。
+  - **[msgodel]**：自己购买的林地由于保留了许多树木，即使在夏天也非常凉爽，避免了需要砍伐和等待重新生长的麻烦。
+  - **[6Az4Mj4D]**：引用印度的实验，45摄氏度下，树荫下温度降至36摄氏度，强调种树是简单有效的降温方案。
+  - **[westonplatter0]**：提到在热带非沙漠环境中也观察到类似的降温效果。
+  - **[Raphell]**：认为种树不仅是为了降温，还能帮助人们在炎热环境中外出，提供心理上的舒适感。
 
-• **种植树木的环境影响**：
-  - [b00ty4breakfast] 反对在沙漠地区种植树木，认为此举可能导致水资源危机，并引用相关新闻支持其观点。
+• **质疑树木降温及其实际应用的观点**：
+  - **[hervature]**：提出树木降温主要依靠蒸发冷却，并质疑树木与大型湿冷设备的降温效率对比，尤其是在需要消耗更多水的条件下。
+  - **[b00ty4breakfast]**：对在沙漠中种树持批评态度，指出当地已经面临水资源危机，进一步种树可能会加剧环境问题，并附上相关新闻链接。
 
-• **树木的其他益处**：
-  - [Raphell] 认为种植树木不仅是为了降温，还能帮助人们在炎热环境中外出活动，提供心理上的舒适感。
-
-• **树木种植的国际经验**：
-  - [konsalexee] 提到欧洲已任命“首席热官”来处理高温问题，暗示树木种植是全球趋势，并对相关研究缺乏新意表示质疑。
-
-• **替代方案**：
-  - [sneak] 建议使用太阳能板代替树木来提供阴凉，特别是在像内华达沙漠这样的地区，太阳能板不仅能提供阴凉，还能产生能源。
+• **替代方案的观点**：
+  - **[sneak]**：提出在沙漠环境中使用太阳能板来提供阴凉，并分享自己在拉斯维加斯的经验， backyard用太阳能板覆盖后能够满足电动车充电需求，认为这是更有效的解决方案。
 
 补充讨论：
-• **技术问题**：
-  - [asmor] 和 [gerdesj] 提到网站上的验证码问题，认为这降低了阅读和参与讨论的效率。
-  - [jgord] 提出是否需要使用 AI 浏览器插件来应对全页验证码的问题。
-
-• **树木与地理位置的关系**：
-  - [EGreg] 观察到靠近赤道的树木通常叶子较少，提供的阴凉有限，并提出是否可以将北部多叶树木引入南部试验。
-
-• **支持树木种植的总体观点**：
-  - [matthewfcarlson] 简单直接地表示，植被在城市舒适度方面优于混凝土。
+• **关于技术问题的抱怨**：
+  - **[asmor]**和**[gerdesj]**：对遇到的验证码问题表示不满，认为这影响了阅读和网站使用的体验。
+  
+• **关于集体行动的讨论**：
+  - **[jgord]**：询问是否有集体策略来应对过度使用的全页验证码问题，并提到使用AI插件来自动填写验证码的可能性。
 
 争议焦点：
-• 树木在沙漠地区种植的环境影响及水资源消耗问题。
-• 树木冷却效果与替代方案（如太阳能板）的比较。
-
-</div>
+• 主要集中在**树木在沙漠环境中的降温效果与水资源消耗的平衡**上，一部分人认为树木能有效降温并改善生活质量，另一部分人则担心种树会加剧水资源短缺问题。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44437948" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2506.21654" target="_blank">Converting a large mathematical software package written in C++ to C++20 modules</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: vblanco</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-01 13:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了将大型数学软件包从C++转换为使用C++20模块系统的经验。传统上，C++软件包通过头文件定义接口，这种方式效率低下。C++20引入了模块系统，通过导出和导入机制提高编译效率。作者以一个包含约80万行代码的有限元库为例，描述了一种同时支持头文件和模块接口的转换方法，讨论了遇到的挑战和实际效果。结果显示，虽然转换需要一定努力，但能有效减少库本身的编译时间，而下游项目的编译时间变化不明显。文章最后探讨了未来几十年内整个数学软件生态系统转换到模块系统的长期策略。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：模块化对编译时间和代码结构的影响，以及与其他优化方法（如预编译头文件、LLMs应用）的比较
-
-不同观点：
-• npalli认为，模块化在减少编译时间（约10%）和改善代码结构方面有明显的好处，但对下游项目的编译时间影响不明确。他还提到，对于现有代码（如deal.II）的模块化可能不如从零开始设计模块化有效，并指出通过其他方法（如pch、forward decls）可能获得更大性能提升。
-
-• trostaft对作者（Wolfgang）及其团队在计算数学和研究软件方面的成就表示赞赏，并期待阅读其作品，显示出对作者专业性的信任和期待。
-
-• nsoonhui提出，LLMs可能有助于将遗留的Fortran或COBOL程序转换为现代语言，认为这种任务应该是LLMs的强项，因为语法和需求明确，且输出可验证。
-
-• barchar指出，模块化主要帮助解析时间，而非代码生成时间，并可能因内联和全局优化的增加而负面影响代码生成性能。他还提到，当依赖项未模块化时，会出现大的全局模块片段，增加BMI大小和解析时间，并指出当前构建系统对头文件单元支持不足的问题。
-
-• Asooka希望看到模块化与预编译头文件的比较，怀疑预编译头文件可能以更少的工作量提供相同的编译时间收益。
-
-• isatty仅对代码块的样式表示不满，未深入讨论技术内容。
-
-补充讨论：
-• 讨论中涉及模块化对不同编译阶段的影响，以及当前工具链（如构建系统、编译器）对模块化支持的不足。
-• 对于遗留代码的模块化改造和LLMs在代码转换中的潜在应用也有一定的讨论。
-• 预编译头文件作为模块化的替代方案被提及，显示出对不同优化方法的权衡和选择的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44433899" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jobsbyreferral.com/" target="_blank">Show HN: Jobs by Referral: Find jobs in your LinkedIn network</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nicksergeant</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-07-01 12:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>JobsByReferral.com帮助用户通过LinkedIn网络寻找工作机会。它通过分析用户下载的LinkedIn数据，找到用户 connections 所在公司的职位空缺，从而增加被推荐和获得面试的机会。具体步骤包括：
-
-1. 下载LinkedIn数据档案（通过“数据隐私”设置获取完整数据，包括Connections.csv文件）。
-2. 可选择使用demo数据体验功能。
-3. 上传LinkedIn数据文件（ZIP格式或Connections.csv文件）开始搜索。
-
-该工具旨在利用已有的人脉网络，提高求职成功率。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LinkedIn的网络内职位搜索功能及其相关问题
-
-不同观点：
-• [gergely] 认为LinkedIn已经提供了“在你的网络内”的过滤功能，用户可以通过暴露所有过滤选项来找到该功能。
-• [hackernewds] 对该功能表示赞赏，认为这是LinkedIn应该开发的功能，并对该功能的存在表示感谢。
-• [b8] 指出有一些网站可以付费或免费获取推荐，同时质疑LinkedIn上随机添加的人给予推荐的可能性，认为只有前同事更有可能给予推荐。
-• [1970-01-01] 提到有些人不使用LinkedIn，但为了声誉会保留个人资料。
-• [thih9] 关注个人数据上传后的隐私问题，询问数据是否被存储或用于其他目的，并询问是否有隐私政策。
-• [Fuzzy1000] 建议增加一个可以精确定位和展示连接方式的功能。
-• [orliesaurus] 将该功能与Blind进行比较，认为这是Blind的增强版。
-• [dijit] 表示希望有一个反向推荐功能，可以推荐之前合作过的优秀同事，并描述了自己设计的一个系统，包括推荐和不推荐的选项。
-• [shados] 讨论了AI将如何改变整个行业，并提到LinkedIn在引入新功能时可能面临的内部流程和时间问题。
-• [bsoles] 提到下载和提供整个LinkedIn数据的风险，指出数据包括连接、验证、联系人、账户历史和根据个人资料和活动推断的信息。
-• [toyg] 对功能的合法性提出质疑，认为这是外包给用户的LinkedIn数据抓取，建议使用官方API，并提到该服务在GDPR下的法律 implications。
-
-补充讨论：
-• 数据的隐私和安全是讨论的一个重点，特别是个人数据的使用和GDPR合规性。
-• 对推荐系统的有效性和可信度存在不同看法，有人认为只有前同事推荐更可信。
-• 功能实现的速度和技术实现方式也是讨论的要点，有人认为AI和用户开发可以比官方更快实现新功能。
-• 最后，对该功能与现有服务（如Blind）和官方API的关系也存在一定的争议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44433386" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00723/full" target="_blank">Swearing as a Response to Pain: Assessing Effects of Novel Swear Words</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sega_sai</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-06-29 12:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章研究了咒骂作为对疼痛的反应是否能减轻痛感，特别关注情感激发和分心作为潜在机制。实验比较了传统咒骂词“fuck”和两个新造的类咒骂词“fouch”和“twizpipe”的效果。参与者（N=92）在进行冷压疼痛测试时重复说这些词。结果显示，传统咒骂词“fuck”显著提高了疼痛阈值和耐痛能力，且情感、幽默和分心评分增加。然而，新造词“fouch”和“twizpipe”尽管在情感和幽默评分上高于中性词，但对疼痛阈值或耐痛能力无影响。研究还发现分心并非关键机制，而情感激发值得进一步研究。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：评论中围绕咒骂词（swear words）的使用、效果及其在不同情境下的影响展开讨论，包括教育、情感表达、疼痛缓解等方面。
-
-不同观点：
-• **咒骂词在教育中的使用：**
-  - [MattPalmer1086] 提到他的德语老师通过教授长咒骂词来使课程更生动，并通过幽默方式帮助学生记忆。
-  - [dtgriscom] 分享了自己高中学习俄语时，记住了一些类似咒骂的发音，这成为学习中的趣事。
-
-• **咒骂词对情绪和疼痛的影响：**
-  - [techdmn] 分享了自己鼓励女儿在情绪激动时通过说咒骂词来释放压力，并认为这种方式有助于情感处理。
-  - [somedude895] 持相反观点，认为过度使用咒骂词会使其失去力量，主张谨慎使用以保持其影响力。
-  - [lxe] 引用了实验结果，指出某些咒骂词如“fuck”在缓解疼痛方面有实际效果，而其他自创的咒骂词则无此效果。
-
-• **替代咒骂词的使用：**
-  - [carpo] 尝试用“sugarplum fairies”替代咒骂词，虽然在某些情况下成功，但在极端疼痛时仍会混合使用咒骂词，引发了幽默效果。
-  - [kulahan] 提出咒骂词可能具有某种特定的发音结构，使得它们在表达情绪时更具力量，并讨论了不同替代词的可能性。
-
-• **咒骂词对表现的影响：**
-  - [anoncow] 引用了科学研究，指出咒骂词不仅在疼痛缓解上有作用，还能在愉悦感、力量和表现提升方面产生影响。
-
-• **个人经验和主观感受：**
-  - [timewizard] 认为咒骂词会使情况变得更糟，主张用简单的表达如“ow!”或“that hurt!”来更快地度过疼痛时刻。
-  - [goopypoop] 以幽默方式提到通过咒骂词来自我调节，并提及了设立咒骂罐（swear jar）的做法。
-
-补充讨论：
-• 评论中还提到了与流行文化的关联，如[1317]推荐的视频和[Finnucane]引用的幽默语句，增加了讨论的趣味性。
-• 一些评论如[phantomathkg]将讨论与《Mythbusters》这样的实验性节目进行类比，强调了对咒骂词效果的实验性验证。
-
-争议焦点：咒骂词的效果因人而异，一些人认为其在情绪处理和疼痛缓解上有积极作用，而另一些人则主张节制使用以避免其失去效力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44412480" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://utk.claranguyen.me/talks.php?id=videogames" target="_blank">Graph Theory Applications in Video Games</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: haywirez</span> |
-                    <span>评分: 77</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-28 10:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章总结了Clara Nguyễn关于图论在电子游戏中应用的演讲内容。演讲涵盖了图论的基本概念及其在游戏开发中的实际应用，包括：3D图形的顶点和边如何在图形中表示和处理，赛车游戏中的圈数计算，利用并查集生成迷宫，以及bitDP理论的应用等。演讲还讨论了1982年Atari 2600游戏《Entombed》中的一个未解问题。演讲时长为60-75分钟，内容深入，并包含与听众的互动。文章还提供了几个技术性问题及其答案，以帮助听众理解演讲内容。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Graph Theory在视频游戏中的应用及其具体实例
-
-不同观点：
-• j2kun认为，文章标题和介绍具有误导性。尽管Graph Theory确实在现实中有许多实际应用，但文章中讨论的一些概念像是假设的应用，而非视频游戏设计者实际使用的技术。j2kun肯定了作者写作的价值，但指出缺乏证据支持这些概念已在实际中使用。
-
-• palmfacehn支持Graph Theory在路径寻找中的应用，特别是在大型房间和走廊网络中，认为这是Graph Theory在视频游戏中一个明显的实际应用。
-
-• Llamamoe指出，文章忽略了图形语法关卡生成（graph grammar level generation），这是由游戏Unexplored率先使用的非常有趣的程序生成算法。
-
-• tantalor对文章未提及平面性（planarity）表示失望，暗示平面性在Graph Theory的应用中也是一个值得讨论的主题。
-
-补充讨论：
-• 讨论中涉及了对文章标题和内容的批评，特别是关于实际应用和假设应用的区分。
-• 评论者提出了几个具体的Graph Theory应用实例，如路径寻找、图形语法关卡生成和平面性，这些都在视频游戏开发中具有潜在价值。
-• 争议的焦点在于文章的标题和介绍是否准确反映了内容的实际内容及其应用实例的真实性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44403547" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.newyorker.com/magazine/2025/06/30/a-medical-history-museum-contends-with-its-collection-of-human-remains" target="_blank">A Medical-History Museum Contends with Its Collection of Human Remains</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: fortran77</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-06-28 20:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讲述了安娜·多迪（Anna Dhody）与费城穆特博物馆（Mütter Museum）的深厚渊源。她从小被母亲“寄放”在各个博物馆，偶然参观穆特博物馆后，被其展示的医学奇观深深吸引。该博物馆展示各种医学标本，如畸形胎儿、连体双胞胎的肝脏和“肥皂女士”等，充满奇异和不安的氛围。多迪后来成为考古学家，本打算从事法医调查，但最终在穆特博物馆工作近二十年，担任策展人。她负责管理博物馆的标本收藏，并努力吸引捐赠者。例如，患有肢端肥大症的罗伯特·彭达维斯（Robert Pendarvis）在得知博物馆展示同病症的骨骼后，决定捐赠自己的遗体。穆特博物馆吸引了一群对人体和科学奇异面充满兴趣的人，是一个独特而略显怪诞的文化场所。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44408152" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44434575" target="_blank">Ask HN: Freelancer? Seeking freelancer? (July 2025)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: whoishiring</span> |
-                    <span>评分: 45</span> |
-                    <span>评论数: 63</span> |
-                    <span>发布时间: 2025-07-01 15:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：自由职业技术工作者提供的服务和技能
-
-不同观点：
-• [scomu] 提供全栈开发服务，专注于构建快速、可访问和可扩展的网站和应用。他拥有18年以上的经验，擅长JavaScript、React、Next.js、Node.js等技术，并能处理整个开发周期，包括架构、基础设施、UI/UX和性能优化。他还具有自定义CMS解决方案和无服务器架构的深厚经验。
-
-• [polivier] 拥有计算机工程博士学位，专长于运筹学（数学优化、约束编程等）。他为各种问题（如调度、路由等）提供定制解决方案，并在Postgres、车辆车间调度工具和药物制造设施的优化模型等方面有实际项目经验。
-
-• [mjgs] 提供DevOps/系统工具、工作流自动化集成和NodeJS web开发服务。他拥有10年以上的IT经验，曾为多家世界500强企业提供大型项目交付服务，擅长使用多种技术（如NodeJS、Python、AWS、Digital Ocean、Netlify等）进行开发和部署。
-
-• [spirodonfl] 提供全栈web、软件和游戏开发服务，专注于高性能、少依赖的解决方案。他擅长HTMX、C、Zig、WebAssembly等技术，并在技术流、社区参与和开发者指导方面有丰富经验。
-
-• [gee_totes] 提供全栈web开发服务，专注于用户体验工程。他拥有Ruby、JavaScript、PHP等技术的专家水平，并能提供技术写作和文档、Vectorization和Elasticsearch调优等服务。他还具备无自我中心的工作态度，并能根据需要带来自己的离岸团队。
-
-• [cldcntrl] 专注于AWS架构和基础设施服务，拥有10年以上的生产级AWS部署经验。他提供AWS相关的各种服务（如IAM、VPC、Cloudwatch、EC2/ASG/ELB等），并以提供最简单的解决方案为目标。
-
-• [CaioFer] 提供多种技术服务（如Rust、ReactJS、GCP、Docker、Kubernetes等），专长于后端开发、区块链、编译器、DevOps和嵌入式系统。他拥有10年以上的经验和多个专业认证。
-
-• [mliezun] 专注于生物技术/生物信息学软件开发，拥有7年以上的经验。他擅长基因组学管道、生物信息学工作流和全栈开发（Python、Go、Rust、React/Next.js等），并能为早期生物技术初创公司提供技术领导力。
-
-• [juancferrer] 提供后端开发和平台扩展服务，曾是多个公司的创始工程师，拥有丰富的平台建设和扩展经验。他曾在PreFix Inc.和Ruckit等公司担任关键开发角色，并成功扩展了客户基础和工程团队。
-
-• [slau] 提供后端软件开发和云架构服务，拥有15年以上的经验，擅长Rust、Python、Pandas、Polars、Big Data管道、SQL和AWS等技术。他曾在制药、安全、数据库和电话行业工作，并具备丰富的技术领导经验。
-
-• [rugu] 提供全周期产品设计服务，包括品牌设计和用户体验设计。他拥有10年以上的经验，专注于将想法转化为市场ready产品，并提供品牌标识、UI/UX设计和设计系统等服务。
-
-• [rbergmair] 提供数据科学、数据工程、搜索引擎和AI开发服务，拥有博士学位和13年以上的自由职业经验。他专长于NLP、搜索引擎、机器学习等技术，并在金融、法律和地理信息系统方面有丰富经验。
-
-• [fzwang] 提供计算机科学教育顾问服务，专注于通过顾问支持学生的自主学习。他设计了一种新的CS教育模型，旨在帮助学生学会如何学习，并自我指导自己的教育过程。
-
-补充讨论：
-• 技术工作者的多样化技能和经验：从全栈开发、运筹学到生物信息学和教育顾问，这些评论展示了技术工作者在不同领域的广泛技能和经验。
-• 远程工作和自由职业的趋势：大多数评论者都愿意进行远程工作，反映了当前技术行业中远程工作的普遍性和灵活性。
-• 专长和项目经验的重要性：许多评论者强调了他们在特定领域的专长和丰富的项目经验，这有助于他们在竞争中脱颖而出。
-• 教育和指导的角色：例如[fzwang]提供了一种新的CS教育模型，强调了技术教育和指导在培养未来技术人才中的重要性。
-
-争议焦点：
-• 不同服务模式的有效性：例如[fzwang]的教育顾问模式是否能被广泛接受和应用，可能存在争议。不同的教育模式和传统教育体系之间的冲突也可能成为讨论的焦点。
-
-总的来说，这些评论展示了技术工作者在技能、经验和服务模式上的多样性和创新性，反映了当前技术行业的动态和趋势。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44434575" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ia.acs.org.au/article/2025/australians-to-face-age-checks-from-search-engines.html" target="_blank">Australians to face age checks from search engines</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: stubish</span> |
-                    <span>评分: 72</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-07-01 23:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>澳大利亚将要求谷歌和微软等搜索引擎在用户登录时进行年龄验证，以保护儿童。根据新的网络安全法规，搜索引擎必须在六个月内实施年龄验证技术，针对18岁以下的用户自动启用最高级别的安全搜索设置，过滤色情和暴力内容。未登录用户则不受此限制，但搜索结果中的不当图片仍将默认模糊处理。此外，搜索引擎还需改进年龄验证技术，防止自动补全涉及色情或暴力内容，并对有关饮食失调或自残的搜索显示危机预防信息。违反新规可能面临最高4950万澳元的罚款。该法规旨在保护儿童免受网络不良内容的影响，特别是与AI聊天机器人相关的风险。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44439058" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://johncarlosbaez.wordpress.com/2021/02/04/the-hoyle-state/" target="_blank">The Hoyle State (2021)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gone35</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-01 18:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于核聚变和科学理论的讨论，包括具体科学概念的准确性及对现代科学理论的评价
-
-不同观点：
-• chasil将当前讨论与之前提到的HB11核聚变（无中子核聚变）联系起来，并引用了无中子核聚变的维基百科页面，暗示讨论内容与这种特定核聚变形式有关。
-
-• libraryofbabel对19世纪失败的科学理论表示赞赏，而对现代科学理论持批评态度，认为现代科学家在缺乏成功的条件下仍然坚持这些理论是令人沮丧的。虽然没有明确指出，但暗示可能在批评弦理论等现代理论。
-
-• terminalbraid针对具体科学细节进行纠正，指出文章中关于铍同位素（8Be）的描述有误，强调普通的铍核是9Be，并解释了8Be由于半衰期极短且不属于束缚态，不能算作常规的原子核。
-
-补充讨论：
-• 争议的焦点之一是科学理论的评价和态度问题。libraryofbabel对现代科学理论持负面看法，而chasil则关注具体科学概念如无中子核聚变，二者态度形成对比。
-
-• terminalbraid的评论集中在科学准确性上，对具体科学描述中的错误进行指正，并提供了相关的维基百科链接以支持其论点。
-
-• 科学理论的有效性和科学家的坚持是另一个潜在的讨论点，libraryofbabel的观点暗示了对科学界在某些领域坚持未成功理论的不满。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44436555" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
