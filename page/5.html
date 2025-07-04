@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-04 23:14 (北京时间)
+            最后更新时间: 2025-07-05 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,47 +61,247 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2502.03382" target="_blank">High-Fidelity Simultaneous Speech-to-Speech Translation</a>
+                    <a href="https://www.greyblake.com/blog/alternative-blanket-implementations-for-single-rust-trait/" target="_blank">Alternative Blanket Implementations for a Single Rust Trait</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Bluestein</span> |
-                    <span>评分: 100</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-03 20:27</span>
+                    <span>作者: greyblake</span> |
+                    <span>评分: 28</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-01 07:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种名为Hibiki的解码器模型，用于同声传译，能够同步处理源语言和目标语言的语音，并生成文本和音频标记，实现语音到文本和语音到语音的翻译。该模型通过弱监督方法，利用现成文本翻译系统的困惑度来确定最佳延迟，并创建对齐的合成数据，从而在积累足够上下文后实时翻译。实验表明，Hibiki在法英同声传译任务中，在翻译质量、说话人保真度和自然度方面达到了先进水平，且其推理过程简单，适用于批量翻译和设备上的实时部署。</p>
+                    <p>本文讨论了Rust中如何解决同一trait不能有多个重叠的blanket implementation的限制问题。具体场景是在开发Joydb时遇到了Adapter trait的两种实现：UnifiedAdapter和PartitionedAdapter，希望用户只需实现其中一个即可自动获得Adapter trait的功能，但由于Rust的限制无法直接实现。
+
+解决方案是使用标记结构体（marker structs）和关联类型（associated types）来绕过这一限制。具体步骤包括：
+
+1. 定义标记结构体Unified<A>和Partitioned<A>，这些结构体仅用于类型级别的分发。
+2. 定义一个辅助trait BlanketAdapter，并分别为Unified<A>和Partitioned<A>实现这个trait。
+3. 修改Adapter trait，增加一个关联类型Target，以委托给正确的BlanketAdapter实现。
+
+通过这种方法，成功解决了Rust中不能有重叠blanket implementation的问题，使得用户只需实现UnifiedAdapter或PartitionedAdapter，即可自动获得Adapter trait的功能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Hibiki实时语音翻译技术的功能、应用及其局限性
+                    <div class="comments-summary">主要讨论点：针对`BlanketAdapter`和`Adapter` trait设计模式的评价及其与Context-Generic Programming (CGP) 的关联
 
 不同观点：
-• Wedn3sday分享了一个Hibiki样本的链接，为其他用户提供了参考例子。
-• Grosvenor认为该技术很有前景，但对不同语法结构的语言（如芬兰-乌戈尔语系）的处理表示关注，指出这些语言的语序和意义变化可能带来挑战。同时，他也幽默地提到项目名称让他联想到喜爱的威士忌。
-• Lukax提到Soniox也支持60种语言的实时语音转文本翻译，并可以通过文本转语音实现语音到语音的翻译，暗示Soniox在实时翻译方面更具优势，并附上了试用链接和利益声明。
-• Nottorp关注该技术的运作方式，询问它是像大型语言模型一样随机生成还是确定性的。
-• Jauntywundrkind提供了Hibiki的代码库链接，方便有兴趣的用户查看技术细节。
-• Notphilipmoran担心该技术在处理西班牙语和英语之间不同句法结构时可能遇到问题，特别指出两种语言在句子结构上的显著差异。
-• Gagabity提到Yandex浏览器早已实现类似功能，特别是对俄语的支持，并质疑技术细节是否相同。
-• Totetsu表达了对项目名称与支持语言不匹配的失望，指出尽管项目名称是日式的，但并未支持日语。
-• Jdkee提到Kyutai实验室当天发布了最新的TTS（文本转语音）模型，提供了最新的相关信息。
-• Almaight分享了一个额外的翻译工具链接，提供了更多选择。
-• AIorNot对该技术表示赞赏，并询问了除法语以外的其他语言支持情况。
-• Clueless明确指出Hibiki当前仅支持法英翻译，澄清了部分用户的疑问。
-• Benlivengood半开玩笑地提到希望该模型能在耳塞中运行，暗示对便携性的期待。
-• Cs702对翻译工作的未来表示担忧，认为翻译员的工作可能会因该技术而消失。
+• maybevoid认为原文中讨论的`BlanketAdapter`和`Adapter` traits与CGP中的provider traits和consumer traits非常相似，并指出原文的设计思路与CGP的设计理念相吻合。他进一步通过一个CGP的重实现例子展示了CGP如何在原文基础上进一步泛化该设计模式，并提到CGP通过宏来减少大量样板代码。他还提出可以进一步优化示例，比如将`load_state`提取为单独的trait以便复用，但为了示例简洁，未深入展开。
+
+• dwenzek则认为虽然该设计模式解决了一个常见问题，但使用两个具有完全相同类型签名的trait可能是一种过度工程化（over-engineering）的表现。他暗示这种设计可能过于复杂，不一定在所有场景下都是最佳选择。
 
 补充讨论：
-• 用户对Hibiki技术的实时翻译功能表现出浓厚兴趣，但也对其在不同语言和语法结构中的应用效果表示关注。
-• 对技术实现细节（如确定性与随机性）以及实际应用场景（如便携性）也有一定讨论。
-• 部分用户提供了其他类似工具的链接或信息，丰富了讨论的范围。
-• 争议焦点在于该技术对不同语言的支持程度及其对翻译行业潜在影响的担忧。</div>
+• maybevoid提供了额外的资源链接，包括Reddit讨论帖和CGP相关示例代码的gist链接，为有兴趣深入了解CGP的读者提供了参考。[1][3]
+• dwenzek对设计复杂度的质疑引发了对该模式在实际应用中是否必要的讨论，涉及到软件设计中简洁性与可扩展性之间的平衡问题。
+
+争议焦点：
+• 该设计模式是否属于过度工程化。maybevoid认为其与CGP理念一致且有进一步泛化的潜力，而dwenzek则担心这种设计在某些情况下可能过于复杂。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44458877" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44431601" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://danielmangum.com/posts/ai-microcontrollers-operators-kernels/" target="_blank">How AI on Microcontrollers Works: Operators and Kernels</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hasheddan</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-06-30 12:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了在微控制器上运行边缘AI（edge AI）推理的实际能力以及新硬件进展的影响。边缘AI通常涉及在计算、内存或网络带宽受限的硬件上执行推理。文章重点介绍了TensorFlow Lite for Microcontrollers（现已更名为LiteRT for Microcontrollers），这是一个用于微控制器的优化推理 runtime。它使用 `.tflite` 文件格式，通过 FlatBuffers 编码数据，包含模型权重和计算图。
+
+文章还解释了运算符（operators）和内核（kernels）的概念，运算符定义了推理操作，而内核则是这些运算符的软件实现，具体性能取决于硬件支持。例如，加法运算符（TFL::AddOp）的实现会根据输出类型（如 `kTfLiteInt8` 或 `kTfLiteInt16`）选择不同的计算方法。文章通过代码示例展示了 `AddEval()` 函数如何处理不同数据类型的加法操作，强调了硬件对性能的影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：是否需要为微控制器设计专门的"lite"格式，或者是否可以统一使用像ONNX这样的通用格式
+
+不同观点：
+• [amelius] 认为不需要为微控制器专门设计"lite"格式，并提出统一使用ONNX格式的建议。其主要论据是，ONNX作为一个通用的深度学习模型格式，可能足以应对各种需求，包括微控制器上的应用。他还提供了ONNX的官方链接供参考。
+
+• [Neywiny] 则持不同意见，认为"嵌入式"和"边缘"计算的概念是相对的，具体应用场景差异很大。他指出，对于不同的场景，"边缘AI"可能意味着从服务器场到传感器等不同层次的设备。因此，针对微控制器设计专门的解决方案是有必要的，因为不同设备的计算能力和资源各不相同，不能一概而论。
+
+补充讨论：
+• [Neywiny] 进一步解释了"边缘AI"在不同场景下的多样性，比如在一些情况下，边缘AI可能指的是本地服务器场，而在另一些情况下，可能指的是传感器中的微控制器。这种多样性意味着，不可能用一个单一的解决方案（如ONNX）来满足所有需求。
+
+• 争议的焦点在于是否需要为微控制器设计专门的格式。一方认为统一格式（如ONNX）可以简化开发和部署，另一方则认为不同设备需要不同的解决方案，以适应其硬件限制和应用场景。
+
+• 论据中提到了设备资源和计算能力的差异，这是支持专门"lite"格式的主要理由，而统一格式的支持者则强调标准化和兼容性的优势。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44422662" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vondra.me/posts/how-often-is-the-query-plan-optimal/" target="_blank">How often is the query plan optimal?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: eatonphil</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-06-30 15:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了PostgreSQL查询优化器选择“最优”查询计划的有效性。尽管优化器承诺选择最优计划，但实际上依赖于成本估算，这可能导致错误选择。作者通过实验展示了在不同选择率下（如1-5%），优化器有时会选择性能较差的索引扫描而非更快的顺序扫描或位图扫描。实验还表明，位图扫描在多数情况下表现更好，尤其在低选择率时，而索引扫描缺乏预取能力，导致性能不佳。
+
+数据分布也会影响计划选择，均匀分布和线性分布的结果不同。在冷缓存情况下差异更明显，而热缓存时差异减小。总体而言，优化器基于统计和成本模型选择计划，但不总是最优。用户很难察觉有更好计划，手动干预也非易事。调整成本参数或有帮助，但适应所有数据分布的完美配置可能不存在。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：SQL查询优化与计划的选择和执行
+
+不同观点：
+• **mike_hearn** 的观点：  
+  - 统计 based 查询计划对即席查询非常有用，但对于机器生成的查询，可预测性更为重要。在这种情况下，硬编码计划或锁定执行计划以防止在生产环境中意外改变是合理的选择。  
+  - 建议数据库映射工具（不一定是ORM）可以根据开发者已知的可能数据分布提供注解，以引导数据库选择合理的执行计划。  
+  - 举例：使用`@Mostly`注解标记枚举的分布，从而指导数据库选择合适计划。
+
+• **bob1029** 的观点：  
+  - 提到了一种改进方式，即使用自适应查询处理技术，允许数据库引擎在查询执行过程中动态调整策略。  
+  - 提供了多个高性能RDBMS中自适应查询处理的相关链接，如SQL Server、IBM和Oracle。
+
+• **remus** 的观点：  
+  - 不同意mike_hearn的第一句话，认为查询优化器的承诺并不是找到“最优”计划，而是在有限的时间和资源内找到一个“足够好”的计划。  
+  - 强调优化器必须在速度和效率之间取得平衡，不能为了追求完美计划而牺牲性能。
+
+• **alexisread** 的观点：  
+  - 认为Linq风格的查询比SQL更适合处理查询计划问题，因为Linq能确定性地缩小查询范围，而SQL依赖查询计划来决定操作的顺序（如过滤和连接的顺序）。  
+  - 指出这在云环境和处理像Iceberg表时尤为重要，因为这些表不能像传统关系型数据库那样进行基准测试。
+
+补充讨论：
+- **争议焦点**：mike_hearn和remus对于查询优化器应选择“最优”还是“足够好”的计划存在不同看法。mike_hearn更关注可预测性和硬编码计划，而remus则强调优化器需要在有限资源内快速找到合理的计划。  
+- **技术改进**：bob1029提出的自适应查询处理技术提供了一种动态调整查询计划的解决方案，可能在一定程度上缓解上述争议。  
+- **查询语言选择**：alexisread提出Linq风格查询在处理查询计划不确定性方面具有优势，尤其是在云和新型数据表结构中。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44424405" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://buttondown.com/jaffray/archive/caching-is-an-abstraction-not-an-optimization/" target="_blank">Caching is an abstraction, not an optimization</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: samuel246</span> |
+                    <span>评分: 99</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-07-01 10:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了缓存（caching）的本质，提出缓存更应被视为一种抽象工具，而非仅仅是性能优化手段。作者认为，传统上缓存被用来提升数据读取速度，避免每次都访问后端数据库或API，但这种观点并不全面。通过处理数据在对象存储、磁盘和内存间的移动，作者意识到缓存其实简化了软件设计，使得不同存储层次的管理更加清晰。文章还指出，缓存算法（如LRU、LFU）提供了干净的抽象边界，尽管这些算法有时看似复杂，但它们在实际系统中不可或缺，因为数据访问模式难以预测。最终，作者强调缓存作为抽象的成功之处在于其隐藏了底层细节，但在出问题时才显得显眼，因此不应低估其价值。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：缓存与软件简化及抽象的关系
+
+不同观点：
+• ckdot2：认为缓存可以带来好处，但不能简单地认为缓存简化了软件。引用经典名言“计算机科学中只有两件难事：缓存失效和命名”，指出缓存的复杂性。
+• necovek：缓存引入了生命周期管理等复杂性，不能直接说缓存使事情变得简单。缓存可以在抽象接口的实现中局部化，但缓存本身不是抽象。
+• armchairhacker：优化通常需要重新思考代码结构，从而使代码更易理解。例如缓存级别迫使分离不同访问频率的数据。抽象是隐藏细节，例如垃圾回收机制。
+• klabb3：作者指的是缓存可以作为存储访问系统中的实现细节，而不是直接管理多个存储层。缓存并非系统功能必需品。
+• charleshn：缓存在分布式系统中引入双模性和亚稳定性问题，如DynamoDB设计中考虑了这些问题。
+• LudwigNagasena：缓存是一种优化，有时可以被抽象掉，例如CPU缓存或构建缓存，但在网页缓存中很难完全抽象。
+• neuroelectron：认为这是语义上的争论，不愿参与。
+• TristanDaCunha：对整个讨论感到困惑。
+• dasil003：缓存只是保持数据副本，增加复杂性，不能简化系统，也不是抽象。
+• zmj：在单写单读情况下，缓存问题较少，多写多读时问题更复杂。
+• gmuslera：性能元素包含在抽象中，优化抽象设计时也需要考虑性能。
+• Joker_vD：缓存可能有多个用户，优化时需考虑系统整体性能，而不是仅满足单一用户需求。
+• taeric：缓存策略和物化视图都可以作为缓存和抽象的辅助工具。
+• eigenform：硬件管理的缓存是抽象的典型例子，存储位置选择被抽象掉。
+• pclmulqdq：更好的抽象使用也是一种优化。
+
+补充讨论：
+• 争议焦点在于缓存是否简化了软件以及缓存是否属于一种抽象。
+• 部分评论者认为缓存增加了复杂性，而非简化系统，且缓存本身不是抽象。
+• 另一部分评论者指出，在特定情况下，缓存可以作为优化手段，并通过抽象隐藏细节。
+• 分布式系统中的缓存问题如双模性和亚稳定性也被提出，作为缓存复杂性的例证。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44432506" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.omgubuntu.co.uk/2025/06/ubuntu-riscv-rva23-support" target="_blank">Ubuntu 25.10 Raises RISC-V Profile Requirements</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bundie</span> |
+                    <span>评分: 118</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-07-01 08:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Canonical计划在Ubuntu 25.10中提升对RISC-V设备的支持，但大多数现有RISC-V设备将无法运行该版本。这是因为Ubuntu 25.10将基准RISC-V配置文件（RVA）从RVA20升级到RVA23，后者要求强制支持向量和虚拟化扩展，以满足更高性能需求如AI、加密和企业工作负载。现有设备如Orange Pi RV2由于缺乏这些扩展将无法支持新版本。不过，Ubuntu 24.04 LTS仍将支持到2029年，因此短期内影响不大。长期来看，这一升级将有助于Ubuntu在RISC-V平台上占据主导地位，但目前支持RVA23的设备还很少。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Ubuntu及相关操作系统对RISC-V等新硬件架构的支持策略及其争议
+
+不同观点：
+• [shirro] 认为操作系统在技术快速发展的背景下做出支持新硬件的决定非常困难。以RISC-V为例，虽然当前选择支持更高规格的硬件可能是明智的，但如果较低规格的RISC-V突然流行起来，可能会错失机会。他以Debian为例，指出Debian曾将32位ARM硬浮点系统的最低目标设为armv7，但后来由于Raspberry Pi（基于armv6）的流行，用户遇到了问题，最后通过Raspbian解决了这个问题。
+
+• [johnklos] 对Ubuntu的硬件支持策略持批评态度，认为Ubuntu对“低端”系统的支持不足，并讽刺其对未来硬件的支持过于超前，甚至支持了一些尚未存在的硬件（如RVA23设备），可能导致用户转向其他操作系统。他还提到，如果Ubuntu继续这样定位，可能会失去用户。
+
+• [somanyphotons] 认为RVA23是一个对Linux机器长期有益的指令集架构（ISA），并推测Ubuntu可能提前知晓了一些即将发布的硬件。他还提出了RVA23是否与RISC-V上的Android需求一致的问题。
+
+• [csense] 提出了一种技术解决方案，询问是否可以通过内核补丁或驱动程序来捕获不支持的指令，并用软件实现这些指令。
+
+• [Levitating] 表示希望有一些Ubuntu提前知晓但尚未公布的硬件。
+
+• [fithisux] 指出目前市场上还没有消费者可用的RV23 mini-ITX、micro-ATX或ATX规格的设备，并提到Orange PI 2存在图形blob问题。
+
+• [throwaway48476] 认为RISC-V应用处理器标准中的缺失部分逐渐补全过程中，类似的问题会不断出现。
+
+• [delfinom] 批评Canonical（Ubuntu的开发公司）试图再次分化市场，暗示其试图通过支持特定硬件来主导某个领域。
+
+补充讨论：
+- 讨论中多次提到RISC-V硬件支持的现状及其不确定性，尤其是RVA23设备在市场上的缺乏。
+- 有人对Ubuntu过于超前的硬件支持策略表示不满，认为可能导致用户流失。
+- 也有一些技术性讨论，如通过软件实现来解决硬件支持问题。
+- Debian的历史案例被用来对比当前Ubuntu面临的类似困境。
+- Canonical的市场策略受到质疑，被认为是在分化市场。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44431828" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -176,6 +376,122 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://joincolossus.com/article/flounder-mode/" target="_blank">Flounder Mode – Kevin Kelly on a different way to do great work</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: latentnumber</span> |
+                    <span>评分: 264</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-03 15:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍了凯文·凯利（Kevin Kelly）的不同寻常的职业道路和工作方式。他没有追求创立一家独角兽公司，而是以“好莱坞风格”工作，参与各种创意项目。凯利曾是《全球概览》编辑，帮助创建了早期在线社区WELL，并联合创办了《连线》杂志。他撰写了多本书籍和文章，涉猎艺术、旅行、宗教、创意和人工智能等领域。凯利还参与了斯皮尔伯格电影《少数派报告》的未来学顾问工作，并启发《未来世界》中的“死亡时钟”概念。他组织精选的长距离徒步旅行，还从事雕塑、绘画和摄影等艺术活动。
+
+凯利提倡长期思考，正在建造一座可持续一万年的时钟。他也是一位重生的基督徒，并与妻子育有三个孩子。他早期提出的“一千个真粉丝”理论推动了创作者经济的发展。
+
+作者布里·沃尔夫森（Brie Wolfson）反思了自己的职业选择，受到凯利不拘一格的工作方式启发，认为在硅谷以外也可以通过多样化的项目实现影响力和职业价值。她分享了自己在谷歌和其他创业公司工作的经历，最终选择追求自己认为有趣和有意义的工作，而不是传统的职业晋升路径。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对技术乐观态度的讨论，以及对凯文·凯利（Kevin Kelly）个人影响力的评价
+
+不同观点：
+• [正面评价]  
+  - **[dannyobrien]**: 对凯文·凯利的积极评价，认为与他的对话帮助恢复了对技术乐观态度的信心，这种对话在个人职业发展中起到了关键作用。
+  - **[vessenes]**: 支持这种观点，分享了与另一位传奇人物John Seeley Brown的类似经历，强调跟随个人兴趣的重要性，但也提出了对“跟随兴趣”是否会导致缺乏长期影响的自我反思。
+  - **[pclowes]**: 认为文章提醒了人们关注方向和兴趣，而不是仅仅追求职业晋升和企业目标，批评了当前科技行业的“职业化”趋势。
+  - **[joshdavham]**: 对作者的心路历程产生共鸣，提到自己从追求创业成功转变为通过软件建设对世界产生积极影响。
+
+• [批评与质疑]  
+  - **[egypturnash]**: 批评文章名义上是关于凯文·凯利的访谈，但实际上更多是作者的自传内容，缺乏对凯利观点的深入探讨，访谈内容过于浅显。
+  - **[jebarker]**: 提出“跟随兴趣”可能存在幸存者偏差，质疑仅凭兴趣是否能带来财务安全和工作自由。
+
+• [社会与个人焦虑]  
+  - **[kaiwenwang]**: 表达了对年轻人面临社会压力的担忧，认为如果不成为行业顶尖人物，可能会陷入贫困和不满的生活状态。
+  - **[whiplash451]**: 强调在大的组织中找到自己兴趣点的重要性，建议在缺乏明确产品路线图的情况下主动寻找项目机会。
+
+• [宗教与哲学思考]  
+  - **[blendo]**: 提到凯利有宗教背景，提供了一个理解凯利思想的宗教视角。
+
+• [其他支持性评论]  
+  - **[cjbohlman]**: 赞赏文章，并联想到Ryan Norbauer的写作，强调根据个人兴趣选择工作带来的满足感。
+  - **[cushychicken]**: 喜欢文章中对乐观态度的许可感，并分享了对凯利评价Steve Jobs和Bob Dylan为“混蛋”的共鸣。
+  - **[gleenn]**: 对文章中的幽默元素（如G-Chat与高管共用Snuggie的场景）表示欣赏。
+  - **[srean]**: 对文章中的照片和凯利保持环境整洁表示赞赏。
+  - **[nathanbarry]**: 对Colossus发布的内容表示喜爱，并对文章分享表示感谢。
+
+• [对科技行业文化的批评]  
+  - **[AIorNot]**: 强烈批评当前科技行业的“胜利文化”，认为这种文化忽视了人类直觉和创造力，并呼吁恢复好奇心、耐心和同理心。
+
+补充讨论：
+- **兴趣与职业发展的平衡**: 一些评论提到了“跟随兴趣”是否会导致缺乏长期职业影响，以及是否存在幸存者偏差的问题。
+- **科技行业的文化批判**: 对当前科技行业过度重视指标、增长和职业化的反思，呼吁更多关注人类创造力和个人兴趣。
+- **跨代智慧的传承**: 有评论指出硅谷的年龄歧视问题，导致年长一代的智慧被忽视。
+
+争议焦点：
+- **文章内容是否偏离主题**: 一些评论认为文章名义上是关于凯文·凯利的访谈，但实际上更多是作者的自传内容，缺乏对凯利观点的深入探讨。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44455933" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://sixcolors.com/post/2025/07/about-that-a16-macbook-rumor/" target="_blank">About that A18 Pro MacBook rumor</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tosh</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-04 16:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了有关苹果可能推出低价MacBook的传闻，特别提到了预计2025年末或2026年初量产的搭载A18 Pro处理器的更廉价MacBook。文章回顾了2023年末的传闻，分析了苹果利用旧技术（如M1芯片）推出价格较低产品的策略。作者推测，新款低价MacBook可能采用iPhone 16 Pro的A18 Pro处理器，其性能接近M1，但成本更低。文章还提到，尽管M4 MacBook Air已经上市，但M1版本仍在销售，表明苹果希望保持较低价位的产品线。最终，作者认为推出一款价格低于999美元的新型低端MacBook可能吸引更多消费者，尤其是在大型零售商如沃尔玛的销售渠道中。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：苹果设备（iPad与MacBook）使用不同芯片架构的成本与软件兼容性问题，以及用户对macOS与iPad设备结合的期望
+
+不同观点：
+• **SteveBK123的观点**：  
+  - 关注M系列芯片引入iPad可能带来的**软件兼容性问题**。  
+  - 担心M系列芯片和A系列芯片之间在软件功能上的不一致，因为目前M芯片系列的设备有一些功能是A系列设备无法实现的。  
+  - 对成本控制表示理解，但更关注潜在的兼容性问题。
+
+• **Attendant3446的观点**：  
+  - 认为用户真正想要的是**在iPad上运行macOS**，而不是将M芯片引入iPad。  
+  - 质疑苹果公司正在开发搭载iPhone CPU的MacBook的方向，暗示这可能不是用户的核心需求。  
+  - 对苹果的产品策略表示不满或不解，认为与用户期望不符。
+
+补充讨论：
+- **芯片架构的选择**：SteveBK123对M系列芯片的引入表示了实际使用中的担忧，而attendant3446则质疑这种硬件变化是否符合用户对设备功能的期望。
+- **软件与硬件的协调**：讨论中涉及了软件功能和硬件性能之间的协调问题，特别是不同芯片系列之间的功能差异。
+- **用户需求与公司策略的矛盾**：attendant3446认为苹果没有满足用户对操作系统整合的需求，而是专注于硬件上的改变，这可能是争议的焦点。
+
+争议焦点：苹果是否应该优先考虑在iPad上引入macOS，还是继续在硬件层面（如芯片架构）进行创新。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44465745" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://cells.andersmurphy.com/" target="_blank">One Billion Cells – Another Multiplayer Demo with Clojure</a>
                 </h3>
                 <div class="story-meta">
@@ -212,221 +528,6 @@
 • 主要争议在于用户对该技术或应用的用途和功能理解不一，部分用户（如 freilanzer）对其目的感到困惑，而其他用户（如 Theofrastus 和 andersmurphy）则对其功能和潜力有一定预期和理解。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44461523" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://angadh.com/wherevonbraunwheel" target="_blank">Where is my von Braun wheel?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 140</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-03 13:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨了为何NASA在1962年放弃了旋转轮形空间站的研发，转而专注于阿波罗登月计划，导致人工重力空间站的设想被搁置。文章指出，这一历史性决策导致了之后长达半个世纪的小型零重力空间站的模式，给宇航员带来肌肉萎缩、骨质流失和视力问题等健康挑战。早期太空先驱如冯·布劳恩曾认为人工重力对长期太空生活至关重要，其设计的旋转轮形空间站本可实现这一目标。然而，建造大型旋转空间站面临工程挑战，需要解决如何将巨大结构装入细长火箭的难题。文章最后提到，商业航天公司如今重新考虑人工重力站的可能性，或能纠正这一历史性偏差，推动人类成为太空文明。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：空间殖民与大型空间结构的可行性及相关技术挑战
-
-不同观点：
-• PaulHoule认为Starship进入轨道后可以建造比国际空间站（ISS）大但比O'Neill殖民地小的结构，且可以在低地球轨道（LEO）上建造太空酒店或模拟环境用于技术开发。他还指出O'Neill殖民地的大气问题和Ceres殖民的潜力。
-• jauntywundrkind强调了充气结构在太空和地面上的应用潜力，并列举了NASA和其它国家的相关测试项目，但对当前进展表示了一些不满。
-• pimlottc纠正了关于von Braun作品的时间线，指出其作品在不同年份出版的细节。
-• Animats认为大多数太空任务无需人类参与即可完成，ISS的实验大多集中在如何在没有重力情况下维持人类生存。
-• rkagerer讨论了高比冲融合火箭的可能性及其在长途太空旅行中的应用。
-• WalterBright建议从哑铃形或绳索悬挂的结构开始，逐步扩展成更大的轮形结构。
-• bryanlarsen认为早期零重力实验非常重要，但未来的空间站应更多考虑人工重力。
-• abe94质疑为何重点放在行星殖民而不是建造大型太空结构。
-• dan-robertson反对大规模灵长类动物移居太空的设想，认为这浪费公共资金且可能破坏火星生命存在的可能性。
-• aidenn0提出"I"形或"H"形结构以增加居住面积。
-• Someone对von Braun的巨轮设计中不同高度重力变化的影响表示关注。
-• kevin_thibedeau指出早期设计未考虑到现代电子和机器人技术的发展，且质疑当时火箭的运载能力。
-• rich_sasha幽默地表示对修理充气结构的担忧。
-• glitchc认为月球是建造永久空间站的最佳地点，并指出月球重力有助于建立和部署永久空间站。
-
-补充讨论：
-• 讨论中涉及了多种太空结构设计方案，包括充气结构、绳索悬挂结构和旋转轮形结构。
-• 对太空殖民的自我维持能力和制造技术的讨论，特别是关于Ceres和火星的殖民潜力。
-• 对公共资金使用和太空探索政治动机的批评。
-• 对未来太空任务中人工重力和推进技术的技术探讨。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44455022" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://buttondown.com/jaffray/archive/caching-is-an-abstraction-not-an-optimization/" target="_blank">Caching is an abstraction, not an optimization</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: samuel246</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-01 10:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了缓存（caching）的本质，提出缓存更应被视为一种抽象工具，而非仅仅是性能优化手段。作者认为，传统上缓存被用来提升数据读取速度，避免每次都访问后端数据库或API，但这种观点并不全面。通过处理数据在对象存储、磁盘和内存间的移动，作者意识到缓存其实简化了软件设计，使得不同存储层次的管理更加清晰。文章还指出，缓存算法（如LRU、LFU）提供了干净的抽象边界，尽管这些算法有时看似复杂，但它们在实际系统中不可或缺，因为数据访问模式难以预测。最终，作者强调缓存作为抽象的成功之处在于其隐藏了底层细节，但在出问题时才显得显眼，因此不应低估其价值。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：缓存与软件简化及抽象的关系
-
-不同观点：
-• ckdot2：认为缓存可以带来好处，但不能简单地认为缓存简化了软件。引用经典名言“计算机科学中只有两件难事：缓存失效和命名”，指出缓存的复杂性。
-• necovek：缓存引入了生命周期管理等复杂性，不能直接说缓存使事情变得简单。缓存可以在抽象接口的实现中局部化，但缓存本身不是抽象。
-• armchairhacker：优化通常需要重新思考代码结构，从而使代码更易理解。例如缓存级别迫使分离不同访问频率的数据。抽象是隐藏细节，例如垃圾回收机制。
-• klabb3：作者指的是缓存可以作为存储访问系统中的实现细节，而不是直接管理多个存储层。缓存并非系统功能必需品。
-• charleshn：缓存在分布式系统中引入双模性和亚稳定性问题，如DynamoDB设计中考虑了这些问题。
-• LudwigNagasena：缓存是一种优化，有时可以被抽象掉，例如CPU缓存或构建缓存，但在网页缓存中很难完全抽象。
-• neuroelectron：认为这是语义上的争论，不愿参与。
-• TristanDaCunha：对整个讨论感到困惑。
-• dasil003：缓存只是保持数据副本，增加复杂性，不能简化系统，也不是抽象。
-• zmj：在单写单读情况下，缓存问题较少，多写多读时问题更复杂。
-• gmuslera：性能元素包含在抽象中，优化抽象设计时也需要考虑性能。
-• Joker_vD：缓存可能有多个用户，优化时需考虑系统整体性能，而不是仅满足单一用户需求。
-• taeric：缓存策略和物化视图都可以作为缓存和抽象的辅助工具。
-• eigenform：硬件管理的缓存是抽象的典型例子，存储位置选择被抽象掉。
-• pclmulqdq：更好的抽象使用也是一种优化。
-
-补充讨论：
-• 争议焦点在于缓存是否简化了软件以及缓存是否属于一种抽象。
-• 部分评论者认为缓存增加了复杂性，而非简化系统，且缓存本身不是抽象。
-• 另一部分评论者指出，在特定情况下，缓存可以作为优化手段，并通过抽象隐藏细节。
-• 分布式系统中的缓存问题如双模性和亚稳定性也被提出，作为缓存复杂性的例证。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44432506" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.omgubuntu.co.uk/2025/06/ubuntu-riscv-rva23-support" target="_blank">Ubuntu 25.10 Raises RISC-V Profile Requirements</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bundie</span> |
-                    <span>评分: 117</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-07-01 08:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Canonical计划在Ubuntu 25.10中提升对RISC-V设备的支持，但大多数现有RISC-V设备将无法运行该版本。这是因为Ubuntu 25.10将基准RISC-V配置文件（RVA）从RVA20升级到RVA23，后者要求强制支持向量和虚拟化扩展，以满足更高性能需求如AI、加密和企业工作负载。现有设备如Orange Pi RV2由于缺乏这些扩展将无法支持新版本。不过，Ubuntu 24.04 LTS仍将支持到2029年，因此短期内影响不大。长期来看，这一升级将有助于Ubuntu在RISC-V平台上占据主导地位，但目前支持RVA23的设备还很少。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：RISC-V架构及相关操作系统支持的发展与挑战
-
-不同观点：
-• [shirro] 认为在当前技术快速发展的背景下，为RISC-V设定未来的目标是合理的，但也担心如果低规格的RISC-V设备突然流行起来，可能会错失机会。他以Debian对32位ARM硬浮点系统的最低目标设定为例，指出尽管当时选择ARMv7是明智的，但由于树莓派使用ARMv6芯片并大获成功，Debian用户一度面临没有硬件浮点支持的困境。
-
-• [somanyphotons] 认为RVA23是一个适合Linux机器的长期ISA，而RVA20不是。他还提到Ubuntu可能对即将发布的硬件有早期了解，并询问这是否与RISC-V Android的要求一致。
-
-• [csense] 提出是否可以通过编写内核补丁或驱动程序来捕获不受支持的指令并提供软件实现。
-
-• [Levitating] 表达了对Ubuntu可能知道一些未公布的硬件的期望。
-
-• [fithisux] 指出目前还没有消费者级别的RV23 mini-ITX、micro-ATX或ATX规格的设备，并提到Orange PI 2存在GFX blob问题。
-
-• [throwaway48476] 认为随着RISC-V应用处理器标准中的遗漏被逐步完善，类似的问题会不断出现。
-
-• [delfinom] 批评Canonical（Ubuntu的开发公司）试图再次在一个领域中进行分叉。
-
-补充讨论：
-• 讨论中涉及到的技术问题包括硬件浮点支持、ISA的选择、内核补丁和驱动程序的开发，以及具体硬件设备的可用性和兼容性问题。
-• 争议的焦点在于如何在快速发展的技术环境中平衡未来发展与当前需求，以及Canonical在RISC-V领域中的角色和策略是否合适。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44431828" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cell.com/cell-reports-physical-science/fulltext/S2666-3864(25)00221-8" target="_blank">Manipulating trapped air bubbles in ice for message storage in cold regions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: __rito__</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-06-30 10:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：冰泡作为数据存储媒介的可行性与相关联想
-
-不同观点：
-• **dtgriscom**：认为冰泡作为存储媒介不耐久，不是因为气候变化，而是由于表面能的作用。不同物质之间的边界会随着时间最小化，冰泡最终会变成球体，导致数据无法长期保存。他引用了自己在MIT学到的知识来支持这一观点。
-  
-• **meindnoch**：提出了一种更有创意的方法，即通过控制树木的年轮来存储信息。每一年可以用覆盖或不覆盖树来分别代表0或1。虽然存储速度很慢（1bit/年），但这一方法引发了对另类存储方式的讨论。
-
-• **0xbadcafebee**：对冰媒介的长期保存性表示怀疑，语气较为调侃。
-
-• **sprior**：将冰泡存储与亚马逊的存储服务类比，戏称为"Amazon Glacier"，带有调侃意味。
-
-• **drfuchs**：通过历史类比，提到1979年的"Intel Magnetics 7110"磁泡存储芯片，暗示冰泡存储可能像过去的技术一样不实用。他还提到了对未来memristor技术的期待。
-
-• **baruchel**：联想到文学作品中"冻结的词语"的概念，提供了文化和文学上的视角。
-
-• **speedylight**：以幽默的方式提到用加热的方式来删除文件，暗示冰泡存储在实际操作中的不便。
-
-• **hnanon12341**：仅仅对文章中的抽象图片表示赞赏，没有深入讨论存储技术本身。
-
-• **lmpdev**：调侃文章本身像是在争取Ig Nobel Prize（搞笑诺贝尔奖），暗示其研究可能不切实际。
-
-• **lloydatkinson**：提到如果要在1925年创建一个冰泡信息并在2025年读取，那么时间旅行是必要的，质疑了实际应用的可能性。
-
-• **Mistletoe**：认为冰泡存储媒介虽然有趣，但实际使用效果可能很差。
-
-• **AlienRobot**：以幽默的方式提到冰泡存储可能在核冬天后会有用，暗示极端环境下的潜在应用。
-
-• **dzink**：对冰泡存储的想法来源表示好奇，但没有深入讨论技术细节。
-
-• **moralestapia**：幽默地表示期待AWS版本的冰泡存储服务，将现代云服务与古老的存储概念结合。
-
-补充讨论：
-• 争议的焦点在于冰泡作为存储媒介的耐久性和实用性，特别是表面能对冰泡形状的影响。
-• 讨论中多次出现幽默和调侃，反映了社区对这一概念实际可行性的普遍怀疑。
-• 类比和历史技术（如磁泡存储芯片）的引用丰富了讨论，提供了更多视角。
-• 部分评论引入了文化和文学联想，扩展了讨论的范围。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44421490" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -477,122 +578,6 @@
 总结：讨论主要围绕非交互式零知识证明的直观理解、技术实现与安全性、隐私保护与绕过验证的可能性、以及该技术在不同场景下的应用潜力与限制。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44457390" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.abc.net.au/news/science/2025-07-03/3i-atlas-a11pl3z-interstellar-object-in-our-solar-system/105489180" target="_blank">Astronomers discover 3I/ATLAS – Third interstellar object to visit Solar System</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gammarator</span> |
-                    <span>评分: 286</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-03 03:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>MPEC 2025-N12报告了ATLAS望远镜发现的一个新天体：3I/ATLAS = C/2025 N1 (ATLAS)。该天体在四张于7月1日拍摄的图像中被发现，拥有高度偏心、超双曲轨道（e ~ 6）。初步观察显示可能有彗星活动，伴随微弱彗发和3角秒长的尾迹。观测数据来自多位天文学家，进一步的观测被鼓励以精确确定其轨道和性质。所有观测数据可通过MPC Explorer实时获取。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕新发现的第三个星际物体（3I）的科学分析、可能性推测以及未来观测的讨论。
-
-不同观点：
-• **科学分析与数据解读**：
-  - [ddahlen] 提供专业见解，解释该星际物体的轨道特性（偏心率超过6）、大小估计（8-22公里，取决于表面反照率），并提到如果该物体活跃（如彗星），其尘埃可能使其看起来比实际大。他还指出该物体逆行，并预测其在接近太阳时的行为。
-  - [jerpint] 则表示对数据不了解，询问如何将这些数据解释为一个实际物体。
-
-• **天文观测技术的进步与未来发现**：
-  - [ordu] 提出两种假设：人类天文学家观测技术的提升，或宇宙中即将出现大量类似物体。
-  - [zeristor] 认为新投入使用的Vera Rubin望远镜将发现更多此类物体。
-  - [jcfrei] 期待更大口径的望远镜（如ELT）上线，认为会带来更多新发现。
-
-• **星际物体数量与宇宙学意义**：
-  - [martinclayton] 引用了学术论文中的数据，讨论星际物体的数量估计，并进行计算推测在土星轨道范围内可能存在一个这样的物体。
-  - [isx726552] 提到小说中的情节与现实中发现的对比，认为现实中发现的星际物体数量增加迅速。
-
-• **对星际物体异常性质的讨论**：
-  - [rjinman] 认为发现更多类似彗星的星际物体，使Oumuamua（1I）显得更加怪异。
-
-• **科幻与假设**：
-  - [fouronnes3] 提出科幻性假设，认为前两个星际物体是外星飞船的废弃阶段，而3I是主船。
-  - [m3kw9] 表达希望该物体是外星智慧生命来访，尽管这是一个不受欢迎的观点。
-
-• **人类应对与技术能力**：
-  - [artur_makly] 询问如果该物体直接朝地球而来，人类目前是否有能力阻止。
-  - [renrutal] 则开玩笑提到是否能搭便车，并指出只有Project Orion可能追上其速度。
-
-补充讨论：
-• **具体信息查询**：
-  - [belter] 提供了一个维基百科链接，指向有关3I的更多信息。
-
-• **宇宙学与过滤理论**：
-  - [carlsborg] 提到“大过滤器”理论，暗示星际探测需要跨越光年的距离，可能影响我们对星际物体的探测和理解。
-
-争议焦点：
-• **科学解释与科幻假设之间的冲突**：一部分讨论围绕科学数据的解释和科幻假设之间的矛盾，例如外星飞船的假设与实际观测数据的对比。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44451329" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.mozilla.ai/wasm-agents-ai-agents-running-in-your-browser/" target="_blank">WASM Agents: AI agents running in the browser</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: selvan</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-07-04 05:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了一个名为 **Wasm agents blueprint** 的实验性项目，旨在通过将代理编写为 HTML 文件，使其能够在浏览器中直接运行，而无需额外安装工具或框架。该项目利用 **WebAssembly** 和 **Pyodide** 技术，将 Python 代码在浏览器中运行，实现了一种轻量、跨平台的 AI 代理。项目中的每个代理都是独立的 HTML 文件，包含用户界面和运行代码，使用 **openai-agents-python** 库与 LLM（如 GPT-4）进行交互，也可以接入自托管模型（如通过 Ollama 或 HuggingFace 提供的模型）。项目提供了多个示例，包括简单对话代理、多代理系统和带有工具的代理等，展示了 Wasm 代理的潜力。用户可以通过 GitHub 获取代码并按照说明运行这些代理。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在浏览器中运行AI代理和相关技术的可行性及其实现方法
-
-不同观点：
-• simonw：认为文中的"agent"定义来源于OpenAI的Python库，该库将工具作为可选项，而不是必选项，这与许多其他代理定义不同。他还指出"hello world"演示仅运行单个提示。
-• thepoet：提到他们在评估Pyodide和WASM时发现多步骤任务需要本地运行LLM生成的代码，并选择了Apple Containers上的CodeRunner，但认为在处理任意提示方面仍需改进。
-• meander_water：认为直接在浏览器中运行模型更有趣，可以通过transformers.js和onnx runtime实现，且无需GPU。
-• om8：展示了在浏览器中运行llama3模型的demo，并建议未来可以完全本地化。
-• TekMol：质疑为何需要WASM，因为当前仅运行与服务器LLM通信的代码。
-• ipsum2：分享了通过修改JS绕过网站反自动化点击检测的经验，并认为Firefox由于其可扩展性可能成为代理的未来。
-• _pdp_：认为用Python编写客户端代码并没有简化代理创建，反而更复杂。他还指出代理连接工具并嵌入工作流仅是工作的一小部分，更多的工作在于可观察性、后台任务、队列系统等。
-• asim：认为代理应是长期运行的外部浏览器进程，WASM的想法聪明但浏览器环境需要进化。
-• sandGorgon：介绍了他们在移动浏览器中创建AI代理的经验，并提到通过扩展框架实现这些代理，且在Android上实现更困难。
-• benatkin：认为文章试图用"agent"这个词来显得酷，但并未说明为何这不仅仅是基础AI工作，指出openai-agents-python库可用于编写非代理代码。
-• raybb：询问是否可以通过浏览器扩展绕过CORS问题。
-• zoobab：指出未提及WebGPU。
-• dncornholio：认为在HTML文件中将Python代码放入字符串是过时的做法。
-• _joel：理解为何需要禁用CORS限制，但仍觉得这不太理想。
-
-补充讨论：
-• 关于是否需要WASM的争议（simonw, TekMol）。
-• 在浏览器中直接运行模型的可行性和工具选择（meander_water, om8, meander_water）。
-• 对代理定义及其实际应用的讨论（simonw, _pdp_, benatkin）。
-• 绕过技术限制（如CORS）的实际操作经验（ipsum2, raybb）。
-• 对不同技术栈（如Python、WebGPU）在浏览器中应用的看法（zoobab, dncornholio）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44461341" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
