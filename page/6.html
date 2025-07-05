@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-05 05:14 (北京时间)
+            最后更新时间: 2025-07-05 09:00 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,170 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://buttondown.com/jaffray/archive/caching-is-an-abstraction-not-an-optimization/" target="_blank">Caching is an abstraction, not an optimization</a>
+                    <a href="https://phk.freebsd.dk/sagas/phkmalloc/" target="_blank">phkmalloc</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: samuel246</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-01 10:42</span>
+                    <span>作者: fanf2</span> |
+                    <span>评分: 71</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-01 11:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了缓存（caching）的本质，提出缓存更应被视为一种抽象工具，而非仅仅是性能优化手段。作者认为，传统上缓存被用来提升数据读取速度，避免每次都访问后端数据库或API，但这种观点并不全面。通过处理数据在对象存储、磁盘和内存间的移动，作者意识到缓存其实简化了软件设计，使得不同存储层次的管理更加清晰。文章还指出，缓存算法（如LRU、LFU）提供了干净的抽象边界，尽管这些算法有时看似复杂，但它们在实际系统中不可或缺，因为数据访问模式难以预测。最终，作者强调缓存作为抽象的成功之处在于其隐藏了底层细节，但在出问题时才显得显眼，因此不应低估其价值。</p>
+                    <p>文章讲述了作者如何改进FreeBSD系统中的内存分配器（malloc），以解决内存分页和释放效率低下的问题。最初，系统使用Chris Kingsley的malloc实现，尽管该实现已考虑了虚拟内存环境，但作者发现当程序终止时会产生大量磁盘活动（称为“死亡嘎嘎声”）。通过日志记录和数据分析，作者发现问题在于释放内存时需要遍历自由内存块列表，导致内核分页。作者通过修改malloc，在释放内存时避免直接访问实际内存块，显著减少了分页问题。最终，作者彻底重写了malloc实现，优化了内存管理效率。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：缓存与软件简化及抽象的关系
+                    <div class="comments-summary">主要讨论点：对Poul-Henning Kamp（PHK）的贡献及其开发的phkmalloc的评价和讨论
 
 不同观点：
-• ckdot2：认为缓存可以带来好处，但不能简单地认为缓存简化了软件。引用经典名言“计算机科学中只有两件难事：缓存失效和命名”，指出缓存的复杂性。
-• necovek：缓存引入了生命周期管理等复杂性，不能直接说缓存使事情变得简单。缓存可以在抽象接口的实现中局部化，但缓存本身不是抽象。
-• armchairhacker：优化通常需要重新思考代码结构，从而使代码更易理解。例如缓存级别迫使分离不同访问频率的数据。抽象是隐藏细节，例如垃圾回收机制。
-• klabb3：作者指的是缓存可以作为存储访问系统中的实现细节，而不是直接管理多个存储层。缓存并非系统功能必需品。
-• charleshn：缓存在分布式系统中引入双模性和亚稳定性问题，如DynamoDB设计中考虑了这些问题。
-• LudwigNagasena：缓存是一种优化，有时可以被抽象掉，例如CPU缓存或构建缓存，但在网页缓存中很难完全抽象。
-• neuroelectron：认为这是语义上的争论，不愿参与。
-• TristanDaCunha：对整个讨论感到困惑。
-• dasil003：缓存只是保持数据副本，增加复杂性，不能简化系统，也不是抽象。
-• zmj：在单写单读情况下，缓存问题较少，多写多读时问题更复杂。
-• gmuslera：性能元素包含在抽象中，优化抽象设计时也需要考虑性能。
-• Joker_vD：缓存可能有多个用户，优化时需考虑系统整体性能，而不是仅满足单一用户需求。
-• taeric：缓存策略和物化视图都可以作为缓存和抽象的辅助工具。
-• eigenform：硬件管理的缓存是抽象的典型例子，存储位置选择被抽象掉。
-• pclmulqdq：更好的抽象使用也是一种优化。
+• [throw0101d] 介绍了PHK的背景，强调他在技术领域的多项贡献，包括MD5crypt算法和Varnish软件。该评论提供了相关维基百科链接以供进一步了解。
+• [Tuna-Fish] 分享了一个个人轶事，描述了phkmalloc的严格检查机制如何导致系统崩溃，并对此表示欣赏和喜爱，认为这种做法虽然极端但有效。
+• [bogeholm] 也分享了一个关于遇见PHK的正面轶事，强调PHK的亲和力和技术专长，通过在无声车厢中通过文字交流确认身份并握手。
+• [grogers] 引用了其他人对phkmalloc的评价，从“ brilliant”到“an affront to all morals”，个人认为这是一种在约束条件下的 clever hack，并指出随着多核系统和ASAN等工具的出现，phkmalloc的某些特性可能不再那么必要。
+• [elteto] 表达了对PHK与Dennis Ritchie讨论UNIX内核相关问题的羡慕，认为这是一种难得而宝贵的经历。
+• [nasretdinov] 对现代硬件（如NUMA架构和多核处理器）是否需要像phkmalloc那样的彻底重新设计表示疑问，提出了技术演进是否需要全新方案的讨论。
 
 补充讨论：
-• 争议焦点在于缓存是否简化了软件以及缓存是否属于一种抽象。
-• 部分评论者认为缓存增加了复杂性，而非简化系统，且缓存本身不是抽象。
-• 另一部分评论者指出，在特定情况下，缓存可以作为优化手段，并通过抽象隐藏细节。
-• 分布式系统中的缓存问题如双模性和亚稳定性也被提出，作为缓存复杂性的例证。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44432506" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.omgubuntu.co.uk/2025/06/ubuntu-riscv-rva23-support" target="_blank">Ubuntu 25.10 Raises RISC-V Profile Requirements</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bundie</span> |
-                    <span>评分: 118</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-01 08:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Canonical计划在Ubuntu 25.10中提升对RISC-V设备的支持，但大多数现有RISC-V设备将无法运行该版本。这是因为Ubuntu 25.10将基准RISC-V配置文件（RVA）从RVA20升级到RVA23，后者要求强制支持向量和虚拟化扩展，以满足更高性能需求如AI、加密和企业工作负载。现有设备如Orange Pi RV2由于缺乏这些扩展将无法支持新版本。不过，Ubuntu 24.04 LTS仍将支持到2029年，因此短期内影响不大。长期来看，这一升级将有助于Ubuntu在RISC-V平台上占据主导地位，但目前支持RVA23的设备还很少。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Ubuntu及相关操作系统对RISC-V等新硬件架构的支持策略及其争议
-
-不同观点：
-• [shirro] 认为操作系统在技术快速发展的背景下做出支持新硬件的决定非常困难。以RISC-V为例，虽然当前选择支持更高规格的硬件可能是明智的，但如果较低规格的RISC-V突然流行起来，可能会错失机会。他以Debian为例，指出Debian曾将32位ARM硬浮点系统的最低目标设为armv7，但后来由于Raspberry Pi（基于armv6）的流行，用户遇到了问题，最后通过Raspbian解决了这个问题。
-
-• [johnklos] 对Ubuntu的硬件支持策略持批评态度，认为Ubuntu对“低端”系统的支持不足，并讽刺其对未来硬件的支持过于超前，甚至支持了一些尚未存在的硬件（如RVA23设备），可能导致用户转向其他操作系统。他还提到，如果Ubuntu继续这样定位，可能会失去用户。
-
-• [somanyphotons] 认为RVA23是一个对Linux机器长期有益的指令集架构（ISA），并推测Ubuntu可能提前知晓了一些即将发布的硬件。他还提出了RVA23是否与RISC-V上的Android需求一致的问题。
-
-• [csense] 提出了一种技术解决方案，询问是否可以通过内核补丁或驱动程序来捕获不支持的指令，并用软件实现这些指令。
-
-• [Levitating] 表示希望有一些Ubuntu提前知晓但尚未公布的硬件。
-
-• [fithisux] 指出目前市场上还没有消费者可用的RV23 mini-ITX、micro-ATX或ATX规格的设备，并提到Orange PI 2存在图形blob问题。
-
-• [throwaway48476] 认为RISC-V应用处理器标准中的缺失部分逐渐补全过程中，类似的问题会不断出现。
-
-• [delfinom] 批评Canonical（Ubuntu的开发公司）试图再次分化市场，暗示其试图通过支持特定硬件来主导某个领域。
-
-补充讨论：
-- 讨论中多次提到RISC-V硬件支持的现状及其不确定性，尤其是RVA23设备在市场上的缺乏。
-- 有人对Ubuntu过于超前的硬件支持策略表示不满，认为可能导致用户流失。
-- 也有一些技术性讨论，如通过软件实现来解决硬件支持问题。
-- Debian的历史案例被用来对比当前Ubuntu面临的类似困境。
-- Canonical的市场策略受到质疑，被认为是在分化市场。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44431828" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://joincolossus.com/article/flounder-mode/" target="_blank">Flounder Mode – Kevin Kelly on a different way to do great work</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: latentnumber</span> |
-                    <span>评分: 264</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-03 15:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了凯文·凯利（Kevin Kelly）的不同寻常的职业道路和工作方式。他没有追求创立一家独角兽公司，而是以“好莱坞风格”工作，参与各种创意项目。凯利曾是《全球概览》编辑，帮助创建了早期在线社区WELL，并联合创办了《连线》杂志。他撰写了多本书籍和文章，涉猎艺术、旅行、宗教、创意和人工智能等领域。凯利还参与了斯皮尔伯格电影《少数派报告》的未来学顾问工作，并启发《未来世界》中的“死亡时钟”概念。他组织精选的长距离徒步旅行，还从事雕塑、绘画和摄影等艺术活动。
-
-凯利提倡长期思考，正在建造一座可持续一万年的时钟。他也是一位重生的基督徒，并与妻子育有三个孩子。他早期提出的“一千个真粉丝”理论推动了创作者经济的发展。
-
-作者布里·沃尔夫森（Brie Wolfson）反思了自己的职业选择，受到凯利不拘一格的工作方式启发，认为在硅谷以外也可以通过多样化的项目实现影响力和职业价值。她分享了自己在谷歌和其他创业公司工作的经历，最终选择追求自己认为有趣和有意义的工作，而不是传统的职业晋升路径。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对技术乐观态度的讨论，以及对凯文·凯利（Kevin Kelly）个人影响力的评价
-
-不同观点：
-• [正面评价]  
-  - **[dannyobrien]**: 对凯文·凯利的积极评价，认为与他的对话帮助恢复了对技术乐观态度的信心，这种对话在个人职业发展中起到了关键作用。
-  - **[vessenes]**: 支持这种观点，分享了与另一位传奇人物John Seeley Brown的类似经历，强调跟随个人兴趣的重要性，但也提出了对“跟随兴趣”是否会导致缺乏长期影响的自我反思。
-  - **[pclowes]**: 认为文章提醒了人们关注方向和兴趣，而不是仅仅追求职业晋升和企业目标，批评了当前科技行业的“职业化”趋势。
-  - **[joshdavham]**: 对作者的心路历程产生共鸣，提到自己从追求创业成功转变为通过软件建设对世界产生积极影响。
-
-• [批评与质疑]  
-  - **[egypturnash]**: 批评文章名义上是关于凯文·凯利的访谈，但实际上更多是作者的自传内容，缺乏对凯利观点的深入探讨，访谈内容过于浅显。
-  - **[jebarker]**: 提出“跟随兴趣”可能存在幸存者偏差，质疑仅凭兴趣是否能带来财务安全和工作自由。
-
-• [社会与个人焦虑]  
-  - **[kaiwenwang]**: 表达了对年轻人面临社会压力的担忧，认为如果不成为行业顶尖人物，可能会陷入贫困和不满的生活状态。
-  - **[whiplash451]**: 强调在大的组织中找到自己兴趣点的重要性，建议在缺乏明确产品路线图的情况下主动寻找项目机会。
-
-• [宗教与哲学思考]  
-  - **[blendo]**: 提到凯利有宗教背景，提供了一个理解凯利思想的宗教视角。
-
-• [其他支持性评论]  
-  - **[cjbohlman]**: 赞赏文章，并联想到Ryan Norbauer的写作，强调根据个人兴趣选择工作带来的满足感。
-  - **[cushychicken]**: 喜欢文章中对乐观态度的许可感，并分享了对凯利评价Steve Jobs和Bob Dylan为“混蛋”的共鸣。
-  - **[gleenn]**: 对文章中的幽默元素（如G-Chat与高管共用Snuggie的场景）表示欣赏。
-  - **[srean]**: 对文章中的照片和凯利保持环境整洁表示赞赏。
-  - **[nathanbarry]**: 对Colossus发布的内容表示喜爱，并对文章分享表示感谢。
-
-• [对科技行业文化的批评]  
-  - **[AIorNot]**: 强烈批评当前科技行业的“胜利文化”，认为这种文化忽视了人类直觉和创造力，并呼吁恢复好奇心、耐心和同理心。
-
-补充讨论：
-- **兴趣与职业发展的平衡**: 一些评论提到了“跟随兴趣”是否会导致缺乏长期职业影响，以及是否存在幸存者偏差的问题。
-- **科技行业的文化批判**: 对当前科技行业过度重视指标、增长和职业化的反思，呼吁更多关注人类创造力和个人兴趣。
-- **跨代智慧的传承**: 有评论指出硅谷的年龄歧视问题，导致年长一代的智慧被忽视。
+• phkmalloc的性能和现代工具（如ASAN）的关系：[grogers] 指出由于多核系统和ASAN等工具的出现，phkmalloc的部分功能已被取代。
+• 对技术轶事的欣赏：[Tuna-Fish] 和 [bogeholm] 都分享了对PHK个人和技术轶事的欣赏，这些轶事增加了对PHK个人魅力的了解。
+• 现代硬件发展对软件设计的影响：[nasretdinov] 提出了现代硬件发展是否需要全新设计的问题，引发了对技术演进的深入思考。
 
 争议焦点：
-- **文章内容是否偏离主题**: 一些评论认为文章名义上是关于凯文·凯利的访谈，但实际上更多是作者的自传内容，缺乏对凯利观点的深入探讨。</div>
+• phkmalloc的设计是否仍然适用于现代系统：[grogers] 和 [nasretdinov] 都提到了现代硬件和技术工具的发展对phkmalloc设计的影响和挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44455933" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44432900" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -235,45 +106,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.greyblake.com/blog/alternative-blanket-implementations-for-single-rust-trait/" target="_blank">Alternative Blanket Implementations for a Single Rust Trait</a>
+                    <a href="https://www.smithsonianmag.com/science-nature/in-a-milestone-for-manhattan-a-pair-of-coyotes-has-made-central-park-their-home-180986892/" target="_blank">In a milestone for Manhattan, a pair of coyotes has made Central Park their home</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: greyblake</span> |
-                    <span>评分: 28</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-01 07:48</span>
+                    <span>作者: sohkamyung</span> |
+                    <span>评分: 105</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-01 12:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了Rust中如何解决同一trait不能有多个重叠的blanket implementation的限制问题。具体场景是在开发Joydb时遇到了Adapter trait的两种实现：UnifiedAdapter和PartitionedAdapter，希望用户只需实现其中一个即可自动获得Adapter trait的功能，但由于Rust的限制无法直接实现。
-
-解决方案是使用标记结构体（marker structs）和关联类型（associated types）来绕过这一限制。具体步骤包括：
-
-1. 定义标记结构体Unified<A>和Partitioned<A>，这些结构体仅用于类型级别的分发。
-2. 定义一个辅助trait BlanketAdapter，并分别为Unified<A>和Partitioned<A>实现这个trait。
-3. 修改Adapter trait，增加一个关联类型Target，以委托给正确的BlanketAdapter实现。
-
-通过这种方法，成功解决了Rust中不能有重叠blanket implementation的问题，使得用户只需实现UnifiedAdapter或PartitionedAdapter，即可自动获得Adapter trait的功能。</p>
+                    <p>2025年6月30日，《Science》报道，一对郊狼在纽约曼哈顿中央公园安家，成为里程碑事件。六年来，两位摄影师持续追踪拍摄它们，记录下这些郊狼在城市环境中的隐秘生活。它们在纽约市天际线背景下自由活动，展示了野生动物适应城市生态的惊人能力。这一现象引发了公众和科学界对城市野生动物行为的关注和研究兴趣。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对`BlanketAdapter`和`Adapter` trait设计模式的评价及其与Context-Generic Programming (CGP) 的关联
+                    <div class="comments-summary">主要讨论点：城市中的郊狼（coyotes）与人类的共存问题，包括其对城市生态的影响以及潜在的风险。
 
 不同观点：
-• maybevoid认为原文中讨论的`BlanketAdapter`和`Adapter` traits与CGP中的provider traits和consumer traits非常相似，并指出原文的设计思路与CGP的设计理念相吻合。他进一步通过一个CGP的重实现例子展示了CGP如何在原文基础上进一步泛化该设计模式，并提到CGP通过宏来减少大量样板代码。他还提出可以进一步优化示例，比如将`load_state`提取为单独的trait以便复用，但为了示例简洁，未深入展开。
+• [thePhytochemist] 认为郊狼在城市中有其正面作用，如控制鼠患，并且个人享受与郊狼在一定距离下的共存。尽管如此，他保持警惕，并意识到郊狼可能会对宠物（如猫狗）构成威胁。他主张学会与郊狼共存，并欣赏它们对城市的贡献。
 
-• dwenzek则认为虽然该设计模式解决了一个常见问题，但使用两个具有完全相同类型签名的trait可能是一种过度工程化（over-engineering）的表现。他暗示这种设计可能过于复杂，不一定在所有场景下都是最佳选择。
+• [qoez] 对郊狼控制鼠患的作用持怀疑态度，用《辛普森一家》中的生态失控例子作比喻，暗示引入郊狼可能会导致新的生态问题，类似于引入新物种来解决现有问题却引发更大麻烦。
+
+• [HocusLocus] 通过提及过去中央公园安全的历史，暗示如今城市中有郊狼出没可能对儿童构成威胁，隐含对当前情况的不满。
+
+• [delichon] 分享了个人经历，指出郊狼不仅威胁小型宠物，还会跟踪家猫。尽管郊狼频繁出没，其猫仍活了九年，但他对再养猫感到犹豫。此外，他也提到曾因浣熊失去过一只猫，反映城市野生动物对宠物的普遍威胁。
+
+• [srean] 提出一种推测，认为人类与郊狼的互动增加，可能正在见证一种新的“驯化/物种形成”事件，类似于早期狗的演化过程。他希望这种互动不会演变为敌对关系。
+
+• [sdwr] 简单表达了对郊狼的喜爱，通过视频链接展示郊狼的可爱一面，未深入讨论风险问题。
+
+• [gotoeleven] 批评了对危险动物过度保护的“奢侈信仰”，认为这是富人的自我满足，而代价由其他人承担。他以科罗拉多狼的重新引入为例，指出类似政策可能带来的负面影响。
+
+• [doug-moen] 警告如果郊狼繁殖，可能会本能地保护幼崽并对人类发起攻击。他主张在情况恶化之前移除郊狼，以避免潜在的冲突。
 
 补充讨论：
-• maybevoid提供了额外的资源链接，包括Reddit讨论帖和CGP相关示例代码的gist链接，为有兴趣深入了解CGP的读者提供了参考。[1][3]
-• dwenzek对设计复杂度的质疑引发了对该模式在实际应用中是否必要的讨论，涉及到软件设计中简洁性与可扩展性之间的平衡问题。
-
-争议焦点：
-• 该设计模式是否属于过度工程化。maybevoid认为其与CGP理念一致且有进一步泛化的潜力，而dwenzek则担心这种设计在某些情况下可能过于复杂。</div>
+• 争议焦点在于郊狼对城市生态的正负面影响以及与人类的共存是否可持续。支持者强调其生态价值，反对者则关注其对宠物和人类的潜在威胁。
+• 个人经历成为讨论的重要部分，不同用户分享了郊狼与宠物之间的互动实例，显示出个体对郊狼行为的直接观察和感受。
+• 对未来可能出现的生态和安全问题存在不同预测，一些人担心郊狼的增多会导致更严重的人兽冲突。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44431601" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44433094" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -284,47 +157,59 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://austen.info/blog/github-copilot-agent-mcp/" target="_blank">Developing with GitHub Copilot Agent Mode and MCP</a>
+                    <a href="https://richardscollin.github.io/tmux-rs/" target="_blank">Introducing tmux-rs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: miltonlaxer</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-06-30 20:47</span>
+                    <span>作者: Jtsummers</span> |
+                    <span>评分: 817</span> |
+                    <span>评论数: 53</span> |
+                    <span>发布时间: 2025-07-03 15:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了作者如何通过GitHub Copilot的Agent Mode与Model Context Protocol (MCP) 协议结合，极大提升了开发效率。作者详细描述了如何在VS Code中自定义Copilot，包括设置自定义指令、提示和聊天模式，从而为不同开发阶段创建专属的AI助手。作者还分享了其VS Code的详细设置，启用了多个实验性功能以减少手动干预。通过MCP，作者让Copilot可以访问外部工具和数据源，如Sequential Thinking、SearXNG和Playwright，进一步增强了AI助手的功能。这些设置使代码生成、测试创建和问题解决更加自动化和高效。</p>
+                    <p>作者Collin Richards介绍了将tmux从C语言移植到Rust的项目，历时六个月，最近实现了代码库100%由Rust编写。尽管这是一个没有特别理由的业余项目，但作者详细分享了移植过程，包括使用C2Rust工具的初期尝试、生成代码的维护难题以及手动重构代码的经历。作者最终放弃C2Rust输出，选择手动翻译代码。文章还介绍了项目的构建过程，利用了Makefile和Cargo等工具，并提到在移植过程中遇到的有趣bug和C语言模式在Rust中的实现问题，如原始指针和宏的使用。最终，作者认为该项目虽然挑战重重，但通过手动重写达到了更可维护的Rust代码。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕MCP（多命令处理）工具、LLM（大型语言模型）代码助手（如Copilot、Claude Code等）的使用及其优缺点的讨论。
+                    <div class="comments-summary">主要讨论点：Rust重写tmux项目的价值、技术细节和挑战
 
 不同观点：
-• skydhash认为MCP设置过于复杂，且示例未能有效展示该实践的优势。他强调软件工程的核心不在于写代码更快，而是做出更好的决策。LLM更多是生成示例和回音室，无法提供独立的判断，工具应帮助开发者基于无偏见的事实做决策，而非迎合开发者的输入。
+• starchild3001：赞赏作者对项目的深入探索和勇气，特别是手动重写代码的决定。他认为自动代码转换工具在保持代码习惯性方面存在不足，并提出对将`unsafe` Rust转换为安全Rust的策略的疑问，尤其是关于如何处理原始指针和复杂控制流的问题。
 
-• jpalomaki指出，虽然Copilot的MCP可能复杂，但有替代方案，比如使用传统的命令行工具（如GitHub的gh、jira-cli等）。对于更复杂的需求，可以结合命令和工具如jq，通过npm运行，这可能比多次调用MCP更高效。
+• ethagnawl：关注tmux的Rust生态，分享了自己在rmuxinator项目上的经验，并提出将rmuxinator与tmux-rs结合使用的可能性，以增强功能。
 
-• skatanski对MCP持积极态度，认为其优势在于可以轻松编写与数据库或API交互的本地服务器，尤其在企业环境中难以获取LLM API密钥时，这种方法非常实用，可以快速进行概念验证（POC）。
+• mbreese：欣赏作者的态度，认为无需为 hobby 项目寻找理由，同时幽默地表示编码比自己的“充满segfaults的园艺”更安全。
 
-• luckystarr表示对Playwright MCP感兴趣，正在尝试使用，并寻求其他用户的建议和注意事项。
+• m3at：对某些开发者因过度打字导致水泡表示惊讶和关切，这与主要讨论点无直接关系但引发了对开发者健康问题的讨论。
 
-• mohsen1分享了使用BrowserMCP的经验，认为其能让AI代理通过浏览和点击理解问题，同时介绍了自己开发的代理外壳（agentshell）来避免代理因交互命令而停止工作。
+• gmoque：支持项目的态度，认为即使重写成熟应用看似不明智，但过程中能学到很多。同时建议将项目作为Rust初学者的学习资源，并提出通过AI增强tmux功能的创意。
 
-• WhitneyLand对Copilot的“agent模式”表示疑问，并将其与其他类似工具（如Claude Code、Gemini CLI）进行比较，希望了解它们的区别和优劣。
+• usrbinbash：质疑使用Rust重写tmux的必要性，认为Go语言更适合这种主要等待用户输入的应用。同时对项目代码库变大表示不满。
 
-• jonstewart引用了对GitHub MCP服务器的批评，指出其在模型使用和token消耗上的问题，并认为过多服务器可能适得其反，希望作者能提供更多关于各个MCP服务器的实用性细节。
+• pizlonator：幽默地声称用Fil-C在短时间内完成了tmux的移植，暗示不同语言选择的可能性和个人偏好。
+
+• tialaramex：提到有关Rust开发的视频资源，认为对Rust开发者有帮助，对非Rust开发者也有一定价值。
+
+• someperson：建议改进c2rust工具以减少信息丢失，从而降低初始转换的负担。
+
+• rthnbgrredf：展望未来通过大型语言模型实现C到安全Rust的自动化转换，但承认当前技术仍有限。
+
+• wiz21c：幽默回应项目“像在地狱中园艺”，暗示项目挑战性高。
+
+• sriku：详细分析了“有趣的bug”部分中的一个C代码问题，指出C编译器隐式声明导致的问题，并提出对地址截断现象的疑惑。
+
+• xvilka：希望项目代码未来更简洁，并比较了zellij与tmux的功能差异，指出zellij缺少一些tmux具备的重要功能。
+
+• sunshine-o：惊讶于tmux代码库的规模，并好奇其复杂性的来源，暗示对项目技术细节的兴趣。
 
 补充讨论：
-• MCP工具的实用性及其在不同开发环境中的应用场景是讨论的重点。
-• 对LLM生成工具的局限性（如回音室效应、缺乏独立判断）的批评与认可。
-• 不同工具（命令行工具、自定义服务器等）在效率和实用性上的比较。
-• 用户对具体工具（如Playwright MCP、BrowserMCP）的实际使用经验和技巧分享。
-• 关于Copilot“agent模式”与其他工具的比较及其在开发工作流中的实际效果的疑问。</div>
+- 争议焦点之一是使用Rust重写tmux的必要性和优势，特别是在性能和代码习惯性方面的讨论。
+- 另一个值得注意的点是对自动化工具c2rust的评价和改进建议，反映了开发者对工具效率和准确性的关注。
+- 讨论中还涉及了将AI与tmux功能结合的创新想法，展现了对技术进步的期待和探索精神。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44427688" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44455787" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -335,46 +220,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.google/technology/safety-security/opening-up-zero-knowledge-proof-technology-to-promote-privacy-in-age-assurance/" target="_blank">Opening up ‘Zero-Knowledge Proof’ technology</a>
+                    <a href="https://jacob.gold/posts/serving-200-million-requests-with-cgi-bin/" target="_blank">Serving 200M requests per day with a CGI-bin</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: doomroot13</span> |
-                    <span>评分: 238</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-03 17:36</span>
+                    <span>作者: feep</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-04 13:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>谷歌开源了其零知识证明（ZKP）库，以增强隐私保护，特别是在年龄验证方面。ZKP技术允许用户证明某些信息为真，而无需分享其他数据，例如在不需要透露其他信息的情况下证明自己年满18岁。通过开放这些加密工具的源代码，谷歌旨在帮助公共和私营部门的开发者构建更注重隐私的应用和数字身份解决方案。这不仅有利于用户享有更私密和安全的数字环境，还帮助企业和研究人员满足隐私需求并开发新应用。此举也响应了欧盟即将于2026年生效的eIDAS法规，鼓励成员国在欧洲数字身份钱包中采用增强隐私的技术。源代码可在GitHub上获取。</p>
+                    <p>本文回顾了2000年代初使用CGI程序创建动态网站的历史。CGI通过设置环境变量、生成新进程来执行程序并传递请求数据，程序输出通过stdout返回作为HTTP响应。CGI程序简单可靠，处理完请求后即退出，自动释放资源。由于每个请求都启动新进程，旧服务器并发能力有限，但现代服务器多核性能使CGI依然能高效运行。作者在现代硬件上测试CGI，结果显示其性能出色，每秒可处理2400多个请求。尽管CGI不再是最佳选择，但仍具可行性。作者还提供了一个使用Go和SQLite的简单留言板程序代码示例。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：非交互式零知识证明（Zero-Knowledge Proofs, ZKPs）的直觉解释及其应用
+                    <div class="comments-summary">主要讨论点：CGI及其现代替代技术的性能、优缺点以及应用场景
 
 不同观点：
-• **对非交互式零知识证明的直观理解需求**：[bobbiechen] 提到对交互式零知识证明有较好的理解，但难以找到对非交互式零知识证明的直观解释，并提供了一些参考资料。
-• **隐私与身份验证的应用**：[natch] 认为零知识证明可以在保护隐私的前提下解决许多因过度分享个人信息（PII）导致的问题，例如使用社会保障号码（SSNs）。
-• **技术实现与安全性争议**：[csense] 提出如何防御通过未经授权的方式获取私钥并绕过验证手段的攻击。
+• cb321认为，1990年代的CGI程序虽然速度快，但容易出错。现代的替代技术如Go、Nim等在本地连接上也能提供低延迟、高速度，但某些技术（如Python）由于启动成本高，在一次性模型中表现不佳。
+• simonw指出，CGI时代的性能问题促使了PHP和FastCGI的诞生，以避免每次请求都启动新进程。然而，现代硬件使得这种做法不再像过去那样不可行，甚至可以达到2000次请求每秒。
+• 10000truths认为，CGI的优点在于它提供了天然的隔离机制，使得一个请求中的错误或问题不会影响其他请求，这在多租户环境中尤为重要。
+• bob1029提到，现代硬件性能强大，使用如Kestrel这样的工具可以轻松处理大量请求，同时开发体验类似于传统的PHP。
+• perlgeek通过对比不同语言的启动时间，指出Perl因CGI的需求而优化了启动速度，相比Python和Ruby更快。
+• p0w3n3d认为，当前复杂的技术架构可能忽视了利用新硬件性能的简单技术，如CGI，并提出了静态文件方案的潜在应用。
+• apgwoz指出，现代的Serverless函数与CGI有相似之处，但提供了更多的安全机制和更少的复杂性。
+• firefoxd提供了Apache请求的可视化工具，以便更好地理解请求处理流程。
+• lukeasrodgers对文章中使用的基准测试工具plow的准确性提出质疑，担心其未能避免"协调省略"问题。
+• kiitos进一步批评了plow工具的代码质量和测试问题，建议不要轻信文章的结论。
+• Traubenfuchs推荐使用Apache Tomcat，强调其共享JVM和数据库连接池等优势。
+• sugarpimpdorsey认为Apache已经过时，建议使用更好的CGI替代方案，除非有遗留需求。
+• riobard对使用“请求/天”作为性能指标提出质疑。
+• petee建议进行FastCGI的对比测试。
+• znpy认为文章中提到的2400次请求/秒在现代16核CPU上表现过低，建议至少使用FastCGI。
 
 补充讨论：
-• **零知识证明的历史与商业化**：[ChuckMcM] 回顾了零知识证明技术在90年代的商业化尝试，如DigiCash和Andy Birrell的微支付概念，并表达了对这些技术重新应用的兴趣。
-• **复杂性与应用限制**：[Confiks] 讨论了一种复杂的多展示无关性与硬件绑定的解决方案，指出其复杂性和应用限制，并提到绕过验证的潜在方法。
-• **去中心化身份验证的潜力**：[esbranson] 认为零知识证明可以用于去中心化身份验证，例如在不提供个人信息的情况下验证政治党派 affiliation。
-• **技术扩展与应用场景**：[est] 询问是否可以通过零知识证明验证电子邮件地址的有效性。[vvpan] 提到 zkTLS 技术可以在不透露用户名的情况下证明拥有某个在线服务的账户。
-
-争议焦点：
-• **隐私保护与绕过验证的可能性**：[Confiks] 与 [csense] 都提到即使有隐私保护机制，验证系统仍可能被绕过，强调需要设定合理的期望。
-• **技术的创新性与实用性**：[hrdwdmrbl] 质疑该技术是否在当前研究前沿仍具有创新性和实用性，或者已经被其他团队超越。
-
-其他值得注意的讨论点：
-• **具体应用场景的讨论**：[Labo333] 提到在法国和美国一些州，成人内容网站因难以实现年龄验证而受到影响。[baby] 分享了关于零知识证明的资讯平台。[mumbisChungo] 提到零知识证明在分布式网络中保护信息隐私的应用。[ranger_danger] 质疑零知识证明如何验证请求来自真人而非机器人。
-• **潜在商业应用**：[cyberax] 提出该技术可能实现类似Scroll的匿名付费浏览网络。
-
-总结：讨论主要围绕非交互式零知识证明的直观理解、技术实现与安全性、隐私保护与绕过验证的可能性、以及该技术在不同场景下的应用潜力与限制。</div>
+• 对现代硬件性能的讨论，如多核CPU和强大内存带来的性能提升。
+• 对不同技术方案的隔离性和安全性的比较。
+• 对基准测试工具和方法的质疑和建议。
+• 对简单技术（如CGI和静态文件）在现代应用中的潜在价值的重新评估。
+• 对不同编程语言启动时间和生态系统的比较。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44457390" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44464272" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -385,77 +273,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://eev.ee/blog/2025/07/03/the-rise-of-whatever/" target="_blank">The Rise of Whatever</a>
+                    <a href="https://dmitriid.com/prompting-llms-is-not-engineering" target="_blank">Prompting LLMs is not engineering</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cratermoon</span> |
-                    <span>评分: 305</span> |
-                    <span>评论数: 45</span> |
-                    <span>发布时间: 2025-07-04 04:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章最初标题为“怀念电脑带来乐趣的时代”，但作者在写作过程中发现，电脑变得不再有趣的背后有一个黑暗原因，与近年历史中的一系列事件有关。文章回顾了2000年代通过互联网转账的唯一可行选择——PayPal，它控制了资金的使用规则，甚至可以冻结账户并扣留资金长达半年。2010年左右，比特币出现，看似能解决这些问题，实现自由转账，但最终并未实现预期。比特币没有成为广泛使用的货币，而演变成一个充满骗局的生态系统，主要用于投机。PayPal仍然是转账的主要方式，其他平台如Stripe、Patreon、Itch和Ko-fi等也都依赖PayPal或Stripe。作者认为，比特币的失败在于大多数参与者并不关心它作为货币的功能，只关心其价格上涨带来的财富，这种投机文化导致比特币及其衍生品（如NFT）失去了最初的意义。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对现代技术（如LLMs、自动化工具）及其对学习、创造和行业影响的多种看法和争议
-
-不同观点：
-• **gyomu**：担心现代自动化工具（如LLMs）对初学者的负面影响，尤其是这些工具可能让初学者跳过练习和学习过程，直接获得结果，从而破坏学习的“良性循环”。例子包括通过AI生成图片或音乐，而不需要经过长期练习。
-
-• **chrismorgan**：对代码编辑器中自动补全功能的不满，认为这种功能不仅没有提高效率，反而增加了麻烦。虽然理论上可以保持代码语法有效，但在实践中并不实用。
-
-• **Almondsetat**：认为计算机本质上无所谓有趣或无聊，用户的体验取决于他们如何利用计算机。对文章中将支付方式和社交网络与计算机无趣直接关联表示不认同。
-
-• **moritzwarhier**：反对文章中对比特币成为主流货币的期望，认为比特币是一个骗局，并批判将公共资金投入比特币的倡导者。
-
-• **dalemhurley**：分享了对PayPal进入澳大利亚市场时的困惑，以及对PayPal试图通过游说改变银行业务系统的批评。
-
-• **resonious**：同意文章中的许多观点，但不同意对未来的悲观 outlook。认为尽管存在愚蠢和贪婪，但现代技术的成就依然值得肯定，并认为LLMs有其价值，只是需要有效使用。
-
-• **icameron**：感慨过去通过努力和毅力解决复杂脚本问题的技能被LLMs取代，表达了对依赖LLMs生成代码的不满。
-
-• **Arch-TK**：认为LLMs在编程中的流行是因为它们擅长解决重复性问题，而不是因为它们在解决新问题上有多优秀。强调了架构和独特问题解决在产品中的核心价值。
-
-• **Al-Khwarizmi**：部分同意文章观点，但对LLMs持不同看法。认为文章写得很好，但LLMs有其应用价值，尤其是在有效使用的情况下。
-
-• **ZYbCRq22HbJ2y7**：认为文章是对现代平台和流行文化的抱怨，但同时指出LLMs将推动人们意识到以前未注意到的事物，并预期未来信息普及对社会的积极影响。
-
-• **washmyelbows**：同意对现代网络平台的批评，但对LLMs在软件开发中的实用性持肯定态度，认为它们在某些任务中可以节省时间。
-
-• **dwedge**：不喜欢文章中的抱怨语气，认为这是一种常见的“受害者”式写作风格，对文章的幽默和字体选择等表示不满。
-
-• **rednafi**：认为编程一直是在寻找更简单的方法来完成任务，LLMs是这一进程的自然延伸。不认为自动化工具的普及是损失，反而是一种进步。
-
-• **marcus_holmes**：同意结论，但认为LLMs帮助人们认识到过程比结果更重要，强调了创造性活动的内在价值和享受过程的意义。
-
-补充讨论：
-- **LLMs对初学者和学习过程的影响**：多个评论提到了LLMs对初学者学习曲线的影响，有人认为这会破坏学习过程，也有人认为这可以解放人们去关注过程而非结果。
-- **对自动化工具的不同态度**：一些评论者对自动化工具（如代码编辑器的自动补全功能和LLMs）持批评态度，认为这些工具增加了不必要的复杂性，而另一些人则认为这些工具提高了效率，是技术进步的体现。
-- **比特币和经济系统的争议**：对将比特币视为未来货币的期望存在较大争议，部分评论者认为这是不切实际的，甚至是危险的。
-- **对文章语气和风格的评价**：部分评论者对文章的写作风格和语气提出了批评，认为其带有抱怨和受害者心态，而另一些人则欣赏文章的写作质量和思考深度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44461208" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cell.com/cell-reports-physical-science/fulltext/S2666-3864(25)00221-8" target="_blank">Manipulating trapped air bubbles in ice for message storage in cold regions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: __rito__</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-06-30 10:15</span>
+                    <span>作者: Bluestein</span> |
+                    <span>评分: 75</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-07-04 21:38</span>
                 </div>
 
                 <div class="summary-section">
@@ -465,44 +289,82 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：冰泡作为数据存储媒介的可行性与相关联想
+                    <div class="comments-summary">主要讨论点：是否应将“提示工程”（Prompt Engineering）视为真正的“工程”（Engineering）
 
 不同观点：
-• **dtgriscom**：认为冰泡作为存储媒介不耐久，不是因为气候变化，而是由于表面能的作用。不同物质之间的边界会随着时间最小化，冰泡最终会变成球体，导致数据无法长期保存。他引用了自己在MIT学到的知识来支持这一观点。
+• floppyd: 认为提示工程应被视为工程的一种，因为该过程涉及解决不确定性、构建系统提示，并通过实验观察结果，这符合工程的定义，尽管复杂程度可能不如其他工程项目。
+• gundmc: 同意将提示工程视为工程，但指出有些人不承认通过优化提示可以获得更好的结果，这令人惊讶。将提示工程类比为社会工程学，强调其影响模型产生期望结果的过程。
+• dlevine: 认为提示工程更接近科学而非工程，因为其过程更像是发现已有系统的特性，而非通过工程方法构建新系统。
+• labrador: 认为提示工程更像艺术而非工程，但理解LLM的基本原理有助于获得更好结果。将提示工程比作好的采访技巧，强调引导而非控制。
+• msgodel: 认为编码本身不是工程，软件工程是无聊的行政工作。对那些只想最大化薪水的人来说，软件工程角色并不理想。
+• toofy: 认为雇佣工程师的人不能因此被称为工程师，类比使用LLM写论文不使人成为生物学家，强调专业角色的区分。
+• ineedasername: 认为提示ChatGPT与提示LLM不同，后者更具工程性质，因为可以减少未知因素并构建特定用途的解决方案。
+• rapatel0: 认为许多工程学科需要统计方法解决问题，提示工程应通过创建基准数据集和定义效能指标来规范化。
+• jonplackett: 认为批评AI有其道理，但全盘否定或全盘接受都是错误的，应客观看待AI的优缺点。
+• acedTrex: 认为对任何真正的工程师来说，提示工程是否为工程是显而易见的，暗示其不属于工程范畴。
+• mystraline: 认为管理层误以为LLM提示可以替代工程师的工作，但实际上LLM提示无法替代对基础设施的深入理解。
+• kriro: 认为提示工程是试图逆向工程一个非确定性黑盒，但反问逆向工程是否属于工程。指出学术界已接受提示工程为软件工程的一部分。
+• simonw: 指出一些提示工程师无法明确“更好结果”的标准，强调评估的重要性。
+• VirgilShelton: 认为提示工程只是 buzzword，但已对真正的工程师产生影响。
+• ChrisArchitect: 提供相关链接，指出围绕LLM的讨论仍是 magical 和 wishful thinking。
+
+补充讨论：
+• 争议的焦点在于提示工程是否能被视为真正的工程，一方认为其涉及解决不确定性和构建系统，符合工程定义；另一方认为其更接近艺术或科学，因其主要涉及发现和影响已有系统。
+• 提示工程的专业性和角色区分也被讨论，例如雇佣工程师的人不应被称为工程师，使用LLM写论文的人不应被称为生物学家。
+• 提示工程的规范化和评估标准被提出作为其进一步发展的方向。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44468058" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/beeeeep54/rust-typescript" target="_blank">A Rust-TypeScript integration</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wreedtyt</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-07-04 11:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>该项目展示了一个结合Rust和TypeScript的Web应用，利用Rust的高性能与安全性以及TypeScript的类型安全特性。后端使用Rust和Poem框架来创建API端点，前端则采用TypeScript和SvelteKit构建用户界面。项目使用Vite作为构建系统，以实现快速开发和优化生产构建。开发时通过`zellij`启动开发服务器，前后端端口在`.env`中配置。项目结构清晰，后端使用Cargo管理依赖，前端则通过常见的JavaScript工具链进行管理。该项目提供了类型安全机制，通过Poem生成的OpenAPI规范在前端生成类型安全的客户端。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Rust与前端（特别是TypeScript）和后端（如Python、Web开发框架）的互操作性及其实现方案
+
+不同观点：
+• **mootoday** 和 **brainless** 支持使用 `ts-rs` 工具从Rust生成TypeScript定义，认为这种方法在项目中（特别是API重构时）非常有帮助。他们提到了该工具的自动化优势。
   
-• **meindnoch**：提出了一种更有创意的方法，即通过控制树木的年轮来存储信息。每一年可以用覆盖或不覆盖树来分别代表0或1。虽然存储速度很慢（1bit/年），但这一方法引发了对另类存储方式的讨论。
+• **graup** 原本期待讨论与WebAssembly（WASM）相关的内容，提到Parcel 2不再支持直接导入Rust到JS，并询问是否有简便的Rust-WASM编译和类型绑定方案。
 
-• **0xbadcafebee**：对冰媒介的长期保存性表示怀疑，语气较为调侃。
+• **paddy_m** 关注于Python后端和TypeScript前端之间的类型同步问题，希望找到一种方法验证两者类型的兼容性，而不是完全一致，以支持前后端并行开发。
 
-• **sprior**：将冰泡存储与亚马逊的存储服务类比，戏称为"Amazon Glacier"，带有调侃意味。
+• **sureglymop** 对SvelteKit应用的架构提出疑问，不确定它是构建成单页应用（SPA）还是静态站点，或者是否作为与Rust后端通过HTTP通信的独立后端，并质疑这种架构的额外开销。
 
-• **drfuchs**：通过历史类比，提到1979年的"Intel Magnetics 7110"磁泡存储芯片，暗示冰泡存储可能像过去的技术一样不实用。他还提到了对未来memristor技术的期待。
+• **pier25** 认为讨论的主题实际上是关于OpenAPI，并质疑除了OpenAPI之外，Rust和TypeScript之间是否存在其他互操作方式。
 
-• **baruchel**：联想到文学作品中"冻结的词语"的概念，提供了文化和文学上的视角。
+• **sidoshi** 提到寻找类似rspc（不再维护）的解决方案，对Poem库与Axum（更流行且稳定）的选择感到困惑，寻求对Poem的稳定性及功能覆盖的评价。
 
-• **speedylight**：以幽默的方式提到用加热的方式来删除文件，暗示冰泡存储在实际操作中的不便。
+• **evilmonkey19** 认为虽然这种方案对特定需求有帮助，但对于大多数Web开发者而言，TypeScript和Python因其多功能性和易用性更为常见，暗示Rust可能过于复杂。
 
-• **hnanon12341**：仅仅对文章中的抽象图片表示赞赏，没有深入讨论存储技术本身。
-
-• **lmpdev**：调侃文章本身像是在争取Ig Nobel Prize（搞笑诺贝尔奖），暗示其研究可能不切实际。
-
-• **lloydatkinson**：提到如果要在1925年创建一个冰泡信息并在2025年读取，那么时间旅行是必要的，质疑了实际应用的可能性。
-
-• **Mistletoe**：认为冰泡存储媒介虽然有趣，但实际使用效果可能很差。
-
-• **AlienRobot**：以幽默的方式提到冰泡存储可能在核冬天后会有用，暗示极端环境下的潜在应用。
-
-• **dzink**：对冰泡存储的想法来源表示好奇，但没有深入讨论技术细节。
-
-• **moralestapia**：幽默地表示期待AWS版本的冰泡存储服务，将现代云服务与古老的存储概念结合。
+• **koakuma-chan** 质疑是否需要独立的Rust后端，表示Next.js和React服务器组件的组合对他们来说已经足够，暗示现代前端框架可以替代后端服务。
 
 补充讨论：
-• 争议的焦点在于冰泡作为存储媒介的耐久性和实用性，特别是表面能对冰泡形状的影响。
-• 讨论中多次出现幽默和调侃，反映了社区对这一概念实际可行性的普遍怀疑。
-• 类比和历史技术（如磁泡存储芯片）的引用丰富了讨论，提供了更多视角。
-• 部分评论引入了文化和文学联想，扩展了讨论的范围。</div>
+- 讨论中涉及多个工具和库，如 `ts-rs`, Poem, Axum，反映了不同开发者对工具选择的不同需求和关注点。
+- 争议的焦点之一是Rust在后端开发中的必要性及其与前端（尤其是TypeScript和现代Web框架）的互操作性复杂度。
+- 另一个值得注意的点是开发者对前后端类型一致性和同步问题的关注，特别是在使用不同语言和框架时。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44421490" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44463654" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -513,93 +375,170 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://cells.andersmurphy.com/" target="_blank">One Billion Cells – Another Multiplayer Demo with Clojure</a>
+                    <a href="https://blog.koehntopp.info/2025/06/17/no-federation-no-e2e.html" target="_blank">Not being federated and E2E as an advantage</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: adityaathalye</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-04 05:54</span>
+                    <span>作者: asimops</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-04 17:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文讨论了创建类似Discord的聊天平台时，反对使用联合（federation）和端对端加密（E2E）。作者认为，联合系统会增加复杂性，导致不同服务器版本不一致，影响功能和安全性，并引发消息延迟和垃圾信息问题。端对端加密则使得服务器无法读取和监管消息内容，增加反垃圾信息和内容审核的难度，且新用户无法查看完整历史记录。作者建议采用非联合的单一服务器架构，使用TLS加密连接，保持消息明文存储，以便实现搜索、反垃圾和内容审核功能。同时，可以联合身份认证，允许用户使用如Mastodon的身份登录聊天服务器。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对某一技术或应用的初步使用体验和功能猜测
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44466580" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.lorenstew.art/blog/eta-htmx-lit-stack/" target="_blank">Our Fullstack Architecture: Eta, Htmx, and Lit</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mpweiher</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-04 10:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了一种结合服务器端渲染与交互性的全栈架构，使用了Eta、HTMX和Lit Web Components三种技术，旨在减少JavaScript使用量，提升页面加载速度和用户体验。Eta负责服务器端模板渲染，提供快速初始页面加载；HTMX处理大部分用户交互，通过简单的HTML属性实现动态行为，而无需大量JavaScript；Lit Web Components在必要时提供强大的客户端逻辑。这种架构显著减少了JavaScript包大小，提升了性能，尤其在移动设备和慢速网络环境下效果显著。文章通过对比不同React和NextJS应用的初始JavaScript大小，展示了该架构的优势。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于模板引擎和前端技术选型的讨论，特别是在使用 eta（模板引擎）与 lit-html 以及对 HTMX 和 data-star.dev 的选择上。
 
 不同观点：
-• **amadeuspagel 的观点**：该用户在移动端使用时遇到了问题，具体是点击单元格时键盘会自动打开。这表明该技术或应用在移动端交互上可能存在一些预期之外的行为，用户对此有一定困扰。
+• 第一个观点（nchmy）：建议使用 lit-html 的模板字符串，而不是 eta。论据是 lit-html 提供了服务端渲染（SSR）的版本，功能全面。这表明 lit-html 可能在 SSR 支持和功能性方面更具优势。
 
-• **andersmurphy 的观点**：这个用户似乎对当前技术或应用非常了解，提到这是一个非常“MVP”（最小可行产品）的版本，并且运行在价值5美元的VPS上。该用户显得比较积极，愿意回答其他人的问题，暗示该技术或应用还在早期阶段，但已经向公众开放。
-
-• **Theofrastus 的观点**：该用户提到了两个具体的功能或现象——“Bad Apple 动画”和“Doom 游戏”，似乎在询问是否有人已经利用该技术实现了这些功能。这可能表明该用户对该技术或应用的潜在功能感兴趣，特别是其多媒体处理能力和兼容性。
-
-• **freilanzer 的观点**：这个用户表现出明显的困惑，似乎不理解该技术或应用的目的或功能，使用了“What the hell am I even looking at?”这样的表达，显示出对当前内容或应用的迷茫。
+• 第二个观点（nchmy）：提出可以考虑使用 data-star.dev 作为 HTMX 的替代方案。虽然没有详细解释原因，但暗示了 data-star.dev 可能在某些方面比 HTMX 更值得考虑，可能是出于性能、功能或社区支持等因素的考量。
 
 补充讨论：
-• 该技术或应用似乎处于早期开发阶段（从“MVP”和“5美元VPS”的描述可以看出）。
-• 用户对该技术或应用的功能和用途有不同理解和期望，有人关注其技术实现和潜力（如 Theofrastus 提到的具体功能），有人则感到困惑（如 freilanzer）。
-• 移动端的用户体验存在一些问题，如 amadeuspagel 提到的键盘自动打开问题。
+• 争议焦点：选择 eta 还是 lit-html。争议的核心在于 SSR 的支持和整体功能的全面性。lit-html 的支持者认为它在 SSR 方面更具优势，而 eta 的使用者可能更看重 eta 的其他特性或个人偏好。
+
+• 另一个值得注意的讨论点：HTMX 与 data-star.dev 的对比。这里并没有展开详细讨论，但提出了一个替代方案，可能引发对两者在不同应用场景下优劣的进一步探讨。
+
+• 论据和例子：评论中提到了 lit-html 的 SSR 版本作为支持其优越性的例子，以及对 HTMX 的替代方案的建议，这些都为各自的观点提供了具体的参考。
+
+总体来看，讨论围绕着模板引擎和前端技术选择展开，涉及具体工具的功能比较和替代方案的建议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44463224" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://huggingface.co/apple/DiffuCoder-7B-cpGRPO" target="_blank">DiffuCoder-7B-CpGRPO: A code generation LLM developed by Apple</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: maxloh</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-04 22:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>**DiffuCoder-7B-cpGRPO**是基于DiffuCoder-Instruct的改进版本，通过结合GRPO的强化学习方法进行优化。该模型从DiffuCoder-7B-Instruct初始化，并在21K代码数据上使用coupled-GRPO进行了一轮后训练。结果显示，该变体在代码生成基准测试（如EvalPlus）上性能提升了4.4%，并减少了对自回归偏差的依赖。
+
+使用示例：
+```python
+import torch
+from transformers import AutoModel, AutoTokenizer
+
+model_path = "apple/DiffuCoder-7B-cpGRPO"
+model = AutoModel.from_pretrained(model_path, torch_dtype=torch.bfloat16, trust_remote_code=True)
+tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
+model = model.to("cuda").eval()
+
+query = "Write a function to find the shared elements from the given two lists."
+prompt = f"""</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44468442" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://twitter.com/soham_btw/status/1940952786491027886" target="_blank">My open source project was relicensed by a YC company [license updated]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sohzm</span> |
+                    <span>评分: 195</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-07-04 02:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章指出，在x.com网站上，某些与隐私相关的浏览器扩展程序可能会引发问题。建议用户禁用这些扩展程序，然后重试访问该网站。文章提醒用户不必担心，可以尝试再次操作。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：开源代码的许可、使用和侵权问题，特别是在一个涉及作弊工具的项目中。
+
+不同观点：
+• **fargle**：认为开源代码不能被"偷"。开源代码的再利用和商业化并不构成盗窃，只要使用的是不兼容的许可证。这里的重点是许可证的合法性问题，以及开源项目被商业化的合理性。
+
+• **tombert**：对开源感到失望，特别是GPL许可证的执行难度。认为公司可能通过销售优化后的二进制文件来规避GPL，且难以证明侵权行为。这反映了开源开发者在维权方面的无奈和困境。
+
+• **VoidWhisperer**：虽然认为开源代码的盗用是不对的，但对具体案例（作弊工具）并不感到同情。这表明对特定类型项目的道德判断影响了其对版权问题的看法。
+
+• **litexlang**：对开源项目的困难表示同情，并建议通过社区支持来反击侵权行为。强调开源社区的团结和支持。
+
+• **nativeit**：质疑原项目的合法性和正当性，因为项目涉及作弊工具。并指出代码相似性可能仅仅是由于类似的想法和使用类似的技术，而非直接的抄袭。
+
+• **an0malous**：提到一些知名公司通过利用法律和道德的灰色地带取得成功，暗示这种情况在科技行业并不少见。
+
+• **kratoskr221**：关注此类侵权行为对开源社区的负面影响，并询问是否可以通过法律手段解决此类问题，以保护开源开发者的权益。
+
+补充讨论：
+• **alberth**：提到相关的代码库似乎是GPL-3许可，或者曾经是，可能涉及到许可证的变更或重新许可问题。
+
+• **sohzm**：简短回应，似乎承认项目的价值有限，但仍代表了一定的努力。
+
+• **bhouston**：幽默地指出，作弊工具被另一个从事类似业务的公司盗用，具有一定的讽刺意味。
+
+• **InkCanon 和 kevbin**：简短评论，涉及到对项目作者身份的猜测和双方可能合作的可能性。
 
 争议焦点：
-• 主要争议在于用户对该技术或应用的用途和功能理解不一，部分用户（如 freilanzer）对其目的感到困惑，而其他用户（如 Theofrastus 和 andersmurphy）则对其功能和潜力有一定预期和理解。</div>
+• 开源代码的再利用和商业化是否构成盗窃，特别是在许可证不兼容的情况下。
+• 涉及不道德用途（如作弊工具）的开源项目是否值得同情和保护。
+• 如何有效保护和维权开源项目的版权，特别是在代码被修改和重新发布的情况下。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44461523" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://vondra.me/posts/how-often-is-the-query-plan-optimal/" target="_blank">How often is the query plan optimal?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: eatonphil</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-06-30 15:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了PostgreSQL查询优化器选择“最优”查询计划的有效性。尽管优化器承诺选择最优计划，但实际上依赖于成本估算，这可能导致错误选择。作者通过实验展示了在不同选择率下（如1-5%），优化器有时会选择性能较差的索引扫描而非更快的顺序扫描或位图扫描。实验还表明，位图扫描在多数情况下表现更好，尤其在低选择率时，而索引扫描缺乏预取能力，导致性能不佳。
-
-数据分布也会影响计划选择，均匀分布和线性分布的结果不同。在冷缓存情况下差异更明显，而热缓存时差异减小。总体而言，优化器基于统计和成本模型选择计划，但不总是最优。用户很难察觉有更好计划，手动干预也非易事。调整成本参数或有帮助，但适应所有数据分布的完美配置可能不存在。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SQL查询优化与执行计划的选择和优化
-
-不同观点：
-• **mike_hearn**：认为基于统计的查询计划对临时查询非常有用，尤其是对于人工编写的SQL查询。但对于机器生成的查询，可预测性更为重要，应该考虑硬编码计划或锁定执行计划以避免生产环境中的意外变化。他还提出可以设计一种数据库模式，提前构建索引和计划，避免性能突然下降。
-
-• **bob1029**：同意可以通过自适应查询处理技术改进查询计划，使数据库引擎在查询执行过程中调整策略，提升性能。他提供了多个高性能RDBMS中自适应查询处理的参考链接。
-
-• **to11mtm**：指出最佳查询计划往往依赖于具体数据库，且存在一些反模式，例如不当使用ORM导致性能问题。他还提到在处理特定数据库流量时，可以利用ORM将某些内容视为字面量而非参数化查询，以提升性能。
-
-• **remus**：不同意查询优化器总是选择“最佳”执行计划的观点，认为优化器在有限的时间和资源内工作，实际上是选择一个“足够好”的计划，并且需要快速和高效地完成。
-
-• **alexisread**：认为Linq风格的查询比SQL风格更具确定性，尤其在云环境和复杂表结构（如Iceberg表）中。Linq可以在查询生成时明确过滤和连接顺序，避免依赖查询计划的优化选择。
-
-补充讨论：
-• **争议焦点**：查询优化器的实际作用和性能表现。mike_hearn和remus对优化器的期望不同，前者关注可预测性和硬编码，后者强调优化器在有限资源下的效率和速度。
-
-• **技术实现**：bob1029提出的自适应查询处理技术和to11mtm对ORM使用中的反模式及具体数据库性能优化的讨论，提供了不同的技术实现视角。
-
-• **工具选择**：alexisread提出的Linq风格查询与传统SQL的对比，突显了在现代数据处理场景中，不同查询语言对性能和确定性的影响。
-
-通过这些讨论，可以看出在SQL查询优化领域，存在多种技术路径和方法，选择合适的查询计划和优化策略需要根据具体应用场景和需求进行权衡。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44424405" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44460552" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
