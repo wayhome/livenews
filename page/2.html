@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-06 05:13 (北京时间)
+            最后更新时间: 2025-07-06 09:09 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,43 +61,339 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.lemonde.fr/en/france/article/2025/07/05/seine-reopens-to-paris-swimmers-after-century-long-ban_6743058_7.html" target="_blank">Seine reopens to Paris swimmers after century-long ban</a>
+                    <a href="https://xata.io/blog/behind-the-scenes-speeding-up-pgstream-snapshots-for-postgresql" target="_blank">Speeding up PostgreSQL dump/restore snapshots</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: divbzero</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-05 17:43</span>
+                    <span>作者: tudorg</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-05 16:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年7月5日，巴黎塞纳河在关闭百年后重新对游泳者开放，这是自1923年以来的首次。此次开放是多年清理工作的成果，也是2024年巴黎奥运会 legacy的一部分。当天，几十名各年龄层的游泳者在埃菲尔铁塔附近的玛丽泳区庆祝这一时刻。巴黎今夏开放了三个游泳区，配有更衣室、淋浴和沙滩式家具，可容纳150至300人。为确保安全，官方每日检测水质，并进行游泳能力测试。尽管水质显著改善，但雨天可能导致污染，泳区或会关闭。巴黎为此投入约14亿欧元改善水质，市长伊达尔戈表示，这不仅是为奥运会，也是为了应对气候变化和提升市民生活质量。</p>
+                    <p>本文讨论了开源CDC工具**pgstream**在提升PostgreSQL快照性能方面的改进。pgstream支持DDL变更复制、模块化部署以及多种目标端（如PostgreSQL、Elasticsearch、Webhooks）的复制和快照功能。快照过程包括捕获源数据库架构、恢复到目标数据库、读取并写入数据。最初的设计使用了**pg_dump/pg_restore**来处理架构，并通过PostgreSQL事务快照机制实现并发读取。然而，写入性能成为瓶颈，尤其在处理大批量数据时。为此，团队通过优化写入逻辑，显著提升了快照速度，使其在具备额外功能的同时，性能接近**pg_dump/pg_restore**。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：欧盟水质监管及塞纳河游泳问题
+                    <div class="comments-summary">主要讨论点：PostgreSQL数据库在灾难恢复（冷恢复）场景下的最佳实践和工具使用
 
 不同观点：
-• **[nextos]**：认为欧盟法规对控制污水排放起到了一定作用，但地方当局往往避免在雨后测量水质，因为雨天时污水仍然经常被排入河流和海洋。即使在莱茵河非常干净的巴塞尔，当局有时也建议不要游泳。
+• **hadlock** 认为官方文档缺乏关于从"冷而黑暗"状态（所有主数据库丢失，需从异地备份恢复）进行备份和恢复的最佳实践指南。特别是在100GB到2TB的数据库范围内，备份和恢复可能需要6到72小时，过程复杂且容易出错。他强调了操作顺序的重要性，并指出在大小超过200-500GB时，开发和生产数据库的差异会导致更多问题。
 
-• **[cycomanic]**：提到巴黎的下水道博物馆是一个独特的体验，展示了历史上建造下水道系统的巨大工程。同时指出，在强降雨时，仍有溢流储水池将污水排入塞纳河。还提到巴黎为奥运会所做的水质清理努力。
+• **bitbasher** 推荐使用**pg_bulkload**和**pg_repack**工具。他分享了使用这些工具在冷恢复大容量数据库（1TB以上）时的显著效果，将恢复时间从24-72小时缩短到1-2小时，并提到**pg_repack**在回收磁盘空间方面的优势。
 
-• **[jedimastert]**：引用了新闻报道，指出尽管为奥运会清理了塞纳河，但仍有运动员在比赛后因水质问题被送医，质疑清理工作的有效性。
+• **jpalawaga** 指出即使有灾难恢复计划，也应假设增量备份无效，需要从头开始恢复整个数据库。他强调大多数服务水平协议（SLA）不考虑72小时以上的停机时间，并建议准备一个读取副本作为新的主数据库以应对严重问题。
 
-• **[bambax]**：提到住在船屋的人和一些年轻人一直有在塞纳河游泳的习惯，认为现在开放给大众游泳是更主流的新闻，但同时暗示这种情况一直存在。
-
-• **[cm2187]**：以讽刺口吻批评法国的规定，认为强制在游泳前淋浴的规定是无意义的监管，质疑水质的实际清洁程度。
-
-• **[david927]**：以幽默方式提到巴黎地下有“鲨鱼”，引用了维基百科页面，可能意在调侃对塞纳河水质的担忧。
+• **moribunda** 认为虽然**bitbasher**提到的优化是有效的，但希望看到更高级的技术，如**pgstream**在处理复杂场景（如并行工作线程和分区感知加载）以及特定数据类型的自定义压缩策略方面的应用。
 
 补充讨论：
-• 争议的焦点在于塞纳河的水质是否真正达到安全游泳的标准，尤其是在重大活动如奥运会之后仍出现运动员健康问题，质疑清理工作的成效。
-• 不同用户对法规和实际执行情况的态度各异，有的认为法规有帮助但执行不足，有的则认为法规本身过于繁琐或无意义。
-• 对塞纳河游泳的传统和现状有不同看法，有人认为这是长期存在的习惯，而有人则将其视为新的公共活动。</div>
+• **争议焦点**在于灾难恢复的实际操作复杂性和工具选择的有效性。虽然**hadlock**强调了恢复过程中的顺序和细节问题，**bitbasher**和**jpalawaga**则提供了具体的工具和策略。**moribunda**进一步提出了对高级技术的需求，以应对更复杂的恢复场景。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44474297" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44473888" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://toytales.ca/atomic-bomb-ring-from-kix-1947/" target="_blank">Atomic "Bomb" Ring from KiX (1947)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gscott</span> |
+                    <span>评分: 56</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-02 19:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>1947年，General Mills的KiX麦片品牌推出了一款原子“炸弹”戒指，顾客可用15美分加一个麦片盒顶换购。这款戒指又称“孤胆骑警原子炸弹戒指”，反映了当时公众对原子能的关注。戒指有可调节的金色带子，侧面有闪电爆炸图案，铝制弹头上有可拆卸的红色塑料尾翼，尾翼内可藏小秘密。移开红色底座后，可通过塑料镜头观察到闪光，这是由戒指内放射性同位素相互作用产生的，当时广告称其“完全安全”。由于所含的钋-210半衰期为140天，现存的这种戒指已无法产生可见闪光。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Radium和Polonium等放射性物质在消费品中的历史使用及其危险性
+
+不同观点：
+• [ChrisMarshallNY] 认为Radium手表是危险的，但基于其在非洲成长的经历，对某些潜在危险环境有较高的容忍度。他指出，尽管接触过如黑曼巴蛇等危险生物，自己还是存活下来，暗示对某些危险环境的适应性。
+• [SoftTalker] 对Polonium-210的危害表示严重关切，引用维基百科的信息强调其高度放射性和对人体极端危险，并提到其易于空气传播。同时，提出质疑，有多少孩子可能摄入了这种物质，并联想到用Polonium-210进行的政治谋杀事件。
+• [allenrb] 持怀旧态度，认为现代产品缺乏过去的品质，隐含对过去某些产品的肯定，但未具体讨论其安全性。
+• [victor22] 对产品中是否真的含有放射性物质表示怀疑，暗示可能存在夸张或虚构成分。
+• [foxglacier] 从更广泛的社会文化角度分析，认为上世纪的技术和未来憧憬令人兴奋，而当前尽管技术进步仍在继续，社会情绪却更加负面，并将此归因于气候变化带来的负面文化影响。
+
+补充讨论：
+• 争议的焦点在于Polonium-210等放射性物质在消费品中的使用及其实际危害程度。一部分人对其危险性表示严重关切，另一部分人则对其存在与否或实际影响持怀疑态度。
+• 不同评论者对历史产品的态度存在差异，有人基于个人经历淡化危险，有人则通过引用科学资料强调潜在风险。
+• 社会文化背景和时代情绪的变化也被引入讨论，作为理解现代与过去对技术进步态度差异的一个视角。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44447797" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://xclacksoverhead.org/home/about" target="_blank">X-Clacks-Overhead</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: weinzierl</span> |
+                    <span>评分: 202</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-02 07:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"X-Clacks-Overhead" 是一个基于已故作家特里·普拉切特（Terry Pratchett）作品《碟形世界》系列中的虚构信号系统 "Clacks" 的非标准HTTP头信息。在小说《Going Postal》中，"Clacks" 是一种类似电报的信号塔网络，角色罗伯特·迪哈特（Robert Dearheart）为了纪念去世的儿子，将儿子的名字 "GNU John Dearheart" 作为特殊信号持续在网络中传输，寓意“只要名字还被提及，人就未曾逝去”。为纪念特里·普拉切特，网络用户创造了 "X-Clacks-Overhead" 头信息，在网页服务器间传输 "GNU Terry Pratchett" 以缅怀他。这种头信息不会影响正常操作，只能通过分析传输数据查看。目前，包括Mozilla、Debian和The Register等网站都在使用这一头信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：X-Clacks-Overhead 头信息的实现、意义及技术扩展
+
+不同观点：
+• **纪念逝者**：[xena]和[MrGilbert]提到通过在HTTP响应头中包含已故人物的名字（如GNU Satoru Iwata）来纪念那些对自己有重大影响的人。这种做法让他们以一种特别的方式“永生”。
+  
+• **文化意义**：[pdpi]认为X-Clacks-Overhead头信息深深体现了黑客文化，并指出特里·普拉切特（Terry Pratchett）在作品中对文化的深刻理解。同时表达了对作者去世的惋惜。
+
+• **历史背景解释**：[masfuerte]解释了“Clacks”一词来源于特里·普拉切特的《碟形世界》系列小说，指的是类似于电报的信号塔网络，名字来源于信号传递时的咔嗒声。
+
+• **技术实现与问题**：[lxgr]提出头信息是否应该像原始的Clacks系统一样具备自我传播的能力，并质疑在HTTP协议中如何实现这种传播。[KaiserPro]分享了自己尝试创建真实Clacks网络的过程，但承认需要更多时间和动力来完成。
+
+• **浏览器与第三方服务**：[podlp]提到在某些功能手机或浏览器（如Opera Mini）中看到过这个头信息，质疑其是否由浏览器注入。同时指出这种头信息与减少带宽的设计目标相悖。[Animats]则揭露了一些网站在cookie同意提示上的不准确信息，指出某些服务声称必要的cookie（如Google Analytics）实际上并非必需。
+
+• **技术扩展与设想**：[atemerev]认为虽然X-Clacks-Overhead是应用层的实现，但提出是否可以利用IPv6的逐跳选项或LoRa中继器来实现类似Clacks的网络，传递名字信息。
+
+补充讨论：
+• **浏览器扩展与头信息检测**：[MrGilbert]提到有浏览器扩展可以检测网站是否广播了X-Clacks-Overhead头信息。
+• **头信息的消失与恢复**：[cyberpunk]提到某些网站（如mozilla.org）曾经停止使用该头信息，但后来又恢复。
+• **奖项关联**：[offbyone]指出X-Clacks-Overhead头信息曾在雨果奖的提名或投票中出现。
+
+争议焦点：头信息是否应具备自我传播能力以及如何在现代网络中更好地实现类似Clacks的系统。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44440968" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/ip7z/7zip/releases/tag/25.00" target="_blank">7-Zip 25.00</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pentagrama</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-05 22:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>7-Zip 25.00版本发布，主要更新包括：支持使用超过64个CPU线程进行压缩，并在多处理器组之间分配线程；bzip2压缩速度提升15-40%；deflate压缩速度提升1-3%；改进对zip、cpio和fat档案的支持；修复了一些漏洞和安全问题。用户反应积极，多人表示支持和赞赏。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：7-Zip及相关压缩工具的功能和实用性
+
+不同观点：
+• [Dwedit] 认为7-Zip 15.05版本在今天仍然有用，因为它是最后一个内置支持NSIS安装脚本反编译的版本。此功能由于安全问题在后来的版本中被移除，因此该版本具有独特价值。
+
+• [gertop] 指出7-Zip在处理.tar.gz文件方面不如WinRAR。具体来说，WinRAR允许用户浏览.tar.gz文件而无需解压，而7-Zip则需要将.tar文件解压到临时文件，这对于处理大文件（如1TB的.tar.gz文件）非常不方便。
+
+• [doctorpangloss] 提出一个问题，即为什么Windows操作系统不预装解压工具。这暗示了对操作系统原生支持解压功能的期望或需求。
+
+补充讨论：
+• 7-Zip和WinRAR在处理特定压缩文件格式（如.tar.gz）时的功能差异，尤其是浏览和解压的便捷性。
+• 7-Zip 15.05版本因其特定功能（NSIS脚本反编译支持）被部分用户视为具有持续价值的版本，尽管该功能因安全原因被移除。
+• 对操作系统是否应自带解压工具的讨论，这涉及到用户对操作系统功能集成度的期望。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44476137" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ipolitics.ca/2025/07/02/its-too-late-david-suzuki-says-the-fight-against-climate-change-is-lost/" target="_blank">'It's too late': David Suzuki says the fight against climate change is lost</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dluan</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-06 00:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对“保姆式国家”的看法
+
+不同观点：
+• 反对过度政府干预：dofubej 认为社会或政府对个人生活的干预过多，使用带有讽刺意味的“nanny state”（保姆式国家）来形容这种现象，表明希望回归更自主的个人生活，不希望被过度保护或管制。
+
+补充讨论：
+• "nanny state" 这一术语常用于批评政府或权威机构对公民生活的过多干预，尤其是在个人选择和自由方面。这种评论反映了一种对自由主义的倾向，主张减少政府干预，让个人对自己的选择负责。
+• 评论的语气带有一定的情感色彩，暗示评论者可能对当前的某些政策或社会氛围感到不满或疲惫。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44476774" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="http://www.vintagecalculators.com/html/the_calculator-on-a-chip.html" target="_blank">The Calculator-on-a-Chip (2015)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-05 16:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了20世纪60年代末到70年代初，计算器行业致力于将所有计算器功能集成到一个芯片上，即"单芯片计算器"的开发历程。早期计算器如1968年的Canon Canola 130S需要13块电路板，而1970年的Sharp QT-8B则使用了Rockwell的4片芯片组。最终，多家公司成功推出了单芯片计算器，包括Mostek的MK6010和Texas Instruments的TMS1802NC。其中，Mostek的MK6010于1970年11月问世，首次应用于Busicom Junior计算器，取代了原机型中的两块电路板和22个中规模集成电路。虽然该芯片集成了计算器逻辑，但仍需额外元件驱动显示器。Mostek在极短时间内完成了这一突破性设计，推动了消费级计算器的普及。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Commodore与德州仪器（TI）之间的竞争及技术策略，以及对经典计算器技术的讨论
+
+不同观点：
+• **[classichasclass的观点]**：Commodore的创始人Jack Tramiel通过收购MOS Technology实现了垂直整合，从而能够自行生产芯片。这帮助Commodore在与德州仪器的竞争中获得优势，尤其是在德州仪器使用相同芯片生产价格更低的计算器导致Commodore被削价竞争的情况下。最终，Commodore成功将德州仪器挤出家用电脑市场，完成了某种意义上的“复仇”。
+
+• **[Dwedit的观点]**：Dwedit更关注技术创新的角度，提到Sinclair Scientific Calculator在技术上的突破。这款计算器使用了为普通四功能计算器设计的低功耗芯片，但依然实现了科学计算器的功能，展示了在有限硬件条件下进行技术创新的可能性。
+
+补充讨论：
+• **技术整合与竞争策略**：classichasclass强调了通过收购和整合技术供应链来获得竞争优势的商业策略，尤其是在早期计算机和计算器市场中的应用。Jack Tramiel通过这种策略成功反制德州仪器。
+
+• **技术创新与限制突破**：Dwedit提出的Sinclair Scientific Calculator的例子展示了如何在硬件限制下进行创新，强调了技术突破在产品设计中的重要性。
+
+争议焦点：虽然没有直接的争议，但两者讨论的角度不同，一个侧重商业竞争和策略，另一个侧重技术创新和工程挑战。两者都反映了早期计算器和计算机行业发展的不同方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44473871" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.winuae.net/" target="_blank">WinUAE 6 Amiga Emulator</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: doener</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-05 21:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了自定义芯片组模拟的重大更新。芯片组模拟（Agnus/Alice 和 Denise/Lisa）几乎完全重写，实现了内部周期精确。Denise/Lisa 模拟现在运行于单独线程，大幅提升精确模式性能。VPOSW/VHPOSW 技巧和同步信号等现在都实现了周期精确模拟，支持硬连线和编程混合模式。显示和计数器独立模拟，支持无限次前后移动。所有屏幕模式现在都能正确计算显示高度，包括处理多次修改。新增低层次键盘模拟，支持三种键盘微控制器变体和NKRO选项。此外，还合并了PCI设备和Voodoo 3模拟更新，修复了多个问题，如Prometheus FireStorm PCI桥接和GDI模式资源释放等。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：WinUAE用户体验及其易用性
+
+不同观点：
+• jonwinstanley认为WinUAE的用户体验曾经非常混乱，特别是在选择特定Amiga型号和模拟特定磁盘加载过程时。他表示只是想快速简单地启动并玩他过去喜欢的Amiga游戏，但过去的体验让他感到困惑。
+
+• 另一用户[trixter]回应称，WinUAE的现代版本已经改进了很多，尤其是对于只想玩老游戏的用户。他指出，现在有很多预配置的设置，用户只需点击几下就能直接进入游戏，而无需深入了解技术细节。
+
+• 还有一些用户提到，WinUAE本质上是一个高度可定制的Amiga模拟器，虽然它的复杂性可能对新手造成困扰，但这也是它强大之处。对于希望获得精确模拟体验的用户来说，这种复杂性是必要的。
+
+补充讨论：
+• 一些用户建议使用前端工具（如FS-UAE）来简化WinUAE的使用体验，这些工具通常提供更友好的用户界面和预设配置，使得游戏加载更加简单。
+
+• 争议的焦点在于WinUAE的复杂性：一部分用户认为这种复杂性提供了更好的模拟精度和灵活性，而另一部分用户则希望有一个更简化的版本，专注于快速游戏加载和简单操作。
+
+• 一些用户分享了他们使用WinUAE的经验和设置技巧，帮助新手更好地理解和使用该软件。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44475600" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.tripjam.app/the-right-way-to-embed-an-llm-in-a-group-chat/" target="_blank">The Right Way to Embed an LLM in a Group Chat</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kenforthewin</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-05 22:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了在群聊中嵌入AI助手的利弊，特别是在专用应用如旅行规划app **TripJam**中的使用。在普通群聊中，AI助手可能偶尔有用，但也会打断对话。然而，当AI被赋予访问工具的权限时，例如在群聊中创建投票，它会更加实用，节省手动操作时间。
+
+在像**TripJam**这样的专用应用中，AI助手通过执行特定任务（如搜索餐厅、添加地点、创建投票等）变得非常有用。这些功能通过一系列工具调用实现，如`add_location`、`center_map`、`search_places`等，帮助用户高效规划行程。
+
+为了避免打扰用户，AI只在被明确询问时回应，并计划未来通过分析聊天内容主动提示用户可能的AI功能，同时确保AI操作结果而非整个对话对群组可见。文章还提到在大型群聊中，不必将所有历史聊天发给AI，以提高效率。
+
+总结：在专用群聊应用中，嵌入AI助手通过执行具体任务提升用户体验，但需谨慎设计以避免打扰用户。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对大型语言模型（LLM）在交流和信息处理中的使用及其影响的看法
+
+不同观点：
+• **femto** 认为当前的AI生成内容往往过于冗长且无意义，像 spam 一样。他指出，AI 应该直接完成用户要求的任务，而不是生成多余的解释或内容。例如，在生成餐厅推荐时，只需提供投票选项，而不必解释推荐理由，除非用户明确要求。
+
+• **MongooseStudios** 表达了对在私人聊天中使用LLM的强烈反感，甚至表示如果朋友在群聊中引入LLM，会考虑结交新朋友。这显示出对AI介入人际交流的极度排斥。
+
+• **dovys** 对在私人消息中使用第三方LLM表示不信任，认为只有操作系统自带的LLM才可能值得信赖，暗示了对数据隐私和安全性的担忧。
+
+• **leakycap** 直接表示反对在群聊中嵌入LLM，与 **MongooseStudios** 的观点类似，但未涉及个人关系的变化，仅表达技术使用上的反对意见。
+
+补充讨论：
+- 争议的焦点在于是否应在私人交流和人际关系中引入LLM，特别是在群聊等场景中。
+- 数据隐私和安全性是部分用户（如 **dovys**）关注的核心问题。
+- **femto** 更关注AI生成内容的质量和效率，认为AI应更简洁和任务导向。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44476084" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -149,353 +445,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://evjang.com/2021/10/23/generalization.html" target="_blank">Just Ask for Generalization (2021)</a>
+                    <a href="https://www.lemonde.fr/en/france/article/2025/07/05/seine-reopens-to-paris-swimmers-after-century-long-ban_6743058_7.html" target="_blank">Seine reopens to Paris swimmers after century-long ban</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jxmorris12</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-03 20:31</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个构建通用人工智能系统的重要工程原则，强调大规模、多样化的数据对模型泛化能力的重要性，超越了 clever model biases。文章讨论了神经扩展法则、无监督预训练和基础模型等研究，表明深度神经网络通过监督学习可以快速吸收大量数据，并具有良好的泛化能力，即使在训练损失为零的情况下（“双下降”现象）。文章还提到，增加训练数据可以减少模型泛化所需的优化步骤，并引用了“记忆是泛化的第一步”的观点。此外，文章展示了DALL-E等模型通过提示生成图像的能力，提出了“提示工程”的概念，并探讨了将这一原则应用于强化学习等其他领域的潜力。然而，强化学习在吸收多样化数据方面效率较低，面临挑战。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对"post-overfitting"训练策略的兴趣和评价
-
-不同观点：
-• [正面评价] [xg15]认为该评论所讨论的内容在2021年仍然具有很大的吸引力，尤其是"post-overfitting"训练策略，令人感到意外和有趣。这表明评论者对该策略持有积极态度，认为其新颖且值得关注。
-• [潜在质疑] 尽管[xg15]对该策略表示了兴趣，但未提及该策略的实际效果或在实践中的应用情况，因此可能有人会质疑该策略的实用性和广泛适用性。
-
-补充讨论：
-• "Post-overfitting"策略的具体实现和效果是讨论的重点，特别是它如何在训练过程中发挥作用以及在何种情况下最为有效。
-• 评论中隐含了对创新性研究方法的关注，尤其是那些在常规方法之外的独特策略。
-• 该评论并未涉及其他研究或策略的对比，因此讨论缺乏对"post-overfitting"策略的全面评价和对比分析。
-
-总体来看，评论主要围绕"post-overfitting"策略的新颖性和吸引力展开，存在潜在的实用性争议，但缺乏具体实验或对比数据的支持。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44458914" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.jeffgeerling.com/blog/2025/mini-nases-marry-nvme-intels-efficient-chip" target="_blank">Mini NASes marry NVMe to Intel's efficient chip</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 225</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-07-04 15:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了作者在重建家庭实验室时，寻找小型NAS设备的过程。他不再需要大量存储空间，目标降至6TB可用存储，并计划使用NVMe SSD实现。文章介绍了三款使用Intel N100/N150芯片的小型NAS：GMKtec G9、Aiffro K100和Beelink ME mini。这些设备均支持多槽M.2 NVMe SSD和2.5Gbps网络，但各有优缺点。GMKtec G9价格最低，但早期版本有散热问题。Aiffro K100体积小、安静且省电，但缺少eMMC和WiFi，且只有一个网络接口。Beelink ME mini具备6个NVMe槽、内置电源和eMMC，性能和散热较好，但价格可能上升。作者建议根据个人对缺点的接受度选择合适设备。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：小型NAS设备的性能、设计目标、功耗、连接性及可靠性
-
-不同观点：
-• monster_truck认为应推出更强大的迷你NAS，如配备Ryzen 7745、128GB ECC DDR5-5200等高性能组件，不介意其高成本、噪音和功耗，追求极致性能。
-• transpute关注Intel N150在安全方面的特性，如TXT/DRTM，认为这对操作系统安全有重要意义，并期待相关设备对coreboot的支持。
-• sandreas则认为迷你设备在可升级性、ECC内存、I/O和散热方面存在不足，更倾向于使用mATX板、ECC内存和IPMI等更传统的配置。
-• bee_rider认为迷你NAS是一种新的设计目标，适用于需要较低功耗和常时在线的存储需求，但与大型NAS在用途上有所不同。
-• Havoc支持迷你NVMe NAS，认为在无ECC的情况下也是一种合理的选择，并指出消费者级别NVMe在RAID配置中的潜在问题。
-• sorenjan提出使用HDD存储和SSD缓存的混合NAS方案，以减少硬盘不必要的运转，提升效率。
-• koeng关心是否有支持ECC内存的迷你NAS，认为这是选择的一个重要限制因素。
-• herf关注SSD的可靠性，尤其是PLP、写入耐久性和ZFS适用性，指出在预算内找到合适选项的困难。
-• guerby对迷你NAS的连接性提出质疑，特别是10Gbps网络接口的缺乏，认为这是市场上的一个重大不足。
-• cuu508寻找非Intel的低功耗迷你NAS选项，如FriendlyElec CM3588，询问是否有其他选择。
-• whatever1关心迷你PC如何连接传统硬盘，质疑Thunderbolt/USB的长期可靠性。
-• attendant3446分享了选择Ryzen 7 5825U作为家用服务器的经验，强调其性能和扩展性，并表示倾向于AMD而非Intel。
-• miladyincontrol建议使用fs-cache与NAS结合，以提升响应速度，特别是在主要存储为HDD的情况下。
-
-补充讨论：
-• 争议焦点之一是迷你NAS的性能与实用性之间的平衡，特别是在ECC内存、网络连接性和存储配置方面。
-• 另一个讨论点是迷你NAS的适用场景，如对低功耗、常时在线和小型化有需求的用户，与传统大型NAS的用途区分。
-• SSD缓存和HDD存储的混合方案被认为是提升效率的一种有效方法。
-• 对市场上迷你NAS产品的选择有限表示不满，尤其是高性能和低功耗组合的设备。
-• 用户对不同设备的安全特性（如Intel N150的TXT/DRTM）也表示了关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44465319" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://nautil.us/is-it-cake-how-our-brain-deciphers-materials-1222193/" target="_blank">Is It Cake? How Our Brain Deciphers Materials</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dnetesn</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-03 14:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章探讨了现代社交媒体和娱乐中流行的“这是蛋糕吗？”现象，即通过视觉欺骗让人误以为某些物体是蛋糕。这种视觉错觉与历史上艺术作品通过材质欺骗视觉的手法相似，比如米开朗基罗的大理石雕塑《大卫》和Giovanni Strazza的《戴面纱的圣母》。这种现象引发了对人类识别物体材质能力的关注，尽管这一能力对生存至关重要，但直到最近才成为神经科学的研究重点。
-
-文章还提到，自2001年Edward H. Adelson的论文《看见材质》发表以来，材质感知研究迅速发展。最近发表在《美国国家科学院院刊》上的一项研究提出了一种广泛的方法，通过行为数据识别出人类大脑在理解材质时考虑的36个基本维度。这种研究不仅揭示了我们如何识别材质，还为了解大脑如何高效处理信息提供了新视角。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人类能够通过视觉预测物品的口感或触感
-
-不同观点：
-• [WJW]认为人类拥有一种特殊能力，即通过观察周围任意物品，能够准确预测其放入嘴中的味道或感觉。这种能力可能源自婴儿时期习惯将各种物品放入口中的行为，并惊奇地发现这种能力在成年后依然有效。
-  
-• [webdevver]对[WJW]的观点进行了幽默的延伸，提出未来科技如Tesla Bot可能会出错，比如误将湿海绵当作食物端给人类，质疑这种预测能力在面对高度智能化或自动化场景时的可靠性。
-
-补充讨论：
-• [WJW]的评论中隐含了对人类早期发展行为（如婴儿通过口腔探索世界）的长远影响的思考，强调了这种行为对成年后某些直觉性能力的潜在影响。
-  
-• [webdevver]的评论引入科技进步可能对人类直觉和感知能力带来的挑战，暗示未来技术误操作可能导致人类依赖的直觉能力失效。
-
-争议焦点：人类通过视觉预测物品口感的能力在未来科技背景下是否依然可靠。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44455591" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.gecode.org/" target="_blank">Gecode is an open source C++ toolkit for developing constraint-based systems</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gjvc</span> |
-                    <span>评分: 55</span> |
+                    <span>作者: divbzero</span> |
+                    <span>评分: 107</span> |
                     <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-05 08:43</span>
+                    <span>发布时间: 2025-07-05 17:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Gecode是一个开源的C++工具包，用于开发基于约束的系统和应用。它具有高度开放性，易于与其他系统集成，支持编程新约束、分支策略和搜索引擎。Gecode功能全面，包括对整数、布尔值、集合和浮点数的约束，具备C++建模层、高级分支启发式算法和多种搜索引擎。它在性能上表现出色，赢得了2008至2012年所有MiniZinc挑战赛的金奖。Gecode文档齐全，采用MIT许可证，是自由软件，具有高可移植性和良好的并行处理能力，并通过超过50000个测试案例确保其可靠性。</p>
+                    <p>2025年7月5日，巴黎塞纳河在关闭百年后重新对游泳者开放，这是自1923年以来的首次。此次开放是多年清理工作的成果，也是2024年巴黎奥运会 legacy的一部分。当天，几十名各年龄层的游泳者在埃菲尔铁塔附近的玛丽泳区庆祝这一时刻。巴黎今夏开放了三个游泳区，配有更衣室、淋浴和沙滩式家具，可容纳150至300人。为确保安全，官方每日检测水质，并进行游泳能力测试。尽管水质显著改善，但雨天可能导致污染，泳区或会关闭。巴黎为此投入约14亿欧元改善水质，市长伊达尔戈表示，这不仅是为奥运会，也是为了应对气候变化和提升市民生活质量。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Gecode软件的现状、用途及其与其他同类工具的比较
+                    <div class="comments-summary">主要讨论点：巴黎塞纳河的水质及其适游泳性，特别关注与水污染和开放游泳活动相关的问题。
 
 不同观点：
-• stargrazer认为Gecode在过去六年中没有明显的更新或提交，且有很多未处理的PR（Pull Requests）。他质疑该项目是否仍在使用，并提出是否有其他约束求解器已经取代了Gecode。
-• nlewycky指出Gecode曾在2008年至2012年间的MiniZinc挑战赛中获胜，但自2013年以来，OR-Tools每年都获得金奖，并在2024年横扫所有类别的金奖。他质疑Gecode的吸引力以及为何要选择它而不是OR-Tools，并提供了一个链接以供参考。
-• ur-whale希望在Gecode的主页上看到一个简短的C++使用示例，以帮助理解其实际应用。
-• gjvc提供了Gecode的GitHub链接，以便进一步查阅和了解该项目。
-• aninteger对Gecode的理解有所不同，他将其想象成一种用于开发内存或CPU受限软件的系统，类似于在限制1MB内存或在特定时钟周期内执行函数的系统。
+• **fouronnes3**: 宣布将参加明天在巴黎举行的一场1000米游泳比赛，并请求祝福。此评论表达了对游泳活动的积极态度，未涉及水质问题。
+
+• **nextos**: 认为欧盟的监管对减少河流和海洋中的污水排放起到了一定作用，但地方当局在雨后通常避免测量水质，因为污水的排放仍然存在。即使在巴塞尔这样的地方，莱茵河水质较好，但当局有时仍建议不要游泳。这表明尽管有改善，但水质问题依然严峻。
+
+• **cycomanic**: 提到巴黎的下水道博物馆，强调了污水处理系统的历史和规模，并指出在雨天会有溢流储水池将污水排入塞纳河。还提到为奥运会所做的清理努力，表明对水质改善的关注。
+
+• **jedimastert**: 引用了关于塞纳河水质的负面报道，特别提到一位运动员在比赛后因水质问题被送医，质疑塞纳河在重大赛事期间的清洁度。
+
+• **bambax**: 指出住在船屋的人和年轻人长期以来都在塞纳河游泳，认为现在向大众开放游泳是更大的新闻，暗示公众对水质的担忧可能被夸大。
+
+• **selimnairb**: 提到塞纳河早在1925年就因水质问题被关闭，历史性地指出水质问题的长期存在。
+
+• **david927**: 以幽默方式提到“小心鲨鱼”，引用维基百科链接，可能是对水质问题的调侃。
+
+• **cm2187**: 以讽刺口吻评论法国对水质清洁的严格规定，质疑这些规定的必要性，暗示对水质改善措施的怀疑。
 
 补充讨论：
-• stargrazer提到了Gecode的主要贡献者去世后维护不多的情况，并对其当前的实际使用情况表示怀疑。
-• nlewycky通过比赛结果来支持其对OR-Tools优于Gecode的观点，并暗示了选择Gecode的必要性问题。
-• ur-whale和gjvc都关注Gecode的实际应用和资源获取，ur-whale特别强调了示例的重要性，而gjvc提供了进一步了解项目的链接。
-• aninteger对Gecode的用途有独特的误解，将其与一种特定的开发环境相联系。
-
-争议焦点：Gecode的当前维护状态及其与其他新兴工具（如OR-Tools）相比的竞争力和实用性是主要的争议点。</div>
+• 评论间的讨论关系主要体现在对塞纳河水质的不同看法上。部分评论（如nextos和jedimastert）强调水质问题及其潜在健康风险，而其他评论（如bambax）则认为公众的担忧被夸大，并指出长期以来一直有人在塞纳河游泳。
+• 争议的焦点在于塞纳河在经过清理后是否真正适合大规模游泳活动，尤其是在重大赛事如奥运会期间，水质是否能得到有效保障。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44471150" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s41598-025-03727-9" target="_blank">Pet ownership and cognitive functioning in later adulthood across pet types</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-05 19:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章研究了宠物饲养与晚年认知功能之间的关系，特别是不同类型的宠物（如狗、猫、鸟、鱼）以及不同年龄组对认知衰退的影响。通过分析欧洲健康与退休调查的数据，研究发现饲养宠物与认知功能（执行功能和情景记忆）的衰退减缓相关。具体来说，狗和猫的饲养与较慢的认知衰退有关，而鸟和鱼则没有这种关联。年龄组并未显著影响这种关系。研究表明，饲养狗和猫可能有助于减缓认知衰退，支持健康的认知老化。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于科学出版物中的图表标注问题以及宠物与认知衰退之间的关系。
-
-不同观点：
-• [ludicrousdispla] 认为图表的标注不充分，指出科学出版物中的图表应在 caption 中完整描述所展示的信息。具体来说，该评论指出时间轴缺少时间单位的说明以及对时间 "0" 的定义不明确，导致图表信息不清晰。
-
-• [torbid] 对宠物与认知衰退研究中的结果提出疑问，特别关注为何养鸟没有类似养猫或狗的效果。该评论还提出租房协议中对不同宠物的限制（如不需要太多许可的小型动物）可能是一个隐藏变量，影响宠物选择与认知健康之间的关系。
-
-• [bestouff] 引用了研究结果，指出养狗和猫与认知衰退减缓相关，而养鸟和鱼则没有这种关联。该观点支持了研究的主要发现，但没有深入讨论可能的隐藏变量或图表标注问题。
-
-补充讨论：
-• [torbid] 提出的隐藏变量（如租房协议对宠物的限制）是一个值得进一步探讨的因素，可能影响不同类型宠物的拥有情况及其对认知健康的影响。
-
-• [ludicrousdispla] 强调了科学研究中图表标注准确性的重要性，指出不明确的标注会引起读者的困惑，影响研究结果的理解和应用。
-
-争议焦点：
-• 图表标注的准确性及其对研究结果解读的影响。
-• 宠物类型与认知健康之间的关系，特别是为何养鸟和鱼没有类似养猫和狗的效果，以及隐藏变量（如租房协议限制）是否起到作用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44474894" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mrsteinberg.com/how-to-not-pay-your-taxes-legally-apparently/" target="_blank">How to not pay your taxes legally, apparently</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jimhi</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-05 18:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了企业主如何利用多种合法手段减少或避免缴税，包括成立有限责任公司（LLC）或C类公司来抵扣各种费用。文中提到彼得·蒂尔通过罗斯个人退休账户（Roth IRA）避税的例子，并讨论了 Qualified Small Business Stock (QSBS) 税 exemption，允许企业在出售前等待5年以避免前1000万美元的税款。此外，文中还介绍了通过设立信托为亲属避税的方法，以及利用波多黎各的税收优惠政策。文章强调这些策略在某些州可能不适用，并提到大学也会鼓励利用这些避税手段。总的来说，这些方法虽然合法，但存在道德和法律的灰色地带。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何合法避税以及利用税务优惠的策略
-
-不同观点：
-• SoftTalker：认为只要法律允许，避税是没有问题的。如果政府希望收取某种税，应该使其简单且无条件。如果存在漏洞或合法避税的方式，人们就会利用它们。
-• trollbridge：认为如果企业盈利，很难合法地不缴税，尤其是在支付给自己工资的情况下。如果企业一直亏损，或许可以卖给其他愿意接手亏损企业的人。
-• lucianbr：指出某些避税策略需要提前多年准备，且存在公司未如预期增值的风险。
-• daft_pink：指出创建一个价值超过1000万美元的公司并不简单，且在非硅谷风险投资环境中，不产生净收入的公司不值那么多钱。实际中，大多数人通过10-15年的努力，出售公司获得300万到700万美元，从而受益于QSBＳ。
-• bgnn：建议创业者移居到没有资本利得税的国家，如荷兰。
-• sailfast：认为问题不在于人们不缴税，而在于富人通过游说影响税法，创造隐蔽的 exemption。
-• idontwantthis：提出美国人可以通过在税收不严的外国工作，获得外国收入豁免（FEIE）。
-• niklasbabel：质疑文章的时间线，尤其是提到Peter Thiel的案例。
-• gist：指出QSBＳ并不适用于所有情况，特别是当买家只想收购资产而非公司本身时。
-• edoceo：认为文章标题是点击诱饵，但文章内容是关于如何避免税务事件，而不是不缴应缴税款。
-• jekwoooooe：警告遵循这种建议可能会被审计，并指出LLC不是税务实体。
-• HenryBemis：讽刺富人通过聘请顶级会计师事务所（如PWC/EY）合法避税，甚至移居到瑞士等避税天堂。
-• madaxe_again：提到英国类似的机制，如企业家减免（BADR），并指出可以通过家庭成员利用他们的免税额度。
-
-补充讨论：
-• 争议焦点在于合法避税的道德性和可行性。一些人认为只要法律允许就无可厚非，而另一些人则质疑这种做法的公平性和对社会的影响。
-• 讨论中还涉及不同国家和地区的税务政策，如荷兰、葡萄牙和英国，以及如何利用这些政策合法避税。
-• 另一个值得注意的点是关于税务策略的复杂性和风险，特别是某些策略需要提前多年准备，且结果不确定。
-• 最后，文章标题的点击诱饵性质和内容的技术性也引发了讨论，一些人认为内容具有误导性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44474531" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2018/03/build-systems.pdf" target="_blank">Build Systems à la Carte (2018) [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: djoldman</span> |
-                    <span>评分: 59</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-02 11:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某篇论文的价值和影响
-
-不同观点：
-• cosmic_quanta认为这篇论文非常出色，尤其因为其易读性，相比于其他学科（如物理学）的论文通常非常晦涩难懂，这篇论文对于开发者来说更加 accessible。
-• esafak提到论文的共同作者Simon Peyton Jones是ACM Fellow，以Glasgow Haskell Compiler闻名，增加了论文的可信度和学术背景。
-• mschwaig指出他们自己的论文与这篇论文有密切联系，特别是在消除软件依赖中的传递信任关系方面，构建了基于哈希的缓存查找机制。
-• mkleczek强调论文的作者Neil Mitchell也是Shake的作者，而Shake是基于这篇论文的。同时提到Buck和Buck2（来自Meta）也是这篇论文的衍生品，尤其称赞Buck2是一件优秀的软件，但遗憾的是它仍然比较小众。
-
-补充讨论：
-• tsss强烈支持这篇论文的重要性，并通过反面例子说明如果Gitlab和Github的开发者早些阅读这篇论文，可能会避免很多问题，尤其是Github Actions中的糟糕设计。
-
-争议焦点：
-• 没有明显的争议，但tsss对Github Actions的批评可能暗示了对其他开发者实践的质疑和不满。
-
-总结：评论者们普遍认可这篇论文的价值，尤其是在易读性和对实际开发工作的指导意义方面，同时也提到了相关学术背景和衍生软件工具。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44442396" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.akentsoc.org/doc/Bowser_ML_2012.pdf" target="_blank">Optimizing typography of insect labels using free fonts and free software (2012) [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: exvi</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-02 03:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对字体推荐和文档排版的不同看法
-
-不同观点：
-• **atoav 的观点**：atoav 推荐了B612字体，认为它具有很高的可读性，并提供了一个链接到Google字体页面的参考，让有类似字体需求的人可以查看和使用。这一观点侧重于字体的实用性和功能性，尤其是可读性。
-
-• **upstandingdude 的观点**：upstandingdude 对文档的排版提出了批评，认为作为一个关于排版主题的文档，其视觉效果并不理想，甚至让人感觉不舒服。这一观点更关注文档整体的视觉呈现和美感。
-
-补充讨论：
-- **对字体的不同关注点**：atoav 关注的是字体本身的技术特点，如可读性，而 upstandingdude 则更在意实际应用中的视觉效果和美观程度。
-- **争议的焦点**：争议的焦点在于字体推荐的实际效果。atoav 认为 B612 字体是合适的推荐，但 upstandingdude 通过批评具体文档的视觉效果，间接质疑了这种推荐的实际应用价值。
-- **例子**：atoav 提供了具体的字体链接供参考，而 upstandingdude 以文档的视觉效果作为反例，表达了对推荐字体的怀疑。
-
-总体来看，讨论围绕字体推荐的实用性和视觉效果展开，体现出对字体选择标准的不同侧重。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44439915" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44474297" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
