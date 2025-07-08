@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-08 14:20 (北京时间)
+            最后更新时间: 2025-07-08 17:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,53 +61,67 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://t2tmud.org/" target="_blank">The Two Towers MUD</a>
+                    <a href="https://rgbcu.be/blog/derive-broken/" target="_blank"># [derive(Clone)] Is Broken</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: astronads</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-05 19:25</span>
+                    <span>作者: RGBCube</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-04 20:31</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《The Two Towers MUD》是一款基于托尔金《指环王》世界设定的免费多人在线角色扮演游戏。游戏背景设定在第三纪元3019年3月15日，萨鲁曼和索伦向中土自由人民发动战争。玩家可以选择加入黑暗势力或抵抗，探索超过10万个房间的广袤世界，参与数百个任务。游戏自1994年运营至今，拥有活跃的全球玩家社区，并定期举办活动，如年度庆典。近期更新包括新增笔记排序和展示功能、莫里亚地城任务NPC难度提升、以及修复多个道具和任务问题。玩家可以通过加入新闻通讯、投票和捐赠支持游戏。</p>
+                    <p>这篇文章讨论了Rust中自动派生 trait（如 `Clone`、`PartialEq` 等）的当前实现问题。具体来说，派生这些 trait 时，编译器要求所有泛型参数也必须实现对应的 trait，但这并不总是合理的。文章通过两个代码示例展示了这一问题：
+
+1. 一个包含 `Arc` 的结构体在派生 `Clone` 时出错，因为编译器默认要求泛型参数 `T` 也实现 `Clone`，但实际上不需要。
+2. 另一个示例展示了类似的问题，结构体 `WrapAlwaysEq` 包含一个泛型类型 `AlwaysEq`，在进行 `PartialEq` 和 `Eq` 比较时出现问题。
+
+文章提出了两种解决方案：
+1. 长期方案是提交RFC，进行讨论和稳定化，但这可能需要数年时间。
+2. 短期方案是编写自定义宏来实现更灵活的派生逻辑，作者选择在 `derive_more` crate 中提出问题，并考虑创建新 crate。
+
+最终，作者希望改进Rust中派生 trait 的实现方式，以避免不必要的泛型限制。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：MUD（多用户地下城）游戏的历史、现状以及玩家的个人体验和推荐
+                    <div class="comments-summary">主要讨论点：Rust中的自动派生`Clone`是否合理及其相关复杂性
 
 不同观点：
-• **MUD游戏的悠久历史**：
-  - [mdtrooper] 提到了几个非常古老的西班牙语MUD，如Balzhur和Medina，分别自2000年和1995年开始运行。
-  - [davidgay] 提到mume.org已经运行超过33年，并分享了自己参与开发的经历，包括一个最初不受欢迎的扩展语言。
+• **支持自动派生`Clone`是基础功能**：
+   - [csomar] 认为自动派生`Clone`不是损坏的功能，而是基础功能。认为这是依赖库可以处理的领域，而不是Rust核心功能的一部分。简单和易于理解的派生有助于学习，并避免意外情况。
+  
+• **自动派生是一种便利，但有局限**：
+   - [loa_in_] 认为自动派生是一种便利，但当自动生成的实现不足时，开发者应手动编写自己的实现。强调了手动实现的必要性。
 
-• **个人体验和怀旧情感**：
-  - [bokchoi] 回忆了高中时沉迷于btech 3056，尽管游戏技术不佳，但回忆很美好，还提到一个游戏bug。
-  - [qmr] 描述了自己在不同年龄段玩MUD的经历，并提到使用KBtin MUD客户端在工作时玩游戏。
-  - [xahrepap] 意外在首页看到童年回忆，分享了通过telnet和朋友一起玩的经历。
+• **Haskell的派生机制作为对比**：
+   - [moomin] 提到Haskell中的派生机制会对其泛型参数施加条件，例如要求泛型参数也实现`Eq`。这种机制可以帮助明确前提条件，但在Rust中表达这些前提条件可能更具挑战性。
 
-• **MUD游戏的现代吸引力**：
-  - [xedrac] 表示自己已有25年没玩MUD，但认为如果时间允许可能会享受玩当前的MUD，并对游戏的代码基础感到好奇。
-  - [SeanAnderson] 对MUD游戏在历史悠久的同时仍有更新感到惊喜，并提到游戏庆祝31周年。
+• **对"需要被克隆的使用方式"的疑惑**：
+   - [hyperbrainer] 对“使用方式需要被克隆”的表述感到困惑，质疑为什么需要这种要求，表明对此概念的不理解或不认同。
+
+• **对LLM回应的抱怨**：
+   - [qwertox] 提到大型语言模型（LLMs）在解释Rust问题时也存在错误和复杂性，认为这种行为令人疲惫。
+
+• **对"复杂性"的质疑**：
+   - [bloppe] 不认为“困难的方式”是破坏性变化，并请求示例说明在放松约束后可能出现的问题。
+
+• **不认同"损坏"的描述**：
+   - [exfalso] 认为称自动派生`Clone`为“损坏”有些夸张。
+
+• **对Rust整体复杂性的批评**：
+   - [tucnak] 认为Rust代码的复杂性过高，甚至超过了C++，并质疑Rust的学习价值，认为C++未来也会实现内存安全，因此更倾向于使用C++。
 
 补充讨论：
-• **MUD游戏的推荐和定义**：
-  - [astronads] 询问当前是否有玩家仍在玩MUD，并请求推荐好的MUD游戏。
-  - [ralfd] 提问MUD是什么类型的游戏，以及是否可以赢得游戏或是否无尽。
-
-• **特定MUD的提及**：
-  - [tcn33] 提到自己在Worlds of Carnage上花费了很多时间，表明这是其主要玩的MUD。
+• 链接的博客文章和GitHub问题对自动派生`Clone`的选择做了更详细的解释，提供了背景信息。
+• 对Rust中派生机制的讨论还涉及与其他语言（如Haskell）的比较，以及对Rust未来发展的质疑。
 
 争议焦点：
-• 无明显争议，但[ralfd]对MUD的定义和游戏性质有疑问，可能代表了对MUD不熟悉的潜在玩家的常见问题。
-
-总结：
-评论主要围绕MUD游戏的历史、个人体验、现代吸引力以及推荐和定义展开。玩家们分享了他们对MUD的怀旧情感和持续的兴趣，同时也提出了对MUD的定义和游戏性质的疑问。</div>
+• 自动派生`Clone`是否足够好，还是需要手动实现以满足复杂需求。
+• Rust语言本身的复杂性是否过高，特别是与其他语言（如C++）相比，是否值得学习和使用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44474919" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44467657" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -122,8 +136,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: pseudolus</span> |
-                    <span>评分: 254</span> |
-                    <span>评论数: 16</span> |
+                    <span>评分: 327</span> |
+                    <span>评论数: 18</span> |
                     <span>发布时间: 2025-07-07 18:19</span>
                 </div>
 
@@ -134,30 +148,75 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：高维空间中的球体堆积问题及其应用
+                    <div class="comments-summary">主要讨论点：关于凸形状、球体 packing 问题的理论与应用，及其在不同领域的潜在价值和挑战。
 
 不同观点：
-• [clickety_clack] 认为向不了解这一领域的人解释自己的工作（如研究特定形状的数学问题）非常困难，尤其是像“只研究不向内突出的形状”这样具体的问题。
-• [Scene_Cast2] 分享了自己尝试将球体堆积方法应用于压缩算法的经历，指出理论方法在实际数据中的应用效果有限，尤其是在处理非均匀数据时。
-• [fcanesin] 建议数学家在获得第一个博士学位几年后，应有机会攻读另一个相关但不同的领域的博士学位，以拓宽其专业领域。
-• [dsp_person] 对高维空间中的球体堆积结果表示惊叹，并询问这是否意味着在通信系统中可以实现带宽的显著提升或功耗的降低。
-• [layer8] 以幽默的方式指出球体堆积问题在物理学中的潜在应用，例如“牛群包装”。
-• [teleforce] 强调球体堆积问题在密码学和通信中的潜在应用，认为这可能带来更安全的通信系统和更高的能效。
-• [NooneAtAll3] 询问在最低维度下，新的球体堆积方法在何时超越已知的最佳堆积方法。
-• [theteapot] 提问最佳球体堆积是否与规则格子相关，并进一步探讨这一特性是否适用于任意高维度。
-• [bGl2YW5j] 表达了对纯数学的热爱，并提到自己从讨厌数学到热爱数学的转变，梦想能在数学领域中发现有用的东西。
-• [tomrod] 认为球体堆积问题在很多应用问题中出现，并表示期待阅读相关论文。
-• [deadbabe] 提出是否可以通过蒙特卡洛方法解决球体堆积问题。
+• [clickety_clack] 认为向不熟悉该领域的人解释其工作（研究特定形状）非常困难，尤其是当该形状具有复杂的数学定义时（如“只研究不向内凸的形状”）。
+• [Scene_Cast2] 分享了将球体 packing 理论应用于数据压缩算法的实际经验，指出理论方法在处理真实世界数据时存在局限性，尤其是非均匀数据。
+• [vanderZwan] 支持 Klartag 的观点，认为凸形状是未被充分重视的数学工具，并举例说明凸包算法在自动调色板分解等非直观问题中的应用。
+• [dsp_person] 对高维空间中球体 packing 的潜在通信应用表示兴趣，尤其是是否能带来带宽或功耗的显著改善。
+• [fcanesin] 提出一个教育建议，认为数学家应有机会在几年后攻读第二个相邻领域的博士学位，以拓宽其专业知识。
 
 补充讨论：
-• [readthenotes1] 通过分享与数学无关的文章评论，指出跨领域专业知识的应用如何帮助人们重新发现不同领域中的事物，例如在数学中重新发现类似于梯形积分法则的应用。
-• [DonHopkins] 的评论似乎与主题无关，可能是在开玩笑或提及某个不相关的人物（Joey Chestnut）。
+• [theteapot] 提出一个技术性问题，询问最优球体 packing 是否与规则格点相关，并探讨这种关系是否适用于高维空间。
+• [NooneAtAll3] 关心在什么最低维度下 Klartag 的方法能超越已知的最佳 packing 方法，这是一个关于具体应用场景的实际问题。
+• [teleforce] 强调球体 packing 问题在密码学和通信中的潜在应用，认为这可能带来更安全的通信系统，并提高能效。
+• [layer8] 以幽默方式提到球体 packing 问题在物理学中的“牛体 packing”问题上的应用可能性。
+• [tomrod] 对球体 packing 在各种应用问题中的广泛应用表示赞赏，并表示期待进一步研究。
+• [bGl2YW5j] 分享了自己对数学态度的转变，从讨厌到热爱，并表达了对在该领域发现有用成果的梦想。
+• [tsunamifury] 认为球体 packing 问题的结论似乎是显而易见的，暗示该问题可能有直观的解决方案。
+• [deadbabe] 提出是否可以通过大量蒙特卡洛模拟来解决球体 packing 问题，暗示计算模拟可能是解决此类问题的一种方法。
 
 争议焦点：
-• 理论数学与实际应用之间的差距：[Scene_Cast2] 指出球体堆积的理论方法在实际数据中的应用效果有限，这表明理论与实际应用之间可能存在较大的差距。
-• 最佳球体堆积方法的实际应用：[dsp_person] 和 [teleforce] 等对高维球体堆积方法在实际应用中的潜力表示关注，尤其是对通信系统和密码学的潜在影响。</div>
+• 理论方法在实际应用中的有效性，尤其是在处理非均匀数据时，[Scene_Cast2] 提出了理论与实际应用之间的差距。
+• 高维空间中球体 packing 的实际应用价值，[dsp_person] 和 [theteapot] 都提到了高维空间 packing 问题在通信和数学中的潜在应用，但未深入讨论具体实现方法。
+
+总的来说，讨论围绕球体 packing 问题的理论研究与实际应用展开，参与者从不同角度分享了看法，包括实际应用中的挑战、技术性问题以及个人经验和见解。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44493196" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://macwright.com/2025/07/03/epanet-placemark" target="_blank">Epanet-JS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-04 13:57</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>EPANET-js是一款结合现代网络地图和行业标准EPANET液压模拟算法的网页应用，旨在帮助规划和更新供水系统。该工具由Iterating团队开发，利用了Tom MacWright之前发布的开放源代码工具Placemark，并对其进行了改进，甚至将核心库也进行了开源。EPANET-js与传统昂贵且局限于Windows的软件形成鲜明对比，提供了更便捷、成本更低的解决方案。通过使用WASM引擎，用户可以在浏览器中进行完整的模拟。这一项目不仅展示了开放源代码的价值，还为液压模拟领域提供了创新工具。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[开源软件epanet-js与传统软件的对比及其应用]
+
+不同观点：
+• [xnx] 认为 epanet-js 是一个巨大的改进，尤其是与昂贵的传统软件相比，后者每年收费16,000美元，且仅限于Windows系统运行。xnx强调了开源软件的优势，即使自己用不到，但依然觉得这个项目很酷。
+• [bilekas] 对项目的许可证模式感到困惑，特别是"两年后根据功能源许可证（FSL）完全开源（MIT）"的含义，要求进一步澄清。
+• [jalk] 提出市政部门是否使用GIS系统来包含所有基础设施（如下水道、水管、电缆等），并质疑这些系统是否缺乏模拟功能。
+• [lbutler] 作为 epanet-js 的开发者之一，提供了项目的源代码链接，邀请大家查看。
+• [iachilo] 表示之前从未听说过EPANET以及饮用水系统有专门的软件，认为这是很有价值的早期知识。
+
+补充讨论：
+- epanet-js 的优势在于其跨平台性和开源性，与传统软件的高成本和局限性形成鲜明对比。
+- 许可证问题引发了对开源模式的进一步探讨，特别是在两年后完全开源的具体含义上。
+- GIS系统在市政管理中的应用及其是否具备模拟功能成为讨论的另一个关注点。
+- 开发者亲自回应并提供源代码链接，增加了项目的透明度和可信度。
+- 部分用户对EPANET及其应用领域表现出初步兴趣，表明该软件在专业领域之外的普及度可能较低。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44464628" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -247,59 +306,12 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://studios.disneyresearch.com/2025/06/09/lookingglass-generative-anamorphoses-via-laplacian-pyramid-warping/" target="_blank">LookingGlass: Generative Anamorphoses via Laplacian Pyramid Warping</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jw1224</span> |
-                    <span>评分: 67</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-07 22:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《LookingGlass: Generative Anamorphoses via Laplacian Pyramid Warping》一文介绍了一种生成变形图像的新方法。传统变形图像（anamorphosis）需从特定视角观察才能显现真实形态，而该文通过使用潜在校正流模型（latent rectified flow models）和拉普拉斯金字塔扭曲（Laplacian Pyramid Warping）技术，使得生成的图像即使直接观看也具有有效的视觉解释。该方法提升了图像的生成质量，并将视觉谜题（Visual Anagrams）扩展到潜在空间模型和更广泛的空间变换中，创造出新颖的生成感知错觉。文章发表于CVPR 2025。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：视频图像处理技术及其应用、艺术性与实用性的争议
-
-不同观点：
-• [mg] 分享了一个项目，通过交换短视频序列中最后一张图像的相邻像素，使其逐渐变得像第一张图像。他提供了实际案例，展示了像素交换技术在视觉效果上的应用。
-• [cornstalks] 提到一个类似的工作，即通过拼图方式实现两张不同图像的转换，引用了Stand-up Maths和Steve Mould的视频为例，强调了不同图像之间转换的技术。
-• [ygritte] 认为这种技术可能用于隐写术（steganography），即通过特定镜像形式进行解码，提出了该技术在信息隐藏和安全领域的潜在应用。
-• [fudged71] 表达了对新生成技术重现光学错觉的喜爱，认为这种技术复兴了传统光学错觉艺术，展现了技术与艺术结合的魅力。
-• [krick] 幽默地表示自己突然想获得一个奇形怪状的镜片或镜子，暗示了对这些视觉效果技术的好奇和潜在兴趣。
-• [ziofill] 虽然认为这些技术很有趣，但质疑其目的和实用性，提出了“为什么要这样做”的问题，反映了艺术性与实用性之间的争议。
-• [echelon] 分享了与迪士尼和Pixar相关的个人经历，表达了对GenAI技术在行业中应用的复杂情感，特别是对一些行业巨头态度的不满，暗示了技术竞争和行业动态对小型团队的压力。
-
-补充讨论：
-• 技术应用的广泛性：从艺术效果到信息安全，像素交换和图像转换技术展示了多样的应用前景。
-• 技术与艺术的结合：一些评论者（如[fudged71]）对新技术在艺术上的应用表示赞赏，而[ziofill]则质疑其必要性和目的。
-• 行业竞争和态度：[echelon]的评论引入了行业竞争的视角，特别是小型创业公司在大公司面前的压力和挑战。
-
-争议焦点：
-• 主要争议在于这些技术的实际应用价值和目的，特别是当技术主要用于艺术效果时，实用性受到质疑（[ziofill]的观点）。
-• 行业内的态度和竞争，特别是大公司对小型团队的评价和反应，也是讨论中的一个敏感点（[echelon]的经历）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44495154" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://www.bbc.com/future/article/20250701-the-chemical-secrets-that-help-keep-honey-fresh-for-so-long" target="_blank">The chemical secrets that help keep honey fresh for so long</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: bookofjoe</span> |
-                    <span>评分: 123</span> |
-                    <span>评论数: 12</span> |
+                    <span>评分: 144</span> |
+                    <span>评论数: 14</span> |
                     <span>发布时间: 2025-07-04 11:04</span>
                 </div>
 
@@ -310,34 +322,28 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：蜂蜜及其他类似食品如何保持长时间不腐败及其背后的科学原理
+                    <div class="comments-summary">主要讨论点：蜂蜜的防腐特性及其背后的科学原理
 
 不同观点：
-• **水活性原理**：[Jun8]指出，降低水活性（aw）是Nutella和蜂蜜等食品能够长时间保鲜的原因。Nutella的水活性比蜂蜜还低，大多数细菌需要约0.85的水活性才能繁殖，而Nutella只有0.4，蜂蜜则在0.5-0.6之间。因此，这类食品无需冷藏也能长期保存。
-
-• **乳酸菌的作用**：[bjelkeman-again]补充，蜂蜜中常见的乳酸菌具有抗菌效果，能够抑制其他细菌的生长。这一观点强调了蜂蜜中微生物的作用，而不仅仅是水活性。
-
-• **肉毒杆菌的潜在风险**：[cypherpunks01]提到，蜂蜜中可能含有少量导致肉毒杆菌的厌氧细菌（Clostridium botulinum），因此不建议喂食婴儿，尽管对成人影响较小。这个观点强调了蜂蜜在特殊人群（如婴儿）中的潜在风险。
-
-• **蜂蜜保鲜的复杂性**：[kragen]认为，低水活性和低pH值并不能完全解释蜂蜜惊人的保鲜能力，蜂蜜中还含有葡萄糖酸、过氧化氢和甲基乙二醛（methylglyoxal）等成分，这些成分具有抗菌和杀菌作用。因此，文章对蜂蜜保鲜机制的解释过于简单化。
-
-• **蜂蜜的实际应用**：[__mharrison__]分享了个人经历，提到在急救培训中学习到蜂蜜可以用于伤口愈合，并通过个人试验证明其有效性。这个观点强调了蜂蜜在实际生活中的非食品用途。
-
-• **高糖浓度对微生物的影响**：[cryptonector]指出，高糖浓度会导致简单生物体的细胞破裂，从而防止细菌滋生。这一观点支持了高糖食品保鲜的原理。
-
-• **天然保鲜方法的扩展应用**：[Daisywh]提出，是否可以将类似的天然保鲜原理应用于非食品领域，认为自然界的解决方案在长时间稳定性方面可能优于合成方法。
-
-• **渗透压的作用**：[giantg2]认为，蜂蜜保鲜的关键在于渗透压。这一观点强调了渗透压在食品保鲜中的重要性。
-
-• **假蜂蜜问题**：[montakaoh]提醒，市场上有许多假蜂蜜，这些假蜂蜜的保鲜能力可能不如纯正蜂蜜，并提供了一个视频链接供参考。
+• YeGoblynQueenne认为，尽管打开的蜂蜜罐会暴露在空气中，并可能受到污染（如沾有细菌的勺子），但蜂蜜不会变质。他们基于个人经验指出，即便蜂蜜中混入了其他食物残渣，蜂蜜依然不会腐败，只是外观可能变差。
+• Jun8将蜂蜜的防腐特性与Nutella等其他低水分活度（aw）的食物进行比较，指出这些食品因低aw而能长期保存，并提供了FDA对水分活度的定义链接。
+• bjelkeman-again补充说明蜂蜜中常见的乳酸菌具有抗微生物效果，能够抑制其他细菌的生长，并提供了相关研究链接。
+• cypherpunks01提到蜂蜜中可能含有少量Clostridium botulinum细菌，这种细菌会导致肉毒中毒，因此不应喂给婴儿。
+• kragen批评原文内容过于冗长，并指出低水分活度和低pH并非蜂蜜长久保存的唯一原因。他引用了维基百科上的资料，强调蜂蜜中产生的葡萄糖酸和过氧化氢等化学物质的作用，以及麦努卡蜂蜜中的甲基乙二醛含量。
 
 补充讨论：
-• **读者对渗透压的兴趣**：[comrade1234]表示对渗透压的概念感兴趣，并愿意阅读相关文章。
-
-• **类似食品的保鲜**：[mhb]提到，巧克力等类似食品也具有类似的保鲜特性。
+• RataNova感叹蜜蜂在数千年前就“发明”了一种生物化学保存系统，远早于人类建立食品科学实验室。
+• __mharrison__分享了个人经历，提到在急救训练中得知蜂蜜可以帮助伤口愈合，并声称自己尝试后效果显著。
+• cryptonector解释说，极高的糖浓度可以破坏简单生物的细胞。
+• giantg2认为，蜂蜜长久保存的关键在于渗透压。
+• Daisywh对类似原理是否能应用于非食品保存表示好奇，认为自然界的解决方案在长时间稳定性方面往往优于人工合成方法。
+• comrade1234对渗透压的概念表示兴趣，并表示会阅读相关文章。
+• montakaoh提醒大家市场上存在很多假蜂蜜，这些假蜂蜜可能不如真蜂蜜那样具有长久保存的特性，并提供了一个视频链接。
+• mhb简单提到巧克力也有类似的特性。
 
 争议焦点：
-• 关于蜂蜜保鲜机制的解释是否充分：[kragen]认为文章对蜂蜜保鲜的解释过于简单，忽略了其他重要成分如甲基乙二醛的作用，而[Jun8]则强调水活性是主要因素。</div>
+• 关于蜂蜜长久保存的原因，存在不同解释。部分评论者强调低水分活度和低pH的作用，而kragen则认为这些因素并不足够，还需要考虑蜂蜜中其他化学物质的影响。
+• 蜂蜜中可能含有肉毒杆菌的风险，尤其是对婴儿的危害，引发了对蜂蜜安全性的关注。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44463429" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -350,48 +356,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://serd.es/2025/07/04/Switch-project-pt3.html" target="_blank">What Microchip doesn't (officially) tell you about the VSC8512</a>
+                    <a href="https://studios.disneyresearch.com/2025/06/09/lookingglass-generative-anamorphoses-via-laplacian-pyramid-warping/" target="_blank">LookingGlass: Generative Anamorphoses via Laplacian Pyramid Warping</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ahlCVA</span> |
-                    <span>评分: 74</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-04 23:10</span>
+                    <span>作者: jw1224</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-07 22:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文是关于作者在开源1U可管理以太网交换机项目（LATENTRED）中使用VSC8512 PHY芯片的经历。作者最初选择VSC8512是因为其QSGMII接口和 supposedly 完全公开的 datasheet，但在尝试调整SERDES TX均衡器设置时发现需要访问“机密参考手册”，该手册受NDA限制。由于无法签署NDA，作者只能依赖公开文档解决问题。
-
-公开文档包括VSC8512 datasheet、硬件设计清单、IBIS-AMI模型和参考设计指南等。通过分析，作者发现VSC8512像是精简版交换机ASIC，并确认了一些SERDES参数（如OB_LEV、OB_PREC等），尽管不完全知道如何设置这些参数。作者还提到MESA API是一个有价值的信息来源，但文档不完善。最终，作者依靠有限的信息和实验解决了信号完整性问题。</p>
+                    <p>《LookingGlass: Generative Anamorphoses via Laplacian Pyramid Warping》一文介绍了一种生成变形图像的新方法。传统变形图像（anamorphosis）需从特定视角观察才能显现真实形态，而该文通过使用潜在校正流模型（latent rectified flow models）和拉普拉斯金字塔扭曲（Laplacian Pyramid Warping）技术，使得生成的图像即使直接观看也具有有效的视觉解释。该方法提升了图像的生成质量，并将视觉谜题（Visual Anagrams）扩展到潜在空间模型和更广泛的空间变换中，创造出新颖的生成感知错觉。文章发表于CVPR 2025。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕Microchip公司的IDE及其收费、硬件开发的困难以及对特定技术遗留问题的讨论。
+                    <div class="comments-summary">主要讨论点：Disney在研究领域的活跃表现及其相关技术应用
 
 不同观点：
-• [gregfjohnson] 认为Microchip的MPLAB X IDE v6.20中使用了基于GCC的编译器，但要启用高于-O0的优化级别需要支付1000美元的“许可费”。这可能违反了GCC的copyleft许可证。他考虑是否应告知EFF（电子前沿基金会）这一情况。
-
-• [anitil] 赞赏文章中对硬件开发困难的揭示，指出硬件制造商并不总是完全公开或诚实 about 设备的性能，通常在开发深入后才会发现问题。
-
-• [userbinator] 认为Microchip在公开其收购公司的产品信息方面做得不错，例如曾经非常保密的Atmel安全IC现在可以免费下载完整的数据手册。
-
-• [lttlrck] 提到令牌环网络技术在1996年已经过时，并猜测某些“工业综合体”中可能仍有需要维护或与遗留系统对接的部分，这可能是该技术仍然存在的原因。
-
-• [kragen] 赞赏文章的全面和无畏，并识别出作者是Andrew Zonenberg。
-
-• [Taniwha] 分享了对PHY芯片的一般经验，指出其内部结构复杂且不同。
-
-• [RainyDayTmrw] 以幽默方式指出“serdes”这一名称在网站和功能命名上的巧合，可能在玩文字游戏。
+• agumonkey对Disney在研究上的持续活跃表示赞赏，认为这是一个积极的现象。
+• mg分享了一个相关项目，通过交换短视频序列中最后一张图像的相邻像素，使其与第一张图像相似，提供了具体的实例。
+• cornstalks提到Stand-up Maths和Steve Mould的一个 puzzle项目，该项目通过两种不同图像产生两种解决方案，提供了另一个相关实例。
+• ygritte认为这种技术可能用于某种隐写术（steganography），但需要正确的镜像形式来解码。
+• fudged71对许多光学错觉通过新的生成技术被重新审视表示赞赏。
+• krick幽默地表示，看到这些技术让他想买一个奇形怪状的镜头来体验。
+• echelon分享了一次与Disney高管会面的不愉快经历，特别是Steve May对其小型创业公司成就的轻视态度，将Disney比作帝国，Pixar比作死星。
+• ziofill对技术的创新性表示认可，但质疑其实际应用目的。
 
 补充讨论：
-- 争议焦点在于Microchip是否违反了GCC的copyleft许可证，通过对其IDE中的编译器收费。[gregfjohnson]提出了这一潜在问题。
-- 对硬件开发困难的讨论揭示了制造商在设备能力公开上的不足，[anitil]强调了这一实际问题。
-- 对遗留技术如令牌环的讨论，[lttlrck]提出了技术历史和实际应用中的遗留问题。
-- 其他评论更多是对文章和作者的赞赏以及对技术细节的分享和经验交流。</div>
+• 讨论中涉及多个具体实例，如mg提供的Instagram链接和cornstalks提供的YouTube视频链接，这些实例丰富了讨论内容。
+• echelon的评论引入了个人经历和对Disney企业文化的批评，为讨论增添了情感和个人视角。
+• ziofill的质疑提出了一个值得注意的问题，即这些技术创新的实际应用价值，这可能成为未来讨论的焦点。
+
+争议焦点：
+• echelon对Disney及其高管Steve May的态度和行为的批评与其他评论中对Disney技术活跃性的赞赏形成对比，显示出对Disney公司文化和技术成就的不同看法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44468718" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44495154" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -443,6 +444,52 @@
 • **AI分析结果的准确性和实用性**：不同用户对AI分析结果的准确性和实用性存在不同看法，尤其是对职业角色和个人兴趣的预测。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44489803" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://serd.es/2025/07/04/Switch-project-pt3.html" target="_blank">What Microchip doesn't (officially) tell you about the VSC8512</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ahlCVA</span> |
+                    <span>评分: 99</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-04 23:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文是关于作者在开源1U可管理以太网交换机项目（LATENTRED）中使用VSC8512 PHY芯片的经历。作者最初选择VSC8512是因为其QSGMII接口和 supposedly 完全公开的 datasheet，但在尝试调整SERDES TX均衡器设置时发现需要访问“机密参考手册”，该手册受NDA限制。由于无法签署NDA，作者只能依赖公开文档解决问题。
+
+公开文档包括VSC8512 datasheet、硬件设计清单、IBIS-AMI模型和参考设计指南等。通过分析，作者发现VSC8512像是精简版交换机ASIC，并确认了一些SERDES参数（如OB_LEV、OB_PREC等），尽管不完全知道如何设置这些参数。作者还提到MESA API是一个有价值的信息来源，但文档不完善。最终，作者依靠有限的信息和实验解决了信号完整性问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Microchip的IDE软件MPLAB X的许可费用及其与GCC的版权问题，以及硬件开发中的挑战和相关技术话题。
+
+不同观点：
+• [gregfjohnson] 认为Microchip的MPLAB X IDE v6.20对优化级别收费$1000.00是不合理的，质疑其是否违反了GCC的copyleft许可证。他考虑是否应通知EFF（电子前哨基金会）来处理此事。
+• [anitil] 分享了对硬件开发困难的看法，指出制造商并不总是完全公开或诚实披露设备的全部能力，通常在开发深入后才被发现，并称赞了该研究工作的深入。
+• [userbinator] 认为Microchip在开放收购自其他公司的产品资料方面做得不错，例如从Atmel购买的安全IC现在可以免费下载完整的datasheets。
+
+补充讨论：
+• [lttlrck] 提到了1996年其硕士论文中关于令牌环网的讨论，并猜测某些工业系统可能因为需要与遗留系统接口而继续使用该技术，可能是"dark silicon"中保留该技术的原因。
+• [kragen] 对文章的全面性和无畏表示赞赏，特别指出是因为作者Andrew Zonenberg的贡献。
+• [nemo8551] 表达了对该系列文章的喜爱，并请求推荐类似深度技术分析的文章。
+• [Taniwha] 简要评论了PHYs设备的复杂性，用"lots of twisty passages all different"来形容。
+• [RainyDayTmrw] 以幽默方式指出了文章和网站都以"serdes"命名，玩了一把文字游戏。
+
+争议焦点：
+• Microchip对GCC优化级别收费是否违反了copyleft许可证，以及是否应通知相关组织如EFF来处理此问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44468718" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -515,83 +562,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://macwright.com/2025/07/03/epanet-placemark" target="_blank">Epanet-JS</a>
+                    <a href="https://thehill.com/opinion/technology/5383530-chatgpt-users-privacy-collateral-damage/" target="_blank">The New York Times wants your private ChatGPT history – even the deleted parts</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-04 13:57</span>
+                    <span>作者: isolli</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-08 07:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>EPANET-js是一款结合现代网络地图和行业标准EPANET液压模拟算法的网页应用，旨在帮助规划和更新供水系统。该工具由Iterating团队开发，利用了Tom MacWright之前发布的开放源代码工具Placemark，并对其进行了改进，甚至将核心库也进行了开源。EPANET-js与传统昂贵且局限于Windows的软件形成鲜明对比，提供了更便捷、成本更低的解决方案。通过使用WASM引擎，用户可以在浏览器中进行完整的模拟。这一项目不仅展示了开放源代码的价值，还为液压模拟领域提供了创新工具。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[epanet-js作为开源工具与昂贵的传统软件的对比及其意义]
+                    <div class="comments-summary">主要讨论点：用户对《纽约时报》可能获取ChatGPT对话记录的担忧及相关法律问题，尤其是涉及版权侵权和隐私的讨论。
 
 不同观点：
-• [xnx] 认为 epanet-js 是一个可以在浏览器中运行的工具，使用WASM引擎进行完整模拟，与昂贵的传统软件（每年16,000美元，仅限Windows系统，按“管道”数量定价）相比，是一个极大的改进。尽管[xnx]表示自己不会用到epanet-js，但依然认为这是免费软件应有的样子，非常酷。
-
-• [lbutler] 作为 epanet-js 的作者之一，提供了项目的源代码链接，邀请大家查看和了解项目的具体实现，强调了开源和透明性。
-
-补充讨论：
-• [xnx] 强调了开源软件在功能和价格上的优势，认为这是对传统高价软件的一种挑战和替代，即便自己不会使用该工具，但对其创新性和开放性表示赞赏。
-• [lbutler] 通过提供源代码链接，展示了开源社区的协作精神，邀请更多人参与和贡献，进一步推动项目的透明性和社区发展。
-• 争议的焦点可能在于高价传统软件的市场定位和价值主张，特别是在面对功能相似甚至更具开放性的免费软件时，用户对软件定价和使用权限的质疑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44464628" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://markushimmel.de/blog/my-first-verified-imperative-program/" target="_blank">My first verified imperative program</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: TwoFx</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-07 17:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Lean 4.22即将发布的新功能之一是用于验证命令式程序属性的基础设施预览。文章通过一个示例展示了该功能，即判断一个整数列表中是否存在两个不同位置的数相加为零。传统上，验证命令式程序较为困难，Lean 4.22引入的新框架Std.Do基于Hoare三元组（“如果前条件P为真，执行命令C后，后条件Q为真”）来简化这一过程。文章演示了如何使用本地命令式风格编写算法，并利用Hoare三元组验证程序正确性。具体示例中，使用HashSet数据结构优化算法至O(n)时间复杂度，并通过Lean语法定义验证属性。文章最后提供了在线Lean环境供交互实验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Lean语言的应用及其在证明和编程中的优缺点
-
-不同观点：
-• drdeca认为Lean在使用`grind`时，如果能生成更明确的证明步骤文本会更好，这样可以在验证速度较慢的情况下替代`grind`步骤。
-• ryjo对Lean中使用逻辑符号和前置条件的情况感兴趣，并分享了在CLIPS中实现类似功能的经历，强调了声明式与命令式编程的对比。
-• Joker_vD指出该证明仅适用于任意精度整数，若使用固定精度整数，算法可能会错误报告，并希望在转移证明时会失败。
-• munchler认为Lean的新功能很棒，但担心证明比程序本身更长更复杂，质疑其在真实世界程序中的可扩展性。
-• jeremyscanvic简单表达了对Lean未来发展的兴奋和期待。
-• norir反对命令式编程，认为尾递归比循环更好，可以避免无限循环和提前退出问题，并提倡使用不可变数据结构来提高正确性验证，尽管许多语言不支持尾递归优化。
-• SUPERX_112简单表达了对文章的赞赏。
+• [pu_pe] 认为《纽约时报》的指控逻辑有问题，暗示用户因害怕版权问题而删除对话是荒谬的。同时，他猜测《纽约时报》可能暗指OpenAI自行删除侵权对话。
+• [profsummergig] 认为，如果ChatGPT对话记录真的被提交给《纽约时报》的律师审查，这将引发一系列法律和隐私问题，尽管这不会阻止大语言模型（LLM）的发展，但会带来很多法律纠纷和新闻事件。
+• [aucisson_masque] 指出，美国的司法系统往往倾向于支持有钱有律师的一方，不管请求多么不合理。同时，他认为用户可以转向其他不强制交出个人对话的ChatGPT竞争平台。
+• [unstatusthequo] 表达了对主流媒体的不信任，尤其是对《纽约时报》的态度。他希望OpenAI的律师能够对抗《纽约时报》，并认为《纽约时报》只是为了金钱利益。
+• [6510] 建议将《纽约时报》加入屏蔽域名列表，并对美国法院认为其数据需要全球用户交出隐私表示质疑。
 
 补充讨论：
-• 关于`grind`步骤的明确性问题，drdeca建议Lean输出更详细的证明步骤以便手动验证。
-• 关于前置条件的应用，ryjo结合CLIPS规则语言分享了实现经验，并提供了代码示例，试图将Lean代码与定理进行类比。
-• 关于数据类型对算法的影响，Joker_vD指出了固定精度整数的潜在问题，强调了证明在不同数据类型下的适应性。
-• 关于可扩展性和代码风格，munchler和norir关注Lean在实际应用中的复杂性和代码风格的选择，norir特别提倡尾递归编程。
-
-争议焦点：
-• 命令式编程与声明式编程的优劣：norir明确反对命令式编程，而ryjo则通过CLIPS的例子展示了命令式和声明式编程的结合应用。
-• Lean证明的复杂性和可扩展性：munchler担心Lean证明在实际应用中的可扩展性，而其他人如jeremyscanvic则对Lean的未来持积极态度。</div>
+• 一些用户如[elcapitan]和[sroussey]以讽刺和戏谑的方式回应，表示会故意生成涉及《纽约时报》律师的敏感对话以引发更多问题。
+• 争议焦点在于《纽约时报》是否有权获取用户与ChatGPT的对话记录，以及这种行为是否侵犯用户隐私和言论自由。
+• 讨论中还涉及对美国司法系统的批评，认为其可能被金钱影响，导致不公正的裁决。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44492986" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44497935" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
