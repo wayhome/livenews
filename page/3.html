@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-08 17:16 (北京时间)
+            最后更新时间: 2025-07-08 20:27 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,39 +61,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://berry-lang.github.io/" target="_blank">Berry Script: lightweight embedded scripting language for microcontrollers</a>
+                    <a href="https://utcc.utoronto.ca/~cks/space/blog/unix/ErrnoWhySoLimited" target="_blank">What is going on in Unix with errno's limited nature</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hasheddan</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-05 12:13</span>
+                    <span>作者: ingve</span> |
+                    <span>评分: 51</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-04 06:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Berry是一种超轻量、动态类型的嵌入式脚本语言，专为低性能嵌入式设备设计。其解释器核心代码小于40KiB，可在低于4KiB的堆上运行（基于ARM Cortex M4 CPU）。Berry使用单通道编译器和基于寄存器的虚拟机，所有代码均用ANSI C99编写。简单值类型（如int、boolean、string）不是类对象，而list、map和range则是类对象，以提升性能。
-
-Berry具有轻量、快速、强大、灵活和简单的特点，支持命令式、面向对象和函数式编程。它提供垃圾回收、FFI（外部函数接口）和正则表达式等功能。控制结构包括条件语句、循环语句和跳转语句。函数支持局部变量、闭包和匿名函数。类支持单继承、方法和操作符重载。模块管理支持内置和扩展模块，并可将代码固化到闪存以减少RAM使用。
-
-Berry语法简单直观，类似于高级语言，支持映射到C代码调用。通过示例展示了类的声明、继承和使用方法。</p>
+                    <p>本文解释了为何一些用户在访问作者博客（Wandering Thoughts）或相关wiki（CSpace）时被阻止。原因在于，作者的反爬虫措施会拦截使用过旧浏览器（尤其是旧版Chrome）的访问者，以应对2025年初大量使用旧浏览器用户代理的高流量爬虫。这些爬虫常用于收集数据训练语言模型。如果用户确实在使用新版浏览器却被误拦，可联系作者。此外，使用archive.*（如archive.today）的用户也会被误认为恶意爬虫，建议改用更为规范的archive.org进行存档。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某种脚本在嵌入式系统中的应用和更新情况
+                    <div class="comments-summary">主要讨论点：Linux内核中errno的使用及其问题，包括错误处理的透明性、调试困难和设计上的局限性。
 
 不同观点：
-• 观点1：该脚本在过去两年中似乎没有收到任何更新。这可能暗示该技术的维护和开发已经停滞，或者更新不活跃。持这一观点的人对该技术当前的活力和未来发展表示担忧，尤其是考虑到技术更新频率通常是衡量其活跃度和可靠性的一个指标。
-
-• 观点2：有人对该脚本在嵌入式系统中的具体用例表示好奇，并提出了疑问。这表明此人对该脚本的实际应用场景和实用价值感兴趣，但目前尚不明确其在嵌入式系统中的典型用例。
+• [rwmj] 认为当前Linux内核中errno的最大问题是无法记录错误发生的位置，导致调试困难，尤其是在错误是在底层系统调用或异步任务中设置的情况下。他还提到，在Linux中实现详细的错误记录非常困难，因为错误通常是通过返回负值的副作用来设置的，且很多代码中并没有明确的错误记录。
+• [userbinator] 则认为errno的行为并不奇怪，并将其与Windows的GetLastError()进行比较，指出在调用成功时错误码并不重要。同时，他认为在每次成功调用时将errno设为0是多余的，尤其在资源受限的历史背景下更是如此。
+• [jezze] 提出了一种不同的设计思路，建议将错误信息和返回值分离到不同的寄存器中，以避免返回值的歧义和类型混淆问题，从而提高代码的清晰度。
+• [toast0] 认为C语言本身的局限性导致了当前错误处理方式的存在，因为C语言难以处理CPU标志等其他返回方式，因此采用当前这种通过返回值和errno结合的方式。
+• [badc0ffee] 补充了一些libc函数中通过检查errno来判断调用是否成功的具体例子，如strtol函数，强调了在某些情况下必须手动检查errno。
+• [0xbadcafebee] 从更广泛的软件设计角度出发，讨论了系统中缺乏可见性的问题，认为理想的设计应具有良好的内聚性和松散耦合，同时能够在出现问题时提供足够的错误信息。他还提到了分布式追踪和可观察性工具的重要性，认为现有的软件设计模式在这方面存在不足。
 
 补充讨论：
-• 争议焦点：目前的主要争议在于该脚本是否仍在活跃开发和更新，以及其在嵌入式系统中的实际应用价值。如果该技术缺乏更新，可能会影响其在快速变化的技术环境中的竞争力。
+• [tptacek] 提供了一个与错误处理相关的历史文档链接，可能涉及一些过时但相关的技术细节。
+• [amelius] 简单提出了线程相关的问题，但未展开讨论。
 
-• 论据和例子：目前没有具体例子被提出，但可以推测，如果该脚本缺乏明确的用例或更新，可能会逐渐被其他有活力的技术取代。同时，嵌入式系统开发中，脚本的轻量化和高效性是关键考量因素，因此该技术的这些特性可能会成为讨论的重点。</div>
+争议焦点：
+• 当前Linux内核中errno机制的调试困难和透明性问题。
+• 是否需要在每次成功调用时将errno设为0，以及这种做法是否多余。
+• 错误信息和返回值是否应该分离到不同寄存器中以提高清晰度。
+• 如何在更大范围的软件系统中实现更好的错误追踪和可观察性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44472246" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44461666" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -104,13 +108,13 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://literaryreview.co.uk/man-of-glass" target="_blank">Man of Glass: Boccaccio: A Biography</a>
+                    <a href="https://briannazigler.substack.com/p/why-are-there-no-good-dinosaur-films" target="_blank">Why are there no good dinosaur films?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Thevet</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-04 16:48</span>
+                    <span>作者: fremden</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-04 19:55</span>
                 </div>
 
                 <div class="summary-section">
@@ -120,9 +124,42 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：围绕《侏罗纪公园》系列电影的评论和分析，包括电影制作的细节、科学性、情感共鸣以及与后续电影的对比。
+
+不同观点：
+• LeftHandPath认为，斯皮尔伯格的原作通过详尽的细节描绘，如琥珀的来源、多学科专家的参与、天气影响以及员工的互动和挫折，营造了一个更真实、有生命力的公园。而后的电影则缺乏这种深度，直接呈现一个已经运行的公园，缺少对创建过程的挣扎和 triumph 的刻画。
+
+• nullhole引用了Ebert的观点，指出原作中对恐龙首次出现的场景充满了敬畏和奇迹感，而后续电影则更多地转向了标准的怪物电影模式，缺乏原作的宏伟感。
+
+• conductr分享了个人经历，反映出公众对恐龙灭绝原因的认知随着时间推移发生了变化，强调了科学知识的不断更新。
+
+• yeahboats指出，新的《侏罗纪》电影缺乏原作的灵魂和角色的深度，更多地依赖CGI技术，并认为原作因其开创性而成为标杆。
+
+• csours赞赏《侏罗纪公园》的开场镜头和Mr. DNA的技术解说场景，认为这些是电影中出色的技术表现。
+
+• OJFord认为，《侏罗纪》系列是唯一适合成年人的恐龙故事，因为其他可能的恐龙故事无法在现代电影制作中获得足够的预算和对话。
+
+• Reason077讨论了电影中关于恐龙捕猎的科学准确性问题，指出古代捕食者的视觉和行为可能与现代鸟类不同。
+
+• euparkeria质疑为何好的恐龙电影如此稀少，相比之下僵尸电影却很多，尽管概念简单。
+
+• throw7怀念旧电影中的经典台词，认为现代电影缺乏这样的 memorable moments。
+
+• bruce511对Ian Malcolm角色的复杂性和Jeff Goldblum的演绎表示赞赏，认为其在电影中的台词具有深刻的哲理。
+
+• jtrn批评文章本身重复了陈词滥调，认为文章指责好莱坞失去创新能力的同时自己也缺乏新意。
+
+• zhynn推荐了Abby Howard的《Earth Before Us》系列书籍，认为这些书籍在科学性和故事性上都非常出色。
+
+• sdsd享受与孩子一起观看恐龙电影的体验，认为这种电影对孩子来说已经是巅峰之作，并反对将恐龙电影过度艺术化。
+
+补充讨论：
+• 科学知识的更新和公众认知的变化是一个值得注意的讨论点，conductr和jxjnskkzxxhx都提到了这一点。
+• 原作与续作在情感共鸣和科学细节上的对比是讨论的核心，LeftHandPath和nullhole的观点最具代表性。
+• 对电影技术的赞赏和批评，如csours和yeahboats的看法，也反映了观众对电影制作的不同期望。
+• 对恐龙电影的个人体验和情感联结，如bruce511和sdsd的分享，提供了对观众多样化视角的洞察。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44466025" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44467379" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -133,13 +170,99 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://buildmytransit.nyc" target="_blank">Show HN: NYC Subway Simulator and Route Designer</a>
+                    <a href="https://markushimmel.de/blog/my-first-verified-imperative-program/" target="_blank">My first verified imperative program</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: HeavenFox</span> |
-                    <span>评分: 146</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-07-07 14:13</span>
+                    <span>作者: TwoFx</span> |
+                    <span>评分: 158</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-07 17:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Lean 4.22即将发布的新功能之一是用于验证命令式程序属性的基础设施预览。文章通过一个示例展示了该功能，即判断一个整数列表中是否存在两个不同位置的数相加为零。传统上，验证命令式程序较为困难，Lean 4.22引入的新框架Std.Do基于Hoare三元组（“如果前条件P为真，执行命令C后，后条件Q为真”）来简化这一过程。文章演示了如何使用本地命令式风格编写算法，并利用Hoare三元组验证程序正确性。具体示例中，使用HashSet数据结构优化算法至O(n)时间复杂度，并通过Lean语法定义验证属性。文章最后提供了在线Lean环境供交互实验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于使用Lean定理证明器验证命令式代码与声明式代码的讨论
+
+不同观点：
+• [bux93] 认为，通过编写实现相同功能的声明式代码来验证命令式代码，这种做法值得怀疑，可能存在问题。
+• [Joker_vD] 指出，该证明仅适用于任意精度整数，而在固定精度整数（如C语言中的整数）情况下，算法可能会错误报告。他质疑如果将该证明转移到固定精度场景下是否会失败。
+• [ryjo] 对文章中使用Lean定理验证命令式编程的方式表示赞赏，并分享了自己在CLIPS（一种声明式规则语言）中实现类似功能的代码，强调了通过定义条件来触发规则执行的方式，并指出这种方式与Lean定理有相似之处。
+• [drdeca] 认为Lean在使用`grind`功能时，如果能生成更明确的证明步骤文本输出，会更有帮助，尤其是在`grind`步骤验证速度较慢的情况下。
+• [munchler] 称赞Lean的新功能，但担心证明过程比代码本身更长更复杂，质疑这种方法在实际程序中的可扩展性。
+• [jeremyscanvic] 对Lean的未来表示期待和兴奋。
+• [norir] 主张拒绝命令式编程，认为尾递归比循环更易于验证正确性，可以避免无限循环和提前退出的问题。他批评Lean支持命令式代码，建议Lean应帮助用户学习如何使用递归思维。
+
+补充讨论：
+• 争议焦点之一是Lean证明在不同精度整数情况下的适用性，特别是固定精度整数场景下的潜在问题([Joker_vD]的观点)。
+• 另一个讨论点是关于命令式编程与声明式编程的对比，尤其是尾递归相对于循环的优越性([norir]的观点)。
+• 还有对Lean工具使用体验的反馈，例如对`grind`步骤的改进建议([drdeca]的观点)以及对Lean可扩展性的担忧([munchler]的观点)。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44492986" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cliffmass.blogspot.com/2025/07/the-texas-flooding-tragedy-could-it.html" target="_blank">The Texas Flooding Tragedy: Could It Have Been Avoided?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: georgecmu</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-08 10:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讲述了2023年7月4日清晨德州瓜达卢佩河发生的 catastrophic flooding（灾难性洪水），导致至少50人死亡。尽管美国国家气象局（NWS）提前数日发布了准确的预警和预报，警告该地区可能发生重大降雨和洪水，但当地并未进行疏散，最终导致悲剧发生。文章批评了相关部门未采取行动，特别是在洪水易发区没有建立预警系统，并指出类似事件如 Maui 野火和 Hurricane Helene 洪水也曾因未充分利用预报导致大量死亡。文章还驳斥了一些媒体将此次洪水与气候变化挂钩的说法，强调没有证据显示气候变化是此次事件的主因，并指出该地区极端降水事件在历史上并未呈现上升趋势。文章最后呼吁社会应更好地利用现有的气象预报能力，以防止天气相关的死亡事故。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：德州中部洪水事件的原因、气候变化的影响、政治因素对天气预警系统的影响以及如何有效应对自然灾害。
+
+不同观点：
+• willguest认为，没有证据表明德州洪水是由气候变化引起的，气候系统是复杂和混沌的，不能通过单一事件来证明气候变化的影响。作者对气候科学的理解有误，过度强调气候变化可能导致人们对监测和预警系统产生怀疑。
+• Reubachi对该话题出现在Hacker News上表示不解，认为这并不符合该平台的评论规则，同时暗示这种讨论在当前很常见。
+• conartist6讽刺地表示，一个图表似乎解决了所有气候科学问题，认为不应因为单一观点而否定其他可能的看法。
+• jmclnx认为，这场悲剧可能无法避免，过去几十年的政策和选举结果导致了当前的问题，改变需要长时间的努力和不同的选择。
+• actionfromafar仅提供了一个Reddit链接，未直接参与讨论。
+• dangus指出，文章混淆了两个问题：人们是否会根据天气警告采取行动，以及媒体是否尽职调查。他认为，虽然这次事件可能不是气候变化的直接结果，但气候变化确实会导致更极端的天气模式。他还提到政府对NOAA和NWS的预算削减问题，认为这会对天气预警系统产生影响，即使这种影响并不直接体现在此次事件中。
+• metalman认为，这类自然灾害不可避免，地球的风险分布难以完全确定。试图建立全国性的应对网络是不现实的，且会遇到政治和实际操作上的困难。他强调，人类往往选择居住在资源丰富的洪水平原，这种现象自古就有。
+
+补充讨论：
+• 争议焦点之一是气候变化是否为此次德州洪水的主要原因，以及如何在科学证据不足的情况下讨论气候变化的影响。
+• 另一个讨论点是政治因素对天气预警系统的影响，特别是政府预算削减对NOAA和NWS的影响。
+• 还有一个值得注意的观点是，人类对自然灾害的应对和居住选择具有历史性和普遍性，这种现象并非现代独有。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44498594" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://random.colorado.edu/" target="_blank">CU Randomness Beacon</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wello</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-05 09:06</span>
                 </div>
 
                 <div class="summary-section">
@@ -149,26 +272,25 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一个地铁路线设计工具的功能、设计和可用性进行讨论。
+                    <div class="comments-summary">主要讨论点：随机性信标（randomness beacon）API的选择以及区块链的应用场景
 
 不同观点：
-• darthplagius：对该工具表示兴趣，计划分享给MTA的AI和创新团队以获得乐趣。
-• shiroiuma：质疑自定义路线设计的实际意义，认为纽约不会建设新路线。
-• blehn：对工具的视觉设计提出建议，认为应通过颜色和不同视觉标识来表示列车状态。
-• Aaronstotle：表达了对创建穿过公园的地铁线路的愿望。
-• kiwibyproxy：对项目的其他城市适用性表示兴趣，建议在文档中提供更多技术细节和结构说明。
-• xnx：提到在编辑路线时遇到技术问题，如点击"<- Add"按钮后出现控制台错误并导致页面空白。
-• indoordin0saur：表示过去曾有类似设计想法，对工具表示赞赏。
-• ars：尝试添加特定跨州路线时遇到困难，指出纽约至新泽西公共交通的不足。
-• pimlottc：指出工具在移动端的使用体验不佳，控件遮挡地图，建议增加最小化功能。
+• CaliforniaKarl认为该随机性信标应使用与NIST信标相同的API（v1或v2 API），以便于互操作性和一致性。这是对技术标准化和兼容性的关注。
+• Octokat的评论 "Skobuffs!" 似乎与主要讨论点无直接关系，可能是一种表达情绪或无关的技术术语。
+• tonnydourado的评论 "laughs in Brazilian" 是一种幽默反应，未提出具体技术观点，可能是对话题不感兴趣或感到滑稽。
+• ntnsndr提出区块链作为随机性信标的一个潜在用例，暗示区块链技术可能为信标的透明性和不可篡改性提供解决方案。这是对区块链技术应用的积极建议。
 
 补充讨论：
-- 视觉设计和用户体验是讨论的一个重点，blehn和pimlottc分别提出了改进建议。
-- 技术问题如xnx遇到的错误提示，以及ars对跨州路线的实际可行性探讨，反映了工具在功能和现实应用中的挑战。
-- 对项目扩展性的兴趣（kiwibyproxy）和现实中新路线的不可能性（shiroiuma）形成了对比。
-- 总体上，用户对工具的创意表示赞赏，但对其功能和设计的完善有进一步期待。</div>
+• CaliforniaKarl强调了API标准化的重要性，可能意味着当前信标在技术整合上面临挑战。
+• ntnsndr的区块链应用建议引出了一个值得进一步讨论的技术方向，即如何利用区块链来增强信标的可靠性和安全性。
+• 评论中存在一定的幽默和无关内容（Octokat和tonnydourado的评论），但未对技术讨论产生实质性贡献。
+
+争议焦点：
+• 主要争议在于是否需要统一的API标准，以及区块链技术是否适用于随机性信标的场景。CaliforniaKarl关注现有技术标准的兼容性，而ntnsndr则提出了一个创新但可能有争议的技术应用方向。
+
+总结：评论主要围绕随机性信标的API标准化和区块链应用展开，有人关注技术兼容性，有人提出新的技术应用可能性，同时夹杂了一些幽默和无关内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44490588" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44471251" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -226,6 +348,114 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://t2tmud.org/" target="_blank">The Two Towers MUD</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: astronads</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-05 19:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《The Two Towers MUD》是一款基于托尔金《指环王》世界设定的免费多人在线角色扮演游戏。游戏背景设定在第三纪元3019年3月15日，萨鲁曼和索伦向中土自由人民发动战争。玩家可以选择加入黑暗势力或抵抗，探索超过10万个房间的广袤世界，参与数百个任务。游戏自1994年运营至今，拥有活跃的全球玩家社区，并定期举办活动，如年度庆典。近期更新包括新增笔记排序和展示功能、莫里亚地城任务NPC难度提升、以及修复多个道具和任务问题。玩家可以通过加入新闻通讯、投票和捐赠支持游戏。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：MUD（多用户迷宫）游戏的相关经历、技术及现状
+
+不同观点：
+• scbrg认为MUD是学习编程的绝佳场所，通过调试其他新手写的代码，获得了编程经验，并通过参与MUD开发最终获得了工作机会。MUD的即时反馈和快速迭代特性让学习过程充满动力。
+• nvader推荐了基于Terry Pratchett作品的Discworld MUD，强调其幽默和深度的游戏体验，并指出其目前仍有活跃的玩家群体。
+• xedrac表示MUD比现代游戏更有趣，但对具体代码基础表示好奇。
+• bokchoi分享了自己高中时玩btech 3056的经历，强调了跨地域交流的乐趣，并提到遇到的一个游戏bug。
+• bovermyer曾考虑编写自己的MUD引擎，但未实现，现在可能将其作为一个新项目考虑。
+• qmr表示自己长时间沉迷于MUD，并偶尔仍在玩，推荐了KBtin MUD客户端。
+• davidgay提到自己参与的MUD（mume.org）已经运行超过33年，并分享了自己对扩展语言的贡献。
+• teroshan询问MUD客户端的推荐，特别是是否有多个游戏通用的客户端。
+• SeanAnderson对MUD游戏的长寿和持续更新表示赞赏。
+• xahrepap回忆了自己与朋友一起玩MUD的童年乐趣。
+• mdtrooper提到了一些长期运行的西班牙语MUD，如Balzhur和Medina。
+• Inviz询问是否有YouTube频道讲述MUD的开发和玩家故事。
+• tcn33提到自己在Worlds of Carnage上花费了大量时间。
+• ralfd询问MUD的定义和游戏是否可以通关。
+
+补充讨论：
+• MUD作为编程学习工具的有效性及其即时反馈和快速迭代的优势。
+• 不同MUD的具体内容和玩家体验，包括基于特定文学作品的MUD。
+• MUD的持续吸引力和其在不同语言环境中的长久运行。
+• MUD客户端的推荐和其通用性。
+• 对MUD开发和玩家故事的兴趣，以及相关视频内容的寻找。
+• 对MUD基本概念和游戏机制的简单介绍和澄清。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44474919" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://buildmytransit.nyc" target="_blank">Show HN: NYC Subway Simulator and Route Designer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: HeavenFox</span> |
+                    <span>评分: 167</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-07 14:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一个地铁模拟项目的反馈与技术讨论
+
+不同观点：
+• [avianlyric] 认为默认的列车停站时间过短，特别是在高运力系统中，停站时间是限制乘客容量的关键因素。他以伦敦Victoria线的例子说明停站时间包括开门、关门、安全检查等多个环节，通常最少需要30秒，20秒仅在低需求时可能实现。此外，他还指出纽约地铁使用固定区块系统，而非移动区块系统，后者效率更高。
+
+• [zerojames] 和 [indoordin0saur] 对项目表示赞赏，认为这是一个很酷的项目，但没有提出具体的技术反馈。
+
+• [darthplagius] 表示会将此项目展示给MTA的AI/创新团队，暗示该项目可能引起专业团队的兴趣。
+
+• [konsalexee] 喜欢这个项目，并建议增加时间旅行的功能滑块，这是一个关于用户体验的增强建议。
+
+• [blehn] 对项目的视觉设计提出批评，建议根据线路颜色匹配轨道和列车颜色，并提出不同的视觉状态指示，例如 stopped、at station 等，以提高可用性。
+
+• [kiwibyproxy] 对项目的技术细节表示兴趣，建议在readme中增加更多关于项目结构的信息，以便适应其他城市。
+
+• [xnx] 报告了一个技术问题，即在编辑路线时遇到控制台错误，页面会变空白。
+
+• [shiroiuma] 质疑设计自定义路线的意义，认为在纽约新建路线的可能性很小，这提出了关于项目实际应用价值的讨论。
+
+• [ars] 提出一个具体路线设计的需求，希望能够从Brooklyn到Newark Airport而不经过曼哈顿，讨论了现实中的交通问题和可能的路线扩展。
+
+• [pimlottc] 指出项目在移动端的不友好体验，建议增加地图控制的最小化功能，以改善移动端使用体验。
+
+补充讨论：
+• 项目在视觉设计和用户体验上存在改进空间，如[blehn]和[pimlottc]所指出的问题。
+• 项目引发了关于技术实现细节的讨论，如[avianlyric]对停站时间和区块系统的分析。
+• 部分用户对项目的实际应用价值提出质疑，如[shiroiuma]，但也有人提出具体需求和扩展建议，如[ars]。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44490588" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.nature.com/articles/s41586-025-09044-5" target="_blank">Integrated photonic source of Gottesman–Kitaev–Preskill qubits</a>
                 </h3>
                 <div class="story-meta">
@@ -255,150 +485,6 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
 • 争议焦点：争议的核心在于光子量子计算技术是否真的能够实现从实验室到市场的跨越，尤其是在可扩展性和成本控制方面是否具备可行性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44469254" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://link.springer.com/article/10.1007/s12520-025-02175-w" target="_blank">Analysing Roman itineraries using GIS tooling</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: diodorus</span> |
-                    <span>评分: 28</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-04 20:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了利用地理信息系统（GIS）工具分析罗马道路网络的方法，特别是针对从Tude到Luco Augusti的第十九号道路。由于传统方法未能解决一些关键问题，如驿站位置、距离测量不一致、古典文献中的里程定义以及复杂的地形，文章提出了一种多代理方法，结合地形和非欧几里得相关性进行细致分析。通过GIS技术，研究能够计算最佳路径，并与历史数据和考古证据进行比较，以解决现有问题。本文强调了多学科研究的重要性，并展示了GIS在分析罗马道路网络中的应用潜力，包括优化路径计算和网络分析等功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：使用现代技术（如GIS工具）重现和定位历史地点，尤其是面对历史变迁和地理变化时所遇到的困难。
-
-不同观点：
-• [jillesvangurp] 强调历史学家在制作地图时往往不够精确，历史事件的具体地点可能会因时间流逝而变得模糊。现代地图不一定能反映历史事件发生的地点，因为地理特征如河流、道路、建筑物和边界等都会发生变化。他引用了一个德国历史学者的例子，该学者使用GIS工具，通过将历史地图与现代地图对比，研究德国纳粹时期死亡行军的路线。结果显示许多道路已不复存在，集中营也被拆除，这使得精确定位历史事件发生的地点变得困难。
-
-• [ggm] 从技术角度出发，提出使用IP网络中的往返时间（RTT）来地理定位端点，通过近似光速和位置圈的方法。这一观点虽然与历史地点定位主题相关性稍弱，但提出了一种现代技术在地理定位中的创新应用。
-
-• [hjrnunes] 推荐Isaac Moreno的YouTube频道，强调其在使用GIS技术研究历史道路方面的贡献，尤其是罗马道路和渡槽的路线。Isaac Moreno不仅参与了西班牙Castilla-León省的罗马道路网站项目，还为西班牙公共电视台制作了关于罗马工程的纪录片系列。这表明现代技术与学术研究相结合，可以有效地研究和重现历史地理信息。
-
-补充讨论：
-• 历史地点的精确定位面临地理变化、时间流逝和人为改造等多重挑战。
-• 使用现代GIS工具和技术可以有效帮助历史学者和研究者重现和定位历史事件发生的地点，但需要结合多种方法和数据来源。
-• 不同领域的专家（如历史学者、工程师）通过合作和使用现代技术，能够更准确地理解和呈现历史地理信息。
-
-争议焦点：
-• 历史事件地点精确定位的困难：一方面是历史资料和地图的模糊性，另一方面是现代地理变化对历史地点定位的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44467826" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simd.info/" target="_blank">SIMD.info – Reference tool for C intrinsics of all major SIMD engines</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pabs3</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-08 01:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章比较了几种不同的指令集架构（ISA），包括GO、VSX、NEON、SSE4.2、AVX2和AVX-512。这些指令集被广泛应用于不同的处理器中，以提升计算性能。GO是较新的实验性指令集，VSX主要用于IBM的Power架构，NEON是ARM处理器的SIMD指令集，擅长多媒体处理。SSE4.2是英特尔和AMD用于提升多媒体和数据处理能力的指令集。AVX2和AVX-512则是更高级的向量扩展指令集，支持更复杂的并行计算，尤其在科学计算和高性能计算中表现突出。不同的指令集适用于不同的应用场景，选择时需根据具体需求权衡性能和功耗。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对某个具有搜索功能的参考网站，用户对搜索功能、指令说明的详细程度以及对其他平台的支持提出了不同看法和建议。
-
-不同观点：
-• **Convery的观点**：  
-  - 认为网站的"搜索"功能有些不便，特别是在用户不确定要搜索的具体指令时。  
-  - 举例：搜索'SHA'时，由于过滤器设置，显示了未选择平台的自动完成选项，结果为0；而搜索'hash'时，结果中包含了无关的指令如'_mm256_castsi256_ph'。  
-  - 总结：搜索功能需要改进以更好地匹配用户查询。
-
-• **syockit的观点**：  
-  - 认为参考网站的指令说明缺乏详细信息，特别是与其它提供详细图示和伪代码的网站相比。  
-  - 举例：将该网站的某个指令页与另外三个提供更详细信息的网站进行对比，指出其它网站提供了图示或伪代码。  
-  - 建议：希望该网站能采用类似其它网站的方法，提供更详细的说明。
-
-• **mshockwave的观点**：  
-  - 认为该网站目前的内容很有用，询问是否计划添加对ARM SVE和RISC-V V扩展的支持。  
-  - 总结：关注网站未来扩展到其他平台的计划。
-
-补充讨论：
-- **争议焦点**：搜索功能的有效性和指令说明的详细程度是主要争议点。Convery和syockit都指出了使用体验上的不足，并提供了具体例子和对比网站以支持他们的观点。
-- **未来发展**：mshockwave提出了对网站未来功能扩展的期待，特别是对ARM SVE和RISC-V V扩展的支持。
-
-整体来看，用户对该网站的功能和内容有肯定，但也对其搜索体验和说明详细程度提出了改进建议，并对未来支持更多平台表示关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44496229" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-07-hymn-babylon-millennium.html" target="_blank">Hymn to Babylon, missing for a millennium, has been discovered</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wglb</span> |
-                    <span>评分: 141</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-04 04:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>研究人员在路德维希-马克西米利安大学（LMU）与巴格达大学的合作中，重新发现了失传千年的《巴比伦赞歌》。该楔形文字泥板描述了巴比伦的辉煌和居民生活，提供了对巴比伦城市社会的新见解。赞歌由250行组成，赞颂了巴比伦的建筑、自然景象以及居民对外国人的尊重。尤为特别的是，它详细描述了自然现象，这在现存的 Mesopotamian 文学中十分罕见。通过人工智能平台，研究团队还识别出另外30份与该赞歌相关的抄本，揭示了该文本在当时的广泛传播。赞歌的部分内容描述了幼发拉底河及其对巴比伦的贡献。这一发现为理解巴比伦文化和历史提供了重要资料。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：古代文明与现代识读能力的比较，以及未翻译楔形文字文本的问题
-
-不同观点：
-• octopoc：介绍《文明的陷落》播客中关于亚述的章节，提到美索不达米亚城市的多元信仰，每个城市有其专属神祇，城际战争被视为神祇间的竞争，类似于现代体育团队的竞争。
-
-• wglb：提供相关学术资源，引用《Iraq》期刊文章，为讨论提供学术支持。
-
-• cjs_ac：提到楔形文字相关的有趣视频，由大英博物馆的Dr. Irving Finkel讲述诺亚方舟故事的古老版本，增加讨论的文化历史维度。
-
-• yayitswei：对比古代巴比伦与中世纪欧洲的识读能力，指出巴比伦有制度化的儿童教育，而中世纪欧洲的识字率下降，识读成为专门技能，质疑现代所谓的指数增长。
-
-• dr_dshiv：关注未翻译的楔形文字文本，指出其中大部分尚未被翻译，建议创建资源来追踪这些古典文本，并认为这些文本应成为人工智能训练的核心部分。
-
-• freilanzer：表达对亚述学的兴趣，认为这是令人印象深刻的领域，但质疑在职情况下学习该领域的可行性。
-
-• MrGuts：以幽默方式回应新发现的巴比伦赞美诗，将其与星际物体和达赖喇嘛转世日联系起来。
-
-• smithkl42：纠正MrGuts关于新发现碎片时间的误解，引用学术文章指出这些碎片已有近两千年的历史。
-
-补充讨论：
-• 讨论中涉及的文本和视频资源为话题提供了更多的背景资料和深入研究的可能性。
-• 争议焦点在于古代文明识读能力的实际水平与现代识读能力的比较，以及如何处理大量未翻译的古代文本。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44461082" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -440,53 +526,6 @@ Berry语法简单直观，类似于高级语言，支持映射到C代码调用�
 争议焦点：无明显争议，但Joker_vD对PyPI上包泛滥的担忧与其他技术实现的趣味性讨论形成一定对比。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44476382" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://yidingjiang.github.io/blog/post/exploration/" target="_blank">The era of exploration</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jxmorris12</span> |
-                    <span>评分: 91</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-07 15:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讨论了大语言模型的数据消耗与未来发展方向。当前模型消耗数据的速度远超人类生成数据的速度，高质量的网络文本可能在2030年前耗尽。David Silver和Richard Sutton提出的“经验时代”概念指出，未来的AI进步将依赖于模型自主生成的数据经验。文章强调，关键在于收集对学习有益的“正确经验”，而非单纯积累数据。
-
-文章引入“flops”作为衡量资源消耗的单位，讨论探索过程的成本与重要性。预训练被视为一种探索，解决了部分探索问题，为模型提供了丰富的数据分布，使后续的强化学习更有效。小型模型通过从大型模型中提炼知识，继承了预训练的“探索税”，提升了自身的推理能力。
-
-最后，文章提出未来AI的发展应关注如何有效利用大量计算资源，以实现更好的探索和泛化能力。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：智能的本质及其在模型与过程中的体现
-
-不同观点：
-• Visarga认为智能不是一个实体（名词），而是一个基于探索和学习的过程。他将智能比作河流，强调模型（如河岸）和活动（如水流）的相互作用，认为两者都不是单独解释智能的根本，而是共同构成智能的过程。他引用Godel、Turing和Chaitin的理论，指出递归过程具有不完备性、不可判定性和不可压缩性，智能只能通过内在于过程的方式来理解。
-
-• Dodomodo引用了来自Twitter的一个链接，该链接的内容可能与讨论的主题相关，但没有展开具体观点，只是提供了一个参考。
-
-• Webdevver提出了关于非笛卡尔显示的思考，例如六边形或径向排列的像素，以及模拟退火法发现的有机排列。他认为当前的位图显示技术是前AI时代的旧技术，提出是否可以通过更符合人类视觉传感器排列的方式来改进显示技术。
-
-补充讨论：
-• Visarga的观点强调了智能的动态性和不可预测性，以及递归过程在智能中的核心作用。
-• Webdevver的观点则集中在技术改进的可能性上，特别是显示技术如何能够更好地适应AI时代的发展。
-• 讨论中涉及了对智能本质、模型与现实世界交互的哲学思考，以及对现有技术局限性的反思与创新建议。
-
-争议焦点：智能究竟是一个静态的实体还是一个动态的过程，以及现有技术是否足以支持对智能的进一步探索和发展。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44491333" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
