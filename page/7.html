@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-10 02:20 (北京时间)
+            最后更新时间: 2025-07-10 05:14 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,49 +61,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://jacob.gold/posts/serving-half-billion-requests-with-rust-cgi/" target="_blank">Serving a half billion requests per day with Rust and CGI</a>
+                    <a href="https://www.generalanalysis.com/blog/supabase-mcp-blog" target="_blank">Supabase MCP can leak your entire SQL database</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: feep</span> |
-                    <span>评分: 101</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-07-07 18:16</span>
+                    <span>作者: rexpository</span> |
+                    <span>评分: 804</span> |
+                    <span>评论数: 71</span> |
+                    <span>发布时间: 2025-07-08 17:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了使用CGI技术处理大量请求的性能测试，特别关注不同编程语言在CGI环境下的表现。作者首先澄清了关于CGI不安全或过时的误解，指出CGI协议本身简单且有效，编写安全的CGI程序与其他HTTP处理代码一样可行。测试在一台60核/240GB内存的虚拟机上进行，使用Vegeta工具和GoHTTP服务器进行负载测试。
-
-测试结果显示，Bash脚本的性能极差，仅达到40请求/秒。Perl表现较好，达到500请求/秒。JavaScript（Node.js）表现超出预期，达到600请求/秒。Python表现最佳，达到700请求/秒。每种语言的CGI程序在测试中均保持100%的成功率。作者强调，基准测试需结合实际环境，测试结果仅供参考。</p>
+                    <p>本文讨论了Supabase的模型上下文协议（MCP）集成中的安全漏洞，该漏洞可能导致SQL数据库中的私密数据泄露。问题核心在于LLM（大语言模型）无法区分用户指令和数据，攻击者可以通过精心构造的用户数据诱导LLM执行未授权的SQL查询。在Supabase的默认配置中，IDE助理拥有高权限的`service_role`，可以绕过行级安全（RLS）策略执行数据库操作。如果攻击者通过提交表单注入恶意指令，可能导致敏感信息（如OAuth tokens和会话凭据）泄露。开发者需警惕此类风险，避免将高权限角色直接暴露给不可信的用户输入。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：CGI（通用网关接口）在现代开发中的使用及其优缺点
+                    <div class="comments-summary">主要讨论点：围绕Supabase MCP中LLM（大型语言模型）提示注入攻击的讨论，以及对相关安全问题的不同看法和解决方案建议。
 
 不同观点：
-• neilv 认为，CGI 在遗留系统和简单系统中仍然有价值。遗留系统可能由高效开发者构建，且运行良好，而简单系统（如家庭路由器上的 Web UI）不需要现代 Web 开发中复杂的工具链。他还提到，现代前端框架（如 Svelte）的复杂性和运行时效率可能不如直接使用 CGI/SCGI。
-• pkal 分享了自己用 Go 编写 CGI 脚本的经验，认为在访问量很小的情况下，效率不是问题，重要的是使用标准库中的工具（如 HTML 模板）来编写安全代码。他提供了自己的 CGI 示例并邀请他人测试。
-• kragen 引用了之前关于 CGI 性能的讨论，提供了不同语言实现 CGI 的性能数据，指出 Rust 和 C 的性能最好，而 Go 的性能相对较低。他还质疑了所使用的 web 服务器是否是性能瓶颈。
-• simonw 对 CGI 示例代码表示赞赏，认为这些代码展示了如何用多种语言实现 SQLite 支持的留言板。
-• antoineleclair 分享了在 Disco 项目中使用 CGI 支持扩展的经验，认为 CGI 的简单性和灵活性使其适用于让开发者使用任意语言，但不推荐用于大型生产站点。
-• 0xbadcafebee 认为，Bash 脚本在嵌入式设备上非常适合用作 CGI，因其体积小且可以调用其他程序处理复杂任务，但需要注意安全性（如使用基本认证）。
-• shrubble 提到在企业环境中常见过度配置的 VM 用于低请求量的内部站点，并指出复杂应用服务器和 web 服务器的集成可能导致不必要的开销。
-• jchw 不理解为何有人希望回归 CGI，认为尽管 CGI 能达到很高的请求处理量，但现代的 FastCGI 和其他模型更为优越，特别是在安全性和性能方面。他还指出，在现代环境中设置单独的应用服务器比使用 CGI 更合适。
-• hedgehog 认为，CGI 在处理低频请求的多个应用时仍然有意义，因为无需在服务器上保留常驻内存的应用进程，且静态文件可以通过 web 服务器直接提供。
-• carodgers 提到 Python 3 已移除 CGI 支持，并询问现代的替代方案。
-• rokob 对 Rust 和 C 在尾部延迟方面的表现相似表示好奇。
-• dengolius 建议使用更快的 Go 第三方库（如 fasthttp）替代 gohttpd。
-• exabrial 抱怨现代 JavaScript 前端在低带宽环境下的表现不佳，并表示欢迎 FastCGI 和服务器端渲染，认为大部分任务不需要复杂的 JavaScript。
-• oxcabe 建议将 CGI 与 WASI 和 WebAssembly 进行性能对比，以探索新的设计方式。
+• **Supabase工程师的观点（gregnr）**：Supabase团队已经采取了一些缓解措施来防止提示注入攻击，包括鼓励使用只读模式、在SQL响应外包装提示以阻止LLM执行恶意指令、以及编写端到端测试来验证LLM是否容易受到攻击。他们承认提示注入是一个未完全解决的问题，并正在研究更细粒度的权限控制和更多文档说明。
+
+• **XSS类比的观点（tptacek）**：将提示注入攻击类比为XSS（跨站脚本攻击），认为这是由于管理应用中处理未经验证的用户生成内容导致的常见问题。在LLM场景下，攻击者可以通过自然语言指令操纵系统，类似于通过Javascript在XSS中操作DOM。
+
+• **问题根源的观点（dante1441）**：认为问题不在于Supabase MCP的具体实现，而在于将未经验证的用户生成内容注入LLM提示中。任何使用代理系统的场景都可能面临类似问题，提示是自然语言，表达方式多样且模型解释具有非确定性，使得防御攻击变得困难。
+
+• **使用建议的观点（simonw）**：建议将数据库访问MCP配置为只读模式，并谨慎选择组合的其他MCP，以防止数据泄露。强调了"致命三合一"问题，即组合多种功能可能导致更严重的安全风险。
+
+• **责任归咎的观点（vigilans）**：认为将LLM连接到生产基础设施的开发者自身是漏洞的根源，强调人为因素在安全问题中的重要性。
+
+• **对MCP模型的批评观点（gortok）**：批评MCP模型的设计和推广，认为其在技术逻辑和安全考量上存在根本性问题，且受到资本推动而忽视了潜在风险。
+
+• **实践经验的观点（nijave）**：分享了在工作中使用LLM进行数据探索的经验，认为通过Gated APIs或GraphQL等中间层可以更好地管理和限制LLM的访问权限，直接连接SQL是一个反模式。
 
 补充讨论：
-• CGI 的安全性和性能是讨论的焦点，特别是与 FastCGI 和其他现代技术的比较。
-• 不同语言在 CGI 实现中的性能表现引起了关注，特别是 Rust 和 C 的高性能表现。
-• 对现代开发中过度复杂的工具链和前端框架的批评，以及对简单解决方案的回归呼吁。
-• 实际应用场景中，CGI 仍然在遗留系统和简单系统中具有实用价值，但在大型生产环境中的适用性受到质疑。</div>
+• **对攻击实例的关注**：多个评论提到实际攻击案例，如通过支持票注入指令（qualeed）和在其他平台发现的类似漏洞（coderinsan）。
+• **对行业趋势的看法**：有评论指出支持网站常成为攻击载体（pests），并对Supabase团队为何推动此功能提出质疑（jppope）。
+• **对现有实现的失望**：有评论对Cursor助手使用高权限账户操作数据库表示失望（yard2010），并对提示工程作为缓解措施的效果表示困惑（borromakot）。
+
+争议焦点：
+• **是否应直接将LLM与数据库或关键基础设施连接**：一些评论认为这是不安全的做法，建议通过中间层或沙盒环境限制LLM的访问权限。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44493174" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44502318" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -114,46 +113,286 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://koaning.io/posts/svg-gifs/" target="_blank">TIL you can make "GIFs" with SVGs for GitHub README.md files</a>
+                    <a href="https://www.cnbc.com/2025/07/09/nvidia-4-trillion.html" target="_blank">Nvidia Becomes First Company to Reach $4T Market Cap</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mfiguiere</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-09 13:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Nvidia股票在周三上涨超过2%，市值首次突破4万亿美元，成为历史上首家达到这一里程碑的公司，主要受益于生成式AI需求的激增。尽管面临地缘政治紧张局势和针对中国市场的芯片销售限制，Nvidia仍凭借其在AI硬件和芯片领域的领导地位，实现了显著增长。自2022年底ChatGPT推出以来，Nvidia的图形处理单元需求激增，推动其股价在过去五年中上涨超过15倍。尽管对中国市场的出口限制导致约80亿美元的销售损失，Nvidia仍超越微软和苹果，成为全球市值最高的公司。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Nvidia的高市值是否合理以及其未来发展潜力
+
+不同观点：
+• **对Nvidia高市值的疑惑**：
+  - [nkzd] 认为Nvidia作为一个不生产自己芯片的“脆弱”公司，成为全球市值最高的公司难以理解。他质疑为何不是一些更为“基础”的行业如石油或航运公司占据这个位置。
+  
+• **对Nvidia高市值的担忧与潜在风险**：
+  - [ra7] 认为Nvidia目前4万亿美元的市值高得令人难以置信，联想到互联网时代的思科（Cisco）泡沫。他提出可能导致Nvidia衰落的两个因素：(a) AI领域失望和公司无法通过GPU变现 (b) 大公司自研芯片降低对Nvidia GPU的需求。他还建议Nvidia通过提供定制芯片设计服务来应对(b)。
+
+• **长期成功的文化和创始人影响**：
+  - [chubot] 认为长期努力和同一文化背景的成功是关键，Nvidia的两次成功（图形处理和可编程GPU）相隔约20年。他比较了苹果和谷歌的成功模式，并指出当创始人离开后，公司内部的效率和创造力可能会下降。
+
+• **Nvidia早期艰难历史**：
+  - [LarsDu88] 提到Nvidia在90年代多次接近破产，特别是与Sega的Dreamcast合同失败后，公司几乎毁灭。
+
+• **Nvidia市值与实际利润的巨大差距**：
+  - [nativeit] 通过简化的计算指出，Nvidia需要卖出数十亿单位GPU才能达到4万亿美元的收入，而目前仅卖出几百万单位。他认为投资者可能在缺乏实质性技术进步的情况下，强行制造增长的假象。
+
+• **对AI股票市场的警告**：
+  - [thomassmith65] 祝贺Nvidia的成功，但警告说目前投资AI相关股票需谨慎，因为很多投资者对技术本身缺乏了解，当市场调整时可能会很糟糕。
+
+• **市值的通胀调整问题**：
+  - [pinkmuffinere] 指出市值比较需要考虑通胀调整，并编辑补充认为Nvidia可能是历史上最高估值的公司。
+
+• **AI技术的未来增长潜力**：
+  - [EcommerceFlow] 认为目前AI的使用率很低，未来增长潜力巨大，因为AI可能达到90%的使用率。
+
+• **全球计算机硬件的增长潜力**：
+  - [mg] 提出一个哲学性问题，未来人类是否会将地球变成一个活跃的计算系统，Nvidia的总市场可能会非常大。
+
+• **货币贬值的影响**：
+  - [bentt] 认为Nvidia高市值主要反映了美元贬值。
+
+• **自建芯片制造的建议**：
+  - [amelius] 建议Nvidia应该开始建立自己的芯片制造厂。
+
+补充讨论：
+• **对未来公司市值的幽默预测**：
+  - [TriangleEdge] 幽默地问道，是否能在有生之年看到第一个万亿美元公司或一个100美元的香蕉。
+
+• **对公司市值列表的需求**：
+  - [firefax] 提到惊讶于找不到一个按市值排名的公司列表。
+
+• **对专有加速器盈利能力的感叹**：
+  - [kraemate] 感叹制造专有加速器能如此盈利。
+
+这些观点涵盖了对Nvidia高市值的疑惑、担忧、未来潜力、市场泡沫风险以及对整个行业和经济的宏观思考。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44509988" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.newscientist.com/article/2486823-new-horizons-images-enable-first-test-of-interstellar-navigation/" target="_blank">New Horizons images enable first test of interstellar navigation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jnord</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-06 22:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>NASA's New Horizons spacecraft, currently traveling through the Kuiper Belt, has demonstrated the first example of interstellar navigation using the parallax effect. Due to its vast distance from Earth, stars like Proxima Centauri and Wolf 359 appear in different positions compared to Earth's view. Astronomers, led by Tod Lauer, used this shift to calculate New Horizons' position by comparing its photos with the Gaia space telescope's star map. Although less accurate than NASA’s Deep Space Network (DSN), this method could improve with better equipment and may offer advantages for future interstellar missions by providing autonomous, more accurate location readings over long distances. However, no current missions are planned for such deep space exploration.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于不同天文导航方法的准确性及媒体来源的可信度
+
+不同观点：
+• [aerospades] 认为视差法的精度较低，只能将新视野号（New Horizons）定位在一个半径为6000万公里的球体内，这大约是地球到太阳距离的一半。相比之下，NASA的SEXTANT任务利用脉冲星导航可以将误差控制在约10公里，且该方法在星际空间中仍然有效。尽管视差法精度不高，但其创新性依然值得肯定，因为新视野号是在2006年发射的，技术相对较老。
+
+• [xlii] 对NewScientist杂志表现出兴趣，并询问其他人对该杂志的评价，偏离了原本关于天文导航方法的讨论，转而关注媒体来源的质量和订阅价值。
+
+补充讨论：
+• [aerospades] 的评论中包含了对两种导航方法的具体数据对比，提供了量化的论据来支持其观点，即脉冲星导航的精度远高于视差法。
+• [xlii] 的评论引出了一个新的讨论方向，即对科学媒体的评价，这与主要讨论点无直接关系，但显示出讨论参与者对科学新闻来源的关注。
+• 争议的焦点可能在于不同天文导航方法的实际应用效果和前景，特别是视差法在现代航天任务中的局限性与创新性之间的对比。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44484557" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ceramic-engine.com/" target="_blank">Ceramic: A cross-platform and open-source 2D framework in Haxe</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: -yukari</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-05 13:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Ceramic利用Haxe编程语言的跨平台特性，实现了一次编写代码，即可将其转译为C++、JavaScript或C#。这使得应用能够原生导出到多个平台，包括Windows、Mac、Linux、iOS、Android、HTML5/WebGL，甚至集成到Unity项目中。Ceramic为开发者提供了高效的跨平台开发解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Haxe语言的优缺点及其应用场景
+
+不同观点：
+• gr4vityWall认为Haxe是一个有趣的语言，尤其赞赏其内置的imgui支持。他还指出，如果15年前Haxe专注于改善工具和人体工学以支持Web开发而非游戏开发，它有可能取代TypeScript的地位。
+• themerone承认Haxe语言本身不错，但认为它未能兑现其承诺。特别指出其API在不同后端之间不够一致，导致难以在复杂应用中跨后端使用。
+• mattigames提到Haxe缺乏移动输入的例子，而在当今游戏开发中，移动平台是主要的游戏平台，这可能是一个不足。
+
+补充讨论：
+• gr4vityWall对Haxe在游戏开发和Web开发中的潜力进行了比较，暗示其在Web开发领域的未实现潜力。
+• themerone的评论指出了一个技术上的限制，即Haxe在多后端开发中的一致性问题，这可能影响其在大型项目中的实用性。
+• mattigames关注Haxe在移动游戏开发中的实际应用例子不足，这可能影响开发者对该语言的接受度。
+
+争议焦点：Haxe在多平台开发中的实际效果和工具支持是否足够成熟。这涉及到其API一致性问题（themerone的观点）以及在移动平台上的应用例子缺乏问题（mattigames的观点）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44472812" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://english.elpais.com/science-tech/2024-07-17/a-simple-monthly-injection-allows-mice-to-live-25-longer-and-free-from-diseases.html" target="_blank">A simple monthly injection allows mice to live 25% longer and free from diseases</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: speckx</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-09 18:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>生物化学家Jesús Gil及其团队在伦敦的实验室中发现，通过每月注射一种抗体X203，18个月大的小鼠（相当于人类55岁）寿命延长了25%，且健康状况更好，癌症发生率更低、胆固醇水平下降、肌肉力量增强。这种抗体通过阻断与衰老相关的天然蛋白质白介素11（IL-11）起作用，减少细胞衰老和炎症。虽然小鼠实验结果积极，但研究人员强调，人类临床试验仍在初期阶段，主要关注安全性。目前，几家公司已开始测试类似抗体，目标包括治疗肺纤维化等老年疾病。尽管数据坚实，但有专家提醒，需更多不同品系小鼠的实验以验证结果的普遍性。该研究发表于《自然》杂志。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：抗IL-11抗体对小鼠寿命延长的影响及其在人类层面上的意义
+
+不同观点：
+• JumpCrisscross分享了一个链接，似乎只是表达了自己今天感到混乱，并没有明确观点，只是提供了关于抗IL-11抗体的信息。
+• Hulitu对小鼠寿命延长的研究表示讽刺，认为延长小鼠寿命的需求并无太大意义，暗示对人类健康或社会问题的关注不足。使用"mices"这一错误复数形式增加了讽刺效果，质疑是否下一步是让大鼠也活得更长，尤其提到纽约（可能暗指纽约的鼠患问题），进一步表达了对该研究实际应用价值的怀疑。
+
+补充讨论：
+• Hulitu的观点中隐含了对资源分配的质疑，认为科学研究应该更关注人类本身的需求和问题，而不是在动物实验上花费过多精力。
+• JumpCrisscross没有直接参与讨论，仅提供了链接，可能只是为了分享信息而非表达立场。
+• 争议的焦点在于科学研究是否应该优先考虑延长人类寿命或解决人类健康问题，而非动物实验。Hulitu的评论反映了一部分人对科研方向的不满或质疑。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44513208" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.reuters.com/business/media-telecom/openai-release-web-browser-challenge-google-chrome-2025-07-09/" target="_blank">OpenAI to release web browser in challenge to Google Chrome</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jmsflknr</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-09 18:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：OpenAI是否应构建自己的浏览器，及其潜在影响和策略考量
+
+不同观点：
+• [qazxcvbnmlp] 认为这是积极的一步，浏览器可以确保用户体验的一致性，避免被主流浏览器（如Google、Apple）的规则限制。长远来看，浏览器可能通过加密证明等技术进一步锁定非主流浏览器，因此拥有自己的浏览器有助于保持控制权。
+
+• [thm] 对OpenAI构建专有浏览器持批评态度，认为这是缺乏创新和原则的体现，尤其是在浏览器应当保持开放和自由的情况下，选择构建专有浏览器是一种倒退。
+
+• [k-i-r-t-h-i] 从战术角度分析，认为即使OpenAI不全力投入或失败，这一举动也能迫使Google分散精力和资源来保护其市场份额，从而削弱Google在其他领域的竞争力。
+
+• [nadermx] 关注技术实现的可能性，猜测OpenAI可能会基于已有开源浏览器（如Firefox或Chrome）进行 fork，类似于微软从Chrome fork出Edge的策略。
+
+补充讨论：
+• OpenAI构建浏览器的动机，可能不仅是为了用户体验控制，还包括在技术竞争中给对手制造压力。
+• 争议焦点在于专有浏览器的正当性，以及OpenAI是否能在浏览器市场中取得实质性突破。
+• 技术实现方式（如是否基于现有开源项目）也是一个讨论点，反映出行业内常见策略的影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44513117" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://koaning.io/posts/svg-gifs/" target="_blank">SVGs that feel like GIFs</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: cantdutchthis</span> |
-                    <span>评分: 296</span> |
-                    <span>评论数: 26</span> |
+                    <span>评分: 496</span> |
+                    <span>评论数: 33</span> |
                     <span>发布时间: 2025-07-08 08:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一种类似GIF的动态图像技术，使用SVG实现，具有高分辨率且文件小（仅49KB）。通过结合使用asciinema和svg-term-cli工具，可以将这些动态SVG嵌入到GitHub的README.md文件中。SVG动画基于SVG规范中的`<animate>`、`<animateTransform>`和`<animateMotion>`标签，分别用于属性动画、变换动画和路径运动。这种技术在bespoken项目中被广泛应用，提供了一种新颖的动态图像展示方式。</p>
+                    <p>本文介绍了一种通过SVG实现类似GIF的动态效果的方法，文件体积小且分辨率高，特别适合嵌入GitHub的README.md文件中。具体操作使用**asciinema**录制终端操作并生成文件，然后通过**svg-term-cli**工具将其转换为动态SVG。SVG动画基于内置于SVG规范的`<animate>`、`<animateTransform>`和`<animateMotion>`标签实现，可用于创建旋转、缩放、平移等效果。作者在其项目**bespoken**中广泛使用此方法。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SVG的应用与潜力
+                    <div class="comments-summary">主要讨论点：SVG（可缩放矢量图形）的应用和功能，特别是在GitHub README中的使用及其技术细节。
 
 不同观点：
-• unleaded：展示了几个来自Wikipedia的SVG示例，包括无JS的导弹指挥游戏、伦敦地铁图和滚动快门动画，强调了SVG可以实现许多令人印象深刻的功能。
-• blackant：分享了自己在GitHub README中使用的每日更新天气和星期的SVG动画，说明了SVG的实用性和创造性应用。
-• firefax：提到了APNG标准，认为尽管APNG在像素艺术和线条图方面表现良好，但使用率不高，且在实际照片压缩上效率较低。
-• paulirish：指出在GitHub README中可以直接嵌入视频，但SVG可能是终端捕获内容更好的选择。
-• yawnxyz：对可以直接从动画中复制文本感到惊喜，认为这是SVG最妙的一点。
-• exabrial：表达了对SVG的热爱，并设想未来有一个浏览器标准，包括可插拔的执行引擎和SVG输出，使开发者不再受限于文档对象模型。
-• pjc50：对SVG可以实现动画感到新奇，并提出是否支持无限循环的问题。
-• xml：提醒大家注意SVG可能导致的页面冻结问题，特别是第三方SVG链接，并提供了一个可能导致浏览器崩溃的示例链接。
-• viraptor：以幽默的方式表示想将SVG架构图转换为戏剧化的电影效果。
-• x187463：认为SVG处理某些效果可能产生大量数据，但对尝试这种新方法感到兴趣。
-• matths：赞赏分享新工具和个人经验的帖子，并分析了嵌套SVG元素的结构。
-• ordinarily：提到长期以来使用SVG动画，并推荐了SVGator网站。
-• layer8：质疑“GitHub支持这些”的说法，认为实际上是浏览器支持SVG。
-• edwinjm：分享了自己的动画GitHub README。
-• heldrida：对讨论重新引起关注表示高兴。
+• [unleaded] 展示了SVG的强大功能，通过具体示例（如导弹指挥克隆、伦敦地铁图和滚动快门动画）说明SVG无需JavaScript即可实现复杂动画。
+• [blackant] 分享了个人经验，描述了如何在GitHub README中使用动态SVG展示天气和星期几，这个SVG每天重建一次。
+• [paulirish] 指出在GitHub README中可以直接嵌入视频，但SVG技巧在展示终端捕获内容时可能是更明智的选择。
+• [yawnxyz] 认为直接从动画中复制文本是不直观的，但这正是这个技巧的亮点。
+• [pjc50] 提出问题，询问SVG是否支持无限循环，并表示这是新知识，会花时间思考其应用。
+• [xml] 警告说某些SVG可能会冻结页面，特别是第三方SVG，建议不要链接到这些SVG，因为存在已知bug，但浏览器团队不愿修复。
+• [exabrial] 表达了对SVG的热爱，并希望未来浏览器能够支持可插拔的执行引擎/内存模型，并以SVG作为输出。
+• [matths] 喜欢这种分享新工具和经验的帖子，认为通过绕过限制（如在GitHub Markdown中使用动画）可以激发创造力，并分享了对嵌套SVG元素的观察。
+• [viraptor] 开玩笑说想把SVG架构图转换成戏剧性动画，如动漫战斗风格。
+• [mass_and_energy] 提到SVG是代码而非二进制图像文件，因此LLM（大型语言模型）可以编写SVG，并分享了个人实验结果。
+• [edwinjm] 分享了自己的动画GitHub README链接。
+• [x187463] 表示会尝试SVG，但对大量数据存储表示担忧。
+• [latexr] 推荐Sarah Drasner的演讲，介绍SVG的疯狂功能。
+• [ordinarily] 提到在Rive或Lottie流行之前就已经使用SVG动画，并推荐了在线工具。
+• [layer8] 质疑“GitHub支持这些”的说法，认为应该是浏览器支持这些功能。
 
 补充讨论：
-• 争议焦点：SVG的潜在问题，如xml提到的可能导致页面冻结的问题。
-• 技术细节：pjc50对SVG是否支持无限循环的疑问，以及exabrial对未来浏览器标准的设想。
-• 实用案例：blackant和edwinjm分享了他们在GitHub README中使用SVG动画的具体实例。
-• 工具推荐：ordinarily推荐了SVGator网站，为创建SVG动画提供了工具支持。</div>
+• SVG的无限循环支持问题及其潜在应用。
+• 使用SVG的潜在风险，特别是第三方SVG可能导致的页面冻结问题。
+• 对未来浏览器支持可插拔执行引擎/内存模型的期望。
+• 个人经验和项目分享，特别是在GitHub README中使用SVG的创意应用。
+
+争议焦点：
+• GitHub README中嵌入内容的最佳方式（视频 vs SVG）。
+• “GitHub支持这些”的准确含义，是否应归因于浏览器的支持。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44498133" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -166,113 +405,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lnginnorthernbc.ca/2025/07/09/parliament-in-austria-has-approved-tracking-messages-in-chat-applications/" target="_blank">Parliament in Austria has approved tracking messages in chat applications</a>
+                    <a href="https://retractionwatch.com/2025/06/30/springer-nature-book-on-machine-learning-is-full-of-made-up-citations/" target="_blank">Springer Nature book on machine learning is full of made-up citations</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: thm</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-09 17:06</span>
+                    <span>作者: ArmageddonIt</span> |
+                    <span>评分: 109</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-09 07:02</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>奥地利议会通过了一项法律，允许安全部门监控WhatsApp、Messenger和Signal等聊天应用中的加密通讯。该法律仅在涉嫌恐怖活动或违宪活动等有限情况下进行监控，且监控许可有效期为三个月，可延长。尽管内政部长称此举有助于安全，反对党如自由党（FPÖ）和绿党则批评此举可能被滥用，绿党甚至考虑诉诸宪法法院。法律通过前需多层审批，以确保合法性。</p>
+                    <p>《Mastering Machine Learning》一书由Springer Nature出版，但被发现包含大量虚假或错误的引用。在检查的18条引用中，三分之二要么不存在，要么有重大错误。一些被引用的研究者确认他们的工作要么未正式发表，要么被错误引用。该书作者Govindakumar Madhavan未回应是否使用了大型语言模型（LLM）生成内容，但虚假引用是LLM生成文本的常见问题。Springer Nature表示正在调查此事，并强调其政策要求作者在使用AI时需声明并有人工监督。LLM生成内容引发的学术诚信问题正日益受到关注。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：监控措施的实施范围及其潜在的滥用风险
+                    <div class="comments-summary">主要讨论点：AI生成内容在出版物中的使用及其引发的问题
 
 不同观点：
-• 观点一：监控应仅限于涉嫌恐怖活动或违宪行为等特定情况。这种限制可以防止监控措施被滥用。（[bn-l]的支持立场）
-    - 论据：监控的范围应严格限定，以避免历史上出现的滥用问题。
-    - 例子：过去曾有对监控权力的滥用，表明限制的必要性。
-
-• 观点二：监控分类标准具有主观性，过去存在滥用现象，因此不应轻易扩大监控范围。（[bn-l]的批评立场）
-    - 论据：分类的标准（如恐怖活动或违宪行为）是主观的，容易被操纵或误用。
-    - 例子：历史上的滥用案例表明这些标准常常被扩大解释，导致对公民权利的侵害。
-
-补充讨论：
-• 争议焦点：监控权力的边界和分类标准的客观性。一方认为在特定情况下可以实施监控，但另一方担心这些情况的主观性和历史上的滥用记录会导致公民自由受到侵害。
-• 另一个值得注意的讨论点是，如何在保障安全和防止滥用之间取得平衡，这涉及到法律和制度层面的设计与监督。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44512443" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://wingolog.org/archives/2025/07/08/guile-lab-notebook-on-the-move" target="_blank">Guile Lab Notebook: On the Move</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bwidlar</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-09 07:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是关于Guile项目中实现一个可移动的垃圾回收器（GC）的进展和挑战。作者描述了如何将Guile连接到一个支持压缩的垃圾回收器，该回收器主要采用就地标记，但在需要时会进行对象 evacuation（撤离）。当GC线程尝试同时处理同一对象时，需要正确管理对象的前向指针和状态。具体操作包括通过交换初始字来声明对象，若失败则将对象就地标记。尽管作者认为当前实现是正确的，但仍存在并发问题导致的潜在bug，特别是当一个线程在另一个线程标记对象时试图对其进行操作。作者希望学习如何证明此类操作的正确性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44507189" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="http://news.bbc.co.uk/2/hi/science/nature/276762.stm" target="_blank">Surfing on a Matchbox (1999)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: TMWNN</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-07 03:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>1999年2月10日，斯坦福大学计算机科学家Vaughan Pratt教授打造了当时世界上最小的网页服务器，仅有火柴盒大小，使用AMD 486-SX处理器、66 MHz CPU、16 MB RAM和闪存，运行简化版Linux系统。该服务器比当时典型的台式电脑小3000倍，旨在展示可穿戴计算机的潜力。Pratt教授成立了可穿戴实验室，致力于将计算机整合进衣物中，并正在开发能识别数字手语的手套"Thumbcode"以解决数据输入问题。未来版本还将增强语音识别能力，并计划开发更强大的信用卡大小的服务器。这一技术展示了嵌入式系统连接互联网的潜力，应用范围广泛。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：技术发展的预测与实际演变，以及学术研究的价值和方向
-
-不同观点：
-• NoboruWataya认为，过去的技术预测在某些方面接近现实，但并不完全准确。他指出，虽然便携式计算机的确成为了主流，但并非以当时设想的“特殊手套”形式，而是以智能手机的形式出现。他还提到，尽管当时移动电话已经存在，且部分可以兼容互联网，但智能手机的兴起在当时并不明显。
-
-• em3rgent0rdr对过去互联网早期时代的天真乐观表示感慨，提到当时人们曾期望未来的个人能够拥有并运行自己的网络服务器，而这一愿景并未完全实现。
-
-• revx的评论相对简单，带有幽默感，询问当前世界上最小的网络服务器的记录保持者是什么，这可能是对早期技术预测的一种调侃或兴趣。
-
-• teekert对学术研究的价值提出质疑，认为一些教授的工作可能是在“浪费钱”，并质疑他们是否应更专注于为社会带来实际利益的技术，而不是仅仅从事“酷炫的项目”。
+• [misja111] 认为作者没有明确回答是否使用了大型语言模型（LLM）生成书籍内容，并对作者关于辨别AI生成内容的难度回应表示怀疑，暗示该回应本身可能也是AI生成的。
+• [haffi112] 指出，像Springer这样的知名品牌应进行尽职调查，以确保出版物的质量，并认为这是一个通过可验证性来增加品牌价值的机会，但Springer显然没有做到这一点。
+• [ludicrousdispla] 强调，LLM的整个输出都是编造的，即使是看起来合法的引用也可能是不真实的。
+• [alok-g] 提出，开发和使用引用检查工具可以部分解决引用问题，但文本中的声明是否经过验证或正确仍是一个未解决的问题。
+• [Isamu] 希望AI能用于自动化引用查找和验证，但目前AI却在制造问题，显示出激励机制的不一致。
+• [veltas] 认为教材质量低下的问题早已存在，学生和讲师往往不加辨别地使用这些书籍。
+• [techas] 提到在一些会议摘要中也发现了类似的问题，即引用看起来真实但并不存在。
+• [b00ty4breakfast] 对AI生成内容的未来表示担忧，并暗示缺乏信心。
+• [Vinayak_A_B] 提出开发引用验证工具的可能性，并设想其在会议和期刊中的应用。
+• [amelius] 质疑整本书是否由机器生成，或者是否是人类文本加上机器生成的引用。
+• [MarlonPro] 对喜欢书籍作为学习资源的人表示同情，暗示AI生成内容对传统书籍构成威胁。
+• [PeterStuer] 幽默地提出是否可以通过占据不存在的引用成为“最常被引用的作者”。
+• [zero_k] 批评Springer在处理同行评审研究论文时的表现，暗示对该出版社的失望。
+• [dandanua] 描绘了一个出版业的未来，即AI在书籍和文章的写作、评审和编辑中占据主导地位，使出版社继续从机构订阅中获利。
+• [MengerSponge] 用幽默的方式表达了对AI生成内容和剽窃问题的关注。
 
 补充讨论：
-• teekert的观点引发了对学术研究方向的讨论，反映了部分公众对高薪教授从事非应用性研究的质疑，涉及到科技发展中市场需求与学术自由之间的张力。
-
-• 评论中还隐含了对技术预测不确定性的讨论，尤其是当技术发展受到市场、公司和偶然因素的影响时，预测未来的困难性。
-
-争议焦点：
-• 学术研究是否应以直接社会效益为导向，还是应允许自由探索“酷炫的”概念和技术，这是评论中反映的主要争议。</div>
+• 争议焦点在于AI生成内容的可信度和质量问题，尤其是引用和验证的真实性。
+• 讨论中多次提到Springer等出版商的品牌信誉和质量控制问题。
+• 有人提出技术解决方案，如引用检查工具，但也有对技术应用现实性的质疑和幽默评论。
+• 对AI生成内容在学术和出版领域的未来影响存在担忧和讽刺。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44486368" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44507061" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -283,206 +457,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.dolthub.com/blog/2024-06-25-polymorphic-associations/" target="_blank">Choosing a Database Schema for Polymorphic Data (2024)</a>
+                    <a href="https://www.researchgate.net/profile/Ico-Maly-2/publication/385703534_AI_power_and_sociolinguistics/links/6813618cdf0e3f544f502f05/AI-power-and-sociolinguistics.pdf" target="_blank">AI, power and sociolinguistics (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gm678</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-09 00:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了在关系型数据库中设计模式时面临的挑战，尤其是处理多态数据（polymorphic data）的困难。多态数据是指可以有多种不同形态的数据类型。文章以患者支付信息为例，说明了如何在SQL中建模这种数据。文章介绍了一种简单的方案——使用具有可空字段的单表模式，即“单表继承”或“层次表”，但这种方法存在一些问题，如难以验证数据的不变性、错误信息不明确以及未来扩展性差。此外，随着数据集的增大，这种设计可能导致性能问题。文章还提到，尽管可以对表添加约束来解决部分问题，但这些约束会变得复杂且难以维护。最终，这种方案需要在数据完整性、可扩展性和性能之间做出权衡。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在处理数据库中的多态数据和复杂数据结构时，不同技术的优缺点和选择。
-
-不同观点：
-• reaanb2 认为SQL中的检查约束和存储过程可以提供更好的错误信息和事务管理。他建议结合使用存储过程与特定数据库设计（如主键和唯一键）来处理多态数据，并提到SQL在处理外键约束和排除约束方面的不足。
-• bob1029 讨论了JSON作为blob列的优缺点，指出在某些情况下（如使用快速序列化器时），JSON blob可以很好地工作，但当需要跨JSON属性进行连接时，JSON可能不是最佳选择。
-• gm678 引用了Martin Fowler的企业应用架构模式，如单表继承、类表继承和具体表继承，认为这些模式可以应用于当前讨论的问题。
-• 1st1 提到Gel语言中对多态模式和查询的支持，认为这是处理多态数据的一种简便方法。
-• fmjrey 认为传统的OO和RDBMS方法在处理现代分布式系统时已达到其极限，提出了EAV数据库（如Datomic、XTDB）和Rama等新方法，作为减少复杂性和提高扩展性的解决方案。
-• hot_gril 反对将类型存储为数据库列，倾向于使用可空列或JSON来处理多态数据，具体选择取决于是否需要对字段进行连接操作。
-• acquiesce 认为下游代码经常需要处理多态性破坏的情况，主张多态应仅用于行为而非数据，并建议在特定情况下才使用子类化。
-• feitico 简单直接地推荐使用NoSQL，特别是MongoDB，来处理多态数据。
-• j45 质疑为何不直接使用多态数据库来处理多态数据，认为关系型数据库在处理此类数据时可能过于复杂。
-• toolslive 提出了列存储作为另一种处理方法的可能性。
-
-补充讨论：
-• 讨论中涉及到对不同数据库设计模式（如单表继承、类表继承、具体表继承）的引用和链接，提供了进一步阅读的资源。
-• 有人提出使用NoSQL作为替代方案，而另一些人则在关系型数据库的框架内寻找解决方案。
-• 对多态数据的处理存在争议，特别是在如何在数据库中表示和查询多态数据方面，存在不同的看法和实践建议。
-• 讨论中还涉及了EAV模型和Rama等新兴技术和方法，作为处理复杂数据和分布式系统的新思路。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44505165" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/Nonannet/pyhoff" target="_blank">Show HN: Pyhoff – Connect Python ML Models to Beckhoff/WAGO IO Hardware</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Saloc</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-09 11:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>"Pyhoff" 是一个用于通过以太网 TCP/IP 和 Modbus TCP 协议与 Beckhoff 及 WAGO 总线端子通信的 Python 包。它支持多种模拟和数字总线端子，轻量无依赖，易于扩展和使用。通过简单的高层次抽象接口，用户可以轻松读写 IO 端子的数据，适用于工业测试、研究自动化和数据采集等场景。安装可通过 `pip install pyhoff` 完成，使用示例包括控制输出电压、读取温度等操作。项目开放贡献，欢迎提交问题或拉取请求。该项目基于 MIT 许可。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44508726" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://forgetoolz.com/rain-pomodoro" target="_blank">Show HN: A rain Pomodoro with brown noise, ASMR, and Middle Eastern music</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ShadowUnknown</span> |
-                    <span>评分: 94</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-08 17:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Rain Pomodoro是一款结合了雨声、棕噪音和ASMR触发器的工作专注计时器，旨在通过沉浸式音效和动态雨景动画提升专注力。它提供真实的雨声效果，包括风声、山间溪流和沙漠风暴，同时搭配棕噪音，能有效屏蔽干扰，增强注意力。ASMR音效帮助放松，减少压力荷尔蒙，提升工作效率。此外，中东风情的音乐和音景刺激创造性思维。计时器还支持自定义25分钟专注时间和休息提醒，配合电影级背景视觉效果，创造理想的专注环境。研究表明，棕噪音比白噪音更适合学习，能减轻精神疲劳。Rain Pomodoro通过科学设计，帮助用户在工作和学习中保持高效专注。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对某款聚焦音效应用的反馈，涉及功能、音效选择、版权问题及个人体验等多个方面。
-
-不同观点：
-• **功能实现与改进建议**：
-  ◦ [uxamanda] 希望能够多选音频（如同时选择雨声和中东音乐）。
-  ◦ [zem] 质疑是否可以手动切换不同音效，或者是否是应用随机变化。
-  ◦ [all2] 询问是否可以导入自己的播放列表（如合成器浪潮音乐）。
-
-• **用户体验与个人偏好**：
-  ◦ [lovegrenoble] 表示自己是雨声爱好者，喜欢该应用提供的雨声链接。
-  ◦ [ramon156] 对项目表示感谢，并计划在工作时尝试使用。
-  ◦ [kstrauser] 对应用表示高度赞赏。
-  ◦ [klunky] 认为这是一个很好的创意，并对网站表示赞赏。
-
-• **版权与命名问题**：
-  ◦ [ozim] 提醒开发者注意，如果要使用"Pomodoro"的名称和logo，可能需要获得官方授权。
-
-• **对应用目的的质疑**：
-  ◦ [hoseja] 对应用的宣传语提出质疑，认为一边提高生产力一边损害大脑健康是个奇怪的提议。
-
-补充讨论：
-• **外部资源推荐**：
-  ◦ [v9v] 提到了一个与中东音乐相关的视频链接，引发了对音效选择的进一步联想。
-  ◦ [rasso] 建议将该应用与"Music for Programming"连接，认为这样会很棒。
-
-• **其他反馈**：
-  ◦ [ShadowUnknown] 感谢大家的反馈和建议，并鼓励分享该项目。
-
-争议焦点：
-• 应用的名称使用和版权问题可能是潜在争议，[ozim] 提醒开发者可能需要获得官方授权。
-• 应用目的的合理性受到 [hoseja] 的质疑，认为提高生产力和保护大脑健康的平衡需要注意。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44502271" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bahjeez.com/the-great-microsd-card-survey/" target="_blank">The Capacity, Performance, and Reliability of MicroSD Cards</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: userbinator</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-06 04:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了2024-2025年售价低于15美元的优质microSD卡选择，并提醒市场上有大量假冒产品。假冒microSD卡通常通过编程虚报容量，实际容量远小于标称值。文章作者自2023年7月起购买并测试了各种品牌和容量的microSD卡，包括正品和假冒产品，以评估它们的真实容量、性能和耐用性。测试标准包括：
-
-1. **真实性**：卡的实际容量是否与标称容量一致，是否为假冒产品。
-2. **性能**：卡在读写操作中的表现如何，是否符合其标示的速度等级。
-3. **耐用性**：在卡变得不可靠或完全失效前，可以写入多少数据。
-
-作者强调，测试为个人独立进行，未受任何赞助。测试结果将持续更新，帮助消费者做出明智选择。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Flash存储设备的耐久性、可靠性、数据销毁方法以及存储容量标注的问题。
-
-不同观点：
-• [twotwotwo] 认为Flash耐久性的讨论在互联网上呈现出一种奇怪的现象，并提到了一些公共数据。他推测通过绘制失败曲线可以发现类似"浴缸曲线"的规律，并将不同类型的卡（如工业卡与杂牌卡）按耐久性分类。他还指出，实际测得的平均写入周期远高于厂商标示的TBW（Terabytes Written）值，并认为处理好失败可以延长设备使用寿命。
-
-• [1970-01-01] 提出了一个实际问题：他的正品三星SDXC卡进入了只读模式，即便低级格式化也无法修复。他询问是否有工具可以销毁卡内数据，除了物理破坏之外。
-
-• [RiverCrochet] 对SD卡的底层操作表示惊讶，特别是Application Units（AUs）的概念。他提到视频速度等级（Video Speed Classes）需要特定的命令来激活，并且主机只能按顺序写入指定的AU。他进一步质疑SD卡固件是否会将块标记为属于特定的AU，似乎是一种"预分配"机制。
-
-• [userbinator] 对microSD卡的存储容量标注表示不满，认为32GB的卡无法存储32,000,000,000字节的数据，并质疑厂商如何解释这一点，认为这接近欺诈。
-
-补充讨论：
-• [twotwotwo] 提到了具体的网站（https://www.bahjeez.com/the-great-microsd-card-survey/all-mi...）供读者查看microSD卡的耐久性数据，并指出不同品牌和型号的卡在写入周期上的差异。
-
-• [RiverCrochet] 对SD卡的技术细节进行了深入探讨，特别是MMC控制器的底层命令和AUs的管理方式，反映了对存储设备工作原理的技术性关注。
-
-• [userbinator] 的观点引发了对存储设备容量标注的争议，特别是厂商在容量标注上是否存在误导消费者的问题。
-
-争议焦点：
-• 存储设备厂商在容量标注上是否存在欺诈行为。
-• SD卡固件是否采用预分配机制来管理写入操作。
-• 如何有效销毁进入只读模式的SD卡上的数据。
-
-这些讨论点反映了用户对Flash存储设备在耐久性、可靠性、数据安全及容量标注方面的关注和疑问。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44477870" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dilbertblog.typepad.com/the_dilbert_blog/2007/06/the_day_you_bec.html" target="_blank">Rules of good writing (2007)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: santiviquez</span> |
-                    <span>评分: 101</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-07-07 14:03</span>
+                    <span>作者: AntonioBarthes</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-09 07:48</span>
                 </div>
 
                 <div class="summary-section">
@@ -492,27 +473,92 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于写作建议和风格的讨论，包括传统写作规则与更高层次写作理解的比较、不同文体和语言的处理方式、以及写作的规则与例外。
+                    <div class="comments-summary">主要讨论点：AI与社会语言学中的权力 dynamics 以及在使用AI生成内容进行学术讨论时的严谨性
 
 不同观点：
-• [kens] 认为大多数写作文章都是对Strunk & White的重复，但《Style: Toward Clarity and Grace》提供了一种更高层次的写作理解，适合寻求进阶建议的人。
-• [mtlynch] 同意读者更容易理解“the boy hit the ball”这种句式，但质疑是否所有大脑都如此，提出这可能与英语的语序结构有关，而非普遍适用于所有语言。
-• [raincole] 提出写作没有固定规则，只有情境性的指导原则，并以不同领域的写作为例，如创业圈和技术领域的写作风格。
-• [CharlesW] 认为Strunk的“省略无用词”是好的商业写作建议，但如果将写作视为一种工艺而非完成KPI，Stephen King的《On Writing》更值得推荐。
-• [GGByron] 指出Orwell也强调避免陈词滥调，并认为仅说“保持简单”没有实际意义，需解释相关概念和术语。
-• [djoldman] 支持Hemingway式的简洁句子，认为删除多余的词是好的写作技巧。
-• [irchans] 纠正了对句子成分的描述，强调应使用“主语”而非“对象”。
-• [Labov] 认为简洁的写作建议适用于博客和新闻记者，但不适合小说家或诗人。
-• [jbreckmckye] 认为清晰和简洁虽好，但单独使用会显得苍白，需要更多内容支撑。
-• [CalChris] 认为Adams的建议很好，但过于简洁的写作不会让人记住。
-• [lutusp] 质疑“好的写作规则”这一说法，认为文章标题将话题呈现为一种价值判断而非选择，并提到Strunk & White的影响。
+• **tony_borlini** 认为AI（DeepSeek-V3）不仅能够总结文章观点，还能进行反驳，这让人感到惊讶。他通过让AI生成博客回应了一篇关于AI、权力与社会语言学的文章，并将该回应发布在个人博客上，邀请读者进一步讨论。
+
+• **carschno** 提供了一个与讨论相关的学术文章的永久链接，指向一篇可能与AI和社会语言学相关的学术资源，但并未直接发表个人观点，而是提供了一个供进一步研究的参考。
+
+• **whatevsmate** 持批评态度，认为社会语言学家在讨论AI和权力 dynamics 时应更加严谨，而不应仅仅基于与一个AI的互动就做出广泛结论。他质疑了所使用的AI模型和版本的透明性，并讽刺这种研究方法为“自我民族志研究”和“ cynical fart-sniffing ”。
+
+• **joules77** 则从人类认知局限性的角度出发，认为“幻觉”和“胡说八道”是人类认知的自然部分，因为人类大脑无法容纳所有知识。他将这种现象与人类在面对知识不足时的默认行为联系起来，并以“本地黑猩猩首领”的比喻来强调这一点。
 
 补充讨论：
-• 争议焦点在于写作是否有固定规则或仅是情境性指导，以及不同写作风格（商业、文学、技术）是否应遵循不同的标准。
-• 不同评论者引用了不同的写作权威，如Strunk & White、Orwell、Hemingway和Stephen King，反映了不同写作哲学和风格的碰撞。
-• 语言结构对写作理解的影响也被提出，尤其是英语语序是否影响大脑处理句子的方式，这引发了对跨语言比较的讨论。</div>
+• **争议焦点**在于使用AI生成内容进行学术讨论的严谨性和透明性。whatevsmate对研究方法和AI模型的选择提出了质疑，认为不应轻率地根据AI生成的内容做出广泛结论。
+• **讨论的另一层面**是AI在互动中表现出“反驳”能力是否值得惊讶，以及这种能力对学术讨论的实际价值。tony_borlini对此感到惊讶并认为值得进一步探讨，而whatevsmate则持怀疑态度。
+• **joules77** 的评论引入了一种人类认知与AI行为之间的类比，为讨论提供了一个新视角，即AI的“幻觉”和“胡说八道”是否可以与人类的类似行为相提并论。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44490490" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44507301" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.afternoon.co/blog/section-174-is-reversed" target="_blank">Section-174 is reversed: all US-based R&D expenses are now deductible</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: romanzubenko</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-09 19:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《Section 174 撤销：所有美国境内研发支出可立即全额扣除》
+
+摘要：
+2025年，美国国内研发支出不再需要按五年摊销，立即可全额扣除。自2022年以来被摊销的研发支出，符合条件的企业（年收入不超过3100万美元）可申请退税或在2025年税表中补扣。企业需在法案生效后一年内修改2022至2024年的税表以追回已摊销成本，或选择在2025年税表中补扣。2024年12月31日后的研发支出可全额扣除。Afternoon.co可协助处理相关税务和修改申报。
+
+关键点：
+- 撤销Section 174的五年摊销要求。
+- 符合条件的小企业可追溯申请退税。
+- 需修改2022-2024年税表或在2025年补扣。
+- 修改申报须在法案生效一年内完成。
+- Afternoon.co提供相关税务咨询服务。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于技术社区中AI生成内容、开源项目贡献的质量及审核机制的讨论。
+
+不同观点：
+
+• 观点一：AI生成内容对开源项目贡献的质量产生负面影响。
+  - 论据：一些用户认为，AI生成的代码或文档往往质量较低，缺乏深度理解，可能包含错误或不完整的解决方案。
+  - 例子：有评论提到，AI生成的PR（Pull Request）在实际项目中可能导致更多的维护负担，因为需要花费额外时间去审查和修正。
+
+• 观点二：AI生成内容可以提高开源项目的贡献效率。
+  - 论据：支持者认为，AI工具能够帮助初学者或非专业开发者更快上手，并为项目提供基础性贡献，例如生成样板代码或文档。
+  - 例子：有用户指出，AI生成的内容在某些简单任务上表现良好，可以作为贡献者的辅助工具，提高开发速度。
+
+• 观点三：审核机制需要加强，而不是排斥AI生成内容。
+  - 论据：部分讨论者认为，问题的核心不在于AI本身，而在于开源项目现有的审核机制不够严格。应该通过改进审核流程和工具来应对AI生成内容的潜在问题。
+  - 例子：有评论建议，使用更严格的代码审查工具和自动化测试来筛选AI生成的内容，确保其质量达到项目标准。
+
+• 观点四：AI生成内容的道德与知识产权问题。
+  - 论据：一些讨论者关注AI生成内容的知识产权问题，认为AI生成的代码或文档可能涉及侵权或者归属权不明，这会对开源社区的贡献文化造成影响。
+  - 例子：有用户担心，AI生成的内容可能复制了受版权保护的代码片段，而贡献者或项目维护者无法察觉。
+
+补充讨论：
+
+• 关于AI生成内容的透明度问题。
+  - 一些讨论者提出，应该要求贡献者明确标注哪些内容是由AI生成的，以便更好地进行审核和评估。
+
+• 关于AI对开源社区文化的长远影响。
+  - 有观点认为，如果过度依赖AI生成内容，可能会削弱开发者之间的协作和学习机会，长远来看对开源社区的发展不利。
+
+争议焦点：AI生成内容对开源项目的贡献是利大于弊还是弊大于利，以及如何在质量和效率之间找到平衡。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44513963" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
