@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-11 20:26 (北京时间)
+            最后更新时间: 2025-07-11 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,200 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://wowparrot.com/using-sound-waves-to-put-out-fire/" target="_blank">Using Sound Waves to Put Out Fire: Story of Two George Mason University Students</a>
+                    <a href="https://www.recall.ai/blog/postgres-listen-notify-does-not-scale" target="_blank">Postgres LISTEN/NOTIFY does not scale</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: taubek</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-11 11:10</span>
+                    <span>作者: davidgu</span> |
+                    <span>评分: 263</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-07-07 14:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2015年，美国乔治梅森大学的两位工程学生Viet Tran和Seth Robertson发明了一种利用低频声波灭火的装置，名为“Wave Extinguisher”。该设备通过产生特定频率的声波，扰动火焰周围的空气和燃料分子，从而隔绝氧气，扑灭火焰。这一发明在演示中成功扑灭了小火焰，并引起了广泛关注。虽然利用声波灭火的概念此前已有研究，但他们的设备是首个便携且有效的原型。然而，该技术仍面临扩展性、能耗以及环境因素影响等挑战，目前主要适用于小火，难以应对大规模火灾。这一突破激发了更多关于声波灭火的研究，未来可能带来更多创新。</p>
+                    <p>文章主要讨论了Recall.ai在使用Postgres数据库时遇到的问题，特别是在高并发写入情况下，Postgres的LISTEN/NOTIFY功能导致数据库性能下降甚至停机。问题源于NOTIFY查询在事务提交阶段会获取全局锁，导致所有提交被序列化，进而引发严重的锁竞争和数据库负载。通过启用日志记录和深入分析，团队确认了NOTIFY是导致问题的根源，并建议在需要扩展到多个并发写入者时避免使用LISTEN/NOTIFY。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：Postgres的LISTEN/NOTIFY机制及其在大规模应用中的问题和替代方案
+
+不同观点：
+• leontrolski：对Postgres的FOR UPDATE SKIP LOCKED方法与" dumb-ol' polling"的比较感兴趣，计划进行基准测试。同时提到对Postgres锁交互行为的不了解，并提供了相关资源链接。
+• sorentwo：分享了Postgres LISTEN/NOTIFY在Oban（Elixir背景作业处理框架）中的痛点，特别是有效载荷大小限制和连接池问题。提到Elixir有更好的分布式和pubsub支持，这得益于平台如Fly的兴起和Heroku的衰退。
+• CaliforniaKarl：赞赏文章提供了Postgres功能何时成为瓶颈的指示，并认为这有助于未来遇到类似问题的人快速理解问题。
+• cpursley：提到更喜欢通过监听Postgres WAL来获取数据库变化，提供了相关工具链接。
+• maxdo：认为Postgres不易扩展，存在许多更便宜的解决方案。
+• callamdelaney：对标题感到不解，认为AI公司选择Postgres作为工具是不合适的。
+• hombre_fatal：建议将NOTIFY在一个独立于事务的连接中执行，以避免问题。
+• shivasaxena：请求分享其他Postgres用户应注意的问题，如AccessExclusiveLock，并列举了一些已知问题。
+• polote：提到RLS和触发器也不易扩展。
+• supportengineer：指出LISTEN/NOTIFY不仅是一个无锁触发器，在负载下可能危及并发性，强调小规模下无害的功能在大规模下可能出问题。
+• cshimmin：建议引入一个不保证顺序的NOTIFY变体，以避免全局锁问题，从而在事务内安全地使用NOTIFY。
+• to11mtm：建议使用NATS进行pubsub，并确保有重连机制。
+• andrewstuart：提到有多种方式可以调用NOTIFY，批评文章作者过于专注于单一方式，且未解释业务目标，建议对NOTIFY进行去抖动/分组处理。
+• NightMKoder：提到Facebook的wormhole方法，通过尾随MySQL bin log获取提交安全性，避免了Postgres的锁行为。
+• freeasinbeer2：对文章中的图表表示困惑，要求提供更明确的性能指标如TPS和百分比差异。
+
+补充讨论：
+• 多种替代方案被提及，如NATS pubsub、监听Postgres WAL、Facebook的wormhole方法等。
+• 对Postgres LISTEN/NOTIFY机制的性能和并发性问题存在争议，特别是在大规模应用中的表现。
+• 建议对NOTIFY的使用进行优化，如去抖动/分组处理，以避免对每个事务都发送NOTIFY。
+• 对文章中提供的性能数据和图表的有效性存在疑问，要求更明确的指标和解释。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44530807" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44490510" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bentoml.com/llm/" target="_blank">LLM Inference Handbook</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: djhu9</span> |
+                    <span>评分: 197</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-11 02:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《LLM Inference in Production》是一本技术手册，汇集了大语言模型（LLM）推理的核心概念、性能指标（如首次 token 时间、每秒 token 数）、优化技术（如持续批处理、前缀缓存）及操作最佳实践。手册旨在解决知识碎片化问题，帮助工程师更好地部署、扩展和运营 LLM，专注于关键内容，避免边缘案例和技术噪音。它提供了实用的优化建议，并会持续更新最新实践。适合正在处理 LLM 生产环境的工程师，尤其是希望提高推理速度、降低成本或增强可靠性的人。手册可从头到尾阅读，也可作为参考资料查阅，并欢迎通过 GitHub 贡献内容。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一个LLM推理手册项目的发布及其相关反馈和建议
+
+不同观点：
+• [项目维护者sherlockxu]：该评论来自项目维护者，介绍了项目的目标和动机，即为了使LLM推理概念更易于理解，特别是对构建实际应用的开发者。维护者对项目被分享到Hacker News表示兴奋，并表示会继续改进项目，欢迎反馈。
+
+• [用户qrios]：对项目表示感谢，并提出建议，希望在"OpenAI-compatible API"页面增加一个纯REST调用的简单示例，而不仅仅提供通过导入OpenAI包的方式。
+
+• [用户subset]：对项目表示赞赏，并表达了对未来内容扩展的期望，特别是关于结构化输出和引导生成方面的内容。同时提供了一个关于推理时采样算法的参考链接。
+
+• [用户aligundogdu]：对项目的设计表示赞赏，并出于好奇询问了网站设计所使用的设计趋势名称。
+
+• [用户holografix]：对项目表示感谢，认为这是一个很好的参考资料。
+
+补充讨论：
+• 项目维护者积极寻求反馈，显示出对项目持续改进的开放态度。
+• 用户qrios的建议显示出对使用不同技术实现方式（REST调用）的需求。
+• 用户subset提供了额外的资源链接，显示出社区内的知识共享精神。
+• 用户aligundogdu的评论显示出对项目外观设计的关注，这可能是项目吸引力的一个重要方面。
+
+争议焦点：无明显争议，评论整体积极并具有建设性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44527947" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://twitter.com/cis_female/status/1943069934332055912" target="_blank">FP8 is ~100 tflops faster when the kernel name has "cutlass" in it</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: limoce</span> |
+                    <span>评分: 153</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-11 10:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章指出，某些与隐私相关的浏览器扩展程序可能在x.com网站上引发问题。建议用户禁用这些扩展程序，然后重试访问该网站。文章提醒用户不必担心，只需按照建议操作即可解决问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：NVIDIA Cutlass项目中关于FP8支持的代码路径及其潜在影响，尤其是涉及性能优化的部分。
+
+不同观点：
+• spoaceman7777认为，当前的代码路径是NVIDIA和Cutlass项目外部贡献者近期添加的，用于测试，而不是分发定制的CUDA内部版本。他提供了一个相关的GitHub链接以供参考。
+• hvenev推测`libnvidia-nvvm.so`中的`cutlass`字符串可能与编译器的优化属性有关，允许编译器对内核行为做出一般无效的假设。
+• KomoD提供了另一个相关的Triton项目链接，指向具体的代码变更。
+• PLenz提到了“Volkswagon排放测试模型”，暗示可能存在类似的作弊行为，但没有详细展开。
+• tempaway43563询问Cutlass是什么，并质疑检查内核名称是否合理或是一种作弊形式。
+• high_na_euv基于对编译器和LLVM的经验，指出许多系统依赖于名称解析，并解释了复杂编译过程中可能出现的无意问题。
+• orlp简短提到“GenuineIntel moment”，暗示可能存在历史重演的担忧。
+• Arch-TK对Git的使用表达了不满，希望人们更好地掌握Git或停止使用它。
+• giingyui质疑使用内核名称作为优化的缺点，并提到除非包含大量sleep调用，否则难以理解其影响。
+• koakuma-chan询问100 TFlops是否算多，未深入技术细节。
+• rowanG077希望NVIDIA的优化仅适用于内部内核，不会普遍应用。
+• nolok评论Intel从“默认信任/参考”到“检查欺诈”的转变，认为这是自食其果。
+• zahlman提供了更具慈善性的解读，认为推文断章取义，误解了原始材料，指出在某些内核上使用fp8确实可能比fp16有更好的性能，但数字和声明缺乏详细支持。
+
+补充讨论：
+• 争议的焦点在于NVIDIA是否通过内核名称进行不当优化或作弊以提升性能。
+• 讨论中涉及的技术细节包括编译器优化、内核名称的使用及其潜在影响。
+• 提供了多个相关链接以供进一步查阅具体代码变更和问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44530581" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://leerob.com/vercel" target="_blank">Things I learned from 5 years at Vercel</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gk1</span> |
+                    <span>评分: 49</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-11 13:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Lee Robinson回顾了在Vercel工作五年的经验和教训。他从一个30人、100万美元年收入的公司成长为650人、2亿美元年收入的公司，个人也从普通员工晋升为副总裁。他分享了五个主要心得：
+
+1. **努力工作并设定明确界限**： passion驱动下工作可以很有成就感，但需建立支持系统以避免倦怠，学会在工作与生活间找到平衡。
+  
+2. **凡事都可以更快完成**： 作为领导要推动进度，设定激进的截止日期以暴露潜在问题，从而加速交付。同时，保持团队对工作的热爱和责任感。
+
+3. **扩展或尝试至死方休**： CEO需处理多任务，领导需承担责任并持续招聘，以防团队超负荷。招聘时只接受“绝对合适”的人选。
+
+4. **建立高效的沟通和执行文化**： 会议应简短、结果导向，重视文档和透明度，减少无效沟通。
+
+5. **产品应简单易用**： 技术复杂性不应影响用户体验，持续优化产品以保持竞争力。
+
+Lee强调，在高速增长的公司工作需要付出巨大努力，但也应注重个人生活和团队协作。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于在科技行业中工作与生活平衡的反思
+
+不同观点：
+• anupj认为，无界限的激情（持续高强度工作）会导致职业倦怠。在科技行业，最重要的不是快速发布产品或扩展规模，而是学会适时停止工作，保持可持续的工作输出比短期内过度努力更有效。
+• nilirl表达了一种最初想要反对的倾向，因为他没有在大获成功的初创公司工作过。尽管有这种抵触情绪，他还是对帖子的内容表示了认可，但同时带有些许情绪化的反应（“现在我很生气”）。
+• fizk集中讨论了帖子作者的表达能力，称赞其为YouTube上最好的编程内容创作者之一，但没有深入讨论工作与生活平衡的问题。
+• TimMeade完全同意帖子的观点，认为作者写得非常好，并且准确指出了科技行业中的现实问题。他表示感激并给予作者美好祝愿。
+
+补充讨论：
+- anupj的观点引发了关于科技行业工作压力的讨论，特别是如何在追求高效与维持个人生活质量之间找到平衡。
+- nilirl的情绪化反应显示出对帖子内容的矛盾心理，可能因为他自身的经历与帖子中的观点存在差距，但他最终还是认可了帖子的内容。
+- fizk的评论更侧重于对作者表达方式的赞美，而不是直接参与到工作与生活平衡的讨论中。
+- TimMeade的回应则是一种支持和感谢，呼应了anupj关于工作生活平衡的观点。
+
+争议焦点：无界限的激情是否必然导致倦怠，以及如何在快速发展的科技行业中实现可持续的工作输出。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44531635" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -127,6 +302,156 @@
 争议焦点：Google和OpenAI批处理模式的实际效果和适用性，尤其是速度与成本之间的权衡，以及文档和技术支持的不足。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44492014" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://formularsumo.co.uk/blog/2025/apple-vs-the-law/" target="_blank">Apple vs the Law</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tempodox</span> |
+                    <span>评分: 247</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-07-11 06:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章总结了作者参加苹果和谷歌在布鲁塞尔举办的数字市场法（DMA）合规工作坊的经历。作者指出，苹果在会上将大部分时间用于自我宣传，并抱怨法律不公，强调其难以遵守现行法规，甚至表现出对其他与会者的不尊重。谷歌的态度相对低调，但同样认为法律过于苛刻，可能伤害消费者和企业。苹果一直反对监管，并曾挑战其门户地位和法律条款，还通过技术手段延迟调查。作者批评这些科技巨头利用拖延战术维持垄断利润，且在工作坊上回避了许多问题，未提供详细解答。会议讨论了互操作性、应用商店等议题，但关键问题未得到有效解答。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：欧盟与苹果公司就DMA（数字市场法）的合规问题以及更广泛的竞争与监管问题
+
+不同观点：
+• **支持欧盟监管的观点**：
+  - [simonask] 认为欧盟在保护消费者权益方面做得很好，特别是在面对大企业如苹果时，能够坚持竞争而非保护主义政策。
+  - [Fizzadar] 强调欧盟是目前唯一有能力对抗科技巨头过度控制的大型机构，希望欧盟继续施压。
+  - [OkPin] 质疑苹果以法律解释和延迟策略来规避合规，认为需要更强的 enforcement 机制。
+
+• **批评苹果行为与动机的观点**：
+  - [EMIRELADERO] 指出苹果以隐私和安全为借口，实际上是进行反竞争行为，依据是此前与Epic的诉讼中暴露的内部聊天记录。
+  - [anupj] 认为苹果的所谓“合规”只是表面功夫，实质上是在设置新的障碍，而非真正开放生态。
+  - [jjcob] 提出应通过法律强制科技巨头不仅要允许竞争，还要积极支持竞争，例如通过设定第三方应用商店的使用比例。
+
+• **对苹果与欧盟技术争议的讨论**：
+  - [grishka] 认为苹果声称的技术复杂性（如代码签名和合规工程问题）是夸大其词，实际上只是简单的“if”语句问题。
+  - [neuroelectron] 分享了个人经历，批评iPhone的UI设计和使用体验在某些方面变得更差，特别是在文本选择和编辑上。
+
+• **对竞争与创新的权衡**：
+  - [dan-robertson] 对自由与监管之间的平衡表示困惑，认为虽然苹果的封闭系统有助于安全，但欧盟的监管有助于减少App Store中的诈骗和垃圾应用。同时担忧欧盟的监管可能影响科技行业的创新。
+  - [nntwozz] 怀念乔布斯时代苹果的创新精神，认为库克领导下的苹果缺乏勇气和远见，尤其在软件质量控制和用户体验方面。
+
+补充讨论：
+• **法律与执行机制的讨论**：
+  - [jjcob] 建议法律应强制规定一定比例的用户使用第三方应用商店或浏览器引擎，否则巨头需支付罚款。
+  - [OkPin] 对欧盟的执行力表示担忧，质疑当前的罚款是否足够，并提出需要更透明的机制如第三方集成公开透明化。
+
+• **苹果的法律策略与反竞争行为**：
+  - [mentalgear] 强调法律应当平等适用于所有公司，无论其规模大小，并批评苹果通过游说和夸大技术难题来阻碍监管进程，认为这损害了公众对民主制度的信任。
+
+争议焦点：
+• 苹果是否真诚遵守DMA法规，或只是通过法律和技术借口拖延时间。
+• 欧盟如何有效执行法规，是否需要更强硬的法律手段和惩罚机制。
+• 科技巨头如苹果在竞争与创新中的角色，以及如何平衡安全、隐私与市场公平竞争的关系。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44529061" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.lesswrong.com/posts/CCuJotfcaoXf8FYcy/some-arguments-against-a-land-value-tax" target="_blank">Some arguments against a land value tax (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: danny00</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-11 13:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了对土地价值税（Land Value Tax, LVT）的一些反对意见，并特别关注了全球财富中土地价值所占的比例问题。作者最初认为LVT仅针对全球财富的6%，但根据世界银行的报告修正为13%。这一修正虽然增加了LVT的可行性，但作者仍坚持其大部分论点，认为简单的LVT实施可能会导致经济扭曲，需要调整税基以减少这些扭曲。此外，作者提到，削减其他更具扭曲性的税收可能会增加土地租金。最后，作者承认目前依赖世界银行的数据进行分析，但希望找到更权威的来源来验证其结论。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：土地价值税（LVT）的合理性、实施可行性及其社会影响
+
+不同观点：
+• [xnx] 认为土地开发的财政激励可以更好地利用现有基础设施，通过按道路系统等基础设施的比例收费，促使未开发土地自然被开发以应对税收。
+• [seanalltogether] 支持将土地价值税与占用税结合，认为这是资助政府服务的唯一公平方式。他指出，如果邻居将土地开发为住宅区，自己的土地价值上升，理应多缴税，但不应负担过多的地方预算。
+• [andrewla] 同意土地价值税在理论上的影响，但认为在实践中难以评估土地的“未改进价值”，任何讨论都应从近似理论理想出发，明确“土地价值”的估算基础，因为这实际上是对该过程的征税。
+• [Mikhail_K] 对理性主义者和自由意志主义者持批评态度，暗示这些讨论往往带有政治倾向。
+• [greenie_beans] 认为土地价值税是针对中产阶级房主的累退税，最终会使富人受益。他们可能无法负担税负或充分利用土地，从而被迫将土地出售给投资者。此外，政策执行和例外情况复杂，不是理想的解决方案，并提供了自认为更优的解决方案链接。
+• [cma256] 指出土地价值税已经存在，并质疑一些文章对迪士尼等例子的使用，认为这些文章忽视了当前税收体系。
+• [spjt] 认为最大化开发土地不应成为目标，更倾向于保留自然环境而非建设更多商业设施。
+
+补充讨论：
+• 争议焦点在于土地价值税的公平性、可行性及其对社会和环境的影响。
+• 支持者认为LVT能更公平地分配税收负担，并促进土地高效利用；反对者则担心其实际执行困难，可能导致中产阶级负担加重和政策执行的复杂性。
+• 不同的例子和假设（如迪士尼、未开发土地）被用来支持或反对LVT的实施。
+• 一些评论提到了土地价值税的理论基础，如乔治主义（Georgism），并提供了进一步阅读的链接。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44531764" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://pico2.pinout.xyz" target="_blank">Show HN: Interactive pinout for the Raspberry Pi Pico 2</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gadgetoid</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-07 16:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文提供了某个微控制器或开发板的引脚功能说明。每个引脚（GP0-GP28）列出了其支持的多种通信接口和功能，包括SPI、I2C、UART和PWM。部分引脚还具有ADC（模数转换）功能。此外，文中标注了电源引脚（VBUS、VSYS、3V3 En、3V3 Out等）和接地引脚（Ground）。还包含一些特殊引脚如RUN、SWCLK、GND和SWDIO，用于调试和供电。该信息适用于设计和开发时正确连接和配置引脚功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Raspberry Pi Pico及其他微控制器引脚图的实用性与改进建议
+
+不同观点：
+• [积极评价] djaychela、NoSalt、ssl232等用户对Pico引脚图的简洁和实用性表示赞赏，并提到这些图表帮助他们更容易地进行项目开发，特别是与Pimoroni相关的产品。
+• [资源推荐] bajsejohannes提供了另一个ASCII版本的引脚图，并建议将其作为项目注释，以便快速参考。此外，他还推荐使用pinout.xyz网站，并建议添加到Pico版本的链接以便更容易发现。
+• [功能建议] varispeed建议增加点击功能以高亮相关引脚，并生成初始化代码示例。moffkalast则希望能够选择引脚和功能，使不兼容的功能引脚变灰，以避免设计PCB时的冲突问题。
+• [制造商改进建议] mrheosuper希望更多制造商在MCU中加入Pin mux功能，以减少设计PCB时的麻烦，特别是像ESP32-CAM这样的板子。
+
+补充讨论：
+• [类似资源需求] transcriptase询问是否有类似的Esp32板的引脚图资源。
+• [易记性] ksdme9提到这种引脚图的优点在于能够记住URL，而不需要在多个页面中查找官方PDF文件。
+• [工具评价] lawik认为pinout.xyz在处理Raspberry Pi项目时是一个宝藏工具。
+
+争议焦点：
+• 微控制器引脚功能冲突是用户在项目设计中的主要痛点，尤其是在多个功能无法同时使用时。moffkalast详细描述了这种问题，并希望有工具能够提前验证设计的可行性。
+
+总体而言，讨论围绕引脚图的实用性和改进建议展开，用户普遍希望有更直观和功能更强大的工具来简化微控制器项目开发。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44491709" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -194,331 +519,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pico2.pinout.xyz" target="_blank">Show HN: Interactive pinout for the Raspberry Pi Pico 2</a>
+                    <a href="https://lwn.net/ml/all/cover.1747070147.git.anand.jain@oracle.com/" target="_blank">Btrfs Allocator Hints</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gadgetoid</span> |
-                    <span>评分: 70</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-07 16:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文提供了某个微控制器或开发板的引脚功能说明。每个引脚（GP0-GP28）列出了其支持的多种通信接口和功能，包括SPI、I2C、UART和PWM。部分引脚还具有ADC（模数转换）功能。此外，文中标注了电源引脚（VBUS、VSYS、3V3 En、3V3 Out等）和接地引脚（Ground）。还包含一些特殊引脚如RUN、SWCLK、GND和SWDIO，用于调试和供电。该信息适用于设计和开发时正确连接和配置引脚功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Raspberry Pi Pico等微控制器的引脚功能及可视化工具的改进建议
-
-不同观点：
-• varispeed：建议在点击如"SPI0"时，高亮显示所有相关引脚，并能即时生成初始化代码或示例代码片段，以便更快上手使用外设功能。
-• djaychela：支持该建议，认为通过可视化工具简化引脚功能展示（如仅显示PWM输出能力）能减轻初学者负担，并感谢相关软件和示例的易用性。
-• bajsejohannes：推荐一个ASCII版本的引脚图，并提到在项目中注释该图以方便参考，同时建议将该资源链接到pinout.xyz以便更容易发现。
-• ksdme9：赞赏可以通过易记的URL直接访问引脚图，而不必翻找官方PDF文件。
-• mrheosuper：希望更多制造商像espressif一样引入Pin mux功能，简化引脚功能选择，减少PCB设计时的麻烦。
-• lawik：认为pinout.xyz是使用树莓派时的宝贵资源。
-• moffkalast：支持类似pinout.xyz的工具，但认为如果能选择引脚和功能，并让不能并行使用的引脚变灰，会更实用。提到微控制器引脚冲突和功能限制带来的设计困难，特别是如ESP32-CAM等特定型号的问题。
-
-补充讨论：
-• 用户对微控制器引脚功能可视化工具的需求和改进建议是主要讨论内容，尤其是如何简化引脚选择和避免功能冲突。
-• 讨论中提到了现有工具的优点，如pinout.xyz的便捷性，但也指出了当前工具在处理引脚功能冲突和并行使用限制方面的不足。
-• 不同用户分享了个人在项目中使用的实用技巧和资源链接，如ASCII版本引脚图，以方便快速参考。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44491709" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dynamicland.org/2024/FAQ/#What_is_Realtalks_relationship_to_AI" target="_blank">Bret Victor on why current trend of AIs is at odds with his work</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: prathyvsh</span> |
-                    <span>评分: 206</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-07-10 15:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Dynamicland是一个由非营利研究机构Dynamicland基金会运营的项目，旨在创造一种人性化的动态媒介，实现全民计算素养。其核心是一个名为Realtalk的计算环境，人们通过手工操作物理材料来创建和探索计算模型，强调面对面的协作。Dynamicland曾是奥克兰的一个社区空间，在2017年至新冠期间，通过各种活动创建了独特的共创计算文化。目前，该机构正在开发新的空间，并专注于“共创科学”和“Realtalk-2024”项目。公众可以通过捐赠、志愿服务或合作参与其中。该项目的最终目标是发明一种人性化的计算形式，并建立能普及这种新媒介的教育和社区机构。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕AI和新型计算系统（如Dynamicland和RealTalk）的潜力和实际应用的讨论。
-
-不同观点：
-• **AI作为学习和创造的工具**：comeondude认为LLM（如ChatGPT）可以帮助那些难以学习传统编程的人通过一种更符合他们思维方式的途径来实现创意项目。他强调AI是创造力的“力量倍增器”，并建议学校应教授如何有效使用AI。
-
-• **Dynamicland的技术透明性和可扩展性**：why_at和randomNumber7对Dynamicland的“完全可见和可理解”的目标提出质疑，认为即使理论上透明的系统（如Linux内核），实际上也很难完全理解，且编程背后可能仍然复杂到让普通人难以掌握。Animats则关注如何将Dynamicland这样的项目从演示阶段扩展到更广泛的应用。
-
-• **RealTalk的互操作性和改进建议**：thatguymike指出RealTalk在互操作性方面的挑战，并建议通过引入简单的对象识别和LLM来改进，使得不同编程对象之间的交互更加直观和一致。
-
-• **对Dynamicland的个人体验和实现**：deosjr分享了自己在尝试构建类似Dynamicland的项目中取得的进展，并对未来进一步开发表示期待。bobajeff则从使用投影技术的实际问题出发，表达了对Dynamicland演示环境的担忧。
-
-补充讨论：
-• **历史和技术背景**：fouc和pmkary提到了与这些项目相关的历史探索和技术先锋，如tunes.org和被点赞的技术专家，强调了这些项目在计算机科学历史中的位置和意义。
-
-• **对理想主义项目的看法**：ijk希望看到更多关于RealTalk的详细介绍，特别是其允许脚本与尚未存在的功能交互的特性。而lif则认为Dynamicland是一个理想主义的项目，之前未听说过该项目及其背后的创始人Bret。
-
-总体而言，讨论围绕AI和新型计算系统如何增强学习和创造力、技术透明性和可扩展性、以及实际应用中的挑战和改进建议展开。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44522076" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/06/24/technology/amazon-ai-data-centers.html" target="_blank">At Amazon's Biggest Data Center, Everything Is Supersized for A.I</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-11 10:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：亚马逊在印第安纳州建设大量数据中心的影响及其潜在问题
-
-不同观点：
-• [v5v3] 质疑亚马逊为何选择农田而非棕地（brownfield sites）进行建设，认为农田更应被保护。
-• [pseudolus] 引用了相关资料，指出当地电力供应将主要依赖天然气，暗示对环境的影响以及对可再生能源缺乏使用的遗憾。
-• [dude250711] 关注数据中心未来可能的再利用问题，特别是在AI泡沫破裂后，是否能转向云游戏或其他AI相关用途。
-• [yahoozoo] 对数据中心巨大的资源消耗（电力、水）表示惊讶，并对人类大脑相对高效的计算能力与AI系统的高资源需求进行对比。
-• [2OEH8eoCRo0] 对亚马逊计划在印第安纳州再建23个数据中心表示震惊，暗示对如此大规模扩展的担忧。
-• [DrBazza] 关注数据中心地理位置的潜在自然灾害风险，特别是靠近卡斯卡迪亚断层和活火山，质疑亚马逊的应急预案和防灾准备。
-
-补充讨论：
-• 数据中心的选址问题引发了对环境保护和可持续发展的关注。
-• 资源消耗，尤其是电力和水资源的大量使用，成为评论中的一个焦点。
-• 对AI技术发展和其对基础设施需求之间的平衡提出了质疑。
-• 自然灾害风险及其对数据中心运营的潜在影响引起了讨论，强调了防灾准备的重要性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44530375" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://flix.dev/" target="_blank">Flix – A powerful effect-oriented programming language</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: freilanzer</span> |
-                    <span>评分: 248</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-10 14:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Flix 语言的特性、优点、缺点以及与其他语言和生态系统（如JVM、Haskell、Scala等）的比较。
-
-不同观点：
-• **Flix 的优点和独特性**：exceptione 对 Flix 语言的代数数据类型、逻辑编程、可变性等特性印象深刻，尤其赞赏其单个可执行文件集成了包管理器、语言服务器协议（LSP）和编译器。他还提到 Flix 在与 JVM 生态系统（如 Java）集成方面的潜力，尽管存在类型擦除问题，但通过 "regions" 概念支持命令式交互。
-
-• **记录的多态性语义**：Joker_vD 关注 Flix 的记录扩展和限制的多态性语义，认为其遵循 Leijen 的方法，允许记录字段的重加和移除，且行为合理。相比之下，早期尝试通过复杂的类型系统静态禁止这种行为显得不必要。
-
-• **语法问题**：daxfohl 对 Flix 语法中的分号使用提出批评，特别是在 `yield` 示例中，最后一行没有 "return" 导致不对称感。他表示可以接受大括号或缩进，但分号必须去掉。
-
-• **Flix 与 Java 的比较和教学**：lutzh 提到曾写过一篇 "Flix for Java Programmers" 的文章，认为 Flix 对于 Java 程序员来说非常有趣，但需要更新以反映 Flix 的最新发展。
-
-• **Aarhus 作为编程语言研究重镇的原因**：textlapse 提出一个题外问题，探讨丹麦奥胡斯大学/科技中心为何成为编程语言研究的强大中心，涉及 C++、C#、Typescript、Dart 等语言的根源。
-
-• **类型类和宏的支持**：pshirshov 关注 Flix 是否支持高阶类型（HKTs）和类型类（在 Flix 中称为 traits）。他对缺乏标称继承表示失望，认为这使得某些有用的抽象无法实现或变得丑陋。
-
-• **代码智能工具的支持**：daxfohl 幽默地提到，是否需要依赖代码智能工具，还是需要自己动脑。同时担心 LLMs 可能会抑制新语言的采用。
-
-• **对 Flix 的兴趣和使用意愿**：andoando 表达了对 Flix 的喜爱，这是他第一次看到新编程语言演示后产生使用欲望。voat 则表示尽管 Flix 看起来很美，但自己是 Web 开发者，从不接触 JVM 生态系统。
-
-• **效果导向编程的介绍需求**：mcdow 请求关于效果导向编程的具体介绍和使用示例。
-
-• **与其他语言的比较**：syhol 指出 Flix 与 Koka 语言非常相似，并希望这些效果系统能够成为主流。Hashex129542 则简单地表示不喜欢过多的关键字。
-
-• **模式匹配的语法建议**：pmontra 对比了 Flix 和 Elixir 的模式匹配语法，建议 Flix 可以更简洁、更 DRY（不重复自己），并提出结构化模式匹配的概念。
-
-• **查询语法的顺序问题**：naasking 对 Flix 查询语句中 `select` 的位置提出异议，认为应该像 LINQ 那样将 `select` 放在最后，以避免 SQL 中的问题。
-
-补充讨论：
-• 讨论中涉及的 Flix 文档和外部资源链接（如 lutzh 的文章、Flix 官方文档中的 JVM 互操作性说明）为深入了解 Flix 提供了参考。
-• 对 LLMs 可能抑制新语言采用的担忧，以及对编程语言设计中语法和语义的细节讨论，也体现了开发者社区对语言易用性和生产力的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44521224" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44524544" target="_blank">Show HN: Cactus – Ollama for Smartphones</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: HenryNdubuaku</span> |
-                    <span>评分: 101</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-10 19:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在移动设备上运行本地大语言模型（LLM）的可行性、性能优化、安全性及相关工具的讨论。
-
-不同观点：
-• [deepdarkforest] 认为Google AI边缘计算支持多种模型（包括来自huggingface和pytorch的模型），并且并不限于特定平台，已经支持iOS。他质疑有人声称Google AI仅支持特定平台的说法，并指出如果UX（用户体验）更好，Google的框架可能会被更多使用。同时，他认为手机上使用LLM的开发者更可能使用官方框架而非第三方框架，并预测苹果未来可能会出于安全原因锁定一些API。
-
-• [ipsum2] 提到GGUF容易实现，但在移动设备上使用tflite和XNNPACK内核可以获得更好的性能，尤其是在低功耗设备上，性能非常关键。
-
-• [throw777373] 分享了通过Termux在Android上运行Ollama的经验，并指出最近Ollama添加了ollama包，无需从源代码编译。
-
-• [smcleod] 提到SmolLM2已被SmolLM3取代，并希望有更多更大的模型可供选择，比如Qwen 3 4b和8b模型。
-
-• [pj_mukh] 对模型性能的细节（如tok/s速度）表示关注，并询问在不同设备上的性能是否一致，例如在react-native和flutter等框架下的表现是否相同。
-
-• [K0balt] 认为在手机上运行7b模型非常实用，并期待能在手机上实现Q4精度的模型运行。
-
-• [felarof] 分享了正在开发具有本地LLM支持的移动版Chromium浏览器的经验，并表示会参考Cactus项目。
-
-• [matthewolfe] 提出对公司和模型开发者在暴露专有模型权重方面的安全性和知识产权问题的担忧，指出拦截应用流量或逆向工程应用以获取权重并不困难。
-
-• [refulgentis] 提醒大家该项目仅有两周历史，且主要是基于llama.cpp的包装，项目尚在早期阶段，并批评了一些营销性言论，认为这些言论可能误导用户。
-
-补充讨论：
-• 多个评论提到了在不同设备和平台上（如Android和iOS）运行LLM模型的实际性能和可用工具（如Termux、Ollama）。
-• 讨论中涉及了对模型性能优化的关注，特别是在低功耗移动设备上的性能表现（如使用tflite和XNNPACK内核）。
-• 有用户对项目的成熟度和市场宣传提出了批评，认为项目尚在早期，且存在误导性宣传。
-• 安全性问题也被提出，特别是关于专有模型权重的暴露和保护问题。
-
-争议焦点：
-• Google AI边缘计算是否平台特定及其与Ollama等工具的比较。
-• 新项目的成熟度及市场宣传的准确性。
-• 在移动设备上运行LLM模型的实用性和安全性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44524544" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://foks.pub/" target="_blank">FOKS: Federated Open Key Service</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ubj</span> |
-                    <span>评分: 248</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-07-10 12:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>FOKS（Federated Open Key Service）是一个提供端到端后量子加密的Git托管服务，数据在本地加密后再上传至服务器，确保数据安全。它支持联邦制，用户可以选择自建或托管服务器，并通过现代后量子公钥加密技术防止量子计算攻击。FOKS还提供加密的键值存储，支持存储短字符串或大文件。其团队管理系统允许创建复杂团队结构，支持跨联邦服务器共享加密数据。设备管理功能支持YubiKey，并可在设备丢失时撤销其访问权限。FOKS通过简单的密钥层次结构实现这些功能，使用签名链和Merkle树确保安全性和防篡改。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：FOKS系统的设计、功能、及其在加密操作和团队协作中的应用
-
-不同观点：
-• [maxtaco] 认为现有的加密操作需要过多的辅助工具，即便是使用YubiKey这样的硬件设备也存在备份和密钥轮换的问题。他主张需要像FOKS这样的系统，且该系统应是开放的，以便开发各种应用而无需依赖特定平台。
-• [WhatIsDukkha] 提供了背景信息，指出这是原Keybase作者开发的开源版本，并附上了相关博客链接。
-• [aitchnyu] 关心FOKS是否支持用户权限管理、存储效率以及增量备份等问题，认为FOKS可能在密码管理、笔记应用和照片存储等方面提供一体化的E2EE存储解决方案。
-• [hobofan] 认为FOKS虽然理想，但引入过程复杂，当前SOPS已经能满足大部分需求，且复杂度较低。
-• [marcopolo] 对FOKS的Git支持表示赞赏，认为可以方便地迁移Keybase的Git仓库。
-• [raphinou] 在开放源项目中遇到用户密钥更新、撤销和新公钥分发的问题，希望FOKS能提供解决方案，但目前尚未找到合适的例子。
-• [pmw] 希望通过与团队共享Linux机器和Radicle去中心化Git服务的对比，了解FOKS在团队协作中的存储和密钥管理方式。
-• [singpolyma3] 对FOKS的“联合”机制表示关注，询问实际数据存储和SSO（单点登录）的实现方式。
-• [iovoid] 指出FOKS的白皮书提到所有管理员必须在同一主服务器上操作，认为这在联合系统中是一个很大的限制。
-• [hofrogs] 对FOKS首页上的AI生成图片表示质疑，认为这降低了项目的可信度。
-
-补充讨论：
-• 争议的焦点之一是FOKS系统的引入和使用复杂度，部分用户认为现有工具如SOPS已经足够好用，而FOKS可能过于复杂。
-• 另一个焦点是FOKS在密钥管理和团队协作中的实际应用，包括权限管理、存储效率和增量备份等问题。
-• 用户对FOKS的“联合”机制及其在多服务器环境下的表现也有一定关注。
-• 部分用户对FOKS项目的实现细节和可信度表示关注，特别是AI生成图片的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44520419" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://evertpot.com/http/" target="_blank">Series of posts on HTTP status codes (2018)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: antonalekseev</span> |
-                    <span>评分: 41</span> |
+                    <span>作者: forza_user</span> |
+                    <span>评分: 20</span> |
                     <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-09 07:05</span>
+                    <span>发布时间: 2025-07-09 11:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了作者计划定期撰写有关HTTP状态代码的系列文章，最初目标是介绍所有68个由IANA列出的官方状态代码。作者从2018年6月开始，先发布了几篇，然后计划每周更新一篇，持续一年。该系列涵盖从1xx信息性状态码到5xx服务器错误状态码，并提供了每个代码的详细解释。作者邀请读者通过邮件列表、RSS或Twitter关注以获取更新，并在评论中与读者互动。最终，作者成功完成了整个系列，包括对一些非官方状态码的讨论。</p>
+                    <p>文章主要介绍了一种基于设备角色的Btrfs文件系统块分配方法，以提升性能。当前的分配方法仅基于设备剩余空间，无法均匀分布读写性能。为此，作者提出引入五种设备角色，按特定顺序分配元数据和数据块：metadata_only, metadata, none, data, data_only。元数据优先分配到快速设备，数据则分配到较慢设备。新方法首先根据角色排序，然后在同一角色内根据剩余空间排序。文章还讨论了如何自动识别设备速度，但指出基于历史IO统计数据可能不准确。该方案旨在优化Btrfs文件系统的性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对内容来源及其呈现方式的讨论
+                    <div class="comments-summary">主要讨论点：Linux内核中的性能配置文件/设备角色/提示机制的必要性及其实际应用
 
 不同观点：
-• [AriedK] 认为文章的URL可能是在玩梗，提到了"ever t-pot"和数字418（源自HTTP状态码418 "I'm a teapot"）。但后来发现这实际上是作者的真实名字，而非刻意玩梗。
-• [VoidWhisperer] 提出标题应更新，增加信息说明内容来自2018年。因为该系列已经完结，而不是刚刚开始，这样能让读者更清楚内容的时间背景。
-• [Untit1ed] 则关注实用性，认为所讨论的资源比常见的http.cat网站更有用，但指出了http.cat的一个缺点：必须事先知道状态码才能查找，无法通过错误输入自动引导到对应的状态码页面（例如404-not-found与直接访问/404的效果不同）。
+• **forza_user** 认为目前已经有kakra维护的优秀的补丁集（链接提供了具体项目），因此对新的性能配置文件/设备角色/提示机制的尝试感到惊讶。他似乎在质疑是否有必要引入新的机制，因为已有的解决方案已经表现良好。
+   
+• **bjoli** 则关注新功能在实际应用中的好处，特别是能否使用较小的SSD来避免由于进程读取元数据而导致的HDD唤醒。他认为如果新功能能够解决这一实际问题，他会非常欢迎这个特性，显示出对新功能潜在实用性的期待。
 
 补充讨论：
-• [Untit1ed] 的评论还隐含了对网站用户体验的关注，认为有些资源需要用户具备一定的前置知识，可能会降低其易用性。
-• 争议的焦点可能在于内容的呈现是否足够清晰，特别是[VoidWhisperer]提出的时间背景信息是否应在标题中明确体现，以避免误导读者。
+• **争议焦点**：是否需要新的性能配置文件/设备角色/提示机制，特别是在已有一个被广泛认可的解决方案的情况下。forza_user对重复工作的必要性提出质疑，而bjoli则关注新功能的具体应用场景和实际效果。
 
-</div>
+• **论据和例子**：forza_user提供了kakra补丁集的具体链接，并引用了相关wiki页面作为已有解决方案的证据。bjoli则通过设想具体使用场景（使用较小SSD来优化性能）来支持他对新功能的需求。
+
+• **讨论关系**：forza_user的观点侧重于对新尝试的必要性提出质疑，而bjoli则从实际应用角度出发，认为新功能有可能带来实际好处。两者之间的讨论反映了开发者社区中常见的平衡新功能引入与现有解决方案优劣的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44507078" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44508601" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
