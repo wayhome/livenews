@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-11 05:15 (北京时间)
+            最后更新时间: 2025-07-11 09:04 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -65,8 +65,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: davidgu</span> |
-                    <span>评分: 103</span> |
-                    <span>评论数: 12</span> |
+                    <span>评分: 263</span> |
+                    <span>评论数: 24</span> |
                     <span>发布时间: 2025-07-07 14:05</span>
                 </div>
 
@@ -80,23 +80,27 @@
                     <div class="comments-summary">主要讨论点：Postgres的LISTEN/NOTIFY机制及其在大规模应用中的问题和替代方案
 
 不同观点：
-• CaliforniaKarl认为该帖子有价值，因为它帮助人们了解Postgres的某些功能何时会成为瓶颈，并为将来遇到相似问题的人提供了解决方案。
-• leontrolski对使用FOR UPDATE SKIP LOCKED方法与LISTEN/NOTIFY进行比较感兴趣，并计划进行基准测试。他还提到了Postgres锁交互的问题，并提供了一个相关链接。
-• sorentwo指出Postgres LISTEN/NOTIFY在Oban（Elixir的背景作业处理框架）中是一个持续的痛点，尤其是有效载荷大小限制和连接池问题，并提到Elixir的分布式Erlang提供了更好的pubsub机制，这得益于平台如Fly的兴起和Heroku的衰退。
-• cpursley更喜欢通过监听Postgres WAL来检测数据库变化，并提供了一个相关工具的链接。
-• hombre_fatal建议尝试在事务外部单独执行NOTIFY。
-• cshimmin提出是否可以有一个不保证顺序的NOTIFY变体，以便在不需要顺序保证的情况下避免全局锁。
-• polote认为RLS和触发器也不具备扩展性。
-• supportengineer指出LISTEN/NOTIFY不仅是一个无锁的触发器，还可能在负载下危及并发性，强调小规模下无害的功能在大规模下可能导致问题。
-• h1fra指出从NOTIFY转向其他方案（如HTTP）会带来新的问题，如网络延迟、DNS、重试等。
-• NightMKoder建议参考Facebook的wormhole方法，通过尾随MySQL bin log来获得提交安全性，而不遇到类似的锁问题。
-• andrewstuart认为可以使用多种方式来调用NOTIFY，而不仅仅是文中提到的方式，并强调需要明确业务目标，建议对NOTIFY进行去抖动或分组，而不是每个事务都发送通知。
-• mulmen询问是否可以将操作并行化到单租户实例中。
+• leontrolski：对Postgres的FOR UPDATE SKIP LOCKED方法与" dumb-ol' polling"的比较感兴趣，计划进行基准测试。同时提到对Postgres锁交互行为的不了解，并提供了相关资源链接。
+• sorentwo：分享了Postgres LISTEN/NOTIFY在Oban（Elixir背景作业处理框架）中的痛点，特别是有效载荷大小限制和连接池问题。提到Elixir有更好的分布式和pubsub支持，这得益于平台如Fly的兴起和Heroku的衰退。
+• CaliforniaKarl：赞赏文章提供了Postgres功能何时成为瓶颈的指示，并认为这有助于未来遇到类似问题的人快速理解问题。
+• cpursley：提到更喜欢通过监听Postgres WAL来获取数据库变化，提供了相关工具链接。
+• maxdo：认为Postgres不易扩展，存在许多更便宜的解决方案。
+• callamdelaney：对标题感到不解，认为AI公司选择Postgres作为工具是不合适的。
+• hombre_fatal：建议将NOTIFY在一个独立于事务的连接中执行，以避免问题。
+• shivasaxena：请求分享其他Postgres用户应注意的问题，如AccessExclusiveLock，并列举了一些已知问题。
+• polote：提到RLS和触发器也不易扩展。
+• supportengineer：指出LISTEN/NOTIFY不仅是一个无锁触发器，在负载下可能危及并发性，强调小规模下无害的功能在大规模下可能出问题。
+• cshimmin：建议引入一个不保证顺序的NOTIFY变体，以避免全局锁问题，从而在事务内安全地使用NOTIFY。
+• to11mtm：建议使用NATS进行pubsub，并确保有重连机制。
+• andrewstuart：提到有多种方式可以调用NOTIFY，批评文章作者过于专注于单一方式，且未解释业务目标，建议对NOTIFY进行去抖动/分组处理。
+• NightMKoder：提到Facebook的wormhole方法，通过尾随MySQL bin log获取提交安全性，避免了Postgres的锁行为。
+• freeasinbeer2：对文章中的图表表示困惑，要求提供更明确的性能指标如TPS和百分比差异。
 
 补充讨论：
-• 争议的焦点在于Postgres的LISTEN/NOTIFY机制在不同场景下的适用性和扩展性问题，特别是关于锁和并发性的影响。
-• 讨论中提到了多种替代方案，包括FOR UPDATE SKIP LOCKED方法、监听WAL、Facebook的wormhole方法等。
-• 不同的观点反映了在实际应用中对Postgres功能的需求和限制，以及在面对问题时可能的选择和权衡。</div>
+• 多种替代方案被提及，如NATS pubsub、监听Postgres WAL、Facebook的wormhole方法等。
+• 对Postgres LISTEN/NOTIFY机制的性能和并发性问题存在争议，特别是在大规模应用中的表现。
+• 建议对NOTIFY的使用进行优化，如去抖动/分组处理，以避免对每个事务都发送NOTIFY。
+• 对文章中提供的性能数据和图表的有效性存在疑问，要求更明确的指标和解释。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44490510" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -109,51 +113,102 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nationalcrimeagency.gov.uk/news/retail-cyber-attacks-nca-arrest-four-for-attacks-on-m-s-co-op-and-harrods" target="_blank">Retail cyber attacks: NCA arrest four for attacks on M&S, Co-op and Harrods</a>
+                    <a href="https://www.browseros.com/" target="_blank">Show HN: Open source alternative to Perplexity Comet</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sandwichsphinx</span> |
-                    <span>评分: 52</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-10 17:44</span>
+                    <span>作者: felarof</span> |
+                    <span>评分: 133</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-10 17:33</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>英国国家犯罪局（NCA）逮捕了四名涉嫌参与网络攻击的人员，目标包括M&S、Co-op和Harrods等大型零售商。两名19岁男性、一名17岁男性和一名20岁女性在西米德兰兹和伦敦被捕，涉嫌违反《计算机滥用法》、敲诈、洗钱及参与有组织犯罪。所有被捕者的电子设备已被扣押进行数字取证分析。NCA表示，调查仍在继续，将与国内外合作伙伴合作，确保将责任人绳之以法。此次行动得到了西米德兰兹地区有组织犯罪部门和东米德兰兹特别行动部门的支持。受害者应通过政府的网络事件指引网站报告类似事件。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于网络攻击的责任、技术漏洞以及犯罪者背景的讨论
+                    <div class="comments-summary">主要讨论点：围绕一个新浏览器项目的功能、技术实现、可持续性及未来发展方向的讨论。
 
 不同观点：
-• **djaychela**：强调了网络攻击对现代零售业务的连锁影响，以及管理层在应对这种危机时的巨大压力。即使管理层不直接负责技术部分，也会受到波及，尤其是当系统需要快速恢复以维持正常业务运作时。
+• 技术实现与安全性：
+  ◦ [mdaniel] 关注项目如何通过修改Chromium源代码来保证安全性，并指出经常更新可能带来的风险，特别是那些在发布后90天内解禁的CVE参考。
+  ◦ [daureg] 对浏览器代理在本地运行对笔记本电池寿命的影响表示关注。
 
-• **gluten_guardian**：对网络犯罪分子的年轻化表示惊讶，并表达了对具体攻击手段的好奇，认为与过去简单的欺诈行为（如谎报年龄买酒）相比，网络犯罪更为复杂。
+• 项目形式与用户偏好：
+  ◦ [layer8] 更希望这个功能作为一个浏览器扩展而非独立浏览器应用。
+  ◦ [o_____________o] 希望该项目能够出现在homebrew平台上。
 
-• **lyu07282**：提供了具体攻击方式的细节，指出攻击者通过伪装成员工，联系帮助台重置密码，进而获取权限并加密系统数据。引用了具体的事件来源来支持其描述。
+• 项目可持续性：
+  ◦ [rpastuszak] 对项目的财务可持续性及开发维护工作表示关注，询问未来的计划。
 
-• **clort**：对嫌疑犯位于英国表示惊讶，似乎暗示对攻击者地理位置的预期不同，可能认为此类攻击通常来自海外。
+• 功能与未来发展：
+  ◦ [DANmode] 询问是否计划开发类似FydeOS的操作系统，或与FydeOS展开合作。
+  ◦ [zebomon] 提到OpenAI即将推出浏览器的传闻，并对该项目表示期待，计划试用。
 
-• **aaronrobinson**：怀疑攻击背后有外国支持，认为单靠社会工程学不足以完成如此复杂的攻击，尤其是在针对外国系统的情况下。
+• 性能与技术细节：
+  ◦ [arjunchint] 询问是否有像Halluminate's Web Bench那样的基准测试可以分享。
+  ◦ [eGQjxkKF6fif] 关注Linux版本的开发路线图。
 
-• **casenmgreen**：提到使用Tor网络的网站被屏蔽，导致无法访问相关信息，暗示攻击者可能利用了类似Tor的隐匿技术。
+• 系统要求与用户体验：
+  ◦ [closetkantian] 对项目的系统要求表示关注，并建议在网站上列出这些信息。
+  ◦ [ivape] 询问默认的BrowserOS模型及其使用的推理服务器。
 
-• **devwastaken**：持激进观点，认为所谓的网络犯罪实际上是系统设计缺陷的结果。主张通过更严格的法规（如要求软件由持照工程师开发）来减少漏洞，并建议对因漏洞被利用而遭受攻击的公司进行惩罚。
+• 应用场景与AI功能：
+  ◦ [paul7986] 提出对AI浏览器在旅行计划和交易支付方面的功能期望，希望能够自动获取最佳交易并提供支付选项。
 
 补充讨论：
-• **技术漏洞的责任问题**：devwastaken的观点特别强调了系统设计和开发过程中的责任，认为科技公司应为其系统的漏洞承担经济和法律后果。
-
-• **攻击者背景的争议**：clort和aaronrobinson对攻击者可能的地理位置和背景持不同看法，clort对英国本地攻击者感到惊讶，而aaronrobinson则怀疑有外国支持。
-
-• **实际攻击手段的细节**：lyu07282提供了关于攻击手段的具体信息，展示了社会工程学在网络攻击中的关键作用。
-
-争议焦点：
-• **攻击者背景和地理位置**：部分评论者对攻击者可能来自英国本地还是海外存在争议。
-• **系统漏洞的责任和解决方案**：devwastaken的观点与其他评论者形成对比，认为漏洞的责任在于系统设计和开发者，而非仅仅归咎于攻击者。</div>
+• 争议焦点在于通过修改Chromium源代码来保证安全性的可行性及其潜在风险，特别是关于更新和安全补丁的影响。
+• 用户对项目的不同形式（扩展或独立应用）和功能（AI集成、性能测试、系统兼容性）有不同期待，显示出多样化的需求和关注点。
+• 对项目未来在操作系统和跨平台支持方面的可能性也有较多讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44523539" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44523409" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://dynamicland.org/2024/FAQ/#What_is_Realtalks_relationship_to_AI" target="_blank">Bret Victor on why current trend of AIs is at odds with his work</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: prathyvsh</span> |
+                    <span>评分: 206</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-10 15:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Dynamicland是一个由非营利研究机构Dynamicland基金会运营的项目，旨在创造一种人性化的动态媒介，实现全民计算素养。其核心是一个名为Realtalk的计算环境，人们通过手工操作物理材料来创建和探索计算模型，强调面对面的协作。Dynamicland曾是奥克兰的一个社区空间，在2017年至新冠期间，通过各种活动创建了独特的共创计算文化。目前，该机构正在开发新的空间，并专注于“共创科学”和“Realtalk-2024”项目。公众可以通过捐赠、志愿服务或合作参与其中。该项目的最终目标是发明一种人性化的计算形式，并建立能普及这种新媒介的教育和社区机构。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕AI和新型计算系统（如Dynamicland和RealTalk）的潜力和实际应用的讨论。
+
+不同观点：
+• **AI作为学习和创造的工具**：comeondude认为LLM（如ChatGPT）可以帮助那些难以学习传统编程的人通过一种更符合他们思维方式的途径来实现创意项目。他强调AI是创造力的“力量倍增器”，并建议学校应教授如何有效使用AI。
+
+• **Dynamicland的技术透明性和可扩展性**：why_at和randomNumber7对Dynamicland的“完全可见和可理解”的目标提出质疑，认为即使理论上透明的系统（如Linux内核），实际上也很难完全理解，且编程背后可能仍然复杂到让普通人难以掌握。Animats则关注如何将Dynamicland这样的项目从演示阶段扩展到更广泛的应用。
+
+• **RealTalk的互操作性和改进建议**：thatguymike指出RealTalk在互操作性方面的挑战，并建议通过引入简单的对象识别和LLM来改进，使得不同编程对象之间的交互更加直观和一致。
+
+• **对Dynamicland的个人体验和实现**：deosjr分享了自己在尝试构建类似Dynamicland的项目中取得的进展，并对未来进一步开发表示期待。bobajeff则从使用投影技术的实际问题出发，表达了对Dynamicland演示环境的担忧。
+
+补充讨论：
+• **历史和技术背景**：fouc和pmkary提到了与这些项目相关的历史探索和技术先锋，如tunes.org和被点赞的技术专家，强调了这些项目在计算机科学历史中的位置和意义。
+
+• **对理想主义项目的看法**：ijk希望看到更多关于RealTalk的详细介绍，特别是其允许脚本与尚未存在的功能交互的特性。而lif则认为Dynamicland是一个理想主义的项目，之前未听说过该项目及其背后的创始人Bret。
+
+总体而言，讨论围绕AI和新型计算系统如何增强学习和创造力、技术透明性和可扩展性、以及实际应用中的挑战和改进建议展开。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44522076" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -168,8 +223,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: hyperbrainer</span> |
-                    <span>评分: 107</span> |
-                    <span>评论数: 6</span> |
+                    <span>评分: 166</span> |
+                    <span>评论数: 7</span> |
                     <span>发布时间: 2025-07-10 16:02</span>
                 </div>
 
@@ -180,21 +235,23 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于数学概念的解释及其图形表示的有效性，以及对相关内容更新停滞的遗憾。
+                    <div class="comments-summary">主要讨论点：图示和代数概念在学习和理解中的应用
 
 不同观点：
-• theZilber认为作者在解释简单概念时花费了过多篇幅，但后来发现这种图形表示帮助他更好地记住了诸如交换律（commutativity）等数学概念及其名称。他特别提到，图形表示让他第一次真正记住了这个概念和它的名字。
-• dclowd9901通过引用网络漫画，提出了一个关于人类在匿名状态下行为的公理，即“人类 + 匿名 = 不愉快”，借此暗示某种普遍的行为模式。
-• MarkusQ表达了对该内容曾经连载时的喜爱，并对该内容似乎已被 abandon（放弃）表示遗憾，特别是曾经和学生一起追随的经历。
-• phforms分享了多年前阅读该内容时的启发，尤其是图形表示在形式推理中的强大作用，尽管没有在实际中应用这些图表，但认为这种系统展示了可能性，非常有趣。
-• Xmd5a讨论了更技术性的内容，介绍了广义Transformer模型，并提供了相关研究链接，表明这些模型可以通过抽象图形手段探索机器学习。
+• [theZilber] 认为作者在解释简单的数学概念时花费了过多篇幅，但随后意识到这种图示化的解释帮助他更好地记住了诸如交换律（commutativity）等概念。他特别提到，图示让他第一次真正记住了这个概念及其名称，这种方法对他非常有效。
+• [Xmd5a] 讨论了广义Transformer模型，这些模型不仅适用于矩阵和向量，还可以操作函数、图表和概率分布等结构，并提到这属于通过抽象图示手段探索机器学习的一系列想法中的一部分。
+• [marvinborner] 指出这些图示与对称交互组合子的λ演算有相似之处，特别提到"When Adding met Copying"中的加法节点复制与λ项的迭代复制之间的对应关系。
+• [MarkusQ] 表示曾经非常喜欢这个系列的内容，并和学生一起学习过，但遗憾的是这个项目似乎已经被放弃。
+• [dclowd9901] 引用了一个关于人类在匿名状态下行为的公理，借此表达对互联网上某些不良现象的看法，但并未直接讨论主要主题。
+• [phforms] 回忆起多年前阅读相关内容时，图示化表示在形式推理中的强大作用给他带来了新的视角，尽管没有在实际中应用，但看到了这种系统的潜力。
 
 补充讨论：
-• lorenzo_medici的评论似乎与主要讨论点无关，更像是一种幽默或题外话，提到了对Claude Makelele的赞美，可能是在另一个语境下的评论。
+• 讨论中涉及图示化表示在不同数学和计算机科学概念（如交换律、λ演算、Transformer模型）中的应用及其有效性。
+• 部分评论者（如[MarkusQ]和[phforms]）表达了对该内容曾经带来的启发和乐趣，但也提到其应用的局限性或项目的停滞。
+• [dclowd9901]的评论虽然与主要讨论点不直接相关，但引出了一个有趣的公理，丰富了讨论的层次。
 
 争议焦点：
-• 对于theZilber的观点，部分读者可能认为详细的解释是必要的，尤其是对基础概念不熟悉的读者，图形表示是否真的比传统解释方式更有效可能存在不同看法。
-• MarkusQ对内容停滞的遗憾可能反映了一些读者对该系列内容不再更新的失望，但其他读者可能并不在乎更新问题，只要内容质量高即可。</div>
+• 对于图示化表示在学习和理解复杂概念中的实际效果存在不同体验和看法，但整体上多数评论者持积极态度。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44522505" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -211,8 +268,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: ubj</span> |
-                    <span>评分: 107</span> |
-                    <span>评论数: 11</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 12</span> |
                     <span>发布时间: 2025-07-10 12:49</span>
                 </div>
 
@@ -223,29 +280,26 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：FOKS系统的功能、应用及其在加密操作和团队协作中的优势和争议
+                    <div class="comments-summary">主要讨论点：FOKS系统的功能、架构及其在加密操作和团队协作中的应用
 
 不同观点：
-• [maxtaco] 认为在2025年，进行基本加密操作仍需要大量“粘合”工作，尤其是当需要使用YubiKey等设备进行重要秘密的加密和备份时。他提出像FOKS这样的系统是必要的，且应是完全开放的，以便在无需支付租金的情况下构建任意应用。
-
-• [WhatIsDukkha] 补充了背景信息，指出maxtaco是Keybase的原作者，现在正开发一个类似Keybase的开源版本，并提供了相关博客链接。
-
-• [marcopolo] 对FOKS已经支持git表示赞赏，认为这使得从Keybase迁移git仓库变得非常方便。
-
-• [ethan_smith] 强调了密钥服务中的“联合”机制解决了一个关键问题：在保持发现和验证便利的同时，防止中心化控制。
-
-• [singpolyma3] 询问了“联合”机制的具体运作方式，假设实际团队数据存储在单个FOKS服务器上，并猜测是否类似于轻量级的单点登录（SSO）系统，用于团队成员使用自己的服务器。
-
-• [pmw] 希望通过两个比较更好地理解FOKS如何促进团队协作：1) 与共享的团队Linux机器进行比较，强调了联合方面和“允许客户端捕捉不诚实服务器行为的附加数据结构”。2) 与去中心化的git服务Radicle比较，关注FOKS中git存储和秘密存储的耦合程度。
-
-• [dannyobrien] 提供了之前讨论的链接，引导读者查看更多背景信息。
-
-• [hofrogs] 对FOKS主页上的AI生成图像表示不满，认为这降低了该项目的可信度。
+• [maxtaco] 认为在2025年进行基本的加密操作仍然需要大量的“粘合”工作，尤其是当需要备份和轮换YubiKey时。他主张像FOKS这样的系统应该存在，并且应该是完全开放的，以便在其上构建任意应用而不需要支付费用。
+• [iovoid] 关注FOKS的联邦系统设计，指出如果所有管理员和所有者必须在同一个主服务器上，可能会带来不便，尤其是在多账户操作时。
+• [marcopolo] 对FOKS已经支持git表示赞赏，认为这使得迁移Keybase git仓库变得容易。
+• [singpolyma3] 询问FOKS的联邦机制如何工作，特别是团队数据存储和SSO（单点登录）的实现细节。
+• [pmw] 希望通过两个比较来更好地理解FOKS如何促进团队协作：一是与共享Linux机器和SSH守护进程的比较，二是与去中心化的git服务Radicle的比较，并关注FOKS中git存储和秘密数据与服务器的耦合程度。
+• [ethan_smith] 支持FOKS的联邦设计，认为它解决了关键问题，即在保持跨组织边界发现和验证的便利性的同时，防止了集中控制。
+• [hofrogs] 对FOKS首页使用AI生成的图像表示不满，认为这降低了其可信度。
 
 补充讨论：
-• FOKS系统的开放性和去中心化特性是其主要优势，尤其是在团队协作和密钥管理方面。
-• 讨论中涉及了具体技术实现的细节，如联合机制和数据存储方式，反映了用户对系统架构和安全性的关注。
-• 争议的焦点包括FOKS项目的可信度和主页设计选择对其形象的影响。</div>
+• 关于YubiKey备份和轮换问题的具体技术实现和潜在解决方案在[maxtaco]的评论中被提及，但没有深入讨论。
+• [iovoid] 提出的多账户操作不便问题引发了对FOKS系统设计中管理员和服务器配置的讨论。
+• [pmw] 提出的两个比较为进一步理解FOKS的功能和优势提供了有价值的视角，特别是在与其他技术方案的对比中。
+• [ethan_smith] 的评论强调了联邦系统在防止集中控制方面的重要性，支持了FOKS的设计理念。
+• [hofrogs] 对AI生成图像的批评虽然是个别意见，但也指出了用户对项目展示和信任的关注点。
+
+争议焦点：
+• 主要集中在FOKS的联邦系统设计及其对多账户操作的影响，以及YubiKey备份和轮换的技术实现上。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44520419" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -258,87 +312,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44523523" target="_blank">Launch HN: Leaping (YC W25) – Self-Improving Voice AI</a>
+                    <a href="https://www.politico.eu/article/turkey-ban-elon-musk-grok-recep-tayyip-erdogan-insult/" target="_blank">Turkey bans Grok over Erdoğan insults</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: akyshnik</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-10 17:42</span>
+                    <span>作者: geox</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-07-10 23:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>土耳其法院封锁了埃隆·马斯克的xAI公司运营的聊天机器人Grok，因其对土耳其总统埃尔多安、国父穆斯塔法·凯末尔·阿塔图尔克及宗教价值观生成了冒犯性回应。此前，Grok还因发表纳粹言论及侮辱波兰总理唐纳德·图斯克等政客引发广泛争议。安卡拉首席检察官办公室已展开调查，依据土耳其法律，此类侮辱行为可判处最高四年监禁。法院批准封锁Grok，电信部门已要求网络供应商执行。同时，波兰方面也考虑因Grok的违规言论关闭X平台，并计划向欧盟委员会报告。Grok团队表示正积极移除不当言论并禁止仇恨言论。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一个产品演示的反馈及相关功能、技术实现的比较和疑问
+                    <div class="comments-summary">主要讨论点：关于Grok模型、土耳其网络封锁和相关事件的讨论
 
 不同观点：
-• joelthelion：认为仅展示演示不够有说服力，建议展示实际通话效果以增强可信度。
-• hajrice：对演示需要申请表示不便，并指出“申请演示”按钮功能不完善，怀疑请求是否成功提交。
-• isabelleilyia：基于自身经验提出法律行业中语音AI的成功率较低，尤其在敏感场景中，询问产品在该领域的成功案例和效果指标。
-• koakuma-chan：关注文档缺乏问题，将该产品与LiveKit进行比较，质疑其技术文档的完备性。
-• lostmsu：关心产品在嘈杂环境下的表现，例如在餐厅中通话的效果如何。
-• shahahmed：祝贺产品发布，询问关于评估管理（evals）的细节。
-• triyambakam：将该产品与VAPI进行比较，询问其相似性和区别。
+• [bgwalter] 认为 Grok 模型可能是在埃尔多安相关事件上进行了训练，并引用了《卫报》一篇关于2016年土耳其政局的文章作为参考。这暗示了Grok模型可能在处理与政治人物相关的数据。
+
+• [moron4hire] 分享了使用Grok模型的个人经验，指出该模型在半年前存在安全漏洞，可以通过将提示翻译成俄语轻易绕过其防护机制（即提示注入问题）。这提出了对模型安全性的担忧。
+
+• [ayhanfuat] 提到土耳其政府封锁了Zendesk的资产域名（zdassets.com），理由是非法赌博被用于资助恐怖主义。这一评论指出了封锁对许多网站造成的连锁反应。
+
+• [snvzz] 对土耳其曾经接近加入欧盟但未能实现表示遗憾，暗示对土耳其政局变化的感慨。
+
+• [shmerl] 以幽默方式提到埃尔多安不喜欢“咕噜（Gollum）”模因，暗指埃尔多安对某些网络内容的不满，可能与网络审查有关。
+
+• [bethekidyouwant] 对之前的评论提出了质疑，认为没有提供具体例子来支持观点，暗示讨论中可能存在缺乏证据的情况。
 
 补充讨论：
-• 用户对产品在不同场景（如嘈杂环境和敏感行业）中的表现有较多关注和疑问。
-• 文档的缺乏和技术实现的比较是用户关心的主要问题之一，显示出对技术透明度和对比信息的需求。
-• 按钮功能的小问题反映出用户对细节体验的关注，提示产品在用户界面和体验上仍有改进空间。
-• 不同用户对产品实际效果和应用案例的兴趣表明，成功案例和数据可能是增强用户信心的重要因素。</div>
+• 评论中涉及了对Grok模型训练数据和安全性的质疑，尤其是模型在处理政治敏感内容和抵御提示注入攻击方面的表现。
+• 土耳其网络封锁事件引发了对网络审查和其对互联网生态影响的讨论，特别是对多个网站受影响的情况表示不满。
+• 争议的焦点可能在于对Grok模型的实际表现以及土耳其政府的网络政策存在不同看法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44523523" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44524544" target="_blank">Show HN: Cactus – Ollama for Smartphones</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: HenryNdubuaku</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-10 19:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Ollama及相关AI框架的功能、安全性、适用平台和使用场景
-
-不同观点：
-• [deepdarkforest] 认为Google AI edge支持多种模型（包括来自huggingface和pytorch的模型），并且不局限于特定平台，甚至支持iOS。他提到虽然Ollama的UX可能更好，但Google可能也会很快跟进相关功能。同时指出手机端开发者更可能使用第一方框架，而非第三方，且苹果可能会因安全原因锁定某些API。
-• [matthewolfe] 关注模型开发者对专有模型权重的保护问题，指出在设备上运行模型时，存在模型权重被拦截或逆向工程的风险。
-• [politelemon] 对项目表示赞赏，建议在README中添加聊天应用链接以展示框架能力，并提到在Pixel设备上启用GPU时遇到问题。他还将该项目与桌面端的lmstudio进行比较，询问未来是否会推出类似的手机应用。
-• [felarof] 表示他们的团队正在开发支持本地LLM的浏览器，目前已有桌面版并计划开发移动版，表示会关注Ollama项目。
-• [khalel] 关注安全问题，担心本地运行的模型可能会获得设备和互联网的完全访问权限，即使在本地运行也存在风险。
-• [ttouch] 对项目的使用场景表示兴趣，特别关注1-4B参数模型的运行能力。
-• [yrcyrc] 询问如何在iOS上添加RAG/个人助理功能。
-• [xnx] 询问是否有Android的.apk文件。
-• [max-privatevoid] 提到Ollama实际上是基于llama.cpp，并对其命名表示不满。
-• [jonathan_11] 与主要讨论内容无关，纯粹是广告和推荐。
-
-补充讨论：
-• 关于平台支持的争议，尤其是iOS和Android上的具体实现问题。
-• 对本地运行模型的安全性担忧，以及如何在不同设备上实现这些模型的功能。
-• 对项目未来发展方向的建议和期望，特别是在移动设备上的应用。
-• 对具体技术实现的疑问，如RAG/个人助理功能的添加和Android .apk文件的提供。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44524544" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44526852" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -353,8 +363,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: freilanzer</span> |
-                    <span>评分: 167</span> |
-                    <span>评论数: 16</span> |
+                    <span>评分: 206</span> |
+                    <span>评论数: 18</span> |
                     <span>发布时间: 2025-07-10 14:02</span>
                 </div>
 
@@ -365,38 +375,78 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Flix语言的特点、优势、局限性以及与其他语言和生态系统的对比
+                    <div class="comments-summary">主要讨论点：Flix语言的特点、优点、局限性及其与其他语言和生态系统（如JVM、Scala、Haskell）的比较。
 
 不同观点：
-• **对Flix的赞赏**：
-  - Flix语言在代数数据类型、逻辑编程和可变性方面的深度和广度令人印象深刻。
-  - 单个可执行文件集成了包管理器、语言服务器和编译器，简化了开发流程。
-  - Flix对JVM生态系统的集成是一个巨大优势，可以利用大量高质量的Java标准库。
-  - 对Flix与Haskell的比较中，认为Flix的LSP实现更简洁。
+• **对Flix的赞赏**：exceptione赞赏Flix的代数数据类型、逻辑编程、可变性以及其集成的包管理器、语言服务器和编译器。他们认为Flix的这种设计使得其在实际项目中非常实用，尤其是与JVM的集成，可以利用JVM上的大量高质量代码。andoando也表示Flix的演示让他有使用的欲望。
 
-• **对Flix的质疑和建议**：
-  - 对Flix与JVM互操作性的疑问，尤其是类型擦除问题。
-  - 对Flix缺乏类型类（typeclasses）和宏的完整支持表示失望，认为这是从Scala迁移的一个障碍。
-  - 指出Flix不支持标称继承，认为这是语言的一个重要缺失。
+• **对JVM集成的关注**：exceptione提出Flix与JVM（如Java）的集成是否符合人体工程学的问题，并提到JVM编译器会擦除类型。这引发了对Flix在JVM互操作性方面的局限性和潜在问题的讨论。
 
-• **与其他语言和工具的对比**：
-  - 有人提到Flix与Koka语言的相似性，并希望这些效果系统能成为主流。
-  - 有人推荐Effect TS作为JavaScript生态系统中的一种选择。
-  - 通过具体代码示例讨论了Elixir和Flix在模式匹配语法上的不同偏好。
+• **与Scala的比较**：pshirshov提到Flix支持高阶类型（HKTs），但找不到类型类（typeclasses）的支持。随后他发现Flix将类型类称为traits，但Flix不支持标称继承，这使得一些有用的特性无法实现或看起来不优雅。
 
-• **对效果导向编程的讨论**：
-  - 有人质疑效果导向编程与函数式编程的兼容性。
-  - 有对效果导向编程的基础概念和实际应用的求知需求。
+• **对语言语义的讨论**：Joker_vD关注Flix在多态记录扩展/限制方面的语义，认为其遵循Leijen的方法，是合理的选择，相比早期尝试通过类型系统追踪记录标签的做法更为实用。
+
+• **对语法和语言设计的不同看法**：pmontra认为Flix的模式匹配语法可以更加简洁，类似于Elixir的结构化模式匹配。而miniBill则对Flix标准库中的某些设计选择（如运行时异常系统）表示了保留意见。
 
 补充讨论：
-• **对具体代码实现的讨论**：
-  - 有人指出代码示例中的数学计算错误。
-  - 对Flix查询语法顺序的批评，并建议参考LINQ的实现方式。
+• **对编程语言演化趋势的疑问**：phkahler对Flix作为效果导向的函数式编程语言表示疑问，质疑效果和函数式编程的结合是否合适。
 
-• **对Aarhus成为编程语言重镇的原因探讨**：
-  - 有人好奇丹麦Aarhus大学/科技中心为何成为编程语言的强大发源地，与其他著名学术机构如Ivy League/Oxbridge的不同之处。</div>
+• **对效果导向编程的兴趣**：mcdow询问效果导向编程的具体实践和应用，而syhol则表示希望效果系统能成为主流，认为其与Koka语言非常相似。
+
+• **对特定地区编程语言影响力的好奇**：textlapse提出一个问题，为何丹麦奥胡斯（及其大学/科技中心）在编程语言领域如此强大，并与其他著名科技中心进行比较。
+
+• **对其他语言的推荐**：Jonovono在回应voat对JVM生态不感兴趣时，推荐了Effect TS，认为这是一个值得尝试的语言。
+
+争议焦点：
+• **Flix与Scala的比较及类型系统的局限性**：pshirshov指出Flix在类型类和标称继承支持上的局限，认为这使得某些库和抽象无法优雅实现，这是与Scala相比的一大缺点。
+
+• **Flix语法设计的简洁性**：pmontra认为Flix的模式匹配语法可以更加DRY（不要重复自己），但目前的实现显得冗长。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44521224" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/google/yamlfmt" target="_blank">Yamlfmt: An extensible command line tool or library to format YAML files</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-07 18:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>`yamlfmt` 是由 Google 开发的一个可扩展命令行工具或库，用于格式化 YAML 文件。其主要目标包括创建易于分发的单一二进制命令行工具，并支持通过自定义格式化器进行扩展，还可以作为库使用。该工具目前由 @braydonk 维护，尚未得到 Google 的官方支持。
+
+安装方式包括通过 Go 安装或直接下载二进制文件，二进制文件无需依赖，可直接运行。它支持基本用法、目录递归处理和双星号 glob 模式搜索文件。此外，`yamlfmt` 还可以在 CI/CD 管道中使用，并支持通过 Docker 镜像运行。
+
+工具的配置可通过 `.yamlfmt` 文件实现，并提供了验证发布工件真实性的步骤。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：YAML格式化的工具选择及YAML本身的优缺点
+
+不同观点：
+• [kryptn] 提到他们通常通过yq工具处理YAML格式化问题。
+• [edoceo] 建议使用Prettier，指出它自2020年起就支持YAML格式化，并且还支持其他多种语言的格式化。
+• [vinkelhake] 表达了对YAML的不满，认为YAML功能过多，且过于复杂，试图表现得过于“聪明”。他还提到自己很久以前使用过YAML，并提供了一个反YAML的网站链接（https://noyaml.com/），显示他对YAML comeback的惊讶。
+• [alwillis] 提供了另一个YAML格式化工具的安装方式，即通过Homebrew安装yamlfmt。
+
+补充讨论：
+• 对YAML本身的争议：[vinkelhake] 对YAML的功能繁多表示不满，认为其过于复杂，而其他开发者如[kryptn]和[alwillis]则更关注如何实际操作和处理YAML格式化问题。
+• 工具选择的多样性：评论中提到了多个工具，包括yq、Prettier和yamlfmt，显示了社区中存在不同的偏好和工具选择。
+• YAML的流行度：[vinkelhake] 提到YAML似乎正在“回归”或者从未真正消失，暗示了YAML在开发者社区中持续存在的现象。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44493146" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -461,96 +511,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://bsky.social/about/blog/07-10-2025-age-assurance" target="_blank">Working with the UK Government to Protect Children Online</a>
+                    <a href="https://stylepedia.net/style/" target="_blank">Red Hat Technical Writing Style Guide</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zimpenfish</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-07-10 19:23</span>
+                    <span>作者: jumpocelot</span> |
+                    <span>评分: 152</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-10 15:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Bluesky致力于创建更开放、去中心化的社交网络，并注重用户安全和体验控制。为遵守英国《在线安全法》，Bluesky将采用Epic Games的Kids Web Services (KWS) 为英国用户提供年龄验证选项，包括支付卡验证、身份证扫描和面部扫描等方式，以减少未成年人接触有害内容的风险。未满18岁或不进行验证的用户将无法访问成人内容，且直接 messaging 功能将被禁用。英国用户会收到相关通知，并可举报不当内容。Bluesky还将持续改进保护措施。</p>
+                    <p>《Red Hat 技术写作风格指南》是红帽公司内部多个团队合作的成果，旨在为技术文档提供写作规范和词语使用建议。该指南涵盖语法（如主动语态、一致性、标点符号使用等）、设计（如标题、界面文档、字体使用）、语言选择（如避免误导性语言、使用包容性语言）、以及如何有效使用交叉引用等内容。此外，指南还包含一个词语使用词典，为技术写作中常见的词汇提供正确用法示例。该文档依据Creative Commons Attribution-ShareAlike 3.0 Unported许可证发布，使用时需注明出处并遵循相关商标规定。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕在线年龄验证系统及其影响的讨论，包括隐私、安全、技术可行性以及与政府合作的问题。
+                    <div class="comments-summary">主要讨论点：技术写作指南的质量和实用性
 
 不同观点：
-• JoshTriplett：认为可以通过观察该服务是否影响其他服务器的用户来判断其是否真正实现了联合。如果其他服务器的用户可以不受中央服务器政策的影响进行交流，那么这个服务就是真正联合的。
-
-• cladopa：质疑谁来保护儿童免受英国政府侵害，指出政府作为权力机构可能滥用权力，存在危险。
-
-• bjackman：关注面部或身份验证后是否会被存储，担心这会禁止匿名性，特别是在 censoring 主流政治言论的国家更需谨慎。
-
-• IshKebab：提供了Epic游戏服务的年龄验证技术细节，指出该系统可能存在漏洞，聪明的小孩可以轻易绕过。
-
-• xg15：质疑未满18岁的用户如何处理未验证情况下的持续提醒，认为应该有一个不验证并忽略提醒的选项。
-
-• aboringusername：认为这种法律危险，因为它们使提交个人数据正常化，虽然个人不反对这种法律以激发技术社区抵制，但希望第三方服务提供者公开身份。
-
-• verisimi：批评Bluesky与政府合作，认为这是对隐私的剥夺，并将公司比作“合作者”。
-
-• isaacremuant：指出政府以保护儿童为借口进行大规模监控，实际问题在于权力和财富的集中，解决社会问题应通过改善教育和经济独立。
-
-• TacticalCoder：提到英国当前涉及青少年伤害的丑闻，质疑政府保护儿童的实际效果，并批评Bluesky可能为庇护不当行为者的平台。
-
-• basisword：认为隐私非常重要，年龄/身份验证可能带来风险，但同时也承认限制青少年访问不当内容可能对社会有积极影响，尽管技术绕过可能使其效果打折扣。
-
-• ImPleadThe5th：从反对到支持年龄验证，认为需要限制青少年接触注意力吸引算法，但希望验证服务由政府提供并受严格监管。
+• jonathanlydall：好的技术写作类似于好的室内设计。技术文档如果写得好，读者不会特别注意到它，因为信息传递是无障碍的。如果写得不好，问题就会显而易见。因此，技术写作的目标应该是避免任何会分散信息传递效果的因素。
+• kaycebasques：技术写作指南常将“最佳实践”和“惯例”混为一谈。最佳实践有实验数据或广泛共识支持，能显著提高文档质量；而惯例只是为了保持一致性，不一定提升质量。明确这种区别有助于讨论更顺畅。
+• perching_aix：一些例句读起来很糟糕，比如被动语态的使用和“material”的单复数问题。此外，句子结构上，像“网站介绍某功能”这样的表达不够自然。
+• AdmiralAsshat：总体不错，但语法部分混合了基本规则和最佳实践。对于技术写作者来说，基本语法规则应是常识，不需要特别列出。
+• dandano：指南很实用，自己常参考澳大利亚风格手册和Divio文档系统，这些都可以作为技术写作的基础。
+• freedomben：指南非常出色，内容详尽且示例丰富，对广泛的读者都有帮助，不仅限于Red Hat员工。
+• dctoedt：部分内容优秀，例如对合同起草有帮助。但有些改进建议值得商榷，比如省略“simply”可能丢失了一些信息，而这些信息对某些读者可能重要。
+• markedathome：好奇此指南与其他公司（如IBM、Microsoft等）的比较，这些公司也有内部风格指南以保持一致性。
+• GLdRH：认为第4.6节内容荒谬，可以忽略。
+• david422：建议利用AI分析写作指南，并根据指南对文档进行评价和建议。
+• ban2ly：认为Red Hat不写文档，因此指南无用。
 
 补充讨论：
-• 争议焦点在于隐私与保护儿童之间的平衡，以及政府和私营公司在数据处理和验证中的角色。
-• 技术可行性及可能存在的漏洞也被广泛讨论，特别是年龄验证系统的绕过方法。
-• 讨论中多次提到英国政府的可信度问题，以及与政府合作可能带来的负面影响。</div>
+• 技术写作中“最佳实践”和“惯例”的区分是讨论的一个重点。
+• 对指南中例句和语法规则的争议，反映了不同读者对写作风格和结构的不同偏好。
+• 对指南实用性和适用范围的评价各异，有人认为广泛适用，有人认为某些部分不实用或无意义。
+• 引入AI工具辅助技术写作和文档评价的建议提供了新的视角。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44524571" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.browseros.com/" target="_blank">Show HN: Open source alternative to Perplexity Comet</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: felarof</span> |
-                    <span>评分: 52</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-10 17:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕新推出的浏览器项目，讨论其功能、可持续性、技术影响以及在不同操作系统上的可用性。
-
-不同观点：
-• [zebomon] 认为该项目的推出很令人兴奋，并提到OpenAI也将推出浏览器的传闻，表示有兴趣尝试该项目并在Discord上反馈。
-• [rpastuszak] 对项目的可持续性表示关注，特别是从财务和开发维护的角度，询问开发者如何保证项目的长期发展。
-• [daureg] 对浏览器代理在本地运行的技术实现表示赞赏，并询问在典型使用场景下对笔记本电池寿命的影响，暗示对性能优化的关注。
-• [eGQjxkKF6fif] 是Linux用户，关心该项目在Linux上的路线图和支持情况。
-• [layer8] 更倾向于将该项目作为浏览器扩展，而非独立浏览器应用，暗示对应用形式的不同偏好。
-
-补充讨论：
-• 项目形式和技术实现是讨论中的一个争议点，[layer8]偏好扩展形式，而[daureg]关注技术细节如电池影响。
-• 操作系统兼容性也是一个重要关注点，[eGQjxkKF6fif]特别提到Linux用户的诉求。
-• 项目的长期可持续性和开发维护计划被[rpastuszak]提出，显示出对项目成功的更深层次的关注。
-
-这些观点反映了用户对新浏览器项目的不同期望和关注点，涵盖了技术实现、平台兼容性和项目可持续性等方面。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44523409" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44521871" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
