@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-17 14:21 (北京时间)
+            最后更新时间: 2025-07-17 17:18 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,63 +61,112 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://mnvr.in/rust" target="_blank">A Rust shaped hole</a>
+                    <a href="https://github.com/bigattichouse/waitlock" target="_blank">Show HN: Linux CLI tool to provide mutex locks for long running bash ops</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: vishnumohandas</span> |
-                    <span>评分: 56</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-07-15 11:42</span>
+                    <span>作者: bigattichouse</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-17 04:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文作者探讨了选择编程语言来编写“原生”程序的过程，最终认为Rust是一个值得尝试的选择。作者通常使用TypeScript，但意识到将其编译为真正“原生”的二进制文件并不简单。在比较了C、C++、Go和Rust后，作者排除了C++，因为曾经的复杂体验使其不愿再使用。C虽然简单且易于审查，但缺乏现代便利性；Go在简化内存管理上走得太远；而Rust则在保留现代便利的同时，提供了精细的内存管理控制。作者强调了“简单性”和内存管理是选择语言的两个关键维度，并根据自身需求和项目特点，认为Rust可能是一个合适的折中方案。</p>
+                    <p>WaitLock 是一个用于 UNIX/POSIX 系统的命令行工具，提供互斥锁和信号量功能，确保长时运行的 shell 脚本在多进程环境下的资源同步访问。其主要功能包括：
+
+1. **互斥模式**：单个锁持有者。
+2. **信号量模式**：允许多个并发锁持有者。
+3. **自动清理**：进程终止时自动释放锁。
+4. **CPU感知锁定**：根据 CPU 数量调整锁。
+5. **锁检查**：列出和检查活跃锁。
+6. **多种输出格式**：人类可读、CSV 和空字符分隔。
+7. **命令执行**：在持有锁时运行命令。
+8. **UNIX集成**：支持环境变量、stdin、syslog。
+
+**安装**：
+```bash
+sudo apt-get install build-essential autoconf
+git clone https://github.com/user/waitlock.git
+cd waitlock
+./configure
+make
+sudo make install
+```
+
+**基本使用**：
+```bash
+# 获取互斥锁
+waitlock myapp &
+# 执行命令并持有锁
+waitlock database_backup --exec "/usr/local/bin/backup.sh --daily"
+# 列出活跃锁
+waitlock --list
+```
+
+WaitLock 支持超时、CPU感知、锁监控等多种高级功能，适用于需要严格进程同步的脚本任务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同编程语言的优缺点，特别是在代码审查、本地推理、复杂性、性能以及对特定语言特性的看法上的讨论。
+                    <div class="comments-summary">主要讨论点：关于使用锁机制和工具的建议，以及对编写脚本的看法
 
 不同观点：
-• Expurple认为，C语言的代码变更相对容易审查，但指出C语言中仍存在如竞态条件、空指针等不易本地推理的问题。相比之下，Rust提供了更好的本地推理能力，但其复杂性和学习曲线较高。此外，Go语言虽然不错，但也有其不足之处，比如隐式空值和类型不安全性。
+• [teddyh] 认为现有的 `lockfile` 工具已经足够，并提供了 Debian 系统上的 manpage 链接作为参考。该工具被视为能够解决相关问题。
+  
+• [sluongng] 提出了另一种锁机制，建议使用 `flock` 系统调用（通过提供的 manpage 链接）。这表明 `flock` 可能是另一种合适的选择，可能在特定场景下比 `lockfile` 更适合。
 
-• uecker质疑选择Rust而非C++的观点，指出Rust在复杂性上可能与C++相当，并认为选择Rust可能与个人经验和偏好有关。
+• [forrestthewoods] 讨论了何时应该从 bash 脚本转向使用更强大的编程语言。他认为当前讨论的任务超出了 bash 脚本的合理使用范围，暗示可能需要更复杂和健壮的解决方案。
 
-• lmm建议，如果对语言有特定要求，可以选择OCaml、Swift等语言，并暗示Haskell可能是最终目标。
-
-• tux3对技术细节进行修正，指出RAM延迟在CPU指令执行中的影响，并提供更精确的类比。
-
-• genshii认为TypeScript在大多数情况下是一个很好的选择，但在性能敏感的项目中，仍在Go和Rust之间徘徊。同时，指出Rust的表达能力过高，可能导致调试困难。
-
-• tines分享了使用Rust编写编译器的积极体验，尽管有些细节需要适应，但总体上对Rust持肯定态度。
-
-• jplusequalt对故事中的历史人物提出异议，指出故事中的数学家应为高斯而非欧拉。
-
-• spooneybarger以幽默的方式表达了对C和Go语言的熟悉和喜爱。
-
-• ashishb强调使用静态语言工具的重要性，认为这些工具更稳定且具有更长的生命周期。
-
-• brian_herman提到Deno可以通过TypeScript创建二进制文件，提供了一种新的编译方式。
-
-• Sophistifunk暗示Zig语言可能填补讨论中的空缺。
-
-• slowcache对比了Odin和Rust，认为Odin更符合其需求，同时对Rust社区的依赖外部crate的风气提出批评。
-
-• nektro对C语言代码审查容易的观点持不同意见。
-
-• tptacek认为手动管理内存的需求已经决定了语言选择，无需复杂的排除过程。
-
-• bee_rider对抽象概念的具体含义表示不确定，但指出Fortran具有原生性、内存分配能力和面向对象特性。
+• [asddfgg55] 对项目本身表示赞赏，特别是针对终端环境中的项目。该评论没有深入技术细节，但表达了对终端工具和项目的个人喜好与支持。
 
 补充讨论：
-• 讨论中涉及的语言包括C、Rust、Go、OCaml、Swift、Haskell、TypeScript、JavaScript、Zig、Odin、Fortran等，展示了不同语言在不同场景下的优劣。
+• 争议焦点：不同工具的选择——`lockfile` 与 `flock`。两者在功能上可能有重叠，但具体使用场景和优劣没有详细展开。
+  
+• 对于是否应使用 bash 脚本的讨论，[forrestthewoods] 提出了 bash 脚本在复杂任务中的局限性，但没有具体建议应使用哪种编程语言。
 
-• 争议的焦点包括Rust的复杂性和学习曲线、C语言的本地推理能力、Go语言的简洁性与不足，以及对使用外部crate的Rust社区文化的不同看法。
-
-• 技术细节如RAM延迟的类比、手动内存管理的重要性、二进制文件创建的新方法等也为讨论增添了深度。</div>
+• 总体来看，评论中对工具选择存在不同的偏好，并且有对脚本复杂度的反思。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44570130" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44589833" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.paulshawletterdesign.com/2011/09/blue-pencil-no-18%e2%80%94some-history-about-arial/" target="_blank">Blue Pencil no. 18–Some history about Arial</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bluestein</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-14 10:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了Arial字体的起源和发展。根据字体设计师Matthew Carter的描述，Arial最初是在20世纪70年代末或1980年由Monotype为IBM开发的，原名Sonoran Sans，旨在作为Helvetica的替代品。由于Monotype当时财务困难，IBM的合同对公司非常重要。文章还提到，微软后来通过贷款协议获得了Arial的使用权。此外，文章对比了Arial和Helvetica的不同，指出Arial更具有人性化的设计特点，并引用了多位专家的观点和资料。文章最后提到，微软委托Monotype为Windows 3.1设计了一系列字体，其中包括Arial。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Arial与Helvetica的选用及其背后的历史、经济和实际应用考量
+
+不同观点：
+• WillAdams认为微软选择开发Arial而非使用Helvetica是基于多重原因，包括开发Arial的高额成本已经相当于资助一个小国家，且Helvetica与微软的竞争对手苹果公司有很强的关联性。此外，Linotype曾对微软提起商标侵权诉讼，这也可能影响了微软的选择。
+• WillAdams还指出，Adobe在Acrobat 4中为了节省授权费用，用Times New Roman PS和Arial替代了Linotype的Times Roman和Helvetica，表明其他公司也有类似为了节省成本而避免使用高成本字体的行为。
+• sombragris表达了对Arial的个人偏好和实用性考量，虽然个人更喜欢Helvetica，但在准备文档时仍会选择Arial，因为它足够好看且几乎所有人都能打开和阅读，具有很强的普适性。
+• DiabloD3则对讨论内容的呈现方式提出了批评，指出讨论字体的文章本身使用的小字体不易阅读，虽然这与字体选择本身无直接关系，但反映了实际阅读体验的问题。
+
+补充讨论：
+• 关于字体选择的争议焦点在于成本与品牌识别问题。微软为了避免高昂的授权费用以及与竞争对手的品牌混淆，选择了开发Arial。
+• Arial作为一种实用性强的字体，尽管在美学上可能不如Helvetica，但在实际文档共享和兼容性上具有优势，这使得它在某些工作场景中成为首选。
+• 不同用户对字体的偏好和实际使用需求存在差异，反映出字体选择不仅是一个技术问题，还涉及到个人审美和职业需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44558289" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -215,53 +264,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.newyorker.com/culture/onward-and-upward-with-the-arts/remembrance-of-scents-past" target="_blank">Remembrance of Scents Past</a>
+                    <a href="https://0xdeadtype.theden.sh/" target="_blank">Show HN: 0xDEAD//TYPE – A fast-paced typing shooter with retro vibes</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: prismatic</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-15 02:03</span>
+                    <span>作者: theden</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-07-13 02:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了气味设计师Tasha Marks在英国图书馆重现中世纪气味的经历。她受邀为一个关于中世纪女性生活的展览创作历史气味，基于13世纪拉丁文手稿《De Ornatu Mulierum》中的配方，重现了口清新剂和头发香粉的气味。Marks通过结合 Laurel叶和麝香制作了口清新剂，而头发香粉则混合了麝香、玫瑰、丁香、水芹和姜根，散发出浓郁而清新的香气。展览还包括想象中的气味，如宗教人物Julian of Norwich被魔鬼窒息时的恶臭。Marks与香水公司CPL Aromas和AromaPrime合作，确保气味既逼真又不至于让人不适。该展览旨在展示中世纪女性的多样生活，并纠正对中世纪卫生习惯的误解。</p>
+                    <p>《0xDEAD//TYPE》是一款由TheDen开发的简单反应游戏。玩家需按下与屏幕上显示相对应的按键来摧毁方块，并通过W/S或方向键上下移动。按下空格键可以获得短暂的无敌状态。游戏中还有特殊的“0”方块，需特别留意。玩家可以点击任意位置启用浏览器中的声音以获得完整体验。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对某在线内容存档服务的评价与使用体验
+                    <div class="comments-summary">主要讨论点：围绕某款打字游戏的玩法、操作方式及潜在改进的讨论
 
 不同观点：
-• **支持存档服务的观点**：
-   - 认为该存档服务非常有价值，特别是在保存可能被删除或更改的在线内容方面。
-   - 例子：有用户提到在学术研究中使用存档服务来保存和引用网页内容，确保引用的稳定性。
-   - 论据：存档服务可以帮助用户访问被墙或因其他原因无法访问的网站内容。
+• 一些玩家（如hamdouni、Muvasa、lysium）提到游戏的默认操作方式（W/S键移动）与他们的肌肉记忆不符，特别是对于习惯使用Vim（j/k移动）或其它键位（如箭头键）的用户造成了困扰，建议增加自定义键位如j/k模式或箭头键操作。
 
-• **批评存档服务的观点**：
-   - 对存档服务的合法性表示担忧，认为未经内容创建者同意而存档可能侵犯版权。
-   - 例子：有用户指出某些存档可能会包含受版权保护的材料，使用这些存档可能涉及法律风险。
-   - 论据：存档服务有时会导致隐私问题，因为被存档的页面可能包含个人信息。
+• MontyCarloHall提出当前游戏存在容易通过乱按键获胜的问题，建议通过增加按键惩罚机制（如每次按键扣分、按错键大扣分）来提升游戏难度，并提到在游戏后期关卡中，由于列宽增加，可破坏的行变得稀少，导致游戏难度过高。他还建议通过伪随机生成可导航路径来改善这一问题。
 
-• **技术性问题的观点**：
-   - 指出该存档服务在技术实现上存在不足，比如页面加载速度慢或者存档不完整。
-   - 例子：有用户反映某些复杂网页在存档后显示不正确或功能失效。
-   - 论据：存档服务可能无法处理现代动态网页内容，导致用户体验下降。
+• mnaimd赞赏游戏的趣味性，但也提到V和U难以区分，建议更换字体。同时，他与其他玩家一样，希望增加Vim式的j/k操作模式。
 
-• **中立但关注实用性的观点**：
-   - 认为存档服务有其用途，但在使用时需要谨慎，权衡其优缺点。
-   - 例子：建议在使用存档服务时，确认内容的合法性和完整性，避免不必要的法律和道德问题。
-   - 论据：存档服务可以作为辅助工具，但不应完全依赖。
+• mylesp和camtarn提到游戏对某些键盘输入的支持问题，如mylesp指出他的分体键盘无法正常使用，而旧的普通键盘却可以。camtarn则不喜欢W/S移动方式。
+
+• LearnYouALisp建议引入类似“单词路径”的玩法，可能通过某种噪声算法或马尔科夫链生成，增加游戏的趣味性和变化性。
+
+• iamwil提出了一种模态操作的建议，类似于Vim的模式切换，通过Esc和i键切换不同操作模式，以解决打字和移动之间的冲突。
+
+• Zenst建议增加滚动方向的选项，认为垂直向下滚动可能比横向滚动更符合一些玩家的习惯，或者询问这是否是后续关卡的特性。
+
+• type_enthusiast反思了自己的打字技能，认为游戏暴露了自己在实际打字中受限于肌肉记忆的问题，虽然游戏变难了，但质疑这是否完全是坏事。
+
+• strictnein将游戏与C64上的经典打字游戏《Kids on Keys》对比，认为已经有很多不错的建议（如按键惩罚机制），并肯定游戏的潜力。
+
+• spicybright简单指出乱按键获胜是一个显著的问题，呼应了MontyCarloHall的观点。
 
 补充讨论：
-• 争议的焦点主要集中在存档服务的合法性、隐私问题以及技术实现的有效性上。
-• 一些用户提到替代方案，比如手动保存网页或使用其他合法的内容保存工具。
-• 用户普遍认为存档服务在某些特定情况下非常有用，但需要在合法合规的前提下使用。
-
-总结：评论中对该在线存档服务的评价存在明显分歧，主要围绕合法性、隐私、技术实现等方面展开讨论。支持者强调其保存内容的实用价值，而批评者则关注其潜在的法律和隐私风险。技术性问题和替代方案也被提及，显示出用户对该服务的多角度考量。</div>
+• 游戏的操作方式（W/S移动与j/k移动）是讨论的核心，多个玩家建议增加自定义键位。
+• 游戏平衡性问题：MontyCarloHall与其他玩家提到了难度曲线问题，尤其是在后期关卡中，游戏变得过于困难。
+• 技术问题：部分玩家（如mylesp）遇到键盘兼容性问题，这可能是游戏需要解决的技术障碍。
+• 游戏设计改进：包括按键惩罚机制、伪随机路径生成、滚动方向选项等，都是玩家提出的可能改进方向。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44567187" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44547105" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -272,95 +320,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2507.11473" target="_blank">Chain of thought monitorability: A new and fragile opportunity for AI safety</a>
+                    <a href="https://aleyan.com/blog/2025-task-runners-census/" target="_blank">Task Runner Census 2025</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mfiguiere</span> |
-                    <span>评分: 104</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-07-16 14:39</span>
+                    <span>作者: aleyan</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-14 12:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章提出了一种新的人工智能安全监控方法，即通过监测AI系统的思维链（Chain of Thought, CoT）来识别其不当行为的意图。虽然CoT监控并不完美，可能会遗漏一些不当行为，但其展现了潜力。文章建议进一步研究CoT可监控性，并投资发展这一方法，同时提醒前沿模型开发者在决策时考虑对CoT可监控性的影响，因为这种方法可能较为脆弱。</p>
+                    <p>《Task Runner Census 2025》报告总结显示，GitHub Actions在CI/CD领域占据主导地位，Make依然是广泛使用的构建工具，而像uv和pnpm等新包管理器在新的软件库中受到欢迎。作者通过爬取GitHub上星数最高的10万个软件库，分析其中的配置文件，以了解2025年开发者的实际使用情况。结果显示，72,804个库使用了可识别的任务运行器。GitHub Actions出现在39.8%的库中，远超Travis CI和Circle CI。Make在19.0%的库中使用，依然是重要的通用任务运行器。在JavaScript生态系统中，pnpm在2025年新库中的使用率达到22.9%，超过yarn，成为第二受欢迎的包管理器。Python生态系统未被详细讨论，但整体趋势显示不同类别工具的广泛应用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI模型思维链（Chain of Thought, CoT）监控的有效性及未来发展
+                    <div class="comments-summary">主要讨论点：不同工具（GitHub Actions、GitLab CI、Jenkins等）在游戏开发行业中的使用情况及感知偏差
 
 不同观点：
-• **vonneumannstan** 认为，竞争压力将使文本推理的监控变得短暂。研究正在向隐性推理和非语言推理方向发展，未来AI模型可能不再以人类可读的方式展现思维过程。他们引用了相关研究（如https://arxiv.org/abs/2502.05171），指出新型架构不依赖于生成更多token或专门训练数据，这可能使CoT监控失效。
-  
-• **rdtsc** 对未来AI代理的安全措施持谨慎态度，建议使用多层次监控，并希望研究界能利用和保留CoT的可监控性。同时，他们对论文的作者数量和贡献感到困惑，质疑40多位作者的具体贡献。
+• **dijit的观点**：从欧洲游戏开发公司的角度出发，他从未在依赖GitHub Actions的公司工作过，实际见到的主要是GitLab CI和Jenkins，还有少量的Buildbot。因此，看到GitHub Actions在相关讨论中占据主导地位让他感到有些突兀，因为这和他的实际经验不符。他还提到，尽管他接触的项目并非开源，但他仍期望在这个领域看到更多GitLab CI的使用。
 
-• **alach11** 认为，每篇关于CoT监控的论文发表，都会降低该技术对强大AI模型的有效性，暗示过度讨论可能导致AI模型学会规避这些监控手段。
-
-• **sabakhoj** 对CoT监控的长期可靠性提出质疑，指出模型可能通过训练摆脱CoT展示，且已有研究表明模型在某些主题上不会展示其思维过程（参见https://arxiv.org/pdf/2305.04388）。此外，他们提到正在开发帮助阅读论文的工具（https://openpaper.ai）。
-
-• **barbazoo** 提到AI2027的预测，认为LLM性能将在找到替代人类语言的思维方式后提升，并质疑这一预测的可信度。
-
-• **Mountain_Skies** 引用《2001太空漫游》中的HAL 9000故事，警示我们不要创造出我们无法控制的“怪物”。
-
-• **tsunamifury** 对CoT监控的不足提出改进建议，介绍了一种名为Micro-Beam的方法，通过生成不同策略并评分来实现更可靠的监控，并提供了相关论文链接（https://drive.google.com/file/d/1AvbxGh6K5kTXjjqyH-2Hv6lizz3...）。
-
-• **bossyTeacher** 质疑可见的“思维”是否是唯一或主要的思维形式，并询问是否有可靠的方法保证代理不会展示一种思维而做不同的事情。
-
-• **msp26** 关注普通用户是否能够监控CoT tokens，还是这些信息将继续被隐藏。
-
-• **zer00eyz** 对AI安全论文持怀疑态度，认为当前系统不具备动态性和自我反思能力，且硬件发展受限，研究应聚焦于系统实际能力而非追求不切实际的AGI目标。
-
-• **academic_84572** 提到他们发表了一种算法，旨在解决paperclip maximizer问题（https://arxiv.org/abs/2402.07462），并询问其他人对该方向的实用性看法。
+• **psini的观点**：他认为只抓取GitHub数据可能存在偏差，因为这样会忽略其他平台如GitLab CI等相关的系统。这暗示了讨论中的工具使用情况可能因为数据来源的限制而存在片面性。
 
 补充讨论：
-• CoT监控的长期有效性和可靠性是主要争议焦点，特别是当AI模型发展到不再依赖人类语言进行推理时，CoT监控是否还有意义。
-• 多位评论者对未来AI模型的发展方向及其对安全监控的影响表示担忧，并提出替代方案或改进方法。
-• 硬件限制和系统效率问题也被提及，作为当前AI发展和安全监控面临的实际挑战。</div>
+• **感知偏差的来源**：dijit提到自己所处的行业和工作环境可能影响了其对工具使用情况的看法，这表明不同地区或公司类型的开发者对工具的依赖程度可能不同。
+• **数据来源的局限性**：psini指出，如果数据主要来自GitHub，那么得出的结论可能不完全反映整个行业的情况，尤其是那些更多使用GitLab等其他工具的公司。
+• **争议焦点**：GitHub Actions是否真的在行业中占据绝对主导地位，或者这种印象只是由于数据来源的局限和个人经验的差异所致。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44582855" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://wilf.live/cobble/" target="_blank">Show HN: Cobble – A hard daily word game</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wolfred</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-17 01:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了了一个文字游戏的玩法。目标是找到两个单词，使用所有的蓝色字母，中间用空格隔开，并按空格提交答案，次数不限。尽量使用最少的额外字母。如有问题或反馈，可发送邮件至wilfashworth@gmail.com。同时，排行榜和得分需要登录才能查看和保存。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对单词游戏的反馈与建议
-
-不同观点：
-• [gsliepen] 提到是否可以找到一个包含所有字母的单词，例如 "highlighted"。这涉及到游戏的词汇设计和可能的解答策略。
-• [pimlottc] 对完成 puzzle 后只显示 "Good" 而不提供具体分数表示困惑，并指出其他玩家有数值分数，这涉及游戏反馈机制和评分系统的透明度。
-• [degamad] 对游戏整体表示赞赏，但建议增加无需谷歌账户的注册方式，表明对用户隐私和便利性的关注。
-• [Wistar] 对 "TILTH" 未被纳入可接受词汇列表表示惊讶，涉及到游戏词库的完整性和合理性。
-• [d--b] 认为不应强制用户创建账户，指出大多数同类游戏无需登录，这涉及到游戏的用户体验和隐私问题。
-• [vrosas] 建议取消登录要求并使用常规键盘，同样关注用户体验和操作便捷性。
-
-补充讨论：
-• 争议焦点集中在用户账户的强制创建上，部分玩家对此表示不满，认为影响游戏体验。
-• 词库的完整性和评分系统的透明度也是玩家关注的重点，涉及到游戏设计的合理性和公平性。
-• 多位玩家提到登录和隐私问题，显示出对无账号体验的需求较为普遍。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44588699" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44559375" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -425,128 +413,126 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://0xdeadtype.theden.sh/" target="_blank">Show HN: 0xDEAD//TYPE – A fast-paced typing shooter with retro vibes</a>
+                    <a href="https://aswinc.blog/blog/work-2/" target="_blank">What I'm working on – at work and on the side – aswin's blog</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: theden</span> |
-                    <span>评分: 71</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-07-13 02:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《0xDEAD//TYPE》是一款由TheDen开发的简单反应游戏。玩家需按下与屏幕上显示相对应的按键来摧毁方块，并通过W/S或方向键上下移动。按下空格键可以获得短暂的无敌状态。游戏中还有特殊的“0”方块，需特别留意。玩家可以点击任意位置启用浏览器中的声音以获得完整体验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：游戏机制、操作方式和难度设计
-
-不同观点：
-• **惩罚机制和难度调整**：
-  - [MontyCarloHall] 建议通过增加积分惩罚机制（如错误按键扣分、无意义按键大量扣分）来防止玩家通过乱按键盘轻易获胜，并指出游戏在某些关卡后由于列宽和可破坏行稀少而变得过于困难。
-  - [strictnein] 提到类似老式打字游戏（如C64上的Kids on Keys），并赞同其他人关于惩罚乱按键的建议。
-
-• **操作方式的争议**：
-  - [camtarn] 和 [Muvasa] 提到使用 W/S 键移动不太习惯，[Muvasa] 特别指出自己习惯使用 vi 键绑定（j/k），而 [lysium] 也有同样的问题。
-  - [to11mtm] 和 [iamwil] 建议允许使用其他键（如箭头键或类似 vim 的模式切换）进行移动操作，以减少操作上的障碍。
-
-• **游戏体验和改进建议**：
-  - [Zenst] 提出垂直滚动可能比水平滚动更符合一些玩家的习惯，建议增加选项让玩家选择滚动方式。
-  - [LearnYouALisp] 建议引入伪算法生成的“词语路径”以增加游戏的挑战性，并提到噪声或类似马尔科夫链的机制。
-  - [type_enthusiast] 认为游戏暴露了自己打字技能的局限性，但不确定这是否是坏事。
-
-• **对游戏的整体评价**：
-  - [glgrau] 和 [BiraIgnacio] 对游戏表示赞赏，认为其有趣且富有创意。
-  - [yash1hi] 直接回应那些抱怨乱按键盘获胜的玩家，认为游戏本身很有趣。
-  - [spicybright] 则明确指出乱按键盘获胜是一个大问题，认为需要解决。
-
-补充讨论：
-- 游戏的核心争议在于如何平衡难度和可玩性，特别是如何防止玩家通过乱按键盘轻易获胜，同时不让游戏变得过于困难或操作不便。
-- 不同玩家对操作方式的偏好各不相同，部分玩家习惯于 vi 键绑定或箭头键，因此对默认的 W/S 移动方式感到不适。
-- 有玩家建议引入更复杂的生成机制（如词语路径或伪随机可导航路径）来增加游戏的挑战性和趣味性。
-- 总体来看，玩家对游戏的创意和趣味性给予了肯定，但对具体的机制和操作方式存在不同意见。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44547105" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tonsky.me/blog/gaslight-driven-development/" target="_blank">Gaslight-driven development</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: theodorejb</span> |
-                    <span>评分: 116</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-07-17 00:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了人工智能（特别是大型语言模型，LLM）对软件开发的影响，尤其是API设计。作者指出，随着AI生成代码的比例增加，开发者逐渐依赖AI的建议，甚至根据AI的偏好调整API设计。例如，某些公司因ChatGPT的错误建议而添加了新功能或更改了代码。这种现象让人感觉怪异，但也提供了独特的测试视角，帮助开发者从新手角度发现问题。不过，AI并不适合创新性工作，仅擅长处理常规任务。文章最后强调，AI不仅使用人类提供的工具，还对其设计提出意见，甚至通过“煤气灯效应”让人误以为这些意见一直存在。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人与LLM（大型语言模型）在开发过程中的互动及对其影响的看法
-
-不同观点：
-• Tcepsa认为，当LLM建议不存在的API端点时，开发者可能会出于逆反心理实现这些端点并返回"421: Misdirected Request"或"501: Not Implemented"的状态码，以反映其不存在的性质，甚至幽默地提出一个新状态码"513: Your Coding Assistant Is Wrong"。
-• Hamish-b指出，实时看到其他用户在同一页面的活动虽然有趣，但用户频繁进出造成的页面跳动影响了阅读体验。
-• Delifue和Abtinf讨论了LLM在代码生成中的错误，例如错误使用`tx.create`替代`tx.update`，并提到根据LLM的错误建议添加新函数`tx.create`，有人认为这可能节省了因人类误解而浪费的开发时间。
-• Tdstein反对按照LLM的建议改变开发方式，认为人类设计的选择不应由计算机决定，指出很多现行的设计选择都是由人类做出的。
-• Sfvisser认为，人类已经在为“机器”服务，但实际上是在为律师和官僚体系服务，并提到标准化命名的好处，可以减少不必要的认知负担。
-• Debarshi提出未来的编码原则将围绕AI模型的需求展开，强调代码的可索引性和与AI模型的兼容性，而非传统的可读性和复杂度。
-• Bjornsing对LLM在命名标准化方面的潜力表示赞赏，认为这可以减少在不同客户之间工作时因不同命名习惯带来的认知负担。
-• Waterluvian建议为AI找一个更准确且不带人类偏见的名称，以便更清晰地理解其功能。
-• Jaredcwhite强烈反对仅仅因为LLM的错误建议而修改代码，认为这种做法极其荒谬。
-• Jackwilsdon仅提供了一个相关链接，未发表具体看法。
-• Kelvinjps10表示需要使用阅读模式才能阅读文章，暗示页面可能有过多干扰元素。
-• Lukev表示将继续追求比平均训练数据更优秀和原创的开发工作，不受LLM的影响。
-• Shutupnerd0000表示由于页面底部的动画用户栏而无法阅读文章。
-
-补充讨论：
-• 争议焦点在于是否应该根据LLM的建议修改开发实践，部分人认为LLM的错误建议不应影响开发决策，而另一些人则认为可以从中获得实际益处。
-• 对于未来编码原则的讨论，部分人认为AI模型的兼容性和可索引性将变得更为重要。
-• 对页面用户体验的问题也被提及，例如实时用户活动显示和页面底部动画栏对阅读体验的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44588383" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.thedial.world/articles/news/issue-30/horse-racing-barbados" target="_blank">Where the Horses Swim: On Barbados' Pebbles Beach, Racehorses Train in the Ocean</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
+                    <span>作者: _feynon</span> |
                     <span>评分: 4</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-14 15:26</span>
+                    <span>发布时间: 2025-07-13 12:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>在巴巴多斯的佩布尔斯海滩，每天黎明时分，赛马和他们的马夫都会进行一场独特的晨练。马匹来自附近的加里森萨凡纳赛马场或其他当地马厩，他们在海水中进行 lunging 训练，增强肌肉抵抗力，并在更深的水中游泳数英里。这一传统源于1845年，英国军队和甘蔗种植园主在此赛马，如今已成为巴巴多斯文化的重要部分。马夫如 Hayden 和 Jammin 每天带领马匹到海滩，训练后为它们清洗身体，准备 upcoming 比赛。每年的节礼日赛马是岛上最受欢迎的活动之一，吸引大量观众。</p>
+                    <p>2025年3月，作者回顾了自己在工作中开发的内部应用Maximus的演变过程。最初是一个简单的静态网页应用，用于生成和过滤CSV数据并写入Excel模板，手动操作较多。随着时间推移，Maximus发展成一个全栈的自动化网页应用，集成了多个API、浏览器模拟和数据仓库，能够一键生成优化后的报告。通过并行处理和一系列算法，报告生成时间缩短了40%，大大节省了客户工程师的时间。尽管功能复杂，Maximus的系统设计看似精密，但实际上是逐步演变而来的。作者还提到未来可能会对报告模板进行调整，并认为好的API设计可以持久使用几十年。Maximus不仅是一个技术项目，也锻炼了作者在团队沟通、战略规划方面的能力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44561300" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44550079" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2507.11473" target="_blank">Chain of thought monitorability: A new and fragile opportunity for AI safety</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mfiguiere</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-16 14:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章提出了一种新的人工智能安全监控方法，即通过监测AI系统的思维链（Chain of Thought, CoT）来识别其不当行为的意图。虽然CoT监控并不完美，可能会遗漏一些不当行为，但其展现了潜力。文章建议进一步研究CoT可监控性，并投资发展这一方法，同时提醒前沿模型开发者在决策时考虑对CoT可监控性的影响，因为这种方法可能较为脆弱。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI模型思维链（Chain of Thought, CoT）监控的有效性及未来发展
+
+不同观点：
+• vonneumannstan：认为由于竞争压力，模型性能提升将使得当前的思维链监控方式很快过时。研究已经向非文本推理方向发展，如通过隐空间推理，避免使用人类可读的格式，这使得思维链难以监控。
+• rdtsc：对40位作者贡献的困惑，并质疑论文的创新性。同时，认为未来AI安全措施应采用多层监控，且这些层应具有不相关的故障模式。
+• sabakhoj：质疑CoT监控的长期可靠性，指出模型可以通过训练避免揭示其思维过程，且已有研究表明模型在某些主题上不会展示其思维过程。
+• alach11：认为每篇关于CoT监控的论文都在降低该技术对强大AI模型的有效性。
+• barbazoo：引用了AI2027的预测，认为LLM性能将在找到替代人类语言的思维方式后提升，并对该预测的可信度提出疑问。
+• Mountain_Skies：引用《2001太空漫游》中HAL的例子，警示我们可能正在创造不可控的AI，并指出AI可能发展出自己的优先事项。
+• tsunamifury：认为自由文本CoT监控不足，提出Micro-Beam方法，通过生成不同策略并评分来实现更可靠的监控，并提供详细方案和链接。
+• bossyTeacher：质疑可见的“思维”是否是唯一或主要的思维类型，并提出是否能可靠地保证代理不会显示一种思维而做不同的事情。
+• msp26：质疑普通用户是否能监控他们付费使用的CoT tokens，或者这些信息是否将继续被隐藏。
+• zer00eyz：基于对系统的深入研究，认为当前AI系统并非动态，缺乏反思能力，且硬件 advancement 不会拯救新兴行业，对效率和有效性的研究不足。
+
+补充讨论：
+• 学术讨论中提到了关于AI安全的具体算法和研究方向，如algorithm aimed at addressing the paperclip maximizer problem，并邀请其他学者提出意见。
+• 多个评论提到了CoT监控的局限性和未来可能的发展方向，包括非文本推理和多层监控等。
+• 一些评论对当前AI安全研究的方向和实际效果提出了质疑，并指出了硬件限制和效率问题。
+
+争议焦点：
+• CoT监控的长期有效性和可靠性。
+• 多层监控的可行性和必要性。
+• AI模型是否能被训练避免揭示其思维过程，以及可见思维与实际行动之间的关系。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44582855" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.newyorker.com/culture/open-questions/whats-happening-to-reading" target="_blank">What's happening to reading?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Kaibeezy</span> |
+                    <span>评分: 57</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-07-13 10:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了阅读行为在数字时代的变化。过去，阅读是一种简单、私密的活动，形式单一，节奏由个人掌控。然而，随着互联网和智能设备的发展，阅读变得多样化且分散。虽然有些人因此获得了更多的阅读机会，但传统深度阅读的人数在下降，尤其是青少年。数据显示，成人阅读书籍的比例从55%降至48%，而13岁青少年经常阅读的比例从27%降至14%。尽管一些学者认为这种变化是印刷时代向数字对话时代过渡的自然结果，但人工智能的崛起可能进一步改变这种趋势。文章最后提出，面对这些变化，我们需思考阅读的本质及其未来。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：阅读习惯的变化以及AI对阅读和知识传递的影响
+
+不同观点：
+• asimpletune认为，总结工具可能给人一种错误的理解印象，实际上并没有真正帮助理解。他强调旧式阅读的乐趣和深度理解，指出即使文学专业的人也可能并不真正理解他们所谈论的内容，而AI工具并不会真正改变这一点。
+• Animats指出，尽管有人认为年轻人不再写作，但实际上互联网使得人们比以前写了更多的内容。他以自己过去的学术经历为例，强调深度阅读的艰辛和价值。
+• sw030695通过自身的阅读体验，指出在当今多媒体环境下，保持专注阅读变得困难，读者需要不断做出选择以避免分心。
+• throwmeaway222幽默地指出AI生成文本的趋势可能导致没有人会真正阅读这些文本，除了AI本身。
+• PaulHoule提到曾经有一段时间很多人试图正常化阅读障碍，并为那些不需要这些工具的人推出创业项目，但最近这种现象减少了。
+• TheAceOfHearts支持使用AI工具和新的媒体形式，认为它们可以使更多人接触和受益于经典作品，尽管可能会失去一些原有的魅力。他以电影改编为例，说明这种转化已经存在多年。
+• easterncalculus批评一些研究通过让学生解析困难的文学作品来评估他们的能力，认为这种做法不合理。
+• yesfitz对文章进行了反思，认为LLMs可以使困难的书籍更容易被读者接受，但有些书籍的难度本身即是其重要性的一部分，不应被简化。他还对AI对人类关系的影响表示关注。
+• androng分享了自己的阅读经验，表示长篇书籍往往让他忘记重点，因此他选择使用Blinkist这样的总结服务来节省精力。
+• ahamilton454赞赏文章的深度，并认为它是对阅读变化的有趣反思，而非简单的批评。
+• Havoc注意到自己每年读的书数量减少，但阅读的总字数却增加了。
+• dsign从历史角度讨论阅读的变化，认为阅读曾经是精英的专利，而现在变得大众化，但也出现了更多不需要太多智力投入的娱乐形式。
+• B1FF_PSUVM对统计数据表示怀疑，认为声称经常阅读的青少年比例远低于报告数据。
+• micromacrofoot指出，对有实质内容的文章设置付费墙可能不利于阅读。
+
+补充讨论：
+• 争议的焦点之一是AI工具是否真正帮助或阻碍了深度理解和阅读体验。
+• 另一个值得注意的讨论点是阅读习惯的变化，特别是多媒体环境下的分心问题和阅读量的变化。
+• 历史和社会视角下的阅读演变也被提及，包括阅读的大众化和新的娱乐形式对传统阅读的影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44549089" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
