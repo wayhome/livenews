@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-20 14:19 (北京时间)
+            最后更新时间: 2025-07-20 17:14 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,12 +61,140 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://blog.canoozie.net/async-i-o-on-linux-and-durability/" target="_blank">Async I/O on Linux in databases</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jtregunna</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-20 06:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文描述了作者在开发简单键值数据库过程中，对I/O性能优化的探索。最初使用内存哈希表和简单的追加日志实现持久化，但性能不佳。之后，作者转向研究Linux的io_uring机制，它通过共享环形缓冲区在应用与内核间实现真正的异步I/O，大幅提升吞吐量。然而，异步I/O导致数据持久性和一致性问题，作者通过引入双写前日志（WAL）设计解决该问题：一个记录操作意图（异步写入），另一个记录操作完成，只有两者齐备时才在恢复时应用操作，确保一致性。最终，作者使用Zig语言实现了该方案，并通过实验验证其性能和可靠性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：使用io_uring和WAL（预写式日志）实现崩溃恢复的方案及其优缺点
+
+不同观点：
+• [ozgrakkurt] 提出了一种使用WAL文件和哈希/长度文件相结合的崩溃恢复方法，具体步骤包括：先追加写入WAL文件，然后同时进行fsync调用和创建一个新的哈希/长度文件，接着重命名长度文件以确保操作的原子性，最后更新内存状态。他好奇这种方法与双WAL方法之间的权衡，特别是fsync调用对写入速度的影响。
+
+• [jmpman] 提出了一种写入意图记录和完成记录的方案，用于提高吞吐量。在恢复时，只应用同时具有意图和完成记录的操作。然而，[jmpman] 被质疑这种方法是否违反ACID原则，因为客户端可能会在系统崩溃时收到成功响应，但该操作在恢复时可能未被记录。
+
+• [tlb] 对[jmpman]的方案提出疑问，认为如果意图记录和完成记录可以一起记录，为什么需要分开。推测意图记录较大，而完成记录较小且可以保证原子写入，因此分开记录可能是为了优化写入的原子性。
+
+补充讨论：
+• [nromiun] 提到与Android相关的题外话，询问Google是否以及何时会在Android中启用io_uring。
+
+• [jtregunna] 简要总结了原文讨论的内容，指出文章讨论了如何使用io_uring构建一个具有崩溃恢复能力的键值缓存数据库。
+
+争议焦点：
+• [jmpman] 的方案是否违反ACID原则，特别是在系统崩溃时可能导致已向客户端确认成功的操作在恢复时未被记录。
+• 不同方案中fsync的调用频率和位置，以及其对写入性能和数据一致性的影响。
+• 意图记录和完成记录是否需要分开记录，以保证原子性和性能优化。
+
+这些讨论点展示了在实现崩溃恢复和数据一致性时，不同开发者在设计上的权衡与选择。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44622454" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/antiwork/flexile/pull/427#issuecomment-3079688548" target="_blank">“I noticed a clear violation of our contributing guidelines” – Pull request bot</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: slacktivism123</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-20 08:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了GitHub上的一个合并请求，涉及为Antiwork项目添加自助邀请链接功能。该功能允许管理员为承包商生成邀请链接，并引导承包商完成认证、入职和文档上传等步骤。关键更新包括：引入邀请链接模型以跟踪邀请信息，支持已认证和未认证用户的邀请流程，改进承包商人页面的UI元素，以及增加全面的测试。此外，还修复了一些错误并进行了若干界面和文字调整。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于自动化工具（bots）在代码协作平台（如GitHub）上处理语法和评论的争议
+
+不同观点：
+• [bob1029] 引用了Reddit上一个关于公关（PR）流程的帖子，似乎暗示类似的繁琐和冗长的流程在代码协作中出现，但没有明确表态支持或反对。
+• [rokkamokka] 强烈反对这种由自动化工具主导的流程，认为这是一种令人厌烦且过于冗长的做法，尤其是当机器人过度干预时。
+• [slacktivism123] 提出疑问，这种自动化工具是否代表了协作编码的未来，并提供了具体链接示例，显示机器人因微小的语法错误标记贡献者的拉取请求（pull requests）。
+• [NooneAtAll3] 质疑slacktivism123的观点，指出并没有在示例中看到机器人明确指出语法问题，并表示在找不到相关内容后感到无聊，暗示可能存在过度解读。
+• [Asraelite] 认为，从原则上讲，机器人检查语法错误和拼写错误是可以接受的，尤其是在这些错误可能导致读者困惑的情况下。然而，Asraelite也指出，当前的机器人配置不当，因为它对一些完全有效的英语表达进行了不必要的纠正。
+
+补充讨论：
+• 争议的焦点在于自动化工具在代码协作中的角色和干预程度。部分人认为机器人过度干预，尤其是在处理非关键性语法问题时（如[rokkamokka]和[Asraelite]的观点）。
+• [slacktivism123]和[Asraelite]提供了具体例子和论据，展示了机器人如何标记贡献者的拉取请求，从而引发对机器人配置和规则的讨论。
+• [NooneAtAll3]对[slacktivism123]提供的例子提出质疑，认为并没有明确看到机器人提出的违规提示，这表明对机器人行为的理解和感知可能存在差异。
+
+总体来看，讨论围绕自动化工具在协作平台上的应用是否适当，尤其是它们在语法检查和评论管理方面的干预程度和配置方式。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44623036" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison" target="_blank">The Big LLM Architecture Comparison</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mdp2021</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-20 06:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文由Sebastian Raschka博士撰写，比较了从GPT-2到2025年间的多款大型语言模型（LLM）架构，如DeepSeek-V3、Kimi K2和Llama 4。尽管这些模型在细节上有所改进，如位置嵌入从绝对位置变为旋转位置（RoPE），多头注意力（MHA）被分组查询注意力（GQA）取代，激活函数从GELU变为SwiGLU，但核心架构变化不大。文章重点分析了2025年LLM架构的关键变化，尤其是DeepSeek V3引入的多头潜在注意力（MLA）和专家混合（MoE）技术，这些技术提升了模型的计算效率。GQA通过共享键值对减少内存使用，而MLA则通过压缩键值张量进一步节省内存。文章强调，尽管模型性能和训练技术有所不同，但架构上的创新更多是对已有基础的优化而非彻底变革。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对内容是否适合用于补课的评价
+
+不同观点：
+• bravesoul2认为该内容适合用来补课，尤其对于像他这样没有持续跟进的人来说是一个很好的回顾。
+
+补充讨论：
+• 此处没有出现明显的争议或不同意见。
+• 评论内容较为简单，主要表达了对内容作为补课材料的认可。
+• 没有提供具体论据或例子支持，更多的是个人感受的表达。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44622608" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.npr.org/2025/07/14/nx-s1-5467062/hungary-library-books-beetles" target="_blank">Hungary's oldest library is fighting to save books from a beetle infestation</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: smollett</span> |
-                    <span>评分: 49</span> |
-                    <span>评论数: 2</span> |
+                    <span>评分: 117</span> |
+                    <span>评论数: 5</span> |
                     <span>发布时间: 2025-07-16 15:25</span>
                 </div>
 
@@ -77,19 +205,23 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Pablo Escobar巅峰时期的讨论及其影响
+                    <div class="comments-summary">主要讨论点：控制害虫的方法及其有效性和环境影响
 
 不同观点：
-• [ChrisArchitect] 引用了Hacker News上的一个讨论链接，暗示对Pablo Escobar相关话题的关注，可能对Escobar的影响力和历史地位感兴趣。
+• bob1029认为控制湿度是简单的解决方案，尤其是将相对湿度（RH）保持在50%以下，可以有效抑制生物在干燥环境中繁殖。这一观点强调物理环境控制而非化学方法。
 
-• [EGreg] 通过分享一个Barstoolsports的文章链接，将讨论引向Pablo Escobar巅峰时期的具体事例，文章标题提到“Pablo Escobar在巅峰时期的力量”，表明EGreg可能认为Escobar在其巅峰时期拥有巨大影响力和权势。
+• funnym0nk3y对使用温和的消灭方法感到惊讶，原本预期会用大量的杀虫剂。这里暗示了对使用化学药剂的预期，可能认为更强力的手段会更有效。
+
+• wiseowise持有一种激进的观点，认为只有死虫才是好虫，表明对害虫零容忍的态度，但没有具体讨论方法。
+
+• EGreg的评论更像是一种题外话，提到了一个不相关的链接，没有直接参与讨论，可能是想通过幽默或无关话题转移讨论方向。
 
 补充讨论：
-• 链接内容可能涉及Pablo Escobar的个人经历、犯罪活动及其对社会的影响，这通常会在不同社区引发关于道德、法律及历史评价的讨论。
-• EGreg的评论通过外部链接提供了一个具体的例子，旨在为讨论增加背景信息，可能希望引导讨论向Escobar的个人影响力及相关事件发展。
-• 争议的焦点可能包括Escobar的传奇性与其犯罪行为之间的道德评价，以及对这类人物的公众关注是否合适。
+• 讨论中涉及了物理方法（如控制湿度）与化学方法（如杀虫剂）的潜在对比，前者被认为更环保，而后者可能更具杀伤力但可能带来环境负担。
 
-这个讨论串相对简短，但通过提供的链接暗示了对Pablo Escobar复杂历史角色的不同看法和兴趣点。</div>
+• 争议的焦点可能在于控制害虫的最佳方法：是采用物理手段如环境控制，还是依赖化学手段如杀虫剂，两种方法的效果和副作用不同。
+
+• 讨论中还体现了一些对害虫治理方法的不同期望，有人可能倾向于激进手段，而有人则倾向于更温和且可持续的解决方案。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44583316" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -144,6 +276,95 @@
 • 用户分享了多种备份工具和自动化方案，如 restic、borg、PBS for proxmox 等，显示出社区对开源和自定义解决方案的偏好。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44618687" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.goto10retro.com/p/vibe-coding-in-basic" target="_blank">I tried vibe coding in BASIC and it didn't go well</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 93</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-07-16 10:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者Paul Lefebvre尝试了使用AI进行“氛围编码”（vibe coding）来编写BASIC程序，但结果并不理想。氛围编码依赖AI生成代码，通过对话逐步完善。尽管AI在查找文档和提供思路方面表现出色，但生成的代码往往需要手动调整才能正常工作。作者选择使用Atari BASIC而非微软BASIC变种进行实验，并通过Atari800MacX模拟器测试代码。
+
+初始简单的"Hello, World"程序成功运行，但绘制圆圈的程序需要多次修正才能准确显示。在尝试创建更复杂的绘图程序时，AI生成的代码包含多个错误，例如变量名和注释符号的使用不当。尽管AI可以最终修正这些问题，但作者认为手动编码仍更为可靠和高效。总的来说，实验表明AI在辅助编码方面有一定价值，但完全依赖其生成代码仍存在挑战。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在编程任务中的表现及其局限性，特别是在"Vibe Coding"（依赖感觉和模糊提示的编程方式）中的应用。
+
+不同观点：
+• nine_k和edent认为LLM像一只“聪明的狗”，可以在某些情况下表现出色，但它们仍然是依赖训练数据的“预测机器”。如果期望过高，容易看到其局限性。nine_k特别强调了对LLM的期望决定了对其表现的评价。
+• manca和recipe19则持批评态度，认为LLM在处理复杂或新颖任务时表现不佳，特别是在代码转换任务中，往往需要大量的调试，表明它们仍然是“愚蠢的预测机器”。
+• ofrzeta和Radle持相对乐观的态度，认为只要提供足够的文档和上下文信息，LLM可以表现出色，并指出文章中失败的例子可能是因为缺乏这些信息。
+• xiphias2对讨论的文章持怀疑态度，认为GPT-4o并非为编码设计，质疑文章受到高关注的原因。
+• Yokolos提供了一种实用的方法，建议在遇到问题时重启对话以避免AI迷失方向。
+• danjc提出LLM在工具使用上的不足，认为如果LLM能够使用编译工具和运行程序来捕捉错误，表现会更好。
+• ilaksh强调了不同语言模型之间的差异，建议使用更大的上下文窗口和外部文档来辅助LLM。
+• fcatalan分享了一个成功的实验，通过图片转换BASIC代码为C代码，并成功运行，显示了LLM在特定任务中的潜力。
+
+补充讨论：
+• Earw0rm和serf关注了特定编程语言（如x87汇编语言）的复杂性，以及提示的精确性对LLM表现的影响，指出LLM在处理需要强逻辑推理的任务中可能表现不佳。
+• firesteelrain建议使用本地LLM并进行训练，以提高在特定任务中的表现。
+
+争议焦点：
+• LLM在编程任务中的实际能力和局限性。乐观者认为提供足够信息可以提高其表现，批评者则强调其在处理新颖和复杂任务时的不足。
+• 对GPT-4o等模型在编码任务中的适用性的不同看法。
+
+总体来看，讨论围绕LLM的能力和局限性展开，反映了不同用户在实际应用中的多样化体验和观点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44580567" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blender-mcp-psi.vercel.app/" target="_blank">Show HN: MCP server for Blender that builds 3D scenes via natural language</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: prono</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-20 06:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Blender MCP（Model Context Protocol）是一个将大型语言模型（LLM）与Blender无缝整合的工具，通过简单的JSON指令让AI实时控制3D场景。它通过TCP连接实现，无需插件或手动操作，支持如Claude、ChatGPT等模型。Blender MCP使用轻量级的JSON协议，提供对3D场景、物体、材质和动画的全面控制，旨在简化AI驱动的3D创作流程。其架构包括TCP服务器、指令处理器和场景控制器。用户可以通过克隆GitHub仓库、配置Claude Desktop和安装Blender插件来设置MCP。该工具旨在让AI与人类创意无缝协作，实现自然语言和实时控制的结合。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对演示的反馈以及与现有工具的比较
+
+不同观点：
+• deng：认为演示时间过短，无法提供详细反馈。同时指出生成模型的网格为三角形（tri-based），而不是四边形（quad-based），这可能是一个重大问题（showstopper）。他强调更复杂的场景和线框检查的重要性。
+• homarp：关注该演示与现有工具（如Blender-mcp）的比较，提出了对演示相对于现有解决方案的优势或差异的疑问。
+
+补充讨论：
+• deng的评论反映出对模型质量和技术细节的关注，特别是网格结构对后续工作流程的影响。
+• homarp的评论则引导讨论向该演示与市场上已有工具的比较，暗示可能需要更多信息来证明该演示的独特价值。
+• 争议焦点可能在于三角形网格是否真的构成重大问题，以及该演示在功能和效果上能否超越现有工具如Blender-mcp。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44622374" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -217,12 +438,63 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.borgbackup.org/" target="_blank">Borg – Deduplicating archiver with compression and encryption</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rubyn00bie</span> |
+                    <span>评分: 53</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-07-20 02:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>BorgBackup（简称Borg）是一款支持重复数据删除、压缩和加密的开源备份工具。它提供高效的存储空间利用，支持安全的身份认证加密，以及多种压缩算法（如lz4、zstd、zlib、lzma或无压缩）。通过FUSE可以挂载备份，便于浏览和恢复数据。Borg易于在多个平台上安装，如Linux、macOS和BSD等，并且采用BSD许可，拥有活跃的开源社区支持。定期检查备份以确保数据安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：备份软件的选择与比较（主要围绕Borg Backup和Restic）
+
+不同观点：
+• **支持Restic**：
+   - [thangngoc89] 提到切换到Restic和Backrest webui以支持Windows，强调了跨机器的重复数据删除和压缩功能。
+   - [kachapopow] 认为Restic在易用性和打包方面更优，尤其是配合borgmatic使用。他还指出Restic的设置更简单，不容易出问题。
+
+• **支持Borg Backup**：
+   - [blablabla123] 提到Borg的作者很可靠，并指出Borg能发现底层磁盘问题，说明其可靠性。
+   - [rollcat] 表示使用Borg Backup已有10年，认为是非常出色的软件。
+
+• **使用前端界面**：
+   - [ElectronBadger] 使用Borg Backup的Vorta前端界面，并认为这是目前最喜欢的备份解决方案。
+
+• **关于 deduplication 功能的讨论**：
+   - [toenail] 指出Borg的deduplication功能在加密备份时仅在每个主机上有效，认为这是合理的设计。
+
+补充讨论：
+• **个人经验转换**：
+   - [creamyhorror] 提到曾使用Borg Backup，但最终切换到了Duplicati。
+
+争议焦点：
+• 主要集中在Restic和Borg Backup之间的选择，特别是在易用性、可靠性和功能（如deduplication）方面的比较。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44621487" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://evanhahn.com/local-llms-versus-offline-wikipedia/" target="_blank">Local LLMs versus offline Wikipedia</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: EvanHahn</span> |
-                    <span>评分: 182</span> |
-                    <span>评论数: 19</span> |
+                    <span>评分: 254</span> |
+                    <span>评论数: 23</span> |
                     <span>发布时间: 2025-07-19 16:49</span>
                 </div>
 
@@ -233,349 +505,31 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）与Wikipedia在知识存储、检索和理解方面的比较与结合使用
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）与Wikipedia在知识存储、检索和理解上的不同作用及其潜在应用，尤其是在信息获取受限的场景下（如“重启社会”）。
 
 不同观点：
-• **LLM的优势在于理解和引导**：[dcc]认为，LLMs的优势不仅在于存储或检索知识，而在于能够理解模糊或不明确的问题，帮助用户找到答案，解释复杂概念并根据用户的理解水平调整回答。这种交互式的理解能力在某些场景下可能比单纯的静态知识库更有价值。
-
-• **Wikipedia的可移植性与实用性**：[simonw]提到，将Wikipedia下载到USB上是可行且合理的，尤其是在需要离线使用时。他还讨论了将Wikipedia数据库转换为更易使用的格式（如SQLite）的实际操作性。
-
-• **结合LLM和Wikipedia的实际应用**：[badsectoracula]分享了正在进行的项目，即将Wikipedia文件与LLM结合使用，以整理和分类其他下载的资料。这展示了LLM在处理大量非结构化数据时的实际应用价值。
-
-• **LLM和传统知识库的互补性**：[twotwotwo]指出，LLM和传统知识库（如Wikipedia、arXiv等）在功能上有所不同。LLM可能会编造信息，但能够处理非明确的问题，而传统知识库则提供可靠但不灵活的信息。在实际使用中，两者可以互补。
-
-• **本地模型和硬件限制**：[entropie]和[twotwotwo]提到了本地运行LLM的硬件限制和挑战，但也指出了在某些情况下（如有GPU支持的设备上）运行本地LLM的可行性和潜在优势。
-
-• **结合LLM和Wikipedia的提议**：[VladVladikoff]和[hannofcart]建议将LLM与本地Wikipedia结合使用，通过RAG（检索-增强-生成）技术实现LLM自我事实核查，从而提高回答的准确性。
+• dcc认为，LLM的优势不仅仅在于存储或检索知识，而在于其能够理解模糊或不明确的问题，帮助用户找到答案。LLM可以解释复杂概念、根据用户的理解水平调整回答，并在不同学科间建立联系，这在互动式理解中非常宝贵。
+• simonw指出，将Wikipedia下载到USB上是一个实际的做法，并且讨论了将Wikipedia数据转换为SQLite格式以实现全文搜索（FTS）的可能性。他提到大容量USB存储设备现在已经很普遍，不用担心空间问题。
+• badsectoracula分享了自己正在进行的项目，将下载的Wikipedia文件与LLM结合使用，通过LLM对未分类数据进行整理和分析，并提到使用量化的Mistral Small 3.2模型在处理速度和效果上取得了不错的成果。
+• twotwotwo认为，LLM和Wikipedia等资源在功能上有所不同。Wikipedia等资源提供的信息通常是准确的且不依赖猜测，而LLM则能够处理更复杂或不明确的问题，尽管有时会生成错误信息。他还提到在离线编码场景下，调用现有库可能比重新构建更有效。
+• rlupi建议构建一个结合LLM和Wikipedia的工具，利用LLM生成概述并通过全文搜索或RAG方法查找事实，以减少小模型生成错误信息的风险。
+• omneity介绍了Wikipedia Monthly项目，提供按语言分类的Wikipedia数据，并指出Simple English Wikipedia内容较为浅显和不准确。
+• saddat提出，可以将LLM用于类似Voyager 3的任务中，提供一个初始简易界面，背后由LLM支持，以揭示人类知识。
+• antonkar质疑为何人类不能像AI公司那样，将整个网络提炼成一个新的Wikipedia，以使孩子们变得更聪明。
+• hannofcart认为，理想的灾难应急信息查询数据库应结合LLM和文件档案，LLM负责理解模糊查询并提供概述，然后列出相关的Wikipedia文章供用户进一步阅读。
+• fho认为，这实际上是一个“为什么不能两者兼有”的情况，可以同时使用压缩的Wikipedia作为知识库，并利用LLM作为界面。
+• meander_water指出，LLM输出的质量取决于输入提示的质量和深度。如果不知道该问什么，信息可能会被锁定在模型中，而Wikipedia则可以直接搜索和阅读所有内容。
+• spankibalt认为，没有讨论页和版本历史的Wikipedia快照是不完整的，尤其是在LLM增强的文本分析中，这些元信息非常重要。
+• entropie分享了自己在Nvidia Jetson Nano上的实验，利用GPU支持运行LLM，并提到在没有互联网的情况下，这种设置可能非常有用。
+• VladVladikoff询问是否存在结合本地LLM和本地Wikipedia的项目，并提到RAG（检索增强生成）可能是一个解决方案。
 
 补充讨论：
-• **Wikipedia的内容质量和深度**：[omneity]指出，Simple English Wikipedia的内容相对浅显且不精确，因此在某些应用场景下可能不够理想。
-
-• **版权和知识获取的公平性**：[antonkar]提出了一个有趣的问题，即如果AI公司可以将整个网络的知识提炼成LLM，为什么人类不能利用某些受版权保护的内容来创建一个更好的知识资源供教育使用。
-
-• **存储和压缩问题**：[wangg]对Wikipedia和LLM的存储大小进行了比较，提出了Wikipedia是否比LLM更易压缩的问题。
-
-• **最终解决方案：LLM+Wikipedia**：[vFunct]简单直接地提出了结合LLM和Wikipedia的方案，认为两者结合可以提供最佳效果。
-
-整体来看，讨论的核心在于LLM和Wikipedia在知识存储、检索和理解方面的不同优势，以及如何在实际应用中将两者结合以实现最佳效果。争议的焦点主要在于LLM生成的不精确信息与传统知识库的可靠性之间的平衡。</div>
+• 讨论中多次提到将LLM与Wikipedia结合使用的技术方案，如RAG，以提高信息检索的准确性。
+• 有争议的焦点在于LLM生成错误信息的倾向与Wikipedia相对准确但静态的信息之间的权衡。
+• 一些评论者分享了具体的项目和技术细节，如数据格式转换、模型运行环境等，提供了实际应用中的见解。
+• 讨论还涉及到LLM在离线场景下的潜在应用，如重启社会或替代传统知识存储方式。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44617078" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.the-independent.com/tech/robot-mushroom-biohybrid-robotics-cornell-b2610411.html" target="_blank">Mushroom learns to crawl after being given robot body (2024)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Anon84</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-17 10:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了康奈尔大学和佛罗伦萨大学的研究团队开发了一种新型生物混合机器人，利用可食用的King Trumpet蘑菇发出的电信号来移动和感知环境。这种机器人通过将真菌菌丝体与电子设备结合，能够感知和响应环境变化，可能应用于农业等领域，如监测土壤化学成分。该研究发表在《Science Robotics》期刊上，标志着生物混合机器人在未来应用中的巨大潜力。此前，类似实验包括将人工虫脑植入乐高机器人以及麻省理工学院研发的结合活体肌肉组织的机器。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：生物混合机器人中使用真菌作为传感器的研究及其潜在影响
-
-不同观点：
-• [cloudbonsai] 认为“学习”这个词在这里过于强烈。真菌基本上是一个紫外线传感器，机器人根据生物信号移动，真菌更像是一个被动的传感器，而非主动的引导者。
-• [Legend2440] 也持怀疑态度，认为真菌并没有“学习爬行”，它只是自然地对光产生信号，机器人根据信号触发行动。
-• [mhuffman] 通过引用“死灵机器人学”（Necrobotics）和相关视频，将此研究视为一种有趣的科学技巧，而非真正的智能表现。
-• [EvanAnderson] 提到这种研究让他联想到科幻作品中的“Skroders”，暗示对这种技术结合的文学联想。
-• [amelius] 提到类似的研究，如鱼控制车辆导航，暗示这种生物与机器结合的广泛应用。
-• [lioeters] 认为尽管这个实验可能有争议，但将生物有机体与机器人系统结合具有潜力，并举例乌龟滑板和金鱼车辆来说明技术对生物能力的增强。
-
-补充讨论：
-• [TylerLives] 以反问形式表达对这项技术潜在风险的担忧。
-• [accoil] 提供更多相关研究的链接，引导读者查看更多信息。
-• [domoregood] 以幽默方式欢迎“真菌霸主”，暗示对未来技术统治的调侃。
-• [vic_nyc] 直接表达对这种技术发展的不安感，质疑其伦理和安全问题。
-
-争议焦点：
-• 该技术是否赋予真菌“学习”能力，或者仅仅是信号反应。
-• 这种生物混合技术的安全性和伦理问题，特别是其潜在的不可预测后果。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44591775" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://makecademy.com/arduino-battery" target="_blank">How to Run an Arduino for Years on a Battery</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thunderbong</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-17 06:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何通过优化硬件和软件，让Arduino系统在电池供电下运行多年。通常Arduino由USB供电，但在自主项目中需要电池供电，直接使用Arduino板如Uno R3会快速耗尽电池。为了延长电池寿命，需要自行构建最小硬件系统，并优化软件以降低功耗。
-
-**硬件方面**，使用ATMega328微控制器、少量电容、电阻、LED、晶振等组件，直接用电池供电，避免使用耗电的电压调节器。通过面包板和跳线连接电路。
-
-**软件方面**，利用Arduino IDE编程，使用JeeLib库让系统进入低功耗睡眠模式，只在需要时唤醒，从而最大限度节省电力。文章提供了硬件连接步骤和示例代码，帮助实现低功耗Arduino系统。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：图像加载问题及无线通信技术的功耗与技术实现
-
-不同观点：
-• [icedrop] 认为图像加载出现问题，怀疑是技术故障或个人设备问题，寻求他人确认是否遇到相同情况。
-• [ggm] 则没有直接回应图像加载问题，而是讨论了无线通信技术（如RF、WiFi、BT、Zigbee、6lowpan）在低功耗设备中的应用及其技术挑战。具体提到固定点采样需要时钟协调，且低功耗设备唤醒可能依赖类似旧时GSM的Morse代码脉冲机制。此外，提到通过增加无线 shield（如WiFi或BT）会加快电池消耗，并建议如果LED能闪烁编码，可以通过手机等设备远程读取信息。
-
-补充讨论：
-• [ggm] 引用了具体的技术实例，如Zigbee和6lowpan在无线通信中的应用，并提到类似Newton设备的红外网络功能以及会议翻译耳机发热的问题，进一步讨论了无线信号发射引起的物理现象（如发热）。
-• [ggm] 还提到了通过低功耗唤醒机制来减少设备能耗，并暗示这种技术在实际应用中的可行性，如通过LED闪烁编码传递信息。
-
-争议焦点：
-• icedrop提出的图像加载问题是否为普遍现象，或者只是个人设备问题，目前尚无定论。
-• ggm的回复虽然技术性较强，但并未直接解决icedrop的问题，而是转向讨论无线通信技术的功耗与技术实现，可能偏离了原始问题。
-
-总结：评论中的讨论涉及了图像加载的技术故障与无线通信技术在低功耗设备中的应用及其相关技术挑战。ggm提供了丰富的技术背景，但未直接回应icedrop的问题，导致讨论出现一定偏离。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44590391" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://davebarry.substack.com/p/death-by-ai" target="_blank">Death by AI</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ano-ther</span> |
-                    <span>评分: 244</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-19 14:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google Maps等平台上的信息不准确问题及其背后的技术与管理难题
-
-不同观点：
-• abathur认为Google Maps上的商家描述不准确，例如某家本地酒吧的描述中提到的多项设施和提供的食物饮料并不存在。尽管已经有人反馈，但问题仍未解决。这导致了一些顾客的负面体验，如想要玩桌球或飞镖的顾客感到失望。
-• jwr支持abathur的观点，并指出这不仅是信息概述的问题，而是Google整体的信息管理问题。他分享了自己多年与Google Maps错误信息斗争的经历，认为Google对反馈的响应不积极，且由于其规模庞大，可能并不重视这些不一致问题。
-• jh00ker则关注当相关讨论被索引后可能带来的影响，提到"Dave Barry去世但仍在辩驳"的例子，暗示信息错误可能会引发更大的误解。
-• ilaksh从技术角度分析了问题的原因，认为部分错误源于名称的混淆，尤其是当多个同名人物存在时。他建议通过增加默认问题（如"其他同名人物"）来改善，并讨论了Google知识图谱的潜在应用问题。
-• ChrisMarshallNY表示对Google纠正错误不乐观，但赞赏Dave Barry的幽默回应，同时提到自己对Google长期存在的问题也有类似体验。
-• rapind和ciconia的评论较为简短，前者提到AI生成内容可能导致诽谤问题，后者则用讽刺的方式表达对AI交流能力的失望。
-• yalogin分享了与Meta AI互动的负面体验，指出一旦AI开始“幻觉”生成错误信息，就很难纠正。
-• zaptrem和_ache_的评论则引发了对"Dave Barry"身份的幽默讨论，zaptrem提到另一个同名人物的死亡事件，而_ache_则用讽刺方式建议重新咨询医生。
-• h2zizzle对Dave Barry表示支持，并表达了对当前AI和Google产品的不满，认为它们经常扭曲现实，且问题难以解决。
-• devinplatt提到Wikipedia在敏感话题上的特别政策，暗示Google等平台可以从中学习管理经验。
-• foobarbecue则以讽刺的方式建议只在不重要的事实任务中使用AI，如写推荐信或制定政策。
-
-补充讨论：
-• 争议焦点在于Google等平台信息不准确且难以修正的问题，用户反馈常常被忽视，导致错误信息长期存在。
-• 技术上的讨论涉及AI生成内容的可靠性、名称混淆问题以及知识图谱的应用潜力。
-• 评论中还提到了AI“幻觉”问题，即AI生成不准确或错误的信息且难以纠正，用户对此表示强烈不满。
-• 部分评论带有幽默和讽刺性质，但也反映了用户对AI和大型科技公司产品现状的深刻不满。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44615801" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.eff.org/deeplinks/2025/07/amazon-ring-cashes-techno-authoritarianism-and-mass-surveillance" target="_blank">Ring introducing new feature to allow police to live-stream access to cameras</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: xoa</span> |
-                    <span>评分: 178</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-07-19 22:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Ring公司创始人Jamie Siminoff重新掌舵，并恢复了以监控为主、隐私为次的策略，重新引入允许警察直接向用户请求录像的功能，甚至新增允许警察实时访问家庭安全设备的功能。这一举措引发了对公民自由的严重威胁，因为警察曾利用Ring录像监视抗议者，且未经授权获取录像。Ring正在推翻过去几年进行的改革，包括恢复与警察的合作，并计划与Axon合作开发新工具，方便警察获取录像和实时流。此外，Ring计划转向“AI优先”，可能引入视频分析或面部识别技术。员工还被要求展示使用AI的证明以获得晋升。这一系列变化表明Ring正重回大规模监控工具的角色，可能是为了在技术威权主义崛起的背景下谋取利润。公众压力曾迫使Ring改进隐私措施，但现在这些进展正在被逆转。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：隐私、数据保护以及商业和执法机构对个人数据的潜在滥用
-
-不同观点：
-• **对“opt-in”机制的不信任**：
-  - [zug_zug] 认为“opt-in”常常是默认勾选且隐藏在复杂的菜单中，甚至可能因“bug”而被错误读取。他建议通过SMS和电话号码建立可追溯机制。
-  - [josephcsible] 则认为只要严格执行“opt-in”和用户明确同意，隐私问题就不存在。
-
-• **对执法机构滥用权力的担忧**：
-  - [haunter] 认为“opt-in”无法阻止执法机构滥用，最终会遭到滥用。
-  - [drannex] 强烈反对技术公司与政府合作，认为这会导致滥用和“警察国家”的出现。
-
-• **对商业机构数据收集和隐私保护的监管建议**：
-  - [jsrozner] 提出严格监管，禁止未经个人明确许可保留其图像或使用其数据进行商业目的的操作，并建议对违规行为施加高额罚款和奖励举报者。
-  - [fma] 认为一些安全系统设计上迫使用户连接云服务，可能为将来数据滥用提供便利。
-
-• **技术实现和替代方案的讨论**：
-  - [georgeburdell] 询问是否存在不依赖公司云服务的适中成本系统，并分享自己的私有网络和NAS方案。
-  - [thephyber] 表示隐私意识强的用户会避免使用Ring这样的产品。
-  - [deadbabe] 询问是否有Ring的开源替代品。
-
-• **对法律和现实情况的讨论**：
-  - [ActorNightly] 指出警察需要请求用户数据，而不是直接访问，但承认在联邦层面法律可能不被严格执行。
-  - [matt3210] 认为“opt-in”在面对法律传票时毫无意义。
-
-补充讨论：
-• **对未来监控社会的担忧**：
-  - [booleandilemma] 对未来全时监控的社会表示担忧，认为文明缺乏智慧。
-
-• **对公司管理问题的评论**：
-  - [conartist6] 评论了公司内部管理问题和对AI过度依赖对公司发展的影响。
-
-争议焦点：
-• **“opt-in”是否能有效保护用户隐私**：一部分人认为只要严格执行用户明确同意，隐私问题可以控制；另一部分人则认为执法机构的滥用和法律漏洞使得“opt-in”形同虚设。
-• **技术公司与执法机构合作的正当性**：一些人强烈反对技术公司与政府合作，认为这会导致隐私侵犯和滥用；而另一些人则认为只要用户同意，就不存在滥用问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44620002" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://worldhistory.substack.com/p/what-were-the-earliest-laws-really" target="_blank">What Were the Earliest Laws Like?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: crescit_eundo</span> |
-                    <span>评分: 57</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-15 23:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对古代法律的形成、发展及其实际应用的讨论
-
-不同观点：
-• [tbrownaw] 认为最早的书面法律是为了解决人们对先前法律的不满。这表明法律是不断演变和回应社会问题的。
-• [lwansbrough] 怀疑这些是否真的是最早的法律，指出在记录缺失的数千年中，可能早已有其他规则形成。这暗示了历史记录的局限性。
-• [ChrisMarshallNY] 对故事本身表示欣赏，并表示对相关历史人物不了解，显示出对历史知识的兴趣和学习的开放态度。
-• [mcphage] 提到法律石碑虽然令人印象深刻，但在当时的法律案件中并未被实际引用。这表明书面法律和实际操作之间可能存在差距。
-• [w10-1] 比较了乌鲁卡吉那和梭伦的改革，指出两者都回应了经济压迫带来的社会问题。同时提到权力的表现形式可能与实际治理方式不同，并指出古代治理记录的有限性，特别是与其他未依赖神权的社会对比。
-
-补充讨论：
-• 争议的焦点在于古代法律的起源和实际应用。一部分人质疑书面法律是否真的是最早的，另一部分人关注书面法律与实际法律实践之间的差异。
-• [w10-1] 的评论还引发了对古代不同社会治理方式的比较，特别是关于权力结构和法律在社会稳定中的作用。
-• 历史记录的局限性是另一个值得注意的讨论点，尤其是对那些没有留下类似石碑或 clay  tablets记录的社会如何治理的猜测。
-
-总体来看，讨论围绕古代法律的形成、演变、实际应用及其历史记录的局限性展开，并涉及对不同文化和时代治理方式的比较。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44577210" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.notcheckmark.com/2025/07/rethinking-cli-interfaces-for-ai/" target="_blank">Rethinking CLI interfaces for AI</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Bogdanp</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-07-19 16:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了为大型语言模型（LLM）代理优化命令行工具和API设计的必要性。当前设计对LLM不够友好，尤其在本地模型上下文窗口较小的情况下。作者以IDA Pro MCP为例，说明了需要在提供足够信息和避免填满上下文窗口之间取得平衡。为了引导LLM优先使用更便捷的函数，作者在文档字符串中加入了指导信息。
-
-文章还提到命令行工具也存在类似问题，如LLM在处理目录和提交代码时容易出错。作者通过使用linters、build脚本、formatters和git钩子来规范LLM行为，并防止其绕过验证步骤。
-
-最后，文章借鉴信息架构（Information Architecture）的概念，指出需要改进命令行工具的信息架构，使其更易于LLM使用和理解。这包括调整输出格式和提供更有用的上下文信息。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：CLI（命令行界面）如何适应LLM（大型语言模型）和AI代理的使用
-
-不同观点：
-• **swax的观点**：开发了一个用于LLM的命令行驱动程序（NAISYS），通过一些技巧使CLI适应LLM的需求，例如中断长时间运行的进程以询问LLM是否要终止或继续等待，以及让LLM理解使用交替屏幕缓冲区的应用程序。swax认为，模型越好，需要的包装就越少，可以通过CLI运行各种任务，如网络研究、运行Python脚本、更新数据库和维护网站等。
-
-• **yoavm的观点**：提出可以使用终端模拟器（如wezterm-mcp）让AI代理像人类一样使用终端，支持在交互式TUI中滚动等操作。
-
-• **gtirloni的观点**：指出Heisenbugs（不确定性错误）已经成为开发工作流程中的常态，这可能是一个需要解决的问题。
-
-• **BrianCripe的观点**：同意CLI界面需要为AI代理作为新用户类型进行调整，但认为这种改变不需要过于剧烈。通过创建抽象和工具（如Justfile）来隐藏复杂性，可以为人类开发者和AI代理提供相同的工具，但通过不同的界面优化。
-
-• **chubot的观点**：认为Claude Code使得shell和开发自动化更加重要，但也暴露了LLM的一些问题，如改变预提交钩子、目录迷失和命令运行混乱等。
-
-• **jerpint的观点**：正在构建一个用于与LLM协作的上下文工程工具（context-llemur），CLI用于人类，MCP用于LLM，但它们都映射到相同的核心命令，这避免了对不同代理重复说明。
-
-• **duncanfwalker的观点**：指出CLI文档难以针对不同用户提供适当建议，LLM可以接受详细的文档说明，因为不会浪费人类时间。建议文档根据用户上下文进行适应，为LLM提供全面信息，为人类用户提供适当建议。
-
-• **AchintyaAshok的观点**：认为当前处于过渡阶段，现有的shell命令是为人类使用设计的，而AI世界需要为LLM提供指导。提出了上下文层次结构的概念，从基础工具描述到具体项目建议，并介绍了一个通过MCP提供上下文知识的工具平台。
-
-• **jasonriddle的观点**：对`command_not_found_handler`在bash中的实现可能性提出疑问，或者认为这是一个值得拥有的功能。
-
-• **badlibrarian的观点**：提出需要一个无借口、永不失败的撤销功能。
-
-• **layer8的观点**：认为如果人类可以学会使用复杂的工具（如Bulk Rename Utility），那么AI也应该能够学会，并质疑LLM在这一过程中的角色。
-
-• **kristopolous的观点**：更新了一个工具（Mansnip）以让LLM摄入部分manpages，认为这可能具有普遍化潜力。
-
-• **esafak的观点**：认为复杂的GUI只是CLI实用程序的可视化版本，过去的CLI也同样复杂，回忆了一个80年代的复杂`ls`类型实用程序。
-
-• **ascorbic的观点**：构建了一个库（am-i-vibing）来帮助检测工具是否在AI环境中运行，从而可以运行非交互模式或在日志中提供额外上下文。
-
-• **jonplackett的观点**：质疑是否可以通过让代理多模态并以更人类化的方式使用计算机来解决CLI适应问题，认为GUI虽然缺乏 power，但AI可以同时访问两者。
-
-补充讨论：
-• 争议的焦点之一是如何为LLM和人类用户提供适当的CLI文档和工具支持。
-• 另一个讨论点是CLI和GUI在适应LLM需求方面的角色和未来发展方向。
-• 具体的实现技巧和工具（如wezterm-mcp、Justfile、Mansnip、am-i-vibing）提供了实际的解决方案和思路。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44617184" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
