@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-21 20:29 (北京时间)
+            最后更新时间: 2025-07-21 23:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,43 +61,386 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.eff.org/deeplinks/2025/07/amazon-ring-cashes-techno-authoritarianism-and-mass-surveillance" target="_blank">Ring introducing new feature to allow police to live-stream access to cameras</a>
+                    <a href="https://blog.canoozie.net/async-i-o-on-linux-and-durability/" target="_blank">Async I/O on Linux in databases</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: xoa</span> |
-                    <span>评分: 362</span> |
-                    <span>评论数: 38</span> |
-                    <span>发布时间: 2025-07-19 22:25</span>
+                    <span>作者: jtregunna</span> |
+                    <span>评分: 150</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-07-20 06:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Ring公司创始人Jamie Siminoff重新掌舵，并恢复了以监控为先、隐私为后的策略。该公司不仅重新推出了允许警察直接向用户请求录像的功能，还引入了一项新功能，使警察可以请求实时访问家庭安全设备的录像。此举削弱了过去几年Ring为保护用户隐私所做的改革，如引入端到端加密和结束与警察的正式合作。现在，Ring计划与Axon合作，开发让警察直接向用户请求录像的工具，并允许用户同意让警察实时观看录像。此举引发了对公民自由的严重威胁，尤其是在警方曾未经授权使用Ring录像监控抗议者的情况下。同时，Ring还计划转型为“AI优先”公司，可能引入视频分析或面部识别技术，员工需证明使用AI才能获得晋升。这一系列变化被认为是Ring在公众压力下短暂调整后，再次成为大规模监控工具的体现。</p>
+                    <p>本文描述了作者在开发简单键值数据库过程中，对I/O性能优化的探索。最初使用内存哈希表和简单的追加日志实现持久化，但性能不佳。之后，作者转向研究Linux的io_uring机制，它通过共享环形缓冲区在应用与内核间实现真正的异步I/O，大幅提升吞吐量。然而，异步I/O导致数据持久性和一致性问题，作者通过引入双写前日志（WAL）设计解决该问题：一个记录操作意图（异步写入），另一个记录操作完成，只有两者齐备时才在恢复时应用操作，确保一致性。最终，作者使用Zig语言实现了该方案，并通过实验验证其性能和可靠性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Ring摄像头及类似设备的数据隐私与安全问题
+                    <div class="comments-summary">主要讨论点：io_uring 与同步 API 的性能比较及其在数据库中的应用，特别是关于持久性（durability）和正确性的讨论。
 
 不同观点：
-• **隐私担忧和安装拒绝**：Ccecil的父母因为担心数据被第三方和执法部门获取，拒绝了安装Ring摄像头，显示出对隐私保护的强烈关注。
-• **对“选择加入”机制的不信任**：zug_zug和haunter认为“选择加入”机制往往设计得不够透明和可靠，容易被公司操纵，导致用户在不知情的情况下分享数据。
-• **呼吁严格监管**：jsrozner主张实施更严格的法规，禁止在未经明确许可的情况下保留和使用个人图像及数据，并建议对违规行为进行严厉处罚，同时鼓励举报。
-• **技术解决方案的讨论**：georgeburdell和SoftTalker提到使用自建的NAS和私有网络来避免依赖公司的云服务，以保护隐私，但承认这种方案成本高且不实用。
-• **对执法部门访问的担忧**：ActorNightly指出，警察需要通过请求获取录像，但同时承认在当前法律环境下，这种保护可能不够。matt3210进一步强调，在法律传票面前，选择加入机制毫无意义。
-• **对Ring产品设计的不满**：fma和henvic批评Ring的产品设计使得离线操作困难，目的是为了便于第三方获取数据，henvic甚至考虑取消订阅。
-• **技术应对策略**：precommunicator分享了一种通过智能插头和UPS断电来控制摄像头使用的技术策略。
+• **quietbritishjim** 认为文章中比较的是有 fsync 调用和无 fsync 调用的性能，而不是同步 API 和 io_uring 的真正性能对比。他认为如果同步代码中去掉 fsync，也能获得类似的性能提升。此外，io_uring 也可以通过某些方法实现 fsync 的功能，因此文章的比较是不对等的。
+• **jorangreef** 指出 TigerBeetle 始终使用 fsync 来保证持久性，并且他们的设计目标不是性能而是正确性。TigerBeetle 的双 WAL（写前日志）设计是为了协议感知的恢复，而不是简单的性能优化。
+• **sethev** 认为文章中的逻辑有误，指出如果第4步（等待完成记录写入 WAL）正确执行，那么第3步（等待意图记录持久化）就是多余的。他怀疑第4步可能没有正确执行，导致误解。
+• **jmpman** 担心如果系统崩溃后，客户端收到成功的请求可能没有对应的完成记录，这违反了 ACID 原则。
+• **avinassh** 同意 jmpman 的观点，认为如果完成记录是异步的且可能未完成，那么服务器的持久性保证就会有问题。
+• **tlb** 和 **BeeOnRope** 都质疑意图记录的必要性，认为如果只有完成记录是持久化的，那么单独记录意图记录似乎没有意义。
+• **leentee** 认为文章中的方案不能保证持久性，并且认为好的同步代码比坏的异步代码更可取，尤其是对于现代 NVMe 存储而言，同步 IO 已经足够快。
+• **lstroud** 分享了在 Linux raid 驱动中遇到的死锁问题，并通过移除 lvm 解决了吞吐量问题。
+• **ptrwis** 提到目前只有一个人在为 PostgreSQL 实现异步直接 IO。
+• **tobias3** 对双 WAL 操作比单个同步 IOPS 更快的说法表示怀疑，认为这可能意味着数据库根本没有持久性。
+• **jtregunna** 在更新中澄清了需要等待完成记录写入后再响应客户端，并指出双 WAL 方法在批量处理时有优势，但在接近单次写入时成本更高。
+• **ozgrakkurt** 分享了自己实现 crash-resilient LSM 树的经验，并好奇双 WAL 方法与 append/rename 方法的 trade-off。
+• **eatonphil** 提到目前似乎没有很多数据库在生产环境中默认使用 io_uring，并希望有人能做这样一个调查。
+• **jasonthorsness** 质疑 NVME 存储接口是否应该比 Linux 抽象层更简洁，并提出某些高性能应用可能更适合作为特殊用途的 unikernels。
 
 补充讨论：
-• **情绪化反应**：drannex对科技公司和政府滥用技术的行为表示强烈不满，使用激烈的言辞表达对“ surveillance state”的反对。
-• **对加密功能的疑问**：howdyhowdy询问Ring是否破坏了E2EE（端到端加密）功能，还是仅仅针对未选择该功能的用户。
+• 争议的焦点在于文章中比较的合理性和持久性保证，特别是 fsync 在异步和同步代码中的作用。
+• 另一个值得注意的讨论点是双 WAL 设计的必要性和意图记录的作用。
+• 一些评论者分享了实际操作中的经验和解决方案，比如 lstroud 的死锁问题和 ozgrakkurt 的 crash-resilient 方法。
+• 还有评论者对 io_uring 在生产环境中的使用情况表示关注，并希望有更多调查和数据。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44622454" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.borgbackup.org/" target="_blank">Borg – Deduplicating archiver with compression and encryption</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rubyn00bie</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-20 02:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>BorgBackup（简称Borg）是一款支持重复数据删除、压缩和加密的开源备份工具。它提供高效的存储空间利用，支持安全的身份认证加密，以及多种压缩算法（如lz4、zstd、zlib、lzma或无压缩）。通过FUSE可以挂载备份，便于浏览和恢复数据。Borg易于在多个平台上安装，如Linux、macOS和BSD等，并且采用BSD许可，拥有活跃的开源社区支持。定期检查备份以确保数据安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：备份工具的选择与比较（主要包括Restic、Borg、Kopia等）
+
+不同观点：
+• **支持Restic**：
+   - **易用性和设置简单**：thangngoc89和kachapopow提到Restic在易用性和设置方面表现更好，尤其是搭配Backrest WebUI或borgmatic时。Kachapopow特别强调Restic的“设置后忘记”特性，减少了对备份失败的担忧。
+   - **跨平台支持**：thangngoc89指出Restic支持Windows，并且具备跨机器的去重功能和良好的压缩支持。
+
+• **支持Borg**：
+   - **可靠性和性能**：sunaookami和rollcat对Borg的性能和去重功能表示认可，尤其是对服务器和笔记本备份的场景。Rollcat提到自己使用Borg已有约10年，认为其非常出色。
+   - **开源社区和作者**：blablabla123提到在一次会议上遇到Borg的作者，并表示作者对数据损坏问题的处理方式让人觉得Borg可靠。
+   - **传统与广泛使用**：rjh29认为Borg历史悠久、流行且经过实战检验，特别适合对数据备份要求高的场景。
+
+• **其他工具的提及**：
+   - **Kopia**：evulhotdog推荐Kopia，认为其功能与Restic和Borg相似，并且拥有出色的GUI。
+   - **Vorta GUI**：jszymborski和ElectronBadger提到使用Vorta作为Borg的GUI前端，解决了Borg命令行操作的不便问题，并且与Hetzner的Storage Box服务兼容良好。
+   - **Baqpaq**：dxs提到Baqpaq，它结合了BorgBackup、RSync和RClone，适用于Linux系统，但个人使用基于Tar的自定义脚本。
+   - **Plakar**：johng提到Plakar是一个新兴的备份项目，值得关注。
+
+补充讨论：
+• **争议焦点**：
+   - **Restic vs. Borg**：kachapopow认为Restic在易用性和设置上优于Borg，但rjh29则强调Borg的可靠性和经过时间考验的特性。
+   - **备份工具的选择**：AnonC提到正在寻找一种低成本、易用且 robust 的NAS备份方案，尤其是对个人数据隐私有高要求的场景。
+
+• **其他值得注意的讨论点**：
+   - **加密与去重**：toenail指出，在加密情况下，去重功能仅在每台主机上有效。
+   - **工具的性能问题**：jszymborski分享了从Duplicati切换到Borg和Vorta的经历，因为Duplicati在恢复时速度极慢。
+
+总结来看，讨论主要围绕Restic和Borg的比较展开，参与者根据各自的体验和需求支持不同的工具，同时也提及了Kopia、Baqpaq和Plakar等其他备份解决方案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44621487" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.pcgamer.com/software/platforms/valve-confirms-credit-card-companies-pressured-it-to-delist-certain-adult-games-from-steam/" target="_blank">Valve confirms credit card companies pressured it to delist certain adult games</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: freedomben</span> |
+                    <span>评分: 896</span> |
+                    <span>评论数: 79</span> |
+                    <span>发布时间: 2025-07-18 15:54</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Valve 最近根据支付处理方的要求，从 Steam 下架了一批成人游戏，以避免失去支付方式，影响其他游戏和内容的购买。Valve 表示正在联系受影响的开发者，并提供应用信用以便他们未来在符合支付处理方标准的情况下发布新游戏。虽然具体下架游戏未公布，但推测与涉及不当主题的成人内容有关。此外，一款中国游戏因 DMCA 投诉而下架，与新规则无关。文章指出，支付处理方（如 Visa 和 Mastercard）对在线成人内容非常敏感，这一 precedent 可能影响未来平台内容的审核标准。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：支付处理方（如Visa、Mastercard）对某些内容（如成人游戏、特定政治内容）的限制及其背后的原因
+
+不同观点：
+• maxbond认为支付处理方不应干涉内容的合法性，只要交易合法且不涉及制裁，就不应阻止交易。他质疑处理方是否因监管要求而采取行动，并认为如果担心欺诈，可以通过提高费用来应对，而非直接限制内容。
+
+• miiiiiike强烈反对信用卡公司对用户消费内容的干涉，认为这些公司不应决定什么是可接受的言论。他强调用户应有更多自由，不应受到支付公司的影响。
+
+• Abishek_Muthian指出支付处理方和支付网关在处理合法内容时也常常过于谨慎，给商家带来技术上的麻烦。他正在开发一个项目以减少与支付网关的交互，并探讨直接银行API的可能性。
+
+• j_m_b从技术角度解释了成人内容的高拒付率问题，认为支付公司限制成人内容是为了避免处理大量的拒付纠纷，而非出于道德考虑。
+
+• throwaway071625关注被下架的游戏内容，特别是涉及乱伦主题的游戏，并担心这种做法会引发更多的内容审查。
+
+• bji9jhff强调虚拟内容不应与现实行为等同，认为“虚构不是现实”这一原则应被广泛接受。
+
+• egypturnash以幽默方式提出Valve是否可以自立支付系统，以此摆脱信用卡公司的限制，并暗示通过这种方式控制热门产品（如Half-Life 3）的发行。
+
+• gmd63批评自由市场支持者在面对此类问题时的双重标准，指出企业有选择不处理某些内容的自由，并呼吁实际执行的法律和监管。
+
+• phendrenad2提供了一个ACLU向FTC提交的文件链接，说明信用卡公司不欢迎的内容及其施压方式。
+
+• Aeolun对比了暴力游戏和成人内容的不同待遇，质疑社会对暴力的接受度高于性内容。
+
+• speeder指出支付处理方不仅因欺诈和拒付问题限制内容，还因某些政治价值观进行审查，并提到有亿万富翁和投资者对内容施加影响。
+
+• eddythompson80提供了支持限制内容的请愿书链接，显示反对支付处理方干涉内容的集体声音。
+
+• lrvick认为这是加密货币需求的有力论证，提出加密货币可以打破支付处理方的垄断，允许自由交易。
+
+• Nifty3929提醒大家这是监管和政治问题，而非支付方式问题，指出如果加密货币威胁到传统金融体系，政府会进行打击，并认为当前的监管更倾向于支持监控和道德审查。
+
+补充讨论：
+- 讨论中涉及了支付处理方对内容审查的广泛影响，包括对合法内容的过度限制以及政治内容受到的压力。
+- 争议的焦点在于支付处理方是否有权干涉内容的合法性，以及这种干涉是否出于道德或法律考量。
+- 提到了加密货币作为一种潜在解决方案，但同时也指出了政府对加密货币的潜在监管打击。
+- 讨论中多次提到法律和监管的作用，以及企业和用户在这种环境下的应对策略。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44606184" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://it-notes.dragas.net/2025/07/18/make-your-own-backup-system-part-1-strategy-before-scripts/" target="_blank">Make Your Own Backup System – Part 1: Strategy Before Scripts</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 345</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2025-07-19 19:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了备份的重要性以及常见的误区和错误做法。许多人低估了备份的价值，依赖不可靠的技术或未经测试的“薛定谔备份”，导致数据丢失。现代人常依赖云存储，却忽视了数据保护的责任。文章强调备份应可恢复、采用开放格式并保持一致性。作者列举了多种数据丢失场景，如自然灾害、网络攻击和人为错误，强调了制定备份计划的必要性。简单的文件复制并非有效备份，需考虑风险、数据重要性、存储空间和恢复时间等因素。备份策略中，全盘备份和单个文件备份各有优缺点，需根据具体需求制定合适的备份方案。最终，没有完美的解决方案，关键是根据实际情况平衡安全性和实用性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：备份和灾难恢复解决方案
+
+不同观点：
+• [progbits] 建议通过限制客户端只能写入备份而不能删除，来防止勒索软件删除备份。同时，备份服务器应维护自己的文件系统快照，以应对最坏的情况。使用 `rsync/ssh` 可以通过 `.ssh/authorized_keys` 的允许命令功能实现这一点。
+
+• [bambax] 强调许多人甚至大公司对备份的忽视。以咨询的一家年收入约10亿欧元的公司为例，他们依赖数据中心操作员的磁盘拷贝，而不自行测试备份。在一次用户错误导致生产数据库被毁后，最近的一次备份已是四天前的，但公司内部对此似乎习以为常。
+
+• [binwiederhier] 指出备份不等于灾难恢复，恢复时间目标（RTO）和恢复点目标（RPO）对于业务连续性至关重要。强调了时间点备份（特别是应用一致性备份）的重要性，并警告不要信任简单的 `rsync` 拷贝。还提到了存储介质的不可靠性，建议采用3-2-1备份策略（三份备份，两份不同介质，一份异地存储）。
+
+• [sandreas] 认为备份系统的好坏在于其是否经过测试并文档化。强调了快照和PULL备份方式在防止勒索软件攻击中的重要性，推荐使用 `restic` 和 `ZFS` 等工具。
+
+• [rr808] 提出个人需求，寻找一种标准化方式来保存家庭照片，但尚未找到满意的解决方案。
+
+• [HankB99] 推荐了ZFS文件系统，并分享了其在硬链接保存和远程备份中的应用经验。
+
+• [kbr2000] 推荐了Dirvish工具，认为其提供了轻量且功能全面的备份解决方案。
+
+• [crinkly] 分享了一种简单有效的备份策略，使用外部磁盘和轮换策略来应对硬件故障和盗窃。
+
+• [gchamonlive] 提供了自定义的备份自动化脚本，基于Borg备份工具，并在GitHub上开源分享。
+
+• [daneel_w] 描述了一种简单、低成本的备份方案，使用 `tar` 和加密工具，手动执行备份并存储在不同地点。
+
+• [kayson] 讨论了备份一致性的难题，特别是在应用程序数据的一致性方面，提出了数据库转储的解决方案。
+
+• [bob1029] 建议使用RDBMS产品的日志复制机制来进行备份，认为这种方法强大且适用于各种数据类型。
+
+• [gmuslera] 强调了根据数据类型和变化特点来优化备份策略的重要性，提出了对不同数据类型（如配置文件、代码、数据库等）进行不同备份处理的建议。
+
+• [firesteelrain] 描述了一种基于多站点复制的备份策略，应用于Artifactory实例，而不依赖传统备份方式。
+
+补充讨论：
+• 争议焦点在于备份策略的复杂性和适用性。有些人强调简单的手动备份方式，而另一些人则认为需要复杂的自动化和一致性保证方案。
+• 另一个值得注意的讨论点是关于ZFS和快照技术在备份中的应用，以及如何有效防止勒索软件攻击。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44618687" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://english.elpais.com/culture/2025-07-20/the-bewildering-phenomenon-of-declining-quality.html" target="_blank">The bewildering phenomenon of declining quality</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: geox</span> |
+                    <span>评分: 393</span> |
+                    <span>评论数: 117</span> |
+                    <span>发布时间: 2025-07-20 08:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了现代产品质量和消费模式的变化，指出许多人感觉产品质量下降，如廉价家具、一次性衣物和过度加工食品等。作者引用1976年研究员E. Scott Maynes的观点，认为质量是主观的，取决于消费者的偏好，因此不能绝对地说新产品比旧产品质量更好。专家Javier Carbonell认为，资本主义承诺的“好生活”难以实现，加上社交媒体展示的不可及生活，加剧了这种悲观情绪。文章还提到“效率文化”取代了“紧缩文化”，如特斯拉和Meta等公司通过裁员追求成本最小化。在公共服务方面，如医疗系统，问题在于未能适应社会变化，导致私人保险增加。心理学家Albert Vinyals指出，消费者更看重新颖而非耐用，这种变化在不同代际间产生了分歧。作者总结，老年人更觉质量下降，因他们重视的耐用性已不再被广泛关注。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：产品质量是否在下降以及如何评价质量的变化
+
+不同观点：
+• 一些用户（如layer8和zkmon）认为产品质量在下降，尤其是成功品牌在市场饱和后为了利润开始偷工减料，导致质量逐渐下滑。他们以个人经历为例，如购买的商品质量不如多年前的旧版本。
+• 另一部分用户（如jstummbillig和simianparrot）则认为质量实际上有所提高，但市场上的选择变得更加多样化，消费者可以根据价格和需求选择不同质量层次的商品。他们指出，现在的商品更加注重可负担性、效率和可访问性，这是一种进步。
+• raspasov直接对比了过去的诺基亚手机和现代的iPhone，认为现代旗舰手机在各个方面都显著优于旧设备，反驳那些认为过去产品质量更好的观点。
+• bitter_michael提出质量的评价标准因人而异，不同消费者对质量有不同的需求和期望，因此不能一概而论。
+• weinzierl持中立态度，认为质量的变化在不同领域表现不一，有些产品质量大幅提升（如汽车），而有些则因大众化导致质量下降（如飞机座位）。
+
+补充讨论：
+• esperent指出，现代衣物的染色质量比过去更好，质疑那些认为衣物质量下降的观点。
+• astrobe_讨论了耐用性与技术创新的对立，认为企业通过“感知过时”策略来推动消费，同时提到自动化可能改善客户服务。
+• thatjoeoverthr提到近期购买到质量极差的鞋子，怀疑这是材料缩水或其他不负责任的生产方式所致，并指出AI和假评论可能让不良商品更难被曝光。
+• globnomulous批评互联网时代让人们变成全天候购物者，认为这种文化对生活质量有负面影响，建议人们应减少无谓的消费。
+
+争议的焦点：
+• 质量是否在普遍下降，还是仅仅因市场选择多样化而导致不同消费者体验不同。
+• 现代商品在技术进步的同时，是否在耐用性和其他传统质量指标上有所妥协。
+
+总的来说，讨论围绕着质量的定义和评价标准，以及市场变化对产品质量的影响展开。不同的个人经历和需求导致了对质量变化的不同看法。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44622953" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://worksonmymachine.substack.com/p/nobody-knows-how-to-build-with-ai" target="_blank">Nobody knows how to build with AI yet</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Stwerner</span> |
+                    <span>评分: 476</span> |
+                    <span>评论数: 67</span> |
+                    <span>发布时间: 2025-07-19 15:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI在编程和软件开发中的应用及其影响
+
+不同观点：
+• **Tom_m**：认为AI应帮助开发者专注于高层次的设计和批判性思维，而非纠结于代码细节。他强调软件架构和设计模式的重要性，并指出掌握这些技能需要长时间的经验积累。
+• **Nirvanatikku**：赞同文章观点，强调清晰表达问题对AI驱动开发的重要性。他分享了使用Repl.it等工具的积极体验，认为这些工具能提升开发效率，但也指出AI有时会偏离预期，需要人工干预。
+• **Lordnacho**：享受AI辅助编程带来的便利，特别是减少了繁琐的编辑工作，提高了工作效率。他认为AI对有经验的开发者特别有帮助，但对新手的影响尚不明确。
+• **Rmdashrfv**：指出AI在实现细节上的局限性，尤其是在非web领域的软件开发中。他认为AI的成功很大程度上依赖于开发者对实现细节的不关心，且很多项目因无法精确控制AI而失败。
+• **Flatcircle**：认为AI是搜索技术的进化，只是一个工具，不会导致行业的存在危机。他强调聪明的人能利用工具做很多有趣的事情，但工具仍需人工操作。
+• **D00mB0t**：以戏谑的方式提到利用AI在网络安全咨询方面赚钱的潜力。
+• **Sgt101**：分享了在使用AI模型时的经验，指出在处理已知任务时效果较好，但在不熟悉的领域容易产生错误且难以纠正。
+• **Schneems**：关注AI生成代码的质量和一致性问题，认为当前AI在将开放问题分解为可验证的具体步骤方面表现不佳，希望有更多控制权。
+• **Gngoo**：认为自己已经掌握了利用AI高效开发的技巧，但难以传授给他人。他强调AI对开发效率的巨大提升，但指出多数开发者尚未接受这种新方式。
+• **Asadotzler**：质疑AI在处理安全、国际化、可访问性等软件质量核心问题上的能力，认为业余开发者难以达到商业软件的标准，AI辅助开发方式可能阻碍行业成熟。
+• **Divan**：强调阅读和理解代码的重要性，认为即使有AI辅助，开发者仍需保持对代码的清晰理解，以确保代码对其他开发者友好。
+• **Saadatq**：提出“flex coding”的新概念，分享了利用AI在短时间内高效完成项目的个人经验，强调AI对生活工作平衡的积极影响。
+• **Siliconc0w**：对AI开发的效果感到失望，认为AI指导可能影响下一代开发者的能力发展，并担心当前方法可能对行业产生负面影响。
+• **Wiremine**：分享了对AI辅助开发的积极体验，认为这是一种新的方法论，可能导致一些热爱手工艺的开发者离开行业，但同时也会开启新的机会。
+
+补充讨论：
+• **AI对开发效率的影响**：多数开发者认为AI能提高效率，尤其是在处理已知问题和繁琐任务时，但对新手和复杂项目的适用性仍存在争议。
+• **AI生成代码的质量和一致性**：开发者普遍关注AI生成代码的质量问题，强调人工干预和代码审查的必要性。
+• **AI对开发者角色的影响**：一些开发者担心AI可能导致开发者角色的转变，从代码编写者变为AI管理员，可能影响行业的人才培养和职业发展。
+• **AI在非web领域软件开发中的局限性**：部分开发者指出AI在处理非web领域软件开发任务时表现不佳，实现细节和特定需求仍需人工处理。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44616479" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://embeddable.com/blog/iframes-for-embedding" target="_blank">Why not to use iframes for embedded dashboards</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rogansage</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-18 11:48</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了为何不建议使用iframes嵌入分析仪表盘，尤其是在用户体验和开发便捷性方面。Iframes作为独立的浏览器上下文，无法继承父页面的样式和交互逻辑，导致视觉和功能上的不一致，增加了开发和维护的复杂性。此外，iframes依赖于postMessage进行跨域通信，限制了交互性和响应速度，且容易引发安全和调试问题。相比之下，使用API或SDK进行嵌入更为理想，能提供更流畅的用户体验和更简便的开发过程。文章强调，现代应用需要更好的嵌入方案以满足用户和开发者的需求。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕是否使用iframes以及其替代方案的技术和业务考虑的讨论。
+
+不同观点：
+• [ewf] 认为不使用iframes可以为他们的开发工具提供差异化优势，避免未来潜在的限制，并且企业客户不希望突出第三方解决方案，iframes会显得"不原生"。虽然避免使用iframes存在技术挑战，但解决这些问题对业务有利。
+
+• [bawolff] 承认iframes有安全风险，但认为这些风险相对较小，相比之下，将页面控制权完全交给第三方网站风险更大。
+
+• [haburka] 认为文章列举的iframes缺点过多，并怀疑其为产品广告。他们指出iframes在允许HTML内容存在于你的网站上而不需要信任或清理方面非常有用，但无法编辑iframe内容是一个严重缺点，通常更喜欢使用API或npm模块。
+
+• [josephcsible] 质疑用户是否真的期望完全品牌一致的仪表盘，提出像YouTube和Twitter这样的iframes在不同网站上看起来一致也很常见。
+
+• [joloooo] 提到使用Observable Framework，似乎提供了一种具体的替代方案。
+
+• [aaviator42] 认为iframes非常方便，并且以安全方式利用其优势并不难。
+
+• [btbuildem] 讨论了在原型/概念验证服务中使用iframes的另一种场景，强调了在工作流管道中使用嵌入式微UI的构想，受到"做一件事并做好"的Unix格言的启发。
+
+补充讨论：
+• [cududa] 对文章内容表示感谢，认为其帮助自己不再需要反复解释这些问题。
+
+• [andrewstuart] 提到该产品被列为最佳替代方案，暗示可能存在市场竞争。
+
+• [rohan_] 对产品理解有困难，认为像v0这样的工具可以快速创建分析仪表盘，并提到https://upsolve.ai/提供了实际价值。
+
+• [msgodel] 对更多分析类内容表示不满。
 
 争议焦点：
-• **选择加入机制的有效性和透明度**：用户对公司提供的“选择加入”机制普遍不信任，认为其设计不透明且容易被滥用。
-• **隐私保护与执法需求的平衡**：如何在保护个人隐私的同时满足执法部门的需求，是讨论中一个重要的争议点。
-• **技术解决方案的可行性**：自建私有网络等技术方案虽然能提供更高的隐私保护，但其成本和实用性受到质疑。</div>
+• 使用iframes的优缺点，特别是在安全性和用户体验方面。
+• 是否应在文章或博客中披露广告意图以避免误导读者。
+• 替代方案如API、npm模块以及具体工具如Observable Framework的有效性和实用性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44620002" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44603657" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -108,104 +451,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.mathpages.com/home/kmath043.htm" target="_blank">Piano Keys</a>
+                    <a href="https://my.matterport.com/show/?m=SZSV6vjcf4L" target="_blank">Matterport walkthrough of the original Microsoft Building 3</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gametorch</span> |
-                    <span>评分: 67</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-15 21:50</span>
+                    <span>作者: uticus</span> |
+                    <span>评分: 71</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-16 18:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了钢琴白键和黑键宽度排列的问题。由于黑键宽度相同且白键前端宽度一致，后端宽度无法完全相同。文章提出了几种优化方案，以最小化白键后端宽度的最大差异。初始方案如设置不同宽度组合，达到最大差异为B/2、B/6、B/8等。最佳传统方案是"B/12方案"，最大差异仅为B/12。进一步放宽条件，允许黑键和白键前端宽度变化，提出一种单位划分法，将一个八度分为878472单位，优化后最大差异显著减小，白键为0.0181英寸，黑键为0.0127英寸。这种优化方案在实际制造中更精确，显著减少宽度差异。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：钢琴键盘设计，特别是黑键和白键的布局及其合理性。
+                    <div class="comments-summary">主要讨论点：微软旧办公室布局及其变迁，包括工作环境、办公室设计和员工体验。
 
 不同观点：
-• **prmph** 认为当前的钢琴键盘设计没有问题，并提出假设：如果把黑键放在白键后面并占据白键的一部分宽度，并不影响弹奏。他质疑为什么白键后部的宽度需要一致，并指出 pianists 不会按到白键的后部。
-
-• **bruce343434** 回应称，在他的钢琴上，黑键的宽度和白键后部的宽度是一样的，这是通过调整黑键的位置实现的，而不是将黑键完全置于白键中间。
-
-• **kazinator** 认为钢琴设计中并没有对白键后部宽度过于精细的要求，实际设计中更关注黑键的宽度和分布。他解释了黑键和白键布局的历史设计方法，并指出这种设计并不是完全对称的，例如 E-F 之间的分割并不完全在两个黑键中间。
-
-• **ralfd** 表示对原文内容不理解，建议需要更多图片来帮助理解。
-
-• **moefh** 认为黑键的传统布局是将八度音分为两个部分（C-D-E 和 F-G-A-B），然后根据这些部分均匀放置黑键，并指出白键在这些部分内有“镜像”关系，例如 C 和 E 的位置关系。他认为实际的钢琴键盘符合这种描述。
-
-• **NooneAtAll3** 希望文章中能有标注音符的图片，并希望看到按键宽度的示意图，以便更好地理解讨论内容。
-
-• **ajuc** 认为钢琴键盘设计不规则，给演奏者带来了记忆不同和弦位置的负担，例如 C 大调和 D 大调的和弦形状不同。他建议可以采用更规则的设计，例如将一个八度分为 6 个白键和 6 个黑键。
+• [avidiax] 和 [ThrowawayB7] 提到早期在微软工作时，办公室根据资历分配，资深员工可以获得带窗的办公室。然而，这种传统已经改变，微软现在也采用了开放式办公室设计。这种变化引发了一些 nostalgia 和不满。
+• [Rodeoclash] 认为小型的独立开发者办公室是理想的工作环境，可以根据个人喜好布置，并且在需要集中精力时关闭门户。
+• [mynameisash] 分享了在微软大楼内找路的困惑，尤其是当建筑设计相似时，容易迷路。
+• [tomcam] 表达了对以前工作环境的热爱，强调了独立思考空间的重要性，并描述了建筑物周围自然环境的美好，特别是在雪天慢跑的经历。
 
 补充讨论：
-• 争议的焦点之一在于钢琴键盘布局的历史设计合理性，特别是黑键和白键的宽度与分布是否应该一致，以及这种不规则布局是否给学习者带来了不必要的困难。
-• 一些评论者（如 prmph 和 kazinator）认为当前设计没有问题，而另一些人（如 ajuc）则认为可以采用更规则的设计来简化学习和演奏。
-• 图片和视觉示例在讨论中被多次提及，显示出视觉辅助在理解键盘布局复杂性方面的重要性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44576183" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/alexwei_/status/1946477742855532918" target="_blank">OpenAI claims gold-medal performance at IMO 2025</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Davidzheng</span> |
-                    <span>评分: 460</span> |
-                    <span>评论数: 74</span> |
-                    <span>发布时间: 2025-07-19 09:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章指出，某些与隐私相关的浏览器扩展程序可能会导致在x.com网站上出现问题。建议用户禁用这些扩展程序，然后重试访问。文章提醒用户不必担心，可以尝试再次操作。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：OpenAI在国际数学奥林匹克（IMO）2025问题上的突破及其引发的讨论
-
-不同观点：
-• **对突破的惊叹与技术探讨**：
-  - [og_kalu] 强调该成果出乎包括OpenAI研究人员在内的很多人意料，是近期技术发展的结果，并归功于Alex Wei及其团队的努力。
-  - [rafael859] 注意到生成的证明使用了有限的词汇，并指出Alex Wei是国际信息学奥林匹克（IOI）金牌得主。
-  - [demirbey05] 提到Google也参与了IMO并获得金奖，暗示AI在数学竞赛中的竞争逐渐升温。
-
-• **对成果难度和专业性的讨论**：
-  - [tlb] 指出这些问题虽然是高中水平，但非常困难，鼓励怀疑者亲自尝试解决。
-  - [dylanbyte] 强调这些问题仅在背景知识上是高中水平，实际非常困难，专业数学家除非有IMO背景，否则也难以取得同样成绩。
-  - [gniv] 指出模型没有解决最难的第六题，与人类表现一致。
-
-• **对成果的质疑与担忧**：
-  - [johnecheck] 对成果的实现方式表示怀疑，担心是否通过大量并行计算和挑选最佳结果来实现，呼吁透明公开使用的工具和方法。
-  - [modeless] 引用了Noam Brown的观点，认为该模型并非专门针对IMO问题，而是一种新的通用推理模型，并期待AI对科学发现的实质贡献。
-
-• **对AI进步速度和影响的讨论**：
-  - [z7] 提到Paul Christiano和Eliezer Yudkowsky对IMO挑战的预测，显示出对AI快速进展的不同看法。
-  - [meroes] 认为由于AI公司针对性雇佣IMO背景的RLHF人员，难以评估该成果是否代表真正的进步。
-
-补充讨论：
-• **对其他AI竞赛表现的关注**：
-  - [quirino] 提到OpenAI团队在"AtCoder World Tour Finals 2025"的表现，强调其在与人类顶级选手中的竞争力。
-
-• **对精英竞赛的理解和统计**：
-  - [nmca] 指出IMO是精英竞赛，许多人不了解其难度，并通过粗略计算说明IMO金牌是百万分之一的人才。
+• [buran77] 提供了一个链接，供收藏和存档微软办公室的虚拟导览。
+• [dreamcompiler] 提到微软最早的办公室位于阿尔伯克基，并提供了一个相关链接。
+• [Helithumper] 提供了一个相关的微软博客链接，可能对讨论有参考价值。
+• [canucker2016] 对零食间的饮料选择减少表示不满，尤其是缺少多种苏打饮料，并对此进行了幽默的批评。
+• [jerpint] 提到了技术演示中使用的高斯溅射和无缝过渡技术，可能暗示未来办公环境展示的潜在技术发展。
+• [Aeolun] 感叹微软过去知道如何建造办公室，暗示对现有办公室设计的不满。
+• [dhx] 对内部玻璃加固（金属网）的必要性提出了疑问。
+• [CurtHagenlocher] 指出照片拍摄时间在2014年至2018年之间，并提到某些建筑在2018年被清空拆除。
+• [jwoglom] 对印有“微软”字样的黑色垃圾桶表示喜爱，尽管原因不明。
 
 争议焦点：
-• 该成果是否代表AI的真正进步，还是仅仅是大量计算资源和挑选结果的产物。
-• AI在数学竞赛中的表现是否能直接转化为对科学发现的实质贡献。</div>
+• 微软办公室设计从独立办公室向开放式办公室的转变，引发了对工作环境质量的不同看法。一些人怀念过去的独立办公室，而另一些人则对开放式设计持保留意见。
+• 零食间饮料选择的变化引起了员工的不满，反映了公司在员工福利方面的细微变化也能引发讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44613840" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44585370" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -216,291 +501,97 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s44222-025-00323-4" target="_blank">Writing Is Thinking</a>
+                    <a href="https://www.npr.org/2025/07/14/nx-s1-5467062/hungary-library-books-beetles" target="_blank">Hungary's oldest library is fighting to save books from a beetle infestation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: __rito__</span> |
-                    <span>评分: 6</span> |
+                    <span>作者: smollett</span> |
+                    <span>评分: 186</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-16 15:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>匈牙利最古老的潘诺恩哈尔马修道院图书馆正努力拯救约10万本手抄书，这些书受到甲虫侵扰。药店甲虫（也称面包甲虫）不仅出现在食物中，还被书籍的胶水和淀粉吸引。为消灭甲虫，修复人员将书籍放入密封塑料袋，抽空氧气，注入氮气，经过六周处理希望彻底消灭甲虫。处理后，每本书将逐一检查和吸尘，受损书籍将进行后续修复。虽然最古老和珍稀的书未受影响，但任何损坏都被视为对文化和历史遗产的打击。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：图书馆中未扫描和未翻译书籍的保存及昆虫侵害问题
+
+不同观点：
+• [dr_dshiv] 认为应该有一个追踪器来显示世界上所有未扫描和未翻译的书籍，特别是新拉丁语书籍中只有不到10%被翻译，这令人惊讶。
+• [bob1029] 提出控制湿度是防止昆虫滋生的有效方法，建议将相对湿度保持在50%以下，以抑制生物在干燥空间中繁殖。
+• [Iryna77] 描述了图书馆中严重的昆虫侵害问题，提到整个藏书需要同时处理，且一些古老书籍需要通过缺氧环境来处理，但对处理结果持怀疑态度。
+• [maxloh] 认为虽然保存原件很重要，但扫描书籍可以减轻很多风险，暗示数字化可能是解决方案之一。
+• [funnym0nk3y] 对使用温和的昆虫消灭方法感到惊讶，原本预期会使用大量的杀虫剂。
+
+补充讨论：
+• [ChrisArchitect] 提供了一个相关讨论的链接，引导至其他平台上的进一步讨论。
+• [mdavid626] 的问题似乎与讨论主题无关，询问是否有匈牙利人。
+• [EGreg] 提供了一个与讨论无关的链接，内容似乎是一个不相关的主题。
+
+争议焦点：
+• 对待图书馆昆虫侵害的处理方法存在不同看法，[Iryna77] 对缺氧处理方法的效果表示怀疑，而 [funnym0nk3y] 则对没有使用强力杀虫剂感到意外。
+• 关于书籍保存的最佳方法，[dr_dshiv] 强调未翻译书籍的问题，[maxloh] 则强调数字化作为解决方案的潜力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44583316" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nytimes.com/2025/07/17/climate/budget-cuts-climate-observatories.html" target="_blank">Trump's Budget Would End 7 Decades of Hawaii Greenhouse Gas Measurements</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mosesbp</span> |
+                    <span>评分: 10</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-21 06:30</span>
+                    <span>发布时间: 2025-07-21 13:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了在大型语言模型（LLMs）时代，人类撰写科学文章的价值。写作不仅是报告研究结果，更是帮助理清思路、形成新想法的重要工具。手写能促进大脑连接，提升学习和记忆效果。虽然LLMs可以快速生成文章和审稿报告，但由于缺乏责任承担能力，不能作为作者。而且，LLMs可能产生错误信息，其生成的文本需要仔细核查。完全依赖LLMs可能剥夺研究人员反思和创造性构建研究故事的机会。不过，LLMs在改进语言、总结文献和激发新想法方面仍具潜力，可作为辅助工具，但不应取代人类的写作过程。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：写作过程与思维合成之间的关系
+                    <div class="comments-summary">主要讨论点：围绕美国政治中"建制派"与"反建制派"的争论，以及对具体政客如米奇·麦康奈尔（Mitch McConnell）的评价。
 
 不同观点：
-• 一些人的感受是，写作让他们觉得自己很聪明或很好，他们将这种感受与写作本身等同起来。这种观点认为写作行为本身让他们感到成就和满足。（zug_zug 隐含的观点）
-• zug_zug 认为，这些人实际上是混淆了思维合成（synthesis）和写作本身。他们经过长时间的头脑酝酿，在最终将想法整合成文时，误以为写作是让他们感觉良好的主要原因，而实际上这种感觉来自于思维合成的完成，而非写作过程本身。
+• **支持反建制派的观点**：
+  - 认为建制派的政客，如米奇·麦康奈尔，长期占据权力位置但并未带来真正的变革。
+  - 反建制派的崛起是对传统政治精英的反抗，旨在打破现有的政治僵局。
+  - 例子：提到茶党运动和特朗普的崛起，认为这是民众对建制派不满的体现。
+
+• **支持建制派的观点**：
+  - 认为建制派政客拥有丰富的经验和政治资源，能在复杂的政治环境中推动政策。
+  - 反建制派虽然有活力，但缺乏实际的政治操作经验，可能导致政策不稳定。
+  - 例子：指出米奇·麦康奈尔在参议院的领导地位帮助共和党实现了一些关键立法胜利。
+
+• **对米奇·麦康奈尔个人评价的争议**：
+  - 有人批评麦康奈尔是典型的建制派代表，过于注重权力维护而忽视民众需求。
+  - 也有人认为他在复杂的政治环境中表现出了高超的策略能力，对共和党有实质性贡献。
+  - 争议焦点：麦康奈尔是否真正为选民服务，还是只关心自己的政治地位。
+
+• **对反建制派运动可持续性的讨论**：
+  - 有人质疑反建制派运动是否能长久持续，担心其缺乏明确的政策纲领和组织结构。
+  - 支持者认为反建制派的活力和草根特性正是其优势，能够更灵活地回应选民需求。
 
 补充讨论：
-• zug_zug 提出，如果在想法合成之前的一周尝试写作，可能会觉得没有成效。这表明写作作为最终输出，是在思维过程完成后的自然结果，而不是成就感的直接来源。
-• 争议焦点在于写作本身是否是成就感的主要来源，还是仅仅是思维合成完成后的外在表现。zug_zug 认为成就感更多来自于思维的整合，而非写作行为。
+- **茶党运动和特朗普影响**：评论中多次提到茶党运动和特朗普，作为反建制派崛起的标志性事件。
+- **政治策略和妥协**：有评论指出，建制派和反建制派在政治策略上的不同，前者更倾向于妥协和渐进改革，而后者更激进。
+- **选民基础**：讨论了不同政治派别背后的选民基础及其诉求，强调了选民对政治精英的不满情绪。
 
-总结：讨论围绕写作是否直接带来成就感，或是思维合成后的自然结果。zug_zug 强调写作是思维整合后的表现，而非成就感的核心来源。</div>
+这些观点展示了美国政治中建制派与反建制派之间的复杂互动，以及对具体政客评价的多样性。争议的焦点主要集中在政治精英的角色及其对选民的实际影响上。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44632314" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.romanroads.org/index.html" target="_blank">Roman Roads Research Association (UK)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: countrymile</span> |
-                    <span>评分: 39</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-20 06:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>罗马道路研究协会（RRRA）致力于推进对罗马道路网络的研究，尤其受到Ivan D. Margary的著作启发。协会利用现代技术如LiDAR进行研究，揭示 previously 不可见的考古遗迹。协会出版同行评审期刊《Itinera》，专注于罗马道路及交通基础设施的研究，接受会员及非会员投稿。2025年将发布第六卷，涵盖考古发掘报告、LiDAR新发现等内容。协会还举办在线讲座，如Mike Luke和Neil Godfrey等专家的演讲，并计划推出新网站。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：罗马时代的建筑结构（如步道、道路、运河等）在现代社会中仍然存在并使用，以及现代技术（如LiDAR）在考古发现中的应用。
-
-不同观点：
-• mark_undoio认为，现代生活中的许多基础设施，如步道、道路、运河和排水沟，竟然是源于罗马时代建造的，这让人感觉很奇怪。同时，他认为一些罗马时代的建筑可能是基于更早的结构建造的。这里表达了一种对历史遗留影响深刻的感慨，以及对历史层次的思考。
-
-• CharlesXY则将话题引向现代技术，特别是LiDAR技术，认为这种技术对于考古发现非常有用，尤其是在亚马逊雨林这种尚未被完全探索的区域。这表明他对技术推动考古发现充满期待，并暗示了在一些未开发区域可能存在未被发现的古代遗迹。
-
-补充讨论：
-• mark_undoio的评论隐含了一种对历史延续性的反思，即古代建筑如何在现代社会中继续发挥作用，并与现代基础设施融为一体。
-
-• CharlesXY的评论则引发了关于技术在考古学中作用的讨论，特别是LiDAR在发现隐藏或未开发区域的潜力，这可能带来新的历史发现。
-
-• 争议的焦点可能在于如何平衡现代技术应用与历史遗迹保护之间的关系，尤其是在未开发或生态敏感区域。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44622543" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theregister.com/2025/07/08/senators_military_right_to_repair/" target="_blank">Senators throw weight behind military right to repair</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ohjeez</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-21 00:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国参议员伊丽莎白·沃伦（Elizabeth Warren）和蒂姆·希赫（Tim Sheehy）提出了一项《2025年战士维修权法案》，旨在将美国陆军现有的维修权政策扩展至所有军事部门。该法案要求未来所有军事采购合同包含条款，确保承包商以公平合理的条件向军方提供维修零件和信息。这将使军队能够自行维修设备，减少对外部承包商的依赖，从而降低巨额维修成本并提高战备状态。该法案还要求对现有合同进行审查和修改，以纳入新的维修规则。此举得到了公众和 bipartisan 的支持，被视为节省国防开支和提升国家安全的有效措施。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对某项政策或提议的可行性及影响的讨论
-
-不同观点：
-• **[euroderf]** 认为该政策应能促进技术传播行业的就业，但担心最终会通过大型语言模型（LLMs）来实现，从而影响就业市场的实际增长。
-• **[SOLAR_FIELDS]** 对该政策持怀疑态度，认为尽管政策本身有道理，但很可能在委员会中被否决，无法实施。
-• **[methuselah_in]** 支持该政策，并认为所有国家都应采取类似措施，表明对政策广泛应用的认可。
-• **[thrance]** 持强烈反对意见，认为在当前政治环境下（特别是与特朗普相关的政策倾向下），该政策不可能成功，并批评其为增加军工复合体开支的工具。
-
-补充讨论：
-• 争议的焦点之一是政策的政治可行性。**[SOLAR_FIELDS]** 和 **[thrance]** 都对政策能否实际落实表示怀疑，但理由不同。**[SOLAR_FIELDS]** 关注的是官僚程序上的阻碍，而 **[thrance]** 则聚焦于政治领导层的优先事项和政策倾向。
-• **[euroderf]** 提供了对就业市场的潜在影响分析，但也表达了对技术替代人工的担忧。
-• **[methuselah_in]** 的观点较为宏观，认为该政策应在全球范围内推广，但没有详细讨论实施细节或潜在问题。
-
-总体来看，讨论围绕政策的可行性、政治环境影响以及对就业市场的潜在影响展开，观点多样且具有一定的争议性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44630799" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://fstrings.wtf/" target="_blank">Fstrings.wtf</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: darkamaul</span> |
-                    <span>评分: 408</span> |
-                    <span>评论数: 38</span> |
-                    <span>发布时间: 2025-07-19 10:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个关于Python 3.13中f-strings行为的测验。用户可以通过该测验测试自己对f-strings的理解，测验包含多个问题，完成后会显示得分。文章还提供了快捷键操作提示，如使用数字键或箭头键选择答案。如果遇到问题，用户可以提交工单。测验由@mitsuhiko和Claude创建，源代码可在GitHub上找到。用户可以选择继续未完成的测验或重新开始。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Python中的字符串插值（f-strings）及其相关语法和复杂性
-
-不同观点：
-• **支持有限度的字符串插值**：一些用户（如tialaramex和Ezhik）认为，适量的字符串插值可以提高代码的可读性和便利性，但过度使用可能导致代码难以理解。Rust和Python的有限插值功能被认为是合理的折中方案。
-• **复杂的语法和学习曲线**：ejiblabahaba指出，f-strings、旧式格式化（%）和新式格式化（.format()）之间的差异和切换会导致困惑，尤其是在处理自定义格式方法和日志记录时。
-• **对复杂功能的态度**：一些用户（如pansa2和Twey）对f-strings中的复杂功能（如海象运算符:=）持怀疑态度，认为这些功能增加了不必要的复杂性。
-• **功能过载的争议**：cvoss认为f-strings的功能已经超过了实际需要的范围，导致开发者需要花费大量时间查找文档，不如自己编写简单的方法。neoden则希望通过linter来限制某些复杂的用法。
-
-补充讨论：
-• **对其他语言的比较**：cluckindan提到，如果这是JavaScript的语法，很多人会抱怨其不直观的语法和奇怪的功能。zahlman则认为，尽管f-strings有些复杂，但相比JavaScript，Python的WTFs（令人困惑的地方）要少。
-• **文档和学习资源**：jdranczewski提到使用pyformat.info作为参考，而Liftyee则表示通过这种问答形式学习f-strings比阅读文档更有趣和有效。
-• **用户体验和个性化需求**：一些用户（如ziml77和psychoslave）认为f-strings并没有特别令人困惑的地方，或者认为通过个人项目可以避开这些复杂性。
-
-争议焦点：
-• 字符串插值功能的复杂性和必要性：一部分用户认为f-strings的复杂功能增加了不必要的学习成本和潜在的错误风险，而另一部分用户则认为这些功能提供了更多的灵活性和便利性。
-• 对海象运算符（:=）的接受程度：部分用户对f-strings中引入的海象运算符持负面态度，认为其增加了不必要的复杂性。
-
-总结：
-评论中关于Python f-strings的讨论主要集中在功能的复杂性、语法学习的难度以及是否需要限制某些复杂的用法。用户对这些功能的看法存在分歧，一部分人认为这些功能提供了便利，而另一部分人则认为增加了不必要的复杂性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44614370" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://foodinstitute.com/focus/beyond-meat-fights-for-survival/" target="_blank">Beyond Meat fights for survival</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: airstrike</span> |
-                    <span>评分: 188</span> |
-                    <span>评论数: 56</span> |
-                    <span>发布时间: 2025-07-19 23:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Beyond Meat被视为市场表现最差的股票之一，营收增长缓慢，预计2025年收入约3.3亿美元，仅比六年前高10%，尽管产品数量大幅增加。公司持续亏损，2024年每销售一美元亏损45美分，目标在2025年底实现EBITDA盈亏平衡，但仍将面临负自由现金流。公司有10亿美元的可转换债券将于2027年到期，但无力偿还，债券目前交易价格为面值的17%。 Beyond Meat股票自2021年以来下跌98%，其市值仍约2.4亿美元，部分原因是做空交易及对公司可能存活的希望。尽管营收在最近两个季度同比增长，但销量仍为负。管理层希望通过改善消费者对植物肉健康性的认知来提升销量，但债务即将到期，时间所剩无几。公司可能通过破产重组继续运营，但股东面临重大风险。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Beyond Meat产品的价格、健康性、市场表现及其在植物基产品市场中的竞争地位。
-
-不同观点：
-• **价格过高**：[makingstuffs]和[angry_moose]认为Beyond Meat价格过于昂贵，[makingstuffs]指出其价格甚至高于优质有机牛肉，且产品高度加工，不符合健康饮食的初衷。同时，[makingstuffs]提供了自制大豆蛋白汉堡的替代方案，认为这是更经济实惠的选择。
-  
-• **市场与财务困境**：[cloudbonsai]关注Beyond Meat的财务问题，指出其高额债务及亏损状态，认为其财务前景黯淡，市场竞争力不足。
-
-• **生态与伦理价值**：[submeta]和[hellcow]强调植物基肉类替代品的生态和伦理价值，认为即使产品经过高度加工，仍然比食用动物肌肉组织对环境和动物福利的影响更小。Submeta特别指出，年轻一代对肉类消费持更加批判的态度，植物基产品的市场前景看好。
-
-• **市场区域差异**：[dmazin]指出，植物基肉类产品在美国市场表现不佳，但在欧洲尤其是英国市场却更为普遍和被接受，[nxpnsv]也提到在奥地利市场，Beyond Meat面临更多本地竞争，销量下降。
-
-• **营养与口感**：[armchairhacker]关心植物基肉类的营养成分是否接近肉类，认为营养价值比口感和外观更重要。而[socalgal2]和[SoftTalker]则对Beyond Meat的口感提出批评，认为其不如Impossible或者自制豆类汉堡。
-
-• **市场策略**：[pedalpete]认为植物基肉类公司应首先瞄准高端市场，而不是试图与廉价肉类和传统素食选项直接竞争。同时，[pedalpete]提到Vow公司的成功策略，即从高端市场入手，逐步扩展到大众市场。
-
-• **简单食物的优越性**：[pjs_]认为豆类等天然食物是更好的选择，既美味又经济实惠，且不会像高度加工的植物基肉类产品那样存在健康和营养问题。
-
-补充讨论：
-• 一些评论者如[j_timberlake]指出，支持植物基产品不仅能减少对工厂化养殖的支持，还能促进该行业的发展，尽管个人影响有限。
-• [mdaniel]提到Juicy Marbles作为Beyond Meat的替代品，提供了另一种高端植物基肉类选择，满足对肉类口感的需求。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44620606" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.hopkinsmedicine.org/news/newsroom/news-releases/2025/07/new-study-finds-evidence-of-hepatitis-c-virus-in-cells-lining-human-brain" target="_blank">New Study Finds Evidence of Hepatitis C Virus in Cells Lining Human Brain</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kungfudoi</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-20 16:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>一项由约翰斯·霍普金斯医学团队进行的新研究发现，丙型肝炎病毒（HCV）可能与一些精神疾病如精神分裂症和双相情感障碍有关。研究团队分析了死后人类大脑样本，特别是脉络丛（脑室内的细胞层，产生脑脊液），并使用了包含2.85亿患者记录的电子病历数据。结果显示，HCV存在于精神分裂症和双相情感障碍患者的脑衬里，但并非所有慢性HCV感染者的大脑中都有该病毒。研究还发现，HCV感染可能通过改变海马体的基因表达影响大脑功能和行为，提示该病毒可能与这些精神疾病的病因有关，而非仅由药物使用引起。这项研究发表在《转化精神病学》上。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44626558" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://williamw520.github.io/2025/07/13/zig-interface-revisited.html" target="_blank">Zig Interface Revisited</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ww520</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-16 16:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了如何在Zig语言中通过动态派发实现多态，特别是使用虚表（VTable）接口模拟其他语言中“接口”的概念。Zig没有内置接口机制，但可以通过一些方法实现多态，包括泛型与编译时派发、标记联合以及虚表接口。本文重点介绍虚表接口，展示了如何构建一个清晰的接口模式，实现接口与实现的分离，且无需修改实现类型。文中以日志系统为例，实现了控制台日志和文件日志两种不同日志记录方式，它们共享相同的接口方法签名。通过虚表接口，可以将不同实现统一存储和调用，支持动态派发。这种方法提供了灵活且可复用的接口模式，对实现类型的影响极小。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Zig语言的接口支持、语法一致性以及动态分派的实现方式
-
-不同观点：
-• [lenkite] 认为Zig缺乏原生的接口支持，导致使用函数指针和手动分派的方式既繁琐又容易出错。他建议可以在标准库中增加一些辅助工具或代码生成器来简化这些操作，以避免手动编写大量的函数指针和分派逻辑。他还提到，虽然Zig是低级编程语言，但这种功能在现代编程中是基础需求。
-
-• [int_19h] 从技术细节上分析了Zig中vtable的设计，指出Zig中的vtable设计与传统的C++ vtable不同。传统的vtable是为了共享单一表而进行一次额外的间接调用，而Zig的vtable是附加在每个实例上，仍然需要一次额外的间接调用到实现对象。
-
-• [justinhj] 提出一种观点，认为对不常使用的语言，人们总是希望它拥有自己常用语言的某个特性。这种看法暗示了对Zig接口支持的需求可能只是个人偏好。
-
-• [billmcneale] 对Zig的语法一致性提出质疑，指出Zig在命名约定上存在不一致，如`pub fn implByCamel case`和`Snake case v_setLevel`，以及不明确的`anyopaque`等，这让他感到困惑。
-
-• [kingstnap] 对[lenkite]提出的实现方式提出不同意见，认为将`pub fn implBy(impl_obj: anytype)`放在不合适的位置，建议像Zig的分配器那样，通过一个`getLogger`函数来创建logger实例，以更好地管理实现的私有性和代码的整洁性。
-
-• [ozgrakkurt] 补充了vtable的优势，指出vtable在编译时间上具有优势，并且使用vtable比使用泛型感觉上更简洁。
-
-• [andsoitis] 对Zig中动态分派的实现提出疑问，询问是否所有代码库都使用相同的模式，以及这对应用程序和其依赖库之间的互操作性是否重要。
-
-补充讨论：
-• Zig语言的低级特性与现代编程需求之间的平衡是讨论的焦点之一。
-• 语法一致性和命名约定的问题也被提出，显示出用户对Zig语言设计上的一些困惑和不满。
-• 不同用户对vtable设计和使用的看法不一，有的强调其实现细节，有的则关注其实际应用中的便利性和一致性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44584414" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44635123" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
