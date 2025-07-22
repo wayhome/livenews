@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-22 20:27 (北京时间)
+            最后更新时间: 2025-07-22 23:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,58 +61,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ritza.co/articles/migrate-from-openai-to-cerebrium-with-vllm-for-predictable-inference/" target="_blank">How to Migrate from OpenAI to Cerebrium for Cost-Predictable AI Inference</a>
+                    <a href="https://codeblog.jonskeet.uk/2025/07/19/unexpected-inconsistency-in-records/" target="_blank">Unexpected inconsistency in records</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sixhobbits</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-07-22 08:08</span>
+                    <span>作者: OptionOfT</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-07-19 15:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了如何将AI应用从OpenAI迁移到Cerebrium，以实现成本可预测的AI推理。Cerebrium是一个无服务器AI基础设施平台，允许用户在专用硬件上运行开源模型，并采用基于时间的定价模式，而非基于令牌的计费。文章提供了逐步指南，帮助用户将一个使用OpenAI API构建的聊天应用迁移到Cerebrium，只需修改两行代码。
+                    <p>本文讨论了C#中记录类型使用"with"运算符时出现的一个意外不一致问题。作者最初误以为"with"运算符会调用构造函数来生成新实例，但实际上它只是克隆现有实例并修改指定属性。这导致在混合使用"with"和派生数据（如基于初始参数计算的属性）时，会出现不一致的结果。例如，修改`Value`属性后，`Even`属性没有相应更新。
 
-### 主要步骤包括：
-1. **创建OpenAI聊天机器人**：设置项目结构，安装依赖项，并编写聊天逻辑。
-2. **迁移到Cerebrium**：注册Cerebrium账户，修改代码以切换到Cerebrium端点。
-3. **性能和成本对比**：添加性能和成本跟踪，比较两种方法的差异。
+文章回顾了记录类型的非破坏性变更和派生数据特性，并指出当这两个特性混合使用时可能引发的问题。尽管使用计算属性可以避免此问题，但对包含复杂计算或集合的记录不适用。
 
-### 前提条件：
-- Python 3.10或更高版本
-- OpenAI API密钥
-- Cerebrium账户
-- Hugging Face token和Llama 3.1模型访问权限
-
-通过本文，用户可以构建一个展示令牌计费和计算计费差异的聊天应用，并根据实际数据选择适合其用例的方法。</p>
+作者提出了四个解决方案，包括接受限制、编写Roslyn分析器检测问题、手动编写复制构造函数，以及使用工厂方法创建新实例，但均不理想。作者希望微软能在文档中加入相关警告，并欢迎其他建议。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：自托管与使用第三方服务在成本、控制、价格以及服务差异方面的比较
+                    <div class="comments-summary">主要讨论点：C# 中记录类型的行为，特别是关于可变字段和计算字段的问题，以及其设计是否存在缺陷。
 
 不同观点：
-• **dabedee** 认为自托管的主要优势在于控制，尤其是在数据隐私、模型定制和成本可预测性方面，但对于大多数使用GPT-4o-mini质量需求的场景，自托管在达到一定规模前会更贵。
+• **wpollock 的观点**：认为问题的根源在于记录中不应该有依赖于可变字段的计算字段。建议修改记录的模式，去除这种设计，或者使用拷贝构造函数来解决问题。
 
-• **amelius** 质疑从一种不受控制的服务转向另一种不受控制的服务的意义，暗示无论自托管还是第三方服务，控制权问题依然存在。
+• **OptionOfT 的观点**：认为问题来源于属性实际上是字段和getter/setter的语法糖，导致混淆了直接字段赋值和执行函数的区别。他指出，如果使用明确的setter方法，不应在克隆和直接字段赋值时执行setter代码。
 
-• **tomschwiha** 指出非优化的自托管部署可能速度慢且成本高，尤其是与在自有数据中心部署GPU相比，后者虽然提供更多控制，但成本也更高。
+• **wavemode 的观点**：引用Jon Skeet的困惑，认为连他都感到困惑，说明这个问题客观上具有迷惑性。
 
-• **benterix** 关注Cerebrium的服务价格高于Runpod，质疑其定价策略，尤其是在与已有较大用户群的公司相比时。
+• **louthy 的观点**：认为C#记录类型的设计初衷是模仿F#等语言中的不可变产品类型，但当前设计导致不一致的数据结构，可能引发bug和安全问题。批评C#设计团队可能仍受C#1.0或Java模式的影响，做出了一些不合理的决策。
 
-• **eloqdata** 指出市场上有许多知名的MaaS平台（如AWS Bedrock和Azure AI Foundry）以及一些初创公司，认为Cerebrium缺乏明显的差异化优势。
+• **benmmurphy 的观点**：指出这个问题已经引起了其他人的注意，并提供了一个博客链接，讨论该问题的潜在陷阱。
 
-• **Incipient** 质疑文章是否在暗示OpenAI比Cerebrium便宜得多，提出了对成本比较的疑问。
+• **_old_dude_ 的观点**：认为C#使用克隆操作是因为记录支持继承，而这种同时支持继承和不可变性的设计是有缺陷的。
 
-• **ivape** 关注成本可预测性和自动扩展问题，指出LLM模型的调用成本高，尤其是使用较大模型时，质疑自托管实例在流量增加时的自动扩展能力。
+• **high_na_euv 的观点**：认为这种行为并非不合理，表示理解和支持。
 
 补充讨论：
-• 自托管与第三方服务在**控制权**上的优劣是讨论的焦点，部分用户质疑自托管是否真的能带来更多控制。
-• **成本问题**是另一个争议点，不同用户对自托管与服务商的价格、性价比及自动扩展能力存在不同看法。
-• **市场竞争**和**服务差异化**也是讨论的重要方面，特别是Cerebrium如何在已有众多竞争者的市场中定位自己。</div>
+• **uticus 和 croemer 的观点**：uticus提到Jon Skeet的书籍，并调侃了Jon Skeet facts。croemer则对标题格式提出了建议，认为不需要重复添加URL信息，但可以加上"C#"以帮助识别内容。
+
+• **apwell23 的观点**：幽默地猜测现在的编码代理/AI是否只是Jon Skeet的化身，间接认可Jon Skeet在社区中的影响力。
+
+争议焦点：C#记录类型在处理可变字段和计算字段时的行为是否合理，以及其设计是否存在缺陷。一部分人认为这是设计缺陷，会导致不一致性和潜在问题，而另一部分人则认为行为合理或可以接受。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44644404" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44616158" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -123,13 +116,72 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://accounting.penrose.com/" target="_blank">AccountingBench: Evaluating LLMs on real long-horizon business tasks</a>
+                    <a href="https://docs.astral.sh/uv/guides/scripts/#running-a-script-with-dependencies" target="_blank">Uv: Running a script with dependencies</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rickcarlino</span> |
-                    <span>评分: 291</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-07-21 16:48</span>
+                    <span>作者: Bluestein</span> |
+                    <span>评分: 315</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-07-21 23:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了如何使用 `uv` 工具执行独立的 Python 脚本，并管理脚本的依赖项。`uv` 可以自动处理虚拟环境和依赖，无需手动管理。对于无依赖的脚本，直接使用 `uv run <script>` 即可执行。如果脚本有依赖，可以通过 `--with` 选项指定所需依赖，或在脚本中使用内联元数据声明依赖。在项目目录中执行脚本时，`uv` 会自动安装项目依赖，除非使用 `--no-project` 标志。此外，`uv` 还支持通过 `uv init --script` 初始化脚本并声明所需的 Python 版本和依赖。使用内联元数据时，项目依赖将被忽略，除非明确添加。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：UV（`uv`命令工具）及其在Python脚本依赖管理中的应用与优缺点
+
+不同观点：
+• **支持与赞赏**：
+   - SimonW（simonw）认为UV的"声明脚本依赖"功能非常有用，特别是通过内联依赖可以自动安装所需的包，无需手动管理虚拟环境。Claude 4也支持该功能，能够根据提示自动生成带有内联依赖的脚本。
+   - GopalV（gopalv）表示该功能是他转向使用UV的主要原因，尤其在git-hooks中使用时非常方便，不需要为脚本单独创建虚拟环境。
+   - Sam_Bristow（sam_bristow）提到UV与Marimo结合，在构建可复现的报告和诊断工具方面非常有效。
+   - M4r71n（m4r71n）赞赏`uv lock`命令，可以为单个脚本生成锁定文件，进一步简化依赖管理。
+   - Trostaft（trostaft）表示UV简化了向学生分发代码的过程，只需一个命令即可运行脚本。
+   - Staplung（staplung）展示了通过UV运行Jupyter Notebook的便捷性，所有依赖会在临时虚拟环境中自动处理。
+
+• **潜在问题与局限性**：
+   - Hoherd（hoherd）指出，UV在无网络环境下无法下载依赖，因此对于需要在无网络环境下运行的脚本，应该提前安装依赖，避免依赖UV的自动下载功能。
+   - Imjonse（imjonse）提到，对于像Pytorch这样的依赖，UV无法通过脚本头部声明来选择合适的版本（CPU、CUDA或ROCm），需要手动处理。
+   - Ezquerra（ezquerra）发现`uv run`在从项目外部运行脚本时，无法正确找到`pyproject.toml`文件，导致依赖无法安装，需要使用内联依赖或指定`--project`参数，但后者操作不便。
+   - Hackbraten（Hackbraten）提到VS Code无法自动识别UV创建的虚拟环境，需要手动指定路径，使用不便。
+
+• **对Python生态的批评与建议**：
+   - AceJohnny2（AceJohnny2）指出该功能仅适用于单文件脚本，对于多文件项目，必须通过`pyproject.toml`来管理依赖，无法直接在模块中声明依赖。
+   - Rr808（rr808）质疑Python生态中存在过多包管理工具，认为这增加了语言的复杂性，用户可能会困惑于是否应采用新的工具。
+   - Satertek（satertek）则质疑为何Pip不支持PEP 723，认为UV的功能应成为官方实现。
+
+补充讨论：
+• **Jupyter相关扩展**：
+   - Heisenzombie（heisenzombie）分享了一个简单的Jupyter内核实现`uvkernel`，并提到正在开发的PEP723插件，用于管理笔记本的内嵌脚本依赖。
+
+• **实际应用案例**：
+   - SafeDusk（SafeDusk）提到在MCP服务器中使用UV功能的成功案例，并提供了详细的博客链接供参考。
+
+争议焦点：
+• UV工具的依赖管理功能在无网络环境下的局限性，以及多文件项目中依赖声明的操作不便，是讨论的主要争议点。此外，Python生态中包管理工具的繁多也引发了对UV是否必要以及未来发展的讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44641521" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5259763" target="_blank">The Role of Blood Plasma Donation Centers in Crime Reduction</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-22 13:35</span>
                 </div>
 
                 <div class="summary-section">
@@ -139,28 +191,9 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLMs在会计任务中的表现及其局限性
-
-不同观点：
-• yunyu（项目成员）认为，LLMs（如Claude和Grok 4）在初期表现良好，但随着数据增多表现下降。错误主要源于奖励机制的漏洞利用而非纯粹的幻觉问题。项目团队认为通过更严格的框架可以提升表现，但目前更关注能力研究。
-• vlade11115担心LLMs可能导致无意中的欺诈行为，尤其是在政府尝试使用LLMs进行会计验证时。对盲目信任LLMs持怀疑态度。
-• pton_xd对LLMs的深度能力感到惊叹，认为尽管目前存在问题，但未来很有前景。
-• lufenialif2基于自身经验认为，LLMs目前最好的用途是作为高级自动补全工具，而非万能解决方案。
-• Havoc认为LLMs在基础会计工作（如费用分类）上即将取代人工，但对精确度要求高的工作（如税务申报）仍不适合。
-• tantalor指出会计中待处理交易应纳入余额计算，而非简单地允许差异存在，认为这种做法不专业。
-• lucianbr和mixdup都提到LLMs缺乏对任务目标的真正理解，长期实验结果多为失败。非确定性软件在高度精确的领域中应用可能导致不良后果。
-• vachina将LLMs比喻为 jackhammer，认为只有在严格控制下才能有效工作，否则可能破坏任务。
-• abc03指出许多会计初创公司仍需大量人工劳动，AI替代本地会计师尚需时日。
-• magicmicah85希望LLMs在不确定时能够放弃任务并交回人类处理，而非忽视指令继续前进。
-• axus和rapind以幽默和类比方式讨论LLMs在会计领域的适用性。
-
-补充讨论：
-• 讨论中涉及LLMs在会计任务中可能导致的欺诈问题，以及在高度监管环境下的适用性。
-• 多个评论提到LLMs在精确度要求高的工作中表现不足，强调人类监督的重要性。
-• 部分评论对LLMs的未来发展持积极态度，认为尽管目前存在局限，但未来有很大潜力。
-• 对LLMs错误类型（如奖励机制漏洞利用和幻觉问题）的分析也是讨论的重点。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44637352" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44646707" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -171,48 +204,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.morphik.ai/blog/stop-parsing-docs" target="_blank">Don't bother parsing: Just use images for RAG</a>
+                    <a href="https://daisyui.com/" target="_blank">DaisyUI: Tailwind CSS Components</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Adityav369</span> |
-                    <span>评分: 200</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-21 17:16</span>
+                    <span>作者: a_bored_husky</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-22 13:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了在处理复杂文档时使用图像而非OCR/解析的方法。Morphik在构建RAG工具时发现，传统的OCR和解析管道常常无法保留关键信息，尤其是在处理包含图表、表格和图形的复杂文档时。这种方法类似于通过阅读剧本来“观看”电影，忽略了视觉传达的重要信息。传统的文档处理流程包括OCR、布局检测、阅读顺序重建、图表标注和文本分块等步骤，但这些步骤往往导致信息失真。例如，OCR可能将“1,000”误读为“l,0O0”，布局检测可能无法正确识别表格边界。作者提出了一种新思路，即直接使用文档的图像进行检索，避免解析过程中的信息丢失。这种方法保留了文档的视觉和空间上下文，提高了信息检索的准确性。虽然对于需要结构化数据的场景，OCR仍有其作用，但直接传递原始文档给大型语言模型（LLM）往往效果更好。</p>
+                    <p>daisyUI 是一个 Tailwind CSS 插件，通过提供有语义的组件类名，帮助开发者减少重复的样式代码，加快开发速度。它简化了 HTML 结构，减少了约 88% 的类名使用，使文件更小、更易维护。daisyUI 提供如按钮、卡片等常见 UI 组件的类名，并且高度可定制，兼容所有 JS 框架，无需 JS 依赖。它还支持多种主题和暗色模式，使用 CSS 变量实现颜色的自定义。安装 daisyUI 作为开发依赖后，可以在 Tailwind CSS 项目中直接使用其类名。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大型语言模型（LLM）在处理图像和文档（特别是PDF）方面的应用和挑战
+                    <div class="comments-summary">主要讨论点：Tailwind CSS及其与Bootstrap的比较
 
 不同观点：
-• **Serjester**：认为LLM在处理图像时面临较大挑战，如图像的token化不同于文本，容易出现“幻觉”问题。处理多图像文档时，准确性下降，且成本较高。对直接图像提取方法持怀疑态度，更倾向于添加OCR步骤。
-• **Pilooch**：其团队已实现了一个开源解决方案（Colette），可以有效处理图像并进行微调，尤其是针对文档理解。认为完全可微调的系统有很大优势。
-• **Themanmaran**：研究表明，单页图像提取在准确性上略优于OCR方法，但多页文档处理时OCR更优。强调LLM在长文本处理上的优势。
-• **Ashishb**：指出将文档转换为图像可能导致信息丢失，例如在某些字体中无法区分数字0和字母O。认为直接图像处理不适用于包含精细文本的文档。
-• **Hdjrudni**：个人经验表明，对复杂文档（如时间表）使用图像输入LLM有时效果优于纯文本输入，特别是在需要忽略部分信息时。
-• **Emanuer**：质疑为何不直接使用多模态RAG（Retrieval-Augmented Generation）系统，认为已有解决方案如Flash 2.5和Sonnet 3.7在图像分析上表现良好。
-• **Imperfect_light**：质疑过分强调PDF处理的必要性，认为在有结构化数据库的情况下，RAG的文档处理优势不明显。
-• **Tom_m**：指出并非所有PDF都需要OCR，文本可直接提取，建议根据具体情况选择合适的工具，避免过度依赖LLM以降低成本。
-• **Meander_water**：质疑LLM在解析文档方面是否优于传统OCR，基于个人经验认为LLM可能会产生较多“幻觉”错误。
-• **K0balt**：询问多模态LLM是否可以直接读取PDF并提取文本和图形元素，认为这是理想的解决方案。
+• [sudhirj] 认为这个项目是Tailwind的逆向重建，本质上回到了类似于Bootstrap的模式。他指出，Bootstrap已经存在多年，而Tailwind本应通过直接指定实际样式来区别于Bootwind，但现在似乎又回到了原点。他质疑为什么不去直接使用Bootstrap。
+
+• [coneonthefloor] 表示Tailwind存在与Bootstrap类似的问题，即他一眼就能看出一个网站使用了Tailwind，而这种感觉让他不太喜欢。这表明Tailwind可能在视觉一致性上导致网站缺乏独特性。
+
+• [jug] 提出疑问，认为这种比较忽略了Tailwind存在的初衷和价值。他可能在暗示Tailwind有其独特的优势和设计哲学，不应该简单地与Bootstrap类比。
+
+• [PaulHoule] 以提问的形式表达了对该项目与Bootstrap关系的困惑，似乎是在质疑这个项目是否只是把Bootstrap的理念应用到了Tailwind上。
 
 补充讨论：
-• **Bravesoul2**：提到OCR和全页阅读在扫描杂志等文档时效果不佳，尤其是识别标题和小文本。
-• **Tobyhinloopen**：分享了使用脚本和LLM自动化处理发票的经验，尽管有一定的成功率，但在精确匹配发票和银行对账单方面仍有不足。
-• **Urbandw311er**：认为文章中对解决方案的描述过于营销化，缺乏实质性技术观察。
-• **Ianbicking**：建议结合图像和文本的处理方式，使用LLM生成图像的文本版本，并结合RAG进行分析，认为这是更自然和有效的处理方式。
+• 争议的焦点在于Tailwind和Bootstrap之间的关系以及它们在实际应用中的区别和价值。一些评论者认为Tailwind正在回归到类似Bootstrap的模式，而另一些人则认为这种比较忽视了Tailwind的独特性和设计初衷。
 
-争议焦点：
-• 直接图像提取与OCR方法的优劣比较，特别是在处理多页文档和包含复杂文本的文档时。
-• LLM在处理图像和文档方面的“幻觉”问题以及信息丢失风险。
-• 使用LLM处理文档的成本和效率问题，尤其是在有结构化数据的情况下。</div>
+• 重要的论据包括：Bootstrap存在多年且具有语义化的类名，Tailwind本应通过直接指定样式来区别于Bootstrap，但现在的项目似乎又回到了类似的模式；Tailwind的视觉一致性问题可能导致网站缺乏独特性。
+
+• 总体来看，讨论反映了开发者对CSS框架选择的不同偏好和关注点，包括样式一致性、独特性以及框架的设计哲学。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44637715" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44646869" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -223,49 +249,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/ai-comes-up-with-bizarre-physics-experiments-but-they-work-20250721/" target="_blank">AI comes up with bizarre physics experiments, but they work</a>
+                    <a href="https://www.bloomberg.com/news/articles/2025-07-18/what-scientists-learned-scanning-the-bodies-of-100-000-brits" target="_blank">An unprecedented window into how diseases take hold years before symptoms appear</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 211</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-07-22 01:28</span>
+                    <span>作者: helsinkiandrew</span> |
+                    <span>评分: 122</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-18 08:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了人工智能（AI）在实验物理学中的创新应用。加州理工学院的物理学家Rana Adhikari及其团队利用AI软件优化引力波探测器LIGO的设计，旨在提高其灵敏度，探测更广泛频率的引力波。尽管最初AI提出的设计看似复杂且不合常理，但经过整理和分析，研究人员发现AI通过增加一个三公里长的环来循环光线，从而减少量子噪声。这一设计能使LIGO的灵敏度提高10%到15%。AI的创新思路帮助科学家突破了传统方法的局限，展示了其在科学发现中的潜力。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI在科学优化算法中的应用及其描述的准确性
+                    <div class="comments-summary">主要讨论点：UK Biobank研究揭示的疾病积累过程及其相关讨论，包括疾病预防、早期检测、身体自愈能力等主题。
 
 不同观点：
-• **LeroyRaz**：认为文章具有误导性，描述中的语言不准确。文章将优化算法描述为AI使用了深奥的理论和技巧，但实际上只是优化算法在人类编码的模拟空间中进行搜索，没有涉及到AI的概念操作或直觉。这种描述会让人误解为是更复杂的AI技术，而实际上只是经典的优化算法。
-• **sampo**：指出过去这种优化算法不会被称为AI，但现在却被如此称呼。文章提到的Urania算法是一种高度并行化的混合局部-全局优化算法，本质上仍是优化算法，而非大众理解的AI。
-• **JimDabell**：提到NASA曾经使用遗传算法进化天线，类似于文中的工作。这表明AI在生成更好解决方案方面有潜力，即使我们不完全理解其原因。
-• **luketaylor**：认为在当前大家普遍误解AI为基于Transformer的语言模型的情况下，将这种优化程序称为AI是不严谨的。
-• **markasoftware**：澄清文中的"AI"不是大型语言模型（LLM），而是基于梯度下降和拓扑优化的算法。
-• **viraptor**：将文中的工作与NASA的进化天线类比，指出AI在某些情况下可以生成更好的结果，即使我们不完全理解其背后的原因。
-• **topspin**：关注文章中提到的技术细节，如延迟线，并讨论其具体实现和作用。
+• [chithanh] 认为文章中提到的疾病积累概念早已为人所知，并引用了功能储备（functional reserve）的概念。例如，HIV患者和SARS-CoV-2患者中，认知能力较高的人可能在疾病症状出现前受到更多保护。同样的原理适用于肾脏的功能储备，治疗急性肾病的目的是保留剩余的功能。
+
+• [findthewords] 强调预防性治疗比事后治疗更具成本效益，预防性治疗的成本可能比事后治疗低十倍、百倍甚至千倍。
+
+• [chiefalchemist] 提出一个有趣的观点，即研究没有提到身体自我防御和自我治愈的能力。理论上，最好的早期治疗可能是不进行治疗，过早的检测可能并不总是有益的。
+
+• [senectus1] 和 [kulu2002] 对研究本身表示赞赏，认为应该有更多类似的研究，并感谢提供存档链接。
+
+• [helsinkiandrew] 提供了一个相关的存档链接，但没有进一步阐述观点。
+
+• [allthedatas] 质疑“疾病”一词的定义及其症状的本质，提出疾病是否只是某种潜在问题的表象。同时，对疾病检测的准确性和制药厂商的动机表示怀疑，认为检测结果并不总是可靠，厂商可能有夸大检测效果的动机。
 
 补充讨论：
-• **WhyNotHugo**：提出文章中隐含的社会现象，即人类过于离经叛道的想法往往被忽视，而AI提出的类似设计却被认真对待。
-• **matt3210**：强调文中的"AI"只是一种并行优化算法，与当前流行的语言模型（如Claude、Grok、OpenAI）不同。
-• **codeaether**：指出当前"AI"一词多指神经网络模型，甚至卷积神经网络都不再被视为"真正的AI"，这反映了公众对AI理解的变化。
-• **anonym00se1**：预测未来会有更多类似标题的新闻，强调AI带来的新奇解决方案。
-• **aeternum**：认为文章更多是炒作，实际上的AI只是重新发现了多年前俄罗斯科学家找到的技术，并进行了优化。
-• **eleveriven**：对AI在科学方法中的新角色感到既兴奋又担忧，认为这是一个值得关注的趋势。
-• **k__**：通过比较AI生成的设计与人类设计的不同，指出AI在处理边缘情况时的优势，建议从中学习。
-• **smj-edison**：对文章中提到的量子模拟空间和算法优化工作表示兴趣，并希望了解其计算强度。
+• 争议焦点之一是早期检测和预防的价值。部分评论者如[findthewords]强调预防的重要性，而[chiefalchemist]则提醒不要过度强调早期检测，认为有时不治疗可能是最好的选择。
 
-争议焦点：
-• 文章中对AI的描述是否具有误导性，是否将传统的优化算法错误地归类为AI。
-• 当前公众对AI的理解与实际技术实现之间的差距。
-• AI在科学研究中的新角色及其对传统科学方法的潜在影响。</div>
+• [allthedatas]对现代医学检测的准确性和制药行业的诚信提出质疑，这是另一个值得注意的讨论点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44642349" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44602609" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -276,25 +296,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.ycombinator.com/companies/kapa-ai/jobs/JPE2ofG-software-engineer-full-stack" target="_blank">Kapa.ai (YC S23) is hiring a software engineers (EU remote)</a>
+                    <a href="https://shafq.at/my-gpu-fan-saga.html" target="_blank">Show HN: My GPU Fan Saga – A DIY ATX Fan Controller</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: emil_sorensen</span> |
-                    <span>评分: 1</span> |
+                    <span>作者: ashafq</span> |
+                    <span>评分: 5</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-22 07:00</span>
+                    <span>发布时间: 2025-07-22 13:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Kapa.ai 是一家帮助技术公司构建 AI 支持和入门机器人的企业，客户包括 OpenAI、Docker 等150多家知名企业和初创公司。他们利用现有技术资料（如文档、教程、聊天记录等）生成自动回答开发者问题的AI机器人。公司正在招聘一名全栈软件工程师，薪资范围为10万至15万美元，外加0.10%至0.30%的股权。该职位要求3年以上软件开发经验，涉及前后端开发，特别是 Python 和 React。工作内容包括扩展基础设施、开发新功能、处理客户端集成以及增加数据类型等。该岗位可远程工作，不要求美国签证或公民身份。Kapa.ai 由 Finn Bauer 和 Emil Soerensen 创立，并获得了包括 Y Combinator 在内的多家顶级投资机构的支持。</p>
+                    <p>本文讲述了作者通过DIY解决显卡风扇噪音问题的经历。作者的VisionTek Radeon RX 550 SFF显卡风扇产生高频噪音，于是切断电源线暂时解决噪音问题，但随着气温上升，显卡过热问题显现。作者首先使用一个12V DC风扇临时降温，但风扇一直全速运转，产生新的噪音问题。随后，作者采用脉宽调制（PWM）技术，通过ATtiny85微控制器自动调节风扇转速。温度数据由DS18B20传感器采集，实现风扇根据显卡温度自动调速。最终，作者成功解决了显卡过热和风扇噪音问题，并从项目中获得了很多乐趣和学习经验。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44643981" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44646780" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -305,34 +325,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.brainpaingames.com/Hypershack.html" target="_blank">Show HN: A rudimentary game engine to build four dimensional VR evironments</a>
+                    <a href="https://maddie.wtf/posts/2025-07-21-jujutsu-for-busy-devs" target="_blank">Jujutsu for busy devs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: teemur</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-19 20:23</span>
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 169</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-22 00:21</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Hypershack 0.2 是一个用于在虚拟现实中探索和学习四维物体的独立空间。它提供了一些帮助用户在四维世界中定位的元素，如下落粒子、显示方向矢量的界面、以及显示坐标轴投影的“指南针”。用户还可以通过开启音频增强功能，利用不同乐器的声音判断各轴的相对位置。为简化操作，用户可以选择“简单模式”，仅进行45度旋转以保持方向。此外，用户可以创建自定义四维环境和游戏，通过JSON定义对象并用JavaScript指定行为。然而，在Unity WebGL游戏中复制粘贴存在问题，需通过界面按钮上传JSON文件。游戏包含六个基础关卡，需在Quest 2上运行，推荐使用Wolvic浏览器。若迷失方向，可通过对齐信标并旋转返回正常三维空间。</p>
+                    <p>本文介绍了网站使用Anubis系统来防止AI公司爬取网站内容导致服务器过载。Anubis采用类似Hashcash的“工作量证明”机制，增加大规模爬取的成本。该方案作为临时解决方案，旨在为识别无头浏览器争取时间。用户需注意，使用Anubis需要启用现代JavaScript功能，某些插件如JShelter可能需要禁用。当前网站运行的是Anubis v1.20.0版本。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对项目的评价与建议
+                    <div class="comments-summary">主要讨论点：Jujutsu（jj）版本控制系统的优缺点及使用体验
 
 不同观点：
-• [正面评价] untech认为该项目很酷，表现出对项目的兴趣，并表示希望在下次使用Quest 2时能够想到该项目。这表明用户对项目总体持积极态度，期待其实际应用。
+• **支持并推荐使用jj**：一些用户如stouset和sieve强烈推荐jj，认为它解决了git的许多复杂问题，特别是其简单的命令结构和处理冲突的便捷性。他们强调，尝试过jj的用户很少会回到git，且转换过程非常顺利，生产力提升显著。
+• **对命令行工具的质疑**：mihaic和flockonus认为，尽管jj可能简化了git的复杂性，但总体上对命令行工具的依赖仍然让他们感到不适。他们更倾向于使用带有图形用户界面（GUI）的工具来管理复杂的版本控制状态。
+• **对自动添加更改的困惑**：Lyngbakr表达了对jj自动添加更改到修订版的困惑，担心不小心提交不需要的更改。这种不确定性让他们更倾向于手动控制提交内容。
+• **对jj的复杂性和设计决策的批评**：ants_everywhere批评jj的设计决策，特别是将工作副本作为提交，认为这会导致质量控制问题。他们还质疑jj是否解决了git的扩展性和提交污染问题。
 
 补充讨论：
-• [改进建议] untech提到页面可以添加一些截图。这表明用户认为增加视觉元素（如截图）可以提升项目的用户体验或帮助用户更好地理解项目。
-• [潜在使用场景] untech提到自己的Quest 2设备，暗示该项目可能与虚拟现实（VR）有关，且未来有在Quest 2上使用的潜力。这为项目提供了一个可能的应用方向和用户群体（VR用户）。
+• **转换团队到jj的困难**：doritosfan84提到尝试将团队转换到jj并不成功，建议创建一个详细的比较页面，展示jj在处理复杂操作时的优势，以便更容易说服团队成员。
+• **与magit的比较**：fn-mote和accelbred是magit的用户，他们询问如何在jj中实现类似magit的功能，特别是对于复杂工作流的处理。
+• **与Graphite.dev的比较**：kadhirvelm提到使用Graphite.dev并询问其与jj的比较，显示出用户对不同版本控制工具的偏好和选择。
+• **与其他工具的比较**：miguel_martin提到了Sapling，这是一个由Facebook开发的版本控制工具，显示出用户对市场上多种替代方案的关注。
+• **新技术的接受度**：atkailash表示对jj的初步尝试持积极态度，认为它有助于改善自己的工作习惯，显示出对新工具的开放态度。
 
-总体来看，评论中没有明显争议，主要是对项目的积极反馈和建设性建议。</div>
+争议焦点：
+• **命令行与GUI的优劣**：一些用户如mihaic和flockonus倾向于GUI工具，而其他用户如stouset和_bent则认为jj的命令行体验非常好。
+• **自动与手动控制的平衡**：Lyngbakr和ants_everywhere对jj的自动更改处理功能持保留态度，担心这会降低控制精度和代码质量。
+
+总体而言，讨论围绕jj的易用性、自动化的优缺点、命令行与GUI工具的对比以及与其他版本控制工具的比较展开。用户们对新工具的接受程度和转换成本也是讨论的重要方面。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44619020" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44641961" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -347,8 +377,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: avonmach</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 6</span> |
                     <span>发布时间: 2025-07-18 20:01</span>
                 </div>
 
@@ -359,15 +389,25 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：特斯拉和推特收购事件的相关讨论
+                    <div class="comments-summary">主要讨论点：火星岩石商业化及相关问题
 
 不同观点：
-• [Sophia95] 提问是否是埃隆（Elon Musk）购买了某个对象（推特），暗示对近期商业收购事件的关注或不确定性。
+• ElevenLathe认为，私营火星任务可以通过带回火星岩石并拍卖来获取资金。他提出了一个具体问题，即带回多少岩石可以在不压低价格的情况下获利或至少抵消部分成本。
+
+• Isoprophlex分享了一次在博物馆接触陨石碎片的个人经历，表达了对这种外星物质的情感联系和兴趣。他提到如果自己非常富有，会尝试购买这样的物品。
+
+• Chiffre01关注价格稳定性的问题，希望不要发现太大的火星岩石碎片，以避免对市场价格的冲击。
+
+• Mongol对火星岩石的来源表示质疑，提出如何确定一块岩石来自火星的问题。
+
+• JKCalhoun对亿万富翁购买外星物品的现象提出批评，认为这是一种炫耀性消费，并对比提出如果自己是亿万富翁，会更愿意用钱来改善地球和其上的生命。
+
+• Sophia95以幽默的方式提问，是否是埃隆·马斯克购买了这些火星岩石，暗示亿万富翁对这类物品的兴趣。
 
 补充讨论：
-• 该评论引发了对埃隆·马斯克（Elon Musk）收购推特事件的关注，虽然没有详细论据，但表明了对当前科技和商业新闻的兴趣。
-• 该评论较为简短，并未提供具体例子或详细论据，但反映了一部分公众对近期大型商业交易的关注和认知。
-• 争议焦点不明显，但可能隐含着对埃隆·马斯克频繁涉足不同领域（如特斯拉、SpaceX、推特）的公众兴趣和质疑。</div>
+• 讨论中涉及到对外星物品的个人情感和文化意义的关注，如isoprophlex对陨石的情感体验以及其孩子对“金属曾是星星”的评论。
+• 有人对火星岩石的科学验证和来源提出质疑，如mongol的问题，这涉及到科学验证和信任的问题。
+• 讨论中也反映出对亿万富翁行为的社会批评和道德思考，如JKCalhoun对亿万富翁消费行为的评价。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44609154" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -380,45 +420,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nasa.gov/image-article/nasas-x-59-quiet-supersonic-aircraft-begins-taxi-tests/" target="_blank">Nasa’s X-59 quiet supersonic aircraft begins taxi tests</a>
+                    <a href="https://medium.com/@eyal.itkin/the-a-file-is-a-relic-why-static-archives-were-a-bad-idea-all-along-8cd1cf6310c5" target="_blank">The .a file is a relic: Why static archives were a bad idea all along</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-19 12:41</span>
+                    <span>作者: eyalitki</span> |
+                    <span>评分: 49</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-19 08:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>NASA的X-59静音超音速研究飞机于2025年7月10日在加利福尼亚州帕姆代尔的美国空军42号工厂进行了首次低速滑行测试，标志着这架独特的实验飞机首次在自身动力下移动。由NASA试飞员Nils Larson和来自NASA及洛克希德·马丁公司的团队共同完成，滑行测试是首飞前的最后一轮地面测试。在接下来的几周内，飞机将逐渐增加速度，最终进行高速滑行测试。低速测试中，工程师和机组人员监测飞机在跑道上的操控情况，验证转向和刹车等关键系统，确保其稳定性和控制性。X-59是NASA Quesst任务的核心，旨在通过将巨响的音爆减少为轻声的“砰”声，展示静音超音速飞行。测试数据将提供给美国及国际监管机构，为制定超音速商用飞行的新噪音标准提供依据。</p>
+                    <p>文章探讨了C语言SDK中的静态链接库（.a文件）的缺点，以及为何静态档案并非理想解决方案。作者以自身在开发C语言SDK的经验为例，指出静态链接在满足客户需求方面的不足，尤其是在易用性、兼容性和维护性方面存在问题。动态链接库（.so文件）则提供了更好的灵活性，比如安全补丁可以通过更新库版本来实现。作者建议对ELF文件头进行更新，引入新的“静态捆绑对象”类型以替代现有的静态档案。文章最后强调，这是作者的个人观点，不代表其雇主的立场。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某款前置发动机、具备较大空气动力学表面的飞行器的设计、稳定性和商业可行性的讨论。
+                    <div class="comments-summary">主要讨论点：静态链接与动态链接的优缺点、静态库（.a文件）的使用及其问题
 
 不同观点：
-• **boguscoder** 认为该飞行器由于前部沉重的发动机设计，可能会导致降落时需要更加谨慎和精细的操作。这暗示了对飞行器操作复杂性的关注。
-
-• **HPsquared** 关心飞行器的稳定性，尤其是前部具有较大空气动力学表面的情况下，如何保持飞行的稳定性成为一个问题。
-
-• **widforss** 对飞行员的视野提出质疑，怀疑飞行员是否能通过窗户清晰观察外部情况，或者该飞行器是否依赖摄像头或自动驾驶技术进行飞行。
-
-• **erikerikson** 质疑超音速飞行的商业可行性和可持续性，认为这类项目可能只是实验性或概念性的，而非真正具备商业前景。
-
-• **NooneAtAll3** 指出NASA的X-59项目与Boom Airspace的XB-1项目在技术目标上的不同，前者测试的是将冲击波向上引导，而后者测试的是亚音速飞行。这表明了对不同技术路径的比较和分析。
-
-• **kaptainscarlet** 提出使用Starship作为更快捷的替代方案，但同时也承认价格是主要障碍。这反映了在技术选择上的不同偏好以及对成本的考虑。
+• TuxSH认为，在静态链接中，依赖于运行时的静态初始化（如构造函数）是不好的做法，并提到了一些编译选项（如`-ffunction-sections`和`-fdata-sections`）可以减少未使用代码的包含。同时，他批评了静态库设计中的某些问题。
+• amiga386反驳TuxSH的观点，认为对于构造函数的问题存在一些变通方法，如使用宏或特定的链接标志，并认为静态链接有其独特的优势，尤其是在防御动态链接器漏洞方面。
+• kazinator解释了.a文件在减少链接时间和内存消耗方面的优势，特别是对于非常大的软件项目，如Linux内核，通过将构建分解为多个.a文件来优化链接过程。
+• rixed对文章标题的武断表示不满，引用“切斯特顿栅栏”原则（Chesterton’s Fence）暗示不应轻易否定旧有做法。
+• parpfish认为“relic”一词使用不当，建议用“archaic”来描述静态库，因为它们可能是过时的而不是被尊崇的。
+• layer8提出是否有可能使用类似共享对象（.so）的“静态捆绑对象”（.sbo）文件，以便同时支持静态和动态链接。
+• tux3介绍了一个工具，将静态库中的所有对象文件合并为一个对象文件，以解决符号污染和大小问题，并认为这是一个临时的解决方案。
+• EE84M3i不理解为什么不能对.so文件进行静态链接，并询问在创建共享对象时丢失了哪些信息。
+• dale_glass分享了静态链接导致构造函数被多次调用的实际问题，并指出这是静态链接中需要注意的潜在问题。
+• dzaima建议创建一个工具将多个.o文件合并为一个.o文件，以解决符号泄露问题，但担心这可能会打破某些假设。
+• stabbles提到binutils实现了一个类似动态库依赖处理的功能，但认为其不够完善，并指出静态库在符号可见性方面存在限制。
+• harryvederci建议使用更新的文章来讨论静态链接，而不是引用过时的指南。
+• benreesman认为文章中对pkg-config的批评不公正，并指出静态库在性能、安全性和可移植性方面有显著优势，特别是在大型科技公司中。
+• high_na_euv对C/C++构建系统的复杂性表示不满，认为其他编程生态系统已经解决了类似问题。
 
 补充讨论：
-• 争议的焦点之一是超音速飞行的商业可行性，erikerikson对此持怀疑态度，而NooneAtAll3则通过对比不同项目暗示技术可行性上的差异。
-• 另一个讨论要点是飞行器的设计特点，如前置发动机的重量分布和空气动力学表面，这引发了对飞行稳定性和操作难度的讨论。
-• 飞行员的视野和飞行辅助技术也是一个值得注意的讨论点，widforss对此表示关注。
-
-整体来看，讨论围绕飞行器的设计复杂性、技术可行性以及商业应用前景展开，参与者从不同角度提出了各自的见解和疑问。</div>
+• 静态库和动态库的使用场景和优缺点是讨论的焦点。
+• 静态初始化顺序问题和符号污染是静态链接中需要解决的技术问题。
+• 工具链和编译选项的改进被认为是解决一些静态库问题的方法。
+• 不同开发者对静态链接的实际需求和偏好有所不同，特别是在大型项目和安全性要求高的场景中。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44615033" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44613791" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -429,91 +471,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ia.acs.org.au/article/2025/-shameful--cba-hiring-indian-ict-workers-after-firing-australian.html" target="_blank">'Shameful' CBA hiring Indian ICT workers after firing Australians</a>
+                    <a href="https://www.usenix.org/conference/woot24/presentation/motallebighomi" target="_blank">MakeShift: Security Analysis of Shimano Di2 Wireless Gear Shifting in Bicycles</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: theteapot</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-22 08:49</span>
+                    <span>作者: motorest</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-19 12:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>澳大利亚联邦银行（CBA）在解雇数百名澳大利亚技术员工后，正在印度招聘相同职位的员工，引发工会愤怒。金融行业工会（FSU）指出，CBA在印度的子公司正在招聘包括数据工程师、软件工程师等多个技术职位，其中110个职位与近期在澳大利亚裁减的岗位“完全相同”。FSU认为，CBA此举违反了企业协议，属于不诚信行为，并将向公平工作委员会（Fair Work Commission）提起诉讼。CBA则辩称其对外包和技术团队的变动一直保持透明。与此同时，澳大利亚失业率上升，工会指责CBA在经济困难时期进行不正当裁员和海外招聘，称其行为“可耻”。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：跨国公司将工作外包给印度等国家对本地工人和经济的影响
+                    <div class="comments-summary">主要讨论点：无线变速器与传统机械/有线变速器的优劣对比
 
 不同观点：
-• [支持外包的观点]
-   - 外包能够降低商品和服务的价格（kypro）。
-   - 从经济角度看，企业为了最大化利润，将工作转移到生产力更高、成本更低的地方是合理的，这是资本主义体系的自然延伸（hunglee2）。
-   - 移民和外包对澳大利亚的经济有积极贡献，带来了多样性和技术（部分观点未直接指出但隐含）。
+• voidUpdate认为无线变速器没有必要，质疑有线（机械）变速器的不足之处。他提出，即使不想用机械连接，也可以通过有线传输数据，而不是采用无线方式。这暗示了对无线技术可靠性的担忧，以及对传统有线方式的偏好。
 
-• [反对外包的观点]
-   - 外包被认为是大型企业为了压制本地工人工资和削弱本地劳动条件的手段，尤其是在IT行业（RachelF, christopher8827, GianFabien）。
-   - 外包过程中，印度工人通过承包公司雇佣，无法享有完整的法律权利，导致他们被剥削（monkeycantype）。
-   - 加拿大和澳大利亚等国家的企业大规模用外籍工人取代本地工人，导致本地工人的就业前景黯淡（breitling, GianFabien）。
-
-• [对政府和行业协会的批评]
-   - 政府决策受制于游说团体和政党捐助者，无法有效保护本地工人利益（GianFabien）。
-   - ACS（澳大利亚计算机协会）因其收费验证IT经验的利益冲突，不会主动倡导减少移民数量，反而可能助长技术岗位外包（christopher8827, simeonmiteff）。
-
-• [对AI和技术进步的讨论]
-   - AI和外包在争夺工作机会，未来工作岗位可能会进一步被自动化取代（oefrha, crinkly）。
-   - 外包和AI技术进步的结合可能会进一步简化和自动化工作岗位，使得工作机会减少（hunglee2, crinkly）。
+• 另一方（未具名）可能支持无线变速器的创新，认为无线技术能够减少物理连接的复杂性，提升设计自由度和用户体验。这种观点可能强调无线技术带来的便捷性和现代感，以及减少机械磨损的优势。
 
 补充讨论：
-• 争议焦点在于外包是否真正有利于经济发展和多样性，还是以牺牲本地工人利益为代价来增加企业利润。
-• 部分评论中存在情绪化表达和对反对意见的攻击（yahoozoo, justlikereddit），使得讨论变得复杂化和政治化。
-• 有人提出替代性经济模式，如合作社形式的企业所有制，以保护工人利益并防止被高效的资本主义企业淘汰（hunglee2）。</div>
+• voidUpdate的评论反映了对无线技术可靠性和必要性的怀疑，特别是对于已经成熟的有线数据传输方案的信任。
+• 另一潜在讨论点是无线变速器的技术成熟度以及是否在实际使用中表现出显著优势。这可能涉及到无线信号延迟、电池寿命、以及抗干扰能力等具体技术问题。
+• 争议的焦点在于无线技术的实用性与可靠性，以及是否有必要为了创新而放弃经过验证的传统技术。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44644645" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.grisp.org/blog/posts/2025-06-11-grisp-nano-codebeam-sto" target="_blank">Erlang 28 on GRiSP Nano using only 16 MB</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: plainOldText</span> |
-                    <span>评分: 96</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-21 19:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>GRiSP Nano成功在仅16 MB内存的限制下启动了Erlang，成为一个重要里程碑。该设备采用STM32U5 Cortex-M33处理器和16 MB OctoSPI DRAM，通过一系列优化技术，如去除Crypto模块、精简BEAM文件、调整RTEMS和内存分配器设置，最终在禁用Unicode的情况下实现了Erlang shell的启动。接下来，团队计划进一步优化内存使用，开发轻量级Unicode支持，并推出相关产品。该项目的进展和细节可在GRiSP.org查看。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：GRiSP平台结合Erlang和RTEMS实时操作系统的技术及其功耗表现
-
-不同观点：
-• kristianp认为低功耗是该平台的重要特点，并引用了ST官方数据手册中的具体数据，指出CPU在3.3V下的功耗为18.6 μA/MHz，计算得出61μW的功耗。他还提到对能量采集应用有兴趣，但认为视频中没有足够深入探讨这一点。
-• voicedYoda对该技术实现表示赞赏，特别是对项目快速完成表示钦佩，但没有涉及具体技术细节或功耗问题。
-
-补充讨论：
-• kristianp关注的是该平台在低功耗场景下的具体表现，特别是功率消耗的数值细节，以及能量采集应用的潜在需求。他引用的数据来自ST官方资料，提供了较为具体的功耗分析。
-• voicedYoda的评论更多是表达对项目整体完成的赞赏，属于一种正面的反馈，但未涉及技术细节或争议点。
-
-争议焦点：
-• 主要的争议焦点可能在于该平台在低功耗应用场景（如能量采集）中的实际表现和应用潜力。kristianp显然希望看到更多这方面的讨论，而视频中似乎没有满足他的期望。
-
-总体来看，讨论主要围绕GRiSP平台的技术实现和功耗表现展开，其中kristianp提供了较为详细的技术分析，而voicedYoda则给予了正面的评价。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44639524" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44614837" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
