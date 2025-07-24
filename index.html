@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-24 20:28 (北京时间)
+            最后更新时间: 2025-07-24 23:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://detekt.dev/" target="_blank">Detekt – A static code analyzer for Kotlin</a>
+                    <a href="https://avi.im/blag/2025/sqlite-wal-checksum/" target="_blank">PSA: SQLite WAL checksums fail silently and may lose data</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: TheWiggles</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-24 11:16</span>
+                    <span>作者: avinassh</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-24 14:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>detekt 是一个帮助开发者编写更整洁 Kotlin 代码的工具，支持在 Android、JVM、JS、Native 和多平台项目中进行静态代码分析。它可以通过插件轻松集成到 Gradle、Maven、Bazel 等构建系统中。此外，detekt 还支持自定义规则扩展，以识别和修复代码中的不良模式。作为一个开源项目，detekt 由社区驱动，用户可以在 GitHub 上参与其开发和改进。</p>
+                    <p>本文讨论了SQLite数据库在WAL模式下的校验和（checksum）处理机制。尽管SQLite在WAL模式中引入了校验和，但它不会在检测到校验和错误时抛出错误，而是直接丢弃出错帧及其后的所有帧，即使它们未损坏。这种行为是设计使然，不是bug。SQLite在校验和验证过程中，通过单次扫描WAL文件来检查每个帧的校验和，并在发现第一个无效校验和时停止。如果缺少伴随的`.db-shm`文件或在WAL写入时发生不洁关机，就可能触发此问题，导致数据丢失。作者认为，默认行为不应直接截断WAL文件并丢失数据，而应抛出错误让代码处理，并建议提供选项让用户选择是否忽略损坏数据。SQLite的这种设计可能是为了在嵌入式环境或移动设备上更好地运行，而非像企业级数据库那样处理数据损坏。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Kotlin在后端开发中的使用及其优势与风险
+                    <div class="comments-summary">主要讨论点：数据库状态的有效性和事务处理的可靠性
 
 不同观点：
-• [smokel] 认为Kotlin相较于Java有语法优势（如扩展方法、更好的null检查），但考虑到Java已经逐渐赶上，Kotlin的优势可能不足以抵消使用它所带来的"技术锁定"风险。他个人喜欢Kotlin，但未能说服保守的同事转向Kotlin。
-   
-• [synesso] 没有直接回应Kotlin和Java的比较，而是提到自己使用"detekt"（一个Kotlin静态代码分析工具）多年，并对Kotlin相关讨论突然成为热门话题表示疑惑。这表明可能对当前讨论的时效性或相关性有不同看法。
+• cwillu认为，保留已提交事务的数据库状态是有益的，因为这样可以确保数据库状态是曾经真实存在过的。这种观点强调了数据一致性和历史状态的可追溯性，即数据库应反映出曾经有效的数据状态，而不是通过选择性恢复导致不一致的情况。
 
 补充讨论：
-• [smokel] 的评论中隐含了对团队技术采纳的代际或经验差异的讨论，表明老资历的开发者可能更倾向于坚持使用Java，反映出团队内部对新技术采纳的阻力。
-   
-• [synesso] 的评论暗示Kotlin相关的讨论或工具（如detekt）并不是新话题，可能在开发者社区中早已存在，只是最近因为某些原因再次引起关注。
-
-争议焦点：Kotlin是否足以凭借其语言特性上的优势（如语法改进和更好的null检查）来克服技术锁定风险，尤其是在Java不断更新和改进的情况下。同时，团队内部对新技术的接受程度和采纳阻力也是讨论中的潜在争议点。</div>
+• 争议的焦点在于数据库在处理事务时，是否应该允许选择性恢复未提交或部分提交的事务。cwillu指出，选择性地回滚某些事务可能会导致数据库进入一种无法保证有效的状态，因此反对这种做法。
+• 论据例子中提到了“ dropping some committed transactions and not others ”，即如果只恢复部分事务而忽略后续事务，可能会导致数据库进入一个无法验证的、无效的状态，从而影响数据库的完整性和可靠性。
+• 该评论还隐含了对数据库事务原子性和持久性的关注，即一旦事务被提交，期望其结果能够持久化并在需要时恢复到一个一致的状态。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669365" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44671373" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,37 +98,183 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://talk.bradwoods.io/blog/connect/" target="_blank">What does connecting with someone mean?</a>
+                    <a href="https://github.com/vet-run/vet" target="_blank">Vet is a safety net for the risky curl | bash pattern</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bradwoodsio</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-24 11:16</span>
+                    <span>作者: mooreds</span> |
+                    <span>评分: 91</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-07-24 12:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了人与人之间建立联系的重要性以及其中的困难。联系意味着彼此 empathy（共情）—— 理解对方并被对方理解，发现共同的价值观、经历和视角，从而建立信任和安全感。作者反思自己人生中最幸福的时刻，发现大部分都与人际连接有关，因此创办了一个网站来促进这种联系。然而，随着成长，人们因害怕受伤而筑起心理防线，导致难以真正与他人连接。文章呼吁通过放下防备、真诚交流来克服孤独，寻求幸福。这需要勇气，但也是建立深层人际关系的关键。</p>
+                    <p>`vet` 是一个命令行工具，旨在解决使用 `curl | bash` 模式执行远程脚本时的安全风险。它提供了一种更透明、安全的方式，允许用户在执行脚本前检查其变更、进行代码审查和静态分析，并在最终执行前需要用户明确批准。`vet` 的工作流程包括：下载脚本、显示变更、进行代码分析、并请求用户确认。该工具强调不盲目信任互联网上的脚本，推荐通过 Homebrew 或手动审查安装过程以确保安全。此外，`vet` 依赖 Bash 4+ 的特性来保证其安全功能，适用于 macOS 和 Linux 系统。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对不同文化中打招呼和社交习惯的比较，以及这些习惯对深入交流和人际关系的影响。
+                    <div class="comments-summary">主要讨论点：围绕使用 `curl|bash` 安装脚本的安全性、可靠性及替代方案的讨论
 
 不同观点：
-• inezk认为，在美国，人们会问"how are you?"，尽管有时只是表面上的问候，但仍然可以成为深入交流的开始。相比之下，在波兰，人们不太问"how are you?"，这可能限制了深入对话的机会。
-• inezk同时指出，欧洲整体上有更好的工作与生活平衡，这使得人们有更多机会与朋友和家人相处，即使在日常问候上不如美国频繁。
+• pxeger1 认为，问题的核心不在于脚本是否恶意，而在于脚本可能写得不专业或没有考虑用户需求，导致安装过程不标准或脆弱。他更倾向于手动下载和安装二进制文件。
+• networked 提出了使用 `vipe` 工具审查和修改 `curl|bash` 脚本内容的解决方案，认为这样可以提高安全性。
+• djha-skin 表达了对当前技术文章质量的不满，认为过去的文章更有实用价值，而不是现在流行的依赖AI生成内容的文章。
+• jjgreen 引用了服务器检测 `curl|bash` 行为的可能性，认为如果服务器被攻陷，可能会针对这些用户提供恶意内容。
+• baq 认为 `curl|bash` 在Windows系统上类似于下载和运行安装程序，历史在不同系统上反复重演，并提到当前流行的 `npm install` 和 `docker run` 也有类似风险。
+• Galanwe 指出 `curl|bash` 的目的是绕过包管理器直接在裸机上安装，因此引入其他工具违背了这一初衷。
+• johnfn 质疑即使使用 `vet` 工具审查脚本后再执行，最终仍需信任代码仓库的安全性，因此审查步骤可能并不能显著提高安全性。
+• ojosilva 分享了使用AI工具扫描GitHub仓库以检查可疑活动的经验，认为AI工具可以作为一种辅助手段，但仍有可能遗漏恶意代码。
+• sgc 对Linux发行版的包管理系统提出了具体要求，并询问哪种发行版能更好地满足这些需求，同时表达了对Debian/Ubuntu系统的一些不满。
+• bugsMarathon88 认为，解决执行不受信任代码的方案不应该是执行更多不受信任的代码，尤其是未经过验证的工具。
+• gchamonlive 对 `vet` 工具的安装方式表示赞赏，但希望能在Arch的AUR中找到它。
+• Sanzig 建议通过域名验证增加安全性，例如在DNS记录中加入公钥以验证脚本签名。
+• evertheylen 分享了自己开发的工具 `probox`，用于保护系统免受不受信任依赖的影响，并欢迎其他人提出意见。
+• tyingq 建议使用无根容器运行脚本，并检查文件系统差异和审计事件，以提高安全性。
+• jimmaswell 质疑是否有过因 `curl|bash` 导致的大规模恶意软件爆发事件，认为这种担忧可能没有实际依据。
 
 补充讨论：
-• codeful对文章表示赞赏，认为文章简明扼要，并提供了有价值的见解，但没有深入讨论文化差异或社交习惯。
-• inezk提供了跨文化比较的具体例子，并结合个人背景（来自波兰）来支持其观点，使得讨论更加丰富和具体。
-
-争议焦点：
-• 问候语"how are you?"在不同文化中的作用和影响是讨论的核心。inezk认为这种问候在某些文化中可能带来更深入的交流机会，而在其他文化中则不一定有相同的效果。
-• 工作与生活平衡对社交关系的影响也是讨论的一个重要方面，inezk认为欧洲在这方面做得更好，尽管问候习惯不同。</div>
+• 争议的焦点在于 `curl|bash` 方法的可靠性和安全性，部分用户认为该方法容易引入风险，而另一些用户则认为可以通过审查工具或容器技术减轻风险。
+• 讨论中提到了多种工具和方法，如 `vipe`、`vet`、域名验证和容器技术，试图提供更安全的 `curl|bash` 替代方案。
+• 对Linux发行版的包管理系统的讨论反映了对更好软件管理解决方案的需求，尤其是对Debian/Ubuntu系统的一些具体问题的不满。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669368" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44669998" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.dzombak.com/blog/2025/07/use-your-type-system/" target="_blank">Use Your Type System</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ingve</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-24 14:57</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了一种简单但有效的技术，通过定义不同的类型来避免在编程中因使用基本类型（如整数、字符串、UUID）而导致的错误。例如，用不同的ID类型（如AccountID和UserID）代替通用UUID，以防止传递错误参数。作者在Golang的天气计算库*libwx*中应用了这种方法，为每个测量值定义专属类型，并提供转换方法，避免直接使用*float64*带来的潜在错误。编译器能帮助捕获这些错误，避免运行时问题。文章强调充分利用类型系统可显著减少类似错误，并建议广泛采用这种技术。代码示例可在GitHub上找到。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44671484" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/wixtoolset/issues/issues/8974" target="_blank">WiX Toolset: Introduce the Open Source Maintenance Fee</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: AndrewDucker</span> |
+                    <span>评分: 103</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-24 12:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>WiX Toolset项目计划引入开放源代码维护费，以支持项目的长期可持续性。从2025年4月5日发布的WiX v6.0起，所有利用WiX Toolset创收的用户需通过GitHub Sponsors支付维护费。费用标准为：少于20人的小组织每月10美元，20至100人的中等组织每月40美元，超过100人的大组织每月60美元。此费用不适用于WiX Developer Direct的支持协议客户。相关步骤包括获取最终用户协议（EULA）、将其添加到.nupkgs、设置GitHub赞助层级以及更新README文件。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：WiX Toolset 开源项目的维护费用模式及其相关争议
+
+不同观点：
+• 支持观点：
+  - trjordan：认为该模式是解决开源项目维护者面临的常见问题的一种有效方式。开源代码仍然可用，但公司等盈利性用户需要支付费用以获得支持，这对开源维护者是合理的补偿。
+  - cyberes：理解项目维护者的动机问题，没有收入时很难保持动力。
+  - optymizer：认为开源软件应有价格，长期依赖无偿劳动对项目发展不利，金钱激励能促使人们完成必要的但无趣的工作。
+
+• 反对观点：
+  - opticfluorine：认为该项目的要求和说明有误导性，尤其是关于商业使用需付费的规定，实际根据许可证，用户可以自己编译代码并用于商业用途。因此，这种做法感觉像是在恐吓商业用户支付费用。
+  - mytailorisrich：对如何在开放源代码许可证下合法收取二进制文件费用感到困惑，认为如果软件是开源的，就不能限制其分发或收费使用。
+
+• 技术与执行问题：
+  - calibas：质疑通过许可证模式是否能有效执行收费，因为用户可以自行编译代码并免费分发二进制文件。
+  - Arch-TK：认为通过EULA来执行这种收费模式会造成管理上的噩梦，不如直接对二进制文件和问题跟踪器收取订阅费用更简单。
+  - scottydelta：认为在开源级别管理这种收费模式可能会很麻烦，执行起来也很困难。
+
+• 其他关注点：
+  - yoavm：澄清WiX Toolset与Wix网站构建平台无关，以免混淆。
+  - lars_francke：对Open Source Maintenance Fee网站本身的设计问题提出批评，认为在浅色模式下难以阅读，且无法在仓库中提交问题。
+  - guluarte：建议GitHub引入"悬赏"功能，允许用户为问题提交附带奖励。
+  - mellosouls：提供了Open Source Maintenance Fee的消费者常见问题链接以供参考。
+  - ChrisArchitect：建议调整讨论标题以避免混淆。
+  - nikanj：指出该收费模式的通知时间较短，从2025年3月到4月，给用户的调整时间不足。
+
+补充讨论：
+- 该讨论涉及开源项目维护者如何通过收费模式维持项目长期发展，以及这种模式在执行和伦理上的争议。核心争议点在于如何在保持开源性质的同时，确保维护者获得合理补偿，以及这种收费模式是否会造成不必要的使用障碍或法律问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44669858" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bitestring.com/posts/2023-03-19-web-fingerprinting-is-worse-than-I-thought.html" target="_blank">Web fingerprinting is worse than I thought (2023)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: xrayarx</span> |
+                    <span>评分: 148</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-07-24 12:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了网络指纹识别技术对用户隐私的严重威胁。与传统的通过 cookies 进行跨网站追踪不同，网络指纹识别利用浏览器的多种配置信息（如浏览器版本、CPU数量、屏幕尺寸等）生成唯一标识符，即使在使用VPN或隐私浏览模式下，也能准确识别用户。文章提到一家公司FingerprintJS Inc.将指纹识别作为服务出售，其JavaScript指纹识别库被许多网站使用，甚至在用户清除缓存或使用隐私模式后，仍能生成相同的标识符，严重威胁用户隐私。文章通过实际测试展示了该技术的有效性，并指出即使采取隐私保护措施，也难以防范这种追踪技术。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：浏览器指纹识别及其隐私影响
+
+不同观点：
+• matthewdgreen认为，虽然App Tracking Transparency对Meta等公司造成了短暂影响，但Meta似乎已经迅速找到了绕过苹果iOS隐私保护的方法，可能涉及新的追踪技术，但具体细节不明确。
+• jordanb表示，频繁遇到验证码是好事，因为这表明其行为看起来更像匿名机器人，而非高价值目标。
+• Sanzig主张，浏览器指纹识别应该被定为非法，因为它比追踪Cookie更具威胁，但尚未引起公众和监管机构的足够重视。
+• u8_指出，fingerprint.com的指纹识别效果不如creepjs，后者更为可怕。
+• yodon提到，有一家公司提供服务，可以明确识别网站访问者的身份，这引发了对隐私的进一步担忧。
+• mysterypie对Firefox的隐私设置提出疑问，质疑为何“resistFingerprinting”不是默认设置，以及启用该设置的可能副作用。
+• Vinnl关注指纹识别的稳定性问题，质疑浏览器版本升级是否会导致指纹失效。
+• voidUpdate询问在设备相同的情况下（如iPhone），指纹识别如何运作。
+• lucraft通过实验发现，Safari在隐私保护方面似乎比Chrome更有效。
+• anonymousDan不确定Brave浏览器是否能有效防止指纹识别，并提到Tor浏览器在对抗指纹识别方面的努力不足。
+• mystraline建议，Firefox和Tor浏览器应通过修改JavaScript报告来提供更好的隐私保护，目前这种保护还不够。
+• 1a527dd5从技术角度分享了使用ja3/ja4进行速率限制的经验，并指出这些工具在防止滥用方面的有效性。
+• Jeremy1026通过实验发现，Safari在普通模式和隐私浏览模式下的指纹识别ID不同，认为这是好的隐私保护表现。
+• bugsMarathon88认为，Tor浏览器是目前唯一能提供真正隐私保护的工具，其他方法只是增加攻击面。
+• Roguelazer批评一些公司结合指纹识别和数据经纪服务进行去匿名化，认为这违反了隐私法规。
+
+补充讨论：
+• 关于浏览器指纹识别的技术实现及其绕过方法的讨论，包括具体工具如creepjs和ja3/ja4的有效性。
+• 关于不同浏览器（如Firefox、Safari、Chrome、Brave、Tor）在隐私保护方面的表现和设置选项的讨论。
+• 关于法律和监管方面对指纹识别的关注和不足，以及这种技术对个人隐私的潜在威胁。
+• 关于验证码和匿名机器人行为对隐私保护的影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44669853" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -200,6 +342,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://ntietz.com/blog/covers-as-a-way-of-learning/" target="_blank">Covers as a way of learning music and code</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-21 15:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了通过模仿（如音乐翻唱和代码重实现）来学习的方法。在音乐学习中，翻唱能提供客观标准，帮助学习者分析和理解原作品的技巧和意图。同样，在编程中，重现现有库或代码可以帮助学习者深入理解其设计决策和实现细节，从而提高编程技能。文章强调，尽管模仿不是原创，但它是一种有效的学习方式，可以为未来的独立创作打下基础。同时，作者提醒要尊重原作者的版权，并在使用他人作品时给予适当 credit。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于复制和模仿他人作品的价值与批评
+
+不同观点：
+• **ozim的观点**：认为批评他模仿或尝试创作的人是不理解创作过程，尤其是对于青少年探索和学习阶段的人。他强调创作初期模仿和分享的重要性，并认为那些批评者通常自己并不会去尝试创作。
+
+• **datameta的观点**：支持通过手动复制（如逐字重写代码）来学习，认为这种方法比简单地复制粘贴更有价值，能带来更多的学习效果。
+
+• **michaelterryio的观点**：引用本杰明·富兰克林的自传，暗示富兰克林也曾讨论过类似问题，表明通过模仿和尝试来学习是一种历史悠久且有效的学习方式。
+
+• **empressplay的观点**：指出在创意编程领域，模仿他人作品并加入自己的创意是一种常见的学习方式，特别是在艺术和动画方面。这种方法能帮助新手在没有巨大压力的情况下进入编程领域。
+
+• **RickJWagner的观点**：认为人们往往乐于批评他人的作品，即使是在模仿和学习阶段。这种批评可能对创作者造成负面影响。
+
+补充讨论：
+• 争议焦点在于模仿和复制在学习过程中的价值与外界的批评之间的关系。ozim和empressplay强调了模仿和分享的积极意义，而RickJWagner则指出了外界批评对创作者的潜在负面影响。
+
+• datameta和michaelterryio的观点提供了具体的例子和历史背景，支持通过模仿和手动复制来提高技能，强调了这种方法在学习中的有效性。
+
+• 总体来看，讨论的重点在于如何看待和处理在创作初期阶段的外界批评，以及通过模仿和复制进行学习的合理性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44636240" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://arstechnica.com/ai/2025/07/research-shows-google-ai-overviews-reduce-website-clicks-by-almost-half/" target="_blank">AI overviews cause massive drop in search clicks</a>
                 </h3>
                 <div class="story-meta">
@@ -250,93 +439,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://bgp.tools/" target="_blank">BGP.Tools: Browse the Internet Ecosystem</a>
+                    <a href="https://www.nature.com/articles/s44222-025-00323-4" target="_blank">Writing is thinking</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: RGBCube</span> |
-                    <span>评分: 157</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-24 01:12</span>
+                    <span>作者: __rito__</span> |
+                    <span>评分: 107</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-21 06:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>BGP.Tools 提供免费和付费的BGP（边界网关协议）数据服务。免费服务包括近实时的BGP数据、用户友好的界面以及频繁更新的外部数据。付费服务则包括BGP网络监控和IRR数据库监控。网站还列出了不同日期的更新日志，并提供示例页面和连接信息，如用户的IPv4地址、连接延迟等。该工具适合网络工程师和需要监控互联网路由情况的专业人士使用。</p>
+                    <p>本文探讨了科学写作在人工智能时代的重要性，指出写作不仅是传达研究结果的工具，更是帮助理清思路、激发新想法的过程。尽管大型语言模型（LLM）可以快速生成科学文章，但它们缺乏责任性，不能作为作者，且生成的内容可能存在错误或虚构信息，仍需人工仔细核查。过度依赖LLM可能会削弱研究人员对自身领域的反思和创造性表达能力。然而，LLM在提高文章可读性、辅助文献总结和克服写作障碍方面仍具有一定价值。最终，写作是思考的体现，人类生成的科学写作仍具重要意义。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：BGP工具及其相关技术和应用
+                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在思考、阅读和写作中的作用及影响
 
 不同观点：
-• rumblefrog对地图表示兴趣，特别提到奔驰公司持有大量IP块（53.0.0.0/8），但大部分似乎未被使用。
-• thisisgvrt分享了一个视频链接，该视频提供了关于数据收集和解析的幕后花絮。
-• tomhow提到了之前关于BGP.Tools的讨论，并附上了一个新闻链接和评论。
-• dapperdrake认为该工具看起来不错，并预测在ASN级别上阻止机器人将变得普遍。
-• ddtaylor提到过去在数据中心中断时试图学习BGP以确定是否是BGP导致中断，但并不顺利，询问是否有好的方法或工具可以在专家报告之前判断BGP是否导致大规模中断。
-• TheBoozyGenius简单评价为“非常疯狂”。
+• jll29认为，阅读和写作是思考的过程，不应习惯性地将这些任务交给AI，尤其是在学生的成长学习阶段。他以计算器作类比，指出只有在打好基础后，才可以使用辅助工具。
+• bwfan123提出，如果写作越来越多地由LLM生成，可能会导致模型崩溃，因为模型需要依赖人类的写作进行训练。
+• carlesfe部分同意上述观点，但指出“写作是思考”只是特定历史阶段的产物。他认为，在便宜的写作技术出现之前，思考和写作是分离的，并以历史上的作家为例说明。
+• infogulch扩展了讨论，认为说话也是思考，而写作是带有超能力的思考工具，类似于《哈利·波特》中的“冥想盆”。
+• msarrel强调，思考和写作密切相关，但使用ChatGPT则不然，并引用MIT媒体实验室的文章支持其观点。
+• Ezhik以调侃的方式表示，新技术可以帮助解决“页面满，脑袋空”的问题。
+• poindontcare批评那些认为LLM只用于语法纠正的人是妄想，暗示LLM在科学研究中的潜力更大。
+• zug_zug认为，人们重视写作是因为写作带来的成就感，但实际上写作只是思考合成后的产物，而非思考本身。
+• pryelluw分享了自己的学习技巧，即通过转录和输入内容来加深理解，特别适用于代码学习。
+• pfoof将阅读比作像EEPROM一样被重新编程，强调通过例子建立联系的学习效果更持久。
+• cubefox指出，LLM在提高文本可读性和语法方面的重要性，特别是对非英语母语者，并讨论了 manuscript 被拒稿的可能性与语法质量的关系。
+• empath75提出，写作需要思考，而LLM并不思考，这一对比值得深思。
+• markhahn分析了写作如何迫使人们明确表达思维过程，并以特朗普的演讲风格为例说明联想式思维的特点。
+• motohagiography强调，写作通过迭代 refined 原始经验，使其成为更高质量的思想，并分享了相关的讲座资源。
+• fehu22简单表示，写作是逻辑的原创体现。
 
 补充讨论：
-• 讨论中包含了对BGP工具的兴趣和技术细节的探讨。
-• 提到了BGP中断问题的实际挑战以及如何提前判断的工具和方法需求。
-• 不同评论之间的关联性较弱，但总体围绕BGP及其应用展开。</div>
+• 争议焦点在于写作与思考的关系，以及LLM在其中的角色。部分评论者担心过度依赖LLM会影响思考能力，而另一些人则认为LLM只是一种工具，类似于历史上的技术进步。
+• 讨论中多次提到历史上的作家和思想家，如苏格拉底、托尔斯泰等，以支持对写作和思考关系的不同看法。
+• 也有评论者关注LLM在特定领域（如科学研究、非英语母语者的学术写作）中的实用性。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44665815" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.engora.com/2025/07/vanishing-home-field-advantage-in.html" target="_blank">Vanishing home field advantage in English football</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Vermin2000</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-07-20 21:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了英格兰足球中主场优势的现象，利用了1888年至2024-2025赛季的完整数据进行分析。研究显示，主场球队平均每场比赛比客队多进0.25球，且胜率更高。然而，在2020-2021年新冠疫情期间，由于没有观众入场，主场优势完全消失，表明观众支持可能是主场优势的主要因素。此外，研究还发现，二战后主场优势逐渐减弱，具体原因尚不明确，可能与球员体能和训练水平的提升有关。总体而言，主场优势在足球比赛中显著，但受到多种因素影响，尤其是观众的存在。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：足球比赛中的主场优势及其影响因素
-
-不同观点：
-• **[Fluorescence]** 认为20世纪90年代的剑桥联队主教练Jeff Beck通过操控球场条件（如犁地、缩小球场尺寸、加长草坪）来削弱对手技术型球队的表现，并利用高前锋进行长传冲吊战术，而非依赖跑动和传球。该评论暗示当时的规定可能不如现在严格。
-
-• **[rhplus]** 指出尽管FIFA对职业球队球场有推荐尺寸，但实际宽度和长度有较大浮动范围（宽46至91米，长91至119米）。该评论进一步推测，随着球场升级，球场尺寸的差异可能已减少。
-
-• **[lordnacho]** 认为足球的专业化（如体能训练、战术优化）在过去几十年中迅速发展，使得球员的身体状况更加优化，从而可以执行过去不可能的战术。该评论还提到在没有观众的PL2或青训比赛中，旅行和体能状况相似，但缺乏球迷可能会影响比赛氛围。
-
-• **[chilmers]** 建议将主场优势与犯规和不当行为的发生率进行对比分析，以观察比赛是否变得更加干净，并探讨这是否会影响裁判偏见对比赛结果的作用。
-
-• **[walthamstow]** 强调了球迷在足球比赛中的重要性，提到在COVID期间没有观众的比赛显得毫无生气，并认为没有球迷的足球毫无意义。
-
-• **[amelius]** 提出希望看到对比赛/锦标赛获胜者是否是最佳球队的分析，并通过统计学上的p值来评估。该评论旨在探讨如何通过改变规则来提高最佳球队获胜的可能性。
-
-• **[jansan]** 认为球迷文化和氛围的变化可能对不同联赛产生不同影响，但主场优势似乎对所有联赛的影响相同，因此对其最初的假设提出质疑。
-
-• **[AndrewOMartin]** 提到一篇文章（来源不可靠）指出主场优势的消失可能与球员行为变化有关，如过去球员在客场比赛时可能会外出饮酒，而现在则更注重健康生活和休息。
-
-补充讨论：
-• **[Vermin2000]** 确认主场优势是真实且可测量的，并指出自二战以来主场优势一直在稳步下降。该评论还提到相关数据图表可以交互查看。
-
-争议焦点：
-• 主场优势的成因及其变化趋势是主要争议点，包括球场条件操控、球迷影响、球员行为变化以及比赛的专业化发展等多方面因素。
-
-总结：
-讨论围绕主场优势的成因、变化及其影响因素展开，涉及球场条件操控、球迷影响、球员行为变化以及比赛的专业化等多方面观点。争议点集中在主场优势是否因规则变化、球迷缺失和球员行为变化而减弱。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44629300" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44632314" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -366,169 +511,6 @@
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44669631" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/apache/httpd/commit/8abb3d06b23975705ebcf4bf4476464fd0b9bd0b" target="_blank">Apache HTTP Server: 'RewriteCond expr' always evaluates to true</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Bogdanp</span> |
-                    <span>评分: 88</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-07-24 04:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章简要描述了对Apache HTTP服务器中`mod_rewrite.c`文件的代码改动。具体更改发生在第4276至4284行，涉及`apply_rewrite_cond`函数中的一段逻辑。主要改动是在条件匹配时，将原来的直接返回`COND_RC_MATCH`修改为根据条件`rc > 0`来判断是否匹配，并返回相应的`COND_RC_MATCH`或`COND_RC_NOMATCH`。此次更改增加了2行代码，并删除了1行代码。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Apache HTTP Server代码提交中的错误及其影响
-
-不同观点：
-• kevincox：认为错误的根源在于代码清理过程中对分支逻辑的误解。具体来说，代码错误地将`rc >= 0`标准化为COND_RC_MATCH(1)，而实际上应该标准化的是`rc > 0`。此外，他还指出其他逻辑变化也需要仔细审查，比如使用`rc <= COND_RC_MATCH`来匹配多种情况，可能意图不明。
-
-• abanana：对如此大规模的更新缺乏测试表示震惊，指出这可能影响大量使用Apache的WordPress网站，特别是其.htaccess文件中的重写规则。认为这种错误会造成广泛的影响。
-
-• binaryturtle：认为这种问题应该通过自动构建或功能测试来发现。
-
-• elric：询问此问题为何被视为安全问题。
-
-• Hexcles：指出该提交中没有添加或更改测试，并质疑该区域是否有任何测试。
-
-• brunooliv：认为这种复杂的条件逻辑代码在没有测试框架的情况下很难维护，即使是AI也难以处理。强调任何代码合并都应有基本单元测试。
-
-• mgaunard：明确表示这不是安全问题，而是正确性问题，整个功能不工作。
-
-补充讨论：
-• 争议焦点：此问题是否为安全问题。elric提出质疑，mgaunard进一步澄清其为正确性问题而非安全问题。
-• 测试的重要性：多位评论者（abanana, Hexcles, brunooliv）强调缺乏测试的问题，并建议基本单元测试应作为代码更改的一部分。
-• 代码质量与可维护性：brunooliv特别提到这种复杂的逻辑代码对后续维护构成挑战，强调测试的重要性以确保代码质量。
-
-总结：讨论围绕代码错误的影响、测试的缺乏、问题是否涉及安全以及代码质量和可维护性展开。各方一致认为需要加强测试以防止类似问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44666896" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/how-distillation-makes-ai-models-smaller-and-cheaper-20250718/" target="_blank">Distillation makes AI models smaller and cheaper</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 95</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-20 22:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了知识蒸馏（distillation）技术如何帮助人工智能模型变得更小、更便宜。知识蒸馏通过使用一个大而昂贵的“教师”模型来训练一个较小、更高效的“学生”模型，从而在保持性能的同时降低计算成本。该技术由Google的研究人员于2015年提出，灵感来自于机器学习中错误答案的处理问题。通过将教师模型中的“软目标”（即概率分布）传递给学生模型，学生模型能够更有效地学习。尽管最初并未受到广泛关注，但随着AI模型规模和成本的增加，知识蒸馏成为了一种重要的优化工具，被各大科技公司广泛采用。文章还提到中国公司DeepSeek利用该技术开发出低成本高性能的聊天机器人，引发了行业震动。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大型语言模型（LLM）的知识蒸馏方法及其相关争议
-
-不同观点：
-• **NitpickLawyer** 区分了两种知识蒸馏方法：
-  1. 基于完成的方法（completion based methods），可以通过API访问实现，使用较小的查询集来训练较小模型。例如，DeepSeek使用约80万条追踪数据对较小的QWen模型进行训练。
-  2. 基于logits/内部表示的方法（logit/internal representations based methods），需要对原始模型的访问权限，API提供者通常不会提供这种权限。这种方法适合模型创建者，例如Sky团队的实验表明，只需1-2千条追踪数据就可以达到相似效果。
-
-• **flukas88** 批评OpenAI在抱怨其他公司盗用其技术的同时，自己却免费利用互联网数据，存在双重标准。
-
-• **pyman** 提出Anthropic可能通过重新包装中国研究人员的工作（如DeepSeek的研究），将其称为“潜意识学习”或使用师生类比，试图占为己有。并质疑Anthropic这种行为的合理性，同时提到Anthropic最近从700万本书中获取数据，质疑其是否在“转化”研究论文。
-
-• **jgalt212** 指出，知识蒸馏曾是自托管可用模型的关键，但由于对“代理化”的不懈追求，自托管再次变得不可行，因为代理工具消耗了太多token。
-
-• **sebau** 认为，几乎所有公开模型都是较大内部模型的蒸馏版本。
-
-• **Animats** 提出一个问题，是否可以将专门用于客户服务等领域的模型压缩到可以在普通服务器上运行的程度，从而减少对大型AI数据中心的需求。
-
-• **visarga** 指出，SOTA LLMs难以维持超过几个月的领先优势，因为有大量数据集和模型可以互相学习，并与人类合作。
-
-• **v3ss0n** 简短评论，指出模型有时会变得更好，有时会变得更差。
-
-• **wizardforhire** 回顾了模型压缩技术的历史，提到过去使用“剪枝”一词，而现在更常用“蒸馏”，并分享了一个关于56k eprom的旧故事链接。
-
-补充讨论：
-• 知识蒸馏方法的细节及其在不同场景中的适用性是讨论的核心，特别是两种方法在访问权限和成本上的区别。
-• 对Anthropic和OpenAI等公司在技术和数据使用上的行为存在争议，涉及技术盗用和双重标准等问题。
-• 讨论还涉及到模型的社会性和相互学习能力，以及对未来AI数据中心需求的质疑。
-
-争议焦点：
-• Anthropic是否通过重新包装中国研究人员的工作来获取信用。
-• OpenAI在技术盗用问题上的双重标准。
-• 知识蒸馏方法在实际应用中的可行性和成本效益。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44629805" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://modernengineeringmarvels.com/2025/07/22/surprising-science-how-electric-cars-quietly-transform-urban-air/" target="_blank">Electric cars produce far less brake dust pollution than combustion-engine cars</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tzs</span> |
-                    <span>评分: 244</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-07-24 02:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了电动汽车通过再生制动技术大幅减少制动粉尘排放，从而改善城市空气质量的科学发现。传统汽车的摩擦制动会产生包含铁、铜等金属的粉尘，这些微粒易被吸入并危害健康。研究显示，电动汽车的再生制动技术能减少83%的制动粉尘污染，整体颗粒物排放比燃油车低38%。尽管电动汽车的轮胎磨损略高，但制动粉尘对空气污染的影响更大。政策制定者开始关注非尾气排放源，未来法规将对轮胎和制动排放进行限制。同时，推动公共交通和步行等绿色出行方式也是减少排放的重要手段。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：电动汽车（EV）和混合动力汽车的环境影响、制动系统与轮胎磨损问题以及对内燃机汽车的限制措施。
-
-不同观点：
-• nine_k：认为混合动力汽车通过动能回收为电池充电，相较于纯电动汽车数量更多，也能起到减少摩擦损耗的作用。
-• brtkwr：作为电动汽车车主，指出轮胎磨损严重，每10,000英里就需要更换轮胎，抵消了刹车粉尘的减少。
-• stephen_g：认为电动汽车的优势（如零尾气排放、减少刹车粉尘）已经非常明确，尽管轮胎磨损略高，但整体优于内燃机汽车。
-• rayiner：主张在城市中禁止内燃机汽车，认为这是改善空气质量的明显举措。
-• simonebrunozzi：引用Brembo的数据，指出刹车生产商已经为电动汽车的普及做了多年准备。
-• mjevans：认为应禁止走走停停的交通状况，因为持续行驶的车辆污染较少，强调通过执行最低速度限制来减少污染和生态影响。
-• apichat：引用EIT Urban Mobility报告，认为减少私人汽车使用、鼓励公共交通等才能更有效减少非尾气排放，单靠电动汽车无法大幅减少污染，需要减少95%的汽车数量。
-• bob1029：提到陶瓷刹车材料能减少颗粒物排放，适合日常驾驶，但在极端驾驶条件下性能下降。
-• gnarlouse：认为电动汽车由于电池重量导致轮胎磨损更快。
-• kazinator：认为刹车片寿命长，相比内燃机汽车消耗的燃油量不值一提，认为对汽车的抱怨是无休止的。
-• PeterStuer：分享自己很少使用刹车，习惯用巡航控制减速和加速。
-• sitkack：作为电动汽车车主，55,000英里后刹车片还未更换，但轮胎已经更换。
-• DataDaemon：批评电动汽车的宣传，认为电动汽车更重。
-• SV_BubbleTime：幽默指出拥有两种刹车系统的车辆传统刹车使用较少。
-• senectus1：分享自己多年驾驶混合动力汽车的经验，几乎不需要更换刹车片，调侃如果需要频繁更换刹车片可能是驾驶习惯问题。
-
-补充讨论：
-• 争议焦点在于电动汽车和混合动力汽车的实际环境效益，尤其是轮胎磨损和刹车粉尘的影响。
-• 讨论中也涉及到对内燃机汽车的限制措施，以及通过改变交通习惯来减少污染的建议。
-• 部分评论提到了不同材料（如陶瓷刹车）对减少颗粒物排放的作用，以及电动汽车重量对轮胎磨损的影响。
-• 个别评论带有幽默或讽刺语气，反映出对电动汽车相关讨论的情绪。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44666157" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
