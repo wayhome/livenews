@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-24 23:15 (北京时间)
+            最后更新时间: 2025-07-25 02:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -65,8 +65,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: avinassh</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 147</span> |
+                    <span>评论数: 9</span> |
                     <span>发布时间: 2025-07-24 14:48</span>
                 </div>
 
@@ -77,15 +77,28 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据库状态的有效性和事务处理的可靠性
+                    <div class="comments-summary">主要讨论点：SQLite的WAL（Write-Ahead Log）中的校验和（checksum）功能的目的和效果，尤其是在数据损坏检测和恢复中的作用。
 
 不同观点：
-• cwillu认为，保留已提交事务的数据库状态是有益的，因为这样可以确保数据库状态是曾经真实存在过的。这种观点强调了数据一致性和历史状态的可追溯性，即数据库应反映出曾经有效的数据状态，而不是通过选择性恢复导致不一致的情况。
+• **teraflop**：认为WAL中的校验和主要用于检测部分写入（partial writes），而不是任意数据损坏。部分写入的检测对于崩溃恢复至关重要，而全面的数据库校验和并非WAL的初衷。SQLite的journal（无论是回滚journal还是WAL）始终使用校验和。
+• **lxgr**：支持SQLite依赖底层系统处理数据损坏，WAL中的校验和设计是有意为之，并符合SQLite文档中的假设和设计理念。SQLite期望由底层存储系统处理数据损坏问题。
+• **kburman**：认为SQLite的WAL校验和实际上是一种安全特性，而不是缺陷。WAL的设计防止了数据库损坏，而不是导致损坏。
+• **cwillu**：强调SQLite的WAL机制确保数据库最终处于一个实际存在过的状态，即便这意味着可能丢失部分提交的事务。相较于数据库处于不可用状态，丢失部分数据是更好的结果。
+• **slashdev**：指出如果校验和失败，数据库应停止在第一个错误点，以恢复到最后一个良好的状态，而不是尝试继续应用后续的WAL页，因为这会导致数据库损坏。
+• **ryanjshaw**：认为SQLite的设计（在检测到损坏时自动恢复到之前状态）是有道理的。在应用程序中，如果WAL损坏，应用逻辑应自行处理数据恢复，例如从云端重新同步。
+• **dathinab**：提到SQLite有一个官方的校验和VFS shim，但它的使用需要手动检查和处理。同时，SQLite的校验和并不是为数据备份或恢复设计的，更多高级数据恢复方法可能需要额外的实现。
+• **adzm**：建议SQLite应该提供一种机制，将校验和错误通知应用层，以便应用自行处理。
+• **westurner**：探讨了使用Merkle树哈希代替当前的WAL校验和的可能性，认为这样可以提供更强的数据一致性保障，尤其是在分布式系统中。
 
 补充讨论：
-• 争议的焦点在于数据库在处理事务时，是否应该允许选择性恢复未提交或部分提交的事务。cwillu指出，选择性地回滚某些事务可能会导致数据库进入一种无法保证有效的状态，因此反对这种做法。
-• 论据例子中提到了“ dropping some committed transactions and not others ”，即如果只恢复部分事务而忽略后续事务，可能会导致数据库进入一个无法验证的、无效的状态，从而影响数据库的完整性和可靠性。
-• 该评论还隐含了对数据库事务原子性和持久性的关注，即一旦事务被提交，期望其结果能够持久化并在需要时恢复到一个一致的状态。</div>
+• SQLite的WAL校验和是否足够用于防止数据损坏存在争议。部分观点认为WAL的校验和设计目的明确，足够应对崩溃恢复，而另一些人则认为可以增强错误处理和通知机制。
+• 关于如何改进SQLite的校验和功能，提出了诸如Merkle树等更复杂的校验机制，以实现更强的数据一致性和错误恢复能力。
+• 讨论中也提到了SQLite的各种扩展和替代方案，例如使用RAFT、CRDT等技术的分布式SQLite版本，以应对不同场景下的需求。
+
+争议焦点：
+• SQLite的WAL校验和是否应该用于检测任意数据损坏，还是仅限于部分写入检测。
+• 在检测到损坏后，SQLite是否应提供更明确的错误通知机制，让应用层处理数据恢复。
+• 是否需要增强SQLite的数据一致性保障机制，如引入Merkle树等更复杂的校验方法。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44671373" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -98,47 +111,107 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/vet-run/vet" target="_blank">Vet is a safety net for the risky curl | bash pattern</a>
+                    <a href="https://www.the-independent.com/tech/ee-bt-three-vodafone-o2-down-phone-networks-outage-latest-b2795260.html" target="_blank">UK: Phone networks down: EE, BT, Three, Vodafone, O2 not working in mass outage</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 91</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-07-24 12:47</span>
+                    <span>作者: oger</span> |
+                    <span>评分: 65</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-24 13:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>`vet` 是一个命令行工具，旨在解决使用 `curl | bash` 模式执行远程脚本时的安全风险。它提供了一种更透明、安全的方式，允许用户在执行脚本前检查其变更、进行代码审查和静态分析，并在最终执行前需要用户明确批准。`vet` 的工作流程包括：下载脚本、显示变更、进行代码分析、并请求用户确认。该工具强调不盲目信任互联网上的脚本，推荐通过 Homebrew 或手动审查安装过程以确保安全。此外，`vet` 依赖 Bash 4+ 的特性来保证其安全功能，适用于 macOS 和 Linux 系统。</p>
+                    <p>本文主要报道了英国多家主要电话网络（如BT、EE、Three和Vodafone）在某日下午发生大规模中断，导致数百万用户无法接打电话。用户在社交媒体上表达了 frustration，各公司发言人分别致歉并表示正在紧急修复问题。根据DownDetector地图，伦敦、伯明翰、曼彻斯特和格拉斯哥受影响最严重。O2用户虽有报告问题，但公司称其网络正常，问题源于其他运营商的故障。与此同时，《独立报》强调其在重要时刻进行深入报道的承诺，并呼吁读者支持其无付费墙的新闻服务。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕使用 `curl|bash` 安装脚本的安全性、可靠性及替代方案的讨论
+                    <div class="comments-summary">主要讨论点：针对英国电信服务商的网络中断问题，评论者对Down Detector的可靠性、电信公司的沟通问题以及潜在技术原因进行了讨论。
 
 不同观点：
-• pxeger1 认为，问题的核心不在于脚本是否恶意，而在于脚本可能写得不专业或没有考虑用户需求，导致安装过程不标准或脆弱。他更倾向于手动下载和安装二进制文件。
-• networked 提出了使用 `vipe` 工具审查和修改 `curl|bash` 脚本内容的解决方案，认为这样可以提高安全性。
-• djha-skin 表达了对当前技术文章质量的不满，认为过去的文章更有实用价值，而不是现在流行的依赖AI生成内容的文章。
-• jjgreen 引用了服务器检测 `curl|bash` 行为的可能性，认为如果服务器被攻陷，可能会针对这些用户提供恶意内容。
-• baq 认为 `curl|bash` 在Windows系统上类似于下载和运行安装程序，历史在不同系统上反复重演，并提到当前流行的 `npm install` 和 `docker run` 也有类似风险。
-• Galanwe 指出 `curl|bash` 的目的是绕过包管理器直接在裸机上安装，因此引入其他工具违背了这一初衷。
-• johnfn 质疑即使使用 `vet` 工具审查脚本后再执行，最终仍需信任代码仓库的安全性，因此审查步骤可能并不能显著提高安全性。
-• ojosilva 分享了使用AI工具扫描GitHub仓库以检查可疑活动的经验，认为AI工具可以作为一种辅助手段，但仍有可能遗漏恶意代码。
-• sgc 对Linux发行版的包管理系统提出了具体要求，并询问哪种发行版能更好地满足这些需求，同时表达了对Debian/Ubuntu系统的一些不满。
-• bugsMarathon88 认为，解决执行不受信任代码的方案不应该是执行更多不受信任的代码，尤其是未经过验证的工具。
-• gchamonlive 对 `vet` 工具的安装方式表示赞赏，但希望能在Arch的AUR中找到它。
-• Sanzig 建议通过域名验证增加安全性，例如在DNS记录中加入公钥以验证脚本签名。
-• evertheylen 分享了自己开发的工具 `probox`，用于保护系统免受不受信任依赖的影响，并欢迎其他人提出意见。
-• tyingq 建议使用无根容器运行脚本，并检查文件系统差异和审计事件，以提高安全性。
-• jimmaswell 质疑是否有过因 `curl|bash` 导致的大规模恶意软件爆发事件，认为这种担忧可能没有实际依据。
+• jon-wood认为Down Detector并不可靠，仅通过社交媒体关键词来判断中断，很多时候只是巧合，不具备智能检测功能。
+• amiga386提供了具体电信公司的情况，指出BT和EE确认了问题，而Vodafone和Three没有问题，O2情况不明。
+• 18172828286177对电信公司未能及时与客户沟通表示不满，特别提到如果有人在等待重要电话，中断可能带来严重影响。
+• yabones猜测此次中断可能与2022年Rogers通信公司的大规模中断类似，是由BGP配置错误导致的。
+• jonathantf2进一步澄清，指出只有拨入EE号码受到影响，而号码已转网的用户不受影响。
+• crinkly分享了个人经历，称在伦敦的一家餐厅内，O2、ER和Three网络正常。
+• wut42对频繁使用Down Detector表示厌倦，认为其报道常常夸大，所有服务商都被报道为中断。
+• chmod775批评Down Detector的地图实际上反映的是人口密度，而非真实的中断情况，并提供了一个解释人口密度的链接。
+• mmsc将此事件与国际政治联系起来，认为中国在密切关注，并暗示此类中断可能在全球地缘政治事件中重演。
 
 补充讨论：
-• 争议的焦点在于 `curl|bash` 方法的可靠性和安全性，部分用户认为该方法容易引入风险，而另一些用户则认为可以通过审查工具或容器技术减轻风险。
-• 讨论中提到了多种工具和方法，如 `vipe`、`vet`、域名验证和容器技术，试图提供更安全的 `curl|bash` 替代方案。
-• 对Linux发行版的包管理系统的讨论反映了对更好软件管理解决方案的需求，尤其是对Debian/Ubuntu系统的一些具体问题的不满。</div>
+• 争议的焦点之一是Down Detector的可靠性和其报道的中断真实性。
+• 另一个焦点是电信公司在中断事件中的沟通问题，以及中断对用户的实际影响。
+• 技术原因的猜测（如BGP配置错误）也引发了一些讨论，部分评论者试图通过外部链接支持其观点。
+• 个别评论者如mmsc将事件提升到国际政治层面，带来了更广泛的讨论背景。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669998" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44670326" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ralfj.de/blog/2025/07/24/memory-safety.html" target="_blank">There is no memory safety without thread safety</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tavianator</span> |
+                    <span>评分: 167</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-07-24 15:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了“内存安全”的定义及其局限性，指出通常所指的内存安全语言能防止使用已释放内存或越界访问内存。然而，作者认为这种细分（如内存安全与线程安全）并不实用，程序真正需要的是“无未定义行为”。文章通过Go语言的例子展示了数据竞争如何导致内存安全问题，例如Go程序中因接口类型和并发操作不当引发的崩溃。相比之下，Java通过严密的并发内存模型避免了类似问题，确保即使在数据竞争情况下也不会出现解引用无效指针的错误。作者提出，确保并发程序安全有两种方法：一是限制编译器优化以保证多字值的一致性（如Java、C#），二是通过强类型系统排除数据竞争（如Rust、Swift）。Go未能完全实现这两种方法，因此并非严格意义上的内存安全语言。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Go 语言的内存安全性和并发处理问题
+
+不同观点：
+• **chadaustin 的观点**：Go 语言并非内存安全，特别是在并发访问数据结构时，可能出现段错误。他提到在新工程师不注意同步数据结构时，这样的问题在 Dropbox 的 Go 服务器中很常见，并指出 Swift 也有类似问题。
+
+• **crawshaw 的观点**：内存安全是一个重要问题，尤其对于 C 程序而言，但线程安全对于 Go 程序并非主要问题。他认为理论上的讨论在实践中并不成立。
+
+• **FiloSottile 的观点**：在实际的 Go 代码中，数据竞争导致的可利用漏洞很少见。相比之下，C/C++ 中的内存安全问题更常见。他认为内存安全是一个光谱，收益会逐渐减少。
+
+• **norir 的观点**：大多数支持线程的语言默认使用全局变量和无限制的内存共享，这是数据损坏和竞争的主要来源。虽然进程模型能避免这些问题，但其开销较大。他建议通过消息传递来减少线程间的数据共享问题。
+
+• **Thaxll 的观点**：Go 语言在常见定义下是内存安全的，实际中很少见到因数据竞争导致的漏洞。他质疑讨论此问题的实际意义。
+
+• **jchw 的观点**：虽然 Go 的数据竞争问题确实存在，但在实际生产环境中很少遇到。Uber 的文章总结了 Go 开发者实际面临的问题，数据竞争并不常见。他认为即便存在问题，也可以通过修复来解决，并不会对现有 Go 代码造成重大影响。
+
+• **loeg 的观点**：质疑为何仍在争论内存安全的定义。
+
+• **chc4 的观点**：Zig 语言声称内存安全，但在并发处理上缺乏类似于 Rust 的 Send/Sync 类型支持，可能在引入 async 支持后会出现问题。
+
+• **advisedwang 的观点**：Go 强调使用通信原语而非直接内存共享，以此避免并发问题。
+
+• **Mawr 的观点**：用极端例子讽刺讨论中的某些观点。
+
+• **nromiun 的观点**：大多数程序并非多线程或并发，内存安全问题更普遍。
+
+• **munificent 的观点**：同意需要线程安全来保证内存安全，但认为未定义行为和内存安全是不同的问题，Go 缺乏内存模型保证，实践中很少成为问题。
+
+• **tptacek 的观点**：认为 Go 不存在内存损坏漏洞，实际中几乎没有针对 Go 程序的内存安全漏洞。他批评了过度定义“内存安全”的讨论。
+
+• **qcnguy 的观点**：指出编程语言理论中的并发讨论忽视了数据库中的并发问题，如缺少锁定或事务处理，这可能比语言层面的并发问题更重要。
+
+• **danbruc 的观点**：没有未定义行为并不意味着线程安全，例如 .NET 中对宽变量的写入不保证原子性，这可能导致线程安全问题。
+
+补充讨论：
+• 争议焦点在于 Go 语言是否应被视为内存安全，特别是在并发访问数据结构时的问题。
+• 讨论还涉及内存安全与线程安全的区别，以及不同语言在处理这些问题上的优劣。
+• 实际开发中并发问题的发生频率和严重性也是讨论的重要方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44672003" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -153,8 +226,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: ingve</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 103</span> |
+                    <span>评论数: 28</span> |
                     <span>发布时间: 2025-07-24 14:57</span>
                 </div>
 
@@ -165,7 +238,44 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：类型系统及其在软件开发中的应用与优缺点
+
+不同观点：
+• pclowes：支持使用类型系统来避免不良状态，但指出如果开发者仅停留在第一层级的类型实现，可能会导致类型繁杂、难以协同工作。如果能进一步将逻辑推入类型控制流，如使用联合类型和模式匹配，体验会变得更好。
+
+• abraxas：支持使用检查异常（checked exceptions）来处理不同类型的异常，并分享了实际项目中的成功经验。尽管初期团队成员有抵触，但最终项目变得非常健壮。
+
+• taeric：认同类型系统的总体理念，但指出在处理字节移动和特定领域计算混合的代码时，类型系统可能会失败。
+
+• tyleo：分享了在C#中使用带有标记类型（marker types）的结构来创建唯一标识符的实践，并提到在TypeScript和Rust中的类似应用。
+
+• bbkane：提到在Go语言中由于自动转换特性，类型安全的好处不明显，最终放弃了这种做法。
+
+• recursivedoubts：认为复杂的类型系统可能导致不必要的负担，尤其是对于已经熟悉基本类型（如UUID、String）的开发者来说。
+
+• tonymet：认为从Python、Perl或PHP转向Go时，早期强制考虑类型在中等复杂度项目中会带来好处。
+
+• mcflubbins：分享了个人经验，认识到类型系统在防止错误和提高代码可读性方面的价值。
+
+• jjice：询问这种方法的专业术语，并表示这种概念超越了普通的强类型。
+
+• peterldowns：引用了朋友Lukas的术语“Safety Through Incompatibility”来描述这种技术，并提供了相关文章链接。
+
+• jerf：认为这种技术是使用类型系统防止错误的基础方法，但在实际推广中遇到很多阻力，常常需要解释和争取。
+
+• hiddew：提到在具有内联类型的语言（如Kotlin）中可以避免构造/析构的开销。
+
+• jshxr：指出在TypeScript等结构化类型语言中实现这种方法可能会有些尴尬，常常需要使用hack方式。
+
+• mk_chan：分享了在C++中使用hack方法的长期经验，并表达了对C++语法和默认设置的不满。
+
+• fellowniusmonk：持哲学性观点，认为复杂类型不存在，只有模式存在，应避免滥用类型。
+
+补充讨论：
+• 争议的焦点在于类型系统的复杂性和实用性。一些开发者认为复杂的类型系统可以提高代码健壮性和可维护性，而另一些开发者则认为这可能导致不必要的复杂性和负担。
+• 实际应用中的类型系统和检查异常的成功案例和挑战也被广泛讨论，尤其是在团队接受度和项目实施中的实际效果。
+• 不同语言对类型系统的支持程度和实现方式也有所讨论，如Go的自动转换特性、TypeScript的结构化类型等。
+• 术语和命名问题也被提及，显示出在类型系统应用中对统一术语的需求。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44671484" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -178,51 +288,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/wixtoolset/issues/issues/8974" target="_blank">WiX Toolset: Introduce the Open Source Maintenance Fee</a>
+                    <a href="https://www.quantamagazine.org/teenager-finds-classical-alternative-to-quantum-recommendation-algorithm-20180731/" target="_blank">Major Quantum Computing Advance Made Obsolete by Teenager (2018)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: AndrewDucker</span> |
-                    <span>评分: 103</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-24 12:29</span>
+                    <span>作者: kwie</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-24 16:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>WiX Toolset项目计划引入开放源代码维护费，以支持项目的长期可持续性。从2025年4月5日发布的WiX v6.0起，所有利用WiX Toolset创收的用户需通过GitHub Sponsors支付维护费。费用标准为：少于20人的小组织每月10美元，20至100人的中等组织每月40美元，超过100人的大组织每月60美元。此费用不适用于WiX Developer Direct的支持协议客户。相关步骤包括获取最终用户协议（EULA）、将其添加到.nupkgs、设置GitHub赞助层级以及更新README文件。</p>
+                    <p>18岁的Ewin Tang证明，普通计算机可以以接近量子计算机的速度解决“推荐问题”。这一发现消除了量子计算优越性的一个重要例证。推荐问题涉及像亚马逊和Netflix这样的服务如何推荐你可能喜欢的产品。此前，计算机科学家认为这是量子计算机能显著加快解决速度的最佳例子之一。Tang在德克萨斯大学奥斯汀分校的教授Scott Aaronson的指导下，选择了这一问题进行研究，并成功找到了一种经典算法，其性能可与量子算法媲美。这一突破使得量子计算在推荐问题上的速度优势不再明显，被视为量子计算领域的一次重大转变。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：WiX Toolset 开源项目的维护费用模式及其相关争议
+                    <div class="comments-summary">主要讨论点：Ewin Tang的论文《Quantum Machine Learning without any Quantum》的相关评论和讨论
 
 不同观点：
-• 支持观点：
-  - trjordan：认为该模式是解决开源项目维护者面临的常见问题的一种有效方式。开源代码仍然可用，但公司等盈利性用户需要支付费用以获得支持，这对开源维护者是合理的补偿。
-  - cyberes：理解项目维护者的动机问题，没有收入时很难保持动力。
-  - optymizer：认为开源软件应有价格，长期依赖无偿劳动对项目发展不利，金钱激励能促使人们完成必要的但无趣的工作。
-
-• 反对观点：
-  - opticfluorine：认为该项目的要求和说明有误导性，尤其是关于商业使用需付费的规定，实际根据许可证，用户可以自己编译代码并用于商业用途。因此，这种做法感觉像是在恐吓商业用户支付费用。
-  - mytailorisrich：对如何在开放源代码许可证下合法收取二进制文件费用感到困惑，认为如果软件是开源的，就不能限制其分发或收费使用。
-
-• 技术与执行问题：
-  - calibas：质疑通过许可证模式是否能有效执行收费，因为用户可以自行编译代码并免费分发二进制文件。
-  - Arch-TK：认为通过EULA来执行这种收费模式会造成管理上的噩梦，不如直接对二进制文件和问题跟踪器收取订阅费用更简单。
-  - scottydelta：认为在开源级别管理这种收费模式可能会很麻烦，执行起来也很困难。
-
-• 其他关注点：
-  - yoavm：澄清WiX Toolset与Wix网站构建平台无关，以免混淆。
-  - lars_francke：对Open Source Maintenance Fee网站本身的设计问题提出批评，认为在浅色模式下难以阅读，且无法在仓库中提交问题。
-  - guluarte：建议GitHub引入"悬赏"功能，允许用户为问题提交附带奖励。
-  - mellosouls：提供了Open Source Maintenance Fee的消费者常见问题链接以供参考。
-  - ChrisArchitect：建议调整讨论标题以避免混淆。
-  - nikanj：指出该收费模式的通知时间较短，从2025年3月到4月，给用户的调整时间不足。
+• [sgt101] 分享了Ewin Tang的论文链接，供大家阅读和参考。
+• [tgv] 指出论文的年份是2018年，提醒读者不要误以为Tang在7岁时就开始研究这个问题，实际上当时他已经17岁，尽管如此，这仍然是非常早熟的表现。
+• [b0gb] 认为推荐系统具有主观性，即便算法速度更快，其实用性也不一定优于基于某些匹配标准的随机选择，因为后者的速度已经达到了极限。
+• [tocs3] 提到收听了Ewin Tang接受采访的播客，并认为该播客对量子计算的现状提供了启发性的见解。同时澄清播客采访是2025年进行的，以避免混淆。
 
 补充讨论：
-- 该讨论涉及开源项目维护者如何通过收费模式维持项目长期发展，以及这种模式在执行和伦理上的争议。核心争议点在于如何在保持开源性质的同时，确保维护者获得合理补偿，以及这种收费模式是否会造成不必要的使用障碍或法律问题。</div>
+• 多个评论者如[fuglede_]、[ameliaquining]、[tapper] 仅仅指出了论文的年份是2018年，没有进一步的分析或评论。
+• 争议的焦点可能在于Ewin Tang的年龄与他的学术成就之间的关系，以及量子机器学习算法相对于传统推荐算法的实际优势。
+
+总结来看，评论主要围绕论文的发表时间、作者的年龄、算法实际应用的有效性以及相关播客内容的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669858" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44672859" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -233,48 +329,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bitestring.com/posts/2023-03-19-web-fingerprinting-is-worse-than-I-thought.html" target="_blank">Web fingerprinting is worse than I thought (2023)</a>
+                    <a href="https://www.vidarholen.net/contents/blog/?p=1160" target="_blank">I wasted weeks hand optimizing assembly because I benchmarked on random data</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: xrayarx</span> |
-                    <span>评分: 148</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-07-24 12:28</span>
+                    <span>作者: thunderbong</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-21 07:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了网络指纹识别技术对用户隐私的严重威胁。与传统的通过 cookies 进行跨网站追踪不同，网络指纹识别利用浏览器的多种配置信息（如浏览器版本、CPU数量、屏幕尺寸等）生成唯一标识符，即使在使用VPN或隐私浏览模式下，也能准确识别用户。文章提到一家公司FingerprintJS Inc.将指纹识别作为服务出售，其JavaScript指纹识别库被许多网站使用，甚至在用户清除缓存或使用隐私模式后，仍能生成相同的标识符，严重威胁用户隐私。文章通过实际测试展示了该技术的有效性，并指出即使采取隐私保护措施，也难以防范这种追踪技术。</p>
+                    <p>这篇文章讲述了作者在一套分布式数据处理平台上进行Java优化工作的经历。目标系统运行于数十万台机器上，即便0.5%的性能提升也价值重大。作者面对的是高度优化的Java代码库，低效的部分早已被优化。通过分析，作者聚焦于数据序列化，尤其是VarInt编码的优化。尽管常规观点认为这类小优化无法通过原生代码提升，但作者通过手写无分支的SIMD汇编算法，实现了比Java版本快4倍的编码器。然而，在实际生产环境中测试时，发现优化效果并不明显。原因在于作者最初使用随机大数进行测试，而实际场景中的数字多为较小数值，导致Java版本在处理这些常见情况时表现并不差。最终，作者撤销了更改，将此次经历视为自定义JIT优化的概念验证。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：浏览器指纹识别及其隐私影响
+                    <div class="comments-summary">主要讨论点：Java代码优化与Benford's Law的应用
 
 不同观点：
-• matthewdgreen认为，虽然App Tracking Transparency对Meta等公司造成了短暂影响，但Meta似乎已经迅速找到了绕过苹果iOS隐私保护的方法，可能涉及新的追踪技术，但具体细节不明确。
-• jordanb表示，频繁遇到验证码是好事，因为这表明其行为看起来更像匿名机器人，而非高价值目标。
-• Sanzig主张，浏览器指纹识别应该被定为非法，因为它比追踪Cookie更具威胁，但尚未引起公众和监管机构的足够重视。
-• u8_指出，fingerprint.com的指纹识别效果不如creepjs，后者更为可怕。
-• yodon提到，有一家公司提供服务，可以明确识别网站访问者的身份，这引发了对隐私的进一步担忧。
-• mysterypie对Firefox的隐私设置提出疑问，质疑为何“resistFingerprinting”不是默认设置，以及启用该设置的可能副作用。
-• Vinnl关注指纹识别的稳定性问题，质疑浏览器版本升级是否会导致指纹失效。
-• voidUpdate询问在设备相同的情况下（如iPhone），指纹识别如何运作。
-• lucraft通过实验发现，Safari在隐私保护方面似乎比Chrome更有效。
-• anonymousDan不确定Brave浏览器是否能有效防止指纹识别，并提到Tor浏览器在对抗指纹识别方面的努力不足。
-• mystraline建议，Firefox和Tor浏览器应通过修改JavaScript报告来提供更好的隐私保护，目前这种保护还不够。
-• 1a527dd5从技术角度分享了使用ja3/ja4进行速率限制的经验，并指出这些工具在防止滥用方面的有效性。
-• Jeremy1026通过实验发现，Safari在普通模式和隐私浏览模式下的指纹识别ID不同，认为这是好的隐私保护表现。
-• bugsMarathon88认为，Tor浏览器是目前唯一能提供真正隐私保护的工具，其他方法只是增加攻击面。
-• Roguelazer批评一些公司结合指纹识别和数据经纪服务进行去匿名化，认为这违反了隐私法规。
+• [chaosmachine] 提到了Benford's Law，这是一个关于现实生活中许多数值数据中首位数字更可能是小数字的观察定律。这暗示评论者可能认为某些数据现象可以通过统计学定律来解释，而不是代码或算法本身的问题。
+
+• [kccqzy] 对Java代码的高度优化表示惊讶，特别是通过改变JIT代码生成来绕过JNI开销的技巧。他们提到在金融技术领域见过一家对延迟敏感的交易公司使用Java编写代码，通过避免产生垃圾对象来防止GC（垃圾回收）机制的介入，从而优化性能。
 
 补充讨论：
-• 关于浏览器指纹识别的技术实现及其绕过方法的讨论，包括具体工具如creepjs和ja3/ja4的有效性。
-• 关于不同浏览器（如Firefox、Safari、Chrome、Brave、Tor）在隐私保护方面的表现和设置选项的讨论。
-• 关于法律和监管方面对指纹识别的关注和不足，以及这种技术对个人隐私的潜在威胁。
-• 关于验证码和匿名机器人行为对隐私保护的影响。</div>
+• [kccqzy] 的评论中提到了一种具体的优化策略，即通过减少或避免GC暂停来提高Java在低延迟环境下的表现。这表明在特定领域（如金融交易）中，Java仍然可以被高度优化以满足高性能需求。
+
+• 争议的焦点可能在于Java是否适合用于低延迟、高性能的系统。虽然[kccqzy]提供了实例证明Java可以被优化到很高的性能，但这种优化可能不是普遍实现或已知的，因此对Java在类似场景中的适用性存在不同看法。
+
+• Benford's Law的引入提供了一种不同的视角，即从统计学角度看待数据特性，而不是从代码或系统优化角度。这表明评论者们从不同的学科背景（统计学与计算机科学）出发，对同一话题产生了不同关注点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669853" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44632674" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -285,53 +370,146 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.aaedmusa.com/projects/cara" target="_blank">CARA – High precision robot dog using rope</a>
+                    <a href="https://www.bloomberg.com/news/articles/2025-07-23/amd-ceo-su-sees-chips-from-us-tsmc-plant-costing-5-to-20-more" target="_blank">AMD CEO sees chips from TSMC's US plant costing 5%-20% more</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hakonjdjohnsen</span> |
-                    <span>评分: 558</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-07-23 17:38</span>
+                    <span>作者: mfiguiere</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 28</span> |
+                    <span>发布时间: 2025-07-23 19:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>CARA是一款最新研发的四足机器人，采用缆索卷筒驱动，而非齿轮或滑轮。其关节通过绳索驱动，具有无反冲、高扭矩透明度、低惯性、低成本和安静运作的优点。为了实现精确的8:1齿轮比，作者通过实验和数值计算，最终成功设计出准确的传动比。CARA的腿部设计采用5杆联动机构，每个关节由8:1的缆索卷筒驱动，使用2毫米Dyneema DM20绳和Eaglepower 90KV BLDC电机，由ODrive S1 FOC控制器控制。机器人脚部由TPU 95A材料制成，小卷筒采用PET-CF材料打印，其余结构件则使用聚碳酸酯。整体设计强调独特性和高性能。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对Aaed及其工程项目的评价与讨论
+                    <div class="comments-summary">主要讨论点：AMD CEO关于美国芯片制造的言论及其影响
 
 不同观点：
-• 正面评价Aaed的技能和项目：
-  ◦ [joeevans1000]、[btbuildem]、[AIorNot]、[aldousd666]和[TheBozzCL]等用户称赞Aaed的工程技能、幽默感、视频制作质量以及清晰的表达能力。他们认为Aaed不仅技术精湛，还能很好地将复杂内容呈现给观众。
-  ◦ [mikewarot]特别提到视频的拍摄质量和制作水平，认为这种高质量的互联网内容对个人工作坊的工具使用有深远影响。
-  
-• 对项目技术细节的讨论：
-  ◦ [scotty79]建议可以进一步优化滚动接触面的形状以提高特定应用的性能，例如机器人腿部的平稳运动。
-  ◦ [fusionadvocate]质疑追求“精确”齿轮比的价值，认为更多的零并不一定意味着更高的“精度”，并关注机制的耐磨性和疲劳抵抗力。
+• **Intel的未来竞争力**：
+  - **timmg**：Intel曾经是美国科技的佼佼者，但近年来多次宣布延迟或关闭某些产品，质疑其是否能与台积电（TSMC）竞争。
+  - **dathinab**：认为即便成本增加5%-20%，某些客户（如政府、CIA、NSA等）仍会接受，因为他们更关注美国制造。
 
-• 对机器人智能的讨论：
-  ◦ [cryptoegorophy]提出如何让机器人通过试错学习新技能，并在需要物理升级时告知用户，例如特定的齿轮比率。这涉及到人工智能和机械工程的结合。
+• **芯片成本与供应链**：
+  - **mmmBacon**：文章未说明成本差异的原因，推测可能是由于新工厂的成熟度不同导致良率差异，从而影响成本。
+  - **proee**：指出半导体工厂的主要成本是资本支出，而非劳动力成本，测试设备等昂贵设备占大头。
+  - **viktorcode**：认为最终美国制造的CPU售价增幅将远超20%。
 
-• 对如何开始类似项目的讨论：
-  ◦ [heap_perms]表示对这类项目感兴趣，但不知道从哪里开始，尽管拥有计算机科学学位和三年开发经验。
-  ◦ [sarthaksoni]对Aaed的个人网站和项目表示羡慕，并激励自己提高自己的标准。
+• **地缘政治与市场竞争**：
+  - **octopoc**：讨论美国试图通过控制AI芯片供应来制约中国芯片制造业的发展，同时提到中美之间的芯片贸易限制。
+  - **aylmao**：指出如果中国赶上，5%-20%的成本增加可能会使美国芯片失去价格优势，建议将制造转移到墨西哥等国家。
+
+• **其他考量**：
+  - **seangrogg**：提到不仅需要考虑CPU的成本，还需关注主板等其他电子元件的供应问题。
+  - **nottorp**：不愿意接受芯片在美国制造，认为台湾制造即可。
+  - **gtirloni**：指出即便芯片在美国制造，可能仍需运回台湾进行封装。
 
 补充讨论：
-• [mnurzia]提到自己上周见过Aaed，并看到他为项目打印部件，这增加了对Aaed及其项目的真实性和亲近感。
-• [csours]用幽默的方式提供了一个视频链接，可能是与讨论相关的额外资源。
-• [srameshc]提到之前在Hacker News上看到过Aaed的相关帖子，并决定订阅他的频道以免再次错过他的精彩内容。
-• [ZeWaka]提到在Open Sauce活动上看到了这个项目，对齿轮传动系统的复杂性感到着迷。
+• **长期经济效益**：
+  - **reliabilityguy**：认为从长期看，在美国拥有芯片工厂对经济有积极影响，包括增加就业、本地供应链和本地专业知识等。
+
+• **对媒体报道的质疑**：
+  - **alexnewman**：批评Bloomberg文章标题误导，认为内容不严谨。
+
+争议焦点：美国芯片制造的成本增加是否值得，以及是否能长期保持竞争优势。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44663074" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/cwida/FastLanes/blob/dev/docs/specification.pdf" target="_blank">The FastLanes File Format [pdf]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jandrewrogers</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-07-24 15:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了名为"FastLanes"的代码仓库。内容涉及项目的通知设置，提示用户需要登录才能更改通知偏好。同时，提到了该项目的受欢迎程度，显示有19次代码分叉和265个星标。文章简短，重点是关于项目的操作指引和基本统计信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Parquet库的性能和功能与其它数据处理技术的比较
+
+不同观点：
+• 第一种观点（nly）：认为Parquet的C++库性能较差，表现不尽如人意。该评论者基于个人经验，指出Parquet库在性能方面存在问题，虽然没有具体例子，但表达了对当前库的不满。
+
+• 第二种观点（timhigins）：关注Parquet在文件部分下载和与DuckDB集成的可能性。具体提到通过HTTP Range请求基于列统计信息进行部分文件下载的功能，并建议将FastLanes集成到DuckDB中，以增加其在多种语言SDK和CLI中的使用。该评论者对技术集成的可行性和潜在优势提出了具体建议。
+
+• 第三种观点（falcor84）：直接比较Parquet和Arrow，但没有展开具体的比较细节或提供论据，只是提出一个常见的技术选择问题，可能暗示在选择数据存储格式时对两者需要进行权衡。
+
+• 第四种观点（timhigins）：进一步提出Lance和LanceDB与Parquet的比较，关注是否有相关的对比或整合可能性。这表明评论者对不同数据处理工具之间的竞争和替代方案感兴趣。
+
+补充讨论：
+• 评论之间的讨论关系：timhigins的评论与nly的经验性评论没有直接冲突，但提出了不同的关注点，即技术集成的可能性。falcor84和timhigins的评论都提出了与其它技术比较的需求，显示出对Parquet在更广泛技术生态中定位的关注。
+
+• 争议的焦点：主要集中在Parquet库的性能和与其他数据处理技术的比较及整合潜力。性能问题和功能扩展是讨论的核心。
+
+• 重要论据和例子：虽然没有提供具体的数据或案例，但nly的经验性反馈为Parquet的性能问题提供了实际使用中的观察。timhigins的建议基于技术集成的潜在优势，虽然没有具体实现细节，但指出了改进方向。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44671584" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/lslvr/mwm" target="_blank">Lslvr/mwm: The smallest (usable) X11 window manager</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: daureg</span> |
+                    <span>评分: 62</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-21 12:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>mwm 是一个极简窗口管理器，专为追求最小化的用户设计。它仅有 20 行代码，不具备模式、美化界面、鼠标控制、虚拟桌面、配置文件等功能，窗口无标题栏、状态栏、按钮、边框和菜单，所有窗口全屏显示，一次只显示一个。它只包含最基本的功能：启动应用、切换窗口和关闭窗口。用户可以通过修改源码自定义键绑定，使用简单的 `grab` 和 `map` 宏。构建过程也很简单，运行 `./build.sh` 即可。mwm 强调软件应具备可 hack、有趣、小巧和可塑性强的特点，让用户能够轻松理解和修改。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：极简窗口管理器及其在X11和Wayland环境下的可行性与挑战
+
+不同观点：
+• [yjftsjthsd-h] 支持极简窗口管理器的概念，提到一个没有标题栏、状态栏、按钮、边框和菜单的窗口管理器，类似于X11下的"cage"项目。该评论强调了这种极简设计的纯粹性，甚至指出在这种设计下不需要移动窗口。
+• [ahlCVA] 认为Wayland生态系统的一个主要问题就是窗口管理器和X服务器的捆绑，使得一些小众或实验性的窗口管理器难以生存。即使有wlroots这样的工具，开发者也需要投入更多精力才能实现X11中默认提供的功能。
+• [neonden] 提出是否可以在Wayland中实现类似X11下的极简窗口管理器。
+• [90s_dev] 对极简软件开发表示赞赏，分享了一个极简窗口管理器的源代码，并指出虽然现代软件常被认为臃肿，但有时选择如Electron这样的工具是为了加快开发和提高可移植性。尽管如此，他个人偏好极简软件，并通过具体项目（hram.dev）展示了如何在不牺牲太多功能的情况下实现极简。
+
+补充讨论：
+• [teddyh] 简短指出该窗口管理器不符合ICCCM标准。
+• [ajross] 对源代码中的预处理器DSL表示赞赏，并幽默地提到Stephen Bourne（C语言预处理器的发明者）的影响。
+• [newlisp] 认为虽然该窗口管理器过于极端，但在Linux桌面环境中，减少GUI的使用通常是有益的。
+• [rithikrolex] 简短评论，内容较为模糊，未提供明确观点。
 
 争议焦点：
-• [fusionadvocate]对精确齿轮比的实际价值提出质疑，认为过度追求精度可能不必要，并关注机制的耐用性问题。这与其他用户对Aaed技术精湛的普遍赞誉形成对比。
+• Wayland生态系统中窗口管理器和X服务器的捆绑是否阻碍了小众/实验性窗口管理器的发展。
+• 极简窗口管理器的实用性和可行性，特别是在现代图形系统如Wayland下的实现可能性。
 
 总结：
-评论主要围绕Aaed的工程项目和视频内容展开，多数评价积极，称赞其技术能力、视频制作和表达能力。同时，也有对项目技术细节和机器人智能的深入讨论，以及如何开始类似项目的疑问和建议。争议点在于对精确齿轮比价值的质疑。</div>
+评论主要围绕极简窗口管理器的设计和实现展开，涉及X11和Wayland的不同技术环境。部分评论者对极简设计表示支持，并分享了具体实现和代码示例，而另一些评论者则关注了在Wayland中实现类似功能的挑战和标准合规性问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44661846" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44634208" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -342,175 +520,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ntietz.com/blog/covers-as-a-way-of-learning/" target="_blank">Covers as a way of learning music and code</a>
+                    <a href="https://www.trynia.ai/" target="_blank">Show HN: Nia – MCP server that gives more context to coding agents</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-21 15:20</span>
+                    <span>作者: jellyotsiro</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-24 15:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了通过模仿（如音乐翻唱和代码重实现）来学习的方法。在音乐学习中，翻唱能提供客观标准，帮助学习者分析和理解原作品的技巧和意图。同样，在编程中，重现现有库或代码可以帮助学习者深入理解其设计决策和实现细节，从而提高编程技能。文章强调，尽管模仿不是原创，但它是一种有效的学习方式，可以为未来的独立创作打下基础。同时，作者提醒要尊重原作者的版权，并在使用他人作品时给予适当 credit。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于复制和模仿他人作品的价值与批评
+                    <div class="comments-summary">主要讨论点：AI辅助编程工具的使用体验与功能探讨
 
 不同观点：
-• **ozim的观点**：认为批评他模仿或尝试创作的人是不理解创作过程，尤其是对于青少年探索和学习阶段的人。他强调创作初期模仿和分享的重要性，并认为那些批评者通常自己并不会去尝试创作。
-
-• **datameta的观点**：支持通过手动复制（如逐字重写代码）来学习，认为这种方法比简单地复制粘贴更有价值，能带来更多的学习效果。
-
-• **michaelterryio的观点**：引用本杰明·富兰克林的自传，暗示富兰克林也曾讨论过类似问题，表明通过模仿和尝试来学习是一种历史悠久且有效的学习方式。
-
-• **empressplay的观点**：指出在创意编程领域，模仿他人作品并加入自己的创意是一种常见的学习方式，特别是在艺术和动画方面。这种方法能帮助新手在没有巨大压力的情况下进入编程领域。
-
-• **RickJWagner的观点**：认为人们往往乐于批评他人的作品，即使是在模仿和学习阶段。这种批评可能对创作者造成负面影响。
+• [efitz] 分享了自己使用AI辅助编程的积极经验。他通过创建"context"目录并结合AI生成文档，在多个项目中取得了良好结果。他强调了这种方法的有效性和实际应用。
+• [NiloCK] 对efitz的评论提出了反馈，指出其描述的“提供上下文”功能并不是新颖的概念，许多MCP服务器都可以实现类似功能。NiloCK认为efitz的描述缺乏独特性，尤其是在标签line的表述上。
+• [afro88] 关注的是AI模型的外部文档访问能力，质疑哪些外部文档是无法通过网络或训练数据获取的，暗示了对AI工具能力边界的探讨。
+• [kokanator] 提出了对数据隐私和所有权的担忧，表示在未明确服务如何处理用户信息之前，不会考虑使用该工具，强调了透明度和用户信任的重要性。
+• [taherchhabra] 提到在使用Claude编写代码时遇到库版本问题，并通过手动下载整个库来解决。他询问该工具是否能解决此类版本控制问题，反映了用户对工具自动化能力的期望。
+• [nisegami] 将该工具与Context7进行了对比，暗示了市场上存在类似工具，用户在选择时可能会进行比较，提出了对工具差异化和竞争力的关注。
+• [kissgyorgy] 遇到了技术问题，即网站导致浏览器崩溃，表达了对该工具技术实现的失望和不信任，强调了工具基本功能稳定性的重要性。
 
 补充讨论：
-• 争议焦点在于模仿和复制在学习过程中的价值与外界的批评之间的关系。ozim和empressplay强调了模仿和分享的积极意义，而RickJWagner则指出了外界批评对创作者的潜在负面影响。
-
-• datameta和michaelterryio的观点提供了具体的例子和历史背景，支持通过模仿和手动复制来提高技能，强调了这种方法在学习中的有效性。
-
-• 总体来看，讨论的重点在于如何看待和处理在创作初期阶段的外界批评，以及通过模仿和复制进行学习的合理性。</div>
+• 用户对AI工具的功能效果、隐私政策、版本控制及技术稳定性等方面存在不同程度的关注和质疑。
+• 争议的焦点包括工具的独特性、外部文档访问能力及数据处理透明度。
+• 用户还关注工具之间的比较，尤其是类似功能的产品，如何脱颖而出成为讨论的一个要点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44636240" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arstechnica.com/ai/2025/07/research-shows-google-ai-overviews-reduce-website-clicks-by-almost-half/" target="_blank">AI overviews cause massive drop in search clicks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jonbaer</span> |
-                    <span>评分: 158</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-07-23 19:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>谷歌搜索结果页面引入了基于AI的概览（AI Overviews），导致网站点击量下降。尽管谷歌声称这不会影响网站流量，但Pew Research Center的分析显示，包含AI概览的搜索结果页面点击率从15%降至8%。同时，用户在查看AI概览后更可能结束浏览，且只有1%的AI概览会引导用户点击来源链接，主要包括维基百科、YouTube和Reddit。AI概览正变得越来越普遍，约五分之一的搜索现在包含此类概览，尤其是问题和长句搜索。尽管研究表明这种趋势不利于网站流量，谷歌则认为AI功能创造了新的连接机会，并否认流量显著下降。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google AI 搜索概述的影响及其引发的问题
-
-不同观点：
-• 一些用户认为过度设计和缓慢的网站导致点击量下降。例如，[throwaway81523]提到，像Hacker News这样的纯文本格式网站加载更快，用户更愿意通过评论获取信息，而不是点击文章链接。
-• [washadjeffmad]和[ctas]指出，Google AI的错误信息对企业和品牌造成了严重影响，导致错误的电话和客户访问，且修复过程繁琐且无保障。
-• [mtkd]认为，AI概述在某些情况下是有用的，比如快速提供准确的答案，但过去需要点击多个SEO优化的页面才能找到答案。
-• [ghushn3]提到，使用Kagi搜索引擎可以避免广告和AI干扰，用户可以自定义排名，体验更好。
-• [oezi]指出，Google在推广AI功能的同时，必须小心不损害其广告业务。
-• [bgwalter]分享了一个有趣的发现，即通过在查询中使用诅咒词可以关闭AI概述功能，引用了相关文章。
-• [yalogin]认为，虽然LLM（如ChatGPT）在某些知识问题上减少了Google的流量，但在信息搜索方面，传统搜索引擎仍然不可或缺。
-• [dado3212]开玩笑地提到，AI模式的放置无意中提高了CTR指标。
-• [kazinator]讽刺地指出，AI概述使得用户无需点击多个广告和垃圾内容即可获取信息，这显而易见。
-• [h4kunamata]推荐Perplexity AI，认为它比其他AI服务更可靠，因为它提供多个来源的信息。
-• [JKCalhoun]认为，免于“搜索点击”并不是坏事，很多人可能已经转向LLM获取信息。
-• [krupan]提出，讨论的重点不应只是AI概述的正确性和关闭选项，而是Google将整个网络复制到其LLM中，导致人们不再访问实际网站，这对网络生态产生了深远影响。
-• [yfw]和[ValveFan6969]抱怨当前搜索结果中充斥着广告和付费内容，影响了用户体验。
-
-补充讨论：
-• Google AI概述的准确性和修复困难是主要问题，特别是对小型企业和品牌的影响。
-• 用户对广告和冗长内容的厌烦促使他们更倾向于使用AI概述获取信息。
-• 传统搜索引擎在信息搜索中的不可替代性，尽管LLM在某些知识问题上表现突出。
-• 对Google可能逐渐减少传统搜索结果呈现的担忧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44663227" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s44222-025-00323-4" target="_blank">Writing is thinking</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: __rito__</span> |
-                    <span>评分: 107</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-21 06:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文探讨了科学写作在人工智能时代的重要性，指出写作不仅是传达研究结果的工具，更是帮助理清思路、激发新想法的过程。尽管大型语言模型（LLM）可以快速生成科学文章，但它们缺乏责任性，不能作为作者，且生成的内容可能存在错误或虚构信息，仍需人工仔细核查。过度依赖LLM可能会削弱研究人员对自身领域的反思和创造性表达能力。然而，LLM在提高文章可读性、辅助文献总结和克服写作障碍方面仍具有一定价值。最终，写作是思考的体现，人类生成的科学写作仍具重要意义。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在思考、阅读和写作中的作用及影响
-
-不同观点：
-• jll29认为，阅读和写作是思考的过程，不应习惯性地将这些任务交给AI，尤其是在学生的成长学习阶段。他以计算器作类比，指出只有在打好基础后，才可以使用辅助工具。
-• bwfan123提出，如果写作越来越多地由LLM生成，可能会导致模型崩溃，因为模型需要依赖人类的写作进行训练。
-• carlesfe部分同意上述观点，但指出“写作是思考”只是特定历史阶段的产物。他认为，在便宜的写作技术出现之前，思考和写作是分离的，并以历史上的作家为例说明。
-• infogulch扩展了讨论，认为说话也是思考，而写作是带有超能力的思考工具，类似于《哈利·波特》中的“冥想盆”。
-• msarrel强调，思考和写作密切相关，但使用ChatGPT则不然，并引用MIT媒体实验室的文章支持其观点。
-• Ezhik以调侃的方式表示，新技术可以帮助解决“页面满，脑袋空”的问题。
-• poindontcare批评那些认为LLM只用于语法纠正的人是妄想，暗示LLM在科学研究中的潜力更大。
-• zug_zug认为，人们重视写作是因为写作带来的成就感，但实际上写作只是思考合成后的产物，而非思考本身。
-• pryelluw分享了自己的学习技巧，即通过转录和输入内容来加深理解，特别适用于代码学习。
-• pfoof将阅读比作像EEPROM一样被重新编程，强调通过例子建立联系的学习效果更持久。
-• cubefox指出，LLM在提高文本可读性和语法方面的重要性，特别是对非英语母语者，并讨论了 manuscript 被拒稿的可能性与语法质量的关系。
-• empath75提出，写作需要思考，而LLM并不思考，这一对比值得深思。
-• markhahn分析了写作如何迫使人们明确表达思维过程，并以特朗普的演讲风格为例说明联想式思维的特点。
-• motohagiography强调，写作通过迭代 refined 原始经验，使其成为更高质量的思想，并分享了相关的讲座资源。
-• fehu22简单表示，写作是逻辑的原创体现。
-
-补充讨论：
-• 争议焦点在于写作与思考的关系，以及LLM在其中的角色。部分评论者担心过度依赖LLM会影响思考能力，而另一些人则认为LLM只是一种工具，类似于历史上的技术进步。
-• 讨论中多次提到历史上的作家和思想家，如苏格拉底、托尔斯泰等，以支持对写作和思考关系的不同看法。
-• 也有评论者关注LLM在特定领域（如科学研究、非英语母语者的学术写作）中的实用性。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44632314" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.ycombinator.com/companies/thunder-compute/jobs/DhML6Uf-c-systems-engineer" target="_blank">Thunder Compute (YC S24) Is Hiring a C++ Systems Engineer</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cpeterson42</span> |
-                    <span>评分: 1</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-24 12:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Thunder Compute正在招聘一名C++系统工程师，年薪10万至15万美元，并提供0.5%至1%的股权。该职位要求3年以上经验，公司将资助签证。工作地点在美国亚特兰大，但将在6个月内迁至旧金山或纽约。该岗位负责优化GPU云平台的C++核心系统，包括性能优化和系统调试，特别关注GPU虚拟化技术。要求具备高水平的C++能力、NIC/GPU性能优化经验以及低延迟环境工作能力。优先考虑计算机科学硕博学位，GPA 3.5以上，并有硬件公司或交易公司工作经验的候选人。公司由YC资助，正在快速增长，团队目前有4人。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669631" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44671601" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
