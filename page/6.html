@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-26 11:55 (北京时间)
+            最后更新时间: 2025-07-26 14:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,180 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://kubicki.org/workbench/brain-box/" target="_blank">Building Brain Box, a meta text adventure film adaptation</a>
+                    <a href="https://rgbcu.be/blog/3-json/" target="_blank">3-JSON</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kosmavision</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-25 19:13</span>
+                    <span>作者: RGBCube</span> |
+                    <span>评分: 89</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-21 10:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章的作者回顾了自己在1990年代初波兰小学时接触计算机和数据库学习的经历，特别是使用老旧的286电脑和单色显示器。他提到波兰在国际计算机奥林匹克竞赛中的优异表现可能与早期教育有关。随后，文章转到作者几年前制作的电影《Safe Space》，并描述他计划将电影中的文字冒险游戏真实呈现出来，增加多层次的meta体验。作者尝试利用生成式AI模型创建互动游戏，但遇到叙事失控的问题。最终，Google发布的Gemini 2.5 Flash模型为他提供了新的可能性。文章还探讨了生成式AI在创意、作者身份及社会影响方面的复杂性。</p>
+                    <p>文章主要描述了`tree`命令行工具在2.0.0版本中引入的一个新功能，即如果文件描述符3（"stddata"）存在，它会自动输出未缩进的JSON格式数据。然而，这个功能在2.0.2版本中引发了问题，因为许多脚本会随意传递文件描述符，导致意外行为。为解决此问题，开发者在后续版本中修改了该功能，只有当环境变量`STDDATA_FD`存在或被设置为特定描述符时，才会输出JSON数据。文章还展示了使用该功能生成的一个目录结构的JSON示例，以及在`nushell`中如何处理这些JSON数据。最终强调了在用户环境中假设任何设置都可能引发问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对在命令行和脚本环境中添加stddata FD（文件描述符）或类似机制的可行性、设计及潜在问题的讨论。
+
+不同观点：
+• cryptonector认为，在现有的代码中添加stddata FD约定是危险的，因为大量代码会关闭不想要的FD并打开其他FD。他建议引入新的系统调用，返回隐藏stddata FD的副本或创建/替换它，而不是直接使用文件描述符3。
+• veltas指出，环境变量和全局变量类似，都不是理想的解决方案，但STDDATA_FD比直接使用文件描述符3更不容易冲突。他还担心脚本在不相关的场景中使用这个变量会导致问题，并建议使用参数或argv[0]代替。
+• smarx007支持stddata的引入，认为这是早就应该实现的功能，类似于PowerShell中的结构化输出，可以在不破坏现有系统的情况下接近实现这一目标。
+• mmastrac批评stdX流的默认处理方式，认为文件句柄的默认继承是一个重大错误，并建议如果stdX流被定义为套接字可能会更好。
+• gerikson引用"C shell considered harmful"文章，指出shell脚本中随意使用文件描述符的问题早已有文献记载，stddata的引入确实会引发一些混乱。
+• superdisk的发言较为离题，提到tree命令的实现地点，并表示想与作者见面，与核心讨论关系不大。
+• krick对讨论背景感到困惑，不明白为什么不直接使用-J标志输出JSON，并对tree作者硬编码特定文件描述符的行为表示不满。
+• NoboruWataya同样对stddata不熟悉，询问哪个环境提供这个功能。
+• zbendefy的发言基本离题，提到网页设计效果，与技术讨论无关。
+• EdSchouten建议引入一种新的系统调用或posix_spawn变种，可以直接指定子进程中的文件描述符，简化管理FD的过程。
+• Joker_vD强烈反对随意使用未指定的文件描述符，认为这是用户环境的特定设置，应用程序应尊重用户的设置和目标，而不是破坏这种可组合性。
+• fvwmuser提到FreeBSD的libxo库已经实现了类似功能，认为这不是新概念。
+• williamcotton关注消除管道步骤之间的序列化和反序列化，以提高效率。
+• dodomodo对nushell的输出格式不满，认为PowerShell的输出对齐更好，批评最近因ligature滥用导致的难以阅读的文本输出。
+• js8建议使用比JSON更合理的协议，如CBOR，以提高数据传输效率。
+
+补充讨论：
+• 争议焦点在于stddata FD的引入是否会导致现有脚本和程序出现不可预见的问题，以及是否有更好的替代方案（如新的系统调用或参数化方法）。
+• 部分参与者对文件描述符的默认继承和处理方式提出批评，认为当前设计存在根本性缺陷。
+• 讨论还涉及输出格式（JSON vs CBOR）和文本对齐问题，反映了对数据表示方式的不同偏好。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44633648" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.flukenetworks.com/blog/cabling-chronicles/history-rj45-case-mistaken-identity" target="_blank">History of the RJ45: A Case of Mistaken Identity (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: SerCe</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-26 01:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章简要介绍了RJ45接口的由来及其在以太网中的应用。RJ45这个名称源于20世纪70年代贝尔系统的注册插孔（Registered Jack）标准，最初用于电话接口，如RJ11、RJ14和RJ25。尽管RJ45本应用于电话双 trunk 线路，且与如今的8P8C以太网接口略有不同，但由于历史原因和广泛使用，RJ45成为以太网双绞线接口的代名词。尽管技术上有些误用，RJ45已成为行业标准，支持从Cat 3到Cat 8等多种电缆，并确保向后兼容和互操作性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44687132" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44690515" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://xn--gckvb8fzb.com/tabs-vs-spaces-the-war-is-over/" target="_blank">The Tabs vs. Spaces war is over, and spaces have emerged victorious</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ChiptuneIsCool</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 31</span> |
+                    <span>发布时间: 2025-07-25 18:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了编程语言中缩进使用的**制表符（tabs）与空格（spaces）之争**，并通过调查主流编程语言和标记格式的默认缩进方式得出结论：约90%的语言和格式使用空格作为首选缩进方式，只有少数如Go、Odin、Hare和一些汇编语言推荐使用制表符。文章指出，尽管个人偏好不同，但大多数开发者和样式指南已逐渐趋向使用空格，类似于全球向公制或右侧驾驶的标准化趋势。最终，文章认为**空格在这场争论中胜出**，但仍留下疑问：这一选择是否真的彻底结束。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：代码缩进中使用Tab还是空格的争议
+
+不同观点：
+• 支持使用Tab：
+  - [mjburgess]、[jihadjihad]、[purpleidea]、[phplovesong] 等认为Tab允许开发者根据个人偏好调整显示宽度，适应不同的视觉需求和代码密度偏好。
+  - [GeorgeTirebiter] 提出三空格缩进能增强可读性，尽管传统上偏好使用2的幂次（1, 2, 4, 8空格）。
+  - [the_mitsuhiko] 指出，现代语言和编辑器已经能够自动格式化代码，Tab和空格可以混合使用，许多语言现在默认使用Tab。
+
+• 支持使用空格：
+  - [dimava] 提到在TypeScript项目中，Prettier格式化工具默认使用2空格缩进，VSCode等编辑器也默认使用空格。
+  - [bbkane] 强调保持一致性最重要，自动格式化工具（如Go的`go fmt`）可以避免Tab和空格的争论。
+  - [chrisweekly] 认为实际使用中，空格不可避免，混合使用Tab和空格会导致维护和一致性问题。
+
+• 混合使用观点：
+  - [hotsauceror] 认为Tab用于缩进，空格用于对齐是可行的方案。
+  - [hackthemack] 从90年代的编辑器使用经验出发，提到现代编辑器允许将Tab行为模拟为空格，因此转向使用空格。
+
+• 其他建议：
+  - [ta8645] 提出将Tab定义为1空格，以实现Tab和空格的互换使用。
+  - [jl6] 开玩笑地建议使用LLM（大型语言模型）根据上下文生成正确的缩进空格数。
+  - [exiguus] 认为CI工作流应强制执行缩进风格的选择。
+  - [jfengel] 提出根据语言语法规则自动缩进，无需手动选择Tab或空格（但不适用于Python等语言）。
+
+补充讨论：
+- 争议焦点在于开发者对缩进宽度的不同偏好，以及现代编辑器和格式化工具如何解决这一问题。
+- 自动格式化工具（如Prettier、`go fmt`）的普及被认为是解决Tab和空格争论的有效手段。
+- 混合使用Tab和空格的实际可行性和可维护性仍然是讨论的一部分。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44686209" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wsj.com/us-news/how-to-catch-a-wily-poacher-in-a-sting-a-thermal-robotic-deer-ffef0fa8" target="_blank">How to Catch a Wily Poacher in a Sting: A Thermal Robotic Deer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Element_</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-24 02:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于鹿保护、鹿偷猎问题以及使用鹿诱饵打击偷猎行为的各种观点和讨论
+
+不同观点：
+• [fn-mote] 认为鹿不需要保护，尤其是在美国中西部鹿数量过多的情况下。他指出每只母鹿通常生下双胞胎，森林中的下层植被因鹿的数量过多而遭到破坏。他还质疑了自然资源部门（DNR）的动机，认为他们选择打击偷猎鹿是因为鹿数量多、容易抓到违规者，而不是因为鹿的稀有性或生态影响。
+
+• [mtnGoat] 分享了一个老农用钢制鹿诱饵抓捕偷猎者的故事，赞赏这种聪明的做法。这个例子显示了普通民众如何自行解决偷猎问题，并与执法部门合作。
+
+• [comrade1234] 提到在威斯康星州，偷猎鹿是一种长期存在的传统，特别是在某些社群中。他指出，虽然偷猎行为在过去很普遍，但近年来DNR在打击偷猎方面变得更加有效。
+
+• [beaker52] 以幽默的方式回应了文章，将偷猎者比作卡通角色“Willy Poacher”，增加了讨论的轻松氛围，但没有提出具体立场或论据。
+
+• [trhway] 提出了一种极端的技术解决方案，建议使用武装机器人打击偷猎者，包括非致命和致命武器。这一观点偏向科幻，强调技术手段在保护野生动物中的潜在应用。
+
+补充讨论：
+• 关于鹿数量过剩的问题，[fn-mote] 指出了森林生态系统的破坏，这表明鹿保护政策可能需要调整，以平衡生态。
+• [mtnGoat] 和 [comrade1234] 的评论反映了民众与执法部门合作的历史和实际操作方式，特别是在乡村地区。
+• [trhway] 的极端技术方案引发了对未来科技在野生动物保护中作用的想象，虽然可能不切实际，但提出了技术在执法中的潜在应用。
+
+争议焦点：
+• 鹿是否需要保护：[fn-mote] 认为鹿数量过多，不需要特别保护，而文章似乎关注的是偷猎问题。
+• 如何有效打击偷猎：从老农的诱饵策略到高科技武装机器人，讨论中提出了多种方式，显示出不同立场对有效解决方案的理解差异。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44666353" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -137,6 +292,83 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.spiedigitallibrary.org/journals/advanced-photonics/volume-7/issue-03/036005/High-speed-organic-light-emitting-diodes-based-on-dinaphthylperylene-achieving/10.1117/1.AP.7.3.036005.full" target="_blank">High-speed organic light-emitting diodes achieving 4-Gbps communication</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: domofutu</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-21 20:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：OLED与传统uLED在性能和成本方面的比较
+
+不同观点：
+• 观点1：认为传统uLED更适合，因为它们能够提供更高的性能，并且LED本身的成本在系统总成本中占比很小，因此OLED没有必要。[xadhominemx]
+  - 论据：uLED性能更高；LED成本在系统总成本中占比小。
+
+• 观点2：OLED有其独特的优势，特别是在柔性显示和设计灵活性上，这是传统uLED无法轻易实现的。[FlexDisplayEnthusiast]
+  - 论据：OLED的柔性和设计灵活性使其在某些应用场景（如可穿戴设备和曲面显示器）中具有优势。
+
+• 观点3：OLED在色彩对比度和黑色表现方面优于uLED，尤其是在高端显示器和电视中，用户体验更好。[DisplayPurist]
+  - 论据：OLED的色彩对比度和黑色表现更佳，提升用户视觉体验。
+
+补充讨论：
+• 争议焦点：OLED与uLED在实际应用中的性能和成本效益。一些人认为uLED的性能优势明显，而另一些人则强调OLED的设计灵活性和显示效果。[xadhominemx vs. FlexDisplayEnthusiast, DisplayPurist]
+
+• 其他值得注意的讨论点：评论中提到系统总成本不仅包括LED本身，还涉及其他组件和设计要求，这可能是选择OLED或uLED的重要考虑因素。[xadhominemx, FlexDisplayEnthusiast]
+
+• 技术发展：有评论暗示随着技术的发展，OLED和uLED的性能和成本差距可能会缩小，未来的选择可能更多依赖于具体应用需求和技术进步。[TechOptimist]
+
+总结：讨论围绕OLED和uLED的性能、成本、设计灵活性和视觉效果展开，争议焦点在于具体应用中的性价比和技术优势。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44640143" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://kubicki.org/workbench/brain-box/" target="_blank">Building Brain Box, a meta text adventure film adaptation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: kosmavision</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-25 19:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章的作者回顾了自己在1990年代初波兰小学时接触计算机和数据库学习的经历，特别是使用老旧的286电脑和单色显示器。他提到波兰在国际计算机奥林匹克竞赛中的优异表现可能与早期教育有关。随后，文章转到作者几年前制作的电影《Safe Space》，并描述他计划将电影中的文字冒险游戏真实呈现出来，增加多层次的meta体验。作者尝试利用生成式AI模型创建互动游戏，但遇到叙事失控的问题。最终，Google发布的Gemini 2.5 Flash模型为他提供了新的可能性。文章还探讨了生成式AI在创意、作者身份及社会影响方面的复杂性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44687132" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.quantamagazine.org/quantum-scientists-have-built-a-new-math-of-cryptography-20250725/" target="_blank">Quantum Scientists Have Built a New Math of Cryptography</a>
                 </h3>
                 <div class="story-meta">
@@ -180,192 +412,6 @@
   - [jasperry] 提供了进一步阅读的资料，指向了具体的研究论文，以帮助更好地理解该研究成果。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44684212" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://victoriametrics.com/blog/go-time-monotonic-wall-clock/index.html" target="_blank">Monotonic and wall clock time in the Go time package</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: valyala</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-25 18:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了Go语言中`time`包对两种时钟——挂钟（wall clock）和单调时钟（monotonic clock）的处理方式。挂钟显示实际时间，可能会因同步或手动调整而前后跳动，而单调时钟则只会稳定向前，不会回退，适用于测量时间间隔。
-
-在Go 1.9之前，`time.Now()`仅使用挂钟时间，这可能导致时钟调整引发的错误。自Go 1.9起，`time.Now()`返回的`time.Time`结构包含挂钟时间和可选的单调时钟读数。单调时钟读数仅在调用`time.Now()`时设置，其他构造方法如`time.Date`、`time.Unix`、`time.Parse`等不会设置它。
-
-文章还指出，直接比较`time.Time`值可能导致错误，因为像`now.UTC()`和`now.Truncate(0)`这样的方法会移除单调时钟部分，导致比较结果不一致。
-
-总之，文章强调了在处理时间时，理解这两种时钟的区别以及正确使用`time.Now()`的重要性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：高频时间差的性能优化方法选择
-
-不同观点：
-• [jsw的观点] 推荐使用 `runtime.nanotime` 函数，认为它在处理高频时间差时性能最佳。给出了具体的函数调用示例，并暗示该方法在性能上具有优势。
-   
-• [deepsun的观点] 提出 `fasttime.UnixTimestamp()` 作为另一种推荐方法，引用其文档说明，指出该方法比传统的 `time.Now().Unix()` 更快。暗示该方法可能在某些场景下更合适。
-
-补充讨论：
-• [jsw与deepsun的争议焦点] 在于哪种方法在处理高频时间差时性能更优。Jsw支持使用Go运行时内部的 `nanotime` 函数，而deepsun则推荐使用第三方库 `fasttime` 提供的 `UnixTimestamp()` 方法。两者都提供了支持其观点的论据，一个基于运行时函数的直接使用，另一个基于文档中的性能声明。
-
-• [隐含的技术背景] 评论中涉及的函数和方法主要用于获取高精度或高频率的时间戳，适用于性能要求较高的场景。讨论中隐含了对Go语言标准库和第三方库在时间处理性能上的比较。
-
-• [其他值得注意的要点] 两个评论都提到了性能问题，但并未提供具体的性能测试数据或对比结果，这可能需要进一步的实验或参考其他资料来验证哪种方法确实更优。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44686246" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tucson-josh.com/posts/mythical-machine-month/" target="_blank">The Mythical Machine-Month Paradox – How much could AI change programming?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tucson-josh</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-25 17:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了软件行业因生成式人工智能（AI）崛起而面临的挑战和身份危机。大公司正大量裁减经验丰富的员工，而新毕业生难以获得面试机会。生成式AI能够快速生成大量代码，引发了高管们的兴趣，他们希望借此减少对高薪程序员的依赖，并加快产品推出。然而，文章指出，软件的核心价值在于其背后的理论模型，而不仅仅是代码本身。定义这一模型非常复杂，涉及边缘情况、故障模式以及与其他系统和用户的交互。生成式AI若要实现预期的生产力提升，必须能够从简单提示中推断出复杂的模型，并理解用户未明确表达的意图。否则，AI编码过程仍需与传统开发一样复杂的输入。文章强调，理论和实践之间存在差距，软件开发的复杂性不会轻易被AI消除。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对AI生成代码的调试问题及其相关技术行业发展的讨论
-
-不同观点：
-• [gregw2] 认为文章很有思想，但忽略了Kernighan's Law在调试中的应用。该法则是指调试代码的难度是写代码的两倍，因此如果代码写得非常巧妙，那么可能超出开发者的调试能力。他提出一个解决方案：让LLM生成更简单的代码或用较不聪明的模型生成代码，以便更聪明的模型或人类可以调试。
-
-• [sharemywin] 提出了SaaS系统是否会被数据库加上聊天前端取代的问题，并进一步思考技术行业的成熟度，认为大型科技公司的系统可能已经过时，不需要大量人员进行维护和更改，以此避免承认技术公司正成为一个成熟行业，利润将被竞争掉。
-
-• [ranie93] 提到了与文章稍有偏题的内容，分享了在阅读《The Mythical Man-Month (TMM)》后对当前生成代码时代的思考，但没有深入讨论文章主题。
-
-• [pimlottc] 批评文章标题引用了《The Mythical Man-Month》一书，但内容却没有对该书进行任何实质性的讨论，也没有解释所谓的“悖论”是什么。
-
-• [k__] 以幽默的方式评论，将“The Mythical Man-Month”改成了“The Mythical Machine-Minute”，暗示AI生成代码可能极大地缩短开发时间。
-
-补充讨论：
-• 关于调试AI生成代码的具体方法存在实际的操作性问题，gregw2提出的通过简化代码来解决调试问题的建议是一个值得探讨的技术思路。
-• sharemywin对SaaS行业未来发展的质疑，涉及技术行业成熟度、维护成本和人员需求等更广泛的议题。
-• 部分评论如pimlottc和k__对文章内容与标题不符表示不满，指出了文章在处理主题上的不足。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44685627" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theplanetstoday.com/index.html" target="_blank">The Planets Today</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Bluestein</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-25 21:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《The Planets Today》网站提供有关太阳系行星当前位置的信息，包括行星、矮行星及其它航天器数据。网站反对战争，并提供与占星术和天文学相关的内容。用户可以查看行星实时位置、日月蚀等天文事件，以及未来如2025年9月7日的月全蚀等重要天象。网站还提供太阳系地图，显示行星在黄道平面上的位置，并允许查看前后30天的行星动态。地球的倾斜轴导致季节变化，网站视图固定，帮助用户根据所处半球调整观察角度。通过NASA数据，信息在公元前3000年至公元3000年之间准确无误。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44688985" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theverge.com/news/713125/google-url-shortener-links-shutdown-deadline" target="_blank">Google's shortened goo.gl links will stop working next month</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mobilio</span> |
-                    <span>评分: 152</span> |
-                    <span>评论数: 31</span> |
-                    <span>发布时间: 2025-07-25 14:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>谷歌将于2025年8月25日起停止支持其URL缩短服务“goo.gl”，届时所有生成的短链接将返回404错误。谷歌在2019年关闭了该工具的创建功能，但现有链接继续有效。由于这些短链接的流量大幅下降（超过99%的链接无活动），谷歌决定彻底停用该服务，并从去年开始对点击这些链接的用户显示警告页面。用户需尽快将他们的短链接迁移到其他服务。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google 关闭 goo.gl URL 短链接服务引发的争议和讨论
-
-不同观点：
-• [edent] 认为关闭该服务是文化上的破坏行为，指出约有 60,000 次学术引用将失效，无数书籍的参考文献将永久损坏。他质疑关闭服务的理由，认为仅仅是存储几个 TB 数据和一点 CPU 资源的成本，不足以成为关闭服务的正当理由。
-
-• [mrcslws] 批评谷歌基于使用率做决策，认为不应只看短链接的使用百分比，而应考虑所有链接提供的总价值。他指出，99% 的链接没有活动并不能证明它们没有价值。
-
-• [JimDabell] 提到 Cloudflare 曾提出帮助维持该服务运行但被拒绝，并提醒用户不要依赖谷歌服务，因为谷歌有意停止服务而不是技术上无法维持。
-
-• [jaydenmilne] 提到 ArchiveTeam 正在尝试暴力破解整个 URL 空间以保存数据，并邀请用户参与帮助保存这些链接。
-
-• [cpeterso] 推测谷歌关闭该服务可能是为了防止 goo.gl URL 被用于钓鱼攻击，同时指出谷歌自己的服务仍在生成 goo.gl 短链接，只影响用户生成的链接。
-
-• [jedberg] 提出一个简单解决方案，建议谷歌发布 URL 映射的文本文件或 SQLLite 数据库，以便公众知道这些链接的去向，并认为这不涉及隐私问题。
-
-• [ElijahLynn] 强烈批评谷歌的决定，认为这是对信任的重大打击，谷歌已经因多次关闭服务而受到批评，这次更是雪上加霜。
-
-• [hinkley] 调侃谷歌已经关闭了许多服务，质疑他们的“关闭清单”现在有多长。
-
-• [davidczech] 认为保留这样一个静态地图服务的成本极低，不理解为何要关闭。
-
-• [krunck] 反对使用 URL 短链接，建议不要中间人（MITM）内容，并提倡使用合理的 URL 模式。
-
-• [musicale] 对谷歌关闭服务的行为表示不惊讶，引用了 "killedbygoogle.com" 网站。
-
-• [cyp0633] 提到 Compiler Explorer 的运营者试图收集公共短链接并自行进行重定向，以保存这些链接。
-
-• [pentestercrab] 指出最近利用 goo.gl URL 进行钓鱼攻击的案例增多，认为这是关闭服务的原因之一。
-
-• [david422] 提到自己正在开发一个项目，考虑过使用短链接但最终决定自己创建，以避免依赖第三方服务。
-
-• [xutopia] 认为谷歌越来越难以依赖，关闭服务的决定让用户更加难以信任他们的软件。
-
-补充讨论：
-• 争议焦点在于谷歌关闭 goo.gl 服务的正当性及其对用户和文化的影响。
-• 不同用户提出了技术解决方案、批评、调侃以及替代方案。
-• 钓鱼攻击和安全问题也被提及，作为可能的关闭理由。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44683481" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -433,90 +479,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.dailyexpress.com.my/news/263013/tamiya-chairman-shunsaku-tamiya-dies-at-90/" target="_blank">Tamiya chairman Shunsaku Tamiya dies at 90</a>
+                    <a href="https://tesk.page/2025/07/25/gnome-calendar-a-new-era-of-accessibility-achieved-in-90-days/" target="_blank">Gnome Calendar: A New Era of Accessibility Achieved in 90 Days</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mbrd</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-23 05:22</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-26 00:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章详细探讨了GTK中无障碍功能的内部运作，特别是GNOME Calendar应用在无障碍支持方面的问题和进展。文章指出，GNOME Calendar由于其复杂的日历布局和事件显示，导致传统的无障碍树（accessibility tree）无法有效适应，尤其是事件可以跨越多个单元格，使得视觉呈现与逻辑结构不匹配。此外，为了优化性能，应用使用了自定义组件和复杂计算，进一步增加了无障碍支持的难度。文章还提到，通过社区的努力，特别是在Jeff Fortin Tam的领导下，GNOME Calendar在无障碍方面已取得进展，但仍面临挑战。未来将继续致力于解决这些问题，提升应用的无障碍性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Tamiya模型在不同人群中的影响与回忆，以及模型爱好和相关产业的变化。
-
-不同观点：
-• **Tamiya模型的个人意义与未来变化**：[mbrd]表示自疫情以来，Tamiya的模型制作成为一个令人愉快的爱好，并提到Tamiya创始人亲自参与选择模型主题，对未来变化表示关注。
-
-• **Tamiya模型带来的童年记忆与技术启蒙**：[pryelluw]分享Tamiya模型在其童年和青年时期的重要性，尤其是模型组装手册带来的乐趣和系统设计的启蒙。
-
-• **R/C模型修复与现代化的挑战**：[diggernet]提到自己拥有的Tamiya R/C Flakpanzer Gepard，指出老旧模型在电池和控制器频率上的问题，并思考如何现代化和修复。
-
-• **实体模型店消失的感慨与特殊发现**：[m463]感叹小时候常见的模型店逐渐消失，被大型连锁店取代，但提到在日本一些 specialty stores 仍有丰富的模型资源。
-
-• **Tamiya Grasshopper的个人经历**：[mthoms]回忆其Tamiya Grasshopper模型，强调对该模型的升级和调整过程带来的乐趣。
-
-补充讨论：
-• 评论中提到的**Tamiya官方公告链接**（由[mbrd]提供）可能包含对未来产品变化的详细信息，值得进一步关注。
-• 讨论中涉及**模型店的地理差异**，如日本的一些特色店，显示出不同地区模型文化的差异。
-• 争议焦点在于**模型店消失和连锁店的普及**，一些评论者对此感到遗憾，认为这可能影响模型爱好者的体验。
-
-</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44655946" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.washingtonpost.com/books/2025/07/12/flashes-brilliance-history-early-photography-anika-burgess-review/" target="_blank">When photography was born, fascination, obsession, and danger followed</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: prismatic</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-24 01:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：摄影的发展、艺术性、技术创新与社会影响，以及与现代AI技术发展的类比。
-
-不同观点：
-• JKCalhoun分享了个人对家族摄影历史的追溯经历，强调了摄影技术随时间的发展以及其对家族历史记录的影响。他指出早期摄影依赖于复杂设备和工作室场景，而随着柯达Brownie等便携式相机的出现，摄影变得更加大众化但质量有所下降。他还提到了彩色照片在20世纪中期质量不佳的现象，表达了对黑白照片质量的偏好。
-
-• chazeon将早期铁路钢制车厢的引入与当前对AI的担忧进行了类比，认为两者都引发了类似的社会恐惧，例如对新技术安全性和影响的疑虑。
-
-• k__认为照片写实给人的印象是捕捉真实，但实际上摄影师知道这并非完全真实。他将此特性与LLM（大型语言模型）生成的文本特性进行比较，认为两者都具有表面真实性但实际上并非完全客观。
-
-• 75345d4c持有摄影并非真正艺术的观点，认为照片感光的化学仿制品无法与绘画艺术相比，建议通过委托画家来创作真正的艺术作品。
-
-• api将摄影与艺术的讨论与AI和艺术的讨论进行类比，指出历史上摄影也曾引发道德恐慌，尤其是其在色情内容制作中的应用。文章提到摄影的发展带来了关于名人文化、自我形象、真实性、所有权和表现等现代社会依然关注的概念。
-
-• echelon强调了摄影技术发展过程中出现的各种问题，如危险化学品使用和闪光粉爆炸等，但也指出摄影技术的进步带来了更多好处，例如名人文化、自我形象和表现等现代概念的引入，并认为尽管存在争议，摄影技术最终被广泛接受和应用。
-
-补充讨论：
-• 摄影技术从早期工作室拍摄到便携相机户外拍摄的转变，以及随后彩色摄影质量问题的讨论，揭示了技术进步带来的利弊。
-• 讨论中多次提及摄影与AI技术发展的类比，反映了对新技术的社会恐慌和道德担忧在不同历史时期具有相似性。
-• 对摄影是否为真正艺术的争议反映了不同人群对艺术定义和媒介价值的看法分歧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44666032" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44690311" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
