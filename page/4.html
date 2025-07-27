@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-27 05:14 (北京时间)
+            最后更新时间: 2025-07-27 09:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.zachleat.com/web/adventures-in-date-parsing/" target="_blank">Never write your own date parsing library</a>
+                    <a href="https://github.com/ealmloff/sledgehammer_bindgen" target="_blank">Breaking the WASM/JS communication performance barrier</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ulrischa</span> |
-                    <span>评分: 87</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-25 17:36</span>
+                    <span>作者: weinzierl</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-23 07:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了为何不应自行编写日期解析库，并以作者自身的经验为例，讲述了在Eleventy项目中从使用Luxon库到寻找替代方案的过程。最初选择Luxon是因为其准确性和相对较小的体积，但随着项目扩展到更多JavaScript环境，Luxon的体积问题凸显。作者评估了多个替代库，如Moment、Dayjs和Date-fns，发现Dayjs体积小但不够准确。最终，作者决定收紧Eleventy中的默认日期解析规则，并采用RFC 9557作为新的标准，以解决ISO 8601的各种解析问题和不一致性。文章强调了严格解析日期格式的重要性，并指出未来JavaScript的Temporal API将带来更一致的日期处理方法。</p>
+                    <p>Sledgehammer Bindgen 是一个用于加速 Rust 与 JavaScript 之间 WASM 通信的工具，特别为需要快速访问 DOM 的 web 框架设计。与通用的 wasm-bindgen 相比，Sledgehammer 通过批量处理字符串解码、缓存字符串以及将操作编码为字节序列等方法来提升性能。它通过减少每次调用 TextDecoder 的开销，并利用 u32 数组批量读取操作数据，以提高效率。用户可以将 Sledgehammer 与 wasm-bindgen 结合使用，以优化性能。项目提供了文档和示例以供参考。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否应自行实现日期、时间处理库，以及处理日期和时间相关的复杂性。
+                    <div class="comments-summary">主要讨论点：WASM与JavaScript之间字符串解码的性能优化及其复杂性
 
 不同观点：
-• **支持自行实现**：quelsolaar认为，人们应该挑战高难度任务，通过自行实现复杂的功能（如日期库、操作系统等）来学习。高难度任务能提升个人能力，避免只做简单任务。
+• [samwillis] 认为Rust社区在提升WASM到JS字符串解码性能方面的努力很有价值，但指出当前即使通过TextDecoder API减少复制操作，仍然存在性能开销。他建议引入类似"String View"的机制，将UTF16验证的责任交给WASM代码，从而避免复制。但他也提到这种方法会带来复杂性，因为JS中的字符串需要不可变，而底层缓冲区可能被更改。
 
-• **反对自行实现**：davidw和jedberg通过幽默和直白的方式表达，认为自行实现日期库、时间解析等功能通常是不必要的，尤其是考虑到其复杂性。jedberg还扩展到其他如负载均衡、防火墙和电子邮件验证等功能。
+• [andyferris] 认为UTF-8和UTF-16的差异使问题变得更加复杂，希望JavaScript和DOM原生支持UTF-8处理，甚至建议为整个页面设置一种模式，以简化将原生语言编译为WASM和Web的过程。
 
-• **实际经验分享（支持库使用）**：takinola和jimmaswell强调了使用现有库（如Moment.js）的重要性，以避免处理日期、时区等复杂问题。jimmaswell特别提到Moment虽然进入维护模式，但其稳定性是一个优势，避免了频繁的重大变更。
+• [jitl] 表示该问题对于需要在WASM中大量传输文本数据的人来说非常紧迫，并提到可以将该方法应用于SQLite结果集的处理。
 
-• **特定场景的自行实现**：aaroninsf分享了在特定场景下自行实现日期解析库的必要性，尤其是处理历史文献中的多样化日期格式。他指出在处理不规范和多语言日期时，需要使用启发式算法和上下文分析。
+• [vanderZwan] 引用了Wasm-bindgen和Sledgehammer的例子，质疑Sledgehammer在JS端解码长字符串后进行分割是否会影响GC性能。
 
-• **简化处理的建议**：senfiaj建议在UI中使用标准化的ISO日期格式，并通过日期/时间选择器来避免用户输入错误。
+• [nhatcher] 提到他之前写过一篇相关的文章，讨论了链接到浏览器实现的原则，尽管代码有些过时。
 
-• **实际案例和错误做法**：FigurativeVoid和bob1029分享了实际工作中的错误做法，如使用整数存储日期或忽略SQL内置函数，强调了依赖成熟库的重要性。bob1029还提到了日本日历的复杂性，进一步支持了不建议自行实现的观点。
+• [CyanLite2] 对浏览器未原生支持这些优化表示遗憾。
+
+• [MuffinFlavored] 认为在WASM和Webview之间进行高性能IPC/RPC方面仍有很大创新空间，提到Electron目前是实现这种功能的主要选择，但希望有更安全和原生的方法来进行这种操作。
+
+• [bcardarella] 提问与Wasmtime等项目的性能比较如何。
 
 补充讨论：
-• **日期处理的特殊性**：QuadmasterXLII通过医疗领域的例子说明，在某些情况下，可以将出生日期视为字符串而非时间点或时间间隔，以简化处理。
-
-• **外部资源推荐**：x187463提供了Computerphile的视频链接，进一步解释日期和时间处理的复杂性。wood_spirit则推荐了自己创建的性能优异的Timestamp解析工具。
-
-争议焦点：是否应自行实现日期和时间处理功能，支持者认为可以提升能力，反对者强调实际复杂性和现成库的可靠性。</div>
+- 争议焦点在于如何在WASM和JS之间高效传输和处理字符串数据，特别是在保持字符串不可变性和减少复制开销之间的权衡。
+- 另一个讨论点是希望浏览器或JavaScript环境能提供原生支持或更简化的模式来处理这些优化。
+- 不同的工具和项目（如Wasm-bindgen、Sledgehammer、Wasmtime）在性能优化上的具体实现和比较也被提及。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44685875" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44656516" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,440 +112,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.instapaper.com/post/789685899750424576/instapaper-rakuten-kobo-integration" target="_blank">Instapaper Rakuten Kobo Integration</a>
+                    <a href="https://worksinprogress.co/issue/the-rise-and-fall-of-the-hanseatic-league/" target="_blank">The rise and fall of the Hanseatic League</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: robin_reala</span> |
-                    <span>评分: 44</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-23 11:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Instapaper和Rakuten Kobo推出新集成，允许Kobo电子阅读器用户直接在设备上保存和阅读网页文章。该集成将取代之前与Pocket的整合，帮助Pocket用户无缝迁移到Instapaper。 former Pocket用户可在instapaper.com/pocket两步骤导入文章，或下载Pocket文件手动导入。Instapaper提供简洁无干扰的阅读体验和强大的组织工具，获得用户好评。集成预计今夏末推出，如有疑问可联系support@instapaper.com。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Pocket与Instapaper等阅读工具的功能恢复及用户选择
-
-不同观点：
-• **kstrauser**：对Pocket取消将文章推送到Kobo功能感到失望，自行编写脚本从GoodLinks提取文章并转换成PDF上传至Dropbox以同步到阅读器，但体验不如Pocket。对Instapaper恢复此功能感到高兴，可能会转向使用Instapaper。
-
-• **smarx007**：认为设备制造商倾向于垂直控制整个技术栈，用户需要自行实现理想的工作流和集成。曾使用Instapaper、Pocket和Readwise Reader，对此次功能恢复持观望态度，不确定是否会再次转向使用Instapaper。
-
-• **Mobius01**：对Kobo Libra的格式表示喜爱，认为这是理想的电子阅读器格式，对Pocket和Instapaper的讨论未直接表态，但对功能恢复表示欢迎。
-
-• **josteink**：刚购买Kobo Libra Colour，事先知道Pocket支持功能已取消，因此没有期望此功能，但对功能可能恢复表示感谢和赞赏。
-
-• **fermentation**：对Instapaper比Pocket存活更久表示意外，未深入讨论具体功能，仅表达对两者竞争结果的惊讶。
-
-• **exe34**：询问是否有好的开源版本Instapaper，提到Wallabag并询问近期使用体验，显示出对开源解决方案的兴趣。
-
-补充讨论：
-• 用户对不同阅读工具的偏好和转换经历，例如smarx007和kstrauser都提到从Pocket转向Instapaper。
-• 对Kobo设备功能恢复的期待和感谢，如josteink和kstrauser对功能恢复的高兴和赞赏。
-• 对开源解决方案的兴趣，如exe34对Wallabag的询问，显示出部分用户对非商业化工具的关注。
-
-争议焦点：
-• 用户在Pocket和Instapaper之间的选择和偏好，反映了不同工具在用户体验和工作流集成上的竞争。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44658127" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.popularmechanics.com/science/environment/a65515974/why-earth-has-tilted-science/" target="_blank">Earth Has Tilted 31.5 Inches. That Shouldn't Happen</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dataflow</span> |
-                    <span>评分: 117</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-07-26 16:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了人类抽取地下水对地球自转轴倾斜的显著影响。根据《地球物理研究快报》发表的一项研究，在不到二十年内，抽取地下水已导致地球倾斜约31.5英寸，并使海平面上升0.24英寸。研究显示，自1993年至2010年，约2,150亿吨的地下水被抽取，主要用于灌溉和人类使用，最终流入海洋。这种水的重新分布改变了地球质量的分布，类似给旋转的陀螺加了一点重量，导致地球自转发生变化。研究还指出，地下水抽取对极点漂移的影响显著，可能有助于理解和应对海平面上升及其他气候变化问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：地球倾斜与地下水枯竭对海平面上升的影响，以及相关科学分析的准确性和意义
-
-不同观点：
-• 一些评论质疑标题的准确性，特别是使用“倾斜31.5英寸”这样的表述。例如，[mvdtnz]指出“倾斜”应该用角度来表示，而不是长度单位。
-• [SoftTalker]认为这种现象是合理的，指出历史上由于冰川融化和火山喷发等自然事件，地球的旋转也曾发生变化。
-• [mistermegabyte]认为人类活动对地球倾斜和海平面上升的影响是有限的，地球作为一个庞大而多变的系统，不会被永久性地改变。
-• [thayne]认为地下水枯竭导致海平面上升是显而易见的，因为抽取的地下水最终会流入海洋。
-
-补充讨论：
-• [csense]深入探讨了质量分布变化对地球旋转轴和角速度的影响，并对如何测量地下水储量及其流动路径提出了技术性问题。他质疑是否所有抽取的地下水都会最终流入海洋，并提到其他人类活动（如采矿和运输）也可能影响地球的质量分布。
-• [nothrowaways]用“从桶里舀一勺水”的比喻来质疑地下水枯竭对地球倾斜的影响，认为不应该有任何影响。
-• [myflash13]提出一个假设性问题，询问地球是否会继续倾斜，直到旋转方向反转，太阳从西边升起。
-
-争议焦点：
-• 标题的准确性和科学性是争议的焦点，尤其是“倾斜31.5英寸”这样的表述让一些读者感到困惑和误导。
-• 地下水枯竭对地球倾斜和海平面上升的实际影响程度存在不同看法，一些人认为影响显著，而另一些人则认为影响有限。
-
-其他值得注意的讨论点：
-• [droopybuns]和[desireco42]以幽默的方式参与讨论，分别提到“ cargo cultist stem”和“K-Pop让人们跳得太高”，为讨论增添了一些轻松的气氛。
-• [smitty1e]对使用非国际单位制（英寸而非米）表示支持，以一种反讽的方式表达对传统计量单位的偏好。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44695205" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wisdomandwonder.com/link/2110/why-mit-switched-from-scheme-to-python" target="_blank">Why MIT switched from Scheme to Python (2009)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: borski</span> |
-                    <span>评分: 271</span> |
-                    <span>评论数: 36</span> |
-                    <span>发布时间: 2025-07-25 16:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>MIT switched from Scheme to Python for its introductory programming course (6.001) because modern programming has shifted from a focus on deep understanding and simple composable parts (like resistors) to dealing with complex, often poorly documented software libraries and unpredictable systems (like robots). In the past, programming required careful thought and understanding of the entire system, while today's programming involves more trial-and-error and working with incomprehensible code. The new course, centered around robotics, emphasizes building robust systems in a more practical context. Python was chosen mainly because it had the necessary libraries for robotics, making it a more pragmatic choice over Scheme. While this shift may produce more practical programmers, some argue it sacrifices the deep foundational knowledge that schemes like Scheme provide.</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：MIT从Scheme切换到Python作为计算机科学入门语言的背景、原因及不同观点
-
-不同观点：
-• **Keith Winstein**（亲历者）：  
-  - 认为不能简单地说MIT从Scheme切换到Python，实际上是整个EECS课程从四个深度课程转变为两个广度调查课程。  
-  - Scheme（通过6.001课程）强调的是计算机科学的基本概念，而不是语言本身，Python在6.01中主要用于简化编程任务，并不是让学生深入学习Python。  
-  - 课程改革的背景是2000年代中期，EECS enrollment下降，尤其是特定人群对该学科的兴趣减退，课程设计需要更具吸引力。  
-
-• **MontyCarloHall**：  
-  - 认为这是CS系从计算机科学教学转向计算机工程教学的一部分，反映了大学教育日益职业化的趋势。  
-  - Scheme适合纯计算机科学教学，而Python更适合应用型计算机工程，因其在实际工程中更常用。  
-
-• **varenc**（老课程受益者）：  
-  - 对旧的Scheme课程有深厚感情，认为Scheme让他对计算机科学有了深刻的理解和热爱。  
-  - 担心新课程无法带来同样的启示。  
-
-• **ted_dunning**：  
-  - 强调Python的生态系统是其优势，Python拥有大量库，可以简化如机器人接口的实现。  
-  - 但也指出了依赖半文档化库的挑战和风险。  
-
-• **KenSF**：  
-  - 认为Scheme的纯粹和简洁性是其优点，Scheme能帮助学生理解抽象和不变性等核心编程原则。  
-  - 对Scheme的消失感到遗憾。  
-
-• **mrexroad**（Scheme的启示）：  
-  - 回忆Scheme教学中函数式编程的启示，认为这是他学习生涯中的关键时刻。  
-
-• **temporallobe**：  
-  - 认为Python比Scheme更普及且易于访问，作为入门语言更合适。  
-  - 强调CS课程会涉及多种语言，Python不会是唯一学习的语言。  
-
-• **CalChris**：  
-  - 提到伯克利保留了Scheme解释器的实现，但不再使用SICP教材。  
-  - 对Scheme在课程后续中不再使用表示不满。  
-
-• **omnicognate**：  
-  - 认为通过试验和错误学习库是编程的一部分，Scheme教学能带来独特的学习体验。  
-  - 对课程变化感到遗憾。  
-
-• **jillesvangurp**：  
-  - 认为好的CS课程应该让学生接触多种语言，Scheme在学术外应用有限，但仍有教学价值。  
-  - Python有用，但不适合教授函数式或面向对象编程，建议使用不同语言教授不同编程范式。  
-
-• **proverbialbunny**：  
-  - 对现代编程需要通过试验不同输入来理解代码的方式感到不安，认为这与传统的深思熟虑的编程方式不同。  
-
-• **bastawhiz**：  
-  - 认为教授主流语言（如Python）能给学生提供在现实生活中可用的工具。  
-  - 类似于基础教育中的实用技能，主流语言能长期对学生产生价值。  
-
-补充讨论：
-- 讨论中多次提到SICP教材的变化，以及Scheme和Python在不同学术机构（如MIT和伯克利）教学中的演变。
-- 争议焦点在于Scheme的学术价值与Python的实用性之间的平衡，以及现代CS教育是否应该更职业化。
-- 一些评论者对课程改革的动机和效果提出了个人见解和推测，特别是关于改革对学生兴趣和就业市场的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44685119" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.drewlyton.com/story/the-future-is-not-self-hosted/" target="_blank">The future is not self-hosted</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: drew_lytle</span> |
-                    <span>评分: 411</span> |
-                    <span>评论数: 95</span> |
-                    <span>发布时间: 2025-07-25 12:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了亚马逊Kindle用户无法再将电子书下载到电脑上的问题，实际上用户只是“租用”电子书，因为它们受数字版权管理（DRM）限制，用户并未真正拥有这些书籍。这种情况不仅限于电子书，还包括存储在Dropbox、Google Drive等服务上的数据，用户也只是“租用”空间。作者通过自建云服务器，实现了对自己数据的完全掌控，但承认自托管（self-hosting）对大多数人而言过于复杂且不切实际。作者解释了什么是自托管，并分享了自己搭建家庭服务器的过程，但认为这不是未来的理想解决方案。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：自我托管（self-hosting）及其在现代数字环境下的意义、技术可行性、用户需求和潜在障碍。
-
-不同观点：
-• **自我托管是知识控制和公民自主权的体现**：[voxleone]认为，自我托管不仅仅是技术选择问题，它关乎谁控制知识的访问权。现代数字知识大多是租赁的，而不是拥有的，这导致了“数字封建主义”。分布式和开放系统对于维护民主和持久的数字公共资源至关重要。
-
-• **自我托管的用户体验问题**：[MoreQARespect]将自我托管比作智能手机普及前的状况，技术存在，但缺乏无缝、美观和符合人体工学的体验。自我托管的复杂性限制了其广泛应用。
-
-• **技术不成熟和基础设施问题**：[deathanatos]指出，自我托管的技术尚不成熟，且ISP提供的不完整互联网接入服务也是障碍之一。现有的技术如OIDC可以解决部分问题，但实施仍不完善。
-
-• **自我托管的复杂性和隐私问题**：[bix6]强调，自我托管需要大量工作和技术知识，但可以提升隐私保护。普通用户往往没有意识到他们放弃了多少隐私。
-
-• **技术解决方案和社区托管的可能性**：[teiferer]建议，自我托管可以通过技术手段实现联合，允许用户在朋友间共享数据，并提供冗余。公共图书馆或非营利组织可以提供托管服务。
-
-• **专注基础服务的必要性**：[jtrn]认为，应首先解决基本服务如安全数据存储的问题，而不是构建复杂的全能平台。社区项目可以提供“数字储物柜”以供文件存储，并通过开放协议访问。
-
-• **个体主义和社区托管的局限性**：[jqpabc123]指出，自我托管和社区托管在很大程度上依赖于个体努力，缺乏保障和承诺，最终可能仍需依赖企业服务。
-
-• **网络应用与下载软件的优劣**：[hermitcrab]对比了网络应用和下载软件，认为下载软件虽然不再流行，但仍有其优势，如一次性付费和数据安全。
-
-• **技术复杂性和安全障碍**：[stego-tech]认同自我托管优于企业云服务，但其复杂性和成本限制了普及。需要更多简化和安全的部署方案以吸引更多用户。
-
-• **不可破解的解决方案和外部威胁**：[dwoldrich]强调，创建一个既安全又具竞争力的解决方案几乎不可能，特别是考虑到企业贪婪和国家行为体的威胁。
-
-• **寻找控制和便利的第三条道路**：[waldopat]引用Moxie Marlinspike的观点，认为大多数人并不想自己托管服务器，市场需要一种既提供控制又提供便利的第三条道路。公共图书馆已经提供了一些类似的服务。
-
-• **数字内容所有权和DRM问题**：[kreco]指出，许多数字内容无法真正下载和自我托管，DRM和其他限制使得用户无法拥有和管理自己的数字内容。
-
-• **自我托管的普及和接受度**：[torginus]认为，自我托管正在变得普遍和被接受，普通用户已经拥有类似服务器的设备，如路由器和物联网中心。
-
-• **历史上的自我托管技术**：[willquack]回忆过去的iMac自带家庭媒体服务器功能，认为这种技术并未完全消失，只是用户转向了其他平台。
-
-补充讨论：
-• **物理书籍的优势**：[saltysalt]简单地指出，物理书籍在数字时代仍有其优势。
-
-争议焦点：
-• **自我托管的复杂性和用户体验**：是否可以通过技术改进和社区支持来降低自我托管的复杂性，使其更易于普通用户使用。
-• **控制与便利的平衡**：如何在提供用户控制权和保持使用便利性之间找到一个合适的平衡点。
-• **技术成熟度和基础设施支持**：自我托管技术是否足够成熟，以及现有的互联网基础设施是否能够支持广泛的自我托管应用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44682175" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://coderik.nl/posts/keep-pydantic-out-of-your-domain-layer/" target="_blank">Keep Pydantic out of your Domain Layer</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: erikvdven</span> |
-                    <span>评分: 58</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-23 06:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了在使用FastAPI和Pydantic时，如何避免Pydantic渗透到领域层（Domain Layer），以保持更好的关注点分离和代码可维护性。Pydantic在数据验证方面非常方便，但过度依赖它可能导致应用变得难以管理，尤其是在应用规模扩大时。为了解决这个问题，作者建议将Pydantic限制在表现层和基础设施层，而在领域层使用普通的Python数据类（dataclasses）。作者介绍了一种工具——Dacite，它可以方便地将Pydantic模型转换为Python数据类，从而实现更清晰的架构分层。虽然手动转换也是可行的，但使用Dacite可以减少样板代码，提升代码可读性。最终，目标是保持核心业务逻辑的独立性，使其更易于维护和测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否应在API和内部逻辑中使用相同的类型，以及Pydantic等库的适用范围
-
-不同观点：
-• [lysecret] 认为API接收的类型不应与内部处理的类型相同，但未详细说明何时或为何要这样做。这可能在某些情况下有意义，但在其他情况下可能只是无意义的重复。
-• [IshKebab] 认为这种方法过于复杂，特别是没有给出充分的理由来解释为何要重复类型定义。对于Python开发者而言，性能问题通常不是首要考虑，因此这种方法显得不必要。
-• [jmward01] 支持强解耦API和内部实现，认为这有助于应用的演化和代码的可维护性，特别是在应用需要不断变更和扩展时。
-• [clickety_clack] 使用Pydantic进行边界验证，并使用pyrsistent在域中实现不可变数据结构，认为这是一种有效的解决方案。
-• [brap] 指出在动态语言中验证类型的困难，特别是在多人协作的代码库中，这使得在API层之外也需关注类型验证。
-• [politelemon] 认为这种方法过于学术化，没有实际问题需要如此复杂的解决方案，并质疑这种过度分层和重复的必要性。
-• [dgan] 使用Protobuffs处理所有数据类型，认为其在网络、逻辑和磁盘间转换非常方便，但在进行重计算时需要转换为更高效的格式。
-• [rtpg] 对从DRF序列化器转向Django Ninja + Pydantic的趋势表示不满，认为这导致API开发变得更复杂，失去了一些实用的工具和特性。
-• [karolinepauls] 主张API应提供规范化数据而非嵌套对象，以便客户端更易处理和比较数据，从而简化客户端逻辑。
-• [vjerancrnjak] 主张只需一种输入和输出类型，反对在中间引入多余的数据类型，认为Pydantic可以在整个流程中使用。
-• [leoff] 质疑使用第三方库如`dacite`来替代`pydantic`，认为这可能引入更多复杂性和潜在风险。
-• [Lucasoato] 支持使用Pydantic与SQLAlchemy结合，推荐SQLModel库，认为这是Pydantic创造者的另一个有效工具。
-
-补充讨论：
-• Pydantic的适用范围和其在不同层级（API层、域层）的使用是否合适是讨论的焦点之一。
-• 使用Pydantic等库是否引入不必要的复杂性和额外维护成本存在争议。
-• 在API设计中，提供规范化数据与嵌套对象的优劣比较也被提及。
-• 强解耦API和内部实现的必要性在应用演化和可维护性方面的讨论中被强调。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44656419" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/InternetH0F/status/1948986646126624866" target="_blank">Autonomous Trash Can</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: moondistance</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-26 19:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要指出，某些与隐私相关的浏览器扩展程序可能会导致在 x.com 网站上出现问题。建议用户禁用这些扩展程序，然后重新尝试访问该网站。文章提醒用户不必担心，只需简单调整即可解决问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：视频分享平台的偏好
-
-不同观点：
-• OgsyedIE 表示，如果有人更喜欢通过 YouTube 观看视频，该团队已经在 YouTube 频道发布了相关内容。这表明 OgsyedIE 认为 YouTube 是一个受欢迎的分享平台，适合那些习惯使用 YouTube 的观众。
-• 隐含的对立观点可能是，有些人可能更喜欢其他平台，而不是 YouTube。尽管评论中没有人明确提出，但分享链接的行为暗示了 YouTube 与其他视频平台之间的选择。
-
-补充讨论：
-• 该评论还提到了视频内容的来源，即“团队”上传，这表明视频内容可能是由某个组织或群体制作并分享的。
-• 链接的存在提示了跨平台分享的重要性，即不同观众可能使用不同的平台，内容创作者需要考虑这些偏好以扩大受众。
-
-争议焦点：目前没有明确的争议，但潜在的讨论可能涉及不同视频平台的优劣对比，例如 YouTube 相较于其他平台的用户体验、广告政策等。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44696500" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tailwindcss.com/blog/vanilla-js-support-for-tailwind-plus" target="_blank">Vanilla JavaScript support for Tailwind Plus</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ulrischa</span> |
-                    <span>评分: 197</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-07-25 18:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Tailwind Plus 现在为所有 UI 组件（如 dropdowns、dialogs、command palettes 等）提供了无 JavaScript 框架依赖的完整功能支持。通过新发布的 `@tailwindplus/elements` 库，开发者可以使用自定义 HTML 元素（如 `<el-dropdown>`、`<el-menu>`、`<el-select>` 等）实现交互功能，而无需编写复杂的 JavaScript。这些元素自动处理 ARIA 属性、键盘支持和焦点管理等，且可通过 Tailwind CSS 类完全自定义样式。用户只需在项目中引入该库，即可在任意项目中使用这些交互组件。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Tailwind CSS及其新功能的评价与技术实现讨论
-
-不同观点：
-• **关于新功能的学习曲线和复杂性**：
-  - **[ricardobeat]** 认为，除了需要掌握CSS之外，开发者现在还需要学习另一个层级化的类名系统，增加了学习的复杂性。
-  - **[combyn8tor]** 指出，虽然Web组件已经存在很长时间，但社区往往选择框架特定的库，而不是‘headless’的基础组件，导致开发者不得不面对多个未完成转换版本的问题。
-
-• **对Web组件的支持与使用**：
-  - **[judah]** 和 **[megaman821]** 支持Web组件的应用，认为这是一种很好的实践，可以避免依赖特定的JavaScript框架，且在不同项目中具有良好的兼容性。
-  - **[mmcclure]** 也认同Web组件的优点，但提到在React环境中使用Web组件会遇到一些挑战，如支持不完整、性能问题和代码模式的不同等。
-
-• **对Tailwind CSS及新功能的期望与失望**：
-  - **[abtinf]** 希望Tailwind团队能够获得更多资金支持，以便更自由地开发和集成更多项目。
-  - **[ayhanfuat]** 对Tailwind曾经支持Vue但现在放弃表示失望。
-  - **[Imustaskforhelp]** 对Tailwind的一些高级功能需要付费表示理解，但仍希望这些功能能够对免费用户开放。
-
-• **对功能移除的不满**：
-  - **[bikeshaving]** 对Tailwind将Web组件作为付费功能表示不解和失望。
-  - **[bitbasher]** 对Tailwind移除Alpine.js支持表示不满，因为这影响了他们复制粘贴代码示例的便利性。
-
-补充讨论：
-• **关于技术实现的细节**：
-  - **[jlukic]** 提到正在开发新版本的Semantic UI，支持Web组件和无编译步骤的响应式功能，并内置Tailwind支持。
-  - **[rafram]** 对Tailwind添加自定义命令面板元素表示认可，但指出这是通过特定的元素实现的。
-  
-• **对技术创新的兴趣**：
-  - **[paranoidxprod]** 对Tailwind新功能的实现方式表示好奇，并希望了解更多不同的实现方法。
-
-争议焦点：
-• 主要集中在Tailwind新功能的付费模式以及对Web组件和Alpine.js支持的移除，部分用户对此表示不满和失望。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44686317" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://morethanmoore.substack.com/p/efficient-computers-electron-e1-cpu" target="_blank">Efficient Computer's Electron E1 CPU – 100x more efficient than Arm?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rpiguy</span> |
+                    <span>作者: loeber</span> |
                     <span>评分: 141</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-25 16:30</span>
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-07-23 08:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>文章主要介绍了汉萨同盟的兴起与衰落。汉萨同盟由中世纪德意志商人组成，最初是独立行商，后来通过集体谈判、集体行动和集体安全建立了一个庞大的贸易网络，覆盖北欧各大港口及内陆地区，无固定领土但影响广泛。他们与外国统治者签订条约，甚至赢得战争，持续近500年。然而，随着技术变化和内部分裂，联盟逐渐瓦解。
+
+文章还描述了欧洲中世纪的贸易复兴。在罗马帝国崩溃后，欧洲长期处于困境，农业产量低下。但自9世纪起，气候改善和技术进步（如重型犁、三田轮作和马项圈的使用）提高了农业产量，推动人口增长和手工业复苏，为长距离贸易奠定了基础。汉萨同盟的成功不仅保障了北欧贸易路线的安全，还增强了欧洲的商业能力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一种新型CGRA架构的效率、应用场景和潜在问题
+                    <div class="comments-summary">主要讨论点：关于汉萨同盟及其相关历史、博物馆推荐、政治与经济制度的讨论，以及其他历史资源的推荐。
 
 不同观点：
-• [pclmulqdq] 认为该架构类似于FPGA，但单元更大，效率在代码适合单一阵列时非常高，但当代码超出特定规模时，网格配置切换会消耗大量时间和功耗。
-• [gamache] 指出该架构与GreenArray GA144相似，但担忧缺乏独特的FORTH方言可能影响市场接受度。
-• [pedalpete] 质疑CPU是否真的是嵌入式设计中的能耗瓶颈，指出其他组件如扬声器和屏幕可能更耗电。
-• [nnx] 认为该架构可能适合LLM推理，但疑惑为何未在这方面进行市场推广。
-• [ACCount36] 认为该架构无法取代通用目的的Arm核心，但在低功耗优化和实时控制核心中可能有应用价值。
-• [ZiiS] 对该架构在通用计算上比ARM更高效的可能性表示怀疑。
-• [Grosvenor] 将其比作Itanium，指出静态调度和编译器优化的挑战。
-• [archipelago123] 解释这是一种数据流架构，指出难以利用数据局部性，且现代乱序核心已解决了一些该架构试图解决的问题。
-• [rpiguy] 比较该架构与Apple的神经引擎设计，质疑其在标量任务和多分支情况下的表现。
-• [variadix] 对效率提升持保留态度，担心程序超出网格时的表现，并指出需要“足够聪明的编译器”，可能面临与FPGA类似的综合时间问题。
+• [junon] 推荐去吕贝克的汉萨博物馆一日游，称赞其设计精美、多语言支持，且博物馆内容可根据个人兴趣定制，同时提到吕贝克的历史建筑保存完好，还可以继续前往特拉夫蒙德的沙滩游玩。
+• [danans] 提到中世纪汉萨商人享有的税收和法律特权，并将其与当代富豪缺乏财务和刑事责任的问题联系起来，暗示这是长期存在的问题。
+• [dr_dshiv] 反驳[danans]的观点，指出汉萨同盟并非专制或民主，而是一个基于共识的组织，并举例说明决策过程中如何达成共识，如“tagfahrt”会议。
+• [ecshafer] 推荐了一档关于汉萨同盟的历史播客《The History of the Germans》，认为其研究深入且能将历史事件与不同历史时期的解读联系起来，适合历史爱好者。
 
 补充讨论：
-• [Imustaskforhelp] 请求简化的解释。
-• [kendalf89] 联想到编程游戏TIS-100。
-• [icandoit] 提到与交互组合子的相似性，并讨论翻译层的构建。
-• [vendiddy] 询问该架构是否类似于每个芯片上有多个小处理器。
-• [wolfi1] 将其比作transputer架构的单硅片实现。
+• [dgan] 提到与汉萨同盟相关的经典游戏《Patrician II/III》，将历史与个人娱乐体验联系起来。
+• [doug_durham] 称赞文章写得好，表达了对历史话题的欣赏。
+• [funnymunny] 推荐对汉萨历史感兴趣的人访问瑞典的维斯比和哥特兰岛。
+• [KingOfCoders] 以居住在汉萨城市斯特拉尔松德的经验，指出该城市至今仍拥有大量土地并相对富裕，尽管今天的影响力已不如从前。
+• [Bridged7756] 提到自己联想到小说《Metro》中的汉扎，承认自己的欧洲历史知识有限。
+• [webslung] 建议对海上贸易历史感兴趣的人探索公元前970-931年的历史，指出其极具趣味性。
+• [m0d0nne11] 对文章中一些指向付费内容的链接表示不满，认为简单的解释性信息不应被付费墙阻挡。
+• [eatonphil] 质疑为何文章中提到汉堡但未在地图上标出。
 
 争议焦点：
-• 该架构的实际能效和应用场景，尤其是在通用计算和特定领域（如LLM推理）中的潜力。
-• 编译器优化和程序超出网格时的性能问题。</div>
+• 汉萨同盟的决策机制：[danans]认为汉萨同盟是缺乏问责的富豪阶层组织，而[dr_dshiv]则认为其是基于共识的组织，并通过具体历史事实反驳前者观点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44685050" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44656961" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -554,53 +162,355 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tattoy.sh/news/animated-cursors/" target="_blank">Animated Cursors</a>
+                    <a href="https://norvig.com/21-days.html" target="_blank">Teach Yourself Programming in Ten Years</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 225</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-07-25 17:59</span>
+                    <span>作者: smartmic</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-26 21:24</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Tattoy现支持动态光标，采用与Ghostty相同的格式，但渲染方式不同。Ghostty使用实际像素渲染，而Tattoy使用UTF8文本字符（如"▀"和"▄"）模拟像素效果，虽然细节不如Ghostty，但具有像素化美感。由于Tattoy基于着色器框架，初步实现Ghostty动态光标花费数小时，但完善功能耗时一周，主要挑战在于支持光标轨迹的透明度和抗锯齿边缘。Tattoy无法获取字体像素，通过模拟终端图像并上传至GPU解决抗锯齿问题，但需额外步骤排除多余像素。该方法在大部分情况下效果良好，但在大终端可能有延迟，未来或可通过完全接管光标渲染来改善。</p>
+                    <p>Peter Norvig的文章《Teach Yourself Programming in Ten Years》批评了速成编程书籍的流行，如《24小时学会Java》等。他指出，编程是一项需要长时间学习和实践的技能，不可能在短时间内掌握。研究表明，要在任何领域达到专家水平，通常需要十年或约10,000小时的刻意练习。速成课程只能提供表面的知识，无法让人深入理解和掌握编程。Norvig引用多位专家和历史人物的观点，强调真正的专业技能需要一生的努力，速成法并不实际。他建议学习者要有耐心，通过持续的挑战和反思来提高编程能力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕终端动画光标（tattoy、Ghostty等）的评价和使用讨论
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44697007" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arstechnica.com/science/2025/07/marine-biologist-for-a-day-ars-goes-shark-tagging/" target="_blank">Marine biologist for a day: Ars goes shark tagging</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: LorenDB</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-23 02:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讲述了一群海洋科学家和志愿者在研究船Garvin上尝试捕获和标记鲨鱼的过程。最初，船上的参与者包括曾经想成为海洋生物学家的人、实际的海洋生物学家、鲨鱼爱好者以及《为什么鲨鱼很重要》一书的作者大卫·希夫曼等。然而，由于诱饵不足和鲨鱼不配合，捕获行动并不顺利，大家开始感到紧张。
+
+研究船Garvin原本是一艘潜水船，主人 Hank Garvin 曾用它教导来自纽约市的低收入学生潜水。Garvin去世后，这艘船被出售。科学家Catherine MacDonald和她的同事们希望创建一个包容和支持的海洋科学环境，提出了“不欢迎混蛋”的理念，并决定购买Garvin号以进行研究。他们通过集资和向Garvin家族请求，最终获得了这艘船。
+
+尽管船况不佳，需要大量修缮才能获得海岸警卫队的认证，但他们决心将其用于海洋科学教育，让更多人有机会参与真正的科学工作。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44655083" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://raymii.org/s/blog/Bringing_a_Decade_Old_Bicycle_Navigator_Back_to_Life_with_Open_Source_Software_and_DOOM.html" target="_blank">Bringing a decade old bicycle navigator back to life with open source software</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mtlynch</span> |
+                    <span>评分: 153</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-26 11:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讲述了作者如何通过开源软件让一台十年前生产的Navman Bike 1000（即Mio Cyclo 200）导航设备重获新生。该设备因官方停止支持和地图更新而面临过时问题。作者通过逆向工程，发现设备运行Windows CE 6.0，并使用Total Commander和开源导航软件NaVeGIS以及OpenStreetMap更新了地图。此外，作者还提到该设备甚至可以运行经典游戏DOOM。文章批评了消费电子产品的计划性报废策略，并呼吁厂商开放旧设备的软硬件源代码以减少电子废物。尽管设备不再获得官方更新，通过开源软件，它仍能保持实用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：旧设备再利用与技术废弃物问题
 
 不同观点：
-• __支持并感兴趣__：  
-  - __MatrixMan__：认为tattoy协议可以解决在终端日志中注释错误信息的需求，支持使用这种工具来提高工作效率。  
-  - __magicalhippo__：认为动画光标不仅视觉效果好，还提出了增加渐变效果和颜色变化的建议，以提升用户体验。  
-  - __renewiltord__：表示Ghostty风格的动画光标能帮助追踪光标位置，认可其作为UI功能的实用性。
+• **对旧设备再利用的满意度**：用户jakedata表示自己对20年历史的Garmin Nuvi GPS非常满意，通过使用micro-SD卡和外部存储，避免了设备成为电子废物。这展示了通过适当的外部资源和格式定义，旧设备仍能发挥作用。
 
-• __对动画光标的担忧__：  
-  - __bombela__：担心动画光标会成为默认设置，导致无法轻易关闭或跳过动画，进而影响使用效率和用户体验，尤其对快速感知视觉刺激的人不友好。  
-  - __kingforaday__：对这种动画光标作为日常使用的可行性提出质疑，询问是否有人真的将其作为日常工具使用。
+• **对旧设备的技术升级**：internet2000建议以低价购买旧Windows CE PDA并使用旧版本的Visual Studio进行软件升级和开源应用的修补，这是一种技术爱好者的乐趣和挑战。
 
-• __技术实现与问题__：  
-  - __ionwake__：在安装和配置过程中遇到问题，无法看到预期效果，怀疑是由于自己定制化的iTerm配置所致。  
-  - __ipsum2__：尝试在asciinema中使用动画光标，但未能正常显示，表示配置存在困难。
+• **对设备像素化和隐私的质疑**：wildzzz质疑照片中像素化和模糊处理的意图，是否是为了隐藏指纹等隐私信息。
 
-• __其他工具和对比__：  
-  - __Animats__：提到Comet Cursor，将讨论引向其他类似的光标动画工具。  
-  - __coldblues__：提到Emacs的Beacon功能，认为这与讨论的动画光标有相似之处。  
-  - __isoprophlex__：以玩笑的方式提出增加音效和物理效果的建议，虽然认为动画光标很酷，但也觉得可能过于分散注意力。
+• **对文章的积极反馈**：thread_id对文章表示赞赏，认为其中提到的工具参考很有价值，并引用了“计划性报废是一种选择，逆向工程是一种抵抗”的观点。
 
-• __误解与期望__：  
-  - __baq__：最初以为动画光标是关于鼠标光标的动画，后发现是终端光标的动画，表示在使用更多TUI应用时可能会考虑使用。  
-  - __pimlottc__：同样误以为动画光标是鼠标光标的动画，建议在演示视频中关闭以避免混淆。
+• **对设备制造商开源要求的讨论**：dwayne_dibley质疑为何没有法律要求设备制造商对不再销售的设备进行开源，以避免资源浪费和废弃。
+
+• **对现代科技资本主义的批评**：lutusp批评现代科技资本主义模式，认为消费者购买产品后并不真正拥有产品，而是被产品所控制，除非开发者有良心，否则这种模式会淘汰有责任心的公司。
+
+• **对智能手机的肯定与怀旧**：aeblyve认为智能手机是很好的发明，尽管怀念以前各种专用设备的时代，但智能手机在Android系统的支持下仍提供了很多自由。
 
 补充讨论：
-- 讨论中涉及多个工具和项目的比较和链接，如Comet Cursor、Ghostty、Beacon等。  
-- 部分用户对动画光标的实用性和配置问题提出了具体的技术问题和建议，显示出对该功能实现细节的关注。  
-- 争议焦点在于动画光标是否会成为默认设置以及其对效率和用户体验的影响。</div>
+• **对设备安全性的担忧**：ddtaylor关注设备更新是否通过不安全的HTTP而不是加密的SSL进行，提出了对旧设备安全性的质疑。
+
+• **对设备功能扩展的创意建议**：fsckboy幽默地建议将DOOM游戏与导航功能结合，创造一种骑车玩游戏的体验。
+
+• **对导航应用的推荐**：firebot推荐Osmand和brouter作为最佳离线导航应用，并指出其可定制导航配置文件的功能。
+
+争议焦点：
+• **设备所有权与制造商责任**：lutusp的观点引发了对现代科技产品所有权和制造商责任的讨论，质疑当前科技行业的商业模式是否合理。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44686164" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44693129" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.chiark.greenend.org.uk/~sgtatham/puzzles/" target="_blank">Simon Tatham's Portable Puzzle Collection</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sogen</span> |
+                    <span>评分: 179</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-07-26 06:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Simon Tatham's Portable Puzzle Collection是一套单人益智游戏，支持Unix和Windows系统，部分游戏可通过网页版（Java或JavaScript）游玩。2023年9月起，作者因设备问题停止更新MacOS版本，并邀请志愿者接手维护。这些游戏大多为现有游戏的重新实现，作者不声称拥有游戏规则的发明权。部分代码由其他作者提供。游戏包括Black Box、Bridges、Cube等多个经典益智游戏，每个游戏提供网页版链接、Windows可执行文件及游戏手册。Mac用户暂时只能使用网页版进行游戏。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Simon Tatham puzzle collection的评价与使用体验
+
+不同观点：
+• MITSardine认为该 puzzle collection 是一个非常优秀的益智游戏集合，没有广告和无用的游戏化元素， puzzle种类多样且难度可控。他特别喜欢 "Keen" 和 "Towers" 这两个游戏，并对比了它们的玩法和难度。
+• ranger207 和 tecleandor 提到了Simon Tatham也是PuTTY的作者，对他在PuTTY和puzzle collection上的贡献表示兴趣，并暗示他的工作对人类生产力的影响是中立的。
+• NoboruWataya 推荐了Android端的口袋益智游戏，并提供了F-Droid上的下载链接。
+• fsckboy 报告了一个关于"untangle"游戏算法性能的问题，当使用大数字设置板子时，算法变得非常慢，甚至kill -9命令都无法终止该进程。
+• beefsack 表示他和他孩子都非常喜欢这个游戏集合，但在Wayland上的缩放有些问题，他通过使用无缩放的显示器来解决。
+• dfboyd 提到iOS版本的应用长期未维护且存在bug，需要新的维护者，但维护者需要Apple开发者账户才能更新。
+• wkat4242 回忆起20世纪80年代的实体益智游戏，并表示这些数字版本让他想起了过去的时光。
+• npteljes 表示这个puzzle collection是他手机上必装的软件之一，特别喜欢"Gauguin"这个游戏，并认为这些游戏适合在不想上网时打发时间。
+• patrickdavey 表示喜欢这些puzzle，但觉得立方滚动类的游戏非常难理解。
+• 3036e4 提到在手机上只玩这个游戏，并试图让孩子也安装，但未成功，因为孩子更喜欢有动画和音效的游戏。
+• merelysounds 提供了iOS上的替代应用"Puzzles"和"Nonoverse"，并提供了下载链接。
+• V__ 提供了另一个有更友好用户界面的puzzle网站链接。
+• ggm 表示希望看到更多类似的游戏推荐，并分享了他目前最喜欢的游戏链接。
+• ofrzeta 提供了另一个在线益智游戏网站链接，并指出该网站有德语描述但规则有英文翻译。
+
+补充讨论：
+• 游戏性能问题：fsckboy 提到了"untangle"游戏的性能问题，特别是在使用大数字设置板子时的慢速和难以终止的进程。
+• 不同平台的体验：beefsack 提到在Wayland上的缩放问题，dfboyd 提到iOS版本的未维护状态，NoboruWataya 提供了Android版本的下载链接。
+• 游戏推荐和替代：merelysounds、V__ 和 ggm 提供了其他类似的游戏和网站链接，丰富了讨论内容。
+• 游戏难度：MITSardine 和 patrickdavey 提到了不同游戏的难度，并分享了他们的个人喜好和体验。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44691935" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bsdly.blogspot.com/2025/07/yes-book-of-pf-4th-edition-is-coming.html" target="_blank">Yes, the Book of PF, Fourth Edition Is Coming Soon</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: turtleyacht</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-23 11:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《The Book of PF》第四版现已开放预订，此次更新旨在适应现代互联网环境，特别针对OpenBSD 7.8和FreeBSD 14-STABLE进行了内容调整。自第三版发布以来，由于PF的用户可见配置变化不大，作者起初未觉有 urgent 更新必要。然而，在持续进行的教程和会议活动中，累积的实际经验和反馈促使作者重新审视并更新内容。特别是在COVID-19期间暂停实体活动后，于2022年和2023年的EuroBSDCon及BSDCan会议中，频繁被问及是否会有新版，作者因此决定着手修订。第四版将专注于OpenBSD和FreeBSD，因NetBSD已开发自己的NPF并弃用PF，而DragonFly BSD的PF版本也显得过时。此次更新不仅是版本号的变化，更是对技术细节和现代网络环境的全面审视。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对PF防火墙与其他防火墙的比较及相关工具和资源的讨论
+
+不同观点：
+• [kstrauser] 认为PF防火墙（特别是通过pf.conf配置）非常出色，使用体验极佳，远超其他防火墙。他将PF与Python相比，认为Linux的防火墙（如ufw）不如PF全面和直观，但ufw在易用性上有所进步。
+• [elchief] 没有直接参与PF与其他防火墙的讨论，而是借机出售一台预装OpnSense（基于PF的防火墙系统）的硬件设备，为有兴趣的讨论者提供了一个实际购买选项。
+• [throw0101d] 推荐了Michael W Lucas的书籍，特别是关于网络和防火墙的技术书籍，同时也提到了作者的一些虚构作品，为对PF感兴趣的人提供了进一步学习的资源。
+• [skywal_l] 提供了关于PF的简短解释，明确PF是OpenBSD的包过滤防火墙，帮助不熟悉PF的讨论者快速理解。
+• [znpy] 表达了对nftables相关书籍的需求，暗示希望有更全面的资源来学习nftables，可能认为nftables相比PF缺乏足够的学习资料。
+• [nokun7] 提出一个基础性问题，询问PF是否与eBPF有关，表明对PF的技术背景缺乏了解，并可能混淆了不同网络技术概念。
+
+补充讨论：
+• 讨论中涉及了对不同防火墙工具的偏好和评价，尤其是对PF的高度评价。
+• 提供了进一步学习的资源，如Michael W Lucas的书籍和PF相关的技术解释。
+• 出现了关于实际硬件设备（预装OpnSense的PC Engines APU2）的出售信息，为讨论提供了实际应用的例子。
+• 讨论中也反映出对不同防火墙工具（如nftables和eBPF）的学习资源的需求，以及对技术概念的混淆。
+
+争议焦点：
+• 主要是对不同防火墙工具（如PF、ufw、nftables、eBPF）的易用性和功能性的比较，以及对相关学习资源的缺乏提出了一些不满和需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44657803" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nature.com/articles/d41586-025-02333-z" target="_blank">Ageing accelerates around age 50 ― some organs faster than others</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rntn</span> |
+                    <span>评分: 179</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-26 16:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>一项发表于《Cell》的研究分析了人体不同器官中蛋白质随年龄的变化，发现人体组织在50岁左右老化加速，尤其是血管。研究人员从意外脑损伤死亡者身上采集组织样本，发现不同器官老化速度不同，肾上腺在30岁左右开始出现早期变化，而主动脉在45至55岁之间变化最显著。该研究识别出一些可能加速老化的分子，并指出老化过程并非线性，而是存在快速变化的阶段。尽管如此，仍需更大规模研究来确认50岁是否为老化的关键转折点。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：人们对不同年龄段出现的老化现象及其影响进行讨论，特别是44岁和60岁两个“老化高峰”的观点。
+
+不同观点：
+• [支持老化高峰观点] 一些用户（如hn_throwaway_99和beej71）分享个人经历，表示在44岁和60岁左右明显感受到身体老化的加速。他们提到在这个年龄段，锻炼变得更加困难，身体出现更多永久性的老化迹象。
+• [质疑老化高峰观点] 用户mellosouls对研究结果表示怀疑，希望有人能指出这些发现的不可靠性，显示出对该研究结论的不信任。
+• [基因程序化老化观点] neom和piombisallow认为老化是由某种基因程序驱动的，从群体选择的角度来看，这种老化是有意义的。
+
+补充讨论：
+• [生活方式的影响] wonderwonder分享了自己通过锻炼、控制饮食和医疗手段，成功逆转了部分老化感受，强调了生活方式对老化过程的影响。
+• [个体差异] 一些用户（如exe34和msie）提到他们在更早的年龄（如30多岁）就开始感受到老化的影响，显示出个体间的老化体验差异。
+• [外部因素] ck2指出长期新冠可能会加速老化过程，提示外部健康因素对老化体验的影响。
+
+争议焦点：
+• 老化高峰的科学性和普遍性。部分用户对研究结果表示怀疑，而其他用户则根据个人经历支持该观点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44695190" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thesisdriven.com/p/the-rise-of-shippable-microfactories" target="_blank">The Rise of Shippable Microfactories</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mhb</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-26 13:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了可运输微型工厂（shippable microfactories）的兴起，这种新型工厂模式旨在解决传统预制建筑经济问题。传统上，预制建筑依赖大型固定工厂生产模块或板材，再运至施工现场，但这种集中化模式面临高额前期资本支出和运输成本的挑战。微型工厂则将工厂本身运至项目现场，进行本地化生产，具备自动化、灵活性和可移动性等优势。文章提出了评估微型工厂经济可行性的框架，并探讨了其在建筑行业的潜在变革。微型工厂通过在现场按需定制生产组件，提高了效率并降低了运输成本，代表了建筑行业向更灵活制造模式的转变。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：现场制造和自动化建筑技术在建筑行业中的应用及其优缺点
+
+不同观点：
+• **支持现场制造的高效性**：  
+  - **proee** 认为，现场生产金属屋顶板的过程非常高效，带有一定的科技感。这种方法通过机器将钢材现场加工和切割，避免了运输问题，提升了效率。
+  
+• **质疑自动化系统的实际效果**：  
+  - **Animats** 对某些展示自动化木工系统的视频持怀疑态度，认为视频质量差，且没有清晰展示机器的实际工作过程，暗示这些视频可能夸大了实际效果。同时，提到已有工厂使用机器人制造建筑板材，但这些工厂规模较大，因为制造的对象体积大。
+
+• **扩展现场制造的潜在应用**：  
+  - **ChuckMcM** 认为，现场制造的经济性并不神秘，类似于大型建筑中的现场混凝土工厂。他还进一步思考了这种方法的更大胆应用，如现场制作玻璃、窗户、管道和定制橱柜等，认为这些方式可以节省时间和运输成本，特别是在大规模住房开发中。
+
+• **现场制造的局限性**：  
+  - **youngtaff** 提出，集装箱的大小可能限制了现场制造的应用，特别是在英国，预制房屋板材通常比集装箱大，且在大型平台上建造。
+
+• **自动化系统的复杂性和许可问题**：  
+  - **octoberfranklin** 强调，大多数工厂设备需要大量的公用设施连接，如高压电源、压缩制冷剂和有毒废物处理等，这些操作需要专门技能和许可证，错误操作会带来严重后果，因此现场实施这些系统可能面临重大挑战。
+
+• **对材料和工人技能的担忧**：  
+  - **mschuster91** 对现场制造的概念持保留态度，认为最终的建筑结构仍然是由木材和纸板等材料构成，如果工人未经过良好培训，可能会出现质量问题，引用Cy Porter的家庭检查视频作为质量低下的例子。
+
+补充讨论：
+- **科幻与现实的比较**：  
+  - **rotexo** 提到了科幻小说中的自动化建造技术，认为虽然这些技术很酷，但可能并不能解决现实中的住房负担问题。
+
+争议焦点：
+- **自动化系统在建筑中的实际效果和可行性**：部分评论者对自动化系统的实际效果持怀疑态度，认为视频和展示可能夸大了实际能力，而另一些人则认为这些技术有潜力应用于更广泛的建筑场景。
+- **现场制造的局限性与扩展应用**：讨论中涉及了现场制造技术的物理限制（如集装箱大小）以及其潜在的扩展应用（如定制橱柜和管道制作）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44693815" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thepinknews.com/2025/07/25/discord-video-game-characters-age-verification-checks-uk-online-safety-act/" target="_blank">Users claim Discord's age verification can be tricked with video game characters</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mediumdeviation</span> |
+                    <span>评分: 128</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-07-26 04:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Discord's new age-verification tool, introduced due to the UK's Online Safety Act, aims to restrict access to adult content for under-18s. However, users have found that the tool can be bypassed using high-fidelity video game character images, such as Sam Porter Bridges from *Death Stranding*. A user successfully tricked the system by using the game's photo mode to mimic facial movements required for verification. This loophole raises concerns about the tool's effectiveness. Additionally, the Online Safety Act has sparked wider debate, with critics like the Electronic Frontier Foundation warning of potential negative impacts on privacy and free speech. Meanwhile, VPN searches in the UK surged following the law's implementation, as some seek ways to bypass these new restrictions.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：政府推出要求公司验证用户年龄的法律，但未提供有效的验证手段，引发了关于技术可行性、隐私安全和实际操作的讨论。
+
+不同观点：
+• 一些用户（如jhgg和isoprophlex）对政府未提供实际验证手段表示嘲讽，认为要求公司验证年龄但不提供工具是荒谬且具有反乌托邦色彩的。isoprophlex用讽刺语气提到"开口验证年龄"或"喝一罐验证饮料"来继续，强调了这种做法的滑稽性。
+• hhh支持Discord的现行做法，即使用设备上的模型进行年龄验证，认为这种方法合理，并希望改进性能，而不是转向ID检查。
+• moritonal提到用户验证网站的大量泄露事件，暗示了对年龄验证系统的隐私和安全担忧。
+• phendrenad2质疑AI通过人脸识别验证年龄的准确性，指出AI和人脑一样，可能会因个体基因差异而错误判断年龄。
+• nottorp认为年龄验证的要求可能会刺激孩子们跳出框框思考，带有一定的积极意味。
+• userbinator提到AI生成图片越来越逼真，认为年龄验证要求给了他们不使用Discord的另一个理由，显示出对平台要求的反感。
+• pacifika指出Ofcom要求平台禁止使用VPN绕过年龄检查，并提醒父母注意VPN的绕过功能，显示了对监管措施的支持。
+• dylan604质疑AI年龄验证的可靠性，认为如果AI能通过多角度视频验证演员年龄，那么也可以绕过单图验证的安全特性。
+• mgaunard批评 formerly free content platforms 现在要求支付2英镑来验证年龄，认为这是荒谬的。
+• avodonosov质疑在线提交生物识别数据是否符合用户利益，暗示了对隐私风险的担忧。
+• 2OEH8eoCRo0认为年龄验证问题将网络匿名性问题公开化，指出人们平时对秘密追踪的容忍度更高，但公开的年龄验证让他们感到不安。
+• can16358p提到技术实现问题，指出内容拦截器（如AdGuard）可能导致网站显示空白，显示出技术实现中的实际问题。
+
+补充讨论：
+• 隐私和安全是讨论的核心，尤其是考虑到用户数据泄露的风险。
+• 技术可行性和准确性受到质疑，特别是AI通过人脸识别验证年龄的可靠性。
+• 用户对平台要求的反感和对匿名性的重视在讨论中也有体现。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44691312" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
