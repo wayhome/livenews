@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-28 12:04 (北京时间)
+            最后更新时间: 2025-07-28 14:23 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,41 +61,281 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://fast.github.io/blog/stacksafe-taming-recursion-in-rust-without-stack-overflow/" target="_blank">StackSafe: Taming recursion in Rust without stack overflow</a>
+                    <a href="https://www.chashnikov.dev/post/inverted-indexes-a-step-by-step-implementation-guide" target="_blank">Inverted Indexes: A Step-by-Step Implementation Guide (2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: andylokandy</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-24 12:30</span>
+                    <span>作者: klaussilveira</span> |
+                    <span>评分: 76</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-07-23 12:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了在Rust中处理递归算法导致的栈溢出问题的解决方案——StackSafe。递归算法虽然直观，但在处理深层数据结构时容易引发栈溢出，导致程序崩溃。传统解决方案包括手动将递归转换为迭代代码，但这种方法在处理复杂数据转换和多重递归时非常复杂。低层库如`stacker`和`recursive`提供了一些栈增长机制，但仍需手动处理许多细节。
-
-StackSafe通过简单的注解`#[stacksafe]`自动扩展栈，使递归函数和递归数据结构都能安全运行，无需担心栈溢出。它同时解决了递归函数和递归数据结构的栈溢出问题，已在生产环境中被用于处理大规模数据工作负载。</p>
+                    <p>本文介绍了倒排索引的概念及其在文档搜索系统中的应用。倒排索引通过将单词作为键，文档ID作为值，使得根据关键词快速查找相关文档成为可能。文章举例说明了如何构建简单的倒排索引，并给出了代码实现，包括`InvertedIndex`类和`IndexGenerator`类。后者用于读取文件、处理文本（分词、清除无用词等）并添加到索引中。文章还提到了一些可能的优化，如去除停用词和词干提取，以提高搜索效果。最终，这种索引结构能够高效处理诸如AND、OR、NOT等查询操作。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Rust 中如何解决栈溢出问题以及不同方案的优劣
+                    <div class="comments-summary">主要讨论点： inverted index（倒排索引）的概念、实现及其应用
 
 不同观点：
-• [AdieuToLogic] 认为可以使用 Free Monad 模式来解决栈溢出问题，这种方法通过将栈空间转移到堆空间来避免栈溢出。虽然速度较慢，但可以有效防止栈溢出。同时提到 Rust 中有一个叫 higher_free_macro 的库可能适合此用途。
+• **欣赏倒排索引的设计美学**：the_precipitate 强调了研究倒排流读取器（ISR/Index Stream Readers）和编码技术（如PForDelta）的重要性，认为这些技术展示了系统设计大师如何将复杂概念提炼为简单而强大的抽象。此外，他还介绍了Mike Burrows的贡献，包括他在搜索引擎和Google的工作。
 
-• [hotpotat] 指出，必须小心确保所有递归函数都使用 #[recursive] 注解，类似于在某些 Haskell 模式中选择严格性来避免类似问题。虽然对有这个库感到欣慰，但同时也对 Rust 编译器本身对递归的支持不足表示遗憾。
+• **倒排索引与普通索引的区别**：SeanSullivan86 表达了对“倒排索引”这一术语的困惑，认为它与普通索引（如书籍后面的索引）相似。他提出了关于多值属性索引是否被称为倒排索引的疑问。
 
-• [lionkor] 反对使用 Free Monad 模式，认为这是一种内存使用效率低下的“创可贴”式解决方案，并建议使用支持尾递归的库（如 tailcall）来解决问题。
+• **n-grams与位图索引的组合**：bob1029 分享了他在代码搜索架构中结合三元索引和FM-index的经验，描述了如何使用三元索引找到包含每个术语的代码库位图，并通过AND操作生成最终的搜索列表。
 
-• [CyberDildonics] 提出使用显式的堆栈数据结构来替代调用栈，认为这样可以更有效地控制栈帧的大小和使用情况，避免栈溢出问题。
+• **Elasticsearch的生产应用**：jumploops 推荐了一篇关于Elasticsearch在电子商务搜索设计模式中的应用的文章，认为该文章帮助他提升了搜索功能（如排名、分面等）的实现速度。
+
+• **简洁的JavaScript实现**：dvh 展示了他使用66行JavaScript实现的倒排索引和文档检索代码，并对使用1/term_frequency代替对数函数做了简单说明，认为这种方法更易于调试。
+
+• **KWIC（Key Word in Context）索引**：AdieuToLogic 提到了与倒排索引相关的KWIC索引概念，指出其在Unix文档中的常见性和实用性，并提供了维基百科链接以供参考。
 
 补充讨论：
-• 争议的焦点在于解决栈溢出的最佳方式：一方支持使用 Free Monad 模式和现有库，另一方则倾向于使用尾递归或显式堆栈数据结构。
-• 对 Rust 编译器本身对递归支持的不足提出了批评，希望编译器能提供更好的递归支持。
-• 不同方案的内存使用效率和性能成为讨论的重要论据，特别是 Free Monad 模式的内存消耗和速度问题被多次提及。</div>
+• 不同评论者从不同角度讨论了倒排索引，包括其设计美学、与普通索引的区别、具体实现技术（如n-grams、位图索引）、生产应用案例（如Elasticsearch）以及简化实现（如JavaScript示例）。
+• 争议焦点在于对“倒排索引”这一术语的理解和定义，SeanSullivan86 对其与普通索引的区别提出了疑问，而其他评论者则通过具体实现和应用案例丰富了讨论。
+• 评论中还提供了实用的资源链接，如Elasticsearch设计模式文章和KWIC索引的维基百科页面，为读者提供了进一步学习的材料。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44669864" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44658665" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ourworldindata.org/grapher/one-person-households" target="_blank">Percentage of one-person households, 1960 to 2018</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: E-Reverance</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-27 22:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章通过互动图表展示了与孤独感、社会关系及相关社会行为的数据。内容包括：家庭对人们生活的重要性、失业求职者的求职方式、拥有可依靠亲友的人群比例、各年龄段美国人独居的比例（按性别区分）、生产力与GDP的关系、以及美国人花费时间的对象（按年龄和性别区分）。此外，还探讨了宗教信仰、慈善捐赠和志愿服务等社会行为。这些图表帮助理解美国人社会联系的现状与变化趋势。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一国独居户数量的比较及其背后的原因分析
+
+不同观点：
+• E-Reverance指出，如果选择更多国家进行比较，挪威的独居户比例最高，而非德国。这表明在讨论独居户比例时，不同国家的数据结果可能会有所不同。
+• slyall认为，独居情况与住房成本密切相关。高住房成本会导致单身人士不得不与他人合租，即使他们更希望独自居住。
+• ViktorRay提出，独居现象可能与心理健康问题相关，尤其是孤独和孤立感可能引发心理健康问题，建议将此类数据与心理健康趋势进行比较分析。
+• AndrewKemendo对保加利亚独居户数量的急剧上升提供了详细解释，指出这是由人口老龄化、年轻人外迁以及家庭结构变化等多种因素共同作用的结果。他还提到，城市化、个人主义以及婚姻和生育率的变化也是重要因素。
+• nly简短评论，认为独居现象，尤其是丧偶老人的增加，是人口老龄化的自然结果。
+
+补充讨论：
+• 独居现象的背后有着复杂的社会和经济因素，例如人口结构变化、城市化进程以及社会价值观的变化（如个体主义和婚姻延迟）。
+• 保加利亚的特殊情况提供了一个有趣的案例，显示了年轻人外迁和老年人独居之间的关联。
+• 心理健康问题与独居现象的潜在联系也是一个值得进一步探讨的领域。
+
+争议焦点：
+• 不同国家独居户比例的比较，尤其是挪威和德国之间的对比，显示了在讨论此类话题时国家选择的重要性。
+• 独居现象的原因存在多元解释，包括经济因素（如住房成本）和社会因素（如人口老龄化和家庭结构变化）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44705387" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://raymii.org/s/blog/Bringing_a_Decade_Old_Bicycle_Navigator_Back_to_Life_with_Open_Source_Software_and_DOOM.html" target="_blank">Bringing a decade old bicycle navigator back to life with open source software</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mtlynch</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-26 11:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讲述了作者如何通过开源软件让一台十年前生产的Navman Bike 1000（即Mio Cyclo 200）导航设备重获新生。该设备因官方停止支持和地图更新而面临过时问题。作者通过逆向工程，发现设备运行Windows CE 6.0，并使用Total Commander和开源导航软件NaVeGIS以及OpenStreetMap更新了地图。此外，作者还提到该设备甚至可以运行经典游戏DOOM。文章批评了消费电子产品的计划性报废策略，并呼吁厂商开放旧设备的软硬件源代码以减少电子废物。尽管设备不再获得官方更新，通过开源软件，它仍能保持实用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：旧设备（如Garmin Nuvi GPS和Windows CE PDA）的再利用、技术过时与开源、设备安全与隐私问题
+
+不同观点：
+• **对旧设备的满意度**：用户jakedata表示对20年历史的Garmin Nuvi GPS非常满意，尤其是其外置存储和明确格式使其免于成为电子废物。用户neumann也拥有同款设备，但对其电池续航不满意，尤其是用于长时间户外探索时。
+
+• **技术过时与开源的讨论**：用户dwayne_dibley质疑为何没有法律要求设备制造商在设备停售后开源软硬件。用户thread_id赞同反向工程和研究过时工具作为抵制过时技术的选择。用户internet2000建议使用旧版Visual Studio为Windows CE PDA开发补丁以提升其价值。
+
+• **对现代科技的反思**：用户lutusp认为现代科技资本主义使得消费者购买产品后反而被产品“控制”，除非开发者有良知，不依赖制造商的后续支持。用户aeblyve则认为智能手机是很好的发明，只要Android系统保持相对自由。
+
+• **设备安全性与隐私问题**：用户ddtaylor关注更新是否通过不安全的HTTP连接进行，暗示对隐私和安全的担忧。用户wildzzz则对文章中照片的像素化和可能的隐私隐藏表示疑问。
+
+• **替代方案的推荐**：用户firebot推荐Osmand和brouter作为最佳离线导航工具，并指出其可定制导航配置文件的功能。用户fsckboy则以幽默方式建议将Doom游戏与GPS导航结合，增加趣味性。
+
+补充讨论：
+• 评论中多次提到反向工程和开源软件，显示出对技术过时和设备可持续使用的关注。
+• 对设备安全性和隐私的讨论反映出用户对旧设备在现代使用场景下的潜在风险的意识。
+• 不同用户对旧设备的怀旧情感与现代技术发展的对比，突显出技术进步带来的便利与挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44693129" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.avclub.com/tom-lehrer-obituary" target="_blank">Tom Lehrer, Performer of Lobachevsky, New Math, and Alma, Goes to Valhalla</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hilux</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-28 03:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Tom Lehrer，这位冷战时期的音乐讽刺歌手及数学家，于2025年7月26日去世，享年97岁。他出生于1928年，是数学天才，15岁进入哈佛大学，20岁前获得学士学位，之后在多所大学教授数学。1953年，他自费录制了首张专辑《Songs By Tom Lehrer》。他的作品以幽默讽刺见长，代表作包括《The Elements》和《Poisoning Pigeons In The Park》。尽管因政治讽刺遭受威胁并于1960年代初停止巡演，Lehrer的影响力持续扩展至后世艺术家如“Weird Al” Yankovic。2020年，他将所有歌曲和歌词公之于众，2022年放弃了版权。Lehrer曾表示，政治讽刺在亨利·基辛格获得诺贝尔和平奖后变得过时。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44706828" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cbc.ca/news/business/lab-grown-diamonds-1.7592336" target="_blank">The natural diamond industry is getting rocked. Thank the lab-grown variety</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: geox</span> |
+                    <span>评分: 279</span> |
+                    <span>评论数: 31</span> |
+                    <span>发布时间: 2025-07-26 12:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了实验室培育钻石的兴起对天然钻石产业，尤其是加拿大钻石矿业的冲击。随着消费者对钻石来源不再过分关注，更多人选择价格更低的实验室培育钻石。自2018年以来，这种趋势愈发明显。多伦多Livia Diamonds的老板Aret Oymakas表示，他的生意中天然钻石占比从100%下降到3%至4%。实验室培育钻石与天然钻石在物理性质上完全相同，但价格更具优势，例如两克拉的实验室培育钻石戒指仅需3,500美元，而同规格的天然钻石则高达35,000美元。这种价格差异和伦理考量推动了消费者的选择。加拿大曾是世界第三大钻石生产国，但现在由于钻石价格下跌和市场需求变化，钻石矿业正面临裁员和停产的困境。尽管一些专家认为天然钻石具有独特的"复杂性"，但对许多消费者而言，价格才是关键因素。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：钻石行业中天然钻石与合成钻石的竞争及相关问题
+
+不同观点：
+• **合成钻石的技术优势与市场影响**：
+   - [Animats] 指出，钻石行业因追求"无瑕"钻石而陷入困境，因为合成钻石在技术上可以做到晶格缺陷远低于天然钻石。合成钻石在技术和工业应用上（如辐射探测器和量子电子学）表现优越，且正在逐渐取代天然钻石。
+   - [ridgeguy] 补充，合成钻石的大规模生产和低成本（如1克拉钻石的制造成本低于30美元）使得天然钻石无法竞争，形成了两个完全不同的市场。
+
+• **伦理与价格的作用**：
+   - [conductr] 认为，消费者选择合成钻石更多是出于价格考虑，而非伦理。伦理问题（如血钻）虽被用作购买合成钻石的理由，但价格下降到天然钻石的50%甚至10%时，消费者才真正转向合成钻石。
+   - [liampulles] 强调，许多夫妇因为社会压力购买天然钻石，而这些钻石是快速贬值的资产。伦理问题和经济理性共同推动了合成钻石的普及。
+
+• **天然钻石的历史与市场操控**：
+   - [milchek] 提到，钻石因垄断和人为制造的稀缺性而保持高价，De Beers通过控制生产和营销创造了这种稀缺性幻觉。
+
+• **审美与情感价值**：
+   - [zahlman] 质疑天然钻石的"复杂性"是否真的值得审美上的偏好。
+   - [jqpabc123] 认为，无论是天然还是合成，钻石都是碳的结晶形式，具有同样的永恒性，真正的区别在于劳动实践。
+
+• **地缘政治与伦理问题**：
+   - [sorenjan] 指出，由于禁止从俄罗斯进口钻石，安特卫普的钻石行业面临困境，认为应接受合成钻石以避免人类苦难和战争暴利。
+
+• **健康风险与自然资源的探索**：
+   - [MITboy12] 声称，天然钻石含有微量放射性元素（如钍和铀），可能带来健康风险。
+   - [1659447091] 建议，若追求天然钻石，可亲自在钻石矿场寻找，如阿肯色州的Crater of Diamonds State Park。
+
+补充讨论：
+• **市场动态与公司策略**：
+   - [BobAliceInATree] 提到，由于合成钻石的竞争，De Beers已关闭其在线商店。
+   - [__turbobrew__] 分享了个人经历，以1/10的价格购买了无瑕的合成钻石，认为除非在乎产地，否则没有理由选择天然钻石。
+
+• **宝石历史与市场变迁**：
+   - [sgt101] 讨论了红宝石的历史，指出天然红宝石因稀有性和独特的光彩仍具高价，但加热处理可降低其价值，类似于钻石市场的动态。
+
+• **价格趋势**：
+   - [cut3] 观察到，尽管合成钻石生产增加，但某些合成钻石的价格反而上升，与其预期相反。
+
+争议焦点：
+• 天然钻石与合成钻石在伦理、审美、价格和健康风险上的优劣比较，以及消费者选择背后的真实动机。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44693570" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thesisdriven.com/p/the-rise-of-shippable-microfactories" target="_blank">The Rise of Shippable Microfactories</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mhb</span> |
+                    <span>评分: 88</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-26 13:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了可运输微型工厂在预制建筑领域的兴起及其潜力。传统预制建筑依赖大型固定工厂生产模块，但面临高额前期资本支出和运输成本的挑战。微型工厂则通过将工厂运至施工现场，实现本地化按需生产，解决这些难题。微型工厂具有便携性、自动化和灵活性，可以在项目完成后移至下一个工地。文章提出工厂效率公式，分析工厂经济可行性，强调微型工厂通过提升利用率和降低运营成本，改善了传统预制工厂因需求不稳定导致的低效问题。微型工厂有望变革建筑行业，提高效率并降低成本。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：现场制造和自动化建筑技术的可行性、经济性及其局限性
+
+不同观点：
+• **支持现场制造的高效性**：  
+   - [proee] 认为现场生产立缝金属屋顶板非常高效，带有自动成型和切割功能的机器能够在工地直接生产定制尺寸的板材，整个过程非常酷且高效。
+   - [ChuckMcM] 提出更多现场制造的可能性，如玻璃装配、风管制作、定制橱柜等。他认为这种方法可能在某些项目中更具经济性，尤其是在大规模开发时，可以减少运输成本和工厂租赁费用。
+
+• **质疑自动化视频的真实性与实用性**：  
+   - [Animats] 对某木工自动化系统的视频表示怀疑，认为视频内容模糊，缺乏展示机器人实际操作的具体细节，且视频大部分为无实质内容的剪辑。他认为这种技术已经存在，但需要更大的工厂来处理大型建筑组件。
+
+• **对物流效率的质疑**：  
+   - [RainyDayTmrw] 对现场制造的经济性提出疑问，指出当前全球物流系统已经非常高效，运输成本相对较低。他以鸡肉跨 hemisphere 运输为例，质疑现场制造是否真的能显著节省成本。
+
+• **现场制造的局限性**：  
+   - [youngtaff] 指出集装箱尺寸的限制，在英国预制房屋板材通常大于集装箱，且在大的平台上建造。这表明现场制造在空间和设备上可能存在局限。
+   - [octoberfranklin] 提到工厂设备需要大量的公用设施连接，如高压电源、压缩制冷剂等，这些连接和拆除需要特殊技能和许可，这可能增加现场制造的难度。
+
+• **对材料和施工质量的担忧**：  
+   - [mschuster91] 认为尽管自动化概念不错，但最终结构仍由木材和纸板等材料构成，如果工作人员未经过良好培训，可能会导致施工质量问题，他引用了Cy Porter的房屋检查视频作为例子。
+
+补充讨论：
+- 现场制造与传统物流效率之间的权衡。
+- 自动化建筑技术的实际操作展示与宣传之间的差距。
+- 现场制造在不同建筑项目中的适用性及其潜在的经济优势。
+- 现场制造对公用设施和专业技能的依赖及其可能带来的挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44693815" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -156,87 +396,25 @@ StackSafe通过简单的注解`#[stacksafe]`自动扩展栈，使递归函数和
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.thesisdriven.com/p/the-rise-of-shippable-microfactories" target="_blank">The Rise of Shippable Microfactories</a>
+                    <a href="https://computer.rip/2025-07-27-a-technical-history-of-alcatraz.html" target="_blank">Regarding: A Technical History of Alcatraz</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mhb</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-26 13:08</span>
+                    <span>作者: aberoham</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-27 18:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了可运输微型工厂（shippable microfactories）的兴起，这种新型工厂模式旨在解决传统预制建筑经济问题。传统上，预制建筑依赖大型固定工厂生产模块或板材，再运至施工现场，但这种集中化模式面临高额前期资本支出和运输成本的挑战。微型工厂则将工厂本身运至项目现场，进行本地化生产，具备自动化、灵活性和可移动性等优势。文章提出了评估微型工厂经济可行性的框架，并探讨了其在建筑行业的潜在变革。微型工厂通过在现场按需定制生产组件，提高了效率并降低了运输成本，代表了建筑行业向更灵活制造模式的转变。</p>
+                    <p>《阿尔卡特拉斯技术史》概述了这座著名监狱的技术演变。阿尔卡特拉斯岛最初于1859年作为关押士兵的监狱启用，最初设施简单，仅为地下室。南北战争期间，它成为关押南方同情者的“政治监狱”，虽然经过改造但仍规模较小。1909年，它完全转变为军事监狱，并新建了专门的高安全级别牢房。由于位置偏远，岛上需要自给自足，包括独立的发电和供水系统。通讯依靠无线电和灯光信号，并曾计划安装水下鱼雷（遥控水雷）防御系统，但由于水流过强未能实现。阿尔卡特拉斯不仅是一个著名监狱，也是一个技术复杂、维护困难的设施。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：现场制造和自动化建筑系统的可行性、经济性及其局限性
-
-不同观点：
-• [proee] 认为现场制造立缝金属屋顶板的过程非常高效且有趣。这种方法使用一台带有长卷钢材的机器，根据工地需求现场成型和切割板材，展现了极高的效率。
-
-• [Animats] 对一个展示机器人木工系统的视频持怀疑态度。他们指出视频内容多为短暂片段和空谈，没有清晰展示机器人工作的全过程，质疑其实际工作能力。同时提到，使用机器人组装建筑板材在工厂中已经实现，但需要更大的工厂来处理大型构件。
-
-• [ChuckMcM] 认为现场制造的经济性值得探索，并提出诸如现场制作玻璃、窗户、管道和定制橱柜等可能性。他们提到这种方法可能在全面住房开发项目中带来更好的经济效益，特别是在不需要租赁非生产期间的工厂空间时。
-
-• [RainyDayTmrw] 对现场制造的经济性表示怀疑，指出物流和运输成本已经相对较低。他们以鸡肉往返美国和中国之间的运输为例，质疑现场制造是否真的能节省运输成本。
-
-• [rotexo] 联想到科幻小说中的场景，认为这种现场制造的方式很酷，但可能无法解决住房负担不起的问题。
-
-• [youngtaff] 指出集装箱的尺寸可能是一个限制因素，特别是在英国，预制房屋板材通常比集装箱大，并在大的平台上建造。
-
-• [octoberfranklin] 强调大多数工厂设备需要大量的公用设施连接，包括高压电源、压缩制冷剂和必须经过化学中和处理后才能处置的有毒废物。这些连接和断开需要特殊技能，处理不当会有严重后果，且通常需要特别的许可证和政府监管批准。
-
-• [mschuster91] 认为这种自动化概念虽然不错，但最终结构仍然是木质和纸板材料，如果工作人员未经过良好培训，可能会导致严重的建筑问题，并引用Cy Porter的家庭检查视频为例。
-
-补充讨论：
-• 现场制造和自动化建筑系统的实际可行性和经济效益存在争议，特别是在不同材料和构件的制作上。
-• 视频内容的真实性和展示效果受到质疑，尤其是其实际工作能力的透明度。
-• 现场制造可能面临诸如集装箱尺寸限制、公用设施连接复杂性和政府监管等实际操作问题。
-• 对现场制造是否能有效解决住房负担不起的问题存在怀疑。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44693815" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://hbr.org/2025/06/is-your-flexible-schedule-burning-you-out" target="_blank">Is Your Flexible Schedule Burning You Out?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rustoo</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-27 21:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章《灵活工作时间是否让你精疲力竭？》由时间管理教练Elizabeth Grace Saunders撰写，讲述了身为公司合伙人的肖恩，尽管在职业生涯中取得了成功并拥有灵活的工作时间，用于陪伴家人，但他仍然感到倦怠。文章探讨了灵活工作时间可能导致的倦怠问题，强调了有效时间管理和平衡工作与家庭生活的重要性。作者指出，即便有灵活安排，如果不加管理，也可能导致压力和精疲力竭，需要寻找适合自己的时间分配方式。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：网页在移动端的表现以及广告体验
-
-不同观点：
-• nop_slide 认为该网页在移动端的用户体验很差，具体表现为半屏广告，影响了阅读体验。他还提到尝试使用Safari的阅读器模式，但只能看到摘要，无法获取完整内容。
-• syndacks 提供了一个替代解决方案，通过分享一个网页存档链接（https://archive.ph/dxfFH），暗示可以使用存档服务来避免广告和改善阅读体验。
-
-补充讨论：
-• nop_slide 的评论反映了对移动端广告过多和影响阅读的普遍不满。
-• syndacks 的评论提供了一种技术性的解决方法，利用第三方服务来绕过广告问题。
-• 争议焦点在于网页的广告加载和用户体验之间的平衡，部分用户可能对广告干扰感到不满，而另一些用户可能理解网站依赖广告收入的现实。
-• Safari阅读器模式的使用也成为一个讨论点，部分用户可能希望通过此类工具获得更好的阅读体验，但其功能限制也可能导致无法获取完整内容。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44704720" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44703305" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -292,214 +470,37 @@ StackSafe通过简单的注解`#[stacksafe]`自动扩展栈，使递归函数和
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.asimov.press/p/cable-bacteria" target="_blank">Cable bacteria are living batteries</a>
+                    <a href="https://www.theguardian.com/global-development/2025/jul/27/missionaries-using-secret-audio-devices-to-evangelise-brazils-isolated-peoples" target="_blank">Missionaries using secret audio devices to evangelise Brazil's isolated peoples</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mailyk</span> |
-                    <span>评分: 66</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-23 17:12</span>
+                    <span>作者: c420</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-27 21:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了丹麦奥尔胡斯大学的科学家们如何发现“缆线细菌”（cable bacteria），这些微生物通过连接成链，在泥水中传导电子，像 living batteries（活电池）一样工作。传统的生物能量代谢理论认为，细胞只能通过附近的化学反应获取能量，而缆线细菌通过跨细胞的长距离电子传递，突破了这一限制。它们在无氧的深层泥中获取电子源（如硫化物），并将电子传递到含氧的水面，完成了能量代谢过程。这一发现不仅改变了对生物能量学的理解，还展示了微生物在生态系统中的重要角色。该研究源于一次意外实验，科学家们在湖泊泥样中观察到无法解释的化学变化，最终揭示了缆线细菌的存在。</p>
+                    <p> missionary groups are using solar-powered audio devices to evangelize isolated Indigenous peoples, such as the Korubo, in the Javari Valley near Brazil's border with Peru. These devices, reciting biblical passages in Portuguese and Spanish, violate laws designed to protect uncontacted communities. Drones have also been spotted in these protected areas. Uncontacted peoples, or "peoples in voluntary isolation," avoid modern society to safeguard their culture and safety. Attempts at contact, including by missionaries, risk spreading disease, cultural disruption, and exploitation. Despite legal protections, economic interests often conflict with the preservation of Indigenous territories, raising concerns about the future of these communities. This is not the first time missionaries have attempted to reach the Korubo, with previous reports of seaplane expeditions to map Indigenous lands.</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕“电缆细菌”及其潜在应用和影响的讨论
+                    <div class="comments-summary">主要讨论点：文化替换与传教活动的影响
 
 不同观点：
-• **误解与澄清**：
-   - [userbinator] 最初误解文章内容，以为是关于聚集在海底电缆周围的细菌，而非“电缆细菌”本身。
+• [K0balt的观点] 认为有些人故意试图摧毁一种文化并用他们自己的文化取而代之，这种行为应该受到惩罚或引起重视。K0balt强调了文化替换的负面影响，暗示这是一种有意的破坏行为。
 
-• **科学应用与技术潜力**：
-   - [ordu] 提出将电缆细菌结构用于替代人类神经系统中的轴突，尤其是脊髓和视神经中的长轴突，以加快信号传播速度，减少反应时间。
-
-• **环境影响**：
-   - [m348e912] 指出电缆细菌在环境中的潜在积极影响，特别是提到在稻田中引入电缆细菌可能大幅减少甲烷排放，从而对环境产生巨大正面影响。
-
-• **生物化学与能源生产**：
-   - [dsign] 提出假设，认为如果电缆细菌能够依靠电势和有限的营养生存，那么可以利用这一原理构建生物化工厂，生产葡萄糖聚合物，尤其是在太空中利用太阳能板代替叶子进行光合作用。
-
-• **学术与科学传播**：
-   - [physarum_salad] 提供了一篇来自奥胡斯大学团队的较少炒作的文章链接，讨论所有微生物是否具有电活性，引导读者关注更严谨的科学研究。
-
-• **文学与叙事风格**：
-   - [enthdegree] 批评文章中使用的人为冒险叙事风格，认为这种“学生-老师角色扮演沉浸式新闻”让人感到虚假和幼稚，导致其对内容产生不信任，并质疑是否必须通过耸人听闻的叙述来吸引读者。
+• [Qem的观点] 则将传教活动类比为过去的“垃圾信息（spam）”，认为即使是在亚马逊雨林这样与世隔绝的地区，人们也无法避免这种文化影响。Qem将传教活动视为一种类似垃圾信息传播的行为，暗示传教活动本质上是一种侵扰。
 
 补充讨论：
-• **无关评论**：
-   - [ytrt54e] 提到Asimov Press和Nico McCarthy的优秀故事，与主题无直接关系。
-   - [swayvil] 的评论与工作环境有关，与主题无直接关联。
+• 争议焦点在于传教活动的意图和影响。K0balt关注的是文化替换的道德和伦理问题，而Qem则聚焦于传教活动作为一种侵扰性行为，将其与现代垃圾信息相比较。
 
-• **能源发电的潜力**：
-   - [CommenterPerson] 期望找到有关电能产生的讨论，但文章未能满足其期望。
+• 例子：K0balt没有给出具体例子，但其观点隐含了对某些传教活动的强烈反对，认为这些活动会导致原有文化的破坏。Qem则通过提到亚马逊雨林中的传教活动，指出了即使是与世隔绝的群体也难以避免外界文化的影响，强调了传教活动的广泛性和侵扰性。
 
-争议焦点：
-• 文章叙事风格的真实性与适当性是争议的焦点，[enthdegree] 对人为冒险叙事风格的批评与其他评论者对科学内容本身的关注形成对比。</div>
+• 讨论关系：K0balt的观点更为关注文化替换的长期后果和应对此负责的主体，而Qem的观点则带有更多的讽刺意味，将传教活动的历史和现代信息泛滥现象联系起来。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44661571" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://16colo.rs/" target="_blank">16colo.rs: ANSI/ASCII art archive</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: debo_</span> |
-                    <span>评分: 92</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-24 01:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Sixteen Colors是一个在线存档平台，专门收集ANSI和ASCII艺术包（artpacks）。这些艺术作品最初是为计算机文本模式控制台设计的，在20世纪90年代随着拨号 bulletin board systems (BBS) 的兴起而流行。艺术家们组成团体，按月发布艺术包，并因团体间的竞争而促进了这一活动的发展。尽管随着互联网的兴起，BBS和ANSI/ASCII艺术的需求和兴趣逐渐减少，但仍有艺术家继续创作。Sixteen Colors作为一个公共档案库，旨在保存这些艺术包，并提供上传、协作、搜索和聊天等功能，以支持这一艺术形式的发展和交流。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕ASCII/ANSI艺术及其相关怀旧情绪的讨论
-
-不同观点：
-• saidinesh5和majkinetor表达了对ASCII艺术及键盘生成音乐（keygen music）的怀旧情感，分享了相关的资源链接。
-• sen提到自己通过在终端打开时随机加载收集的.ANS文件，重温连接BBS的怀旧感受。
-• debo_推荐使用Gemini浏览器访问一个包含50k+ ANSI/ASCII图像的网站，模拟通过调制解调器下载的体验。
-• ilaksh提供了在Linux上播放ANSI文件的程序`durdraw`的信息，并推荐了Perfect DOS VGA 437字体，但指出该程序不会在播放后保留图像。
-• xyst对IRC客户端BitchX未包含ASCII艺术表示遗憾，并提供了维基百科链接。
-• ptek提到在无法负担PS1或电脑配置较差时，ASCII艺术是一种替代娱乐方式，并分享了相关资源。
-• greeniskool分享了一个“Bad Apple”的ANSI艺术转换版本链接。
-
-补充讨论：
-• ssilver询问了用于绘制这些艺术作品的常用编辑器，这一问题未得到直接回答。
-• kls0e提到了一位叫roy sparks的艺术家，其作品带来了极大的喜悦。
-• yowayb分享了使用AI工具Grok生成ANSI艺术的失败尝试，输出结果不如预期，指出了AI生成艺术的局限性。
-
-争议焦点：
-• 讨论中并无明显争议，但yowayb的评论暗示了对AI生成艺术质量的不满，相对于怀旧的手工艺术，AI生成的结果显得不够理想。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44665816" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://educatedguesswork.org/posts/memory-management-7/" target="_blank">Understanding Memory Management, Part 7: Advanced Garbage Collection</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ekr____</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-27 18:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是内存管理系列的第七篇，也是最后一篇，讨论了高级垃圾回收（Garbage Collection, GC）机制。文章首先提到垃圾回收在生产系统中的应用以及一些系统设计者可能避免使用GC的原因。主要关注GC的延迟问题，因为基本的“停止世界”GC算法需要暂停整个程序，这对交互式应用影响显著。为了控制延迟，需要精心安排GC时机，避免在用户操作时进行GC，比如在程序空闲时执行。现代GC使用多种触发机制，如内存压力和分配率。为了最小化延迟，可以采用分代垃圾回收等方法，只回收部分对象，特别是最近分配的对象，以减少暂停时间。文章还提到了一些高级GC策略来缓解GC对程序的影响。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44703530" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://benthams.substack.com/p/the-federal-war-on-animal-welfare" target="_blank">The Federal War on Animal Welfare</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: paulpauper</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-27 22:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44705174" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dfarq.homeip.net/what-went-wrong-for-yahoo/" target="_blank">What went wrong for Yahoo</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: giuliomagnifico</span> |
-                    <span>评分: 239</span> |
-                    <span>评论数: 50</span> |
-                    <span>发布时间: 2025-07-26 18:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章回顾了雅虎（Yahoo）从1994年创立到2016年被 Verizon 以48亿美元收购的兴衰史。雅虎曾被誉为“互联网的门户”，1996年上市后市值一度超过1250亿美元，但最终以不到其历史最高值的一个零头出售。文章分析了雅虎的失败原因，主要在于其盲目收购不盈利或亏损的公司，如Broadcast.com、Geocities和Tumblr，而未能像谷歌那样进行明智的投资。雅虎在1997年至2015年间进行了114次收购，但多数未能带来持续收益，而谷歌的收购如YouTube和Doubleclick则年年盈利。雅虎的失误在于未能区分有盈利潜力的流量和无利可图的流量，导致资源浪费和最终的衰落。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Yahoo的兴衰原因及错失的机遇
-
-不同观点：
-• **Yahoo错失Google和Facebook的收购机会**：thunderbong指出Yahoo曾有机会以低价收购Google和Facebook，但因犹豫不决而错过，最终这两家公司都成为了万亿美元级别的企业。katzgrau甚至认为，即便Yahoo成功收购了它们，也可能无法维持其成功。
-
-• **Yahoo对开源社区的贡献**：drewg123强调Yahoo曾是FreeBSD项目的重要贡献者，尤其是在SMPng项目和AMD64端口方面。Yahoo在开源社区的影响力一度类似于如今的Netflix。
-
-• **管理层的决策失误**：andy_ppp批评Yahoo管理层过于注重短期财务分析，缺乏技术卓越的追求和长期愿景，最终导致公司在技术竞争中失败。neya进一步指出，CEO Marissa Mayer的管理不善和一些有争议的决策（如Tumblr收购）加剧了公司的问题。
-
-• **Yahoo的全球外包策略**：ogou提到Yahoo在印度的外包策略初期节省了成本，但随着印度工程师了解薪资差距并争取市场工资，成本优势逐渐消失。
-
-• **Yahoo的娱乐生态系统**：jjbinx007回忆Yahoo曾提供的在线游戏和视频会议功能，认为其生态系统一度非常吸引人，但在搜索引擎和Google等竞争压力下逐渐失去优势。
-
-• **Yahoo与Google和Meta的成功对比**：npalli认为讨论Yahoo的失败不如关注Google和Meta的成功因素，强调事后诸葛亮的局限性。
-
-• **Yahoo的结构性问题**：jillesvangurp认为Yahoo从一开始就是一个平庸的产品公司，缺乏长远愿景，即使拥有大量资金也无法在技术竞争中取胜。
-
-• **Yahoo的媒体公司转型**：maltelandwehr指出Yahoo逐渐从科技公司转变为媒体公司，决策时更注重短期收益而忽视技术投资，导致错失关键技术发展机遇。
-
-补充讨论：
-• **Yahoo目录和搜索引擎的变迁**：jjbinx007提到Yahoo的目录服务曾是探索互联网的有趣方式，但随着Google搜索的崛起，这种模式逐渐被淘汰。
-
-• **Yahoo的基础设施问题**：WarOnPrivacy描述了Yahoo在Verizon和AOL基础设施迁移过程中的用户困扰，尤其是邮件服务器的频繁更改。
-
-• **Yahoo的潜在复兴**：ksec表达了对Yahoo目录服务和精选网络的怀念，认为在当前垃圾内容泛滥的互联网环境下，Yahoo的这种服务有复兴的潜力。
-
-争议焦点：Yahoo是否能在收购Google或Facebook后成功维持其增长，以及管理层的决策是否是导致其衰落的主要原因。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44696033" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44705093" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
