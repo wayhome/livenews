@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-28 14:23 (北京时间)
+            最后更新时间: 2025-07-28 17:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="http://www.intel4004.com/btstrp.htm" target="_blank">The Bootstrap Load</a>
+                    <a href="https://andreyor.st/posts/2025-06-09-implementing-dynamic-scope-for-fennel-and-lua/" target="_blank">Implementing dynamic scope for Fennel and Lua</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gone35</span> |
-                    <span>评分: 22</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-27 20:37</span>
+                    <span>作者: Bogdanp</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-23 20:49</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了英特尔4004微处理器设计中的自举负载技术。该技术由设计者Federico Faggin开发，利用硅栅技术实现，能够在输出电压等于全供电电压的情况下构建逻辑门，而传统电阻负载只能达到供电电压的60%。通过深入理解器件物理原理，Faggin成功制造出无需额外掩模层的优质片上电容，解决了此前被认为无法实现的难题。自举负载和隐埋接触对于在有限功耗下实现所需速度至关重要。相比之下，四相设计虽能达到类似效果但更为复杂，如Rockwell的第一款微处理器PPS-4。4004的原始电路图中广泛使用了自举负载。</p>
+                    <p>本文讨论了在Fennel和Lua中实现动态作用域（dynamic scoping）的方法。Lua虚拟机不支持动态作用域，Fennel也没有类似Clojure的`Var`概念。然而，通过使用Lua的`debug`库，可以模拟Clojure等Lisp语言中的动态作用域。作者希望实现一个更符合Lisp习惯的动态作用域机制，而不是通过显式引用变量名的方式。
+
+文章首先解释了词法作用域（lexical scoping）和动态作用域的区别。词法作用域下，变量仅在其定义的代码块内有效；而动态作用域允许变量在特定动态范围内像全局变量一样被访问。作者通过一个代码重构的例子展示了词法作用域的局限性，并对比了Clojure中使用`binding`实现动态作用域的方法。
+
+最后，作者提到可以参考Leafo的指南来实现这一特性，并计划在fennel-cljlib项目中继续推进这一工作。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于bootstrap load的细节及其技术背景
+                    <div class="comments-summary">主要讨论点：动态绑定与隐式上下文对象在脚本语言设计中的使用和优劣比较
 
 不同观点：
-• [_ihaque] 认为原文链接中对bootstrap load的描述不够详细，但提到@kens写了一篇更详尽的文章来解释这一技术（提供了具体链接）。这表明[_ihaque]关注的是技术细节的深入了解，并通过引用其他资源来补充原文内容的不足。
+• **支持使用隐式上下文对象**：tikotus认为使用一个**不可变的隐式上下文对象**可能比动态绑定更适合他的需求。他的主要论据是，隐式上下文对象能够覆盖大多数常见用例，并且在处理**协程**（coroutines）时更加直观和可预测，减少意外行为。
 
-• [cushychicken] 则关注的是4004 schematic（可能是指Intel 4004芯片的电路图）的紧凑性，对其能够将整个设计浓缩到三页纸上表示惊讶和赞赏。这表明[cushychicken]的关注点在于技术的精简和工程设计的巧妙。
+• **对动态绑定的兴趣与疑虑**：tikotus提到他对**动态绑定**的概念很感兴趣，尤其是在为游戏开发设计的脚本语言中。但他对动态绑定在协程中的表现存在疑问，似乎不确定动态绑定如何在协程环境中有效工作。
 
 补充讨论：
-- [_ihaque] 引用的文章链接（https://www.righto.com/2020/10/how-bootstrap-load-made-histo...）进一步探讨了bootstrap load的技术实现和历史背景，提供了更深入的技术分析。
-- [cushychicken] 的评论反映了对于技术文档简洁性和工程复杂性的感慨，没有涉及具体的技术实现细节。
+• **可预测性与意外行为**：tikotus强调了使用隐式上下文对象的一个优点，即它能够减少使用中的“意外”。这表明他可能认为动态绑定在某些场景下，尤其是涉及协程时，可能会引入不易察觉的复杂性或不可预测性。
 
-争议焦点：评论之间并无直接争议，但可以看出对同一技术话题的不同关注点，[_ihaque]注重技术细节和背景，而[cushychicken]则偏重于设计的简洁和精妙。</div>
+• **协程的支持**：tikotus特别提到自己是**协程的频繁使用者**，因此他关注的是哪种方法能更好地支持协程操作。他似乎认为隐式上下文对象在这方面更具优势。
+
+• **适用场景的考虑**：tikotus在动态绑定和隐式上下文对象之间摇摆不定，表明他仍在评估哪种方法能更好地满足其脚本语言的具体需求，尤其是针对游戏开发的特殊场景。
+
+争议焦点：动态绑定在协程环境下的适用性和可预测性是争议的核心，tikotus显然对这一点存在疑虑。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44704482" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44663887" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,32 +108,104 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/mujasoft/vid2gif" target="_blank">Show HN: Vid2gif – Convert .mp4/.mov to optimized GIFs locally using FFmpeg</a>
+                    <a href="https://news.exeter.ac.uk/faculty-of-health-and-life-sciences/beetroot-juice-lowers-blood-pressure-in-older-people-by-changing-oral-microbiome/" target="_blank">Beetroot juice lowers blood pressure by changing oral microbiome: study</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mujasoft</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-27 22:32</span>
+                    <span>作者: lightlyused</span> |
+                    <span>评分: 184</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-27 12:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>"vid2gif" 是一个实用工具，用于将视频文件（如 .mp4, .mov, .mkv, .webm）转换为优化后的 GIF，特别适合在 GitHub 项目的 README 文件中展示示例或动画。该工具完全离线运行，不依赖在线服务，使用 ffmpeg 进行转换，具备以下特点：
-
-1. 生成较小、较平滑的 GIF。
-2. 自动清理临时文件。
-3. 可选择添加时间戳以避免输出文件被覆盖。
-4. 纯 Bash 实现，除 ffmpeg 外无其他外部依赖。
-
-安装方法包括通过 Homebrew 或手动添加到 $PATH。使用时指定输入视频文件，并可选输出文件名和时间戳。该工具基于 MIT 许可发布。</p>
+                    <p>一项由埃克塞特大学进行的研究发现，富含硝酸盐的甜菜根汁可能通过改变老年人口腔微生物组来降低血压。研究比较了年轻人和老年人的反应，结果显示，老年人饮用甜菜根汁两周后血压下降，而年轻人没有明显变化。硝酸盐在体内转化为一氧化氮，对血管健康和血压调节至关重要。研究发现，甜菜根汁改变了口腔细菌组成，抑制了有害细菌如Prevotella，增加了有益细菌如Neisseria的生长。该研究强调了食用富含硝酸盐的蔬菜对老年人心血管健康的潜在益处，如菠菜、火箭菜、芹菜和羽衣甘蓝等替代品也同样有效。研究发表在《自由基生物学与医学》期刊上。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：甜菜根汁及其他相关健康实践的益处与潜在风险
+
+不同观点：
+• [支持甜菜根汁的益处] _the_inflator 认为甜菜根汁是一种合法的“作弊”手段，特别是在三项全能和自由潜水等运动中。他提到虽然个人感受不明显，但数据表明其有效性。他还提醒不要过度使用，因为草酸盐可能带来风险，且甜菜本身也有同样效果。
+• [口腔微生物群的影响] djtango 和 hotpotat 提到运动后使用漱口水可能影响口腔微生物群，从而降低一氧化氮的产生，进而可能影响生理表现。hotpotat 特别指出漱口水如Listerine可能会影响床上表现，并引用了一项研究支持其观点。
+• [甜菜根形式的影响] treetalker 质疑饮用甜菜根汁与直接食用甜菜的效果是否有实质区别。healsdata 进一步提出问题，是否甜菜中的硝酸盐与加工肉类中的不健康硝酸盐相同，并质疑用芹菜汁腌制培根的健康性。
+• [替代方案与实际应用] ulf-77723 提到从《Anita Bean的运动营养完全指南》一书中了解到不使用抗菌漱口水的重要性，并询问甜菜根胶囊是否是汁液的有效替代品。mariusor 指出甜菜根汁在职业自行车选手中作为“边际收益”的一部分使用。
+• [甜菜根汁的普及与文化差异] bufordtwain 开玩笑地建议通过比较澳大利亚老年人的血压与其他国家的老年人血压来测试甜菜根汁的效果。
+• [甜菜根汁对牙齿的影响] Havoc 担心长期饮用甜菜根汁会导致牙齿染色。
+• [基本健康实践] 1970-01-01 强调基本健康习惯如睡眠、植物性饮食和适度运动的重要性，认为其他健康实践只是从90%到99%的提升。
+• [甜菜根的食用方式] mythrwy 提供了一种不喜欢直接食用甜菜的人可以通过将其加入水果奶昔中的方法。
+• [食品质量与现代饮食反思] bognition 反思了罗马铅管对健康的影响，并类比现代高度加工食品对健康的潜在危害，提出如何廉价地提供高质量食品的挑战。
+
+补充讨论：
+• [甜菜根汁的价格与质量] ck2 指出高质量甜菜根汁价格昂贵，因为需要在富含硝酸盐的良好土壤中种植，而来自中国的许多产品质量较低。
+• [甜菜根汁作用机制的争议] nradov 提到一直以为甜菜根汁的效应是由于血管扩张作用，但现在的讨论让他对此产生怀疑。
+
+争议焦点：
+• 甜菜根汁的具体效果机制及其替代形式（如胶囊）是否有效。
+• 口腔微生物群对健康的影响及其与甜菜根汁和漱口水的关系。
+• 高质量甜菜根汁的获取难度及价格问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44705328" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44700923" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2506.21734" target="_blank">Hierarchical Reasoning Model</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hansmayer</span> |
+                    <span>评分: 281</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-07-27 07:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文提出了一种分层推理模型（Hierarchical Reasoning Model, HRM），旨在解决当前大型语言模型在处理复杂目标导向任务时的不足。HRM受人脑分层和多时间尺度处理的启发，通过两个相互依赖的递归模块实现深度计算：负责缓慢抽象规划的高层模块和处理快速详细计算的低层模块。HRM在仅有2700万参数的情况下，使用1000个训练样本即可在复杂推理任务中取得优异表现，无需预训练或链式思考（CoT）数据。该模型在抽象与推理数据集（ARC）上超越了更大的模型，展示了其在通用计算和推理系统中的潜力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：HRM模型的性能、原理及其潜在应用和争议
+
+不同观点：
+• **积极评价**：
+   - [cs702] 认为HRM模型在多个复杂任务（如Sudoku和迷宫问题）上表现出色，尤其在不使用预训练和大量数据的情况下，超过了当前最先进的CoT方法。
+   - [topspin] 强调HRM模型的层次推理机制类似于人脑的认知模式，特别是通过自适应停止策略实现“快慢思考”的机制，并认为这种多模块合作是实现AGI的潜在途径。
+   - [advael] 对HRM模型使用递归模块增强注意力模型的方法表示赞赏，认为这是未来研究的一个有前景的方向。
+
+• **与认知科学理论的关联**：
+   - [SubiculumCode] 从认知心理学角度出发，认为HRM模型与“模糊痕迹理论”相吻合，该理论主张记忆和认知在不同层次上运作，这与HRM的多层次推理机制相似。
+
+• **怀疑与批评**：
+   - [JonathanRaines] 对HRM模型的结果表示怀疑，指出该研究尚未经过同行评审，且结果部分缺乏评估细节，实际性能可能不如文中声称的那样优越。
+   - [malcontented] 虽然不否认HRM模型的创新性，但对其与CoT模型的比较提出质疑，认为HRM模型更像是一个特定问题的解题器，而非通用的任务解决者。
+
+• **潜在应用与扩展**：
+   - [lispitillo] 提出HRM模型与MoE（专家混合模型）结合的可能性，并预测这种结合可能在短时间内实现，但指出HRM模型当前的应用场景有限，缺乏对未来应用的讨论。
+   - [OgsyedIE] 认为HRM模型的嵌套结构可以与MoE系统结合，创造出在效率和质量上都有新突破的模型。
+   - [camphy] 关注HRM模型在模糊推理场景中的应用潜力，认为目前模型在定义明确的问题空间（如Sudoku）上表现优异，但对其在更复杂环境中的表现存疑。
+
+• **幽默与调侃**：
+   - [0x000xca0xfe] 开玩笑地提到HRM模型可能终结CAPTCHA验证码。
+   - [belter] 质疑HRM模型是否只是ReAct、Chain-of-Thought和结构化规划的变种。
+   - [electroglyph] 简单直接地问“但它能扩展吗？”
+
+补充讨论：
+• **实验验证需求**：
+   - [nowittyusername] 表示虽然HRM模型的概念听起来合理，但需要第三方验证其实际效果。
+   - [smokel] 计划通过GitHub仓库亲自验证HRM模型的效果，并对其无需预训练即可解决规则学习问题表示惊讶。
+
+争议焦点：HRM模型的实际性能、与CoT模型的比较以及其在不同场景中的通用性和扩展性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44699452" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -141,37 +220,106 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: merrier</span> |
-                    <span>评分: 81</span> |
+                    <span>评分: 109</span> |
                     <span>评论数: 8</span> |
                     <span>发布时间: 2025-07-26 21:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文纪念爱沙尼亚作曲家阿尔沃·帕特（Arvo Pärt）90岁生日，称赞其音乐的简约、灵性与寂静，具有跨越文化、信仰和世代的普遍吸引力。帕特与约翰·威廉姆斯并列为当今最常演出的当代作曲家，其作品摒弃复杂与炫技，以沉默和简朴表达深刻的精神内涵。早年在苏联统治下，帕特因实验现代主义技法遭 censorship，作品如《Nekrolog》和《Credo》引发争议。在沉寂后，他发展出独特的“钟鸣体”（tintinnabuli）风格，代表作包括《Für Alina》和《Tabula Rasa》等，融合早期圣乐与极简主义，创造出兼具宗教与世俗吸引力的现代音乐。帕特的信仰是他艺术的源泉，他强调对每个音符的爱是作曲的核心。</p>
+                    <p>文章主要介绍爱沙尼亚作曲家阿尔沃·帕特（Arvo Pärt）的音乐成就和影响，庆祝他90岁生日。帕特的音乐以其简洁、灵性和沉默为特色，跨越文化、信仰和代际界限，具有普遍吸引力。他与约翰·威廉姆斯虽风格迥异，但同为当今最常演出的当代作曲家。帕特的作品避开炫技，注重沉默和精神深度，代表作包括《Für Alina》和《Tabula Rasa》等。他创造的“钟鸣体”（tintinnabuli）技法，以简约和冥想性著称。帕特早年受苏联统治影响，作品如《Credo》曾遭禁。离开苏联后，他创作了更多神圣主题的作品，融合早期宗教音乐和极简美学，吸引宗教和世俗听众。帕特的信仰深刻影响其创作，他强调对每个音符的热爱。他的音乐因其超越时空的特性而被广泛赞誉。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对作曲家Arvo Pärt及其作品的评价与推荐
+                    <div class="comments-summary">主要讨论点：对作曲家Arvo Pärt及其作品的不同看法和推荐
 
 不同观点：
-• [kmarc] 认为Pärt的作品《Fratres》极具感染力，能够引发听众情感上的共鸣，每次聆听都是一种宣泄体验。该评论强调了作品对表演精度的高要求以及对听众的情感影响。
-• [throw0101d] 提到Pärt的作品具有一定的极简主义倾向，可能并不适合所有人的口味。该评论还提供了一系列推荐作品的链接，并建议听众选择由Estonian Philharmonic Chamber Choir演奏的合唱作品，因为Pärt与该乐团有密切合作。
-• [antognini] 认为Pärt的音乐转变始于其作品《Für Alina》，这是他首次运用其独特的“tintinnabuli”风格，并详细分析了该作品的音乐结构，指出其简单却效果显著的特点。
-• [lukeh] 推荐参观位于塔林的Arvo Pärt Centre，似乎更关注Pärt的个人背景及其影响。
-• [sombragris] 推荐Pärt的另一部知名作品《Spiegel im Spiegel》，但未做过多评价。
-• [ofalkaed] 仅提供了两个YouTube链接，未做进一步评论。
-• [ziofill] 认为《Sarah was ninety years old》是Pärt最美丽且令人难忘的作品之一，建议听众欣赏。
-• [scop] 将Pärt与巴赫相提并论，认为他们的音乐不仅仅是人类的创作，更是上帝荣耀的体现，带有宗教色彩的评价。
+• [throw0101d] 认为Pärt倾向于一种极简主义风格，并非所有人都喜欢。他推荐了几部个人喜欢的作品，如"Cantus in memoriam Benjamin Britten"、"De Profundis"、"Te Deum"等，并提到Pärt常与爱沙尼亚爱乐室内合唱团合作，因为文化上的联系。
+• [antognini] 强调Pärt音乐的转折点是一部名为"Für Alina"的小作品，这是他首次使用"tintinnabuli"风格，打破了他之前遵循的20世纪中期的 dissonant、serialist风格。他详细分析了该作品的结构，指出其简单性与效果的对比。
+• [kmarc] 表达了对"Fratres"的强烈情感反应，认为该作品每次演奏都是一种宣泄体验，能将演奏者的精准转化为听众的激动。
+• [sombragris] 推荐了Pärt的另一部著名作品"Spiegel im Spiegel"，暗示其美感和知名度。
+• [lukeh] 提供了实用建议，如果去塔林，值得访问Arvo Pärt中心。
+• [ziofill] 推荐了"Sarah was ninety years old"，称其为美丽而令人难忘的作品。
+• [ofalkaed] 仅提供了两个作品链接，未附详细评论。
+• [scop] 从宗教角度评价Pärt的音乐，认为他的音乐与巴赫一样，不仅是人类的音乐，更是上帝荣耀的音乐。
 
 补充讨论：
-• Pärt作品的极简主义风格存在一定争议，部分听众可能不喜欢这种风格。
-• 评论中多次出现具体作品的推荐和链接，显示出Pärt作品的多样性和广泛影响力。
-• 对《Für Alina》的结构分析展示了Pärt音乐创作的独特性和技术细节。
-• 宗教和情感因素在Pärt音乐评价中占据重要位置，部分评论提及其作品的灵性和宗教背景。</div>
+• 争议焦点：Pärt的极简主义风格并非所有人都喜欢，尽管有强烈推崇者，但也有可能存在不喜欢这种风格的听众。
+• 作品分析：对"Für Alina"的详细音乐结构分析展示了Pärt独特的"tintinnabuli"风格的创新性和简洁性。
+• 文化联系：Pärt与爱沙尼亚爱乐室内合唱团的合作被视为文化上的联系，因其爱沙尼亚背景。
+• 宗教视角：有评论从宗教角度解读Pärt的音乐，将其与巴赫并列，认为其音乐具有神圣性。
+
+这些观点展示了Pärt作品的多样性和复杂性，以及听众对其音乐的不同情感和理解。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44696894" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://khang-nd.github.io/7.css/" target="_blank">Show HN: Windows 7 GUI for the web</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: khangnd</span> |
+                    <span>评分: 162</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-07-27 17:27</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>7.css是一个CSS框架，用于构建类似Windows 7界面的组件。它基于XP.css，而XP.css则是98.css的扩展。该框架强调语义HTML，如使用`<button>`标签创建按钮，并注重无障碍设计。7.css不包含JavaScript，仅通过CSS样式化HTML，兼容各种前端框架。
+
+使用方法包括通过unpkg直接引入或通过npm安装。若需与其它CSS框架共存，可使用7.scoped.css，将样式限定在`.win7`类内。此外，支持按需引入单独组件样式。
+
+框架提供多种组件，如按钮和气泡（工具提示）。按钮有默认、按下、禁用和聚焦等状态样式。气泡可通过`role="tooltip"`创建，并能定位在不同方向。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕 7.css 框架的评价及其相关技术、设计和法律问题
+
+不同观点：
+• 对 Windows 7 设计风格的怀旧和赞赏  
+  - [cosmic_cheese] 认为 Windows 7 的设计风格优雅且耐看，可以经过调整变得现代，并指出当前的 UI 设计在可读性、信息密度和互动性上有所倒退。
+  - [malikNF] 表达对 Windows 7 的怀旧情感，认为它是微软最后一个优秀的操作系统，之后的系统变得不友好且缺乏创新。
+
+• 技术集成与应用场景  
+  - [joshuaissac] 提出将 7.css 与 Electron 和 Tauri 集成，以创建跨平台的本地化界面，并设想根据用户系统主题自定义界面。
+  - [dybber] 指出 iOS 上的复选框显示不正常，暗示跨平台兼容性问题。
+  - [isomorphic-] 提到某些元素与 DarkReader 不兼容，涉及实用性问题。
+
+• 设计与安全问题  
+  - [1718627440] 担心该框架可能被用于钓鱼攻击，因为其界面过于逼真，可能误导用户。
+  - [robertclaus] 猜测微软的 "glass" 设计是否影响了苹果的界面设计。
+
+• 其他框架和界面风格的比较  
+  - [xcrunner529] 询问是否存在类似 7.css 的 Aqua 风格库。
+  - [pknerd] 质疑为什么没人尝试模仿 KDE 或 GNOME 界面。
+
+补充讨论：
+• 技术实现问题  
+  - [kaltsturm] 询问如何在不使用 TailwindCSS 的情况下使用 7.css 框架。
+
+• 法律风险  
+  - [gchamonlive] 担心这些模仿操作系统视觉元素的项目可能面临微软的法律诉讼，尤其是版权问题。
+  - [hk1337] 附和了关于钓鱼攻击的担忧，并暗示这些项目可能被不法分子利用。
+
+• 项目文档和展示  
+  - [nosioptar] 赞赏项目文档包含图片，认为这是项目的一大亮点。
+
+争议焦点：
+• 7.css 框架的跨平台兼容性与实用性问题  
+• 该框架可能带来的安全风险，尤其是钓鱼攻击的可能性  
+• 模仿操作系统视觉元素的法律风险</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44702894" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -237,162 +385,6 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://hackaday.com/2025/07/27/a-very-tidy-handheld-pi-terminal-indeed/" target="_blank">Cyberdeck – Pi Zero 2 W with Xbox 360 Chatpad</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kelt</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-28 02:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章介绍了一款由Raspberry Pi Zero 2W和其他组件打造的便携手持终端。设计者[Random Alley Cat]通过3D打印外壳，巧妙地解决了部件和线缆的布局问题，使设备看起来非常专业。她使用Pimoroni Hyperpixel屏幕、Xbox 360键盘以及现成的Pi UPS电源板和电池，并设计了一个机架来固定所有部件，使得外壳无需承担双重功能，布局更加简洁。尽管键盘并非完美，但整体设计实用且精致。文章还提到了一些其他类似的设计，并邀请读者分享他们的看法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44706753" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.reuters.com/world/asia-pacific/papering-over-strains-us-allies-prep-taiwan-war-2025-07-25" target="_blank">Papering over strains, US and allies prep for Taiwan war</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mhga</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-28 06:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44707720" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.rnz.co.nz/news/world/568228/how-australia-s-tax-office-lost-billions-in-a-simple-scam" target="_blank">Australia's tax office lost billions in a simple scam</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: colinprince</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-28 02:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章披露了澳大利亚税务局（ATO）一起重大GST欺诈案。通过手机简单操作，成千上万的澳大利亚人利用ATO系统的漏洞，非法获取了共计20亿澳元的GST退款。文章详细描述了Linden Phillips如何轻松通过虚假业务申领巨额退款，而ATO未进行任何核实便支付了款项。尽管有人警告ATO系统存在漏洞，但在发现欺诈行为后，ATO仍继续支付数亿澳元。尽管ATO声称迅速打击了诈骗，但实际反应迟缓，最终通过警方调查才揭露此案。ATO仅追回了5%的被盗款项，显示出其系统和应对措施的严重不足。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于澳大利亚难民政策及难民无法返回家园的报道引发的讨论
-
-不同观点：
-• 观点一：支持澳大利亚现行的难民政策，认为严格控制边境是保护国家安全和维护社会稳定的必要措施。支持者引用报道中的数据，指出许多难民来自冲突地区，返回家园可能面临严重的安全威胁，因此留在澳大利亚是更好的选择。
-
-• 观点二：反对现行政策，认为澳大利亚应该接纳更多难民，并提供更好的安置条件。反对者提出道德和人道主义理由，认为澳大利亚作为一个富裕国家，有责任帮助那些因战争和迫害而流离失所的人。他们还指出，现行政策导致难民长期处于不确定状态，无法重建生活。
-
-• 观点三：中立态度，认为需要在国家安全和人道主义需求之间找到平衡。持这种观点的人建议改进现行政策，例如加快难民身份审核流程，提供临时保护签证，并增加对难民的社区支持和融合项目。
-
-补充讨论：
-• 争议的焦点在于如何在保障国家安全的同时，履行国际人道主义义务。一些评论者提到其他国家的难民政策，例如德国和加拿大的开放政策，认为澳大利亚可以从中学习。
-
-• 讨论中还有人关注难民对澳大利亚社会和经济的潜在影响，包括就业市场和公共资源的分配问题。支持者认为难民可以为澳大利亚带来多样性和劳动力，而反对者担心对本地居民就业和公共服务造成压力。
-
-• 另一个值得注意的讨论点是关于难民原籍国的情况变化，例如某些地区的安全状况是否改善，使得难民有可能安全返回家园。这涉及到如何评估和预测冲突地区的局势变化，以及如何制定相应的难民返回政策。
-
-通过这些不同观点和讨论要点，可以看出围绕澳大利亚难民政策的辩论涉及复杂的道德、法律、安全和社会经济因素。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44706511" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://furnacecreek.org/quicktunes/" target="_blank">Show HN: QuickTunes: Apple Music player for Mac with iPod vibes</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: albertru90</span> |
-                    <span>评分: 87</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-26 23:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>QuickTunes是一款适用于macOS的简洁快速音乐播放器，旨在重现2000年代初iPod的简单音乐播放体验。它支持轻松浏览播放列表、专辑、艺术家和歌曲，并提供流畅的滚动、键盘导航和多点触控手势。应用界面可根据窗口大小动态调整，支持自定义外观。用户可以通过快捷键快速搜索本地或Apple Music曲库，并管理播放队列。其他功能包括使用媒体键控制播放、右键点击Dock图标操作、以及分享当前播放歌曲。兼容macOS 15 "Sequoia"及Apple Silicon和Intel芯片的Mac电脑。提供试用和购买选项。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对不同音乐客户端及其功能的讨论，包括对Apple Music及其替代品的评价。
-
-不同观点：
-• MBCook认为LongPlay是一个专门为完整专辑播放设计的优秀客户端，强调其专注于专辑播放的独特功能，如按专辑顺序播放和跳过整张专辑的选项。界面展示为专辑封面网格，简洁直观。
-
-• leakycap指出该网站上的传真应用是一个无需订阅即可发送传真的优秀解决方案，虽然与音乐客户端无关，但提供了一种实用的附加功能。
-
-• browningstreet询问是否有适用于Windows的Apple Music替代播放器，指出Windows上的Apple Music应用存在“原生平台应用”的不足之处。
-
-• dontlaugh推荐Cider，一个在Linux上使用的替代音乐播放器，并提供了相关链接，展示了对跨平台解决方案的兴趣。
-
-• eisa01寻求iOS上的Apple Music替代品，表达了对Apple Music应用默认搜索指向Apple Music流媒体服务的不满。
-
-• dangus反驳关于Apple Music应用臃肿的观点，认为Apple已经通过将播客、电视/电影和设备管理移出Apple Music来减少臃肿，并质疑所谓“运行缓慢”的说法，认为这是过时的看法。
-
-• bigyabai提到Spot for Linux，另一个适用于Linux的快捷导向流媒体界面，为放弃Mac的用户提供了另一个选择，并提供了相关链接。
-
-• zapzupnz指出LongPlay的名字与QuickTune非常接近，后者是另一个Apple Music的前端，提醒用户注意两者的相似性和潜在混淆。
-
-• dostick强调现代音乐播放器不仅要关注用户界面和用户体验（UIUX），还要关注支持的音乐存储方式，如DLNA、Plex、Jellyfin等，认为这是用户选择播放器的主要考虑因素。
-
-补充讨论：
-• 用户对不同平台（Windows、Linux、iOS）上的Apple Music替代品有各自的需求和推荐，显示出对跨平台解决方案的关注。
-• 对Apple Music应用的“臃肿”和性能问题存在争议，部分用户认为其已经过优化，而其他用户则对其功能和默认设置有所不满。
-• 支持多种音乐存储和流媒体服务的功能被视为选择音乐播放器的重要因素。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44697798" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://www.sfgate.com/hawaii/article/hawaii-petroglyphs-uncovered-20780579.php" target="_blank">Large ancient Hawaiian petroglyphs uncovered by waves on Oahu</a>
                 </h3>
                 <div class="story-meta">
@@ -428,6 +420,70 @@
 总结：讨论主要围绕术语使用、岩画的年代与成因、网站的技术问题以及文化资源访问权限等方面展开，观点多样且涉及多个层面的问题。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44654031" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.jefftk.com/p/shallow-water-is-dangerous-too" target="_blank">Shallow water is dangerous too</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 133</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-07-23 21:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讲述了作者一家人在度假期间，四岁的女儿险些在浅水喷泉中溺水的事件。尽管喷泉水深较浅，仅到孩子肘部，但女儿仍因失去平衡而倒立在水中，无法自行站起。幸亏作者的姨妈及时发现并呼救，作者迅速将她救起，女儿最终安然无恙。此事让作者意识到，即使是浅水，对小孩来说也存在危险，不能掉以轻心。作者对自己将“能站立的浅水”与“孩子能安全自救的浅水”混为一谈感到后悔，并提醒其他家长警惕类似风险。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：儿童与水相关的安全问题，特别是如何防止溺水事故以及游泳教育的必要性。
+
+不同观点：
+• **qchris** 认为，孩子经常接触的三大危险源是汽车、狗和水。水由于其潜在的危险性，尤其需要通过定期的游泳课程来提高安全性。他强调了严格制定规则和及早进行游泳教育的重要性。
+
+• **ncruces** 对美国不常见幼儿游泳教育表示惊讶，分享了其所在地区将游泳教育作为小学课程的一部分，以减少溺水事故。他还引用了数据表明葡萄牙在减少溺水死亡率方面的进步。
+
+• **grujicd** 通过自身差点溺水的经历警示其他父母，即使看似安全的设备（如游泳圈）也可能存在危险。他强调了即使有安全设备，孩子仍可能处于危险之中。
+
+• **susiecambria** 分享了自己在水中遇险的经历，强调了对水的敬畏之心，并指出即使会游泳的人也可能遇到危险。她还提到水中救援知识的重要性，如在干燥地面上也可能因少量水而溺亡。
+
+• **burnt-resistor** 提出了对任何低于3英尺的水体应设置围栏的建议，并提醒人们注意低水头坝和洪水区的危险。
+
+• **RyanOD** 强调了孩子落水时可能没有任何声音，家长需时刻保持警惕。
+
+• **chmod775** 认为孩子在学会走路时就可以学习游泳，3-5岁时可以学会不依赖浮具游泳，这能为紧急情况争取时间。
+
+• **chrismatheson** 引用了“只要有6英寸的水就可以溺亡”的说法，强调了对水的警惕性。
+
+• **jcalx** 分享了关于溺水事件通常是安静的发生，不会有大喊和挥手求救的迹象。
+
+• **praptak** 指出即使是像拖地桶这样小的水体也可能导致致命事故。
+
+• **eviks** 质疑是否通过游泳教育就能避免所有溺水事故。
+
+• **ghaff** 提到其大学要求通过游泳测试才能毕业，虽然对幼儿无帮助，但这种要求可能对提高整体游泳能力有帮助。
+
+• **littlestymaar** 强调了即使是浅水，对孩子来说也是危险的，并举例说明孩子在少于一英尺的水中溺亡的事故。
+
+• **plasma_beam** 作为泳池拥有者和家长，认为不应让幼儿独自探索有水体的院子，即使水很浅，也存在危险。
+
+补充讨论：
+- 评论中多次提到即使会游泳的人也可能遇到水中危险，强调了对水的敬畏和持续的监督必要性。
+- 不同地区对幼儿游泳教育的重视程度不同，有些地区将其纳入正式教育，而其他地区则不常见。
+- 数据和个人经历被用作支持论点的依据，如葡萄牙溺水死亡率的改善和个人溺水经历的分享。
+- 提出了多种预防措施，如围栏设置、持续的家长监督和水中救援知识的教育。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44664176" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -506,6 +562,59 @@ pip install tinyio
 总结来看，讨论主要围绕tinyio库的设计和使用细节展开，包括与其他库的比较、语法选择的原因以及对不熟悉Python的开发者的一些困惑解答。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44653509" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://furnacecreek.org/quicktunes/" target="_blank">Show HN: QuickTunes: Apple Music player for Mac with iPod vibes</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: albertru90</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-26 23:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>QuickTunes是一款适用于macOS的简洁快速音乐播放器，旨在重现2000年代初iPod的简单音乐播放体验。它支持轻松浏览播放列表、专辑、艺术家和歌曲，并提供流畅的滚动、键盘导航和多点触控手势。应用界面可根据窗口大小动态调整，支持自定义外观。用户可以通过快捷键快速搜索本地或Apple Music曲库，并管理播放队列。其他功能包括使用媒体键控制播放、右键点击Dock图标操作、以及分享当前播放歌曲。兼容macOS 15 "Sequoia"及Apple Silicon和Intel芯片的Mac电脑。提供试用和购买选项。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：用户对不同音乐客户端及其功能的讨论，包括对Apple Music及其替代品的评价。
+
+不同观点：
+• MBCook认为LongPlay是一个专门为完整专辑播放设计的优秀客户端，强调其专注于专辑播放的独特功能，如按专辑顺序播放和跳过整张专辑的选项。界面展示为专辑封面网格，简洁直观。
+
+• leakycap指出该网站上的传真应用是一个无需订阅即可发送传真的优秀解决方案，虽然与音乐客户端无关，但提供了一种实用的附加功能。
+
+• browningstreet询问是否有适用于Windows的Apple Music替代播放器，指出Windows上的Apple Music应用存在“原生平台应用”的不足之处。
+
+• dontlaugh推荐Cider，一个在Linux上使用的替代音乐播放器，并提供了相关链接，展示了对跨平台解决方案的兴趣。
+
+• eisa01寻求iOS上的Apple Music替代品，表达了对Apple Music应用默认搜索指向Apple Music流媒体服务的不满。
+
+• dangus反驳关于Apple Music应用臃肿的观点，认为Apple已经通过将播客、电视/电影和设备管理移出Apple Music来减少臃肿，并质疑所谓“运行缓慢”的说法，认为这是过时的看法。
+
+• bigyabai提到Spot for Linux，另一个适用于Linux的快捷导向流媒体界面，为放弃Mac的用户提供了另一个选择，并提供了相关链接。
+
+• zapzupnz指出LongPlay的名字与QuickTune非常接近，后者是另一个Apple Music的前端，提醒用户注意两者的相似性和潜在混淆。
+
+• dostick强调现代音乐播放器不仅要关注用户界面和用户体验（UIUX），还要关注支持的音乐存储方式，如DLNA、Plex、Jellyfin等，认为这是用户选择播放器的主要考虑因素。
+
+补充讨论：
+• 用户对不同平台（Windows、Linux、iOS）上的Apple Music替代品有各自的需求和推荐，显示出对跨平台解决方案的关注。
+• 对Apple Music应用的“臃肿”和性能问题存在争议，部分用户认为其已经过优化，而其他用户则对其功能和默认设置有所不满。
+• 支持多种音乐存储和流媒体服务的功能被视为选择音乐播放器的重要因素。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44697798" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
