@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-29 09:13 (北京时间)
+            最后更新时间: 2025-07-29 12:05 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,264 +61,70 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/segmentationf4u1t/trae_telemetry_research" target="_blank">Performance and telemetry analysis of Trae IDE, ByteDance's VSCode fork</a>
+                    <a href="https://tkdodo.eu/blog/the-useless-use-callback" target="_blank">The Useless UseCallback</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: segfault22</span> |
-                    <span>评分: 929</span> |
-                    <span>评论数: 35</span> |
-                    <span>发布时间: 2025-07-27 17:57</span>
+                    <span>作者: 0xedb</span> |
+                    <span>评分: 69</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-07-28 20:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章分析了字节跳动旗下的Trae IDE（基于Visual Studio Code的 fork）的性能和隐私问题。研究发现，Trae IDE存在资源消耗过多（33个进程，5.7 GB内存，远超VSCode的9个进程和0.9 GB内存）以及持续发送遥测数据的问题，即便用户已关闭遥测功能。测试还显示，Trae与字节跳动基础设施保持定期连接，传输大量数据，且包含用户ID等信息。虽然版本2.0.2解决了部分进程过多的问题，但遥测数据传输问题仍未得到有效解决。文章揭示了Trae IDE在性能和隐私管理上的不足及其对社区反馈的处理方式。</p>
+                    <p>本文讨论了React中`useCallback`和`useMemo`的误用问题，指出在某些情况下这些钩子实际上是没有必要的，甚至可能导致不必要的开销。
+
+### 主要内容：
+1. **为什么要使用memoization？**
+   - 通常是为了性能优化，避免不必要的重新渲染或副作用（effect）的频繁执行。
+   - `useCallback`和`useMemo`的主要作用是保持引用稳定性（referential stability）。
+
+2. **无用的memoization**：
+   - 如果组件没有被`React.memo`包裹，那么使用`useCallback`或`useMemo`不会带来性能提升。
+   - 例子中展示了将`useCallback`用于非memoized组件（如内置的`button`）时，并不能带来任何实际的好处，反而增加了不必要的缓存和依赖比较开销。
+
+3. **需要注意的场景**：
+   - 如果组件内部使用了`useEffect`或将props传递给其他memoized组件，移除memoization可能会导致问题。
+
+总结：在非memoized组件中使用`useCallback`或`useMemo`通常是多余的，应该谨慎使用这些钩子以避免不必要的开销和复杂性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对不同IDE和编辑器中遥测（telemetry）功能的分析和争议
+                    <div class="comments-summary">主要讨论点：React中关于`useEffect`、`useCallback`、`useMemo`等Hooks的复杂性、使用必要性及性能优化的讨论。
 
 不同观点：
-• **对测试方法的质疑**：
-  - [kiitos] 认为在屏幕分享中，用户更改了遥测选项但没有重启编辑器，这样的测试无法得出有效结论。重启编辑器可能是必要的步骤。
-  
-• **推荐替代IDE**：
-  - [barkingcat] 推荐了TheiaIDE，这是一个类似VSCode的编辑器，曾经比较粗糙，但现在有了显著改进，并被一些大公司使用。该用户认为TheiaIDE是一个值得考虑的替代方案。
+• **nemothekid的观点**：认为React的复杂性是隐藏的，`useEffect`和`useCallback`等Hooks常常导致问题。修复这些问题通常需要重新架构组件树，而不是简单地使用`useCallback`。对API、框架或语言的能力表示怀疑，并提到React编译器的出现试图解决这些问题，但对其必要性感到惊讶。
 
-• **对CapCut桌面版遥测的关注**：
-  - [fjghajkhdfgjlk] 对ByteDance的CapCut视频编辑器感兴趣，认为其用户界面优秀，但担心其中可能包含遥测或间谍软件，希望看到相关分析。
+• **wfleming的观点**：支持在某些情况下使用`useCallback`，特别是当回调函数依赖于props时。认为不把依赖放入依赖数组可能会导致使用过时的值，从而产生错误。同时指出，父组件应该负责 memoizing 回调函数，而不是子组件。
 
-• **对其他IDE（如Kiro）的分析请求**：
-  - [spyridonas] 请求对AWS的Kiro（VSCode的AWS分支）进行遥测实践分析，表现出对不同平台数据收集实践的关注。
+• **matsemann的观点**：对Hooks的复杂性表示不满，尤其是`useEffect`中的依赖数组和函数的引用稳定性问题。还提到在处理异步更新和状态管理时，Hooks会导致不优雅的代码结构，称之为“spaghetti code”。
 
-• **对遥测数据类型的接受度**：
-  - [cchance] 认为所收集的系统信息、使用模式和性能指标等数据并不是特别敏感或冒犯，表示可以接受。
+• **rbongers的观点**：认为如果父组件不需要优化，可以不使用`useMemo`和`useCallback`。如果需要优化，这些工具是必要的，并且它们的使用是自我解释的。不认为这是过度的间接层次，反而是为了避免不必要的重新渲染。
 
-• **对遥测禁用问题的质疑**：
-  - [drewbitt] 质疑为什么即使少数用户关闭了遥测功能，某些公司仍然不愿意完全禁用它。
+• **CharlieDigital的观点**：强烈反对使用memoization，认为这增加了不必要的复杂性和代码开销。与其他框架相比，React的设计导致了更多的手动优化需求，并认为这是React自身体设计带来的问题。
 
-• **对具体IDE身份的困惑**：
-  - [theusus] 指出讨论中没有明确提到所讨论的IDE是哪一个，并提供了可能的链接，提醒不要误伤。
+• **strogonoff的观点**：强调`useMemo`和`useCallback`的重要性，特别是在保持非原始类型数据的引用相等性方面。认为这是一种必要的优化手段，并且有助于代码的清晰度和可维护性。
 
-• **使用工具屏蔽遥测的建议**：
-  - [efitz] 建议使用pi-hole屏蔽遥测端点，并通过观察功能是否正常来判断遥测的必要性。同时批评了某些公司无视用户偏好的行为。
+• **rtpg的观点**：认为盲目使用`React.memo`应该是一个很大的胜利，因为引用的相等性成本很低。对“先修复慢渲染”的观点表示怀疑，认为避免浪费渲染周期和修复慢渲染是两个不同的问题。
 
-• **对遥测数据安全的担忧**：
-  - [leetbulb] 担心遥测事件可能被用来泄露任意数据（如源代码），指出通过特定方式编码数据的可能性。
+• **patrickthebold的观点**：提出了一种无Hooks的模式，使用全局状态和外部状态来避免组件之间的状态同步和传递，认为这样可以减少一些React中的复杂性。
 
-• **对开源项目遥测的观察**：
-  - [drewbitt] 指出Bytedance的trae-agent项目似乎没有包含遥测。
+• **prinny_的观点**：对React的复杂性和其引入的“bandaid fixes”表示失望，认为新特性并没有带来新的机会，反而增加了开发难度。对依赖的memoization需求表示不满，并认为React正在疏远一些爱好者和小型用户。
 
-• **对使用专有软件的批评**：
-  - [isatty] 质疑人们为什么会使用明显的“间谍软件”而不选择自由软件。
+• **qprofyeh的观点**：认为Hooks是一个泄漏的抽象，会导致更多的问题。
 
-• **对不同公司遥测的比较**：
-  - [nottorp] 比较了Bytedance和Microsoft的遥测，认为除了数据被发送到不同服务器外，没有太大区别。
+• **hyfgfh的观点**：认为`useRef`模式像是一种代码异味，怀念生命周期方法，并预测未来React的版本会带来更多的模式和问题。
+
+• **SSchick的观点**：不理解为什么`React.memo`不是默认应用的，认为手动在每个组件上使用`memo`是过度的开销，并且难以在代码库中强制执行。
 
 补充讨论：
-• **对透明度和用户控制的呼吁**：
-  - [stan_kirdey] 赞扬了OP的详细分析，并呼吁IDE开发商通过默认选择加入遥测和提供真正的关闭选项来获得用户信任。
-
-总体来看，讨论围绕遥测的功能、数据收集的合理性、对专有软件和自由软件的选择以及如何有效屏蔽或减少遥测展开。争议的焦点在于用户是否能有效关闭遥测功能以及遥测数据的安全性和透明度。</div>
+- 争议的焦点在于React Hooks（特别是`useEffect`、`useCallback`和`useMemo`）的必要性和复杂性。一些开发者认为这些工具带来了不必要的复杂性，而另一些开发者则认为它们是必要的优化手段。
+- 另一个讨论点是React编译器的必要性及其解决问题的能力。
+- 有人提出无Hooks的开发模式，试图减少React中的复杂性问题。
+- 对React严格模式和Rails 8的提及显示了对React生态系统中不断变化的特性的广泛看法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44703164" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lareviewofbooks.org/article/viral-language/" target="_blank">Viral Language</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lermontov</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-26 04:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同用户对年轻人（尤其是Z世代）使用语言现象的看法，以及语言演变的历史背景和相关概念的辨析。
-
-不同观点：
-• [kazinator] 认为诸如 "aura"（气场）和 "brain rot"（脑残）等词汇并非新创，并提供了词源证据。例如，"aura" 一词早在1732年就有使用记录，而 "brain-rot" 甚至可以追溯到1854年亨利·梭罗的作品《瓦尔登湖》。这一观点强调了这些词汇的历史渊源，暗示它们在现代被认为是新词可能是一种误解。
-
-• [henriquegodoy] 强调语言和行为之间的相互影响，认为行为会影响语言，而语言反过来又会影响行为，形成一种循环。这种观点关注语言演变的动态过程，强调社会行为对语言创新的推动作用。
-
-• [bitwize] 提出需要区分几种不同的语言现象：Z世代的俚语（如 "rizz"）、为避免被平台惩罚而使用的代用语（如 "unalive" 代表 "kill"），以及用星号替代字母以避免提及某些不受欢迎的人物（如 "El*n M*sk"）。此外，bitwize 质疑一些被认为是Z世代使用的词汇（如 "cheugy"）的真实性，认为这些词汇可能是媒体和市场营销人员虚构并传播的，类似于1990年代“垃圾摇滚俚语”的骗局。
-
-补充讨论：
-• 争议焦点在于某些词汇或语言现象的真实性和来源。例如，kazinator 通过词源网站证明 "aura" 和 "brain rot" 的历史悠久，而 bitwize 则对一些所谓的Z世代词汇（如 "cheugy"）的真实性提出质疑，认为这些词汇可能是媒体虚构的产物。
-
-• bitwize 强调了不同语言现象之间的区别，认为混淆这些现象会导致对年轻人语言使用的误解和简化，因此有必要对它们进行区分和澄清。
-
-• henriquegodoy 的观点补充了语言演变的动态视角，强调语言和行为之间的相互影响和反馈循环。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44691232" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://90s.dev/blog/requesting-funding-for-90s-dev.html" target="_blank">Requesting Funding for 90s.dev</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 90s_dev</span> |
-                    <span>评分: 67</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-07-28 15:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章作者介绍了一个名为90s.dev的项目，最初误称为“视频游戏制作工具”，但实际上是一个复古操作系统网页环境，计划在其中开发游戏制作功能。由于时间和资金限制，项目发布时尚未完成，作者为此寻求资助。由于需要维持生计，作者提出通过GitHub Sponsors按小时付费的方案：每收到25美元，就投入一小时开发90s.dev。该项目已经耗费作者大量时间和精力，且代码完全前端化，难以直接 monetize。作者提供了项目源码和文档链接，并邀请有兴趣的人通过GitHub Sponsors进行资助。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对不同话题的建议、反馈和意见
-
-不同观点：
-• [bix6] 建议通过众筹或Kickstarter等平台筹集资金，并通过特殊奖励回馈支持者。这表明了对项目融资的积极建议和鼓励。
-
-• [gausswho] 分享了一个关于页面上的彩色气泡的体验，将其比作旧学校的屏幕保护程序，表达了对这一设计细节的欣赏。
-
-• [chistev] 提到帖子上了首页，并澄清这不是一个负面评论。他还提到之前有人抱怨被反对投票，暗示对社区反馈机制的关注。
-
-• [90s_dev] 描述了自己对开发90s.dev的愿景，包括技术细节和功能设想，如创建一个适合开发游戏的复古操作系统环境，并提出通过GitHub Sponsors获取资金支持的想法。
-
-补充讨论：
-• [dfedbeef] 对某个被标记的帖子表示不解，认为该帖子与主题高度相关，反映了对于社区管理和内容审核的关注。
-
-争议焦点：
-• 对于帖子被标记和反对投票的合理性存在不同看法，[chistev] 提到了之前有人对被反对投票的抱怨，暗示可能存在争议。
-• [dfedbeef] 对某个被标记的帖子表示不解，提出了内容相关性的争议。
-
-其他值得注意的讨论点：
-• [90s_dev] 对复古开发环境的设想引发了对技术实现和资金支持方式的讨论，特别是通过GitHub Sponsors获取支持的具体建议。
-• [gausswho] 对页面设计细节的积极反馈，显示出用户对界面设计的小惊喜和愉悦体验。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44711940" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wsj.com/tech/personal-tech/why-you-should-use-a-password-manager-for-all-your-secrets-not-just-logins-e4c46a8b" target="_blank">Use a Password Manager for All Your Secrets, Not Just Logins</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: petethomas</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-28 23:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：全球化对本地文化的影响及应对策略
-
-不同观点：
-• 观点一：全球化对本地文化造成威胁  
-  — 论据：全球化带来了强势文化的入侵，使得本地文化逐渐消失。  
-  — 例子：有人提到好莱坞电影对本地电影产业的冲击，导致本地作品难以获得市场份额。
-
-• 观点二：全球化可以与本地文化共存并互相 enrich  
-  — 论据：全球化提供了文化交流的机会，本地文化可以通过吸收外来文化的优点来丰富自己。  
-  — 例子：有人指出，许多本地艺术家通过国际交流提升了创作水平，并获得了更大的展示平台。
-
-• 观点三：需要有策略地保护本地文化  
-  — 论据：完全拒绝全球化是不现实的，但可以通过政策支持和文化教育来保护和促进本地文化的发展。  
-  — 例子：有人建议政府可以通过补贴本地文化产业和举办文化活动来增强本地文化的竞争力。
-
-• 观点四：全球化本质上是经济驱动，文化影响是次要的  
-  — 论据：全球化主要是经济现象，文化影响只是伴随效应，不必过度担忧。  
-  — 例子：有人提到跨国公司进入本地市场，虽然带来了新的文化元素，但主要是为了商业利益。
-
-补充讨论：
-— 争议焦点在于全球化是否必然导致文化同质化。支持文化共存观点的人认为本地文化有足够的韧性和适应能力，而反对者则担心文化和身份认同的丧失。
-— 有评论指出，全球化对不同地区的影响是多样的，不能一概而论，需要具体分析各地区的文化特性与应对能力。
-— 还有人提到，技术发展尤其是互联网的普及，使得文化交流更加便捷，但也加剧了文化冲突的可能性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44717038" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.dumbpipe.dev/" target="_blank">Dumb Pipe</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: udev4096</span> |
-                    <span>评分: 936</span> |
-                    <span>评论数: 48</span> |
-                    <span>发布时间: 2025-07-27 14:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>"Dumb pipe" 是一种简化设备间直接连接的工具，能够在2023年复杂的网络环境中穿透NAT，保持设备连接稳定。用户只需在两台计算机上运行一个命令即可建立连接并传输数据，无需账户或配置。该工具基于Iroh Rust库，使用QUIC协议，支持多路复用和加密。对于无法直接连接的情况，它通过中继节点传输数据。用户还可以利用Iroh的附加功能如pubsub和数据同步，但这些会使管道不再“简单”。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：通过不同工具和方法实现计算机之间的通信和文件传输
-
-不同观点：
-• **使用SSH和socat进行加密传输**：[remram]提出可以通过SSH和socat或mkfifo工具实现加密的数据流传输，并提供了具体的命令示例。该方案可以通过中继服务器进行传输，适用于防火墙或NAT后的目标。
-• **对“智能”产品的批评**：[44za12]认为，许多被称为“ dumb ”（简单）的产品实际上非常智能，因为它们只专注于基本功能而不进行额外的数据收集或广告推送。他希望通信工具能像管道一样简单直接。
-• **文件传输工具的分享**：[smusamashah]分享了一个包含浏览器和CLI工具的列表，用于在不同设备之间传输文件，并希望获取更多类似工具。
-• **USB直接通信的疑问**：[Aardwolf]质疑为什么不能通过USB电缆直接在两台电脑之间进行通信和文件传输，特别是对于USB-C接口，同时提到Android设备与PC之间的通信相对容易。
-• **对Iroh系统中节点发现和解析的批评**：[kiitos]认为Iroh系统在节点发现和解析方面没有详细说明，虽然概念类似于DNS，但实际操作中存在困难，且作者没有给出明确的解决方案。
-• **秘密短语共享的复杂性**：[Alifatisk]提到通过Iroh分享长秘密短语的过程繁琐，质疑是否有更简单的方法在设备之间共享此类信息。
-
-补充讨论：
-• **隧道解决方案的缺陷和需求**：[zackmorris]认为大多数隧道解决方案存在缺陷，并提出了一个检查清单来评估这些缺陷。他呼吁提供一个更全面的解决方案。
-• **与Tailscale的比较**：[Liftyee]提到Iroh和Tailscale有相似的需求，质疑两者之间是否有重复的实现，并希望有现成的低级库来处理NAT等问题。
-• **Iroh技术的赞赏与推荐**：[ilovefood]高度赞赏Iroh技术，并提到在Web3峰会上的相关工作坊，提供了代码和 slides 的链接。
-• **隧道工具的资源分享**：[behrlich]提供了一个关于隧道工具的资源列表链接，供有兴趣的人参考。
-• **SSH管道的实现**：[qudat]提到在pico.sh使用SSH构建了类似的管道传输工具，并提供了链接。
-• **游戏实时网络的适用性**：[darzu]质疑Iroh技术是否适用于游戏中的实时网络，特别是对于需要低延迟和高带宽的UDP通信。
-• **PWNAT工具的推荐**：[bob1029]推荐了pwnat工具，认为它避免了中间服务器的需求，尽管不完全覆盖所有使用场景。
-• **基于Iroh的隧道管理工具**：[CGamesPlay]提到自己开发了一个基于Iroh的隧道管理CLI工具，支持TCP、UDP和UNIX socket的端口转发，并提供了链接。
-
-争议焦点：
-• **Iroh系统中节点发现和解析的实现细节不足**：[kiitos]认为Iroh在节点发现和解析方面缺乏详细的解决方案，而这正是P2P网络中的关键问题。
-• **不同隧道解决方案的缺陷和需求**：[zackmorris]和其他用户讨论了各种隧道解决方案的不足之处，并希望找到一个能够解决所有问题的“终极”解决方案。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44701555" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44715391" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -397,6 +203,256 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.tampabay.com/news/weather/2025/07/28/tampa-florida-100-degrees/" target="_blank">Tampa FL hits 100 degrees for first time in recorded weather history</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: WarOnPrivacy</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-28 21:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Tampa recorded its hottest day in history on Sunday, reaching 100 degrees for the first time since record-keeping began in 1890. The extreme heat has raised concerns about its continuation, especially with low rain chances forecasted. In response to the heatwave, measures are being taken to protect both people and animals, such as cooling horses with hose water. Additionally, the article touches on other regional news, including hurricane preparedness, real estate activity, and recent weather events like flash flooding in Plant City. The ongoing high temperatures in the Tampa Bay area remain a critical concern.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：气候变化及其对温度的影响，特别是区域温度异常和人类应对能力。
+
+不同观点：
+• **jauntywundrkind** 认为Climate Reanalyzer是一个可靠的工具，可以用来观察全球温度异常，尤其是海洋温度异常。他提到2023年Manatee Bay海洋温度达到100华氏度的情况，并指出Tampa区域的温度并没有显著异常，但在墨西哥湾北部有一些明显的温度异常。
+
+• **davidw** 同意湿度对温度感知的影响，并指出南部的佛罗里达州在最高温度上不如俄勒冈州和华盛顿州。他强调了干燥气候对温度感知的影响，并提到在干燥气候下，阴凉处和微风可以显著改善体感温度。
+
+• **wewewedxfgdf** 持悲观态度，认为面对气候变化无能为力，只能适应。他还指出这是全球普遍的政治立场。
+
+• **poulsbohemian** 认为当前的高温不算严重，未来可能会出现更极端的高温天气，如连续多日超过100华氏度的情况。
+
+• **toomuchtodo** 通过个人经历描述了在Tampa机场的体验，表达了对未来气候变化的担忧，并提到对不承认气候变化者的不解。
+
+• **WorldPeas** 提出人类活动，如建造大型邮轮港口，可能对局部气候产生影响，并提到由此引发的个人不满。
+
+补充讨论：
+• 讨论中提到了多个影响温度感知的因素，包括湿度、海洋温度异常和人类活动。
+• 有人对气候变化持悲观态度，认为无法改变只能适应，而另一些人则通过具体数据和个人经历表达了对气候变化的担忧和关注。
+• 人类活动对局部气候的影响也被提及，特别是基础设施建设对温度的潜在影响。
+
+争议焦点：
+• 关于南部地区是否一定更温暖的问题存在不同看法，具体数据和感知之间的差异引发了讨论。
+• 面对气候变化应采取何种态度和行动，存在一定的分歧，有人认为无能为力，而另一些人则强调需要采取行动。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44715993" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.polygon.com/news/616835/visa-mastercard-steam-itchio-campaign-adult-games" target="_blank">Visa and Mastercard are getting overwhelmed by gamer fury over censorship</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mrzool</span> |
+                    <span>评分: 356</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2025-07-28 17:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>游戏玩家不满Steam和itch.io下架成人游戏，将愤怒转向支付处理公司Visa和Mastercard，发起大规模邮件和电话抗议活动。玩家认为这些支付公司是下架的幕后推手，尽管其规则模糊。玩家在社交媒体上组织动员，通过打电话和发邮件施压，意图通过制造沟通障碍，迫使支付公司关注问题。尽管客服代表表示无权改变政策，玩家仍坚持通过占用线路和回拨占用其他客户的服务资源。玩家还向高管发送邮件，并保持礼貌态度以增加影响力。同时，有组织提供资源和脚本帮助玩家参与抗议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：支付处理公司作为 gatekeeper 对内容进行审查的争议
+
+不同观点：
+• Kapura：认为少数人基于个人喜恶推动审查是荒谬的，特别是当这些内容并没有强迫任何人消费时。主张应继续对支付处理公司施压，同时也需抵制那些试图决定其他成年人如何支配时间的人。
+• numpad0：指出最初被下架的是色情内容，但现在审查范围已扩展到恐怖游戏，如《Mouthwashing(2024)》。担忧审查范围会继续扩大。
+• duxup：批评支付处理系统的不透明性，举例一家制作剑的公司无故被禁止使用信用卡支付，且无法得知具体原因或申诉。
+• benoau：引用Collective Shout的博客，指出当Steam未回应时，他们转向支付处理公司施压，认为这是有效的策略。
+• ThrowawayR2：认为消费者和企业对Visa、Mastercard没有其他选择，主张应向政治人物施压，特别是民主党立法者，以获得支持和选票。
+• dehugger：建议Steam改变政策，让成人游戏只能用商店信用购买，以解决支付处理问题。
+• tflinton：提醒大家即使某些内容不违法，也可能带来民事问题和风险，支付处理公司可能不得不采取审查措施以规避风险。
+• motbus3：感叹当今社会人人想当审查者或统治者，表达对此趋势的不满。
+• SilverElfin：认为某些内容应受到严格监管，但私人支付应由政府作为公共服务提供，以避免审查。
+• vunderba：提供一个相关的在线请愿链接，呼吁对支付处理公司施压。
+• bsenftner：质疑相关文章的真实性，认为其迎合游戏观众，没有实质内容。
+• nemomarx：提供信息称Collective Shout通过大量电话成功引起支付公司注意，建议继续保持这种压力。
+• 3acctforcom：认为普通人的电话无法影响大公司高层的决策，强调权力运作的现实。
+• scirob：询问是否有任何行动可以减少这些公司的权力。
+• CivBase：对“玩家愤怒”能否带来实质性改变持怀疑态度，但承认当前的Stop Killing Games活动可能具有一定影响力。
+
+补充讨论：
+• 争议焦点在于支付处理公司作为gatekeeper审查内容的合理性和合法性，以及应如何有效抵制这种趋势。
+• 讨论中涉及的具体案例（如《Mouthwashing(2024)》游戏和制作剑的公司）突显了审查对不同类型内容的影响。
+• 建议的应对策略包括向支付处理公司施压、通过政治途径寻求改变、以及利用集体行动引起注意。
+• 对当前审查系统的透明度和申诉机制缺失的问题也有较多批评。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44713414" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lareviewofbooks.org/article/viral-language/" target="_blank">Viral Language</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lermontov</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-26 04:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同用户对年轻人（尤其是Z世代）使用语言现象的看法，以及语言演变的历史背景和相关概念的辨析。
+
+不同观点：
+• [kazinator] 认为诸如 "aura"（气场）和 "brain rot"（脑残）等词汇并非新创，并提供了词源证据。例如，"aura" 一词早在1732年就有使用记录，而 "brain-rot" 甚至可以追溯到1854年亨利·梭罗的作品《瓦尔登湖》。这一观点强调了这些词汇的历史渊源，暗示它们在现代被认为是新词可能是一种误解。
+
+• [henriquegodoy] 强调语言和行为之间的相互影响，认为行为会影响语言，而语言反过来又会影响行为，形成一种循环。这种观点关注语言演变的动态过程，强调社会行为对语言创新的推动作用。
+
+• [bitwize] 提出需要区分几种不同的语言现象：Z世代的俚语（如 "rizz"）、为避免被平台惩罚而使用的代用语（如 "unalive" 代表 "kill"），以及用星号替代字母以避免提及某些不受欢迎的人物（如 "El*n M*sk"）。此外，bitwize 质疑一些被认为是Z世代使用的词汇（如 "cheugy"）的真实性，认为这些词汇可能是媒体和市场营销人员虚构并传播的，类似于1990年代“垃圾摇滚俚语”的骗局。
+
+补充讨论：
+• 争议焦点在于某些词汇或语言现象的真实性和来源。例如，kazinator 通过词源网站证明 "aura" 和 "brain rot" 的历史悠久，而 bitwize 则对一些所谓的Z世代词汇（如 "cheugy"）的真实性提出质疑，认为这些词汇可能是媒体虚构的产物。
+
+• bitwize 强调了不同语言现象之间的区别，认为混淆这些现象会导致对年轻人语言使用的误解和简化，因此有必要对它们进行区分和澄清。
+
+• henriquegodoy 的观点补充了语言演变的动态视角，强调语言和行为之间的相互影响和反馈循环。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44691232" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://utcc.utoronto.ca/~cks/space/blog/programming/WhyRDParsersForMe" target="_blank">Why I write recursive descent parsers, despite their issues (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: blobcode</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-24 04:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文是Chris Siebenmann于2025年2月17日发布的一则通知，解释了为何一些用户在访问其博客"Wandering Thoughts"或相关wiki "CSpace"时被拦截。原因是为应对大量使用旧浏览器（尤其是旧版Chrome）的爬虫（用于LLM训练数据采集），作者采取了反爬虫措施，可能误拦了使用旧浏览器或通过某些网页存档服务（如archive.*）访问的正常用户。被误拦的用户可联系作者并提供所用浏览器的User-Agent字符串以解决问题。作者建议使用更为规范的archive.org进行存档访问。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同类型的解析器技术及其优缺点，包括手写递归下降解析器与自动生成解析器（如LALR、YACC、Bison等）之间的比较。
+
+不同观点：
+• JonChesterfield认为LALR解析器生成器（如Bison或lemon）在处理复杂语法时可以有效避免歧义，但其错误信息不友好。他建议使用LALR解析器进行初步解析，若失败则调用自定义解析器进行诊断，而不是直接使用自定义解析器进行整个编译流程，因为这可能导致更多错误。
+• jasperry更偏好OCaml中的Menhir解析器生成器，认为其具备许多便利功能，并且享受掌握该工具的过程。
+• randomNumber7引用"Top Down Operator Precedence"（Pratt Parsing）算法，认为递归下降解析器优于生成器，并且该方法早在1973年就被提出。
+• nicoburns指出，过去十年中递归下降解析器在生产系统中更受欢迎，并且少见其他方法的提倡。
+• o11c则认为Bison经过多年改进已经非常实用，如果配置得当，可以解决很多实际问题，并批评那些无视这些改进而继续抱怨YACC的人。
+• ufo提出一个折中方案，使用LALR解析器生成器检查语法是否存在歧义，但实际实现仍使用递归下降解析器。
+• marssaxman表示从未觉得解析器生成器值得使用，递归下降加上Pratt优先级攀爬算法已足够应对大多数情况。
+• norir描述了一种自底向上构造无歧义递归下降解析器的技术，强调局部无歧义和避免全局词法分析的必要性。
+• zahlman提到在Go和Python中没有标准的解析器生态，但提供了一些替代工具如pybison、ply和pyparsing。
+• favorited质疑主流编译器最终是否都会转向手写递归下降解析器，并提到CRuby和Go的历史例子。
+• pklausler认为递归下降解析器在需要语法反馈的语言（如Fortran）中更为干净，并且解析器组合子使得递归下降解析器易于编码。
+• coldcode分享了1982年用Fortran编写Jovial语言解析器的个人经验，认为Fortran并不适合编写解析器。
+• fjfaase通过实际项目说明了递归下降解析器在处理C语言语法时的灵活性，特别是在结合语义信息的情况下。
+
+补充讨论：
+• 争议焦点在于解析器生成器与手写递归下降解析器之间的选择。前者在处理复杂语法和检查语法正确性上具有优势，但错误信息不友好；后者则在灵活性和易于实现上更受欢迎。
+• 不同语言和项目背景下的解析器选择有所不同，OCaml和Fortran等语言有各自偏好的工具和方法。
+• 一些开发者提出折中方案，结合两者的优点，以解决实际问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44666824" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://en.ssi.dk/news/news/2025/large-danish-study-no-link-between-vaccines-and-autism-or-49-other-health-conditions" target="_blank">Danish Study: No link between vaccines and autism or other health conditions</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: healsdata</span> |
+                    <span>评分: 127</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-07-28 23:47</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>一项大型丹麦研究分析了超过100万名儿童的数据，发现含铝疫苗与包括自闭症、哮喘和自身免疫疾病在内的50种健康问题之间没有关联，证实了丹麦儿童疫苗接种计划的安全性。研究由Statens Serum Institut（SSI）进行，数据涵盖1997年至2018年出生的儿童，结果显示疫苗中微量铝不会增加这些健康风险。该研究发表在《Annals of Internal Medicine》上，旨在回应国际上对疫苗安全性的争论，强调应依赖科学证据而非误导信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：疫苗与自闭症之间的关系以及相关研究的科学有效性和透明度
+
+不同观点：
+• puppycodes认为“疫苗导致自闭症”是一种错误的信息传播，将这种观点视为一种“心智病毒”。
+• SubiculumCode作为自闭症研究者指出，虽然不能完全排除疫苗导致自闭症的可能性，但其他原因有更强的理论和实证支持，研究资源应优先投入到这些领域。
+• bradleyy关注科学研究的透明度问题，质疑是否大多数研究都会公布数据和代码，尤其是在当前科学复制危机的背景下。
+• another_twist对疫苗怀疑者持强烈批评态度，认为试图说服他们毫无意义，甚至视其为公共健康的威胁。
+• dc396指出，无论研究结果如何，其在政治或公众中的影响可能微乎其微，这令人沮丧。
+• glitchc对此表示庆幸，认为如果研究结果显示有任何关联或不确定，将会引发更大的风波。
+• carom作为疫苗怀疑者，对一项具体研究的数据进行了解读，认为该研究未能完全排除疫苗与阿斯伯格综合症之间的联系，并希望看到更长期的数据分析。
+• autoexec鼓励人们在面对新证据时改变观点，认为这是智慧的表现。
+• macinjosh表达了对疫苗的个人疑虑，主要集中在疫苗制造商的法律豁免、医生回扣以及疫苗定义的改变等问题上，但仍选择遵循医生的建议。
+• fsckboy对研究的设计和研究者的资金来源提出质疑，认为研究可能缺乏诚意，并指出疫苗中铝的作用及其历史背景。
+• fooker希望研究能说服父母不要听信错误信息，但同时也担心学术界是否允许发表与主流观点相悖的研究。
+• kryogen1c好奇丹麦和美国的疫苗接种计划中铝含量比较如何。
+
+补充讨论：
+• 研究透明度与科学复制危机：bradleyy和fsckboy都提到了研究透明度和资金来源的问题，反映了对科学研究可信度的关注。
+• 疫苗怀疑者的态度：another_twist和carom代表了对疫苗怀疑者的不同态度，前者持强烈批评态度，后者试图从技术角度解读研究数据。
+• 研究的影响力和学术自由：dc396和fooker指出了研究结果在公众和政治领域的影响力有限，以及学术界可能存在的发表偏倚。
+
+争议焦点：
+• 疫苗与自闭症之间是否存在关联：尽管主流科学认为疫苗不会导致自闭症，但仍有怀疑者基于数据解读和研究设计提出质疑。
+• 科学研究的透明度和可复制性：研究数据和代码的公开问题以及研究者的资金来源和潜在偏见。
+• 如何对待疫苗怀疑者：是应该努力说服他们，还是视其为无意义的负担。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44717226" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.stepsecurity.io/blog/supply-chain-security-alert-num2words-pypi-package-shows-signs-of-compromise" target="_blank">Num2words PyPI Package Compromised</a>
                 </h3>
                 <div class="story-meta">
@@ -432,50 +488,6 @@
 总结：讨论围绕一个Python库的历史演变和当前的安全问题展开，涉及对项目发展复杂性的感慨以及对安全性的关注。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44712736" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://deepmind.google/discover/blog/aeneas-transforms-how-historians-connect-the-past/" target="_blank">Aeneas transforms how historians connect the past</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: world2vec</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-24 15:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《Aeneas：改变历史学家连接过去方式的新模型》介绍了一种名为Aeneas的人工智能模型，旨在帮助历史学家更好地解释、归因和修复古罗马铭文。该模型通过在海量拉丁铭文间寻找文本和上下文相似性，加速了传统上复杂且耗时的对比工作，并能处理多模态输入，如文字和图像，以确定铭文的地理来源。Aeneas还能修复未知长度的文本空白，并在恢复和断代 damaged texts方面达到了先进水平。该模型基于一个包含超过17.6万条拉丁铭文的大型数据集进行训练，并与诺丁汉大学等多所高校合作开发。Aeneas不仅适用于铭文，还能扩展至其他古代语言和媒介，如纸草和钱币。研究团队将提供免费的互动版本和开源代码，以促进更多研究。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对新技术在历史研究中应用的看法
-
-不同观点：
-• [bpodgursky] 认为这个发现带有一定的讽刺意味，因为罗马的埃涅阿斯故事本质上是一种政治宣传，用来创造民族创始叙事。这暗示了他对历史叙事真实性的质疑，以及对利用技术还原历史文本的复杂态度。
-
-• [bawana] 对技术的实际应用表示怀疑，并通过反问语气表达了对该技术能否完整还原古希腊石刻文字及其年代的疑惑，显示出对技术能力边界的关心。
-
-• [ViktorRay] 对这一新技术表示赞赏，认为它将为历史学家的研究工作带来便利，显示出对技术进步在历史研究中积极作用的认可。
-
-补充讨论：
-• bpodgursky 的评论引入了对历史叙事的批判性思考，特别是关于历史如何被政治化地构建，这为讨论增添了历史与政治宣传关系的维度。
-• bawana 的质疑揭示了人们对新技术实际效果和可靠性的关注，尤其是在处理复杂和不完整的古代遗迹时。
-• ViktorRay 的积极评价强调了技术进步在简化和加速历史研究方面的潜在好处，代表了技术乐观派的观点。
-
-争议焦点：
-• 该技术的实际应用效果和可靠性是讨论中的一个潜在争议点，特别是在面对历史文本的复杂性和历史叙事的政治背景时。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44672230" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -546,45 +558,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://utcc.utoronto.ca/~cks/space/blog/programming/WhyRDParsersForMe" target="_blank">Why I write recursive descent parsers, despite their issues (2020)</a>
+                    <a href="https://deepmind.google/discover/blog/aeneas-transforms-how-historians-connect-the-past/" target="_blank">Aeneas transforms how historians connect the past</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: blobcode</span> |
-                    <span>评分: 119</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-24 04:07</span>
+                    <span>作者: world2vec</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-24 15:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文是Chris Siebenmann于2025年2月17日发布的一则通知，解释了为何一些用户在访问其博客"Wandering Thoughts"或相关wiki "CSpace"时被拦截。原因是为应对大量使用旧浏览器（尤其是旧版Chrome）的爬虫（用于LLM训练数据采集），作者采取了反爬虫措施，可能误拦了使用旧浏览器或通过某些网页存档服务（如archive.*）访问的正常用户。被误拦的用户可联系作者并提供所用浏览器的User-Agent字符串以解决问题。作者建议使用更为规范的archive.org进行存档访问。</p>
+                    <p>《Aeneas：改变历史学家连接过去方式的新模型》介绍了一种名为Aeneas的人工智能模型，旨在帮助历史学家更好地解释、归因和修复古罗马铭文。该模型通过在海量拉丁铭文间寻找文本和上下文相似性，加速了传统上复杂且耗时的对比工作，并能处理多模态输入，如文字和图像，以确定铭文的地理来源。Aeneas还能修复未知长度的文本空白，并在恢复和断代 damaged texts方面达到了先进水平。该模型基于一个包含超过17.6万条拉丁铭文的大型数据集进行训练，并与诺丁汉大学等多所高校合作开发。Aeneas不仅适用于铭文，还能扩展至其他古代语言和媒介，如纸草和钱币。研究团队将提供免费的互动版本和开源代码，以促进更多研究。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同类型的解析器技术及其优缺点，包括手写递归下降解析器与自动生成解析器（如LALR、YACC、Bison等）之间的比较。
+                    <div class="comments-summary">主要讨论点：对新技术在历史研究中应用的看法
 
 不同观点：
-• JonChesterfield认为LALR解析器生成器（如Bison或lemon）在处理复杂语法时可以有效避免歧义，但其错误信息不友好。他建议使用LALR解析器进行初步解析，若失败则调用自定义解析器进行诊断，而不是直接使用自定义解析器进行整个编译流程，因为这可能导致更多错误。
-• jasperry更偏好OCaml中的Menhir解析器生成器，认为其具备许多便利功能，并且享受掌握该工具的过程。
-• randomNumber7引用"Top Down Operator Precedence"（Pratt Parsing）算法，认为递归下降解析器优于生成器，并且该方法早在1973年就被提出。
-• nicoburns指出，过去十年中递归下降解析器在生产系统中更受欢迎，并且少见其他方法的提倡。
-• o11c则认为Bison经过多年改进已经非常实用，如果配置得当，可以解决很多实际问题，并批评那些无视这些改进而继续抱怨YACC的人。
-• ufo提出一个折中方案，使用LALR解析器生成器检查语法是否存在歧义，但实际实现仍使用递归下降解析器。
-• marssaxman表示从未觉得解析器生成器值得使用，递归下降加上Pratt优先级攀爬算法已足够应对大多数情况。
-• norir描述了一种自底向上构造无歧义递归下降解析器的技术，强调局部无歧义和避免全局词法分析的必要性。
-• zahlman提到在Go和Python中没有标准的解析器生态，但提供了一些替代工具如pybison、ply和pyparsing。
-• favorited质疑主流编译器最终是否都会转向手写递归下降解析器，并提到CRuby和Go的历史例子。
-• pklausler认为递归下降解析器在需要语法反馈的语言（如Fortran）中更为干净，并且解析器组合子使得递归下降解析器易于编码。
-• coldcode分享了1982年用Fortran编写Jovial语言解析器的个人经验，认为Fortran并不适合编写解析器。
-• fjfaase通过实际项目说明了递归下降解析器在处理C语言语法时的灵活性，特别是在结合语义信息的情况下。
+• [bpodgursky] 认为这个发现带有一定的讽刺意味，因为罗马的埃涅阿斯故事本质上是一种政治宣传，用来创造民族创始叙事。这暗示了他对历史叙事真实性的质疑，以及对利用技术还原历史文本的复杂态度。
+
+• [bawana] 对技术的实际应用表示怀疑，并通过反问语气表达了对该技术能否完整还原古希腊石刻文字及其年代的疑惑，显示出对技术能力边界的关心。
+
+• [ViktorRay] 对这一新技术表示赞赏，认为它将为历史学家的研究工作带来便利，显示出对技术进步在历史研究中积极作用的认可。
 
 补充讨论：
-• 争议焦点在于解析器生成器与手写递归下降解析器之间的选择。前者在处理复杂语法和检查语法正确性上具有优势，但错误信息不友好；后者则在灵活性和易于实现上更受欢迎。
-• 不同语言和项目背景下的解析器选择有所不同，OCaml和Fortran等语言有各自偏好的工具和方法。
-• 一些开发者提出折中方案，结合两者的优点，以解决实际问题。</div>
+• bpodgursky 的评论引入了对历史叙事的批判性思考，特别是关于历史如何被政治化地构建，这为讨论增添了历史与政治宣传关系的维度。
+• bawana 的质疑揭示了人们对新技术实际效果和可靠性的关注，尤其是在处理复杂和不完整的古代遗迹时。
+• ViktorRay 的积极评价强调了技术进步在简化和加速历史研究方面的潜在好处，代表了技术乐观派的观点。
+
+争议焦点：
+• 该技术的实际应用效果和可靠性是讨论中的一个潜在争议点，特别是在面对历史文本的复杂性和历史叙事的政治背景时。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44666824" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44672230" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
