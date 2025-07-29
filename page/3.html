@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-29 23:18 (北京时间)
+            最后更新时间: 2025-07-30 02:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,54 +61,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://themaister.net/blog/2025/06/16/i-designed-my-own-ridiculously-fast-game-streaming-video-codec-pyrowave/" target="_blank">I designed my own fast game streaming video codec – PyroWave</a>
+                    <a href="https://biffweb.com/p/structuring-large-codebases/" target="_blank">Structuring large Clojure codebases with Biff</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Bogdanp</span> |
-                    <span>评分: 183</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-07-28 20:01</span>
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-29 14:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了通过网络在两台机器间低延迟传输游戏画面的技术需求和挑战，强调每一毫秒的延迟都很关键。整个过程包括从机器A发送控制输入到机器B，B渲染帧、编码并传输，最后机器A解码并显示图像。为实现低延迟，通常使用GPU加速的视频压缩，如H.264、HEVC或AV1。为了进一步减少延迟，可以采取以下策略：
-
-1. **仅使用帧内编码**：抛弃运动预测以提高错误恢复能力和简化编码过程，代价是比特率大幅增加。
-2. **抛弃熵编码**：熵编码不利于并行化，去除它可以加速编码。
-3. **离散小波变换**：尽管现代编码多用离散余弦变换（DCT），但小波变换在某些特定领域仍有应用价值。
-
-这些方法可以实现超低延迟，但代价是更高的带宽消耗，适合本地局域网内使用，而不适合互联网传输。文章还提到了专业广播领域和特定硬件实现的例子。</p>
+                    <p>Jacob O'Bryant分享了重写Yakread应用的进展，并探讨如何通过改进Biff（一个Clojure web框架）来更好地管理大型代码库。Yakread原版存在查询缓慢的问题，新方法通过在XTDB上实现物化视图（存储在RocksDB中）来解决，避免了手动去规范化数据模型。每个物化视图由纯函数（denormalizer）定义，Biff自动处理相关操作。测试方面，使用Fugato生成测试数据，并通过“oracle”函数验证物化视图的正确性。此外，所有应用逻辑都是纯函数，通过状态机模式将副作用处理与应用逻辑分离，确保单元测试不依赖副作用，提高了代码的可测试性和可维护性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：视频编码的低延迟与高效压缩技术，尤其是在游戏流媒体和研究项目中的应用。
+                    <div class="comments-summary">主要讨论点：数据 denormalization 和视图的使用
 
 不同观点：
-• Thaxll提到VLC创建者正在开发类似的尖端低延迟流媒体技术，并分享了相关采访和视频链接。
-• Sippeangelo认为，如果编码器与游戏引擎合作，比如利用运动预测，游戏流媒体的性能可以大幅提升，但可能受到专利的限制。
-• Raphman指出JPEG-XS标准也是一个低延迟的选项，尤其适合商业项目，因为有专利池保护。
-• Keketi提出使用LLM（大型语言模型）进行游戏画面文本转录和重建的创意，尽管有损且慢，但压缩比极高。
-• Cadwhisker提到该编解码器使用与HTJ2K相同的算法，并希望了解两者之间的差异。
-• Monster_truck认为该技术类似于NDI，但缺乏NDI的便利性，并提到使用nvenc的超低延迟预设。
-• CharlesW建议与H.264/AVC进行基准测试对比，并提供了ffmpeg设置示例。
-• Kookamamie认为最接近的竞争者是NDI，由Vizrt（前NewTek）推出，目标是类似的比特率和延迟范围。
-• Fidelix表示赞赏，并期待该技术被整合到Moonlight等项目中。
-• Superjan强调低延迟和低复杂度在某些应用中的重要性，而不仅仅关注压缩效率。
-• Sitkack指出新视频编解码器的设计需要广泛的研究项目支持，以防止专利侵权。
-• Nairoz好奇是否可以为特定游戏设计定制的视频编码器，优先编码重要区域。
-• Kreco简单表达了对文章的感谢和欣赏。
-• Crazygringo对硬件编码与GPU加速编码的效率提出疑问，并希望看到实际的基准测试。
-• Hashtekar回顾了30年前在视频压缩技术上的工作，对当前技术的发展表示欣慰。
+• 观点一：在视图（views）中保留 denormalized 数据。这种做法的好处是可以提高查询性能，因为避免了频繁的表连接操作，特别是在数据读取密集型的场景下。这种方法强调了实际应用中性能优化的重要性，即使这意味着在设计上做出一些权衡。（例子：在复杂的报表生成中使用 denormalized 视图以提高速度）
+
+• 观点二：反对在视图中使用 denormalized 数据，认为这违背了数据库规范化的基本原则。这种观点强调数据一致性和减少冗余，认为应尽量通过适当的索引和查询优化来提高性能，而不是依赖 denormalization。这种方法更关注数据的完整性和可维护性。（论据：数据冗余可能导致更新异常和数据不一致）
 
 补充讨论：
-• 争议焦点之一是软件实现的低延迟编码是否优于现有的硬件编码解决方案。
-• 另一个讨论点是专利对创新的潜在阻碍，尤其是在游戏流媒体编码领域。
-• 不同编解码器之间的比较，包括JPEG-XS和H.264/AVC，也是讨论的重要部分。
-• 还探讨了定制编码器和特定游戏优化的可能性。</div>
+• 讨论中有人提到，视图本身只是逻辑上的数据展示层，是否 denormalized 应根据具体需求权衡，而不是一概而论。
+• 另一个值得注意的点是，有观点提出可以根据不同的应用场景混合使用两种策略，例如在读多写少的场景中适当使用 denormalization，而在需要强一致性的场景中保持规范化设计。
+• 争议的焦点在于性能优化与数据一致性之间的权衡，以及在视图中使用 denormalized 数据是否为合适的实践。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44714914" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44723818" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,13 +100,200 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://mathstodon.xyz/@tao/114915604830689046" target="_blank">Tao on “blue team” vs. “red team” LLMs</a>
+                    <a href="https://yakubov.org/blogs/2025-07-25-variable-naming-impact-on-ai-code-completion" target="_blank">Do variable names matter for AI code completion? (2025)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: qsort</span> |
-                    <span>评分: 332</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-07-28 14:36</span>
+                    <span>作者: yakubov_org</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-25 23:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了变量名称对AI代码补全的影响。通过实验测试了8种AI模型在500个Python代码样本上的表现，样本使用了7种不同的命名风格，包括描述性名称（如`current_temperature`）、标准风格（如`snake_case`）、简化名称（如`calc_pay`）和混淆名称（如`fn2`）。结果显示，描述性变量名称能显著提高代码补全的准确性。具体发现包括：描述性名称的完全匹配率为34.2%，而混淆名称为16.6%；其语义相似性也更高。实验表明，清晰的变量名称不仅有利于人类阅读，也能提升AI代码补全的效果，尽管它们使用更多 tokens。不同模型架构下结果一致，描述性名称表现最佳。因此，使用AI编码工具时，建议采用描述性变量名称以获得更好补全效果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：变量命名对代码可读性及AI代码补全的影响
+
+不同观点：
+• Groxx认为变量命名在实际代码中被过度重视，提到在他们的经验中，ID数组被当作字典使用，但开发者仍经常弄错。他们觉得命名被高估，特别是在小型函数中，开发者仍会犯错误。
+
+• yakubov_org通过实验数据表明，描述性强的变量名（如"current_temperature"）相比无意义的名字（如"x"）更能帮助AI代码补全。实验测试了多种命名风格，结果显示良好的命名对AI模型的表现有积极影响。
+
+• ssalka支持使用语义明确的变量名，如`current_temperature`，认为这样能为LLM（大型语言模型）提供更好的上下文，只有在竞争性编程中简短命名才可能有优势。
+
+• nemo1618建议重新使用匈牙利命名法，认为这种命名法能帮助LLM直接看到变量类型，而不需要通过其他工具查找，并认为这种方法被 unfairly maligned（不公正地贬低）了。
+
+• r0s强调代码的主要目的是为了让人类阅读，因此在AI还未能直接编译成机器语言之前，代码的可读性至关重要。
+
+• robertclaus对yakubov_org提供的实验数据表示赞赏，认为实证数据很有价值。
+
+• OutOfHere指出，长函数中使用注释和分段名称能帮助提高代码可读性，并且在Python中，准确的类型注释对LLM的表现有显著影响，而不准确的注释则可能误导模型。
+
+• qwertytyyuu以幽默的方式对SCREAM_SNAKE_CASE（全大写的下划线命名法）表现优异表示疑惑。
+
+补充讨论：
+- 变量命名对AI代码补全的影响存在争议，有人认为命名被高估，有人则通过数据证明命名对AI有帮助。
+- 匈牙利命名法的复兴建议，以及命名和类型注释对LLM的重要性，都是讨论中的重要补充。
+- 代码可读性是多位评论者关注的焦点，特别是在人类和AI共同工作的背景下。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44689778" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/xorq-labs/xorq" target="_blank">Show HN: Xorq – open compute catalog for AI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mousematrix</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-29 15:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Xorq 是一个框架，旨在简化和统一机器学习（ML）管道的构建与部署，支持跨 Python 和 SQL 引擎（如 DuckDB、Snowflake、DataFusion）的声明式管道。其主要特点包括：
+
+1. **多引擎支持**：使用 pandas 风格语法和 Ibis 进行声明式表达。
+2. **可移植计算**：提供 YAML 格式的表达式，支持 UDFs 和 UDAFs，自动序列化。
+3. **缓存与性能**：利用表达式哈希实现缓存，减少重复计算。
+4. **血缘追踪**：内置列级血缘和可观察性。
+5. **可重现性**：生成可重现的表达图和元数据文件。
+
+Xorq 仍处于测试阶段，未来可能会有重大变化。更多信息可访问 [docs.xorq.dev](http://docs.xorq.dev)。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：新名称容易混淆，是否应重新命名
+
+不同观点：
+• **支持重新命名**：WhatsName认为新名称容易与“xorg”混淆，且人们已经很难区分“groq”和“grok”。为了避免进一步的混乱，建议在刚刚发布的情况下进行重新命名。
+
+补充讨论：
+• **名称混淆问题**：指出新名称与已有名称（xorg、groq、grok）的相似性，可能导致用户混淆，这成为建议重新命名的主要理由。
+• **发布后重新命名的可行性**：提到产品刚刚发布，此时进行重新命名可能成本较低，同时也更能避免未来更大的混淆问题。
+
+争议焦点：是否需要为了避免混淆而进行重新命名，尤其是考虑到产品刚刚发布，重新命名的成本与不重新命名可能导致的用户混淆之间的权衡。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44724425" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://wikimediafoundation.org/news/2025/07/17/wikimedia-foundation-challenges-uk-online-safety-act-regulations/" target="_blank">Wikimedia Foundation Challenges UK Online Safety Act Regulations</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Nurw</span> |
+                    <span>评分: 317</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-07-29 10:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>下周，2025年7月22日和23日，伦敦高等法院将审理维基媒体基金会针对《英国网络安全法》分类规定的法律挑战。维基媒体基金会运营着维基百科及其他维基媒体项目，认为该法规威胁到维基百科及全球志愿贡献者的隐私和安全。基金会的法律挑战聚焦于这些新分类规定，这些规定可能对维基百科施加最严格的义务（1类义务），包括验证贡献者身份等，这将增加负担并威胁贡献者的隐私和安全，可能导致数据泄露、骚扰甚至迫害。同时，这也会分散资源，影响维基百科的维护和改进。此案是首次对《网络安全法》分类规定的法律挑战，并有英国维基百科志愿者作为共同原告参与。维基媒体基金会呼吁法院保护维基百科及其贡献者的隐私和安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英国《在线安全法》（OSA）及其相关法规的合法性、影响以及各方反应
+
+不同观点：
+• Roark66认为《在线安全法》与之前试图禁止个人加密的法案类似，反映了政府对复杂问题的理解不足，且已有法律要求在未犯罪情况下不交出加密钥匙可被判刑，显示出法令的严苛。
+• supermatt提出可以通过家长控制来管理未成年人上网，强调家长的责任，而非依赖大型科技公司。认为不需要将问题复杂化。
+• braiamp关注维基媒体基金会的立场，指出根据现行法律，维基百科可能被归类为1类义务对象，即便按法律自身规定不应如此，表明该分类法规可能的不合理性。
+• chippiewill对维基媒体基金会的法律挑战持怀疑态度，认为即便成功，也不会影响《在线安全法》的主要条款，包括对成人内容进行年龄验证的要求。
+• noodlesUK同样质疑维基媒体基金会的法律基础，指出OSA是主要立法，难以通过常规途径挑战，且对法规的反对理由不够明确。
+• Havoc以激进方式建议通过封锁英国政府IP以示抗议。
+• bargainbin认为该法案是政府以“信息灾难的四骑士”为借口限制个人自由，不应责怪家长。
+• hermitcrab提供了一份对《在线安全法》如何适用于非成人论坛所有者的概述，提供了一些具体情境下的法律解读。
+• miohtama提到工党正在考虑禁止VPN，暗示对网络自由的进一步限制。
+• cormorant询问维基百科被归类为1类的原因，并建议是否可以通过关闭某些功能（如内容推荐系统）来避免该分类。
+• perihelions批评维基媒体基金会的“特殊辩护”，认为其辩护基于自身利益，而非公众利益，指出这种“开放互联网”的立场存在矛盾。
+• jonathantf2对维基媒体尚未通过募捐活动应对该法律表示惊讶。
+• crtasm关注听证会结果，询问何时能得知结果。
+• IlikeKitties主张集体抵制英国用户以推翻法律，批评任何遵守该法的公司都是对自由互联网的背叛。
+
+补充讨论：
+• 讨论中多次提到维基媒体基金会的法律挑战及其基础，反映出对该基金会动机的不同解读。
+• 对《在线安全法》的实施及其对互联网自由的影响存在广泛争议，部分评论者主张通过技术手段（如封锁IP、VPN）来规避或抗议该法。
+• 家长控制作为解决方案被提出，但该提议受到一定质疑，认为责任应归于家长而非科技公司。
+• 对法律挑战的成功可能性存在怀疑，尤其在主要立法难以被推翻的背景下，维基媒体基金会的立场被认为不够坚定。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44721403" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/multikernel/kernelscript" target="_blank">KernelScript eBPF-centric programming language</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gtirloni</span> |
+                    <span>评分: 28</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-29 12:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>KernelScript是一种现代的、类型安全的领域特定编程语言，旨在简化以eBPF为中心的内核定制。它统一了eBPF、用户空间和内核空间的开发，通过简洁的语法生成高效的C代码，支持eBPF程序、用户空间程序及内核模块的集成。当前eBPF开发存在诸多挑战，如需要深厚的eBPF知识、复杂的构建系统和手动内存管理等。KernelScript通过单文件多目标编译、自动尾调用管理等功能解决这些问题，提供了一种比Rust、bpftrace、Python/Go eBPF库更简便的开发方式。KernelScript目前处于测试阶段，语法和功能可能会变化，不建议用于生产环境。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于一个类似Solaris zones的多内核项目（multikernel）在Linux上的实现及其相关技术（如eBPF）的讨论。
+
+不同观点：
+• [sargun] 认为该项目最有趣的地方在于其起源——多内核（multikernel）的概念，并将其类比为在Linux上构建类似Solaris zones的系统。这表明该项目可能受到了Solaris系统设计理念的启发，旨在通过多内核架构实现更好的资源隔离和管理。
+
+• [9cb14c1ec0] 则更关注项目的技术实现，特别是对eBPF技术的兴趣。虽然其学习曲线较高，但该用户表示有兴趣尝试这个项目，表明eBPF技术的应用可能是该项目的一个亮点，吸引了对新技术有探索欲望的开发者。
+
+补充讨论：
+• [sargun] 的评论暗示该项目可能是在Linux环境下重现或改进Solaris zones的功能，重点在于多内核架构的创新性。
+• [9cb14c1ec0] 强调了对eBPF技术的关注，显示出该项目在技术实现上可能涉及前沿技术，且对实际应用有潜在的影响。
+• 争议焦点可能集中在该项目是否能真正实现Solaris zones在Linux上的等效功能，以及eBPF技术在其中的角色和实际效果。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44722518" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.science.org/content/article/peacock-feathers-can-be-lasers" target="_blank">Peacock feathers can be lasers</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ohjeez</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-29 15:12</span>
                 </div>
 
                 <div class="summary-section">
@@ -135,33 +303,156 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI在红蓝队模型中的应用及其在不同领域的类比和实际效果
+                    <div class="comments-summary">主要讨论点：评论围绕某篇文章中提到的孔雀相关的光学现象（可能是激光或荧光）进行讨论，探讨该现象是否属于真正的激光（lasing）以及其潜在的科学价值。
 
 不同观点：
-• **ants_everywhere** 认为红蓝队模型在AI中是有用的。蓝队负责头脑风暴，而红队负责检验和挑战。他还指出，安全系统的强弱不仅仅取决于最薄弱的环节，还与多层防御机制有关。
-• **_alternator_** 表示红蓝队模型有助于理解LLM（大型语言模型）的当前实用性。他认为LLM在添加测试方面较为可靠，但在修复错误或添加功能时容易出现问题，例如编写非健壮的代码。
-• **nostrademons** 将红蓝队模型类比于商业领域，指出蓝队行业（如电力、银行）是经济的基础，而红队行业（如餐饮、旅游）则提升消费者福利。他认为，从经济角度看，成为蓝队一员更有优势，尽管技术本身可能在红队中更实用。
-• **javier_e06** 认为红蓝队模型在网络安全中是两个对等的 forces，但在软件开发中并不完全适用。测试本身也是代码，可能会存在bug，因此测试也需要被测试。
-• **ashton314** 提到RSA算法的创建过程类似于红蓝队模型，其中Rivest和Shamir提出想法，Adleman负责找出安全漏洞。
-• **recipe19** 指出，将防御仅视为最薄弱环节的观点是危险和天真的。多层防御是必要的，因为任何单一层次都无法达到100%的安全性。
-• **TheGRS** 认为，AI模型应同时参与红蓝队角色，并应参与管理任务，使开发者更像监督者。
-• **scoreandmore** 分享了使用Claude分析网站安全性的经验，发现其建议较为表面，并质疑是否通过攻击网站能获得更深入的改进建议。
-• **zkmon** 提出，红队不应仅仅是一个团队，而是背景环境的一部分，通过与前景的互动和适应来实现进化。
-• **jedberg** 指出，混沌工程是为了在操作中充当“红队”，通过探索所有可能的失败空间来提前发现问题。
-• **bodhi_mind** 询问是否存在同时承担红蓝队角色的“紫队”，以及这是否会破坏两者的目的。
-• **1970-01-01** 认为使用进攻和防御来描述红蓝队可能更直观，并质疑为何Terry Tao未使用这些术语。
-• **LeifCarrotson** 强调红队的重要性，尤其是在不可靠和不透明的AI工具背景下，但指出一些企业为了短期利润可能选择忽视测试和安全。
-• **hiq** 询问LLM是否能在形式化证明中发挥“蓝队”角色，帮助数学家节省时间并专注于更困难的部分。
+• **xeonmc的观点**：怀疑文章中所描述的现象是否真的属于激光（lasing）。他认为，仅凭单色性（monochromaticity）不能断定是激光，因为线性滤波也能实现类似效果。他指出，非线性过程不一定意味着是激光，也可能由非谐性（anharmonicity）引发的高阶谐波导致，尤其是在生物材料中常见。他强调，要确定是激光，必须有相干放大（coherent amplification）的证据。
+
+• **krukah的观点**：对文章中的现象持调侃态度，认为这类似于之前一些荒诞的科技新闻（如用鸽子做硬盘）。他以讽刺的语气表示对未来可能出现的类似新闻充满期待，暗示对这种研究实际应用价值的怀疑。
+
+• **bell-cot的观点**：没有直接讨论技术问题，而是以幽默的方式建议更新“邪恶霸主清单”（Evil Overlord List），指出孔雀作为廉价替代品比鲨鱼更实用，并暗示应优先考虑实用性而非表面上的威慑力。
 
 补充讨论：
-• 技术细节如JWTs的生命周期和网站安全性改进建议（scoreandmore）。
-• 对网站字体可读性的技术问题反馈（Fabricio20）。
+- **xeonmc** 引用了维基百科上关于双光子激发显微镜的条目，试图为他的论点提供支持，即生物材料在强激光下可能表现出非线性现象，但不一定是激光。
+- **krukah** 和 **bell-cot** 的评论更多是基于幽默和讽刺，没有提供技术论据，但反映了部分公众对某些科学研究实际应用价值的怀疑态度。
+
+争议焦点：主要争议在于文章中所描述的现象是否真正构成激光（lasing），特别是对相干放大（coherent amplification）的要求是否满足。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44724402" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nisheethvishnoi.substack.com/p/learning-is-slower-than-you-think" target="_blank">Learning Is Slower Than You Think</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: almost-exactly</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-07-29 14:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对教育模式、AI在教育中的作用以及文章写作风格的讨论
+
+不同观点：
+• **overrun11**：认为文章采用了MFA（艺术硕士）风格，通过对比不同事物的细节但不明确指出哪一个更好，这种写法可以应用于任何主题，并给出了一个ChatGPT生成的对比飞机旅行和马车旅行的例子，质疑这种写作方式的说服力。
+• **timerol**：认为文章对学校教育模式（3/4项目制学习与1/4课堂教学）的论证是合理的，但作者试图否认Alpha学校的类似模式，并夸大了该模式的问题。timerol对文章中对Alpha学校的批评不完全认同，并建议文章可以从亚洲补习文化与AI辅导入手，而非在文章中间提及。
+• **pnathan**：批评文章写作风格过于简短且缺乏洞察力，强调教育是一个缓慢且困难的过程，涉及个体成熟和知识传授的平衡。同时指出，个别化教育（如家庭学校）因能够筛选环境而具有优势，但公共教育面临来自家庭和政治选择带来的问题。
+• **briandw**：通过自身经历（疫情期间在家教育孩子）说明一对一辅导的有效性，认为文章的反对意见多为意识形态上的，且美国教育系统存在问题，AI辅导有巨大潜力。
+• **chizhik-pyzhik 和 wohoef**：质疑文章为AI生成，指出文章风格（如使用破折号、不必要的比喻等）像是AI写作，并对此表示不满，认为这种写作方式难以阅读且不真诚。
+
+补充讨论：
+• **iFire 和 JamesPark1982**：通过推荐书籍（《The Diamond Age》和《Flower for Algernon》）来丰富对教育技术和不同智力水平个体学习体验的讨论。
+• **scarier**：提供另一个对Alpha School的评论链接，认为该实验结果尚不明确，但值得关注。
+• **Alifatisk**：分享个人学习经验，指出间隔重复和主动回忆是提高学习速度的有效方法。
+• **softwaredoug**：引用健美中的一句话“慢即是顺，顺即是快”来强调学习过程中的节奏感。
 
 争议焦点：
-• 红蓝队模型在不同领域的适用性和类比的准确性。
-• AI工具在红蓝队模型中的实际效果和可靠性，尤其是在测试和安全方面的应用。</div>
+• 文章的写作风格和内容是否有效、有说服力，尤其是其对教育模式的批评。
+• 文章是否为AI生成，以及AI生成内容在写作和教育中的应用是否合适。
+• 对Alpha学校模式的不同看法，尤其是关于效率和个性化学习之间的平衡。
+
+总体来看，评论中的争议主要集中在文章的写作质量、教育模式的有效性以及AI在教育中应用的合理性上。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44711306" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44723763" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/tripplyons/cuda-fractal-renderer" target="_blank">Show HN: CUDA Fractal Renderer</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tripplyons</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-26 00:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>CUDA Fractal Renderer 是一个能够快速渲染分形的工具。它使用CUDA进行并行计算，支持通过指定种子生成不同分形，并可使用 `--grid-size` 参数并行生成多个分形。项目依赖CUDA和uv工具，安装和使用步骤包括设置虚拟环境、运行渲染命令以及查看生成的 `output.png` 图像文件。代码格式化可通过运行 `./format.sh` 完成。该项目基于MIT许可证，主要使用Python和CUDA编写。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕代码实现、技术细节和相关工具使用的讨论
+
+不同观点：
+• **neomantra**：赞赏代码的简洁和易于检查，并提到处理volumes是一个重大变化，同时建议将矩阵暴露给CLI以进行插值操作，还提到过去在GPGPU方面的工作经验，对比该实现的范围较小但更易理解。
+• **sestep**：感谢提供了uv.lock文件，提到过去在尝试运行只有requirements.txt的研究项目时的困难，强调了解决老化代码的麻烦。
+• **dcanelhas**：对代码中存在atomic add操作提出质疑，认为基于block/thread索引，不同线程不应该修改同一个像素。
+• **porphyra**：表达了对用Python编写CUDA代码的喜爱，认为代码简洁是当前技术进步的体现。
+• **bsenftner**：建议尝试分形体积计算或分形动画，认为这是CUDA值得探索的方向。
+• **almostgotcaught**：提出一个相关问题，询问如何从图形代码（如DirectX或OpenGL）调用CUDA，而不是像当前代码那样不直接绘制到屏幕。
+
+补充讨论：
+• 技术实现的简洁性与可操作性是讨论的重点，neomantra和sestep都提到了代码易于理解和运行的优点。
+• 对CUDA代码中的具体技术细节（如atomic add的必要性）存在争议，dcanelhas对代码的实现细节提出了疑问。
+• 对CUDA在其他领域（如分形计算和图形代码集成）的应用提出了展望，bsenftner和almostgotcaught分别提出了分形计算的可能性和CUDA与图形API的集成问题。
+• 历史经验的分享（如neomantra提到过去的GPGPU工作）为讨论增加了深度，提供了背景信息。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44690117" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.trailofbits.com/2025/07/25/exploiting-zero-days-in-abandoned-hardware/" target="_blank">Exploiting zero days in abandoned hardware</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ingve</span> |
+                    <span>评分: 93</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-25 12:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文总结了在DistrictCon的首次Junkyard竞赛中成功利用两款停产网络设备的过程，并获得“最具创新性利用技术”亚军。研究显示，停产硬件由于缺乏更新，存在未修复的漏洞，成为攻击者的理想目标。团队利用了Netgear WGR614v9路由器和Bitdefender Box V1的安全漏洞，通过链式攻击获得远程控制权限。对于Netgear，团队通过UPnP守护进程的多个漏洞（包括认证绕过、缓冲区溢出和命令注入）实现攻击。对于Bitdefender Box，则通过未经认证的固件降级漏洞和命令注入实现攻击。这些设备因停产而无法获得安全更新，导致其易受攻击。详细技术分析可在Trail of Bits的代码库中找到。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：EOL（生命周期终止）设备的安全性及处理方法
+
+不同观点：
+• [dguido] 认为应该公开EOL设备的漏洞，以便用户学习和理解如何编写和应对这些漏洞。他提到未来会公开更多此类信息，并提供了具体设备（如Netgear WGR614v9和BitDefender Box 1）的漏洞链接。
+• [myself248] 指出拥有EOL设备的用户不一定要丢弃设备，但需要权衡继续使用的风险。他建议消费者在购买设备时考虑其整个安全生命周期，包括制造商的支持承诺和社区固件选项，并暗示如果设备不支持OpenWRT等开源固件，就不应购买。
+• [bornfreddy] 对“无更新即易受攻击”的说法持怀疑态度，认为漏洞一直存在，只是发现技术有所进步。他质疑为何废弃硬件会比新路由器更危险，并认为除非设备支持OpenWRT等固件，否则成熟度带来的安全性有限。
+• [ectospheno] 提供了一种替代方案，使用Dell电脑、Intel四端口网卡和OpenBSD系统，认为这些硬件和系统更新更有保障，并能提供更长的支持时间。
+• [jgalt212] 提出关于Android TV OS是否为Sony等电视的计划报废的问题，暗示操作系统可能被设计为在一定时间后失去支持。
+• [nickpsecurity] 讨论了安全更新机制的平衡问题，提出一种需要用户确认的签名内容更新机制，并建议在最低层次的固件更新中加入物理交互（如跳线或开关）以防止恶意更新。他还提到了一种ROM/flash组合的实现方式。
+
+补充讨论：
+• 争议焦点在于EOL设备是否必然更危险，以及如何在安全性和用户控制之间取得平衡。
+• 提出的解决方案包括使用开源固件（如OpenWRT）、选择支持长时间更新的硬件（如Dell和Intel）、以及设计更加安全的更新机制（如物理交互和签名确认）。
+• 讨论还涉及了计划报废的概念，特别是在智能电视和操作系统更新支持方面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44682450" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -213,354 +504,6 @@
 • 不同用户对笔的书写流畅性、手感、耐用性和价格有不同偏好，展现了个人使用体验的多样性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44686624" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://en.wikipedia.org/wiki/Truchet_tiles" target="_blank">Truchet Tiles</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: downboots</span> |
-                    <span>评分: 84</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-07-25 22:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Truchet tiles是用于信息可视化和图形设计的方形瓷砖，其图案不具有旋转对称性。最早由Sébastien Truchet在1704年提出，后由Cyril Stanley Smith在1987年推广。这些瓷砖可以通过不同方向的排列形成多种图案，常用于可视化信息。典型样式包括对角线分割的对比三角形和四分之一圆弧。Truchet tiles也被用于抽象策略游戏和生成迷宫图案，其连通性可通过渗透理论分析。此外，它们在计算机图形学和各种拼贴问题中也有应用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Truchet tiles（特鲁谢瓷砖）的应用与变化
-
-不同观点：
-• nojs 提到 Heropatterns.com 提供的背景图案，认为这些图案适用于网页的细微背景，例如页脚。
-• coldcode 分享了自己在2D艺术中使用 Truchet tiles 的经验，特别是通过着色使其与众不同，并提到使用不同尺寸的瓷砖组合。
-• onion2k 指出 Truchet tiling 在着色器社区中的广泛应用，并提供了着色器社区中一些优秀的示例链接。
-• onychomys 提到基于 Truchet 概念的卡片拼图游戏，认为虽然不是特别出色，但仍有一定趣味性。
-• nedbat 展示了使用多层次 Carlson Truchet tiles 进行半色调图像处理的技术。
-• joshu 分享了自己过去为绘图仪设计的 Truchet tiles 作品，提供了多个设计示例链接。
-• ItCouldBeWorse 指出 Truchet tiles 可以用来避免拼接纹理时产生的摩尔纹。
-• Jgoauh 表达了对在线实时绘制 Truchet tiles 工具的需求。
-• pan69 提到一个关于 PETSCII 中 Truchet tiles 的视频，认为这是一个有趣的观看内容。
-• calvinmorrison 回忆了童年时玩木制 Truchet tiles 的经历，提到通过翻转瓷砖来创建各种设计。
-
-补充讨论：
-• 评论中展示了 Truchet tiles 在不同领域中的多样应用，包括网页设计、2D艺术、着色器艺术、游戏设计和童年玩具等。
-• 争议焦点并不明显，但不同用户对 Truchet tiles 的使用方式和应用场景存在差异，例如艺术创作与实用工具之间的区别。
-• 用户 Jgoauh 提出了对实时绘制工具的需求，这可能代表了一部分用户对实用工具的期望。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44689453" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://hologram.page/blog/hologram-v0-5-0-released" target="_blank">Hologram v0.5.0</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bartblast</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-26 00:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Hologram 0.5.0 发布，带来重大更新，包括性能提升、架构改进以及新功能，为未来发展奠定更稳固基础。执行速度从毫秒提升到微秒，支持实时交互如鼠标移动事件。新功能包括全面的会话和Cookie管理、新的HTTP传输层、实时重载和增量编译。新增高性能bitstring实现、基准测试基础设施和基础CRDT支持。会话管理支持完整的服务器端会话，Phoenix框架下完全互操作。Cookie支持包括自动编码/解码。事件系统增加对指针和鼠标移动事件的支持，并优化事件属性。实时重载功能自动检测文件变化并显示编译错误。CRDT实现支持无冲突复制数据类型和基于时间戳的自动冲突解决。增量编译提升构建速度，跳过未更改模块，并优化构建过程持久化。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Hologram web框架的性能、使用场景、以及与现有技术（如Phoenix、LiveView）的关系。
-
-不同观点：
-• **doodlesdev**：认为Hologram的页面导航速度非常快，但初始加载速度较慢，尤其是有大量未使用的JavaScript。他提出可以通过不使用JS并采用预取规则和缓存头来优化文档网站。总体上，对Hologram表示认可，但对其在文档网站中的实现持一定保留态度。
-
-• **dsiegel2275**：关注Hologram的离线支持功能，并询问Hologram是否可以与现有的Phoenix应用共存，尤其是为了满足低带宽和离线需求。
-
-• **jamauro**：对Hologram表示兴奋，期待使用它来构建支持离线的全栈Elixir应用。
-
-• **christophilus**：认为Hologram的全栈Elixir解决方案很有吸引力，特别是能够在前后端使用同一种语言。有意在空闲时间尝试。
-
-• **Alifatisk**：对Hologram带来的即时响应感到惊讶，并询问是否是Elixir的功劳。
-
-• **bartblast**：作为Hologram的开发者，介绍了v0.5.0版本的重大性能改进，包括渲染速度、会话管理、实时重载等功能，强调了其在实时交互和开发体验上的优势。
-
-• **travisgriggs**：对Hologram的定位感到困惑，不清楚它是否替代Phoenix、LiveView等工具，还是作为辅助工具使用，希望明确其应用场景和优势。
-
-• **lawn**：认为Hologram的离线优先特性是一个重要优势，并建议增加客户端重新上线后同步数据的功能，解决LiveView网站在断网时失效的问题，例如离线完成待办事项列表的同步。
-
-补充讨论：
-• **bn-l**：对Elixir及其虚拟机技术联想到游戏角色，未对技术细节进行讨论。
-
-争议焦点：
-• Hologram是否应该在文档网站中使用大量JavaScript，以及如何优化初始加载速度（doodlesdev的观点）。
-• Hologram的具体使用场景和定位问题，尤其是与Phoenix和LiveView的关系（travisgriggs的观点）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44690158" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://survey.stackoverflow.co/2025" target="_blank">2025 Stack Overflow Developer Survey Results</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: colingw</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-29 14:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要总结了2025年开发者对AI工具和技术的态度与趋势。OpenAI的GPT模型在最受赞赏和期望的AI模型中居首，而Anthropic的Claude Sonnet模型在期望和赞赏度上紧随其后。然而，多数开发者对AI工具的准确性持怀疑态度，不信任的比例（46%）高于信任（33%）。此外，2025年对AI工具的正面 sentiment 有所下降，从之前的70%以上降至60%。在云开发和协作工具方面，Cargo成为最受赞赏的工具，GitHub则取代Jira成为最受期望的协作工具。开发者放弃某项技术的主要原因包括隐私问题、高昂定价和更好替代品的出现。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Stack Overflow 开发者调查结果的代表性和网站用户体验问题
-
-不同观点：
-• [chistev] 认为Windows在调查中占主导地位，但实际讨论中Mac似乎更普遍。他还抱怨了网站上的"接受cookies"弹窗过大，影响了使用，并且找不到拒绝所有cookies的选项。
-
-• [colingw] 指出调查中缺少一些特定的编辑器（如Emacs）和编程语言（如Clojure），暗示调查设计可能存在偏见或遗漏。
-
-• [ChrisRR] 认为调查结果被学生和初级开发者所主导，导致其无法准确反映整个行业的现状。
-
-补充讨论：
-• 关于Windows和Mac在开发者中的实际使用情况存在认知差异，虽然调查显示Windows占主导，但一些人认为Mac在实际开发环境中更普遍。
-
-• 用户对网站用户体验问题（如cookies弹窗）表示不满，特别是当缺少明显的拒绝选项时，影响了用户的自主选择权。
-
-• 对调查的设计和参与者构成的质疑反映了调查结果的可靠性和代表性问题，尤其是涉及行业趋势时。
-
-争议焦点：
-• 调查结果是否能够真实反映开发者群体的多样性和实际使用习惯，尤其是在编辑器和编程语言的选择上。
-
-• 网站用户体验问题，特别是cookies弹窗的设计，是否对用户造成了不必要的干扰和不便。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44723876" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://log.pfad.fr/2025/optimi-zig-sudoku-solving/" target="_blank">Optimi-Zi(n)g Sudoku-Solving</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-26 16:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了使用Zig语言实现的数独求解器，并通过 dancing-links (DLX) 算法进行优化。DLX算法是一种解决“精确覆盖”问题的高效回溯算法，通过0和1组成的矩阵来表示问题和部分解。具体到数独问题，矩阵需要满足行、列、九宫格及单元格的唯一性约束，总共有4×9×9个约束条件。文章详细描述了如何将数独问题转换为精确覆盖问题，并通过选择满足约束的行来逐步求解。
-
-初始实现中，每次需要新单元格时都调用`allocator.create()`，导致不必要的性能开销。通过一次性分配四个单元格（每 puzzle 约750次分配），显著提高了性能，使求解时间平均减少到1毫秒。文章还提到，对于标准9x9数独，稀疏矩阵并非空间高效，建议使用索引替代64位指针以节省空间。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否可以将适用于Kenken的经验应用于Sudoku类游戏
-
-不同观点：
-• **支持将Kenken经验应用于Sudoku类游戏**：用户fchief提到自己曾经每天玩Sudoku，但后来转向了Kenken，并认为类似的方法在Sudoku类游戏中也能奏效。这表明他认可Kenken的思维方式和技巧可以适用于Sudoku或其他类似的逻辑游戏。
-
-• **隐含观点：不同游戏有独特性**：虽然fchief认为类似方法可行，但并没有明确提到Kenken和Sudoku是否有本质区别，只是表达了方法的可迁移性。可以推测出，其他用户可能会认为不同游戏有其独特的规则和挑战，方法不一定能直接套用。
-
-补充讨论：
-• **个人经验**：fchief基于自身从Sudoku转向Kenken的经历提出了观点，说明个人经验在逻辑游戏中的应用和转化是讨论的一个切入点。
-• **未提及具体方法**：评论中未具体说明是哪些方法或策略可以从Kenken迁移到Sudoku，这可能引发后续讨论，关于哪些技巧具有普遍适用性。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44695385" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.washingtonpost.com/world/2025/07/25/tour-france-bikes-hidden-motors/" target="_blank">Tour de France confronts a new threat: Are cyclists using tiny motors?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 49</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-07-25 21:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：机械掺杂（机械作弊）在自行车比赛中的存在和检测
-
-不同观点：
-• jamesblonde认为Fabian Cancellera在2010年巴黎-鲁贝比赛中被广泛怀疑使用机械掺杂，且Greg LeMond曾指控Chris Froome在环法自行车赛中作弊。他还提到，现在自行车比赛会通过X光检查自行车是否有马达，且车手不再像以前那样频繁更换自行车。
-• throwaway81523指出，检查自行车是否使用马达并不是新鲜事，相关检查早已成为常规操作，并提供了维基百科链接支持其观点。
-• gwelson认为，相比其他运动，自行车比赛中的欺诈和作弊现象更为普遍，并提出疑问为何这一现象在自行车比赛中更为常见。
-• jmcdowell推荐了一个关于机械掺杂的深度播客系列"Ghost in the Machine"，讨论了当前技术如何可能被用于作弊，并提到了Femke van den Driessche的案例。
-• stdclass提供了视频证据，声称Wout van Aert在2016年的比利时越野赛中多次使用马达作弊。
-• jonplackett简洁地表示，问题的答案是否定的，即没有使用机械掺杂。
-• arduenika以幽默的方式质疑马达的尺寸问题，提到在一定尺度上，线粒体是细胞的能量工厂。
-• carlhjerpe认为，高水平比赛中应持续使用X光检查自行车，以防止机械掺杂问题，并指出相比药物测试，X光检查对隐私的侵犯较小。
-• jnsaff2推荐观看讽刺性作品"Tour de Pharmacy"，暗示对自行车比赛中作弊现象的讽刺。
-• aeternum以讽刺口吻建议，将电磁铁嵌入道路表面来帮助特定自行车加速或减速，质疑机械掺杂的实际操作性。
-• blakesterz提到了对Lance Armstrong的旧指控，并提供了一个相关视频链接。
-• aaronrobinson认为机械掺杂早已存在，并不是新现象。
-• floodfx质疑使用马达在比赛中的实际效益，提出在自行车比赛中减轻重量的重要性，并希望看到使用马达的重量/功率/时间比计算，认为在爬坡赛段中使用马达并不值得。
-
-补充讨论：
-• 评论中多次提到使用X光检查自行车以防止机械掺杂，这被认为是有效的预防措施。
-• 对自行车比赛中作弊现象的普遍性和原因进行了讨论，尤其是相比其他运动，自行车比赛中的作弊现象更为突出。
-• 提供了多个具体案例和视频链接，支持和反驳机械掺杂存在的观点。
-• 争议焦点在于机械掺杂是否在当前比赛中仍然存在以及其操作性和实际效益。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44688738" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.pipervoice.com/" target="_blank">Show HN: Companies use AI to take your calls. I built AI to make them for you</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: michaelphi</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-07-28 22:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Piper是一款由AssemblyAI创始工程师开发的个人AI电话代理，帮助用户自动拨打繁琐的电话，如预约餐厅、取消订阅或与客服沟通。用户只需在浏览网页时点击电话号码，输入需求，Piper即可自动拨打电话、处理对话并提供全程录音和文本记录。Piper能够应对各种电话场景，如账单争议、预约服务、供应商报价等，免去用户自行拨打电话的麻烦，节省时间和精力。Piper声音自然，模拟真人对话，用户无需担心其听起来像机器人。该服务可通过Chrome扩展免费试用，适合处理那些让人拖延的“无聊”电话任务。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI语音代理在客户服务中的应用及相关争议
-
-不同观点：
-• 支持观点（[zzyzxd]）：用户认为LLM（大型语言模型）在客服电话中表现优异，能够快速理解并解决用户问题，甚至优于人工客服。该用户希望更多企业采用类似技术，以便问题能被迅速分类并转交给合适的人员处理。
-• 反对观点（[jeffwass]）：用户指出AI在处理边缘案例时可能存在不足，认为对于复杂问题，AI可能无法胜任，用户更希望直接与人工客服沟通。
-• 讽刺/幽默观点（[clvx], [protocolture]）：一些用户以讽刺或幽默的方式表达对AI客服的不满或不信任，[clvx]希望AI能不断要求转接人工，[protocolture]则以玩笑的方式描述了一个荒谬的AI应用场景。
-• 社会影响担忧（[andrewinardeer]）：该用户担心AI语音代理的广泛应用会导致工作岗位流失，并可能引发社会运动。同时，对AI在处理复杂问题上的能力表示怀疑。
-• 实用性质疑（[FiniteIntegral]）：该用户认为AI客服在实际应用中可能仅对某些特定人群有吸引力，且对商业模式的可持续性提出质疑。
-
-补充讨论：
-• 潜在应用场景（[chevman]）：有用户认为AI客服在处理与服务供应商、保险公司等的谈判中可能具有巨大潜力。
-• 隐私与安全担忧（[gruez], [afarah1]）：一些用户担心AI客服可能带来的数据隐私和安全问题，尤其是身份验证和信息保护方面。
-• 技术实现与改进建议（[alooPotato], [throwaway81523], [generalizations]）：用户对AI的交互速度、最后对话环节的处理、以及在浏览器登录中的应用提出改进建议。
-• 历史背景（[kleiba]）：有用户提到Google Duplex在几年前曾遭遇的反对声音，提醒人们注意可能的社会反弹。
-• 开源可能性（[pnw]）：有用户询问是否已有此类工具的开源版本，以便用于打击诈骗。
-
-争议焦点：
-• AI客服在处理复杂问题和边缘案例时的能力。
-• AI广泛应用可能导致的社会问题，如工作岗位流失。
-• 数据隐私和安全问题。
-
-总结：讨论围绕AI语音代理在客户服务中的应用展开，支持者认为其能提高效率，反对者则担心其能力不足和社会影响，同时还有对隐私安全的顾虑和技术改进的建议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44716414" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ianto-cannon.github.io/clock.html" target="_blank">Different Clocks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pppone</span> |
-                    <span>评分: 215</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-07-28 19:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Ianto Cannon创建的时钟图形使用JavaScript生成可缩放矢量图形（SVG），源代码可自由使用和修改。每个时钟显示当前的协调世界时（UTC），包括以下几种样式：
-
-1. **Binary**：方块显示Unix时间，即自1970年以来的秒数，以32位整数表示。
-2. **Polygons**：多边形显示时间，格式为yy:M:w:d:h:mm:ss，其中M是月份，w是当月第几周，d是星期几。
-3. **Blobs**：左起第一个blob显示每千年波峰移动一次，后续blob分别显示每年的波峰、每天的波峰、每小时的波峰、每分钟的波峰和每秒的波峰，最后一个blob综合了所有六种波。
-4. **Peaks**：最高峰每千年从右向左移动一次，依次递减至每分钟移动一次。
-5. **Waves**：与Peaks类似，但使用贝塞尔曲线而非锐边。
-
-© Ianto Cannon 2025年7月28日</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：各种独特时钟设计及其引发的思考和创意应用
-
-不同观点：
-• [iosjunkie] 提到 Peaks 时钟的设计引发了他对时间流逝的思考，虽然时钟设计精美，但看到时间滑走让他感到一丝存在的焦虑。
-• [rook_line_sinkr] 将二进制时钟与柏林的一个真实时钟（Mengenlehreuhr）进行了比较，引入了现实生活中的类似设计。
-• [rezmason] 表示喜欢组合的blob时钟，并计划在CodePen上制作一个只显示小时、分钟和秒的版本以进行实验。
-• [mlukaszek] 分享了另一个非数字但有趣的时钟——Corpus Clock，提供了更多有趣时钟的例子。
-• [DougBTX] 对千年一次的时钟标记表示兴趣，认为它们接近于我们的理解范围，但又不完全如此。
-• [agys] 提供了一个包含24种不同文本形式时钟的网站链接，特别提到其中一个带有互动功能的“cuckoo”时钟。
-• [pvillano] 提到了他个人最喜欢的汉诺伊塔时钟（Towers of Hanoi），提供了相关链接。
-• [ghxst] 表示喜欢二进制和波形时钟，并思考如何将这些元素作为网页设计中的一部分应用。
-• [xnx] 提到使用AI工具制作不同时钟概念的乐趣，并分享了一个基于"Against the Run"艺术作品的时钟重建链接。
-• [DaveZale] 提出了一个有趣的想法，设想一个吃豆人主题的时钟，让吃豆人随着时间流逝在表盘上移动。
-• [fitsumbelay] 认为时钟设计是进入字体创作和广播设计的良好入口，并强调了时钟设计在设计和编码实验中的平台作用。
-• [mattmar96] 简单表达了对组合blob时钟的喜爱。
-• [GuinansEyebrows] 回忆了一个旧的iPhone时钟应用"hms"，该应用通过三维矩形展示时间，每个维度对应小时、分钟和秒，并提到该应用因某些原因被下架。
-
-补充讨论：
-• 时钟设计的创新性和视觉效果引发了参与者对时间流逝的哲学思考，以及如何将这种设计应用到其他创意领域，如网页设计和艺术创作。
-• 参与者积极分享各种独特的时钟设计和相关资源链接，丰富了讨论内容。
-• 争议焦点不明显，但不同参与者对时钟设计的偏好有所不同，例如有人喜欢简约的二进制时钟，有人则偏爱复杂的汉诺伊塔时钟。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44714223" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
