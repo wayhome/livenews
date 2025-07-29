@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-07-29 12:05 (北京时间)
+            最后更新时间: 2025-07-29 14:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,70 +61,155 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tkdodo.eu/blog/the-useless-use-callback" target="_blank">The Useless UseCallback</a>
+                    <a href="https://arclight.run/how-i-fixed-my-blogs-performance-issues-by-writing-a-new-jekyll-plugin-jekyll-skyhook/" target="_blank">How I fixed my blog's performance issues by writing a new Jekyll plugin</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 0xedb</span> |
-                    <span>评分: 69</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-07-28 20:44</span>
+                    <span>作者: arclight_</span> |
+                    <span>评分: 73</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-07-24 19:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了React中`useCallback`和`useMemo`的误用问题，指出在某些情况下这些钩子实际上是没有必要的，甚至可能导致不必要的开销。
+                    <p>本文介绍了作者通过开发一个名为 **jekyll-skyhook** 的 Jekyll 插件，解决了自己博客性能问题。最初，作者的网站在 Google Search Console 中显示页面未被索引，经过诊断发现是由于网站性能差。使用 Google PageSpeed Insights 测试后，作者发现博客得分很低，主要问题包括使用 Google Fonts CDN 和 YouTube 默认嵌入代码导致的性能问题。
 
-### 主要内容：
-1. **为什么要使用memoization？**
-   - 通常是为了性能优化，避免不必要的重新渲染或副作用（effect）的频繁执行。
-   - `useCallback`和`useMemo`的主要作用是保持引用稳定性（referential stability）。
-
-2. **无用的memoization**：
-   - 如果组件没有被`React.memo`包裹，那么使用`useCallback`或`useMemo`不会带来性能提升。
-   - 例子中展示了将`useCallback`用于非memoized组件（如内置的`button`）时，并不能带来任何实际的好处，反而增加了不必要的缓存和依赖比较开销。
-
-3. **需要注意的场景**：
-   - 如果组件内部使用了`useEffect`或将props传递给其他memoized组件，移除memoization可能会导致问题。
-
-总结：在非memoized组件中使用`useCallback`或`useMemo`通常是多余的，应该谨慎使用这些钩子以避免不必要的开销和复杂性。</p>
+为解决这些问题，作者通过自托管字体和使用第三方库（如 lite-youtube）替换 YouTube 嵌入代码来提升性能。同时，作者优化了图片处理，提供多种格式（如 WebP、AVIF）并生成响应式 `srcset`。由于现有的 Jekyll 插件无法满足需求，作者开发了 **jekyll-skyhook** 插件，支持图片转换、响应式生成、缓存清除和自动路径更新等功能，显著提升了博客性能。插件代码已在 GitHub 开源。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：React中关于`useEffect`、`useCallback`、`useMemo`等Hooks的复杂性、使用必要性及性能优化的讨论。
+                    <div class="comments-summary">主要讨论点：网页优化、图像处理、自动化工具与手动优化的平衡、页面加载速度与用户体验的权衡
 
 不同观点：
-• **nemothekid的观点**：认为React的复杂性是隐藏的，`useEffect`和`useCallback`等Hooks常常导致问题。修复这些问题通常需要重新架构组件树，而不是简单地使用`useCallback`。对API、框架或语言的能力表示怀疑，并提到React编译器的出现试图解决这些问题，但对其必要性感到惊讶。
+• **图像格式选择与优化时机的讨论**：
+  - firefoxd认为开发者依赖自动化工具处理图像格式，但优化应在图像创建时完成，例如选择合适的格式（jpeg或webp）。
+  - bentocorp分享了使用Jampack后端处理工具优化网站速度的成功经验，减少了590MB的大小。
 
-• **wfleming的观点**：支持在某些情况下使用`useCallback`，特别是当回调函数依赖于props时。认为不把依赖放入依赖数组可能会导致使用过时的值，从而产生错误。同时指出，父组件应该负责 memoizing 回调函数，而不是子组件。
+• **页面加载问题与用户体验**：
+  - Sayrus指出页面存在301重定向循环和过多请求的问题，导致加载速度变慢，用户体验下降，尽管这些优化可能对Google Pagespeed有利。
+  - pavel_lishin质疑懒加载（lazy-loading）是否真正有利于用户，尤其是在无网络环境下访问页面时。
 
-• **matsemann的观点**：对Hooks的复杂性表示不满，尤其是`useEffect`中的依赖数组和函数的引用稳定性问题。还提到在处理异步更新和状态管理时，Hooks会导致不优雅的代码结构，称之为“spaghetti code”。
+• **自动化与手动处理的选择**：
+  - thomas_witt询问为什么选择重写图像处理逻辑，而不是使用已有的jekyll_picture_tag gem。
+  - Brajeshwar分享了自己简化处理的方式，通过Jekyll迁移，优化图像并保持内容独立性，避免过度依赖特定工具。
 
-• **rbongers的观点**：认为如果父组件不需要优化，可以不使用`useMemo`和`useCallback`。如果需要优化，这些工具是必要的，并且它们的使用是自我解释的。不认为这是过度的间接层次，反而是为了避免不必要的重新渲染。
+• **Google索引与页面优化的关系**：
+  - azangru认为页面加载速度与Google索引状态无直接关系，虽然可能影响排名。
+  - est提到尽管Pagespeed得分高，但仍有页面被Google去索引，暗示内容重要性可能更关键。
 
-• **CharlieDigital的观点**：强烈反对使用memoization，认为这增加了不必要的复杂性和代码开销。与其他框架相比，React的设计导致了更多的手动优化需求，并认为这是React自身体设计带来的问题。
-
-• **strogonoff的观点**：强调`useMemo`和`useCallback`的重要性，特别是在保持非原始类型数据的引用相等性方面。认为这是一种必要的优化手段，并且有助于代码的清晰度和可维护性。
-
-• **rtpg的观点**：认为盲目使用`React.memo`应该是一个很大的胜利，因为引用的相等性成本很低。对“先修复慢渲染”的观点表示怀疑，认为避免浪费渲染周期和修复慢渲染是两个不同的问题。
-
-• **patrickthebold的观点**：提出了一种无Hooks的模式，使用全局状态和外部状态来避免组件之间的状态同步和传递，认为这样可以减少一些React中的复杂性。
-
-• **prinny_的观点**：对React的复杂性和其引入的“bandaid fixes”表示失望，认为新特性并没有带来新的机会，反而增加了开发难度。对依赖的memoization需求表示不满，并认为React正在疏远一些爱好者和小型用户。
-
-• **qprofyeh的观点**：认为Hooks是一个泄漏的抽象，会导致更多的问题。
-
-• **hyfgfh的观点**：认为`useRef`模式像是一种代码异味，怀念生命周期方法，并预测未来React的版本会带来更多的模式和问题。
-
-• **SSchick的观点**：不理解为什么`React.memo`不是默认应用的，认为手动在每个组件上使用`memo`是过度的开销，并且难以在代码库中强制执行。
+• **其他技术实现与简化开发的讨论**：
+  - corentin88提出使用embedlite.com简化YouTube嵌入的另一种方法。
+  - philipwhiuk提到Google web-fonts导入麻烦，最终选择移除。
+  - deafpolygon简短评论，质疑为博客做复杂优化的必要性。
+  - impostervt分享了使用Claude AI快速搭建静态网站的经验，简化了开发流程。
 
 补充讨论：
-- 争议的焦点在于React Hooks（特别是`useEffect`、`useCallback`和`useMemo`）的必要性和复杂性。一些开发者认为这些工具带来了不必要的复杂性，而另一些开发者则认为它们是必要的优化手段。
-- 另一个讨论点是React编译器的必要性及其解决问题的能力。
-- 有人提出无Hooks的开发模式，试图减少React中的复杂性问题。
-- 对React严格模式和Rails 8的提及显示了对React生态系统中不断变化的特性的广泛看法。</div>
+• 不同开发者对图像格式、页面加载、自动化工具及手动优化的偏好和实际经验分享。
+• 懒加载等优化技术对用户体验的双刃剑效应。
+• 对Google索引、页面速度与内容质量之间关系的不同看法。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44715391" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44675053" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=hCQCP-5g5bo" target="_blank">I saved a PNG image to a bird</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mdhb</span> |
+                    <span>评分: 195</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-07-28 16:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>该页面提供了与YouTube相关的多项信息和功能链接。用户可以访问关于YouTube的介绍、新闻、版权信息、联系方式、创作者资源、广告、开发者信息以及使用条款等。页面还包括隐私政策、安全指南以及YouTube新功能的测试信息。此外，页面提到了NFL Sunday Ticket服务，并显示版权归属2025年Google LLC。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过鸟类传递和存储数据的概念及其技术可行性
+
+不同观点：
+• [aflag] 和 [Balgair] 认为通过训练鸟类传递和存储数据（如PNG图像）是可行的，尤其是在大量鸟类的情况下，可以实现类似云存储的功能。[Balgair] 进一步提出是否可以使鸟类的发声实现图灵完备性，即通过鸟类的叫声实现逻辑运算。
+• [CobrastanJorji] 对评论的反转让感到惊喜，原本以为会是简单的物理传递方式，但实际是通过 clever 的技术手段实现。
+• [m-hodges] 幽默地提到了版权问题，暗示用鸟类传递数据可能涉及法律问题。
+• [strangattractor] 赞赏内容创作者的才华，并提到其其他有趣的项目，如声音相机和水印技术。
+• [anton-c] 提到视频中的鸟类具有出色的模仿能力，甚至能模仿 R2D2 的声音。
+• [nashashmi] 只是表示对简短评论的失望，没有深入讨论技术问题。
+• [any1] 对使用数字调制方法（如FSK和PSK）在鸟类声音中存储数据的技术细节感兴趣，并提出多载波和相位保持的可能性。
+• [flysand7] 表示欣赏创作者的热情和专业精神，并因视频对鸟类产生了新的 appreciation。
+• [jonny_eh] 和 [nitwit005] 以幽默方式提到需要新的技术标准（RFC）来包含这种新特性。
+• [kyrofa] 表示对内容创作者在音乐方面的才华的赞赏，并提到其在其他领域的成就。
+• [ranger_danger] 批评了一些人在Reddit上对标题用词的过度关注，而忽略了视频的技术含量和创作者的努力。
+• [beardsciences] 对视频中的创意和隐藏技术（如 spectrogram）表示赞赏，认为其具有实际意义。
+• [fudged71] 建议尝试使用具有纠错功能的 QR 码来提高数据传递的可靠性。
+
+补充讨论：
+• 争议焦点：一些人关注标题用词的准确性（如“PNG”的使用是否合适），而忽略了视频的整体技术含量和创造性。
+• 技术细节：讨论涉及数字调制方法（FSK、PSK）、多载波技术以及 QR 码的应用，显示出对技术可行性和改进的深入思考。
+• 创作欣赏：多位评论者对内容创作者的才华和热情表示赞赏，认为其作品具有启发性和娱乐性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44712311" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.dumbpipe.dev/" target="_blank">Dumb Pipe</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: udev4096</span> |
+                    <span>评分: 936</span> |
+                    <span>评论数: 48</span> |
+                    <span>发布时间: 2025-07-27 14:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"Dumb pipe" 是一种简化设备间直接连接的工具，能够在2023年复杂的网络环境中穿透NAT，保持设备连接稳定。用户只需在两台计算机上运行一个命令即可建立连接并传输数据，无需账户或配置。该工具基于Iroh Rust库，使用QUIC协议，支持多路复用和加密。对于无法直接连接的情况，它通过中继节点传输数据。用户还可以利用Iroh的附加功能如pubsub和数据同步，但这些会使管道不再“简单”。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过不同工具和方法实现计算机之间的通信和文件传输
+
+不同观点：
+• **使用SSH和socat进行加密传输**：[remram]提出可以通过SSH和socat或mkfifo工具实现加密的数据流传输，并提供了具体的命令示例。该方案可以通过中继服务器进行传输，适用于防火墙或NAT后的目标。
+• **对“智能”产品的批评**：[44za12]认为，许多被称为“ dumb ”（简单）的产品实际上非常智能，因为它们只专注于基本功能而不进行额外的数据收集或广告推送。他希望通信工具能像管道一样简单直接。
+• **文件传输工具的分享**：[smusamashah]分享了一个包含浏览器和CLI工具的列表，用于在不同设备之间传输文件，并希望获取更多类似工具。
+• **USB直接通信的疑问**：[Aardwolf]质疑为什么不能通过USB电缆直接在两台电脑之间进行通信和文件传输，特别是对于USB-C接口，同时提到Android设备与PC之间的通信相对容易。
+• **对Iroh系统中节点发现和解析的批评**：[kiitos]认为Iroh系统在节点发现和解析方面没有详细说明，虽然概念类似于DNS，但实际操作中存在困难，且作者没有给出明确的解决方案。
+• **秘密短语共享的复杂性**：[Alifatisk]提到通过Iroh分享长秘密短语的过程繁琐，质疑是否有更简单的方法在设备之间共享此类信息。
+
+补充讨论：
+• **隧道解决方案的缺陷和需求**：[zackmorris]认为大多数隧道解决方案存在缺陷，并提出了一个检查清单来评估这些缺陷。他呼吁提供一个更全面的解决方案。
+• **与Tailscale的比较**：[Liftyee]提到Iroh和Tailscale有相似的需求，质疑两者之间是否有重复的实现，并希望有现成的低级库来处理NAT等问题。
+• **Iroh技术的赞赏与推荐**：[ilovefood]高度赞赏Iroh技术，并提到在Web3峰会上的相关工作坊，提供了代码和 slides 的链接。
+• **隧道工具的资源分享**：[behrlich]提供了一个关于隧道工具的资源列表链接，供有兴趣的人参考。
+• **SSH管道的实现**：[qudat]提到在pico.sh使用SSH构建了类似的管道传输工具，并提供了链接。
+• **游戏实时网络的适用性**：[darzu]质疑Iroh技术是否适用于游戏中的实时网络，特别是对于需要低延迟和高带宽的UDP通信。
+• **PWNAT工具的推荐**：[bob1029]推荐了pwnat工具，认为它避免了中间服务器的需求，尽管不完全覆盖所有使用场景。
+• **基于Iroh的隧道管理工具**：[CGamesPlay]提到自己开发了一个基于Iroh的隧道管理CLI工具，支持TCP、UDP和UNIX socket的端口转发，并提供了链接。
+
+争议焦点：
+• **Iroh系统中节点发现和解析的实现细节不足**：[kiitos]认为Iroh在节点发现和解析方面缺乏详细的解决方案，而这正是P2P网络中的关键问题。
+• **不同隧道解决方案的缺陷和需求**：[zackmorris]和其他用户讨论了各种隧道解决方案的不足之处，并希望找到一个能够解决所有问题的“终极”解决方案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44701555" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -203,291 +288,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.tampabay.com/news/weather/2025/07/28/tampa-florida-100-degrees/" target="_blank">Tampa FL hits 100 degrees for first time in recorded weather history</a>
+                    <a href="https://www.da.vidbuchanan.co.uk/blog/adversarial-pds-migration.html" target="_blank">Adversarial ATProto PDS Migration</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: WarOnPrivacy</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-07-28 21:37</span>
+                    <span>作者: LorenDB</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-07-29 00:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Tampa recorded its hottest day in history on Sunday, reaching 100 degrees for the first time since record-keeping began in 1890. The extreme heat has raised concerns about its continuation, especially with low rain chances forecasted. In response to the heatwave, measures are being taken to protect both people and animals, such as cooling horses with hose water. Additionally, the article touches on other regional news, including hurricane preparedness, real estate activity, and recent weather events like flash flooding in Plant City. The ongoing high temperatures in the Tampa Bay area remain a critical concern.</p>
+                    <p>本文讨论了ATProto账户在个人数据服务器（PDS）之间的迁移，特别是在原PDS不合作或出现问题（敌对情况）下的迁移方法。ATProto设计中包含了“可信退出”的理念，确保用户能在必要时迁移到新PDS，而不会造成太大干扰。文章详细介绍了如何为这种敌对迁移做准备，包括创建备份旋转密钥和定期备份数据。备份内容包括账户的公共数据（如Bluesky帖子）和私有数据（如偏好设置）。迁移过程使用`goat`工具，需提前安装并准备必要的账户信息和新的PDS邀请码。虽然过程复杂且手动步骤较多，但通过这些措施，用户可在PDS出现问题时成功迁移账户。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：气候变化及其对温度的影响，特别是区域温度异常和人类应对能力。
-
-不同观点：
-• **jauntywundrkind** 认为Climate Reanalyzer是一个可靠的工具，可以用来观察全球温度异常，尤其是海洋温度异常。他提到2023年Manatee Bay海洋温度达到100华氏度的情况，并指出Tampa区域的温度并没有显著异常，但在墨西哥湾北部有一些明显的温度异常。
-
-• **davidw** 同意湿度对温度感知的影响，并指出南部的佛罗里达州在最高温度上不如俄勒冈州和华盛顿州。他强调了干燥气候对温度感知的影响，并提到在干燥气候下，阴凉处和微风可以显著改善体感温度。
-
-• **wewewedxfgdf** 持悲观态度，认为面对气候变化无能为力，只能适应。他还指出这是全球普遍的政治立场。
-
-• **poulsbohemian** 认为当前的高温不算严重，未来可能会出现更极端的高温天气，如连续多日超过100华氏度的情况。
-
-• **toomuchtodo** 通过个人经历描述了在Tampa机场的体验，表达了对未来气候变化的担忧，并提到对不承认气候变化者的不解。
-
-• **WorldPeas** 提出人类活动，如建造大型邮轮港口，可能对局部气候产生影响，并提到由此引发的个人不满。
-
-补充讨论：
-• 讨论中提到了多个影响温度感知的因素，包括湿度、海洋温度异常和人类活动。
-• 有人对气候变化持悲观态度，认为无法改变只能适应，而另一些人则通过具体数据和个人经历表达了对气候变化的担忧和关注。
-• 人类活动对局部气候的影响也被提及，特别是基础设施建设对温度的潜在影响。
-
-争议焦点：
-• 关于南部地区是否一定更温暖的问题存在不同看法，具体数据和感知之间的差异引发了讨论。
-• 面对气候变化应采取何种态度和行动，存在一定的分歧，有人认为无能为力，而另一些人则强调需要采取行动。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44715993" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.polygon.com/news/616835/visa-mastercard-steam-itchio-campaign-adult-games" target="_blank">Visa and Mastercard are getting overwhelmed by gamer fury over censorship</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mrzool</span> |
-                    <span>评分: 356</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-07-28 17:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>游戏玩家不满Steam和itch.io下架成人游戏，将愤怒转向支付处理公司Visa和Mastercard，发起大规模邮件和电话抗议活动。玩家认为这些支付公司是下架的幕后推手，尽管其规则模糊。玩家在社交媒体上组织动员，通过打电话和发邮件施压，意图通过制造沟通障碍，迫使支付公司关注问题。尽管客服代表表示无权改变政策，玩家仍坚持通过占用线路和回拨占用其他客户的服务资源。玩家还向高管发送邮件，并保持礼貌态度以增加影响力。同时，有组织提供资源和脚本帮助玩家参与抗议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：支付处理公司作为 gatekeeper 对内容进行审查的争议
-
-不同观点：
-• Kapura：认为少数人基于个人喜恶推动审查是荒谬的，特别是当这些内容并没有强迫任何人消费时。主张应继续对支付处理公司施压，同时也需抵制那些试图决定其他成年人如何支配时间的人。
-• numpad0：指出最初被下架的是色情内容，但现在审查范围已扩展到恐怖游戏，如《Mouthwashing(2024)》。担忧审查范围会继续扩大。
-• duxup：批评支付处理系统的不透明性，举例一家制作剑的公司无故被禁止使用信用卡支付，且无法得知具体原因或申诉。
-• benoau：引用Collective Shout的博客，指出当Steam未回应时，他们转向支付处理公司施压，认为这是有效的策略。
-• ThrowawayR2：认为消费者和企业对Visa、Mastercard没有其他选择，主张应向政治人物施压，特别是民主党立法者，以获得支持和选票。
-• dehugger：建议Steam改变政策，让成人游戏只能用商店信用购买，以解决支付处理问题。
-• tflinton：提醒大家即使某些内容不违法，也可能带来民事问题和风险，支付处理公司可能不得不采取审查措施以规避风险。
-• motbus3：感叹当今社会人人想当审查者或统治者，表达对此趋势的不满。
-• SilverElfin：认为某些内容应受到严格监管，但私人支付应由政府作为公共服务提供，以避免审查。
-• vunderba：提供一个相关的在线请愿链接，呼吁对支付处理公司施压。
-• bsenftner：质疑相关文章的真实性，认为其迎合游戏观众，没有实质内容。
-• nemomarx：提供信息称Collective Shout通过大量电话成功引起支付公司注意，建议继续保持这种压力。
-• 3acctforcom：认为普通人的电话无法影响大公司高层的决策，强调权力运作的现实。
-• scirob：询问是否有任何行动可以减少这些公司的权力。
-• CivBase：对“玩家愤怒”能否带来实质性改变持怀疑态度，但承认当前的Stop Killing Games活动可能具有一定影响力。
-
-补充讨论：
-• 争议焦点在于支付处理公司作为gatekeeper审查内容的合理性和合法性，以及应如何有效抵制这种趋势。
-• 讨论中涉及的具体案例（如《Mouthwashing(2024)》游戏和制作剑的公司）突显了审查对不同类型内容的影响。
-• 建议的应对策略包括向支付处理公司施压、通过政治途径寻求改变、以及利用集体行动引起注意。
-• 对当前审查系统的透明度和申诉机制缺失的问题也有较多批评。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44713414" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lareviewofbooks.org/article/viral-language/" target="_blank">Viral Language</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lermontov</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-26 04:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同用户对年轻人（尤其是Z世代）使用语言现象的看法，以及语言演变的历史背景和相关概念的辨析。
-
-不同观点：
-• [kazinator] 认为诸如 "aura"（气场）和 "brain rot"（脑残）等词汇并非新创，并提供了词源证据。例如，"aura" 一词早在1732年就有使用记录，而 "brain-rot" 甚至可以追溯到1854年亨利·梭罗的作品《瓦尔登湖》。这一观点强调了这些词汇的历史渊源，暗示它们在现代被认为是新词可能是一种误解。
-
-• [henriquegodoy] 强调语言和行为之间的相互影响，认为行为会影响语言，而语言反过来又会影响行为，形成一种循环。这种观点关注语言演变的动态过程，强调社会行为对语言创新的推动作用。
-
-• [bitwize] 提出需要区分几种不同的语言现象：Z世代的俚语（如 "rizz"）、为避免被平台惩罚而使用的代用语（如 "unalive" 代表 "kill"），以及用星号替代字母以避免提及某些不受欢迎的人物（如 "El*n M*sk"）。此外，bitwize 质疑一些被认为是Z世代使用的词汇（如 "cheugy"）的真实性，认为这些词汇可能是媒体和市场营销人员虚构并传播的，类似于1990年代“垃圾摇滚俚语”的骗局。
-
-补充讨论：
-• 争议焦点在于某些词汇或语言现象的真实性和来源。例如，kazinator 通过词源网站证明 "aura" 和 "brain rot" 的历史悠久，而 bitwize 则对一些所谓的Z世代词汇（如 "cheugy"）的真实性提出质疑，认为这些词汇可能是媒体虚构的产物。
-
-• bitwize 强调了不同语言现象之间的区别，认为混淆这些现象会导致对年轻人语言使用的误解和简化，因此有必要对它们进行区分和澄清。
-
-• henriquegodoy 的观点补充了语言演变的动态视角，强调语言和行为之间的相互影响和反馈循环。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44691232" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://utcc.utoronto.ca/~cks/space/blog/programming/WhyRDParsersForMe" target="_blank">Why I write recursive descent parsers, despite their issues (2020)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: blobcode</span> |
-                    <span>评分: 119</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-07-24 04:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是Chris Siebenmann于2025年2月17日发布的一则通知，解释了为何一些用户在访问其博客"Wandering Thoughts"或相关wiki "CSpace"时被拦截。原因是为应对大量使用旧浏览器（尤其是旧版Chrome）的爬虫（用于LLM训练数据采集），作者采取了反爬虫措施，可能误拦了使用旧浏览器或通过某些网页存档服务（如archive.*）访问的正常用户。被误拦的用户可联系作者并提供所用浏览器的User-Agent字符串以解决问题。作者建议使用更为规范的archive.org进行存档访问。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同类型的解析器技术及其优缺点，包括手写递归下降解析器与自动生成解析器（如LALR、YACC、Bison等）之间的比较。
-
-不同观点：
-• JonChesterfield认为LALR解析器生成器（如Bison或lemon）在处理复杂语法时可以有效避免歧义，但其错误信息不友好。他建议使用LALR解析器进行初步解析，若失败则调用自定义解析器进行诊断，而不是直接使用自定义解析器进行整个编译流程，因为这可能导致更多错误。
-• jasperry更偏好OCaml中的Menhir解析器生成器，认为其具备许多便利功能，并且享受掌握该工具的过程。
-• randomNumber7引用"Top Down Operator Precedence"（Pratt Parsing）算法，认为递归下降解析器优于生成器，并且该方法早在1973年就被提出。
-• nicoburns指出，过去十年中递归下降解析器在生产系统中更受欢迎，并且少见其他方法的提倡。
-• o11c则认为Bison经过多年改进已经非常实用，如果配置得当，可以解决很多实际问题，并批评那些无视这些改进而继续抱怨YACC的人。
-• ufo提出一个折中方案，使用LALR解析器生成器检查语法是否存在歧义，但实际实现仍使用递归下降解析器。
-• marssaxman表示从未觉得解析器生成器值得使用，递归下降加上Pratt优先级攀爬算法已足够应对大多数情况。
-• norir描述了一种自底向上构造无歧义递归下降解析器的技术，强调局部无歧义和避免全局词法分析的必要性。
-• zahlman提到在Go和Python中没有标准的解析器生态，但提供了一些替代工具如pybison、ply和pyparsing。
-• favorited质疑主流编译器最终是否都会转向手写递归下降解析器，并提到CRuby和Go的历史例子。
-• pklausler认为递归下降解析器在需要语法反馈的语言（如Fortran）中更为干净，并且解析器组合子使得递归下降解析器易于编码。
-• coldcode分享了1982年用Fortran编写Jovial语言解析器的个人经验，认为Fortran并不适合编写解析器。
-• fjfaase通过实际项目说明了递归下降解析器在处理C语言语法时的灵活性，特别是在结合语义信息的情况下。
-
-补充讨论：
-• 争议焦点在于解析器生成器与手写递归下降解析器之间的选择。前者在处理复杂语法和检查语法正确性上具有优势，但错误信息不友好；后者则在灵活性和易于实现上更受欢迎。
-• 不同语言和项目背景下的解析器选择有所不同，OCaml和Fortran等语言有各自偏好的工具和方法。
-• 一些开发者提出折中方案，结合两者的优点，以解决实际问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44666824" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://en.ssi.dk/news/news/2025/large-danish-study-no-link-between-vaccines-and-autism-or-49-other-health-conditions" target="_blank">Danish Study: No link between vaccines and autism or other health conditions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: healsdata</span> |
-                    <span>评分: 127</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-07-28 23:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>一项大型丹麦研究分析了超过100万名儿童的数据，发现含铝疫苗与包括自闭症、哮喘和自身免疫疾病在内的50种健康问题之间没有关联，证实了丹麦儿童疫苗接种计划的安全性。研究由Statens Serum Institut（SSI）进行，数据涵盖1997年至2018年出生的儿童，结果显示疫苗中微量铝不会增加这些健康风险。该研究发表在《Annals of Internal Medicine》上，旨在回应国际上对疫苗安全性的争论，强调应依赖科学证据而非误导信息。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：疫苗与自闭症之间的关系以及相关研究的科学有效性和透明度
-
-不同观点：
-• puppycodes认为“疫苗导致自闭症”是一种错误的信息传播，将这种观点视为一种“心智病毒”。
-• SubiculumCode作为自闭症研究者指出，虽然不能完全排除疫苗导致自闭症的可能性，但其他原因有更强的理论和实证支持，研究资源应优先投入到这些领域。
-• bradleyy关注科学研究的透明度问题，质疑是否大多数研究都会公布数据和代码，尤其是在当前科学复制危机的背景下。
-• another_twist对疫苗怀疑者持强烈批评态度，认为试图说服他们毫无意义，甚至视其为公共健康的威胁。
-• dc396指出，无论研究结果如何，其在政治或公众中的影响可能微乎其微，这令人沮丧。
-• glitchc对此表示庆幸，认为如果研究结果显示有任何关联或不确定，将会引发更大的风波。
-• carom作为疫苗怀疑者，对一项具体研究的数据进行了解读，认为该研究未能完全排除疫苗与阿斯伯格综合症之间的联系，并希望看到更长期的数据分析。
-• autoexec鼓励人们在面对新证据时改变观点，认为这是智慧的表现。
-• macinjosh表达了对疫苗的个人疑虑，主要集中在疫苗制造商的法律豁免、医生回扣以及疫苗定义的改变等问题上，但仍选择遵循医生的建议。
-• fsckboy对研究的设计和研究者的资金来源提出质疑，认为研究可能缺乏诚意，并指出疫苗中铝的作用及其历史背景。
-• fooker希望研究能说服父母不要听信错误信息，但同时也担心学术界是否允许发表与主流观点相悖的研究。
-• kryogen1c好奇丹麦和美国的疫苗接种计划中铝含量比较如何。
-
-补充讨论：
-• 研究透明度与科学复制危机：bradleyy和fsckboy都提到了研究透明度和资金来源的问题，反映了对科学研究可信度的关注。
-• 疫苗怀疑者的态度：another_twist和carom代表了对疫苗怀疑者的不同态度，前者持强烈批评态度，后者试图从技术角度解读研究数据。
-• 研究的影响力和学术自由：dc396和fooker指出了研究结果在公众和政治领域的影响力有限，以及学术界可能存在的发表偏倚。
-
-争议焦点：
-• 疫苗与自闭症之间是否存在关联：尽管主流科学认为疫苗不会导致自闭症，但仍有怀疑者基于数据解读和研究设计提出质疑。
-• 科学研究的透明度和可复制性：研究数据和代码的公开问题以及研究者的资金来源和潜在偏见。
-• 如何对待疫苗怀疑者：是应该努力说服他们，还是视其为无意义的负担。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44717226" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.stepsecurity.io/blog/supply-chain-security-alert-num2words-pypi-package-shows-signs-of-compromise" target="_blank">Num2words PyPI Package Compromised</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: varunsharma07</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-28 16:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年7月28日，Python社区发现num2words库的0.5.15版本在PyPI上发布，但其GitHub官方库中没有对应标签，可能遭到 compromise。安全研究员@johnk3r指出，该事件疑似与曾发动供应链攻击的“Scavenger”黑客组织有关。该恶意版本发布后不久，自动化工具已开始尝试将其集成到项目中。尽管PyPI迅速下架了该版本，但此事件暴露了Python生态系统的供应链安全风险。建议开发者检查并降级至安全版本，并加强安全措施。企业用户可使用StepSecurity等工具增强CI/CD管道的安全性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个Python库的历史演变及其当前状况
-
-不同观点：
-• [vdupras] 认为该库是在十多年前由他创建的，起初仅用于一个小而简单的用例，并没有被其他人使用。他对该项目如今变得“嘈杂”感到惊讶和不满，暗示项目的发展超出了他的预期，且可能变得过于复杂或受欢迎。
-
-• [varunsharma07] 则关注该库的最新动态，指出一个流行的版本（num2words v0.5.15）在没有仓库标签的情况下发布，并且与一个已知的威胁行为者相关联。这暗示了对该库安全性和维护现状的担忧。
-
-补充讨论：
-• 项目的历史和原始用途与当前的状态形成对比，[vdupras]对项目变得“嘈杂”的感慨反映了某些开源项目在发展过程中可能面临的复杂性和不可控性。
-
-• [varunsharma07]的评论引入了对项目安全性的关注，特别是涉及到与已知威胁行为者的关联，这可能对使用该库的开发者构成风险。
-
-争议焦点：
-• 项目的发展方向和复杂性增加是否合理。
-• 项目安全性及其维护者信誉问题，特别是涉及到潜在的安全威胁。
-
-总结：讨论围绕一个Python库的历史演变和当前的安全问题展开，涉及对项目发展复杂性的感慨以及对安全性的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44712736" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44717382" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -548,6 +367,155 @@
 • 对学术研究与商业应用之间的矛盾提出了批评，强调实际用户需求的重要性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44670483" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lareviewofbooks.org/article/viral-language/" target="_blank">Viral Language</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lermontov</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-26 04:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同用户对年轻人（尤其是Z世代）使用语言现象的看法，以及语言演变的历史背景和相关概念的辨析。
+
+不同观点：
+• [kazinator] 认为诸如 "aura"（气场）和 "brain rot"（脑残）等词汇并非新创，并提供了词源证据。例如，"aura" 一词早在1732年就有使用记录，而 "brain-rot" 甚至可以追溯到1854年亨利·梭罗的作品《瓦尔登湖》。这一观点强调了这些词汇的历史渊源，暗示它们在现代被认为是新词可能是一种误解。
+
+• [henriquegodoy] 强调语言和行为之间的相互影响，认为行为会影响语言，而语言反过来又会影响行为，形成一种循环。这种观点关注语言演变的动态过程，强调社会行为对语言创新的推动作用。
+
+• [bitwize] 提出需要区分几种不同的语言现象：Z世代的俚语（如 "rizz"）、为避免被平台惩罚而使用的代用语（如 "unalive" 代表 "kill"），以及用星号替代字母以避免提及某些不受欢迎的人物（如 "El*n M*sk"）。此外，bitwize 质疑一些被认为是Z世代使用的词汇（如 "cheugy"）的真实性，认为这些词汇可能是媒体和市场营销人员虚构并传播的，类似于1990年代“垃圾摇滚俚语”的骗局。
+
+补充讨论：
+• 争议焦点在于某些词汇或语言现象的真实性和来源。例如，kazinator 通过词源网站证明 "aura" 和 "brain rot" 的历史悠久，而 bitwize 则对一些所谓的Z世代词汇（如 "cheugy"）的真实性提出质疑，认为这些词汇可能是媒体虚构的产物。
+
+• bitwize 强调了不同语言现象之间的区别，认为混淆这些现象会导致对年轻人语言使用的误解和简化，因此有必要对它们进行区分和澄清。
+
+• henriquegodoy 的观点补充了语言演变的动态视角，强调语言和行为之间的相互影响和反馈循环。
+
+</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44691232" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/babycommando/zuse" target="_blank">ZUSE – The Modern IRC Chat for the Terminal Made in Go/Bubbletea</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: babycommando</span> |
+                    <span>评分: 90</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-07-27 23:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>ZUSE 是一个简洁的 IRC 终端客户端，使用 Go 语言开发，并基于 Bubble Tea 框架。它提供快速、无干扰的聊天体验，适合在命令行界面中使用。安装方式包括通过 `go install` 直接获取或从源码构建。使用时，用户需打开终端并输入 `zuse`，然后填写 IRC 信息即可开始聊天。基本操作包括使用方向键浏览聊天和切换面板，按 `Ctrl+C` 退出。当前软件处于测试阶段，可能存在漏洞和未完成的功能，用户可以通过 GitHub 项目提交问题。项目遵循 Apache-2.0 开源许可协议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：IRC客户端的现状、功能、及其与现代通信工具的比较
+
+不同观点：
+• dlojudice认为，IRC错过了成为主流去中心化协议的机会，主要问题在于其协议缺乏现代团队所需的功能（如多媒体支持、文件共享、可搜索的历史记录、以及丰富的文本格式）。尽管IRCv3提高了可扩展性，但未能填补这些功能上的差距。IRC的简约既是其优势，也是其致命弱点。
+• alberth关注的是IRC截图的可读性，建议增加对比度并避免使用分散注意力的背景。
+• emersion提供了一个类似但更成熟的客户端链接，供参考。
+• sho_hn分享了一个与讨论主题无关的链接，可能是为了提供娱乐或兴趣。
+• GCUMstlyHarmls对能够在约1千行代码中实现一个完整的IRC TUI客户端表示印象深刻，尽管其建立在大型抽象之上。
+• sva_以幽默的方式评论了“IRC Chat”这一表述的重复性。
+• boredemployee表达了对过去在IRC服务器和频道中与朋友交流的美好回忆，并询问是否仍有活跃的IRC服务器和频道。
+• haggis-alt对nightrider的工作表示赞赏，重复两次以强调。
+• jcastro表示希望看到类似的Matrix客户端。
+• anonym29指出，在Bubbletea/Lipgloss界面中，无法通过点击、拖拽和高亮文本进行基本操作，如快速复制文本，这使得其落后于一些几十年前的CLI-based IRC客户端。
+• alrs对“现代”这一形容词的使用表示不满，认为其带有被动攻击性。
+• ClueslessTech99关心该IRC客户端是否支持IRCv3。
+• DigiEggz对该项目表示兴奋和赞赏。
+
+补充讨论：
+• 评论中既有对IRC功能和用户体验的深入讨论（如dlojudice和anonym29的观点），也有对具体实现细节的赞赏（如GCUMstlyHarmls和DigiEggz的评论）。
+• 有些评论偏离了主要讨论点，如sho_hn提供的链接和sva_的幽默评论。
+• 争议的焦点在于IRC是否应增加更多功能以适应现代需求，还是保持其简约特性。dlojudice认为功能缺失是其未能成为主流的原因，而保持简约则是其在技术社区中受欢迎的原因。
+• 用户体验问题也被提及，如alberth对截图可读性的建议和anonym29对文本操作的批评。
+
+通过这些评论，可以看到社区对IRC现状的不同看法，以及对其未来发展的期望和建议。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44705494" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.polygon.com/news/616835/visa-mastercard-steam-itchio-campaign-adult-games" target="_blank">Visa and Mastercard are getting overwhelmed by gamer fury over censorship</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mrzool</span> |
+                    <span>评分: 356</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2025-07-28 17:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>游戏玩家不满Steam和itch.io下架成人游戏，将愤怒转向支付处理公司Visa和Mastercard，发起大规模邮件和电话抗议活动。玩家认为这些支付公司是下架的幕后推手，尽管其规则模糊。玩家在社交媒体上组织动员，通过打电话和发邮件施压，意图通过制造沟通障碍，迫使支付公司关注问题。尽管客服代表表示无权改变政策，玩家仍坚持通过占用线路和回拨占用其他客户的服务资源。玩家还向高管发送邮件，并保持礼貌态度以增加影响力。同时，有组织提供资源和脚本帮助玩家参与抗议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：支付处理公司作为 gatekeeper 对内容进行审查的争议
+
+不同观点：
+• Kapura：认为少数人基于个人喜恶推动审查是荒谬的，特别是当这些内容并没有强迫任何人消费时。主张应继续对支付处理公司施压，同时也需抵制那些试图决定其他成年人如何支配时间的人。
+• numpad0：指出最初被下架的是色情内容，但现在审查范围已扩展到恐怖游戏，如《Mouthwashing(2024)》。担忧审查范围会继续扩大。
+• duxup：批评支付处理系统的不透明性，举例一家制作剑的公司无故被禁止使用信用卡支付，且无法得知具体原因或申诉。
+• benoau：引用Collective Shout的博客，指出当Steam未回应时，他们转向支付处理公司施压，认为这是有效的策略。
+• ThrowawayR2：认为消费者和企业对Visa、Mastercard没有其他选择，主张应向政治人物施压，特别是民主党立法者，以获得支持和选票。
+• dehugger：建议Steam改变政策，让成人游戏只能用商店信用购买，以解决支付处理问题。
+• tflinton：提醒大家即使某些内容不违法，也可能带来民事问题和风险，支付处理公司可能不得不采取审查措施以规避风险。
+• motbus3：感叹当今社会人人想当审查者或统治者，表达对此趋势的不满。
+• SilverElfin：认为某些内容应受到严格监管，但私人支付应由政府作为公共服务提供，以避免审查。
+• vunderba：提供一个相关的在线请愿链接，呼吁对支付处理公司施压。
+• bsenftner：质疑相关文章的真实性，认为其迎合游戏观众，没有实质内容。
+• nemomarx：提供信息称Collective Shout通过大量电话成功引起支付公司注意，建议继续保持这种压力。
+• 3acctforcom：认为普通人的电话无法影响大公司高层的决策，强调权力运作的现实。
+• scirob：询问是否有任何行动可以减少这些公司的权力。
+• CivBase：对“玩家愤怒”能否带来实质性改变持怀疑态度，但承认当前的Stop Killing Games活动可能具有一定影响力。
+
+补充讨论：
+• 争议焦点在于支付处理公司作为gatekeeper审查内容的合理性和合法性，以及应如何有效抵制这种趋势。
+• 讨论中涉及的具体案例（如《Mouthwashing(2024)》游戏和制作剑的公司）突显了审查对不同类型内容的影响。
+• 建议的应对策略包括向支付处理公司施压、通过政治途径寻求改变、以及利用集体行动引起注意。
+• 对当前审查系统的透明度和申诉机制缺失的问题也有较多批评。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44713414" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
