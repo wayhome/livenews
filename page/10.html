@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-01 02:22 (北京时间)
+            最后更新时间: 2025-08-01 05:15 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,94 +61,58 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://techcrunch.com/2025/07/31/google-is-experimenting-with-machine-learning-powered-age-estimation-tech-in-the-u-s/" target="_blank">Google is experimenting with machine-learning powered age estimation tech in US</a>
+                    <a href="https://www.fiveonefour.com/blog/Fixing-ctrl-c-in-terminal-apps-child-process-management" target="_blank">Fixing Ctrl+C in Rust terminal apps: Child process management</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: severusdd</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-31 14:17</span>
+                    <span>作者: Callicles</span> |
+                    <span>评分: 100</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-29 22:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Google正在美国测试一种基于机器学习的年龄判定技术，以根据用户年龄过滤其所有产品中的内容。该技术通过分析用户在Google账户中的活动数据，如搜索历史和YouTube观看记录，来估算年龄。若系统判定用户未满18岁，将发送邮件通知，并实施相应限制措施，包括禁用Maps的时间轴功能、停止个性化广告、限制特定类型的广告、禁止访问Play Store中的成人应用，以及启用YouTube的数字健康功能，如休息提醒和深夜使用通知。若用户认为被误判，可通过提交身份证照片或自拍来申诉。其他平台如Instagram和Roblox也在使用类似技术，而年龄验证已成为全球趋势，尤其在英国《在线安全法》通过后。</p>
+                    <p>本文讨论了在Rust终端应用程序中处理Ctrl+C中断时遇到的终端损坏和子进程管理问题，并提供了相应的解决方案。主要问题包括终端状态损坏、子进程输出干扰、挂起的后台进程以及竞争条件。文章提出了以下解决方法：
+
+1. **进程输出代理**：将子进程输出重定向到日志系统，避免直接输出到终端。
+2. **终端状态管理**：确保应用程序退出时恢复终端到原始状态，使用`crossterm`库实现跨平台终端操作。
+3. **优雅的进程终止**：先尝试使用`SIGTERM`优雅关闭进程，必要时再用`SIGKILL`强制终止，并设置超时。
+4. **线程安全的状态指示器管理**：协调交互元素与子进程输出，防止同时写入终端导致字符格式错误。
+
+此外，文章还提供了测试策略和常见陷阱的避免方法，强调从一开始就实现这些模式以避免终端问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：YouTube平台的用户体验和身份验证问题
+                    <div class="comments-summary">主要讨论点：Rust CLI 程序中的信号处理问题及其复杂性，尤其是 SIGINT 和 SIGPIPE 的处理，以及与操作系统相关的子进程管理问题。
 
 不同观点：
-• [palmfacehn的观点]  
-YouTube的搜索功能已经大不如前，推荐内容也经常不相关。现在要求用户提供政府发放的ID或进行面部扫描以访问第三方推荐的内容，可能是压垮用户的“最后一根稻草”。这种做法会促使第三方将内容上传到其他平台，进一步削弱YouTube的吸引力。
-
-• [nuker的观点]  
-质疑如果没有Google账号，用户该如何应对这些新的身份验证要求。这暗示了对没有Google账户的用户可能面临的困境，以及YouTube这一举措对所有用户群体的影响。
-
-补充讨论：
-- [隐私和数据安全问题]  
-[palmfacehn]提到对提供ID或面部扫描的担忧，认为这可能导致用户流失，并暗示YouTube的这些举措可能会进一步驱使内容创作者和第三方平台转移到其他竞争平台。
+• mprovost：认为 Rust CLI 程序在处理 SIGPIPE 时存在问题，因为编译器在调用 main() 前会忽略 SIGPIPE，导致程序无法像其他程序一样在管道关闭时被信号杀死，而是返回写错误。虽然可以通过手动检查错误类型和退出状态码来模拟，但无法完全重现被信号杀死的情况。
   
-- [账号依赖问题]  
-[nuker]的评论引出了一个潜在问题，即YouTube对Google账号的依赖，可能对没有Google账号的用户造成不便或排斥。
+• duped：认为优雅地关闭进程固然重要，但并不是所有子进程都适合被管道输出。对于某些进程（如需要 stdin 的 shell），应该为子进程分配新的 pty。此外，提出可以通过操作系统特性（如 PR_SET_PDEATHSIG 和 PID namespaces）管理子进程，而不是维护一个子进程注册表，并指出在 raw mode 下无法接收 ctrl+C 信号的问题。
 
-争议焦点：  
-YouTube新引入的身份验证要求是否合理，以及这些要求对用户隐私的影响和潜在的用户流失风险。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44745913" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/charmbracelet/crush" target="_blank">Crush: Glamourous AI coding agent for your favourite terminal</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nateb2022</span> |
-                    <span>评分: 347</span> |
-                    <span>评论数: 43</span> |
-                    <span>发布时间: 2025-07-30 16:18</span>
-                </div>
+• anp：同意 mprovost 提出的问题在 Rust 程序中存在，但认为这些问题并不是 Rust 特有的，其他语言的终端应用程序也会遇到类似问题。
 
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Crush 是一个集成多种大语言模型（LLM）的终端工具，允许用户在终端中使用自己偏好的模型进行编码工作。它支持多模型选择、灵活切换LLM并保持会话上下文、多工作会话管理，以及通过语言服务器协议（LSP）增强功能。Crush 可在 macOS、Linux、Windows 等多个平台上运行，并支持通过多种方式安装。用户可以通过获取 API 密钥快速开始使用，并可自定义配置以适应不同需求。此外，Crush 支持模型上下文协议（MCP）服务器，可通过 stdio、http 和 sse 传输类型扩展功能。</p>
-                </div>
+• vlovich123：支持 anp 的观点，进一步指出这些问题在任何语言的终端应用程序中都会出现，不限于 Rust。
 
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：终端AI编程工具的UI设计、功能比较及其实际使用体验
+• silon42：质疑应用程序是否应该负责清理工作，认为这应该是 shell 或终端的责任，并提出如果使用 "kill -9" 发送 SIGKILL 信号，应用程序无法处理。
 
-不同观点：
-• jsnell认为这些终端AI工具过度注重UI的视觉效果（如ASCII艺术、动画等），但缺乏预期的快捷键、tab补全、平滑滚动等实用功能，导致它们既不像传统的REPL或CLI，也不像全屏的Unix文本用户界面（TUI）程序。
-• tptacek指出，该工具代码清晰、结构化，对于想要了解如何实现工具调用、会话管理和自动摘要的人来说，是一个很好的蓝图。
-• tekacs提供了处理演示GIF的实用建议，通过减慢速度并转换为视频形式，帮助其他人更清楚地了解演示内容。
-• alixanderwang对比了该工具与Claude Code，认为该工具在UI美观和用户体验上有优势，但也存在无法组合模型、生成不明二进制文件、初始化文件内容不实用等问题，且Ctrl+C退出时终端崩溃。
-• Aperocky关注这些工具能否使用本地模型，以减少对外部API的依赖。
-• cristea希望看到这些新工具（如Claude Code、opencode、aider、cortex）的比较，以便更好地了解它们的区别和功能。
-• ascorbic对"glamorous"一词的拼写进行了澄清，指出其在英国英语中是正确的。
-• r0dms对Charm团队及其工具表示支持，认为他们了解开发者体验（DX），并期待他们在这个AI编程工具领域的发展。
-• anonzzzies希望这些工具能支持通过月度付费服务进行身份验证，以便切换界面但保留订阅服务。
-• NitpickLawyer对LSP增强功能和多会话/项目管理功能表示关注，认为这些功能很有趣。
-• mbladra赞赏该工具的UI设计，并询问是否有人成功切换过LLM提供商。
-• jekude关注Charmbracelet团队，询问是否会有类似Claude Code的CLAUDE.md文件。
-• bluelightning2k提到了一个潜在的争议，即某公司是否曾通过收购开源仓库并排除原贡献者而进行不道德操作，但具体公司不明确。
-• surrTurr询问该工具是否已与opencode进行过比较。
-• fridder指出该工具支持FreeBSD，认为这是一个加分项。
+• mook：指出 Windows 系统上的情况更复杂，因为 Windows 不使用 Unix 信号，通常只有类似 SIGKILL 的信号，但可以选择加入类似 SIGINT 的信号。
+
+• koakuma-chan：询问主进程退出后，子进程是否还能继续运行并写入 stdout/stderr。
+
+• rendaw：抱怨代码可读性问题，认为代码对比度不够，影响阅读体验。
+
+• windowshopping：提到标题容易引起误解，但最终避免了歧义。
+
+• npalli：质疑 Rust 的并发处理能力，认为在生命周期管理、线程协作和整体人体工学方面，现代 C++ 可能更具优势。
 
 补充讨论：
-• 视觉效果与实用功能的平衡：jsnell等人对工具过度注重视觉效果而忽视实用功能表示不满。
-• 工具的功能比较和选择：多个评论者（如alixanderwang、Aperocky、cristea）关注这些工具之间的功能比较，尤其是对本地模型支持、LLM提供商切换等功能的需求。
-• 对开源和团队行为的争议：bluelightning2k提到了一个潜在的道德争议，但具体情况尚不明确。
-• 对特定功能的需求：如支持月度付费服务身份验证（anonzzzies）和FreeBSD支持（fridder）。</div>
+• 争议的焦点在于应用程序是否应该负责处理子进程和信号的清理工作，还是应由操作系统（如 shell 或终端）处理。
+• 讨论还涉及不同操作系统（Linux、MacOS、Windows）在信号处理和子进程管理上的差异，尤其是 Windows 系统的特殊性。
+• 有人关注代码的可读性问题，建议改进代码高亮和排版以提升阅读体验。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44736176" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44728796" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -159,41 +123,46 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theatlantic.com/science/archive/2025/07/science-empire-america-decline/683711/" target="_blank">How Scientific Empires End</a>
+                    <a href="https://mistral.ai/news/codestral-25-08" target="_blank">Codestral 25.08</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-31 12:47</span>
+                    <span>作者: tosh</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-07-31 17:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了苏联科学家Roald Sagdeev见证了苏联科学从鼎盛到衰败的过程。在苏联早期，科学受到政治干预，斯大林要求科研符合意识形态，甚至在物理学会议上有人因马克思主义否定量子力学的不确定性原理。到20世纪70年代，苏联在太空领域被NASA超越，科研经费短缺，许多无科学背景的人因政治关系占据要职。1985年，Sagdeev短暂成为戈尔巴乔夫的顾问，但因批评超级计算机项目落后于美国和中国而被排斥。之后，苏联科学进一步衰落，许多顶尖科学家离开，其中不少人前往美国。文章还提到，如今在美国，特朗普政府被指对科学进行“控制性 demolition”，导致科研环境恶化，顶尖科学家可能外流，美国作为全球科研中心的地位或将不保。</p>
+                    <p>Mistral AI 宣布推出 **Codestral 25.08** 和完整的 **Mistral 编码堆栈**，旨在解决企业在大规模采用 AI 编码工具时面临的诸多挑战。文章指出，尽管 AI 编码助手功能日益强大，但由于部署限制、定制化不足、架构分散、缺乏统一的监控和控制，以及与内部工具链不兼容等问题，企业环境中的采用率依然较低。
+
+**Codestral 25.08** 提供了显著改进：
+1. **高保真代码补全**：接受率提高 30%，代码保留率提升 10%，失控生成减少 50%。
+2. **代码库规模的搜索和语义检索**：支持大规模代码库的高召回率、低延迟搜索，并可私有部署以确保数据安全。
+3. **自动化多步骤开发**：通过代理工作流实现自主开发，结合上下文进行多步骤操作。
+
+该堆栈支持企业级软件开发的每个阶段，从代码建议到自主提交请求，适用于云、VPC 和本地环境，满足了企业对 AI 原生开发平台的核心需求。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：将当代美国与历史上的苏联和纳粹德国进行比较的合理性及其影响
+                    <div class="comments-summary">主要讨论点：Mistral代码发布问题及其与其他模型的比较，以及开发工具和编码方式的讨论。
 
 不同观点：
-• [thatnerd的观点] 认为将当代美国与苏联时期进行比较并非夸大其词。他引用Lysenko事件为例，指出在意识形态影响下科学数据被扭曲的情况。尽管当代美国科学家面临的危险不如苏联时期严重，但意识形态对科学的影响是相似的。他特别提到RFK Jr.的生物学理论和政府科学家因发表不符合意识形态的发现而失去工作的风险，并警告这可能会导致美国科学的倒退。
+• [shock] 认为Mistral团队没有在OpenVSX上发布Mistral代码是愚蠢的行为，因为他们无法在VSCodium中使用该代码，这限制了向他人推荐的机会。这里表达了对工具兼容性的不满。
 
-• [LoganDark的观点] 提供了一个链接，但未明确表达立场，可能意在引导读者查看更多背景信息以形成自己的观点。
+• [tosh] 关注Mistral模型（或Codestral模型）的性能，询问其与其他模型的比较，显示出对技术细节和实际效果的关注，但没有明确的立场，只是寻求更多信息。
 
-• [bell-cot的观点] 认为这篇文章像是在对一项荒谬的法律提案进行道德批判，暗示文章可能只是为了吸引点击率。他对比了自己对该主题的了解，质疑文章的必要性和动机。
-
-• [strict9的观点] 强烈反对将当代美国与希特勒的德国和斯大林的苏联进行比较。他认为过去的历史背景与当代问题不同，不能简单类比，批评这种比较是不恰当的。
+• [incomingpain] 认为那些仍然依赖于通过网络聊天窗口获取代码的人“活在过去”，强调Codestral是为这些人设计的，但鼓励转向更先进的开发方式，如agentic coding。同时提到早期测试的qwen3 coder表现优异，暗示Codestral可能不是唯一选择。
 
 补充讨论：
-• 争议的焦点在于历史比较的适当性和意识形态对科学的影响。thatnerd支持这种比较，认为有相似之处并可能导致科学倒退；而strict9则认为历史背景不同，不能直接比较。
+• [shock] 的评论中隐含了对开源社区和工具兼容性的期待，认为重要代码应该在更广泛的平台上可用。
 
-• 另一个值得注意的点是意识形态对科学研究环境的毒化效应。thatnerd指出，即便理论正确，科学政治化本身就会对科学发展产生负面影响。
+• [incomingpain] 的评论引发了一种争议，即关于使用现代开发工具和方法（如agentic coding）与传统方法（如通过网络聊天窗口获取代码）的优劣对比，焦点在于技术进步和开发者适应新工具的能力。
 
-• bell-cot的评论提出了对媒体动机和内容质量的质疑，暗示这种比较可能只是为了吸引注意力而非严肃讨论。</div>
+• 整体讨论还涉及不同开发工具（如VSCodium与可能不兼容的Mistral代码）之间的兼容性问题，反映出用户对跨平台支持的需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44745113" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44747655" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -204,71 +173,13 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://futhark-lang.org/blog/2025-07-29-tracking-source-locations.html" target="_blank">Tracking source locations in the Futhark compiler</a>
+                    <a href="https://shakeddown.substack.com/p/a-short-post-on-short-trains" target="_blank">A short post on short trains</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jmillikin</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-31 04:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Futhark是一种高性能的纯函数式并行数组编程语言。为了帮助程序员优化程序速度，Futhark引入了性能分析工具。最初，Futhark只支持转储GPU操作报告，后来增加了`futhark profile`命令，可以将基准测试生成的机器可读数据转化为人类可读的报告。报告显示了各个成本中心的执行时间，如GPU内核和数据拷贝操作。然而，报告中的名称是编译器生成的，可能不易直接对应到源代码中的函数，特别是由于内联和优化导致的关系模糊。例如，"segmap"和"scan"操作可能对应于多个嵌套的扫描操作。通过这些工具，程序员可以更好地理解和优化程序性能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44742359" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://cyberscoop.com/quantum-cybersecurity-migration-act-federal-encryption-legislation/" target="_blank">Senate legislation would direct agencies to fortify against quantum threats</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thesabreslicer</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-07-31 16:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国参议员加里·彼得斯（Gary Peters）和玛莎·布莱克本（Marsha Blackburn）提出《国家量子网络安全迁移战略法案》，旨在应对量子计算机对网络安全的潜在威胁。该法案要求白宫办公室制定战略，帮助联邦机构开始试点量子安全加密，以防范量子计算机可能破解现有加密标准的风险。该立法还要求定义“与加密相关的量子计算机”标准，并评估各机构向量子后加密迁移的必要性。由于被盗数据可能被存储并日后解密，专家警告需立即采取行动升级系统。该法案是对近年来通过的量子 computing 相关法律的跟进，旨在确保美国在量子技术领域不落后于中国。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44746981" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://frigade.ai" target="_blank">Show HN: An AI agent that learns your product and guides your users</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pancomplex</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-07-30 13:24</span>
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 93</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-07-30 14:15</span>
                 </div>
 
                 <div class="summary-section">
@@ -278,36 +189,29 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Frigade产品的概念、网站设计及技术实现
+                    <div class="comments-summary">主要讨论点：地铁系统的列车长度、车站设计和运营效率之间的权衡
 
 不同观点：
-• 正面评价：
-  ◦ [flippy_flops]：赞赏概念和营销视频，但对AI解决方案的成熟度有疑虑，希望看到更具体的使用场景演示（如在Survey Monkey上的应用）。
-  ◦ [nico]：对多角色邀请功能感兴趣，但质疑是否能用同一邮箱创建多个角色。
-  ◦ [anyg]：认为在多个行业中有用，但对数据泄露风险和非客户网站的使用可能性提出疑问。
-  ◦ [twoodfin]：建议将代理反馈整合到开发者产品反馈中，认为这对产品经理非常有价值。
-  ◦ [lyime]：赞赏多角色邀请功能，认为设计巧妙。
-  ◦ [j45]：对产品概念感兴趣，并建议加入用户会话点击/交互历史的功能。
+• **支持小列车和小车站的观点**：小列车和小车站可以降低建设成本，并且通过增加列车频次来弥补运力不足。这种设计在新建地铁系统时具有经济优势，特别是在预算有限或城市空间受限的情况下。然而，这种设计的风险在于一旦需求超出预期，系统的扩容将非常困难和昂贵。
+  
+• **反对小列车和小车站的观点**：小列车在高峰期容易导致拥堵，乘客需要等待多趟列车才能上车。此外，小列车在信号系统和维护方面可能带来更高的运营成本。例如，慕尼黑的地铁系统虽然通过缩短列车间隔提高了频次，但在高峰期仍然出现过度拥挤和延误的问题。
 
-• 对网站设计和性能的批评：
-  ◦ [Rohitcss]：认为网站的登陆页面流程奇怪，质疑是否在本地运行。
-  ◦ [superasn]：认为登陆页面设计不佳，导致浏览器卡顿和CPU占用过高。
-  ◦ [moomoo11]：网站让笔记本风扇狂转，建议简化页面设计，直接展示价值主张。
-  ◦ [lawlessone]：关心产品是否在本地运行。
-  ◦ [saberience]：强烈不满现代企业网站的设计风格，认为滚动体验差，建议直接展示内容。
+• **关于等待时间和总出行时间的观点**：等待时间是影响公共交通效率的重要因素，特别是在列车间隔较长的情况下，实际出行时间会比预期长很多。即使在拥有优秀公共交通系统的城市，不确定的等待时间和不可靠的班次也会影响出行体验。
+
+• **创新方案的讨论**：有评论提出短列车但长站台的方案，通过将站台分为多个登车区，让列车不必等待前车离开即可进站，从而提高频次。还有评论建议通过不同服务模式的组合，让列车跳站运行以提高速度和效率。
 
 补充讨论：
-• 争议焦点：
-  ◦ 网站设计和性能问题：部分用户对Frigade的登陆页面设计和性能表现提出批评，尤其是滚动效果和CPU占用问题。
-  ◦ 产品功能实现细节：用户对多角色邀请、数据泄露风险和本地运行等功能实现细节表示关注。
+• **自动化和运营成本**：自动化和无人驾驶列车被认为是降低运营成本的一个重要手段，尤其是在减少人力成本方面。然而，自动化系统也需要考虑信号系统的复杂性和维护成本。
 
-• 其他值得注意的讨论点：
-  ◦ [tuesdaynight]：询问产品是否支持多语言使用。
-  ◦ [skeeter2020]：对多角色邀请功能的具体实现方式表示疑问，尤其是当用户不使用邮箱时的情况。
+• **长期规划和扩容问题**：有评论指出，虽然初期建设长站台和短列车的成本较低，但如果需求增长超过预期，扩容将面临巨大的技术和经济挑战。相比之下，初期建设更长的站台和列车可能在长远来看更具经济性。
 
-总结来看，评论主要围绕Frigade的概念和实际应用展开，有用户对其创新性表示赞赏，但也对其技术实现和网站设计提出了改进建议。</div>
+• **实际案例的参考**：一些评论提到了新加坡的环线和慕尼黑的地铁系统作为小列车系统的例子，指出了这些系统在高峰期的局限性。此外，有人提到哈德逊-伯根轻轨作为近期建造的例子，认为其符合多项小列车系统的特点。
+
+• **其他创新概念**：包括 rollercoaster 管道系统和 Turing 机器头站台设计等，虽然这些概念较为理论化，但也为地铁系统的设计提供了新的思路。
+
+争议焦点：小列车和小车站设计在初期建设中的经济优势与未来扩容难度之间的权衡是主要争议点。支持者认为初期成本低且灵活，反对者则担心高峰期拥堵和扩容困难。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44733892" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44734522" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -318,39 +222,103 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theguardian.com/world/2025/jul/31/severe-turbulence-delta-25-passengers-injured" target="_blank">Severe turbulence forces Delta A330 to make emergency landing, 25 injured</a>
+                    <a href="https://tante.cc/2025/07/30/friction-and-not-being-touched/" target="_blank">Friction and Not Being Touched</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: voxadam</span> |
-                    <span>评分: 22</span> |
+                    <span>作者: colinprince</span> |
+                    <span>评分: 52</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-31 13:32</span>
+                    <span>发布时间: 2025-07-31 03:18</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>一架从盐湖城飞往阿姆斯特丹的达美航空班机因严重颠簸被迫紧急降落在明尼阿波利斯，导致25名乘客受伤。乘客描述此次颠簸极为剧烈，甚至有人被甩离座位。专家指出，随着气候危机加剧，极端大气条件增加，严重颠簸事件预计将在未来几十年内增加两到三倍。自2009年以来，美国已报告207起因严重颠簸导致的重伤案例。气候变化正使航空旅行面临的颠簸问题愈发严重。</p>
+                    <p>文章讨论了现代人工智能（AI）系统被描绘成“万能机器”（Everything Machines）的现象。这些系统被宣传为能解决一切问题，无论失败都是因为使用不当或技术不足，而不是系统本身的局限性。这种观点脱离了AI实际能力的物理和技术现实。同时，文章探讨了“无摩擦性”（frictionlessness）的概念，在科技领域，无摩擦通常被视为理想状态，但作者认为摩擦在社会和认知层面有重要作用。摩擦让我们感受到他人的存在、观点和需求，是社会互动的一部分。无摩擦性则体现了自我的、孤立的心态，让人不必承认或接触他人。AI作为万能机器的叙事本质上反映了这种不愿被他人“触碰”的心态，避免了人与人之间的互动和必要的摩擦，最终可能导致个体与社会的隔离。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：航班飞行安全及路线选择
+                    <div class="comments-summary">主要讨论点：关于“无摩擦体验”的争议及其在不同情境下的意义和影响
 
 不同观点：
-• [cjrp] 强调乘坐航班时应始终系好安全带，即使在巡航阶段也不例外。该评论关注的是乘客的安全问题，建议无论在飞行的哪个阶段都应保持系好安全带的习惯。
-
-• [maybelsyrup] 认为航班选择直接飞越对流区而非绕行，可能是为了节省燃料，并隐含这种决策与高票价相关。这里讨论的焦点是航空公司的运营决策，以及是否为了节省成本而牺牲乘客的安全或舒适性。
+• [nmeofthestate] 认为该讨论毫无价值，完全是浪费时间，没有具体展开论据。
+• [camgunz] 持相对积极的态度，提到Trevor Noah和Esther Perel的相关讨论，认为视频内容既有娱乐性又有知识性，支持无摩擦体验的潜在好处。
+• [atoav] 反对作者对无摩擦的推崇，认为摩擦是组织和系统中不可或缺的一部分。他以客户服务和税务表格为例，指出摩擦有时是系统设计的必要部分，可以过滤掉不必要的需求。他还提到，现实中某些流程本身具有摩擦，如果隐瞒这种摩擦，反而是对用户的误导。
+• [elcapitan] 对原文中“无摩擦带有自恋倾向”的观点提出异议，认为强迫他人与自己互动反而是更自恋的行为，支持在某些情况下无摩擦体验的合理性。
+• [throw839340949r] 强烈反对原文作者的观点，认为人们选择无摩擦体验并非出于情感需求或寻求安全空间，而是因为有更重要的事情要做。他还提到保持个人空间的重要性，并以疾病和过敏为例，认为避免身体接触是合理的，不应被视为孤僻或逃避。
 
 补充讨论：
-• [appreciatorBus] 提供的链接显示了航班的历史飞行路径，并指出在19:20左右似乎发生了异常情况。虽然没有明确表达立场，但该评论提供了进一步分析的基础，特别是关于航班是否确实飞越了对流区。
+• 争议的焦点之一是无摩擦体验是否必然带有自恋或孤僻的倾向。部分评论者如[elcapitan]和[throw839340949r]认为这种观点是对无摩擦体验的误解和偏见。
+• 另一个值得注意的讨论点是摩擦在系统设计中的必要性。[atoav]详细阐述了摩擦在过滤需求和管理复杂流程中的作用，并指出某些情况下摩擦是不可避免的。
+• [camgunz]提供的视频链接为讨论提供了另一种视角，展示了无摩擦体验在某些情境下的潜在优势和吸引力。
+• 个人空间和身体接触的问题在讨论中也占据了一定篇幅，[throw839340949r]以疾病和过敏为例，强调保护个人空间和避免接触的合理性。
 
-争议焦点：
-• 是否为了节省燃料而冒险飞越对流区，进而影响乘客安全。
-• 航班票价与服务质量、安全措施之间的关系。
+总结：评论中对“无摩擦体验”的态度存在明显分歧，部分人支持其潜在优势，另一部分人则强调摩擦在现实系统设计中的必要性和合理性，同时讨论还涉及个人空间和身体接触的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44742021" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wiz.io/blog/critical-vulnerability-base44" target="_blank">Critical vulnerability in AI coding platform Base44 allowing unauthorized access</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: waldopat</span> |
+                    <span>评分: 112</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-07-30 16:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要介绍了在大语言模型（LLM）革命背景下，代码生成领域发生的重大转变，尤其是“氛围编码”（vibe coding）的兴起。这种新方式让没有技术背景的用户也能通过自然语言提示生成全功能应用。平台如Loveable、Bolt和Base44引领了这一潮流，使用户能创建从个人工具到企业内部聊天机器人等各种应用。
+
+Wiz Research在研究中发现，Base44平台存在一个严重漏洞，攻击者利用该漏洞可以通过提供简单的“app_id”值绕过认证，获取对私有企业应用及其敏感数据的完全访问权限。该漏洞在24小时内被修复，且未发现被滥用的证据。
+
+文章强调，氛围编码平台的共享基础设施模式带来了安全风险，一个平台漏洞可能危及所有在其上构建的应用。研究旨在提醒业界关注此类AI开发平台的安全隐患，确保技术的安全演进。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕应用程序安全漏洞及其暴露的问题展开的讨论，涉及安全漏洞的严重性、责任归属、技术与法律问题，以及对平台和品牌的评价。
+
+不同观点：
+• **[toddmorey] 和 [zamalek] 对安全漏洞的批评：** toddmorey 指出了一个非常简单的漏洞，通过提供非秘密的 app_id 就可以利用该漏洞，并对当前的安全状况表示担忧。zamalek 认为这种认证问题应被视为法律上的重大过失，尤其在“vibe-coded”授权方面，表达了对安全实践的强烈不满。
+
+• **[sandeepkd] 对安全实践的分析：** 认为此类问题属于“安全通过隐匿”的典型案例，并指出许多应用都可能存在类似问题，反映出对当前安全设计模式的担忧。
+
+• **[zahlman] 对平台名称的评论：** 对多个平台名称的独特性表示质疑，认为这些名称不太合适，带有调侃意味。
+
+• **[darepublic] 对平台价值的质疑：** 认为这些平台只是将LLM（大型语言模型）包装了一下，本质上只是“胶水代码”，不值得过多的赞誉和关注。
+
+• **[bgwalter] 提供的背景信息：** 提到多个平台创始人与 Unit 8200 的关系，并引用了 Wix 被用于创建虚假网站的例子，暗示这些技术可能被滥用。
+
+• **[jus3sixty] 对整体行业问题的批评：** 认为无论是数据泄露还是其他问题，都不会阻止大公司的“利益列车”，因为有“风险管理”机制，暗示这种现象普遍且难以改变。
+
+• **[bitwize] 对 GenAI 安全的调侃：** 讽刺地指出“GenAI”中的“S”代表“安全”，暗示当前生成式AI技术在安全性上的不足。
+
+• **[swyx] 对平台间关系的调侃：** 戏称 Wiz 发现 Wix 的漏洞是“以色列对以色列的暴力”，带有幽默性质地指出多个平台之间的关联性。
+
+• **[uponasmile] 对漏洞修复方式的质疑：** 质疑 Wix 是否手动修复了漏洞，还是利用 Base44 修复了它，表现出对平台技术能力的不信任。
+
+• **[htrp] 对法律和合同责任的关注：** 关注 Wix 是否在合同中对 Base44 代码库的状态做出了保证，暗示可能存在的法律纠纷。
+
+• **[oc1] 对黑客活动的预测：** 认为当前是黑客的“黄金时代”，无论是为了乐趣还是金钱，安全研究人员和脚本小子都会活跃起来。
+
+补充讨论：
+• 争议焦点：安全漏洞的严重性和责任问题。toddmorey 和 zamalek 强调了问题的严重性，而 sandeepkd 则分析了这种漏洞的普遍性和深层原因。
+• 对平台的评价：从平台名称到平台价值，不同用户表达了不同看法，有的质疑其技术含量，有的则质疑其品牌名称的合理性。
+• 对行业整体问题的反思：jus3sixty 和 bgwalter 提到了技术滥用和行业内难以改变的现象，反映了更广泛的行业问题。
 
 </div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44745465" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44736101" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -361,81 +329,45 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0151099" target="_blank">Ultra-Rapid Vision in Birds</a>
+                    <a href="https://www.infoworld.com/article/4023654/net-10-preview-6-brings-jit-improvements-one-shot-tool-execution.html" target="_blank">.NET 10 Preview 6 brings JIT improvements, one-shot tool execution</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: downboots</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-27 16:32</span>
+                    <span>作者: breve</span> |
+                    <span>评分: 174</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-27 05:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章通过行为实验研究了三种小型鸣禽（蓝山雀、领雀和斑姬鹟）的视觉时间敏锐度。研究发现，这些鸟类能够分辨高达145赫兹的光暗交替周期，远超基于其体型和代谢率的预测，并且比其他脊椎动物及人类的最高分辨频率高出约50赫兹。这种快速视觉能力可能源于自然选择的压力，有助于它们在飞行中精准探测和追踪快速移动的物体。研究表明，快速视觉可能是许多生态相似的鸟类共有的特征，而不仅限于猛禽的锐利视觉。</p>
+                    <p>.NET 10 Preview 6引入了一系列改进，包括JIT编译器对结构参数的优化，如将结构参数的成员放入共享寄存器，以及改进的循环反转。此外，新增的"一次性工具执行"功能允许开发者通过`dotnet tool exec`命令执行工具，而无需本地或全局安装，特别适用于CI/CD环境。其他增强包括对JSON处理的改进，解决重复属性可能导致的安全漏洞，以及对Blazor、ASP.NET Core、.NET MAUI等框架的优化。开发者可在dotnet.microsoft.com下载Preview 6，正式版预计11月发布。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：鸟类是否能够通过眼睛运动或其他快速运动来感知高于闪烁融合频率的闪烁光，以及它们对闪烁光的反应速度是否比人类快。
+                    <div class="comments-summary">主要讨论点：.NET 10的新功能、工具使用体验、桌面UI框架问题以及对.NET生态的整体看法
 
 不同观点：
-• modeless认为，即使闪烁频率高于人类视觉的闪烁融合阈值，鸟类仍可能通过使用眼睛运动或其他快速运动来区分闪烁光。具体来说，modeless指出，恒定光源在运动中会产生平滑的模糊，而闪烁光则会产生多个清晰的图像。然而，该评论也提到，目前似乎没有方法验证鸟类是否通过运动来区分闪烁光。
-
-• yrcyrc支持modeless的观点，并补充了一个相关的观察，提到有说法称鸟类反应速度比人类快13倍，这在鸟群飞行中尤其有用，因为它们需要快速处理大量视觉信息。这暗示鸟类可能确实能够感知高于人类阈值的闪烁光。
-
-补充讨论：
-• 争议的焦点在于是否能验证鸟类通过运动或其他机制感知闪烁光。modeless质疑当前研究方法的局限性，而yrcyrc提供了一个可能的解释，即鸟类快速反应能力可能使它们在某些情况下能够感知到人类无法感知的闪烁。
-
-• 两个评论都提到了鸟类感知能力的潜在差异，尤其是与人类视觉系统的对比，强调了鸟类在快速运动和反应方面的独特优势。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44702478" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.vincentuden.xyz/blog/pcb_management" target="_blank">Open source BOM management (for me)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: vincent-uden</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-27 18:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了一位嵌入式软件开发者在转向硬件设计（PCB设计）过程中遇到的组件管理问题及解决方案。起初，作者通过模块化和简化设计原则（如DRY和KISS）成功设计了电路，但随着使用多达40种不同组件的电路板增多，组件库存管理变得混乱。为解决这一问题，作者开发了一个开源的BOM（物料清单）管理工具，结合Gridfinity网格存储系统，利用3D打印的网格收纳盒管理组件。该工具通过可视化界面展示组件位置，支持从Altium Designer导入BOM，并能批量管理库存。未来，作者计划增加BOM批量采购导出功能和网格布局自定义等功能，以进一步提升工具的实用性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：电子元件存储和管理系统的优化和功能建议
-
-不同观点：
-• **jpatten** 认为目前最挑战的问题是保持元件数量的更新。他建议增加一个功能，可以输入“制作了25个模块”，系统自动扣除各个元件的数量，并考虑增加一个额外百分比来应对像0402这样的小元件容易丢失的情况。他还进一步设想了一个功能，可以解析DigiKey/Mouser等订单或者读取包装袋上的条形码来自动更新数量，并考虑如何支持不同的存储方式，比如卷盘存储。
-
-• **Robelius** 关注的是网格高亮系统，特别是在网格中存放超过49种不同元件时的处理方式。他提出了是否允许一个立方体中存放多种不同元件的问题，并询问是否更倾向于将同类元件混合存放，还是将不同类型的元件混合存放。他提到自己尝试过两种方法，但在没有适当维护的情况下都会出现问题。
-
-• **mycatisblack** 对使用Google表格来映射小元件抽屉网格的方式表示赞同，并表示愿意尝试新的软件。他还提供了一个实际的存储建议，即使用塑料小瓶来存放SMD电阻和电容，并通过在厚塑料板上钻孔来排列这些小瓶，从而在一个抽屉中存放更多元件。
+• [jug] 赞赏了.NET 10中引入的`dotnet tool exec`可以直接运行C#脚本，类似于F#的`dotnet fsi`功能，并希望C#能更深度整合进PowerShell作为脚本语言。他认为这对于大型脚本编写非常有利，尤其是C#的语言特性。
+• [tester756] 认为.NET是一个非常健全的编程生态系统，拥有出色的CLI、包管理器和IDE支持，但与C++相比，在操作系统、数据库和编译器等底层开发的机会较少。
+• [mattgreenrocks] 对`dotnet watch`在Blazor组件开发中的不稳定表现感到困扰，尤其是CSS更改未被及时捕捉的问题，这影响了开发体验。
+• [smackeyacky] 对.NET桌面开发支持表示不满，特别是缺乏从WinForms到现代化UI框架（如MAUI）的迁移路径，认为微软对旧项目的支持不足。
+• [sharken] 期待`dotnet run app.cs`的多文件支持，并认为这是未来.NET 11中的一个重要改进。
+• [giancarlostoro] 更加关注Visual Studio的更新，认为其每次大版本更新都带来显著改进，并期待下一个大版本的发布。
+• [brainzap] 认为微软应该更多关注GitHub问题的修复和深度教程的撰写，而不是过度聚焦于AI功能和最小API。
+• [croes] 更偏好.NET Framework 4.8，认为其生命周期比任何.NET Core/5+版本都长，稳定性更高。
 
 补充讨论：
-• **jpatten** 强调了自动化和精确管理元件数量的重要性，特别是对于大规模生产和小元件容易丢失的情况。
-• **Robelius** 则更关注存储系统的灵活性和可维护性，尤其是在元件种类繁多的情况下如何有效地组织和管理。
-• **mycatisblack** 提供了一种具体的、低成本的物理存储解决方案，并分享了实际操作中的经验。
+• [Alifatisk] 对`dotnet tool exec`的"one-shot execution"功能表示兴趣，并询问其具体解决了哪些问题。
+• [sergiotapia] 作为一个从.NET 4之后就没再使用过.NET的开发者，对.NET 10的新功能表示好奇，特别是CLI工具的改进。
+• [devwastaken] 提醒开发者注意微软对.NET编译器的知识产权声明，认为使用.NET意味着与微软及其平台深度绑定。
 
 争议焦点：
-• **Robelius** 提出的关于网格系统中多于49种元件的处理问题，以及元件混合存放的偏好问题，可能在实际应用中引起不同用户的争议，因为这涉及到个人或团队的工作习惯和存储策略。
-
-总结：讨论主要围绕电子元件存储系统的功能改进和物理存储方案的实际应用展开，涉及自动更新数量的功能需求和不同存储方式的优劣比较。</div>
+• .NET新版本的功能改进是否真正解决了开发者的痛点，尤其是桌面UI框架的支持问题。
+• 对微软在.NET生态中的发展方向存在不同看法，部分开发者更偏好稳定版本的.NET Framework，而非快速迭代的.NET Core/5+版本。
+• 对微软知识产权政策的担忧，部分开发者认为使用.NET意味着与微软平台的深度绑定。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44703581" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44699174" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -446,43 +378,188 @@ YouTube新引入的身份验证要求是否合理，以及这些要求对用户�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://medicalxpress.com/news/2025-07-fan-older-adults-hotter-dry.html" target="_blank">Using a fan can make older adults hotter in a dry heat</a>
+                    <a href="https://www.theguardian.com/world/2025/jul/31/the-mathematics-of-starvation-how-israel-caused-a-famine-in-gaza" target="_blank">The mathematics of starvation: how Israel caused a famine in Gaza</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bikenaga</span> |
-                    <span>评分: 6</span> |
+                    <span>作者: NomDePlum</span> |
+                    <span>评分: 21</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-31 15:50</span>
+                    <span>发布时间: 2025-07-31 17:50</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p> Montreal Heart Institute研究发现，在38°C和60%相对湿度下，风扇能轻微降低老年人核心体温并提升舒适度；但在45°C和15%相对湿度下，风扇会升高核心体温并增加不适感。研究发表于《JAMA Network Open》，包括58名老年人参与的实验室试验显示，高温和低湿环境下，风扇使核心体温上升0.3°C，排汗增加270 mL/h，感知和舒适度变差。而在高湿环境下，风扇能降低直肠温度0.1°C，增加排汗率57 mL/h，改善热感知和舒适度。皮肤湿润也能有效缓解热压力并减少脱水。研究建议，风扇在湿热天气是安全低成本的降温选择，但在极热干燥条件下应避免使用。</p>
+                    <p>文章揭示了以色列通过控制运往加沙的食物，造成该地区饥荒的严峻情况。自战争结束以来，加沙的农业和渔业被禁止，几乎所有食物依赖外部输入。以色列根据多年数据计算出加沙居民每日最低需摄入2,279卡路里，但实际提供的远低于此标准。2025年夏季，加沙陷入饥荒，人道组织要求每月至少提供62,000吨干粮和罐头食品，但以色列仅允许少量食物进入，导致大规模饥饿。尽管国际社会施压，以色列总理内塔尼亚胡仅承诺少量额外援助，饥荒仍在恶化，尤其是儿童和老人受影响最严重。联合国专家警告，加沙正面临“最糟糕情况”的饥荒。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对研究文章中有关远程医疗使用和效果的评价
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44748192" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cborbook.com/introduction/from_xml_to_json_to_cbor.html" target="_blank">From XML to JSON to CBOR</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: GarethX</span> |
+                    <span>评分: 85</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-07-30 10:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章简要回顾了数据交换格式的发展，重点介绍了三种格式：XML、JSON和CBOR。XML源于20世纪60-70年代IBM的GML，后来演变为SGML，并于1996年通过W3C简化为XML，旨在为互联网提供结构化的数据交换格式。XML具有良好的可扩展性和兼容性，但较为冗长。JSON则是为Web应用设计的轻量级格式，语法简单，更注重性能和易用性。CBOR是针对物联网等资源受限环境设计的二进制格式，强调高效和紧凑。每种格式都在特定历史背景下解决了不同的技术需求，反映了数据交换格式不断演变的趋势。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：CBOR数据格式及其与其他数据格式（如JSON、XML、MessagePack等）的比较
 
 不同观点：
-• 观点一：远程医疗具有巨大潜力，尤其是在医疗资源不足的地区。支持者认为远程医疗能够有效减少患者的交通时间和成本，同时提高医疗服务的可及性，特别是在偏远或医疗资源匮乏的地区。例如，有评论提到远程医疗在精神健康领域的应用显著增加了患者的就医机会。
+• **CBOR的定位和重要性**：
+  - **mrbluecoat**：认为将CBOR称为“关键数据格式”言过其实，与其他格式如Protobuf、Parquet、Avro和Cap'n Proto相比，CBOR并非那么重要。
+  - **nabla9**：认为CBOR在需要非常小的代码体积时具有优势，但在可以使用压缩的情况下，CBOR相对于JSON没有显著的数据体积优势。
 
-• 观点二：远程医疗的有效性存疑，尤其是在某些复杂病症的诊断和治疗中。有评论指出，远程医疗缺乏面对面的身体检查，可能导致误诊或治疗方案的不准确。例如，有医生提到在缺乏实验室检测和影像学检查的情况下，远程诊断存在风险。
+• **CBOR与JSON的对比**：
+  - **_the_inflator**：赞赏JSON的简洁和易用性，尽管需要为datetime、BLOBs等写类型转换器，但这些转换器正是JSON实用性的原因。此外，JSON的灵活性使其在简单和复杂需求之间取得平衡。
+  - **brookst**：指出文章中缺少CBOR的具体示例，使其难以理解CBOR的具体表现形式。
 
-• 观点三：隐私和数据安全问题。部分评论担心远程医疗平台的隐私保护和数据安全，认为患者健康信息在传输过程中可能面临泄露或被不当使用的风险。有人提到需要更严格的法规和标准来保护患者隐私。
+• **CBOR与其他二进制格式的对比**：
+  - **makapuf**：认为ASN.1在简洁性和通用性上优于CBOR等格式。
+  - **camgunz**：认为CBOR和MessagePack在本质上是相同的，但CBOR的标签注册机制和标准化的扩展类型并不实用，且增加了解码负担。
 
-• 观点四：医疗公平性问题。一些评论强调，远程医疗的普及可能导致新的医疗不平等，因为低收入群体或老年人可能缺乏必要的技术设备或技能来使用远程医疗服务。这可能进一步扩大医疗服务的数字鸿沟。
+• **CBOR的实际应用**：
+  - **JoelJacobson**：提到CBOR在WebAuthn（Passkey）协议中的实际应用，并分享了一个纯SQL/PLpgSQL CBOR解析器的实现。
+  - **gethly**：希望浏览器能原生支持CBOR，以便在提高速度的同时减少数据体积，而不需要担心解码问题。
 
-• 观点五：经济影响。有评论讨论了远程医疗对医疗成本的影响，一部分人认为远程医疗可以减少总体医疗支出，因为减少了医院和诊所的物理就诊需求；但另一方面，也有人担心远程医疗可能导致过度医疗，增加不必要的检查和治疗费用。
+• **CBOR的细节和技术问题**：
+  - **aidenn0**：对CBOR浮点数表示的准确性提出疑问，并指出文档中的潜在错误。
+  - **fjfaase**：提到文档的下一部分将CBOR与其他二进制存储格式（如protobuf）进行比较。
+
+• **CBOR的历史和社区讨论**：
+  - **dang**：提供了一些与CBOR相关的历史讨论链接，显示出社区对CBOR和MessagePack的长期争论。
+  - **JimDabell**：提到之前关于CBOR和MessagePack选择的讨论。
+
+• **ASN.1的实际应用**：
+  - **johnisgood**：分享了Erlang/Elixir对ASN.1的良好支持，并对比了Java/Kotlin在ASN.1支持上的不足。
 
 补充讨论：
-• 远程医疗技术的发展和改进，例如人工智能辅助诊断工具的应用，可能提升远程医疗的准确性和效率。
-• 不同国家和地区对远程医疗的政策和法规差异，可能影响其推广和应用效果。
-• 实际操作中，医生和患者对远程医疗的接受度和满意度，也是影响其发展的重要因素。
+• **压缩与格式比较**：
+  - **glenjamin**：指出文档中对压缩的提及不足，并建议比较压缩后的JSON和CBOR，以获得更全面的理解。
 
-争议焦点：远程医疗的有效性和安全性、隐私保护、医疗公平性以及其对医疗成本的实际影响是主要争议点。</div>
+• **对CBOR的幽默批评**：
+  - **naggumsghost**：以幽默的方式批评CBOR，并引用了一个对XML的激烈批评，暗示需要为CBOR想出一个类似的“激烈批评”。
+
+争议焦点：
+• CBOR是否真的如宣传所言是“关键数据格式”，以及其相对于其他格式（如JSON、MessagePack、ASN.1等）的实际优势和应用场景。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44746887" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44732593" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000qw60/executive" target="_blank">M8.7 earthquake in Western Pacific, tsunami warning issued</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jandrewrogers</span> |
+                    <span>评分: 847</span> |
+                    <span>评论数: 48</span> |
+                    <span>发布时间: 2025-07-30 00:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Earthquake Event Page应用支持大多数现代浏览器，用户也可选择使用实时通知、订阅源和网络服务获取最新信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：日本东部海啸预警及其影响，包括不同地区海啸的实际影响、地震强度以及公众反应。
+
+不同观点：
+• **[decimalenough]** 提到日本东部海岸发布了海啸预警，预计海啸高达3米，并指出这与2011年福岛海啸同一地区。更新信息显示，实际海啸波浪较小，最高仅40厘米，可能不会造成重大损害。同时提供了日语和英语的直播链接。
+• **[vasusen]** 提到其妻子因一个2025年日本地震预言的漫画而取消了前往日本的旅行，并调侃当前的海啸预警似乎验证了这一预言，尽管该预言曾引发过度恐慌和航班取消。
+• **[yinser]** 认为此次地震规模非常大，可能会进入有史以来最大地震的前八名，并附上维基百科相关列表链接。
+• **[dhx]** 引用了DART浮标观测到的水柱高度变化数据，指出在俄罗斯附近海域有显著变化。
+• **[andsoitis]** 提供了美国西海岸、夏威夷和阿拉斯加的海啸预警链接，指出夏威夷和阿拉斯加处于警告状态，而美国西海岸则是“观察”状态。
+• **[mordechai9000]** 关注俄罗斯彼得罗巴甫洛夫斯克的震害情况，引用了USGS的“严重”震动评估，并提到该地区过去几周有多次强震活动。
+• **[user____name]** 批评了在灾难预警中争论海啸是否为“波浪”的无意义行为，暗示在紧急情况下讨论重点不当。
+• **[bicx]** 指出俄罗斯该地区最近有大量地震活动，并持续收到地震警报。
+• **[Kozmik1]** 提到中途岛和关岛的海啸波幅为3英尺（1米），引用了夏威夷州长Josh Green的信息。
+• **[supportengineer]** 关心在夏威夷的家人的安全，担心瓦基基地区可能会被洪水袭击，并提到一些餐厅提前关闭。
+• **[chasd00]** 在哥斯达黎加度假，提到其酒店海滩因海啸预警关闭，但通过直播摄像头未看到明显海啸影响。
+• **[watkajtys]** 提供了地震及其周边地震活动的可视化链接，帮助理解地震影响。
+• **[N19PEDL2]** 指出此次地震是地球上有记录以来的第六强地震。
+• **[haunter]** 提到千叶有鲸鱼被冲上岸，附上了社交媒体链接。
+• **[swader999]** 提供了关于地震的Dutchsinse覆盖视频链接，供进一步了解。
+
+补充讨论：
+• 争议焦点：当前海啸预警与2025年日本地震预言的关联性被调侃，但多数讨论集中在地震和海啸的实际影响及数据分析上。
+• 数据引用：多个评论引用了实时数据、观测数据和官方预警链接，提供了较为全面的信息来源。
+• 地区关注：讨论覆盖了日本、俄罗斯、美国夏威夷和阿拉斯加等多个地区的海啸预警和实际影响，显示出事件的跨国影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44729865" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.neowin.net/news/fortnite-maker-confirms-epic-games-store-launch-on-play-store-after-google-loses-appeal/" target="_blank">Sweeney confirms Epic Games Store launch on Play Store after Google loses appeal</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bundie</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-31 19:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>谷歌在与Epic Games的法律纠纷中上诉失败，法院维持原判，要求谷歌开放Play商店。2023年12月的审判认定谷歌通过其Play商店和支付系统非法垄断，强制对开发者收取15%到30%的佣金。法院命令谷歌允许用户从Play商店下载竞争对手的应用商店，允许开发者使用自己的支付系统，并不得阻止开发者告知用户外部更便宜的购买选项。谷歌对该命令提出上诉，但上诉法院驳回其请求。Epic Games CEO对结果表示庆祝，而谷歌则担忧此决定会影响用户安全和Android生态系统的创新，并可能向美国最高法院提起上诉。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对Tim Sweeney（Epic Games CEO）的评价和其公司商业行为的讨论
+
+不同观点：
+• 正面评价：一些用户认为Tim Sweeney是行业的变革者，特别是在对抗苹果公司垄断行为的过程中表现出色。他推动了游戏行业对垄断行为的挑战，并为开发者争取了更多的利益。有评论提到，Sweeney对开放平台和自由市场的倡导为其他公司树立了榜样，尤其是他通过Epic Games与苹果的对抗，挑战了应用商店的高额抽成制度。
+
+• 负面评价：另一部分用户对Tim Sweeney持批评态度，认为他只是在维护Epic Games自身的利益，而不是真正关心开发者或行业的整体发展。有人指出，Epic Games自己的游戏平台和商业模式也存在一定的封闭性和垄断嫌疑，因此认为Sweeney的行为是出于自身利益，而非纯粹的行业改革。
+
+• 对商业模式的讨论：有评论指出，Epic Games通过《Fortnite》等游戏积累了大量财富，并通过这些资源来支持其与苹果等大公司的法律对抗。批评者认为，Epic Games的这种做法实际上是在利用其游戏成功后的资源进行商业斗争，而不是真正为了开放市场。支持者则认为，利用自身资源进行法律对抗是合理的，因为这有助于推动整个行业的变革。
+
+• 对行业影响的讨论：一部分评论认为，Epic Games与苹果的对抗有可能改变整个科技行业的商业模式，特别是在应用商店抽成和平台封闭性方面。支持者认为，这种对抗可能会促使其他平台进行改革，从而为开发者和消费者带来更多选择和利益。批评者则担心，这种对抗可能会导致行业的不稳定，甚至引发更多的法律和商业纠纷。
+
+补充讨论：
+• 一些评论还提到了Epic Games在游戏行业中的其他行为，比如其虚幻引擎（Unreal Engine）对开发者的影响。支持者认为，虚幻引擎为许多开发者提供了强大的工具，推动了行业的技术进步。批评者则认为，Epic Games通过虚幻引擎和其他商业手段，也在建立自己的生态系统，可能导致新的封闭和垄断。
+
+• 关于法律对抗的结果，一些评论表示关注。他们认为，无论结果如何，这种法律对抗可能会持续很长时间，并对整个行业产生深远影响。支持者希望这能带来积极的变化，而批评者则担心这可能会带来更多的不确定性和风险。
+
+争议的焦点：Tim Sweeney及其公司Epic Games的行为是否真正为了推动行业改革和开放市场，还是仅仅为了自身利益。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44749202" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
