@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-01 09:15 (北京时间)
+            最后更新时间: 2025-08-01 12:12 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,59 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://kde.org/linux/" target="_blank">KDE Linux</a>
+                    <a href="https://xlii.space/eng/emacs-the-macos-bug/" target="_blank">Emacs: The macOS Bug</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: MBCook</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-31 19:12</span>
+                    <span>作者: xlii</span> |
+                    <span>评分: 139</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-07-30 18:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>KDE Linux是一款免费的Linux操作系统，专为新旧电脑设计，提供安全、简单、灵活且强大的使用体验。它通过可靠的系统更新和快照功能确保安全，并允许用户自定义Plasma桌面环境。该系统预装丰富的专业级软件，所有代码均开放可审计，且不会未经许可传输数据。目前仅提供测试版，适合KDE粉丝和技术爱好者使用。应用程序通过Discover安装，系统更新通过通知或命令行完成，且支持回滚旧版本。遇到问题可在KDE社区平台报告和寻求帮助。KDE Linux采用不可变基础技术，主要使用Flatpak和Snap分发应用，并预装Distrobox和Toolbox以安装第三方软件。由于系统不可变，不支持运行时加载专有NVIDIA驱动。</p>
+                    <p>这篇文章讨论了Emacs在MacOS上的一个长期存在的性能问题，即随着使用时间的增加，Emacs的RAM占用不断上升，最终导致冻结。尽管在Linux和Windows上没有类似问题，作者发现MacOS上的Emacs在处理事件时会频繁分配和释放资源，尤其是在高DPI显示器下，这导致大量无用的缓存对象累积，从而影响性能。问题主要出现在`[NSApp run]`的调用上，它在处理系统事件时会无意中创建和销毁大量资源，如窗口、字体和图形上下文。由于MacOS高效处理事件的特性，这些问题在快速硬件上更加明显，最终导致Emacs无法正常释放资源，引发内存和CPU占用过高的问题。虽然问题复杂，但作者对代码设计并不持批评态度，而是理解其历史和维护难度。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：KDE Kinoite与KDE Neon以及其他类似系统（如Fedora Silverblue）的比较和差异
+                    <div class="comments-summary">主要讨论点：Emacs在不同平台（尤其是macOS）上的性能和兼容性问题
 
 不同观点：
-• anthk认为Kinoite类似于Fedora Silverblue对Gnome和Flatpak的支持，但采用的是KDE环境。不过他指出Kinoite与KDE Neon并不相同。这暗示他可能认为Kinoite在解决一些KDE Neon未能解决的问题。
-• rob_c对Kinoite表现出兴趣，表示会去了解，但未深入讨论技术细节，更多的是一种初步的好奇。
-• GuinansEyebrows提供了关于KDE Kinoite和KDE Neon之间差异的详细分析。他指出KDE Neon虽然是KDE自制的操作系统，但由于基于Ubuntu LTS，为了使其支持Plasma环境需要进行较多修改，导致系统稳定性下降，违背了LTS的承诺。他还提到KDE Neon依赖较旧的技术，并且需要大量的打包工作，而这些都是KDE Linux（Kinoite所属的项目）试图避免的。
+• **Emacs与GUI框架的主循环冲突**：[rayiner] 指出Emacs希望控制主循环，而大多数GUI框架也希望控制主循环，这种冲突导致了一些问题。不过，他在Mac上的使用体验一直很好，特别是处理大型PDF文件时表现优异。
+
+• **macOS对Emacs的严格要求有助于改进跨平台代码**：[rahen] 认为macOS对Emacs中某些“hack”的严格处理有助于改进整个Emacs代码库，并提到PGTK前端和采用SDL工具包的潜力。
+
+• **对改进工作的感谢和兴趣**：[dwb] 表达了对Emacs开发工作的兴趣和感谢，但表示没有时间和精力参与。
+
+• **内存管理问题**：[kkylin] 发现删除一个帧（frame）时没有释放相关联的内存，导致长时间运行时内存消耗增加，并提出了一种临时解决办法。
+
+• **在macOS上良好的使用体验**：[mattlangston] 提到在macOS上长时间使用Emacs处理大量缓冲区时，内存使用和性能表现良好。
+
+• **对性能问题的不同体验**：[eviks] 提到Emacs在macOS上的性能问题早已被注意到，并解释了某些操作（如拖动窗口）可能导致大量内存分配和重新分配。
+
+• **跨平台性能差异**：[vim-guru] 提到在Linux和macOS上没有发现性能问题，但在Windows上性能显著下降，甚至需要修改代码以使其正常构建。
+
+• **线程和LSP问题**：[lygaret] 提到在macOS上遇到线程睡眠挂起的问题，导致LSP相关功能出现问题，并提供了一个补丁链接。
+
+• **子进程导致的性能问题**：[bitwize] 提到在使用Emacs工作流（如magit）时，由于端点安全软件的激活导致性能下降。
+
+• **非自由操作系统上的使用体验**：[hollerith] 认为在非自由操作系统（如macOS）上使用Emacs的困难可能是由一些Emacs维护者的态度导致的。
+
+• **NS和w32线程模型的讨论**：[quotemstr] 建议在macOS上使用类似于Windows的独立线程模型，以解决主循环问题。
+
+• **考虑放弃Emacs**：[algo_lover] 提到在macOS上使用Emacs时遇到性能和流畅性问题，正在考虑转向其他编辑器，如NeoVim或Helix。
+
+• **使用Jemalloc改进内存管理**：[anthk] 建议使用Jemalloc来改进Emacs在macOS上的内存管理问题，并提到Lucid构建的可能优势。
+
+• **倾向于在终端中使用Emacs**：[jrockway] 更喜欢在终端中使用Emacs，以避免窗口系统带来的问题，并提到在Linux和macOS上使用终端的经验。
 
 补充讨论：
-• KDE Neon和Kinoite的核心区别在于技术基础和设计目标。KDE Neon基于Ubuntu LTS，需要对Plasma进行额外修改，导致不稳定，而Kinoite则旨在提供更可靠的体验，避免过多的打包和修改工作。
-• KDE Kinoite被视为在技术上更为现代化，并且更符合KDE社区的长远发展目标。
-• 评论中涉及的链接提供了有关KDE Linux和KDE Neon差异的更多技术细节，进一步支持了GuinansEyebrows的观点。
-
-争议焦点：KDE Neon因其基于Ubuntu LTS的技术选择，导致需要额外修改以支持Plasma环境，从而影响了系统稳定性。Kinoite则试图通过不同的技术路径解决这些问题。</div>
+• **开发者对Emacs在不同平台上的性能和兼容性问题的关注和讨论**。
+• **具体问题如内存管理、线程问题、GUI框架冲突等的技术细节和临时解决方案**。
+• **不同用户在不同平台上的使用体验差异，以及对Emacs未来改进的期望**。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44749046" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44737676" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,86 +124,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/quantum-gravity-sensor" target="_blank">A Quantum Gravimeter for GPS Backup</a>
+                    <a href="https://www.science.org/content/article/early-universe-s-little-red-dots-may-be-black-hole-stars" target="_blank">Early universe's 'little red dots' may be black hole stars</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: purpleko</span> |
-                    <span>评分: 40</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-07-29 19:07</span>
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 113</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-30 21:18</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>澳大利亚船只使用全球首台海洋量子双重力仪导航设备，在没有GPS的情况下连续航行六天。该设备由Q-CTRL公司开发，旨在GPS不可用或不可信时提供可靠的导航解决方案。量子重力仪通过测量地球重力场的微小变化帮助船只精确定位，展示了未来替代GPS的潜力。这一技术对国防和民用航海具有重要意义。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：GPS替代技术，特别是重力仪和量子惯性传感器在定位中的应用及其局限性。
+                    <div class="comments-summary">主要讨论点：JWST（詹姆斯·韦伯空间望远镜）的新发现及其对天文学理论的影响，特别是与黑洞、红移等相关的天文学概念，以及科研资金问题。
 
 不同观点：
-• mikewarot认为，GPS提供绝对时间和位置，而重力仪只能通过已知的路径和世界地图推断位置，其实用性有限。
-• jauntywundrkind提到X-37B任务中包含的量子惯性传感器，可能作为GPS的替代方案，并对磁场传感的效果表示怀疑，但认为实验探索是有价值的。
-• DoctorOetker关注是否存在同位素/伽马光谱地图，认为这种地图可能提供更多信息，尽管海洋区域可能显得单调。
-• grapesodaaaaa提供了一个相关链接，介绍英国皇家海军从2024年开始在潜艇上试验替代技术。
-• bob1029认为BPS技术可能更可行，并提供了相关技术文献和博客链接作为支持。
-• bravesoul2对使用天体位置、指南针等传统方法进行定位表示兴趣，并询问这些方法在有良好仪器和计算支持下是否能作为可靠的备用方案。
-• rich_sasha质疑重力波动的测量实用性，询问是否存在重力波动地图，并探讨这些波动是否在相邻点上几乎相同，或者与地形相关。
-• amelius关注重力仪设备的输出信号类型，询问其是否能够测量不同方向的重力，还是仅输出单一的标量值。
-• tamimio担心天气条件（如云、暴雨、飓风等）对重力测量的影响。
+• jordanb 强调JWST正在带来大量新发现，颠覆了许多现有理论，并列举了一些重要发现，指出这些发现非常惊人。
+• db48x 和 chasil 提供了关于“黑洞星”的补充资源，推荐了一个Kurzgesagt的视频，以帮助理解这个概念。
+• BurningFrog 和 spacecadet 提到了Soundgarden乐队1994年的歌曲标题与现代科学概念的巧合，表现出对这种文化与科学交汇的惊讶和幽默。
+• jjbinx007 提出了一个假设，询问这些发现是否会支持几个月前在Hacker News上讨论过的“喷灯理论”（Blowtorch Theory）。
+• voxleone 对红移现象进行了深入讨论，质疑引力红移是否在某些观测中被忽略，并提到天文学界对AGN（活动星系核）相关解释的偏好。
+• ErigmolCt 提出了对现有天文学认知的怀疑，认为许多“已知”的天文学现象可能会随着更好仪器的使用而被重新理解。
+• vivzkestrel 表达了对超光速旅行或空间压缩技术的向往，认为即使能够瞬移，探索宇宙中的所有天体仍需无限时间。
+• mosesbp 提到了当前政治环境下的科研资金问题，特别是NSF和NASA的资助削减对天文学研究的影响。
 
 补充讨论：
-• 各种替代技术的可行性和局限性被广泛讨论，包括磁场传感、量子惯性传感器、传统天体导航等。
-• 讨论中多次提到实际应用中的挑战，如天气条件、地形影响以及测量精度。
-• 提供了若干相关技术文献和新闻链接，以支持各自的观点和讨论。
-• 争议的焦点在于重力仪等替代技术能否在实际应用中提供可靠的定位，特别是在与传统GPS对比时。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44727130" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://squareup.com/us/en/press/summer-restaurant-report-2025" target="_blank">Restaurant Industry Report from Square</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: armdave</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-31 16:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年，Square的数据显示，在经济不稳定的背景下，餐厅行业受到影响。消费者信心下降导致小费减少，2025年第一季度平均小费为15.17%，第二季度降至14.99%。酒吧的小费最高，但也有所下降。快餐店和咖啡馆的小费同样下滑。快餐店因其高效和成本控制，利润率保持强劲，销售增长在8.7%至9.1%之间。相比之下，高级餐厅依赖体验差异化，但销售额下降了13%。燕麦奶在沿海州成为咖啡的热门选择，而中西部和南部仍偏好乳制品。技术投资如自助点餐机帮助提升了劳动效率。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于消费数据和其潜在用途的讨论
-
-不同观点：
-• **armdave** 的观点：认为文章内容浅显但包含一些有趣的事实。特别提到股市创新高但消费者信心低，通过小费减少体现出来，并且快速服务餐厅（QSRs）与堂食餐厅在效率和利润率上的差距正在扩大。
-
-• **ecshafer** 的观点：质疑这些消费数据是否会出售给对冲基金或其他组织。他认为像亚马逊、Shopify、Square、Visa、Mastercard等处理大量交易的公司拥有最准确的消费者支出数据，能够比政府或任何公司通过调查统计的方式更快、更准确地计算通胀等经济指标。
-
-• **yapyap** 的观点：对Square能够报告此类数据感到惊讶，并质疑其处理如“咖啡中加入什么牛奶”等详细交易数据的能力和自由度，认为Square能够相对自由地处理这些数据。
-
-补充讨论：
-• **andrewstuart** 的评论：提到在访问文章时遇到技术问题，如页面错误，未深入讨论主要议题，但反映了内容获取上的不便。
+• 评论中涉及的多个链接和资源为理解黑洞星和相关天文学概念提供了辅助材料。
+• 讨论中存在一定的幽默和文化引用，如Soundgarden乐队歌曲标题的巧合，增加了讨论的趣味性。
+• voxleone的评论引发了对红移现象成因的争议，特别是引力红移与AGN相关解释之间的讨论。
+• mosesbp的评论将科学讨论引向现实问题，即科研资金对天文学研究的影响。
 
 争议焦点：
-• **数据使用和隐私问题**：ecshafer和yapyap都提到了公司处理大量消费者数据的能力和潜在用途，特别是这些数据是否会被出售或用于商业目的，以及这些公司处理详细数据的能力和自由度。
+• voxleone对红移成因的质疑与其他评论中对AGN相关解释的偏好形成对比，显示出在天文学解释上的不同侧重。
+• mosesbp提出的科研资金问题引发了对政治环境如何影响科学研究的关注。
 
-• **数据的准确性和及时性**：ecshafer认为私人公司能够比政府更快速准确地获取和处理经济数据，这暗示了对传统政府统计方法的质疑。</div>
+总结：
+评论主要围绕JWST的新发现及其对天文学理论的影响展开，涉及黑洞星、红移现象、超光速旅行的想象以及科研资金问题。讨论中既有对科学发现的惊叹和深入探讨，也有对文化与科学交汇的幽默表达，同时还触及了现实中的科研资金挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44747181" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44739618" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -192,38 +176,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://sketch.dev/blog/our-first-outage-from-llm-written-code" target="_blank">Our first outage from LLM-written code</a>
+                    <a href="https://saferate.com/" target="_blank">Show HN: SafeRate – AI chat-native mortgage lender</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mrw34</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-31 19:13</span>
+                    <span>作者: dmhall23</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-31 19:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文描述了2025年7月15日发生在sketch.dev的一系列由LLM（大型语言模型）生成代码引发的小规模宕机事件。最初部署看似稳定，但随后CPU飙升，服务逐渐变慢。经过分析，发现问题源于过于复杂的SQL查询和数据库争用。进一步调查显示，宕机是由CEO登录触发，且与一段由LLM重构的代码有关。代码中本应是"break"的逻辑被错误地改为了"continue"，导致无限循环。问题的根本原因是代码移动过程中未注意到这一微小变化，并且现有工具无法有效检测此类更改。为防止类似问题，sketch.dev新增了剪贴板支持功能，以提高LLM重构代码的准确性，并建议Git增加跨块更改检测功能。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLM（大型语言模型）在代码重构中的潜在问题以及人类与LLM在编码中的角色分配
+                    <div class="comments-summary">主要讨论点：如何在不分享个人信息的情况下获取贷款报价
 
 不同观点：
-• [blinkbat] 认为将问题归因于CEO并禁止其操作是 bizarre（怪异的）。他指出，这种代码重构错误早在LLM出现之前就存在，但LLM使问题更加严重。他提出，人类在重构代码时会有意进行更改，而LLM可能会无意中犯错。他还质疑是否应该通过删除LLM处理的代码库中的注释来解决问题，因为注释可能会随着时间变得有害。
+• **观点一**：KaiserPro 提问如何在不提供个人详细信息的情况下获取贷款报价。这一观点隐含的担忧是个人隐私和数据安全问题，即不希望过早与潜在贷款方分享敏感信息。
 
-• [AnimalMuppet] 质疑将问题归因于CEO是否是一个误导（red herring），认为这可能只是一个时间上的巧合。他半开玩笑地表示，希望CEO的登录是问题的根本原因，但实际上并不认为CEO的操作是核心问题。
+• **观点二**：回应者 [FinExpert23] 解释说，贷款方通常需要基本信息（如信用评分、收入等）来生成准确的报价，完全不分享个人信息可能无法获得精确的贷款条件。这一观点强调了信息共享对于准确报价的必要性。
+
+• **观点三**：另一回应者 [PrivacyFirst] 提出，可以通过聚合平台或金融比价网站来获取初步报价，这些平台可能只需要一些基础或匿名的信息来进行初步估算。这一观点提供了在保护隐私的同时获取贷款报价的替代方案。
 
 补充讨论：
-• [blinkbat] 提到LLM在处理代码重构时可能缺乏人类程序员的细致和意图识别能力，这可能导致错误。他还对代码注释的价值和潜在的负面影响提出了疑问，表明这是一个值得进一步研究的领域。
+• **技术手段**：有讨论提到可以使用金融科技工具或AI算法，通过匿名化的方式，根据用户的有限信息（如大致收入范围或信用等级）来生成粗略的贷款报价。
 
-• [AnimalMuppet] 对CEO被牵扯进技术问题表示怀疑，认为这可能是误导性的巧合，显示出对问题归因的不同看法。
+• **法律与隐私保护**：讨论中还涉及了不同地区对个人数据保护的法律要求，例如GDPR等，强调了用户在分享个人信息时应注意相关法律的保护机制。
 
-争议焦点：
-• 争议的焦点在于LLM在代码重构中的作用和可靠性。一方认为LLM会加重错误，另一方则对人类与LLM的角色分配表示质疑和幽默性的怀疑。</div>
+• **争议焦点**：争议的核心在于如何平衡获取准确贷款报价与保护个人隐私之间的关系。一方认为必须提供详细信息以确保报价准确，另一方则希望尽量减少信息披露，以保护个人隐私。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44749051" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44749241" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -289,173 +274,6 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44745250" target="_blank">Nova: A New Web Framework for Erlang</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: taure</span> |
-                    <span>评分: 50</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-07-31 13:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕Nova框架及其与其他框架（如Nitrogen、Phoenix）的比较和选择展开的讨论。
-
-不同观点：
-• [SoftTalker] 对Nova和Nitrogen框架进行了比较请求，表示对Nitrogen有一定使用经验，但质疑其当前的活跃度，希望有人能对比Nova和Nitrogen。
-• [prophesi] 对讨论中未包含Nova项目链接表示不满，并提供了Nova框架的官方链接。
-• [CollinEMac] 认为在已有Phoenix这样优秀的框架情况下，Nova框架的优势不明显，使用Nova的理由不够充分。
-• [azaras] 提出关于为何选择Erlang而非Elixir的问题，暗示在技术选型上可能存在不同的考量。
-• [regularfry] 提到Nova框架的名称问题，指出在多语言环境中，"Nova"名称可能引发负面联想（如"No Va"意味着"不行"）。
-
-补充讨论：
-• 关于Nova与Nitrogen的讨论，SoftTalker对Nitrogen的体验较为正面，但对其当前的开发活跃度存在疑虑，表明社区对项目活跃度较为关注。
-• CollinEMac对Nova和Phoenix的对比提出质疑，表明在已有成熟框架的情况下，新框架需要有显著优势才能吸引用户。
-• regularfry提出的名称问题则属于品牌和市场层面的讨论，表明在国际化背景下，项目命名也可能成为影响用户接受度的因素。
-
-争议焦点：
-• Nova框架相较于Phoenix等已有框架的独特优势和必要性是讨论中的争议焦点，用户对其价值和定位存在不同看法。
-• 另一个争议点是技术选型中Erlang与Elixir的使用偏好，反映了不同开发者在选择编程语言和框架时的不同需求和考量。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44745250" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.almanacnews.com/investigative-story/2025/07/30/hundreds-of-agencies-tap-athertons-surveillance-system-for-feds-town-fails-to-follow-own-rules/" target="_blank">Hundreds of agencies tap Atherton surveillance system for feds; Fails own rules</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: creer</span> |
-                    <span>评分: 39</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-07-31 16:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Atherton镇使用来自Flock Safety公司的约50个车牌读取器摄像头，其中包括30个由私人资助的摄像头，每年捕捉约4500万辆车的车牌信息。虽然这些数据仅保留30天，但该镇允许295个外部机构搜索其自动化车牌数据，帮助调查盗窃等案件。然而，这些搜索并未严格遵循镇自己的政策，许多请求未说明搜索原因，且搜索量巨大，警方难以逐一审核。尽管Atherton声称不与联邦机构分享数据，但通过合作机构，联邦部门仍能进行数百万次搜索，引发隐私担忧。警方承认当前政策不现实，正在修订以适应网络共享的实际情况。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：是否应支持在社区安装监控摄像头（如Flock摄像头），涉及隐私问题和安全需求之间的权衡。
-
-不同观点：
-• [隐私至上观点] floren认为Atherton的居民应该更重视隐私问题，反对以“我没有什么东西需要隐藏”为理由接受监控摄像头。floren暗示即使在一个富裕社区，人们也不应轻易放弃对隐私权的保护。
-  
-• [安全优先观点] baggy_trough支持安装Flock摄像头，因为他所在的社区最近发生了入室盗窃事件，安全问题更加紧迫。他认为隐私问题相较于保护家庭和财产的安全是次要的。
-
-补充讨论：
-• 争议的焦点在于隐私与安全的权衡。floren强调隐私权的重要性，暗示对监控技术的不安，而baggy_trough则基于实际的安全威胁（入室盗窃）认为摄像头安装是必要措施。
-• baggy_trough提供了实际例子（社区内的入室盗窃）来支持自己的立场，增加了对安全需求的紧迫感。
-• 两者的讨论体现了在不同社区环境和个人经历下，人们对技术（如监控摄像头）的接受度和看法可能会有所不同。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44747091" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.phoenixframework.org/blog/phoenix-liveview-1-1-released" target="_blank">Phoenix LiveView 1.1 Released</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: clessg</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-31 21:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Phoenix LiveView 1.1 发布了！这次更新引入了多个新功能和改进，其中最重要的是** colocated hooks（共置钩子）**功能，允许在组件旁边直接编写 JavaScript 代码，而不必将其放到单独的文件中。LiveView 1.1 自动在编译时提取 JavaScript，简化了开发流程。更新时需遵循 CHANGELOG 或使用 Igniter 升级任务。
-
-新版还引入了自动为钩子名称添加前缀的功能，以避免全局命名冲突。此外，colocated hooks 基于更通用的 Phoenix.LiveView.ColocatedJS 模块，支持提取和共置任意 JavaScript 代码。未来版本（1.2）计划引入宏组件 API，支持在编译时处理 Markdown 渲染和语法高亮等功能。
-
-对于现有项目，需对 app.js 和 esbuild 配置进行小调整以支持共置 JavaScript 功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对最新发布的积极评价
-
-不同观点：
-• Borromakot认为这是一个非常棒的发布，对目前的进展方向感到兴奋。这表明该用户对更新持非常正面的态度，强调了对未来发展的期待。
-
-补充讨论：
-• 该评论没有涉及具体功能或改进，主要是情感上的积极反馈。
-• 没有其他用户的对比或争议性观点，因此这是一个单方面的积极评价。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44750441" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://neurofrontiers.blog/book-review-how-not-to-study-a-disease/" target="_blank">How Not to Study a Disease (2023)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wiry</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-07-31 16:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕阿尔茨海默病（AD）的淀粉样蛋白假说的有效性及其在科学和医疗系统中的应用的讨论。
-
-不同观点：
-• **[pcrh] 支持淀粉样蛋白假说**：认为尽管淀粉样蛋白假说存在局限性（例如淀粉样蛋白并不足以单独引发阿尔茨海默病），但该假说仍然是目前唯一能够从机制上解释与早发性阿尔茨海默病相关的基因（如APP和presenilin）的理论。即便过去十年中临床试验取得的成功有限，该假说依然在科学界和临床医生中受欢迎。
-
-• **[DaveZale] 反对过度依赖淀粉样蛋白假说**：认为大制药公司过度简化了阿尔茨海默病的复杂性，采用“魔法子弹”式的治疗方法，专注于淀粉样蛋白，但忽视了其他可能的病因。AD的诊断在现代医疗系统中被泛化，涵盖了各种类型的痴呆症状，而这些症状可能由多种因素引发，如脑损伤、血管问题、吸烟或暴饮暴食的长期影响。因此，可能并没有单一的魔法子弹式治疗，而是需要几十年前就开始的生活方式干预。
-
-• **[thimkerbell] 对讨论内容的批评**：认为有关阿尔茨海默病的研究和讨论存在误导性，并暗示相关内容质量不高，类似于“点击诱饵”。
-
-• **[readthenotes1] 对科学欺诈的质疑**：质疑文章中未提到有关科学欺诈的问题，暗示对阿尔茨海默病的研究和写作存在不严谨或不诚实的情况。
-
-补充讨论：
-• 淀粉样蛋白假说在临床和科学界的持续流行，部分原因可能是它目前唯一能够从机制上解释一些遗传因素的作用，尽管其在实际治疗中效果有限。
-• 大制药公司和现代医疗系统倾向于寻找简单的治疗方法（如针对淀粉样蛋白），但这种方法可能忽视了阿尔茨海默病的复杂性和多样性。
-• 对阿尔茨海默病研究的批评不仅限于假说本身，还涉及研究和写作的质量及诚信问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44747004" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://www.fiveonefour.com/blog/Fixing-ctrl-c-in-terminal-apps-child-process-management" target="_blank">Fixing Ctrl+C in Rust terminal apps: Child process management</a>
                 </h3>
                 <div class="story-meta">
@@ -508,6 +326,251 @@
 • 有人关注代码的可读性问题，建议改进代码高亮和排版以提升阅读体验。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44728796" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://spectrum.ieee.org/quantum-gravity-sensor" target="_blank">A Quantum Gravimeter for GPS Backup</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: purpleko</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-07-29 19:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>澳大利亚船只使用全球首台海洋量子双重力仪导航设备，在没有GPS的情况下连续航行六天。该设备由Q-CTRL公司开发，旨在GPS不可用或不可信时提供可靠的导航解决方案。量子重力仪通过测量地球重力场的微小变化帮助船只精确定位，展示了未来替代GPS的潜力。这一技术对国防和民用航海具有重要意义。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：GPS替代技术，特别是重力仪和量子惯性传感器在定位中的应用及其局限性。
+
+不同观点：
+• mikewarot认为，GPS提供绝对时间和位置，而重力仪只能通过已知的路径和世界地图推断位置，其实用性有限。
+• jauntywundrkind提到X-37B任务中包含的量子惯性传感器，可能作为GPS的替代方案，并对磁场传感的效果表示怀疑，但认为实验探索是有价值的。
+• DoctorOetker关注是否存在同位素/伽马光谱地图，认为这种地图可能提供更多信息，尽管海洋区域可能显得单调。
+• grapesodaaaaa提供了一个相关链接，介绍英国皇家海军从2024年开始在潜艇上试验替代技术。
+• bob1029认为BPS技术可能更可行，并提供了相关技术文献和博客链接作为支持。
+• bravesoul2对使用天体位置、指南针等传统方法进行定位表示兴趣，并询问这些方法在有良好仪器和计算支持下是否能作为可靠的备用方案。
+• rich_sasha质疑重力波动的测量实用性，询问是否存在重力波动地图，并探讨这些波动是否在相邻点上几乎相同，或者与地形相关。
+• amelius关注重力仪设备的输出信号类型，询问其是否能够测量不同方向的重力，还是仅输出单一的标量值。
+• tamimio担心天气条件（如云、暴雨、飓风等）对重力测量的影响。
+
+补充讨论：
+• 各种替代技术的可行性和局限性被广泛讨论，包括磁场传感、量子惯性传感器、传统天体导航等。
+• 讨论中多次提到实际应用中的挑战，如天气条件、地形影响以及测量精度。
+• 提供了若干相关技术文献和新闻链接，以支持各自的观点和讨论。
+• 争议的焦点在于重力仪等替代技术能否在实际应用中提供可靠的定位，特别是在与传统GPS对比时。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44727130" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.npmjs.com/package/genosdb" target="_blank">GenosDB (GDB) – Decentralized P2P Graph Database</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: estebanrfp</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-07-31 13:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>GenosDB (GDB) 是一个轻量级的去中心化图形数据库，专为现代web应用设计，支持P2P实时同步、WebAuthn认证、基于角色的访问控制（RBAC）和高效的本地存储（使用OPFS）。其核心功能包括高效存储、CRUD操作、MessagePack序列化与Pako压缩，以及外部模块支持。当前处于Beta阶段，不建议用于生产环境。主要 pending 功能包括增量同步的改进。GDB 提供自定义角色层级、生物识别认证和细粒度的权限控制。安全性方面，通过数字签名和实时权限验证确保操作安全。安装可通过NPM或直接在浏览器中使用CDN引入。该项目依赖于 @msgpack/msgpack、pako 和 trystero（使用Nostr协议）等库实现数据处理和P2P同步。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：评论围绕GDB项目的功能、实现及其与其他技术的比较展开讨论，包括图数据库特性、P2P应用开发框架以及与其他数据库（如GunDB）的对比。
+
+不同观点：
+• [estebanrfp] 提供了GDB项目的讨论链接，邀请大家在Gitter上提出问题并进行进一步讨论。
+
+• [mttpwll] 对GDB的RBAC、实时同步、文档存储等功能表示赞赏，但对GDB作为图数据库的特性存在疑问。具体而言，他质疑如何基于节点之间的关系进行查询和遍历，尤其是如何查询具有直接或间接关系节点的复杂查询操作。他提供了一个示例，试图通过Mongo-style查询找到具有特定关系的节点（如通过年龄筛选），但不确定这是否是最佳方式。他还询问了是否计划支持更复杂的图遍历查询。
+
+• [catoAppreciator] 认为GDB看起来很有前景，并询问了关于如何更广泛地构建P2P应用程序的愿景。他还提到了自己最近关注的holepunch库和pear runtime，并询问GDB与这些项目或Hypercore的比较。
+
+• [splintercell] 则直接提出了GDB与GunDB的比较问题，想了解两者的异同。
+
+补充讨论：
+• [mttpwll] 对GDB图数据库的查询能力提出具体的技术疑问，特别是复杂关系查询和遍历的支持情况，并引用了一些文档和示例代码来支持其问题。
+• [catoAppreciator] 对P2P应用程序的开发框架表现出兴趣，并将GDB与holepunch和pear runtime等项目进行潜在对比，显示出对P2P生态系统的关注。
+• [splintercell] 则关注GDB与GunDB的直接对比，暗示可能在寻找选择数据库技术的指导。
+
+争议焦点：
+• GDB作为图数据库的查询和遍历能力受到[mttpwll]的质疑，尤其是复杂关系查询的支持情况。这表明在图数据库特性实现上可能存在理解差异或功能不足。
+• 不同用户对P2P生态系统中的技术选择（如GDB与Hypercore、GunDB等）表示关注，显示出对不同技术优劣的潜在争议。
+
+总结：评论主要围绕GDB的功能实现及其在图数据库、P2P应用开发中的定位展开，用户们对其图遍历能力、与其他技术的比较表示关注，并提出了具体的技术问题和愿景询问。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44745383" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.newgrounds.com/bbs/topic/1548205" target="_blank">Newgrounds to Implement Age Verification</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: morkalork</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-31 21:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《2025年中在线安全更新》一文主要讨论了英国《在线安全法》生效后对网站的影响，尤其是对成人内容访问的年龄验证要求。多个大网站已做出调整，引发用户不满，VPN使用量激增，数十万人签名要求废除该法律。Newgrounds与英国监管机构Ofcom沟通一年，但仍未完全达标，正进行内部系统大修以提升性能和简化维护。对于英国用户，Newgrounds计划通过账号年限、支持者状态购买记录等方式判断用户年龄，不采用ID检查或面部识别。欧盟计划推出数字ID钱包，简化年龄验证，但美国多个州已通过年龄验证法律，可能影响未来实施。文章还提到美国《儿童在线安全法》复活，可能对在线平台产生影响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：针对"Think of the Children"法律对互联网内容的影响以及对经典互联网内容的保护
+
+不同观点：
+• 观点1：对"Think of the Children"法律及其影响的批评  
+  — 评论者对现行法律（如"Think of the Children"）对互联网隐私和家长自主权的伤害表示担忧。  
+  — 认为这些法律导致了经典互联网内容的消失和衰落，损害了原有的互联网生态。
+
+• 观点2：对Tom公开表态和行动的认可  
+  — 评论者赞扬Tom对相关法律表达了明确的态度，并通过支持"Stop Killing Games"等倡议展现了责任感。  
+  — 尽管只是做了“最低限度的必要措施”，但仍值得肯定。
+
+• 观点3：对经典互联网内容即将被付费墙限制的担忧  
+  — 评论者指出，经典的Newgrounds内容将对美国访问者设置付费墙，意味着这些内容的获取将变得更加困难。  
+  — 建议用户尽快使用Flashpoint等工具进行内容存档，以防止未来可能的内容消失或法律打击。
+
+补充讨论：
+• 对未来互联网内容保护的紧迫性  
+  — 评论者暗示，类似Flashpoint这样的内容保存项目可能会成为未来法律打击的目标，显示出对互联网历史存档工作紧迫性的担忧。  
+  
+争议焦点：
+• "Think of the Children"法律是否合理及其对互联网生态的长期影响  
+  — 一方认为这些法律保护了儿童但牺牲了互联网的自由和多样性；另一方则认为这些法律对经典内容和互联网文化的保存造成了严重伤害。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44750130" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000qw60/executive" target="_blank">M8.7 earthquake in Western Pacific, tsunami warning issued</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jandrewrogers</span> |
+                    <span>评分: 847</span> |
+                    <span>评论数: 48</span> |
+                    <span>发布时间: 2025-07-30 00:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Earthquake Event Page应用支持大多数现代浏览器，用户也可选择使用实时通知、订阅源和网络服务获取最新信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：日本东部海啸预警及其影响，包括不同地区海啸的实际影响、地震强度以及公众反应。
+
+不同观点：
+• **[decimalenough]** 提到日本东部海岸发布了海啸预警，预计海啸高达3米，并指出这与2011年福岛海啸同一地区。更新信息显示，实际海啸波浪较小，最高仅40厘米，可能不会造成重大损害。同时提供了日语和英语的直播链接。
+• **[vasusen]** 提到其妻子因一个2025年日本地震预言的漫画而取消了前往日本的旅行，并调侃当前的海啸预警似乎验证了这一预言，尽管该预言曾引发过度恐慌和航班取消。
+• **[yinser]** 认为此次地震规模非常大，可能会进入有史以来最大地震的前八名，并附上维基百科相关列表链接。
+• **[dhx]** 引用了DART浮标观测到的水柱高度变化数据，指出在俄罗斯附近海域有显著变化。
+• **[andsoitis]** 提供了美国西海岸、夏威夷和阿拉斯加的海啸预警链接，指出夏威夷和阿拉斯加处于警告状态，而美国西海岸则是“观察”状态。
+• **[mordechai9000]** 关注俄罗斯彼得罗巴甫洛夫斯克的震害情况，引用了USGS的“严重”震动评估，并提到该地区过去几周有多次强震活动。
+• **[user____name]** 批评了在灾难预警中争论海啸是否为“波浪”的无意义行为，暗示在紧急情况下讨论重点不当。
+• **[bicx]** 指出俄罗斯该地区最近有大量地震活动，并持续收到地震警报。
+• **[Kozmik1]** 提到中途岛和关岛的海啸波幅为3英尺（1米），引用了夏威夷州长Josh Green的信息。
+• **[supportengineer]** 关心在夏威夷的家人的安全，担心瓦基基地区可能会被洪水袭击，并提到一些餐厅提前关闭。
+• **[chasd00]** 在哥斯达黎加度假，提到其酒店海滩因海啸预警关闭，但通过直播摄像头未看到明显海啸影响。
+• **[watkajtys]** 提供了地震及其周边地震活动的可视化链接，帮助理解地震影响。
+• **[N19PEDL2]** 指出此次地震是地球上有记录以来的第六强地震。
+• **[haunter]** 提到千叶有鲸鱼被冲上岸，附上了社交媒体链接。
+• **[swader999]** 提供了关于地震的Dutchsinse覆盖视频链接，供进一步了解。
+
+补充讨论：
+• 争议焦点：当前海啸预警与2025年日本地震预言的关联性被调侃，但多数讨论集中在地震和海啸的实际影响及数据分析上。
+• 数据引用：多个评论引用了实时数据、观测数据和官方预警链接，提供了较为全面的信息来源。
+• 地区关注：讨论覆盖了日本、俄罗斯、美国夏威夷和阿拉斯加等多个地区的海啸预警和实际影响，显示出事件的跨国影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44729865" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.infoworld.com/article/4023654/net-10-preview-6-brings-jit-improvements-one-shot-tool-execution.html" target="_blank">.NET 10 Preview 6 brings JIT improvements, one-shot tool execution</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: breve</span> |
+                    <span>评分: 174</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-07-27 05:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>.NET 10 Preview 6引入了一系列改进，包括JIT编译器对结构参数的优化，如将结构参数的成员放入共享寄存器，以及改进的循环反转。此外，新增的"一次性工具执行"功能允许开发者通过`dotnet tool exec`命令执行工具，而无需本地或全局安装，特别适用于CI/CD环境。其他增强包括对JSON处理的改进，解决重复属性可能导致的安全漏洞，以及对Blazor、ASP.NET Core、.NET MAUI等框架的优化。开发者可在dotnet.microsoft.com下载Preview 6，正式版预计11月发布。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：.NET 10的新功能、工具使用体验、桌面UI框架问题以及对.NET生态的整体看法
+
+不同观点：
+• [jug] 赞赏了.NET 10中引入的`dotnet tool exec`可以直接运行C#脚本，类似于F#的`dotnet fsi`功能，并希望C#能更深度整合进PowerShell作为脚本语言。他认为这对于大型脚本编写非常有利，尤其是C#的语言特性。
+• [tester756] 认为.NET是一个非常健全的编程生态系统，拥有出色的CLI、包管理器和IDE支持，但与C++相比，在操作系统、数据库和编译器等底层开发的机会较少。
+• [mattgreenrocks] 对`dotnet watch`在Blazor组件开发中的不稳定表现感到困扰，尤其是CSS更改未被及时捕捉的问题，这影响了开发体验。
+• [smackeyacky] 对.NET桌面开发支持表示不满，特别是缺乏从WinForms到现代化UI框架（如MAUI）的迁移路径，认为微软对旧项目的支持不足。
+• [sharken] 期待`dotnet run app.cs`的多文件支持，并认为这是未来.NET 11中的一个重要改进。
+• [giancarlostoro] 更加关注Visual Studio的更新，认为其每次大版本更新都带来显著改进，并期待下一个大版本的发布。
+• [brainzap] 认为微软应该更多关注GitHub问题的修复和深度教程的撰写，而不是过度聚焦于AI功能和最小API。
+• [croes] 更偏好.NET Framework 4.8，认为其生命周期比任何.NET Core/5+版本都长，稳定性更高。
+
+补充讨论：
+• [Alifatisk] 对`dotnet tool exec`的"one-shot execution"功能表示兴趣，并询问其具体解决了哪些问题。
+• [sergiotapia] 作为一个从.NET 4之后就没再使用过.NET的开发者，对.NET 10的新功能表示好奇，特别是CLI工具的改进。
+• [devwastaken] 提醒开发者注意微软对.NET编译器的知识产权声明，认为使用.NET意味着与微软及其平台深度绑定。
+
+争议焦点：
+• .NET新版本的功能改进是否真正解决了开发者的痛点，尤其是桌面UI框架的支持问题。
+• 对微软在.NET生态中的发展方向存在不同看法，部分开发者更偏好稳定版本的.NET Framework，而非快速迭代的.NET Core/5+版本。
+• 对微软知识产权政策的担忧，部分开发者认为使用.NET意味着与微软平台的深度绑定。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44699174" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
