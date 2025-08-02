@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-02 05:15 (北京时间)
+            最后更新时间: 2025-08-02 09:04 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,448 +61,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://mayhul.com/posts/scheduled-tasks/" target="_blank">Replacing cron jobs with a centralized task scheduler</a>
+                    <a href="https://it-notes.dragas.net/2025/07/29/make-your-own-backup-system-part-2-forging-the-freebsd-backup-stronghold/" target="_blank">Make Your Own Backup System – Part 2: Forging the FreeBSD Backup Stronghold</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tlf</span> |
-                    <span>评分: 140</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-07-28 18:23</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 86</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-07-29 07:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍了Heartbeat平台从使用多个独立的cron作业脚本转向集中式任务调度系统的演变过程。过去，不同的任务（如发布帖子、发送事件提醒等）由多个cron脚本分别管理，导致维护困难和错误排查复杂。为解决这些问题，作者设计了一个集中式调度系统，利用单一数据库表`ScheduledTasks`存储任务信息，并通过一个cron作业每分钟执行一次来管理和触发任务。系统使用AWS SQS消息队列和消费者模式来处理任务执行，支持重试机制和任务过期管理。这种设计简化了任务调度管理，提高了系统可靠性和可维护性。</p>
+                    <p>本文主要讨论备份服务器的配置和策略。作者偏好使用FreeBSD作为备份服务器的操作系统，并根据需要选择专业备份服务或完全控制备份磁盘。对于IPv4和IPv6，作者采用不同的网络配置方法，并强调使用VPN和防火墙增强安全性。作者建议将备份服务分割到不同的jail或虚拟机中，并使用ZFS文件系统增加灵活性。他强调本地和远程备份的结合，以确保数据安全，并建议备份服务器应具备磁盘冗余和加密。备份服务器应尽量与外部网络隔离，并通过VPN访问，以增强安全性，防止数据泄露或被盗。作者还提醒，备份必须存放在与生产数据不同的数据中心，以防灾难性事件导致数据丢失。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：自建任务调度系统的优缺点及替代方案
+                    <div class="comments-summary">主要讨论点：如何通过权限管理增强备份安全性，避免攻击者破坏生产环境后进一步删除备份。
 
 不同观点：
-• gnat：认为有价值的评论应该基于知识和经验讨论技术的优缺点。提到自建调度系统会逐步变得复杂，从简单的脚本演变为具有错误处理和状态跟踪的功能，且复杂性难以避免。对作者的方案能维持多久的简洁性表示好奇。
-• Felk：建议利用数据库的事务性代替SQS，通过数据库锁机制确保任务不会被重复执行，并指出这种方法可以避免启发式重试，同时简化系统设计。
-• rashidae：质疑数据库变大后的处理方法，以及如何解决幂等性问题，并指出cron作业仍然是单点故障。
-• jiggunjer：指出类似功能的现成产品（如工作流编排工具）通常提供web界面和数据库支持，未明确作者是否使用现成产品或自建解决方案。
-• burnt-resistor：认为需要重试、原子性、监控、灵活调度的任务不适合大多数cron服务器，列举了一些常见的工具如Beanstalkd、Sidekiq等，指出高可用性常被忽视。
-• sunshine-o：寻找轻量级的cron替代方案，用于单主机环境，提到supervisord和immortal作为进程控制工具，寻求类似功能的调度工具。
-• dmitry-vsl：建议在创建帖子时直接设置发布时间，通过函数获取需要发布的帖子，从而完全避免使用cron作业。
-• pinko：推荐HTCondor作为一种可靠但缺乏华丽界面的选择。
-• sontek：支持RabbitMQ的"延迟消息"功能作为任务调度解决方案，认为其推送任务并在特定时间处理的能力非常适合。
-• meatmanek：质疑为何使用1分钟cron作业而不是持续运行的队列工作线程，认为后者更适合处理任务。
-• shireboy：指出自建任务调度器在多机环境下的挑战，如需要锁定机制确保任务不被重复执行，并建议使用现成的工具如Hangfire。
-• dthedavid：建议考虑购买而非自建系统，指出自建系统在开发者体验、可观察性和可扩展性方面常有不足，推荐开源解决方案如trigger.dev。
-• majkinetor：推荐Rundeck作为任务调度工具，基于多年使用经验认为其提供GUI、日志检查、重试、通知等功能，适合企业环境。
-• shawn_w：质疑"集中任务调度器"是否就是cron，认为cron已经满足集中调度的需求。
-• UltraSane：指出Windows任务调度程序的强大功能，尤其是基于事件触发的任务执行。
+• Benlivengood 认为使用 `zfs allow` 命令可以有效授予非根用户仅向其数据集添加快照的权限，从而防止攻击者删除备份。这种方法虽然需要手动清理旧快照，但能显著降低风险。
+• 他还提到可以通过分工进一步增强安全性，例如让发送快照的朋友无法以 root 身份登录备份服务器，从而限制其权限，避免潜在的破坏行为。
 
 补充讨论：
-• 自建调度系统的复杂性与替代方案的比较是讨论的核心，参与者提出了多种工具和方法，如数据库事务性、现成的工作流工具、持续运行的队列工作线程等。
-• 多机环境下的任务调度和锁定机制是另一个重要讨论点，涉及如何避免单点故障和任务重复执行的问题。
-• 不同工具和技术的推荐基于各自的实践经验，提供了多种视角和具体实现方法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44713716" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=44757792" target="_blank">Ask HN: Who wants to be hired? (August 2025)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: whoishiring</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 66</span> |
-                    <span>发布时间: 2025-08-01 15:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：技术求职者的背景、技能和求职意向
-
-不同观点：
-• [mistachkin] 拥有丰富的低层技术经验，如C/C++、Win32、Linux等，专注于数据库、分布式系统和安全等领域，对远程、合同工或混合工作模式持开放态度，但不愿意搬迁。
-• [mcdrake] 是一个具有3年经验的全栈开发人员，擅长TypeScript/JavaScript、React和Python等技术，愿意在一定条件下搬迁至西雅图或旧金山，寻找更快速发展的团队和有趣的项目。
-• [dcminter] 位于瑞典，拥有Java和AWS的深厚经验，愿意参与技术写作，偏好小型且亲密的工作环境，不愿意搬迁。
-• [lykr0n] 专注于Oracle Cloud，提供技术支持和问题解决服务，寻求兼职工作或无法拒绝的全职 offer，不愿意搬迁。
-• [ashwinsundar] 是全栈开发人员，擅长Python和Django，正在创业并寻找兼职合同工作，期望时薪较高，不愿意搬迁。
-• [_tqr3] 拥有全栈经验，技术栈包括TypeScript、React、Node.js等，不愿意搬迁出加拿大，但可能在明年考虑，偏好远程或混合工作模式。
-• [pauldipietro] 是一个多面手，拥有广泛的技术经验，目前寻求技术项目管理或设计角色，对开发工具和兽医行业有兴趣，偏好远程工作，但对本地岗位也开放。
-• [deanmen] 拥有数学硕士学位，擅长C++、Python和Rust，愿意搬迁，寻找具有挑战性的软件问题解决岗位。
-• [christinaday] 是产品设计师和前端开发人员，拥有超过十年的经验，对设计系统和AI工具感兴趣，对湾区的混合或现场职位开放。
-• [macangus] 拥有丰富的AI和ML经验，寻求具有伟大愿景的公司，偏好使用AI技术的岗位，愿意搬迁。
-• [achrafaa] 专注于系统级编程和性能优化，拥有PHP、C、Zig等技术经验，由于健康原因不愿意搬迁，寻求远程工作机会。
-• [MoravecsParadox] 是数据分析师，擅长将数据转化为产品和业务影响，寻求产品数据分析或分析工程岗位，对湾区的现场或远程友好岗位开放。
-• [_hfqa] 拥有丰富的AI和ML经验，曾参与创办的公司被OpenAI和私募股权公司收购，目前寻求CTO、VP或软件工程师岗位，对远程和搬迁持开放态度。
-• [ska80] 位于吉尔吉斯斯坦，拥有Java和AWS经验，愿意搬迁，偏好美国或欧盟时区的远程工作。
-• [james093113] 是全栈开发人员，擅长多种前端和后端技术，以及AI/ML集成，不愿意搬迁，寻求远程工作机会。
-
-补充讨论：
-• 求职者普遍对远程工作持开放态度，部分求职者愿意搬迁，但也有一些由于健康或其他原因不愿意搬迁。
-• 技术栈多样，从底层技术如C/C++到高级应用如React、Node.js，以及AI/ML和云技术，显示出求职者的技术深度和广度。
-• 求职意向多样，有的求职者寻求全职岗位，有的则寻求合同工或兼职机会，部分求职者对特定行业或项目表现出兴趣。
-• 争议焦点可能在于搬迁意愿和工作模式的偏好上，一些求职者更倾向于远程工作，而另一些则对现场或混合模式持开放态度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44757792" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://patrickcollison.com/fast" target="_blank">Fast (2019)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: samuel246</span> |
-                    <span>评分: 69</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-08-01 15:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章列举了多个快速完成 ambitious 项目的例子：
-
-1. **BankAmericard**：Dee Hock 在90天内从零开始推出，吸引超过10万客户。
-2. **P-80 Shooting Star**：Kelly Johnson 的团队在143天内设计并交付了美国空军首架喷气战斗机。
-3. **Marinship**：在收到 telegram 后的197天内建成船厂并完成首艘船。
-4. **The Spirit of St. Louis**：Donald Hall 和 Charles Lindbergh 在60天内设计并制造了这架飞机。
-5. **Eiffel Tower**：用793天建成，成为当时世界最高建筑。
-6. **Treasure Island**：用约两年时间在旧金山湾建造了人工岛。
-7. **Apollo 8**：NASA 在134天内决定并实现了登月任务。
-8. **The Alaska Highway**：用234天建成1,700英里的军用公路。
-9. **Disneyland**：在366天内建成。
-10. **The Empire State Building**：用410天建成。
-11. **The Berlin Airlift**：在463天内完成大规模空运任务，并建成 Tegel 机场。
-12. **The Pentagon**：用491天建成，设计和建造极为迅速。
-13. **Boeing 747**：用约930天完成从决定到首架飞机的制造。
-14. **The New York Subway**：首条线路用时4.7年，后续扩展项目耗时更长。
-
-这些例子展示了高效团队在短时间内完成复杂项目的能力。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：快速执行与创新之间的关联，以及影响快速执行的因素
-
-不同观点：
-• pncnmnp 通过披头士乐队的例子说明，在压力和有限资源下，快速执行可以带来高效的结果。即使在不利条件下（如成员生病），团队仍能完成工作。
-• austin-cheney 认为快速执行往往源于低焦虑和恐惧驱动，软件行业中的延迟通常是由于分析瘫痪和多层次的焦虑所导致。
-• davidw 指出快速执行有时会导致负面结果，例如对少数族裔不公的基础设施建设，因此需要权衡快速执行的利弊，并尽量避免不良后果。
-• neogodless 提供了有关快速与慢速讨论的链接，显示出社区对这一话题的广泛关注和不同视角。
-• alnwlsn 回顾了20世纪的快速技术进步，认为那是一个“快速行动并打破常规”的时代，未来可能不会再出现类似的时期。
-• thinkingkong 认为首次执行某项任务时速度较快，但随着对后果的认识增加和法规的引入，执行速度会减慢。创新需要在各种约束中找到平衡。
-• CyberDildonics 评论了简短评论在不同情境下的接受度，间接提及快速评论可能缺乏深度。
-• gnabgib 提供了不同年份相关讨论的链接，显示出对该话题的历年关注度。
-• namblooc 通过莫扎特在四天内完成交响乐的例子，说明天才在短时间内可以完成高质量的作品。
-• JaiRathore 强调小型、信任和有才华的团队可以更快地追求单一紧急目标，这是快速执行的关键。
-• zengid 认为在背水一战的情况下，执行速度会加快。
-
-补充讨论：
-• cortesoft 对一个提及2020年新冠疫苗的2019年讨论表示质疑，指出了时间线上的不一致。
-
-总体来看，讨论围绕快速执行的驱动因素、其正面和负面影响、以及如何在现代环境和创新过程中实现快速执行。不同评论者提供了历史例子、个人观察以及对现代社会中快速执行的批评和建议。争议的焦点在于快速执行是否总是有益，以及如何在快速与审慎之间取得平衡。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44758132" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.google.com/search?q=bad+UX" target="_blank">Bad UX</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: liquid99</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-08-01 18:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文主要提示用户如果无法访问Google搜索，可以点击提供的链接，或发送反馈以获取帮助。文章旨在解决用户在使用Google搜索时可能遇到的问题，并提供了两种简单的解决方案：点击链接或提交反馈。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google的用户体验（UX）设计、Comic Sans字体及其相关现象
-
-不同观点：
-• 一些用户关注Google的UX设计，提到“使用Google登录”的强制性弹窗比早期的弹出广告更具侵入性，认为这是不良UX设计的例子。([sugarpimpdorsey])
-• 另一用户通过提到搜索"askew"（倾斜）和"bad UX"的结果，来展示Google的趣味性设计或“彩蛋”。([ayewo])
-• 一位用户分享了与Comic Sans相关的个人故事，提到有人给该字体的发明者发邮件表达不满，并收到简短的粗鲁回复，这引发了对Comic Sans争议性的讨论。([chiffre01])
-• 有用户发现搜索Comic Sans设计者Vincent Connare时，搜索结果也使用了该字体，认为这是一种致敬。([squidbeak])
-• 一位用户提到安装了Comic Sans Everywhere的浏览器扩展，认为Comic Sans被误解，并认为其传达了一种网络世界虚假的幽默感。([zaptheimpaler])
-
-补充讨论：
-• 一位用户询问如何永久更改Google的字体，暗示对Comic Sans的偏好，可能并非开玩笑。([jpecar])
-• 有用户认为Google的Android应用也存在不良UX设计，但没有具体说明。([Oanid])
-• 一位用户推荐了McSweeney’s的经典文章《我是Comic Sans，混蛋》，通过幽默方式为Comic Sans辩护。([JHorse])
-• 另一用户提到维基百科上关于Google Easter Eggs的列表，提供了更多趣味性设计的参考。([xnx])
-• 一位用户分享了在法律行业中见到使用Comic Sans的奇怪经历，表达了对这种选择的不解。([anigbrowl])
-• 有用户提到搜索"best font ever"时也会有趣味性设计（彩蛋）。([ZeroWidthJoiner])
-• 一位用户期待Apple的“液态玻璃设计”被首先展示，而非Google的趣味设计，显示了对不同设计风格的偏好。([betaby])
-• 另一用户发现搜索Material 3 Expressive时出现错误，希望Google修复该问题，涉及Google搜索结果的技术性问题。([kotaKat])
-• 一位用户提到在移动端没有看到变化，但在搜索“Good UX”和“Bad UX”时得到不同类型的AI回答，讨论了AI在UX中的作用。([x______________])
-• 最后，有用户提到搜索“Garamond”字体时搜索结果页（SRP）也会变化，进一步展示了Google的趣味设计。([theideaofcoffee])
-
-争议焦点：Comic Sans字体的使用及其在设计中的合适性是讨论中的一个争议点，部分用户对其持负面看法，而另一些用户则认为其被误解，甚至具有幽默感和独特价值。此外，Google的UX设计，特别是其强制性弹窗和AI回答机制，也是争议的焦点之一。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44760821" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="http://funcall.blogspot.com/2025/07/pseudo.html" target="_blank">Pseudo, a Common Lisp macro for pseudocode expressions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: reikonomusha</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-07-29 18:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了一种将大型语言模型（LLM）嵌入Common Lisp编程语言的构思，通过`pseudo`宏将自然语言描述自动转换为S表达式。该宏利用LLM将伪代码扩展为实际代码，并结合上下文信息（如可见变量、函数符号、源代码等）生成符合要求的代码。虽然此方法在Lisp中可行，但存在LLM的常见问题，如速度慢、成本高、结果不可预测或错误。目前，`pseudo`依赖于Google的Gemini作为后端，并需要一些外部库支持。作者提醒不要在生产环境中使用此功能，并提供了代码下载和依赖库信息以供实验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：针对平台上18+广告的可见性问题
-
-不同观点：
-• 观点一：用户 nurettin 表示在平台上看到许多18+广告，暗示这些内容可能不适合，并对平台上的广告内容合规性提出质疑。
-  - 论据或例子：具体提到18+广告，表明这些内容可能未经过滤且容易被看到。
-
-• 观点二：部分用户可能认为平台上的广告是依据个人兴趣推送的，因此18+广告的出现可能与用户的历史行为或偏好有关。
-  - 论据或例子：广告推送算法通常根据用户的浏览历史或兴趣进行个性化推荐，因此看到18+广告可能与用户自身行为相关。
-
-• 观点三：另一部分用户可能认为平台应加强内容审核和过滤机制，确保不适宜的广告不会随意展示给所有用户。
-  - 论据或例子：强调平台有责任保护未成年用户，并确保广告内容符合相关法律法规。
-
-补充讨论：
-• 争议焦点：18+广告的可见性是否为平台的失误，还是用户个人行为的结果，以及平台在内容审核和过滤机制上是否足够完善。
-• 其他值得注意的讨论点：广告推送算法是否合理以及用户对广告内容的控制权（如是否可以手动屏蔽或举报不适宜的广告）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44726641" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://leaseswap.nyc/analytics" target="_blank">Show HN: An interactive dashboard to explore NYC rentals data</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: giulioco</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-07-30 03:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了纽约市（NYC）租赁市场的分析工具。用户可以通过选择不同的时间范围（如1个月、3个月、6个月、1年）查看租赁数据。工具提供多种筛选和自定义搜索选项，包括卧室数量（从工作室到4间以上）、浴室数量（从任意数量到4间以上），以及多种房源来源（如Leasebreak、Streeteasy、Craigslist等）。用户还可以通过点击地图选择具体社区，查看各区域的租赁市场洞察。该工具帮助用户根据个人需求精确定制和分析租赁市场数据。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：纽约市（NYC）租金变化及数据准确性
-
-不同观点：
-• **租金数据不准确/存在误导**：[rprend] 指出，挂牌租金往往高于实际支付租金，房东通过各种手段使租赁历史看起来更贵，挂牌租金往往是房东的期望价格，而非真实价格。这种做法助长了租金通胀。他还分享了个人经历，说明合同租金高于实际支付租金，并将其比作软件行业的“虚高”计算方法。[solumos] 也对数据提出质疑，指出某些地区的租金中位数看起来很可疑，且有些社区数据缺失。[msukkarieh] 对West Village一居室公寓租金高达6000美元表示怀疑，认为数据可能不真实。
-
-• **租金上涨的原因及影响**：[cuuupid] 提供了数据，指出过去两年租金大幅上涨，并讨论了可能的原因，包括市场压力和供应方贪婪，并提出即将上任的市长推动的租金稳定政策可能带来的市场影响。他质疑租金上涨是否是市场健康的表现，还是泡沫的前兆。[asdev] 建议使用多模态AI来过滤不符合居住标准的公寓，以提高价格数据的准确性。
-
-• **需要增加房屋供应**：[cyberax] 提出，NYC需要增加房屋密度来降低住房成本，并反问“只要建更多房子就行，对吧？”这一观点暗示增加供应可能有助于缓解租金上涨的问题。
-
-• **其他技术性讨论**：[AvAn12] 提到该内容曾在《纽约时报》房地产版块出现多年。[kevin11111] 对内容表示赞赏。[jeffbee] 建议建立租赁登记制度，以避免依赖广告猜测租金。[mbStavola] 提到在房地产数据中，布鲁克林的Bay Ridge和Staten Island的Westerleigh被混在一起，虽然它们属于同一国会选区，但仍然是不同的社区。[suncemoje] 仅简单回应“可爱？”，未提供具体意见。
-
-补充讨论：
-• 评论中反映了对租金数据准确性的广泛关注，以及对租金上涨原因和影响的深入讨论。
-• 有人提出技术解决方案，如使用AI过滤虚假数据和建立租赁登记制度，以提高租金信息的透明度和准确性。
-• 不同社区的租金差异和数据缺失问题也被提及，显示出对区域性租金差异的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44730691" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cyberdaily.au/digital-transformation/12441-atlassian-terminates-150-staff-with-pre-recorded-video-will-be-largely-replaced-by-ai" target="_blank">Atlassian terminates 150 staff</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 165</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-08-01 19:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Atlassian近日通过预录视频解雇了150名员工，主要来自其欧洲运营部门，视频后员工需等待15分钟以确认是否被裁。被裁员工的电脑立即被封锁，但将获得六个月的工资补偿。此次裁员是由于公司向AI客服解决方案转型，客户对复杂支持的需求减少。Atlassian联合创始人Mike Cannon-Brookes发送了该视频，而另一创始人Scott Farquhar此前曾表示AI将深刻改变澳大利亚，并倡导广泛应用AI。此举引发员工对公司沟通方式冷淡的批评。此前，澳大利亚联邦银行也因AI推广而裁减了至少45个岗位。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：公司通过预录视频宣布裁员的做法及其影响
-
-不同观点：
-• andrewstuart2：认为通过视频宣布裁员是没有人情味的方式，但6个月的遣散费比视频形式更具意义。
-• fkyoureadthedoc：对比自己之前公司按工作年限每一年给一周遣散费的做法，认为6个月的遣散费非常优厚，宁愿接受这种没有人情味的方式。
-• jasonephraim：澄清被裁员工并不是通过视频得知消息，而是通过之后收到的邮件，且视频是向全体员工宣布，而非一对一通知。
-• giancarlostoro：质疑公司是否通过邮件向12,000名员工发送了这种类似定时炸弹的消息，认为这会让留下来的员工感到不安。
-• tartoran：补充说明被裁员工在收到邮件时，电脑会立即被封锁，进一步加剧不适感。
-• xp84：解释视频标题中的"CSS Team"指的是客户服务与支持团队，而不是层叠样式表，并借机批评公司的产品性能问题。
-• betaby：讽刺公司没有在视频中提到“每天使用AI”而非Atlassian产品。
-• MortyWaves：将公司通过预录视频裁员的做法与公司强制推行Jira垄断联系起来，批评公司冷酷无情。
-• tiffanyh：提出对于拥有大量远程员工的公司，如何有效处理裁员问题，并指出希望了解更好的方法，但不完全赞同当前的做法。
-• xcke：认为裁员方式缺乏人情味，合适的做法应由经理迅速且富有同情心地通知，而不是通过预录视频，强调即使是直播会议也比预录视频更合适。
-• nielsbot：引用任天堂前总裁岩田聪拒绝裁员的观点，指出裁员对员工士气的负面影响。
-• nsksl：质疑是否有可能进行150次一对一会谈来处理裁员。
-• heybales：讽刺公司通过裁员节省的开支是否会回馈给客户。
-• kazinator：抱怨Atlassian产品的未实现功能请求问题，认为简单的聊天机器人可以传递此类信息。
-• Animats：提出是否有公司通过AI宣布裁员的先例。
-
-补充讨论：
-• 争议的焦点在于公司通过预录视频宣布裁员的方式是否合适，许多人认为这种方式缺乏人情味。
-• 部分评论对比不同公司的遣散费政策，认为尽管方式不理想，但优厚的遣散费可以部分弥补这种不足。
-• 对于大规模裁员，特别是远程员工的处理方式，有讨论提出实际操作上的困难，但仍有建议认为可以采取更人性化的方式。
-• 一些评论将裁员做法与公司整体文化、产品问题联系起来，反映出对公司更深层次的不满。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44761205" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://secuso.aifb.kit.edu/english/2809.php" target="_blank">Our Farewell from Google Play</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: shakna</span> |
-                    <span>评分: 192</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-08-01 09:08</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>SECUSO的"隐私友好应用"项目始于2016年，旨在提供仅需必要权限的替代应用，如手电筒应用。该项目在Google Play上提供了超过30个隐私友好应用，总安装量超过35万次。然而，由于在Google Play上维护应用更新的工作量过大，研究团队难以继续支撑。从2025年起，这些应用将不再通过Google Play提供更新，现有用户需转向F-Droid商店以获取持续支持和更新。现有安装不会受影响，但若不更新，可能因安卓系统变化而出现兼容性问题。SECUSO提供了迁移至F-Droid的指南，并感谢用户一直以来的支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google Play 对应用持续更新要求的影响及开发者的不同立场
-
-不同观点：
-• **反对 Google 强制更新政策**：
-  - [a2128] 认为 Google 要求持续更新（每年针对新 SDK 发布更新）是不合理的开发策略，特别是对于功能完备、无需频繁更新的应用。这种政策增加了开发者的负担，并可能引入新 bug。
-  - [ncruces] 提到自己的应用原本是可持续的“业务”，但由于无法满足 Google 持续更新的要求，只能放弃。同时指出，这种政策反而促使了广告和跟踪器泛滥的应用兴起。
-  - [xorcist] 认为智能手机平台不断变化使得维护负担不合理，类似于每年重新编译 Windows 软件一样荒谬。
-  - [dotdev] 提到自己的多款游戏因无法快速重建以满足新政策而被下架，最终只能在个人网站上提供 APK 下载。
-
-• **支持 Google 的更新要求**：
-  - [ohdeargodno] 认为 Google 要求应用保持更新是合理的，特别是对于低复杂度应用，更新工作量很小。如果不进行更新，开发者可能无法应对新的安全要求，用户隐私也无法得到保障。
-  - [liendolucas] 对 Google 的政策表示理解，认为开发者应适应这种“更新或消亡”的生态，虽然感到无奈，但这是行业现状。
-
-• **中立或无关立场**：
-  - [rs186] 提到类似情况也发生在 iOS 平台，暗示这是移动应用生态中的普遍问题，而非仅限于 Google Play。
-  - [hollowonepl] 认为相比苹果，Google 的政策相对更容易应对，特别是在处理例外情况时。
-  - [amelius] 关注点在于页面底部的符号，与主要讨论点无关。
-  - [brnt] 赞赏 SECUSO 的应用，但对 Google 政策未明确表态，只是感叹用户未来更难找到无垃圾软件的应用。
-  - [Animats] 表示自己只从 F-Droid 获取应用，暗示不依赖 Google Play，因此对该讨论不甚关心。
-
-补充讨论：
-- **争议焦点**：Google Play 强制持续更新的政策是否合理，以及这种政策对开发者、用户和应用生态的实际影响。反对者认为这是不必要的负担，支持者则认为这有助于安全和用户体验的提升。
-- **替代方案**：一些开发者选择将应用托管在个人网站或 F-Droid 等平台，以规避 Google Play 的政策要求。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44754523" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2025/08/01/business/dealbook/openai-ai-mega-funding-deal.html" target="_blank">OpenAI raises $8.3B at $300B valuation</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mfiguiere</span> |
-                    <span>评分: 117</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-08-01 14:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：OpenAI的估值和未来发展前景
-
-不同观点：
-• 一些人认为OpenAI的高估值是合理的，因为其未来增长潜力巨大，类似于Nvidia等高估值公司（ttul）。投资者愿意支付高倍数的年化收入（ARR）是因为看好其增长空间。
-• 另一观点则认为OpenAI被高估了，特别是在面临Google和Anthropic等竞争时，除非GPT-5能带来颠覆性变化，否则当前的估值难以支撑（amradio1989, softwaredoug）。
-• 也有评论指出OpenAI的估值存在泡沫风险，当前的AI热潮可能类似于过去的科技泡沫，最终会迎来调整（dgb23）。
-
-补充讨论：
-• OpenAI从Meta回聘工程师被视为积极信号（bix6）。
-• 对于OpenAI的具体估值存在争议，有评论提到其估值可能在1570亿到3000亿美元之间，不同来源的数据存在差异（onlyrealcuzzo, christianqchung）。
-• 投资者在风投中的回报问题也被提及，有人质疑风投模式是否可持续，或者是否会在未来出现类似于MBS的崩溃（rich_sasha）。
-• 有人认为AI模型的未来在于开源，应用这些模型的具体应用将会是真正的收入驱动因素（amradio1989）。
-• OpenAI的收入和资金运行时间也被讨论，有评论估算其年化收入为120亿美元，并探讨了其资金还能支持多久（nabla9, GiorgioG）。
-• 还有评论对比了OpenAI和XAI（Elon Musk的AI公司），质疑OpenAI的高估值是否合理（v5v3）。
+• 讨论中提到了 `zfs allow` 命令的具体应用场景，即通过限制用户权限来防止攻击者在攻陷生产环境后进一步删除备份数据，这是一种纵深防御策略。
+• 强调了手动清理旧快照的额外工作量，但认为这种风险降低是值得的，表明在安全性和操作复杂性之间做出了权衡。
+• 提到了权限分工的策略，通过限制 root 登录权限，进一步缩小了潜在攻击面，这是一种最小权限原则的应用。
 
 争议焦点：
-• OpenAI的高估值是否合理，以及其未来增长潜力能否支撑这一估值。
-• 当前AI领域的投资热潮是否为泡沫，以及未来可能的市场调整。</div>
+• 主要争议在于手动清理旧快照的操作复杂性和额外工作量是否值得，这涉及到对安全性和操作效率的不同优先级权衡。有些人可能认为自动化清理更为理想，而另一些人则可能更看重手动操作带来的安全性提升。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44757247" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44720285" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -513,34 +102,407 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.linuxjournal.com/content/when-flatpaks-sandbox-cracks-real-life-security-issues-beyond-ideal" target="_blank">When Flatpak's Sandbox Cracks</a>
+                    <a href="https://www.coveragecat.com/careers/engineering/software-engineer" target="_blank">Coverage Cat (YC S22) Is Hiring a Senior, Staff, or Principal Engineer</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dxs</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-08-01 20:01</span>
+                    <span>作者: botacode</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-01 17:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了Flatpak在Linux系统中作为沙箱技术的安全问题。尽管Flatpak通过使用bubblewrap命名空间、系统调用过滤和门户接口来隔离应用程序，理论上提供了一个安全的运行环境，但实际使用中存在漏洞。许多Flatpak应用声明了广泛的权限，如`filesystem=home`或`device=all`，这削弱了沙箱的效果。文章具体介绍了两个安全漏洞：CVE-2024-32462，涉及通过门户接口执行任意主机命令；CVE-2024-42472，涉及利用符号链接获取对敏感文件的访问。此外，Flatpak应用的权限配置复杂，且更新滞后，可能包含过时且有漏洞的库。为增强安全性，文章建议保持Flatpak核心和门户的更新、最小化应用权限、使用工具审核权限、推广安全默认设置并加强教育。未来可以通过自动化沙箱生成工具和持续的运行时扫描来改进安全性。</p>
+                    <p>Coverage Cat正在招聘一名高级软件工程师，要求具备6年以上经验，薪资140美元起。该公司致力于通过AI技术改善美国人的财务和保险体验，提供透明、易懂的保险政策。该职位负责端到端产品开发，收集客户数据并提供决策工具，帮助客户节省开支和保护重要资产。申请截止日期为2025年7月30日。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：评论对内容是否为AI生成提出质疑和分析
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44759432" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.erlang-solutions.com/blog/supporting-the-beam-community-with-free-ci-cd-security-audits/" target="_blank">Supporting the BEAM community with free CI/CD security audits</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 66</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-08-01 16:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Erlang Solutions为BEAM社区提供支持，包括为开源Erlang和Elixir项目提供免费的CI/CD安全审计，帮助发现和修复漏洞。这些审计通过SAFE工具实现，集成于开发管道中，如GitHub Actions、CircleCI和Jenkins，自动扫描代码以提前发现问题。审计结果在几分钟内生成，反馈清晰且具可操作性。开源维护者可通过邮件申请免费许可，时长根据项目需求确定。此外，Erlang Solutions还提供专家主导的生产系统审计服务，涵盖代码审查、架构评估和性能审计等。公司通过赞助会议、支持基金会和社区项目等方式，全面支持BEAM生态系统的发展。更多信息可在社区中心获取。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Erlang BEAM虚拟机及其相关的开源支持和许可证问题
 
 不同观点：
-• 观点一：认为该内容可能是由AI生成的。理由是内容的结构和大量的要点格式（如项目符号的使用）与AI生成内容的典型特征非常相似，尤其是AI通常会采用条理清晰的表达方式。示例：评论指出“许多项目符号”是一个典型特征。
-• 观点二：认为该内容可能是人类刻意模仿AI写作风格。虽然没有直接否认人为创作的可能性，但暗示如果这不是AI生成内容，那么创作者在刻意模仿AI的写作方式。
+• [Animats] 指出理解BEAM是什么存在困难，解释BEAM是Erlang的运行时解释器（虚拟机），并提到“BEAM”作为一个缩写在Acronym Finder中难以找到，需要通过维基百科等资源来获取信息。
+• [mananaysiempre] 关注开源维护者免费获取SAFE许可证的条件，指出许可证条款中存在不合理的法律术语，特别是关于开源软件和商业使用的限制，并以Curl项目为例，认为该许可证条款不适用于类似Curl这样的完全开源但通过商业支持获利的项目。
+• [citizenpaul] 对近期频繁提及BEAM的现象感到疑惑，询问是否有什么与Erlang相关的趋势或事件。
+• [victorbjorklund] 提到网站上的字体看起来被拉伸，可能是一个技术性或设计上的问题，与主要讨论点无直接关系。
+• [lagniappe] 对讨论中的标题和内容提出异议，认为标题不应带有主观评论，应直接反映内容。
 
 补充讨论：
-• 评论中没有直接给出关于内容质量或准确性的评价，主要聚焦于内容是否由AI生成以及其写作风格的讨论。
-• 争议焦点在于该内容是否由AI生成，虽然提出了两种可能性，但并没有明确证据支持其中任何一方，更多是基于写作风格的推测。
-• 评论的语气带有一定的调侃性质，尤其是“well imitated”的表述，暗示对AI生成内容特征的某种刻板印象或认知。</div>
+• 许可证条款的适用性及其对开源社区的影响是争议的焦点，特别是关于“开源软件”和“商业使用”的定义和限制。
+• 对BEAM及其在技术社区中受到关注的原因存在疑问，可能涉及Erlang相关的技术发展或社区活动。
+• 讨论中还包含对技术文档和信息获取的难度的反馈，以及对网站设计问题的技术性意见。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44761760" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44758957" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://twey.io/hci/svalboard/" target="_blank">Ergonomic keyboarding with the Svalboard: a half-year retrospective</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Twey</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-08-01 16:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文作者讲述了自己作为计算机用户和键盘爱好者的经历，特别是为了缓解重复性劳损（RSI）而转向使用Dvorak键盘布局，并逐渐探索各种人体工学键盘的历程。作者详细介绍了使用过的几款键盘，如Microsoft Ergonomic系列和Kinesis Advantage，但最钟爱的还是Ergodox EZ。他强调了分体式设计、帐篷式摆放和拇指集群等功能对减轻手腕和肘部疼痛的重要性。此外，作者对键盘的可编程性有高度需求，因其独特的输入习惯和速记爱好。最后，作者提到对CharaChorder的尝试，尽管其紧凑设计和和弦输入有潜力提升打字速度，但因其操作系统封闭和配置限制而未能完全实现作者的期望。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Svalboard及其类似人体工学键盘的实用性、协作性、便携性及潜在问题
+
+不同观点：
+• [j1elo] 认为缺少额外的备用键盘会使得与他人协作变得困难，特别是在需要快速让其他人使用电脑的情况下，比如同事或伴侣。他以Elecom Huge trackball为例，说明其他人不会使用这种特殊设备，虽然这可以视为一种“优点”，但在协作场景中却是一种障碍。
+
+• [eviks] 讨论了从默认不人体工学的键盘到分体式键盘的演变，认为虽然这种演变有其合理性，但遗憾的是健康问题推动了这一小众且昂贵的市场发展。他还提出了一些关于键盘布局和手势操作的改进建议，如通过每根手指的传感器实现更多手势操作，并指出“抓取”动作更自然。
+
+• [donio] 是一位拥有25年以上Datahand使用经验的用户，他对Svalboard表示关注，特别是对其他Datahand用户的看法感兴趣，关心Svalboard的硬件、开关和整体手感。
+
+• [Fraterkes] 担心使用像Svalboard这样的键盘会像使用Vim一样，习惯了之后就很难适应其他键盘，特别是在笔记本电脑上工作时会感到不便。
+
+• [jiehong] 认为Svalboard看起来很酷，但他更喜欢Kinesis Advantage 360，并提到自己越来越多地使用语音输入进行工作，特别是在编码时键盘仍然是最佳选择。
+
+• [RDaneel0livaw] 从小就喜欢分体式人体工学键盘，认为sp111是他的最终选择，特别是对于右撇子用户，带数字键盘的设计非常合理，并且在游戏中可以作为内置的游戏宏键盘。虽然拥有Kinesis Advantage 2，但由于学习曲线较高，很少使用。
+
+补充讨论：
+• 争议的焦点之一是Svalboard等特殊键盘的协作性和便携性问题，[j1elo]和[Fraterkes]都提到了在不同设备和场景下使用这些键盘的困难。
+• 另一个值得注意的讨论点是键盘布局和操作手感的改进建议，[eviks]和[RDaneel0livaw]都提到了键盘设计中的手势操作和学习曲线问题。
+• 不同用户对键盘的偏好和使用习惯差异较大，[donio]和[jiehong]都提到了自己长期使用某种键盘的经验和对新产品的关注。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44759171" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/videosdk-community/ai-telephony-demo" target="_blank">Build an AI telephony agent for inbound and outbound calls</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sagarkava</span> |
+                    <span>评分: 46</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-07-30 17:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了如何使用VideoSDK构建一个支持入站和出站电话的AI电话代理。该项目支持多个SIP提供商和AI代理，具有可扩展的架构，适合VoIP电话解决方案。主要内容包括：
+
+1. **安装和配置**：
+   - 需要Python 3.11+、VideoSDK账户、Twilio账户（用于SIP中继）和Google API密钥（用于Gemini AI）。
+   - 克隆仓库、安装依赖、配置环境变量，然后运行服务器。
+
+2. **API端点**：
+   - **处理入站电话**：`/inbound-call`，处理来自SIP提供商的来电。
+   - **发起出站电话**：`/outbound-call`，使用JSON数据发起呼叫。
+   - **配置SIP提供商**：`/configure-provider`，支持运行时切换SIP提供商。
+
+3. **添加新的SIP提供商和AI代理**：
+   - 提供详细的步骤和代码示例，说明如何扩展支持新的SIP提供商和AI代理。
+
+该项目旨在为开发者提供一个灵活的平台，以便集成和扩展各种电话通信功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI在电话系统（尤其是外呼和客户服务）中的应用及其潜在问题和影响
+
+不同观点：
+• **mmasu**：
+  - 支持AI在电话系统中的应用，但指出实际开发中遇到的问题，如噪音检测、话轮检测、电话系统问题等，导致项目最终放弃。
+  - 认为AI在这些领域的应用是不可避免的，但需要有人类在回路中进行监督和纠正。
+  - 相信随着LLM能力的提升，AI的表现会越来越好，但同时对未来可能回归人类服务的趋势持开放态度。
+
+• **Macha**：
+  - 对AI外呼持批评态度，认为这种技术类似于垃圾电话（robocall spam）。
+  - 对AI在电话系统中的大规模应用持怀疑和负面看法。
+
+• **sagarkava**：
+  - 宣传其团队开源的AI电话代理框架，认为该框架可以有效处理内外呼电话，并提供了具体的技术细节和功能列表（如SIP & VoIP处理、LLM集成、FastAPI服务器、插件支持等）。
+  - 鼓励对AI电话系统感兴趣的开发者提供反馈，展示了对该技术前景的乐观态度。
+
+• **mixdup**：
+  - 持怀疑态度，担心AI在客户服务中的应用会导致服务质量下降（例如电力公司或互联网服务供应商的客户服务体验变差）。
+  - 对AI替代人类客服的可行性和效果表示担忧。
+
+• **nextworddev**：
+  - 简短评论，建议使用pipecat，未深入讨论技术细节或观点。
+
+• **methuselah_in**：
+  - 关注AI技术可能导致的就业问题，担心AI电话代理的广泛应用会导致大量人员失业。
+  - 对AI替代人类工作的社会影响持负面看法。
+
+补充讨论：
+- **争议焦点**：AI在电话系统中的应用是否会导致服务质量下降和人类工作岗位的减少。
+- **技术挑战**：mmasu指出了开发过程中遇到的具体技术问题，如噪音检测和话轮检测，显示出AI在实际应用中的复杂性。
+- **开源贡献**：sagarkava的评论提供了一个实际的技术解决方案，并邀请社区参与，展示了AI技术在电话系统中应用的实际可行性。
+- **不同态度**：从Macha和mixdup的评论中可以看出对AI电话系统的怀疑和批评，而sagarkava和mmasu则更倾向于接受和推动这种技术的发展。
+
+总体来看，讨论围绕AI电话系统的技术可行性、实际应用中的问题以及对就业和社会影响的担忧展开。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44737372" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cnn.com/travel/de-havilland-comet-dh106-first-passenger-jet" target="_blank">A DH106 1A Comet has been restored at the de Havilland Aircraft Museum</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rmason</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-07-29 20:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了世界上第一架商用喷气式飞机——德哈维兰DH106彗星号（Comet G-ALYP）的首航历史及其影响。1952年5月2日，这架飞机从伦敦机场起飞，历时23小时，中途停留五次，飞行7000英里抵达约翰内斯堡。这标志着航空旅行进入喷气时代，提供了比螺旋桨飞机更舒适和快速的体验。然而，由于一系列事故，彗星号机队很快被停飞并进行破坏性测试。如今，德哈维兰飞机博物馆恢复了该飞机的内饰，让人们可以一窥当年的飞行体验。博物馆还展示了二战时期的蚊式战斗机原型等珍贵航空文物。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：De Havilland Comet飞机的历史、技术特点、保存现状及设计缺陷
+
+不同观点：
+• [zabzonk] 分享了20世纪60年代乘坐Comet 4从雅典飞往尼科西亚的个人经历，感觉像是在乘坐老式的火车车厢，可能与运营公司Olympic Airways的维护有关。
+• [betamaxthetape] 指出在英国国家收藏中心保存的另一架Comet 4B变种飞机目前不向公众开放，引用了相关来源加以证明。
+• [buildsjets] 提到自1995年以来在西雅图的飞行博物馆中有一架DH106 Mk4C正在修复，但由于疫情等原因，修复工作自2019年以来几乎停滞，且博物馆可能在几年后失去租赁权。
+• [rwmj] 介绍了其当地一家飞机博物馆中的Comet展品，包括已经修复的方形窗Comet和可供参观的Comet驾驶舱，并提到博物馆还有其他经典飞机如Mosquito和Chipmunk。
+
+补充讨论：
+• [SoftTalker] 提到关于Comet原始设计的方形窗口导致结构裂缝的传言，并指出尽管有争议，现代大多数增压飞机还是采用了圆形或椭圆形的窗口设计以减少应力集中。
+• [dangle1] 认为Comet的结构问题本可以更好地预防，同时指出其发动机嵌入机翼的设计可能导致火灾和引擎故障等问题，甚至比引擎安装在挂架上的飞机有更高的风险。
+• [erikig] 则从美学角度赞赏了Comet的翼装发动机设计，认为这是商用喷气工程中最美的设计，复合材料翼尖次之。
+
+争议焦点：
+• Comet飞机方形窗口设计是否直接导致了其结构问题，以及这种设计对后续飞机设计的影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44727756" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.science.org/content/article/contrarian-climate-assessment-u-s-government-draws-swift-pushback" target="_blank">Contrarian climate assessment from U.S. government draws Swift pushback</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: WarOnPrivacy</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-02 00:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44763965" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wsj.com/lifestyle/monkeys-thieves-bali-temple-0b63a432" target="_blank">The criminal enterprise run by monkeys</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mathattack</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-07-30 21:55</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：乌鲁瓦图寺猴子与人类共同参与的“犯罪”行为及其背后的动机和责任
+
+不同观点：
+• **decimalenough** 认为乌鲁瓦图寺的猴子偷窃游客财物是一个由三方组成的“犯罪”体系，其中人类（如寺庙祭司或看管人）扮演了重要角色。具体过程是猴子偷窃后进入游客禁止入内的寺庙区域，看管人通过提供食物（如香蕉）换回物品，最终游客为了取回物品会慷慨打赏看管人。这个观点强调了人类在此体系中的主动参与和获利。
+
+• **bediger4000** 持强硬态度，认为应对此类“犯罪家族”（指猴子）施以迅速而严厉的惩罚，因为它们只理解暴力和赎金。这个观点表达了对猴子行为的零容忍态度，主张以暴制暴。
+
+• **quantified** 提出人类与猴子有较近的进化关系，尽管不如黑猩猩那样亲近，但仍然足够接近。这个观点侧重于从生物学角度解释猴子行为的潜在原因，暗示人类对猴子行为应有更多理解和宽容。
+
+• **OutOfHere** 支持**decimalenough** 的观点，并进一步指出猴子可能是被人类训练来进行这种行为的，目的是促进当地食品商贩的销售。这个观点认为，真正应被指责的是人类，猴子只是工具。
+
+• **econ** 以幽默语气提问猴子是否能提供其他服务，如送饮料或包裹，暗示对猴子“犯罪”行为的娱乐化看法，未直接参与严肃讨论。
+
+补充讨论：
+• **hatthew** 以调侃语气回应了一个假想的情境，即猴子自己拍摄了犯罪现场照片，进一步娱乐化这个话题。
+• **damontal** 以同样调侃的方式回应了**bediger4000** 的强硬立场，未提出实质性观点，更多是表达对讨论的不满或调侃。
+
+争议焦点：
+• 猴子偷窃行为的责任归属问题：一部分人认为猴子是主要犯罪者，应受到惩罚（如**bediger4000**），而另一部分人认为人类（看管人或训练者）是幕后主使，真正应被指责的是人类（如**decimalenough**和**OutOfHere**）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44739965" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bower.sh/you-might-not-need-tmux" target="_blank">You might not need tmux</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: elashri</span> |
+                    <span>评分: 84</span> |
+                    <span>评论数: 35</span> |
+                    <span>发布时间: 2025-08-01 09:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了作者对终端复用器 **tmux** 的长期使用体验以及最终寻找替代方案的过程。作者曾是 **tmux** 的忠实用户，依赖其会话持久性、窗口管理等功能。然而，受一个 GitHub 讨论和一次采访启发，作者认识到 **tmux** 存在一些问题，如颜色渲染不正确、滚动条使用不便、不支持新的终端协议等。尽管传统命令如 `ctrl-z` 和 `nohup` 可部分替代 **tmux** 的会话持久性功能，但在窗口管理和远程 SSH 会话中的表现不佳。
+
+作者尝试了几个轻量级工具如 **dtach**、**abduco** 和 **shpool**，它们更符合 Unix 哲学，专注于会话持久性，但功能上仍不及 **tmux** 完善。最终，作者发现 **shpool** 最符合需求，尽管存在一些小问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Tmux 的使用、替代方案及其优缺点
+
+不同观点：
+• [d4rkp4ttern] 认为 Tmux 的可脚本化特性非常有用，能够通过 Tmux-cli 工具让 Claude Code 与交互式 CLI 脚本进行交互，实现自动化测试和调试，并提出这种工具开启了很多可能性。
+• [jelder] 强调 Tmux 在 Mac 和 iTerm2 环境下的出色表现，特别是其无缝的远程开发体验，甚至不需要掌握 Tmux 命令。
+• [pure-orange] 认为 Tmux 虽然在终端生态中有些麻烦，但它是必需的工具。与其寻找替代方案，不如从协议角度重新思考如何让这些功能更原生。
+• [JdeBP] 指出 TERM 设置问题不是 Tmux 特有的，而是所有终端模拟器共有的问题，设置 TERM 是使用终端设备的必要步骤。
+• [wkat4242] 支持 Tmux，认为其通过翻译转义代码实现的功能非常有用，特别是对旧设备的支持，并表示个人只关心工具是否好用，而非架构是否优雅。
+• [nickjj] 喜欢 Tmux 的多会话管理功能，特别是其键盘发送功能，能简化配置文件的批量处理，并分享了具体的使用经验。
+• [esjeon] 提到 suckless 社区的终端工具不打算重现 Tmux 的功能，显示出与 Tmux 用户不同的设计理念。
+• [sevensor] 同时使用 Kitty 和 Tmux，前者在家中使用，后者在工作中使用，因为 Tmux 的会话恢复功能在远程工作时非常关键。
+• [plett] 将 Tmux 比作浏览器标签页，认为当处理多个终端会话时，Tmux 提供的功能不可或缺。
+• [mickeyp] 推荐使用 Emacs 作为终端多路复用工具，认为其可以替代 Tmux。
+• [c120] 需要在无法安装 Screen 的远程 Linux 机器上使用 Tmux，认为没有其他工具可以替代 Tmux 的会话保持功能。
+• [panki27] 通过 WezTerm 消除了对 Tmux 的依赖，但仍需要 Tmux 来处理服务器端会话。
+• [tombert] 对 Tmux 的键盘快捷键非常依赖，认为其是开发工作流中不可或缺的工具。
+• [nobleach] 提到 Tmux 的两个问题：复制多行文本需要缩放窗口和从滚动缓冲区复制到剪贴板的麻烦，但其他解决方案都不如 Tmux 好用。
+• [canistel] 指出 Tmux 是唯一能通过键盘选择滚动缓冲区内容的多路复用器，这是其独特的优势。
+
+补充讨论：
+• Tmux 的替代方案如 WezTerm 和 Emacs 被一些用户推荐，但大多数用户仍认为 Tmux 的某些功能（如会话恢复和键盘操作）无可替代。
+• 争议焦点在于 Tmux 的复杂性和设置问题，部分用户认为这些是必要的权衡，而另一些用户则寻求更简化和原生的解决方案。
+• Tmux 在远程开发和多终端会话管理中的实用性被广泛认可，特别是在需要保持会话连续性的场景中。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44754492" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.quantamagazine.org/at-17-hannah-cairo-solved-a-major-math-mystery-20250801/" target="_blank">At 17, Hannah Cairo solved a major math mystery</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: baruchel</span> |
+                    <span>评分: 196</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-08-01 16:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>17岁的汉娜·开罗（Hannah Cairo）解决了一个长达40年的数学猜想，令数学界震惊。她自小在巴哈马接受家庭教育，通过在线课程和自学完成了高等数学课程，11岁就学完了微积分。她对数学的深入探索使她感到家庭教育的局限性，因此她申请参加了伯克利的一个研究生课程。在那里，她构造出一个行为异常的函数，推翻了米佐哈塔-竹内猜想（Mizohata-Takeuchi conjecture），这一成果挑战了数学家对函数行为的常规认知。尽管她的学习路径非传统，但她的数学天赋和成就获得了广泛认可。开罗谦逊且不认为自己特别出色，但她无疑已成为数学界的一颗新星。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕一位年轻数学天才的成就及其教育经历的讨论
+
+不同观点：
+• [1024core] 认为现代大学的制度存在问题，因为即使她已经有了重要的学术发表，仍需要通过传统的博士课程获取学位。该评论暗示了大学学位制度的僵化。
+• [impish9208] 引用了她的自我描述，强调了她因孤立感和重复性工作而产生的焦虑，并表示这种感受与评论者自身有共鸣。这里关注的是学术道路上的心理体验。
+• [anonzzzies] 关注数学证明的现代化和工具（如Lean、Agda等）的应用，认为未来应更多地使用可验证的代码形式来构建数学证明，从而推动整个领域的进步。
+• [AlanYx] 赞赏了Khan Academy在早期教育中的作用，认为它为不同数学能力的人提供了坚实的学习资源，强调了在线教育资源的价值。
+• [shermantanktop] 认为她的移民背景和在家自学的经历，加上她的天赋和努力，使她取得了非凡的成就，并指出制度化的教育在某种程度上起到了平衡作用。
+• [AtlasBarfed] 对多数大学因她缺乏学位而拒绝她的申请表示既不惊讶又震惊，批评了现代教育制度中的学位价值问题，认为学术机构在选拔人才时应更灵活。
+
+补充讨论：
+• [larodi] 提到了另一位杰出的数学家Zvezdalina Stankova，并对她的人生经历和成就进行了介绍，同时猜测Cairo可能曾是她的学生或即将成为她的学生。
+• [debo_] 对她笔记的清晰和艺术性表示赞赏，并提出了一个有趣的问题：是否通过在线资源学习的人更注重表达和呈现。
+• [zavg] 和 [myth_drannon] 都表达了对她成就的钦佩，[myth_drannon] 还提到了苏联时期的数学圈（Math Circles）理念，认为这对数学教育非常重要。
+• [conferza] 表示尽管自己不擅长数学，但她的故事依然非常鼓舞人心。
+
+争议焦点：
+• 大学学位制度的僵化与人才选拔的灵活性之间的矛盾是评论中隐含的一个争议点，[1024core] 和 [AtlasBarfed] 都表达了对现行制度的批评。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44759152" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
