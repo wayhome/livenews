@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-03 09:14 (北京时间)
+            最后更新时间: 2025-08-03 12:08 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,42 +61,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://danluu.com/2choices-eviction/" target="_blank">Caches: LRU vs. Random</a>
+                    <a href="https://eugene-andrienko.com/it/2025/07/28/speed-up-suspend-resume-freebsd.html" target="_blank">Speed up suspend/resume for FreeBSD</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gslin</span> |
-                    <span>评分: 75</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-07-31 06:45</span>
+                    <span>作者: speckx</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-07-31 14:49</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了缓存替换策略，特别是随机驱逐（random eviction）和LRU（最近最少使用）的比较。虽然LRU通常表现更好，但随机驱逐在某些情况下，尤其是循环过大导致缓存不合适时，表现相对稳定。文章提出了一种新的策略，即在两个随机选择中使用LRU（2-random），发现其在较大缓存中表现接近LRU，甚至更好。实验显示，LRU在小缓存中略优，而2-random在大缓存中表现更佳。此外，文章还探讨了伪LRU策略，因其实际实现成本较低。总体而言，2-random是一种在大缓存中具有竞争力的策略，特别是在实际应用中伪随机版本的实现。</p>
+                    <p>文章主要描述了在Thinkpad X220笔记本上安装FreeBSD 14.2和Coreboot后，发现 suspend/resume 时间比之前使用FreeBSD 11和专有BIOS时显著变长。最初怀疑是Coreboot导致问题，但即使换成Libreboot问题依然存在。
+
+通过分析Libreboot日志，发现Libreboot并非导致长时间恢复的原因，其恢复过程耗时很短。进一步分析FreeBSD的dmesg日志，发现问题可能与不存在的电池设备和无线驱动有关。尝试替换无线驱动（iwm换为iwlwifi）和关闭不必要的USB设备后，问题得到一定改善。
+
+最终结果显示，开源软件并非导致长时间恢复的主要原因，问题更多与FreeBSD系统的设备管理和驱动相关。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：随机选择策略在缓存和负载均衡中的应用及其效果
+                    <div class="comments-summary">主要讨论点：系统休眠功能的有效性和合理性
 
 不同观点：
-• [bob1029] 认为使用两个随机选择（2-random）并仅在这些选择中使用LRU（最近最少使用）策略可能是一个有效的改进。他还指出，k-random策略可能比2-random更好，类似于进化算法中的锦标赛选择机制，可以通过调整锦标赛大小来控制选择压力。此外，1v1的 tournament 非常廉价，不需要维护全局排序。
-
-• [pvillano] 对使用随机性来延缓性能悬崖（cliffs）表现出兴趣，并举例说明当循环访问n+1个对象而缓存只能容纳n个时，LRU策略会导致每次访问都出现缓存失效和驱逐，缓存变得无用，性能急剧下降。他认为2-random策略可以将这种性能悬崖转化为一个平缓的斜坡，并带有长尾效应。
-
-• [hinkley] 对2-random在负载均衡中比leastconn（最少连接数）策略更有效表示不解，但也承认在缓存中，2-random比其他启发式策略更有效。
+• jeffbee认为系统休眠功能是一种对不良睡眠管理的依赖。他认为一个系统应该能够在运行中保持休眠状态至少一周左右，而不是依赖休眠功能来解决管理不善的问题。
 
 补充讨论：
-• bob1029提到了k-random策略的潜在优势，并通过进化算法中的锦标赛选择机制进行类比，强调了随机选择策略的性能优势。
-• pvillano通过具体例子说明了缓存失效和性能悬崖的问题，并支持使用2-random策略来缓解这些问题。
-• hinkley对2-random在负载均衡中的优越性表示质疑，但未完全否定其在缓存中的效果。
+• jeffbee的评论暗示休眠功能可能被用作不当系统管理的解决方案，而不是解决根本问题。
+• 该评论还涉及到技术系统在长时间运行中的稳定性与效率问题，认为理想的系统应该具备长时间无故障运行的能力。
+• 争议的焦点在于休眠功能是必要的技术支持还是对不良管理实践的掩饰。这引发了关于如何有效管理系统运行和维护的讨论。
 
-争议焦点：
-• 2-random策略在负载均衡中是否比leastconn更有效是讨论中的一个争议点，hinkley对此持怀疑态度，而bob1029和pvillano则更看好随机选择策略的潜在优势。
-
-总结：讨论主要围绕随机选择策略在缓存和负载均衡中的应用及其效果展开，参与者对该策略的具体效果和适用场景存在不同看法，尤其是在负载均衡中的应用上存在争议。</div>
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44743034" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44746270" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -107,44 +104,193 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.fermiquestions.org/" target="_blank">Show HN: Wordle-style game for Fermi questions</a>
+                    <a href="https://www.bbc.com/news/articles/c15wk77zxngo" target="_blank">North Korea sent him abroad to be a secret IT worker</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: danielfetz</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-08-02 17:11</span>
+                    <span>作者: tellarin</span> |
+                    <span>评分: 86</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-08-02 10:18</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个名为"Fermi Estimation"的猜测游戏，玩家需要在六次尝试内猜出一条问题的答案，问题通常涉及数量估计，例如每年屠宰多少只鸡。游戏会提示玩家的猜测是过高还是过低，并通过颜色反馈猜测的接近程度。玩家胜利的条件是在±10%的范围内猜中答案。文章还展示了游戏的统计数据，如玩家进行的游戏次数、胜率、当前连胜和最高连胜记录以及猜测分布情况。</p>
+                    <p>这篇文章揭示了朝鲜秘密派遣IT工人到国外，通过虚假身份为西方公司从事远程工作，以资助政权。这些工人使用数百个假身份，主要在美国和欧洲从事IT工作，月收入至少5000美元，其中85%上交国家。由于国际制裁，朝鲜通过这种方式每年可获得2.5亿至6亿美元的收入。这些工人通常伪装成西方人，以避开制裁并获得更高薪酬。一些工人还涉及数据盗窃和勒索。美国法院已对多名参与此类活动的朝鲜人提起诉讼，其中部分人通过虚假身份在加密货币公司工作并进行诈骗。文章引用了一位化名Jin-su的脱北者提供的详细证词，他描述了如何获取假身份并成功申请工作，特别是在英国和美国市场。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对一个数字猜测游戏的反馈与建议
+                    <div class="comments-summary">主要讨论点：朝鲜人员利用虚假身份在海外获取工作的现象及其相关问题
 
 不同观点：
-• @andrewrn（开发者）：承认在项目中过度设计，并表示从中学习到精简MVP的重要性。同时提到游戏结合了数学和常识，具有一定的趣味性，并邀请其他用户合作。
-• @hebejebelus：认为游戏本质上是一个二分/二进制搜索模拟器，通过高值和低值的猜测可以很快得到答案，尤其在百分比问题上。建议增加实时语音反馈功能以提升用户体验。
-• @plaguna：指出由于键盘布局和地区设置问题，输入的数字被错误格式化，导致游戏无法正常进行，特别在使用西班牙键盘和Safari浏览器的情况下。
-• @riidom：认为箭头指示具有误导性，建议改为明确的文字提示，如“太高了”或“太低了”。
-• @estomagordo：提到在玩了一段时间后，开始重复收到相同的问题，影响了游戏体验。
-• @_ache_：指出由于本地化设置问题，数字中的空格被当作分隔符处理，导致猜测值被截断，无法正确输入大数。
-• @gabagool：建议支持科学计数法输入，以简化包含多个零的数字输入过程，并询问橙色提示的计算方法。
-• @dave333：分享了一个类似的经典问题，即“凯撒临终呼吸中的分子现在有多少在人肺中”，增加了游戏的背景知识趣味性。
-• @lorenzohess：建议增加显示用户首次猜测与正确答案之间的百分比差距，以便用户了解自己的接近程度，并建议报告每局的平均指标。
-• @mondobe：认为游戏非常简洁有趣，但希望增加分享分数链接的功能，以便与他人分享成绩。
-• @ishita159：对游戏中的历史数据（如曾经生活在地球上的1170亿人）表示惊讶，认为游戏很有趣且具有教育意义。
+• baxtr: 对Jin-su利用多重虚假身份在欧美找工作的方式表示惊讶，并质疑许多大公司是否进行基本的背景调查。他提到，如果身份信息如此容易获取，那么这些公司的背景调查是否有效。
+  
+• forinti: 对背景调查的有效性提出进一步质疑，并认为即便这些人员保留了工作，他们的实际水平如何仍不确定。同时，提出与朝鲜人员的持续互动可能会让更多信息流入朝鲜，长远来看可能产生积极影响。
+
+• yapyap: 对Jin-su被派往国外进行这种活动感到意外，并认为更符合逻辑的做法是在朝鲜国内进行。此外，对只需上交85%收入给政权表示不解，认为上交全部收入并由政权提供廉价生活必需品似乎更合理。
+
+• lathefarger: 简短评论，提到自己的工资实际上支持了美国的政权。
+
+• deadbabe: 强烈反对雇佣低成本的海外工程师，认为这样做的风险很高，尤其是涉及敏感数据和系统时，无法确保这些工程师的身份是否真实或是否代表某个集团。
 
 补充讨论：
-• 游戏的核心机制引发了关于二分法和数学推理的讨论，部分用户认为游戏本质上是一个数学题解器。
-• 用户对本地化和UI/UX问题提出了具体反馈，如数字格式化和错误提示，影响了部分用户的游戏体验。
-• 对游戏功能的建议主要集中在增加用户交互和分享功能，以及改进输入和反馈机制，以提高游戏的可玩性和趣味性。
-• 部分用户对游戏的教育意义表示认可，并分享了类似的问题以丰富游戏内容。</div>
+• 争议焦点在于雇佣海外工程师的信任与安全问题，特别是当涉及国家如朝鲜时，背景调查的有效性和身份验证成为讨论的核心。
+• forinti的观点引发了一些对与朝鲜人员互动是否可能带来信息流入的讨论，这被认为可能对朝鲜有长期的积极影响。
+• yapyap对收入上交比例和生活方式的质疑反映了对朝鲜经济控制方式的困惑和讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44769338" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44766326" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.solutionslookingforproblems.com/post/the-rubik-s-cube-perfect-scramble" target="_blank">The Rubik's Cube Perfect Scramble (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: notagoodidea</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-08-02 14:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文描述了作者尝试打乱一个魔方，使得相同颜色的方块不相邻，并寻找一种看似随机的打乱方法。作者参考了Florian F的方案，但希望每个面的图案不同，且满足更多条件。作者列出了六个要求，包括每个面都要有所有颜色，且相同颜色不相邻等。由于魔方的可能组合数极大，作者通过编程方式尝试生成符合条件的打乱方案。
+
+作者首先处理角块，通过树遍历方式排除不符合要求的组合，并考虑交换奇偶性。然后处理边块，同样进行组合筛选。最终，作者在极短时间内将可能的角块排列从88,179,840种减少到750,640种，为进一步组合边块和角块打下了基础。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Rubik's Cube的排列、随机性、完美打乱以及计算复杂性
+
+不同观点：
+• **关于边缘块的限制和排列**：
+  - Rawling指出，前11个边缘块可以自由放置，第12个块的朝向由前11个决定。他还提到，需要跟踪交换次数，偶数次交换可解，奇数次则不可解。
+  - Rawling进一步提出疑问，是否在前10个块放置后，第11个块的位置和第12个块的朝向已经被决定。
+
+• **完美打乱的定义**：
+  - DavidPFarrell认为，"完美打乱"应该是只能用20步解开的排列，且不能通过任何捷径减少步数。他质疑这种排列的数量。
+
+• **计算所有排列的可能性和效率**：
+  - Retr0id提到Rubik's Cube有43,252,003,274,489,856,000种排列方式，认为全面搜索是不切实际的。但他指出，通过高效的代码和大量计算资源，理论上可以在实际时间内完成。
+  - Retr0id还提到，虽然这种全面搜索不实际，但人们可能仍会尝试（例如计算π的记录）。
+
+• **随机性和规则的讨论**：
+  - Superjan表达了一种对随机性的个人偏好，希望投掷硬币时不会连续看到同一面。
+  - Aardwolf认为排列看起来有一定规律，建议只用某些规则（如规则6和3，或规则6、3和1等）来创造有趣的排列。
+
+• **其他工具和实现**：
+  - Lutzh分享了一个二维Rubik's Cube的JavaScript实现链接，暗示这可能是一个新的解决方案寻找问题。
+
+• **18步解决所有排列的疑问**：
+  - Divbzero质疑OP的"完美打乱"需要18步解决，是否意味着所有Rubik's Cube排列都可以在18步或更少步数内解决。
+
+• **排列的美学和随机性认知**：
+  - Liampulles认为排列有一种混合了随机和规律的美，表示会将他的Rubik's Cube保持在这个位置。
+
+• **随机性与高熵状态的区别**：
+  - Pama指出，人类认为的随机和真正高熵的随机状态是不同的。他举例，在43亿种组合中，只有48种符合人类定义的随机标准。
+
+• **立方块和正方形的区别**：
+  - Lupire提到，相邻的正方形可能颜色相同，但相对位置不正确，强调Rubik's Cube是一个立方块的谜题，而非简单的正方形。
+
+补充讨论：
+- 讨论中涉及了Rubik's Cube的排列限制、随机性定义、计算复杂性以及人类对随机性的认知。
+- 争议焦点在于"完美打乱"的定义和实现，以及全面搜索所有排列的可能性和意义。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44767928" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://deadbeef.io/freehold_software" target="_blank">Write "Freehold" Software</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rjinman</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-07-26 15:54</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：软件所有权模式（freehold）、订阅模式、开源软件及其商业模式的讨论
+
+不同观点：
+• **支持freehold模式**：ktallett认为freehold模式（一次性购买，永久拥有）是理想的软件发布方式，比如Goodnotes和Affinity设计应用就是成功的例子。但他对如何让大多数软件回归这种模式表示困惑，因为现代社会很多人不愿意为软件支付高昂的前期费用。
+
+• **开源软件作为替代方案**：bee_rider认为，许多人不重视拥有自己的工具，而开源软件填补了这个空白。对于工作软件，应该能够在本地运行，而不需要许可证服务器等外部依赖。如果软件不使用DRM或与许可证服务器通信，那么可能会被未经授权地复制，因此或许应该直接开源。虽然基于开源软件构建商业模式很困难，但至少有很多人在这方面有经验。
+
+• **订阅模式的合理性**：throwpoaster指出，传统的软件商业模式存在成本与收入匹配的问题，即如果用户一次性支付费用，如何为后续的漏洞修复或服务器维护付费？订阅模式解决了这个问题，因为它提供了持续的收入流。
+
+• **自托管和遥测**：Havoc对自托管感兴趣，并认为如果做得好，透明的遥测数据收集是可以接受的。开发者希望了解他们的软件在实际中的使用情况是合理的。
+
+• **软件所有权的定义**：idle_zealot认为作者所指的freehold实际上是Freeware或Shareware，而在当今世界，对应的是FOSS（自由和开源软件）。如果没有源代码，就谈不上拥有软件。
+
+• **freehold类别过于 restrictive**：Paradigm2020认为当前的freehold类别过于狭隘，排除了一些价格合理且有微交易的优秀游戏。他主张将供应商与市场分开，以避免像Amazon basics那样的垄断情况。
+
+• **对freehold概念的质疑**：tenacious_tuna对作者使用ChatGPT定义freehold表示不解，认为这与freehold软件的理念相悖。
+
+• **幽默评论**：acuozzo和layer8以幽默的方式回应了freehold这个概念，acuozzo开玩笑说自己在Freehold, NJ长大，是否意味着他写的软件就是Freehold2x。layer8则调侃freehold是“free as in hold my beer”。
+
+补充讨论：
+• **freehold软件的实际应用**：讨论中提到了freehold软件在现代应用中的实例，如Goodnotes和Affinity设计应用，但也指出了这种模式在现代社会推广的困难。
+• **开源软件与商业模式的冲突**：开源软件被认为是freehold软件的一种替代方案，但如何在开源软件上建立商业模式是一个挑战。
+• **订阅模式的优缺点**：订阅模式被认为解决了成本与收入匹配的问题，但也有人对其必要性表示怀疑，特别是在涉及到DRM和许可证服务器时。
+
+争议焦点：
+• **freehold模式 vs. 订阅模式**：freehold模式的支持者认为这是理想的软件所有权形式，但其推广面临社会消费习惯的挑战。而订阅模式则被认为在持续收入和成本覆盖方面更为合理，但也遭到了一些对DRM和遥测数据收集的质疑。
+• **软件所有权的定义**：讨论中对软件所有权的真正含义存在不同看法，有人认为拥有源代码才是真正的拥有，而其他人则认为一次性购买的freehold模式足够。
+
+总的来说，讨论围绕软件所有权模式、开源软件的替代性以及订阅模式的合理性展开，反映了不同用户对软件商业模式的偏好和关注点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44695015" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2507.12547" target="_blank">Modeling Open-World Cognition as On-Demand Synthesis of Probabilistic Models</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-02 20:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文提出了一种名为“模型合成架构”（MSA）的计算模型，用于模拟人类在开放世界中的认知能力。该架构结合了分布式和符号化表示，利用语言模型实现基于全局相关性的信息检索和模型合成，并通过概率程序构建量身定制的心理模型。研究通过一个体育场景数据集测试了MSA在 novel 因果推理中的表现，结果显示MSA在模拟人类判断方面优于仅基于语言模型的方法。这表明MSA能够更好地实现局部连贯推理，为理解和复制人类在开放领域中的推理能力提供了新路径。本文在CogSci 2025会议上发表。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44771060" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -159,8 +305,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: mpweiher</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 6</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 7</span> |
                     <span>发布时间: 2025-07-31 12:41</span>
                 </div>
 
@@ -171,25 +317,22 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于核聚变反应堆项目的可行性、时机及其在当前能源背景下的意义。
+                    <div class="comments-summary">主要讨论点：关于融合能源项目的可行性、时机及其背景的讨论。
 
 不同观点：
-• **captain_coffee的观点**：对项目能否在2028年实现供电表示强烈怀疑。他认为文章遗漏了关键细节，即是否已有实际可行的聚变反应堆设计。他对实现这一目标的时间表持怀疑态度。
-  
-• **vessenes的观点**：对华盛顿州资助核电项目感到意外，因为该州有丰富的水电资源。但他认为，增加核电可能是为了补充现有的电力基础设施，并预测Wenatchee在未来十年可能成为数据中心和电力枢纽。
-
-• **Havoc的观点**：引用了维基百科的数据，指出截至2025年，聚变效率已经有所提高，实现了Q=4.13的增益。这表明对核聚变技术进展持积极态度，认为其效率已有显著提升。
-
-• **ck2的观点**：推荐了PBS Space Time的视频，暗示这些视频可以提供更多关于核聚变的信息，可能认为这些资源有助于理解核聚变技术的现状和未来。
-
-• **trhway的观点**：提到随着人工智能数据中心对电力的巨大需求，现在正是发展核聚变的好时机。他还用过去失败的火箭项目（Rotary Rocket）为例，指出风投公司（VCs）有时会投资高风险高回报的项目，暗示对核聚变项目的投资也可能面临类似风险。
+• **captain_coffee** 对项目可行性高度怀疑，认为报道遗漏了关键细节，特别是实际工作中的融合反应堆设计，并质疑2028年实现供电目标的可能性。
+• **vessenes** 对华盛顿州资助核能项目表示惊讶，但认为在已有水电资源的基础上增加核能和基础设施可能是一个"多多益善"的策略，并设想Wenatchee未来可能成为数据中心和电力枢纽。
+• **Havoc** 引用了维基百科的数据，指出融合效率正在提高，特别是2025年的最高增益Q=4.13，显示出技术的进展。
+• **pfdietz** 反对一味怀疑，认为该项目有其独特的创新之处，并以SpaceX为例，建议大家在发表意见前应先了解更多细节。
+• **ck2** 提供了一个PBS Space Time的视频链接，暗示这些视频可以为理解融合能源提供有价值的背景知识。
+• **trhway** 提到AI数据中心对电力的巨大需求使得融合能源的时机正好，并回顾了过去类似的高风险高投资项目（如Rotary Rocket），暗示风险资本家可能看到了类似的潜力。
 
 补充讨论：
-• **争议焦点**：captain_coffee对核聚变项目能否按计划在2028年实现供电表示强烈怀疑，而Havoc则通过数据表明聚变效率已有显著提升，暗示项目可行性。
-• **投资与时机**：trhway指出AI数据中心对电力的需求增加，认为此时发展核聚变是合适的，但同时提到历史上类似高风险项目的投资失败案例，暗示对当前投资的谨慎态度。
-• **地域背景**：vessenes结合华盛顿州的水电资源背景，讨论了在此地资助核电项目的合理性，提出了对未来电力基础设施发展的预测。
+• 争议的焦点在于融合能源项目的可行性和实际供电时间表，尤其是**captain_coffee**的怀疑与其他如**pfdietz**和**Havoc**对技术进展的乐观态度形成对比。
+• **vessenes** 和 **trhway** 提到了项目背景中的市场需求和技术投资历史，为讨论提供了更广泛的视角。
+• **ck2** 提供的视频链接为深入理解讨论的技术细节提供了资源支持。
 
-总结：讨论围绕核聚变项目的可行性、时机、投资风险以及在当前能源背景下的意义展开，各方观点不一，有的持怀疑态度，有的则较为乐观。</div>
+总结来看，讨论主要围绕项目的可行性、时机以及技术进展，同时夹杂着对风险资本和市场需求的分析。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44745067" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -202,36 +345,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.righto.com/2025/08/reverse-engineering-analog-TDA7000.html" target="_blank">How to reverse engineer an analog chip: the TDA7000 FM radio receiver</a>
+                    <a href="https://twey.io/for-programmers/linear-types/" target="_blank">Linear Types for Programmers (2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: nynyny7</span> |
-                    <span>评分: 40</span> |
+                    <span>作者: marvinborner</span> |
+                    <span>评分: 30</span> |
                     <span>评论数: 3</span> |
-                    <span>发布时间: 2025-08-02 15:59</span>
+                    <span>发布时间: 2025-08-02 16:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了如何通过芯片的显微照片对模拟芯片进行逆向工程，以Philips TDA7000 FM收音机接收芯片为例。TDA7000是1977年设计的FM收音机单芯片，由于当时技术相对简单，只有一层金属层，便于分析。芯片包含超过100个晶体管，涉及差分放大器、电流镜和Gilbert单元混频器等模拟电路。文章通过标注芯片照片上的主要功能块和组件，解释了如何识别晶体管、电阻等微观元件。NPN晶体管和PNP晶体管的结构不同，NPN为垂直结构，PNP为水平结构，易于通过形状区分。文章还讨论了芯片设计中的布线技巧和隔离边界的作用，帮助理解芯片内部电路布局。</p>
+                    <p>本文介绍了线性类型在类型理论中的应用，源自Jean-Yves Girard提出的线性逻辑。线性逻辑有四大主要操作符：独立值对（A ⊗ B）、选择（A ⊻ B）、消费者选择（A & B）和相互依赖值对（A ⅋ B）。线性类型确保每个值只能使用一次，这种特性在编程中可用于模拟资源消耗、状态变化和协议执行等场景。例如，投币购买物品后不能再用同一硬币，或文件关闭后不能再写入。线性类型还可应用于内存管理和并发编程，避免垃圾回收和死锁问题。通过这些应用，线性类型在函数式和命令式语言之间架起桥梁，使程序更高效和安全。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：芯片在未调谐到电台时的噪声来源及相关技术原理
+                    <div class="comments-summary">主要讨论点：关于线性类型（linear types）的语言和相关概念的讨论
 
 不同观点：
-• gblargg认为，当芯片未调谐到电台时，芯片会用白噪声替代音频，他原以为这种背景噪声像电视未接收信号时的自然噪声一样。
-• CamperBob2对相关器的工作原理表示困惑，特别是关于通过延迟信号半个周期并反转信号如何在完全调谐的情况下与原信号匹配。他指出，70 kHz的中频（IF）在2倍于15 kHz基带音频所需的Nyquist截止频率下采样，因此假设信号被带限或通过巧妙的偏移减少方案处理，并且调谐正确，信号内容在半个周期后经过反转和延迟可以匹配。
+• [renox] 提到 Austral 语言支持线性类型，并提供了一个不错的教程，虽然不清楚该语言的当前状态。这表明 Austral 可能是一个值得关注的新兴语言，特别是在学习线性类型方面。
+
+• [jnpnj] 提出一个问题，询问虚类型（phantom types）和类型状态（typestates）是否是线性类型的子集或类似概念。这反映出对不同类型系统之间关系的探讨，特别是对线性类型、虚类型和类型状态之间的联系存在疑问。
 
 补充讨论：
-• kens简短表明自己是芯片的作者，并表示可以回答有关芯片的问题，但未深入讨论技术细节。
-• CamperBob2的评论进一步探讨了信号处理的技术细节，特别是关于采样、带限信号以及调谐准确性的假设，提出了对相关器工作原理的推测和解释。
+• [scythmic_waves] 偏离主题，表达了对讨论中提到的网站设计风格的赞赏，未涉及技术内容。
 
 争议焦点：
-• 主要集中在相关器如何通过延迟和反转信号实现匹配的技术细节上，CamperBob2对此表示不解并尝试给出可能的解释。</div>
+• 主要争议点在于线性类型与其他类型系统（如虚类型和类型状态）之间的关系。这涉及到对不同类型系统的理解，以及它们在编程语言设计中的定位和应用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44768677" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44769145" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -289,41 +432,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.database-doctor.com/posts/iceberg-is-wrong-2.html" target="_blank">Iceberg, the right idea – the wrong spec – Part 2 of 2: The spec</a>
+                    <a href="https://danluu.com/2choices-eviction/" target="_blank">Caches: LRU vs. Random</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: lsuresh</span> |
-                    <span>评分: 22</span> |
+                    <span>作者: gslin</span> |
+                    <span>评分: 75</span> |
                     <span>评论数: 3</span> |
-                    <span>发布时间: 2025-08-02 14:26</span>
+                    <span>发布时间: 2025-07-31 06:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了Apache Iceberg规范的缺陷，指出它并未有效解决大数据湖中的元数据管理问题。文章首先回顾了数据库面临的几个核心问题：空间碎片化、细粒度并发控制、多对象原子性、行与文件的不匹配以及低延迟的元数据访问。作者支持使用开放格式，尤其是Parquet作为表结构数据的存储格式，但指出仅靠Parquet文件无法构成完整的数据库表。
-
-要使多个Parquet文件表现得像数据库表，需要解决四个关键问题：文件定位、文件元数据、事务控制机制和表结构演变。Iceberg规范试图通过清单文件和清单列表来管理这些文件，但这些文件采用AVRO格式，导致较大的文件开销。文章质疑这种设计是否真正有效解决元数据问题，并指出其在实际应用中的局限性。
-
-总结来说，Iceberg规范虽然在概念上试图提供解决方案，但其具体实现和文件格式设计存在不足，未能充分应对大数据湖的元数据管理挑战。</p>
+                    <p>文章讨论了缓存替换策略，特别是随机驱逐（random eviction）和LRU（最近最少使用）的比较。虽然LRU通常表现更好，但随机驱逐在某些情况下，尤其是循环过大导致缓存不合适时，表现相对稳定。文章提出了一种新的策略，即在两个随机选择中使用LRU（2-random），发现其在较大缓存中表现接近LRU，甚至更好。实验显示，LRU在小缓存中略优，而2-random在大缓存中表现更佳。此外，文章还探讨了伪LRU策略，因其实际实现成本较低。总体而言，2-random是一种在大缓存中具有竞争力的策略，特别是在实际应用中伪随机版本的实现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Iceberg 表格格式在实际应用中的优缺点以及是否值得从 Hive 表迁移到 Iceberg
+                    <div class="comments-summary">主要讨论点：随机选择策略在缓存和负载均衡中的应用及其效果
 
 不同观点：
-• **chojeen 的观点**：认为对 Iceberg 的批评有些过度。他指出，Iceberg 的并发系统在典型的 Spark 应用中（如微批处理和少量维护任务）表现良好。对于那些需要极高并发或特殊需求的用例，可能更适合使用内存云数据库或传统的 RDBMS，而不是 Iceberg。Iceberg 及其类似格式是为了特定用例设计的，不应被视为万能解决方案。
+• [bob1029] 认为使用两个随机选择（2-random）并仅在这些选择中使用LRU（最近最少使用）策略可能是一个有效的改进。他还指出，k-random策略可能比2-random更好，类似于进化算法中的锦标赛选择机制，可以通过调整锦标赛大小来控制选择压力。此外，1v1的 tournament 非常廉价，不需要维护全局排序。
 
-• **fifilura 的观点**：正在考虑是否将他们的技术栈从 Hive 表迁移到 Iceberg。他认为 Iceberg 在技术上更先进，解决了 Hive 的许多问题，但担心失去 Hive 表的灵活性，例如轻松重创表或编辑数据。他建议可能采用混合方式。他还指出，Iceberg 更像是 Hive 表的升级版，而不是解决所有数据库问题的万能药。
+• [pvillano] 对使用随机性来延缓性能悬崖（cliffs）表现出兴趣，并举例说明当循环访问n+1个对象而缓存只能容纳n个时，LRU策略会导致每次访问都出现缓存失效和驱逐，缓存变得无用，性能急剧下降。他认为2-random策略可以将这种性能悬崖转化为一个平缓的斜坡，并带有长尾效应。
 
-• **ozgrakkurt 的观点**：认为对 Iceberg 的批评是与其基本性质和广泛适用性不符的。他以 Parquet 为例，指出即使技术上不是最优，广泛使用和开放性使得某些格式依然流行。他认为可以通过外部索引和内存中的元数据等方法优化 Iceberg，且不应期望任何技术在所有场景下都是最佳选择。
+• [hinkley] 对2-random在负载均衡中比leastconn（最少连接数）策略更有效表示不解，但也承认在缓存中，2-random比其他启发式策略更有效。
 
 补充讨论：
-• **争议焦点**：Iceberg 是否适用于高并发和大规模数据处理场景，以及其相对于 Hive 表的复杂性和灵活性。
-• **技术权衡**：讨论了 Iceberg 的技术优势和潜在的复杂性增加，特别是在从 Hive 迁移时的权衡。
-• **优化潜力**：提到可以通过外部优化和混合方法来提升 Iceberg 的性能和灵活性。</div>
+• bob1029提到了k-random策略的潜在优势，并通过进化算法中的锦标赛选择机制进行类比，强调了随机选择策略的性能优势。
+• pvillano通过具体例子说明了缓存失效和性能悬崖的问题，并支持使用2-random策略来缓解这些问题。
+• hinkley对2-random在负载均衡中的优越性表示质疑，但未完全否定其在缓存中的效果。
+
+争议焦点：
+• 2-random策略在负载均衡中是否比leastconn更有效是讨论中的一个争议点，hinkley对此持怀疑态度，而bob1029和pvillano则更看好随机选择策略的潜在优势。
+
+总结：讨论主要围绕随机选择策略在缓存和负载均衡中的应用及其效果展开，参与者对该策略的具体效果和适用场景存在不同看法，尤其是在负载均衡中的应用上存在争议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44767888" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44743034" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -334,169 +478,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://supernuclear.substack.com/p/the-case-for-having-roommates-even" target="_blank">The case for having roommates even when you can afford to live alone</a>
+                    <a href="http://www.xdobry.de/tclsqueak/" target="_blank">TclSqueak – Program in Tcl the Smalltalk Way</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-08-02 14:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：合租生活的利弊与社会期待
-
-不同观点：
-• GregDavidson：认为合租生活有助于社交智力的成长，特别是在个人困难时期（如配偶去世）提供了支持。合租让他与一些室友建立了深厚的友谊，但也承认有些室友具有挑战性。
-• derektank：分享了与多个室友合租时，分摊烹饪任务的经历。虽然自己偏好独立生活，但认识到合租在共享烹饪和社会互动方面有其优势，并支持废除禁止SRO建筑物的法律以促进合租。
-• w10-1：指出合租可能带来的冲突，特别是在室友关系变化（如从单身到有伴侣）时，可能导致不可调和的矛盾。还提到合租可能导致隐私泄露和情感依赖问题，并质疑长期合租是否可持续。
-• 8f2ab37a-ed6c：关注在美国，成年人（特别是30或40岁以上）与室友合租是否会影响恋爱和吸引伴侣。质疑是否存在一种社会期待，即需要展示某种生活方式来吸引伴侣。
-• wussboy：强调“个人偏好”和“对自身有益”的区别。认为合租可能对个人成长有益，即使个人偏好是独居。
-• chistev、nixass：明确表示偏好独居，如果经济允许，不会选择合租，重视隐私和自主权。
-• jlarocco：认为个性在合租选择中起重要作用。虽然合租对一些人有益，但对他来说是不可接受的，他希望回家后能独处放松。
-• deadghost：有过合租经历，虽然总体上喜欢合租，但也遇到过不好的室友。没有体验过作者描述的共同烹饪和社交经历。
-• cpach：享受合租生活，认为独居很无聊。
-• Bradlinc：离婚后再次与室友合租，虽然最终选择独居，但现在认为如果找到另一个合租空间可能会更好。
-• tennisflyi：指出找到可靠、干净、友好的室友是合租的主要问题。
-• sunscream89：有在“有意的社区”生活经历，认为成熟和有能力的人可以成功地在合租环境中生活。强调需要共同努力和规则来维持这种生活方式。
-• Aurornis：认为合租可以提供社交和支持，但对于有家庭的人来说，家庭生活已经提供了这些好处。承认并非所有家庭都能很好地分担责任和社交。
-
-补充讨论：
-• 合租的利弊因人而异，有些人从中获得社交和情感支持，而另一些人则偏好独居的隐私和自主。
-• 个性、生活阶段和经济状况都会影响合租的选择和体验。
-• 合租中的冲突和挑战，如关系变化、隐私问题和室友依赖，是需要考虑的重要因素。
-• 社会期待和文化差异可能影响对合租的看法，特别是在恋爱和吸引伴侣方面。
-• 合租的成功与否很大程度上取决于找到合适的室友和共同努力维持良好的生活环境。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44767858" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tallysolutions.com/technology/introduction-to-unikernel-2/" target="_blank">Introduction to Unikernel: Building, deploying lightweight, secure applications</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: eyberg</span> |
-                    <span>评分: 15</span> |
+                    <span>作者: ofalkaed</span> |
+                    <span>评分: 14</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-08-01 14:22</span>
+                    <span>发布时间: 2025-07-30 22:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要介绍了一种名为unikernel的专用应用环境，其类似于租用的私人别墅，提供独占资源，不与其他应用共享。Unikernel是一种紧凑、单应用的虚拟机，能提升速度、效率和安全性。传统操作系统如Linux和Windows设计为同时运行多个应用，导致不必要的资源消耗。Unikernel通过将应用与操作系统合并为单一可执行映像，减少了这些开销，从而加快启动时间，降低内存消耗，并提升安全性。
-
-本文还比较了两种主要的unikernel类型：Nanos和Unikraft。Nanos允许创建可在多种云服务上运行的映像，而Unikraft依赖其专用的云结构以获得更好性能。最后，文章提供了创建和部署Nanos unikernel的步骤指南。通过使用OPS工具，用户可以简化映像和实例的创建过程。</p>
+                    <p>TclSqueak 是一个图形化的面向对象编程环境，专为 Tcl 语言设计，灵感来自 Smalltalk，特别是 Squeak 环境。它具有现代化的用户界面，支持实时反馈和 TclOO、XOTcl 等面向对象扩展，兼容 Tcl 8.6。其功能包括基于 SQLite 的代码库、静态类型语法检查器，以及对 Git 等版本控制系统的支持。此外，还提供了一系列视频教程，涵盖基础编程、调试、对象自省、版本控制、代码搜索与补全以及语法检查等内容。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Unikernels技术的潜力和实际应用
+                    <div class="comments-summary">主要讨论点：对编程语言Tcl及其现代性的评价
 
 不同观点：
-• [perbu] 认为Unikernels是一个有趣且具有周期性重新发现潜力的概念，类似于程序员不断重新发现函数式编程。他暗示Unikernels可能因为其潜在价值而每隔一段时间就会被重新提起和讨论。
-• [wiradikusuma] 则持怀疑态度，认为Unikernels的实际应用仍面临挑战，特别是对于像Quarkus或Spring这样的Java框架，他质疑是否能有效地将这些框架与Unikernels结合使用。
+• **支持Tcl的观点**：
+   - **简洁高效**：doublerabbit认为Tcl是目前他觉得最“理性”的语言，能够很好地完成工作，且没有受到企业化或官僚化的影响。
+   - **怀旧与实用**：doublerabbit表示，相比2000年代后的语言，Tcl让他感觉更加简洁直接，没有受到繁文缛节的束缚。
+
+• **对现代语言的批评**：
+   - **现代语言复杂且受限**：doublerabbit认为2000年代后的编程语言大多被企业文化影响，充满了不必要的复杂性（"red tape bullshite"），虽然这些语言流行，但并不符合他的编码风格。
+   - **例外：Ruby**：在一定程度上，Ruby和Tcl类似，相对简洁实用，是他能接受的少数现代语言之一。
 
 补充讨论：
-• [perbu] 的观点中隐含了对技术周期性发展规律的认识，可能意味着他认为Unikernels的实际应用虽然目前有难度，但未来可能会有突破。
-• [wiradikusuma] 的评论则反映了对当前技术限制的现实考虑，特别是对复杂Java框架的兼容性问题，暗示Unikernels在实际应用中还有很长的路要走。
-• 争议的焦点在于Unikernels技术的成熟度和其在实际开发中的可行性，尤其是在现代复杂框架中的应用。</div>
+• **编码风格的差异**：doublerabbit自称是一个“非正统”的程序员，暗示他的编码风格和主流开发者不同，这可能反映了对主流开发工具和语言的抗拒或不适应。
+• **争议焦点**：现代编程语言是否因为企业化而变得过于复杂。这涉及到编程语言设计中的简洁性与功能性之间的平衡问题，以及开发者对这种平衡的不同偏好。
+
+</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44757249" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theartnewspaper.com/2025/08/01/robert-wilson-playwright-director-artist-obituary" target="_blank">Robert Wilson has died</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: paulpauper</span> |
-                    <span>评分: 69</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-08-02 02:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>罗伯特·威尔逊（Robert Wilson），这位以高度视觉化和风格化戏剧作品闻名的实验性剧作家、导演兼艺术家，于83岁去世。在长达六十年的职业生涯中，他与玛丽娜·阿布拉莫维奇、菲利普·格拉斯、劳瑞·安德森和Lady Gaga等艺术家合作，创作了许多经典作品。威尔逊的代表作包括“无声歌剧”《Deafman Glance》（1970）和与菲利普·格拉斯合作的史诗级作品《Einstein on the Beach》（1976），这些作品在全球剧院和音乐节中频繁上演。他的作品常以超长时长和大胆的视觉美学著称，结合简约舞台设计、创意灯光和投影技术。除了戏剧，威尔逊也是一位多产的视觉艺术家，创作了大量绘画、雕塑和装置艺术，并在全球多家博物馆展出。2010年代，他开始创作《Video Portraits》系列，其中包括与Lady Gaga和玛丽娜·阿布拉莫维奇的合作。威尔逊的艺术影响力深远，他的作品将继续作为其不朽的遗产。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：罗伯特·威尔逊（Robert Wilson）的艺术影响及作品评价
-
-不同观点：
-• **[dang]** 认为罗伯特·威尔逊对其他艺术家有深远影响，并分享了一个包含汤姆·威茨（Tom Waits）的纪录片片段，强调威尔逊作品中的精彩片段。他特别提到了一个难忘的时刻，显示出对威尔逊艺术表现力的赞赏。
-
-• **[sramsay]** 高度评价威尔逊为当代最具原创性的艺术家之一，特别提到了《沙滩上的爱因斯坦》（Einstein on the Beach）是他认为的二十世纪最伟大的戏剧作品之一。尽管威尔逊曾表示他的许多作品不应该被复排，但sramsay希望他的作品能够长久流传。
-
-• **[frereubu]** 分享了一个有趣的观察，提到有家庭带9至10岁的孩子观看威尔逊导演的《沙滩上的爱因斯坦》时，孩子们被深深吸引。这表明威尔逊的导演手法可能使复杂的歌剧音乐变得更加易于理解和接受。
-
-• **[wlevine]** 表达了对《沙滩上的爱因斯坦》的热爱，并分享了一个关于威尔逊的采访视频，形容采访内容非常疯狂，暗示威尔逊的个性和艺术理念独特且具有冲击力。
-
-• **[toomuchtodo]** 仅提供了一个维基百科链接，未发表具体评价或观点。
-
-• **[addaon]** 澄清了讨论中的一个潜在误解，指出此罗伯特·威尔逊是剧作家，而非多年前去世的作家罗伯特·安东·威尔逊。
-
-补充讨论：
-• **争议焦点**：目前讨论中未出现明显争议，但有提到威尔逊本人对其作品是否应被复排的态度，这可能成为未来讨论中的一个潜在分歧点。
-
-• **论据和例子**：
-  - 不同用户分享了与威尔逊相关的视频和采访链接，提供了具体例子来支持他们对威尔逊艺术影响的看法。
-  - frereubu的评论特别指出了威尔逊作品对儿童的影响，这是一个独特的观察角度，强调了威尔逊作品的广泛吸引力。
-
-• **讨论关系**：
-  - 各个评论之间没有直接的争论或反驳，主要是分享个人观点和对威尔逊作品的欣赏。
-  - 用户之间通过分享不同的资源（如视频和采访）丰富了对威尔逊作品的讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44764568" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.washingtonpost.com/world/interactive/2025/gaza-war-destruction-aerial-airdrop/" target="_blank">Rare aerial imagery shows displacement and destruction in Gaza</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jbegley</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-08-02 23:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44772661" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44740034" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
