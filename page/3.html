@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-11 09:08 (北京时间)
+            最后更新时间: 2025-08-11 12:03 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,47 +61,253 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.sweet.security/blog/ecscape-understanding-iam-privilege-boundaries-in-amazon-ecs" target="_blank">ECScape: Understanding IAM Privilege Boundaries in Amazon ECS</a>
+                    <a href="https://mill-build.org/blog/14-bash-zsh-completion.html" target="_blank">Writing simple tab-completions for Bash and Zsh</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: eyberg</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-08-06 22:16</span>
+                    <span>作者: lihaoyi</span> |
+                    <span>评分: 199</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-08-10 09:50</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了Amazon ECS中IAM权限边界的问题，特别是在EC2实例上运行不同权限级别的任务时可能出现的跨任务凭据泄露风险，称为“ECScape”。在一个EC2主机上，低权限任务可以通过滥用ECS内部协议获取高权限任务的AWS凭据，从而提升权限。这种风险源于任务通过本地元数据服务获取凭据的机制。为减轻这种风险，建议避免在同一EC2实例上混合部署高权限和低权限任务，考虑使用AWS Fargate实现任务隔离，限制IMDS访问，并实施最小权限原则。文章还介绍了发现该问题的背景和一些缓解措施。</p>
+                    <p>本文介绍了如何为Bash和Zsh编写简单的Tab自动补全功能，解决了两种 shell 不同的API问题，并提供了在Mill构建工具中的应用示例。基本思路是编写一个生成补全选项的函数（如`_generate_foo_completions`），然后分别为Bash和Zsh创建特定的补全函数（如`_complete_foo_bash`和`_complete_foo_zsh`），通过`COMPREPLY`和`compadd`将结果返回给shell。文章还提供了将这些代码集成到shell配置文件（如`~/.bashrc`和`~/.zshrc`）的步骤，并展示了如何在Mill工具中自动完成这些配置。最终实现跨平台的Tab自动补全功能，包括对补全项的描述支持。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：ECS on EC2 的安全边界问题
+                    <div class="comments-summary">主要讨论点：[不同shell环境下自动补全功能的实现方式与用户体验]
 
 不同观点：
-• 观点一：EC2 虚拟机是一个安全边界，而容器不是。  
-  - 支持方：[RainyDayTmrw]  
-  - 论据：ECS on EC2 的设计预期就是将 EC2 虚拟机视为安全边界，容器本身并不构成安全边界。这是符合 AWS 架构设计的原则的，即虚拟机提供一个隔离层，而容器则共享主机资源。  
-  - 例子：在传统虚拟化环境中，虚拟机之间通过虚拟化技术进行隔离，而容器通常依赖操作系统的内核特性，因此隔离性较弱。
+• **fish的自动补全优势**  
+  - 支持通过`fish_update_completions`解析man page自动生成补全文件  
+  - 补全语法简单（如`complete --command curl`示例），官方文档足够  
+  - 用户可手动编写补全规则并提交上游  
 
-• 观点二：容器也应被视为一种安全边界，特别是在多租户环境中。  
-  - 支持方：[SecureFirst]  
-  - 论据：尽管容器依赖于主机的内核，但通过适当的安全措施（如用户命名空间、seccomp、SELinux 等），容器也可以提供足够的安全隔离。因此，简单地将容器排除在安全边界之外可能是不准确的。  
-  - 例子：一些企业使用容器技术在多租户环境中运行敏感工作负载，依赖的就是这些增强的安全特性。
+• **bash/zsh的补全痛点**  
+  - 过度“智能”的补全逻辑可能干扰用户习惯（如阻止文件名补全）  
+  - 与肌肉记忆冲突的UX设计（如限制非法中间输入）  
+  - 争议焦点：是否应默认回退到文件名补全  
 
-• 观点三：安全边界应根据具体使用场景定义。  
-  - 支持方：[CloudNativeGuy]  
-  - 论据：在某些特定场景下，例如使用 AWS Fargate 或类似的无服务器容器服务，安全边界会有所不同。此时，用户无需管理底层基础设施，安全边界更多依赖于平台的隔离机制。因此，安全边界应该根据具体的使用场景和技术栈来定义，而不是一概而论。  
-  - 例子：Fargate 提供了隔离的执行环境，减少了用户对底层基础设施的依赖。
+• **工具与库的替代方案**  
+  - `jdx/usage`可集成clap生成补全/argparse/manpage（但迁移成本存疑）  
+  - `fx.wtf`实现JSON字段的bash/zsh自动补全  
+  - 争议：是否需要标准化标志或库（如argparse内置补全）  
+
+• **轻量级实现案例**  
+  - ksh通过数组定义补全（如`complete_kill_1`数组）  
+  - zsh利用内置函数（如`_describe`）快速编写补全脚本  
+  - ssh主机名补全的进阶实践（结合环境变量和Python脚本）  
+
+补充讨论：  
+- 小众shell需求（如tcsh用户呼吁更多支持）  
+- 跨平台差异（bash on OSX/zsh on Linux的影响）  
+- 开发者工具建议：是否需构建DSL和转译器简化补全开发  
+- 调侃观点：LLM的出现部分源于shell语法复杂性</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44854035" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://rachelbythebay.com/w/2025/08/03/scope/" target="_blank">Squashing my dumb bugs and why I log build IDs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wglb</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-08-07 15:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于C++中`std::optional`的静态检查与动态检查的优缺点，以及C99中`if`语句作用域的变化]
+
+不同观点：
+• **支持静态检查的观点**  
+  - `clang-tidy`的静态控制流敏感检查可以在编译时强制要求检查`std::optional`的值是否有效，从而避免运行时错误（如`!ua()`的bug）。  
+  - 静态检查在大多数情况下比手动实现的动态检查更简单、更精确。  
+  - 提到`std::expected`（C++23）可以作为错误传递的替代方案，并指出`clang-tidy`正在支持对其的类似检查。  
+
+• **关于动态检查的局限性**  
+  - 动态检查可能无法捕捉某些分支未被执行的bug，因为其依赖运行时输入。  
+  - 静态检查可能无法很好地处理变量突变的情况。  
 
 补充讨论：
-• 关于 ECS 和 EC2 的隔离机制的争议点主要集中在容器是否足够安全以作为安全边界。部分讨论者认为 EC2 虚拟机提供了更强的隔离性，而另一些人则指出通过适当配置，容器也可以达到类似的安全效果。
-• 另一个值得注意的点是不同 AWS 服务（如 EC2 和 Fargate）之间的安全边界差异，以及这些服务在不同场景下的适用性。
+• **C99中`if`语句作用域的变化**  
+  - 提到C99引入了`if`语句的块作用域（不同于C89），并通过一个巧妙的代码示例（`int c99()`函数）展示了如何在不使用预处理器的情况下检测C99支持。  
+  - 示例代码利用了枚举的作用域规则，但指出在非严格编译器（如TCC）上可能行为不一致。  
 
-</div>
+争议焦点：  
+- 静态检查与动态检查的优劣比较，尤其是在处理变量突变和分支覆盖时的表现。  
+- C99中`if`语句作用域变化的实际影响及其检测方法的可靠性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44818501" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44825658" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://wuu73.org/blog/aiguide1.html" target="_blank">How I code with AI on a budget/free</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: indigodaddy</span> |
+                    <span>评分: 212</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-08-09 22:27</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI模型使用与优化、免费资源获取、本地开发环境搭建
+
+不同观点：
+• [radio879的观点] 强调使用多种AI模型（如GLM-4.5、Kimi K2、Qwen3-Coder等）在代理环境中的有效性，并介绍了自己开发的辅助应用（https://wuu73.org/aicp），用于在不同AI聊天界面和IDE之间跳转，减少操作摩擦。该应用可以保存项目状态、自动扫描代码文件等，提升工作效率。同时，指出过度依赖API和大型模型会增加成本，而使用较小的模型和免费资源可以实现无限制的编码工作。
+
+• [andai的观点] 认为小型模型在处理简单任务时更有效，因为速度更快。与radio879不同，他更关注“能完成任务的最小模型”，并提出如果放弃代理模式，即使是100倍小的模型也能处理任务。他还提到将整个代码库放入提示中，避免文件系统操作，并测试廉价模型用于代码搜索。
+
+• [sublinear的观点] 认为所有这些AI辅助工具过于复杂，不如自己写代码更直接。
+
+• [yichuan的观点] 提出本地“Cursor-like”栈的潜力，完全在本地运行，无需云和API密钥。建议的设置包括Cursor CLI、本地内存层（如LEANN或Milvus）和本地运行的推理引擎（如Ollama）。虽然需要一些设置 effort，但能实现离线、私有、快速的开发环境。
+
+• [qustrolabe的观点] 认为有些人愿意为免费层放弃数据隐私，虽然自托管需要大量资源，但最终代码会开源，因此可以接受。
+
+• [joshdavham的观点] 同意在AI聊天界面解决问题和提出方案的效果通常优于代理框架（如Cline、Trae、Copilot等）。
+
+补充讨论：
+• 免费资源：[chromaton] 提到Google的Gemini提供高限额的免费访问；[reactordev] 推荐Continue.dev和ollama/lmstudio用于本地模型运行；[hgarg] 推荐Rovodev CLI，提供每天2000万个免费token。
+• 本地模型运行：[yichuan] 和 [xvv] 讨论了在本地运行模型的可行性和最佳选择，特别是内存和显存限制下的最佳模型。
+• 实际应用：[tonyhart7] 提到使用Kiro Code的SDD进行多模型切换；[bravesoul2] 推荐Windsurf的免费模型用于自动完成工作。
+
+争议焦点：
+• 使用大型模型与小型模型的优劣：radio879和andai对模型大小的选择和使用场景有不同看法。前者认为大型模型在代理环境中表现更好，而后者则偏向于小型模型以提高速度和效率。
+• AI工具的复杂性：sublinear认为AI辅助工具过于复杂，不如手写代码直接，与其他评论者对工具效率的肯定形成对比。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44850913" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/denizsafak/abogen" target="_blank">Abogen – Generate audiobooks from EPUBs, PDFs and text</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mzehrer</span> |
+                    <span>评分: 274</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-08-10 05:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Abogen是一个文本转语音工具，能够将ePub、PDF或文本文件快速转换为高质量音频，并生成同步字幕。它使用Kokoro-82M语音引擎，适用于制作有声书或社交媒体的配音。该工具支持Windows、Mac和Linux系统，提供了多种安装方式，包括通过脚本或pip安装。用户可以通过拖放文件、调整语速、选择语音和字幕样式等设置，轻松生成音频。Abogen还支持批量处理和多种输出格式，适合不同硬件配置的用户使用。如果在安装或运行中遇到问题，文档中也提供了相应的解决方案和提示。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：将文本转化为有声书的工具及其应用和挑战
+
+不同观点：
+• [m_sahaf] 提出一个整合Calibre-Web、Abogen和Audiobookshelf的管道方案，用于为听力障碍者提供有声书服务。
+• [dsign] 认为，虽然此类工具可用于私人用途，但作者使用这种方法生成有声书文件进行分发存在风险，因为部分读者对AI生成内容持抵制态度。他分享了自己雇佣口音独特的配音演员以增强书籍吸引力的经验。
+• [anotherpaul] 质疑工具能否生成高质量的有声书，尤其是与当前艺术水准竞争的长篇作品，指出角色扮演和方言等细节处理是目前的挑战。
+
+补充讨论：
+• [frumiousirc] 提供了技术反馈，指出运行环境问题并分享了解决方案，同时提到PDF转换中的视觉换行问题影响理解。
+• [gman83] 强调了对高质量旁白的要求，认为目前工具难以满足其需求。
+• [xtracto] 提出工具对非文本元素（如图表、图像）处理的不足，并询问是否存在能生成详细图像描述的开源神经网络。
+• [floppyd] 比较了不同TTS系统，认为Gemini 2.5 Flash TTS在短篇内容生成上更具优势。
+• [logicprog] 分享了使用Kokoro和abogen生成有声书的具体技术问题，如跳词和句子切分不当。
+• [amaccuish] 表示期待能从PDF生成格式良好的ePub的工具。
+• [8s2ngy] 指出了Kokoro处理句号和省略号等标点符号的问题。
+• [TOGoS] 提到演示视频没有音频，可能存在兼容性问题。
+• [numb7rs] 提醒注意工具名称在某些地区的冒犯性。
+• [lynx97] 建议增加DAISY格式输出以增强可访问性。
+• [poulpy123] 询问工具是否有API以实现移动端使用。
+• [nikolayasdf123] 幽默地询问是否可以选择特定名人声音进行文本朗读。
+
+争议焦点：工具生成的有声书质量是否能与专业配音演员媲美，以及读者对AI生成内容的态度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44853064" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.psu.edu/news/engineering/story/conversations-remotely-detected-cell-phone-vibrations-researchers-report" target="_blank">Conversations remotely detected from cell phone vibrations, researchers report</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: giuliomagnifico</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-08-10 18:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>计算机科学研究人员利用毫米波雷达传感器捕捉手机振动，通过适应大型人工智能语音识别模型，成功将振动解码为可识别的语音转录。实验在距离手机约3米处进行，转录准确率达到60%（词汇量上限为10,000）。该技术基于2022年一项可无线识别10个预定义词语的项目发展而来，使用适应性模型处理低质量的雷达数据。虽然转录存在误差，但结合上下文信息，部分对话内容仍可被推断出来。研究旨在提醒公众注意潜在的隐私风险，并提高对远程窃听可能性的警惕。该研究由美国国家科学基金会支持，发表于《Proceedings of WiSec 2025》会议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：通过非传统手段（如雷达、激光、摄像头）进行语音窃听的技术可行性及其实际效果。
+
+不同观点：
+• [lolc的观点]
+  - 认为通过测量语音震动进行窃听在实际操作中不太可行。需要非常接近目标，且在50厘米距离的准确率只有60%，在300厘米距离时准确率降至2%，与随机猜测相差无几。
+  - 对标题中的"远程"窃听表示怀疑，认为目前这种方法不如高指向性麦克风有效，尤其是在嘈杂环境中（如地铁）。
+  - 提出了一种可能性，即在嘈杂环境中使用隐藏在耳机中的雷达可能会有一定效果，但仍认为麦克风会表现更好。
+  - 讨论了耳机作为目标的情况，认为耳机由于尺寸小，震动可能更大，但表面积小可能导致信号不强。
+
+• [_trampeltier的观点]
+  - 认为通过摄像头检测植物或薯片袋的运动来重建声音的技术更令人印象深刻。
+  - 暗示这种基于视觉的技术可能比雷达方法更具创新性和有效性。
+
+• [Eisenstein的观点]
+  - 提到类似的激光技术，通过激光反射到一个物体上并转换成音频。
+  - 指出这些技术（激光、雷达）虽然方法不同，但都依赖于测量受声波影响的次级材料的运动来推断语音。
+  - 提供了一个参考链接，展示了激光麦克风的应用实例。
+
+补充讨论：
+• 争议焦点在于这些非传统窃听技术的实际可行性和效果。特别是雷达技术在不同距离和环境下的准确率和实用性受到质疑。
+• 不同技术（雷达、摄像头、激光）之间的对比，讨论了各自的优缺点以及在特定场景中的潜在应用。
+• 提出了对未来技术改进的可能性，以及在特定环境下（如嘈杂环境）不同技术的表现差异。
+
+总结来看，讨论围绕着非传统窃听技术的可行性、准确性及其在不同场景下的实际效果展开，同时涉及多种技术之间的比较和各自的优劣势。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44857100" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -145,53 +351,41 @@ Type.ai成立于2023年，团队规模为3人，位于纽约。公司鼓励多�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=pf3BxNq1cp4" target="_blank">My Dream Productivity Device Is Done – and It's Becoming a Kit [video]</a>
+                    <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Events" target="_blank">Events</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 47</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-08-06 23:31</span>
+                    <span>作者: aanthonymax</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-08-10 20:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文简要列出了与网站相关的多个链接和信息，包括关于网站的介绍、新闻发布、版权声明、联系方式、创作者信息、广告、开发者条款、隐私政策、安全政策、YouTube功能测试、NFL Sunday Ticket等内容，并注明版权归2025年Google LLC所有。</p>
+                    <p>这篇文章简要介绍了JavaScript中的事件处理。事件是系统中发生的动作，浏览器会通知这些事件，使开发者能够通过编写代码做出响应。文章讲解了事件的基本概念，包括什么是事件、如何使用`addEventListener()`设置事件处理器、以及为何不推荐使用内联事件处理属性。
+
+事件可以通过`addEventListener()`方法来监听，当事件触发时，指定的事件处理函数会被调用。例如，点击按钮后，背景颜色可以随机变化。文章还提到可以监听多种不同的事件，如`mouseover`、`keydown`等。通过示例代码，文章展示了如何为按钮的点击事件添加事件监听器，并演示了事件处理过程。
+
+总结：事件是浏览器中的信号，开发者可以使用`addEventListener()`来监听和响应这些事件。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕自制PDA设备及其在生产力提升中的作用展开的讨论，包括对设备功能、设计、实用性及市场定位的不同看法。
+                    <div class="comments-summary">主要讨论点：[事件在Web开发中的使用和重要性]
 
 不同观点：
-• Waterluvian：观察到有些人花费大量时间设置工作环境以提高生产力，但实际生产力并未显著提升。他们更多关注于“准备工作”的 meta 层面，而非实际执行任务。
-• PaulRobinson：理想中的生产力设备是现代版的 Psion 5MX，具备出色的键盘、合适的尺寸、现代化的屏幕和连接性，强调不需要多余的应用程序或复杂的功能，只需专注于基本的文本编辑和网络连接。
-• the__alchemist：从概念上赞赏该设备，但指出EPD显示屏的编程复杂性和延迟问题，认为这对用户体验有负面影响，建议使用常规显示屏以提高响应速度。
-• theamk：揭示该PDA基于ESP32和Arduino库开发，提供相关GitHub链接，并指出其实际上是一个“定制UI”而非完整的操作系统。
-• magarnicle：认为当前的“生产力”设备过于简单，无法解决根本问题。建议设计一个功能强大但屏幕小且不吸引人的设备，以减少不必要的使用。
-• magicmicah85：赞赏该设备的理念，但认为自己的生产力问题源于心理而非设备，因此不认为新设备能解决问题，反而可能增加不必要的复杂性。
-• wewewedxfgdf：表达对电子设备自制的向往，但承认缺乏相关技能。
-• cosmic_cheese：建议扩展设备尺寸以容纳全键盘，使其更适合写作任务，并提到现有的e-ink平板在键盘连接和系统流畅性上的不足。
-• WorldPeas：质疑为何许多标榜“生产力”的设备并未真正提升生产力，认为市场宣传与其功能不符。
-• protocolture：希望有一种价格低于50美元、具备键盘和WiFi功能的设备。
-• ZiiS：关注设备的价格，认为若价格过高可能影响购买意愿，并提到复杂手表可以从中国以低价购得，暗示对该PDA成本的比较。
-• qwerty456127：认为设备按键数量太少，影响使用。
-• RajT88：表达对该设备的兴趣，同时怀念过去多样化的移动设备市场，认为当前市场过于单一，主要由iPhone主导。
-• righthand：担心该项目在美国关税政策下可能面临的生存问题。
+• [jfagnani] 认为事件在Web项目中未被充分利用，可以替代专有框架功能，提供同步和互操作性优势。他列举了多种使用事件的场景，如上下文请求、悬念处理、错误边界等，并提到了Web Components Community Group的协议。
+• [Waterluvian] 认为状态和事件是驱动应用的两个核心，但在React等状态驱动的框架中，事件常被编码为状态，导致复杂性问题。他提到在React中使用事件总线来处理不想作为状态跟踪的事件。
+• [JSR_FDED] 对内联事件处理器的批评表示质疑，认为这种观点过于武断，并询问内联事件处理器为何被视为安全风险。
+• [h4ch1] 倾向于使用Svelte的状态管理（如$state和$effect）来避免自定义事件系统的复杂性，认为这减少了样板代码并提高了效率。
+• [Sephr] 建议在Web SDK API中优先使用EventTarget而不是自定义事件订阅模型。
 
 补充讨论：
-• 关于设备价格的讨论，部分用户关注其性价比及生产成本。
-• 对EPD显示屏的技术讨论，指出其在编程复杂性和用户体验上的潜在问题。
-• 对键盘设计的不同看法，有的用户强调全键盘的重要性，有的则关注按键数量和布局。
-• 对当前市场趋势的批评，认为生产力设备市场缺乏真正的创新和多样性。
-• 对关税政策可能影响设备生产和销售的担忧。
-
-争议焦点：
-• 生产力设备的实际效果：部分用户质疑这些设备是否真正提升了生产力，还是仅仅停留在准备工作的层面。
-• 设备的设计和功能取舍：例如键盘的实用性、显示屏的技术选择等，用户在这些具体设计上存在不同偏好和意见。
-• 设备价格与其功能和性价比之间的关系，部分用户认为高价设备应具备更多功能，但也有人希望设备保持简单并降低成本。</div>
+• [事件与状态的对比]：讨论中多次提到事件和状态在应用驱动中的不同角色和各自的优势。
+• [安全性和维护性]：JSR_FDED对内联事件处理器的安全性和维护性提出了疑问，这可能是一个争议点。
+• [框架选择的影响]：h4ch1的观点反映了框架选择（如Svelte）对事件使用方式的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44819057" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44858009" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -249,6 +443,44 @@ Type.ai成立于2023年，团队规模为3人，位于纽约。公司鼓励多�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.sweet.security/blog/ecscape-understanding-iam-privilege-boundaries-in-amazon-ecs" target="_blank">ECScape: Understanding IAM Privilege Boundaries in Amazon ECS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: eyberg</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-08-06 22:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了Amazon ECS中IAM权限边界的问题，特别是在EC2实例上运行不同权限级别的任务时可能出现的跨任务凭据泄露风险，称为“ECScape”。在一个EC2主机上，低权限任务可以通过滥用ECS内部协议获取高权限任务的AWS凭据，从而提升权限。这种风险源于任务通过本地元数据服务获取凭据的机制。为减轻这种风险，建议避免在同一EC2实例上混合部署高权限和低权限任务，考虑使用AWS Fargate实现任务隔离，限制IMDS访问，并实施最小权限原则。文章还介绍了发现该问题的背景和一些缓解措施。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于EC2实例中工作负载安全性的讨论，特别是ECS和EKS实例的安全性]
+
+不同观点：
+• [第一种观点] BeastMachine认为在EC2实例中保护工作负载并不特别，无论是否使用ECS或EKS都可以实现相同的安全措施。
+• [第二种观点] RainyDayTmrw提出在ECS on EC2的场景下，EC2虚拟机是安全边界，而容器本身并不具备这一特性，这是预期的行为。
+• [其他重要观点] ranger_danger分享了关于IAM权限管理的困难经历，指出在实际操作中，精确分配权限是一项复杂且耗时的任务。
+
+补充讨论：
+• 争议焦点：BeastMachine和RainyDayTmrw之间的讨论集中在EC2实例和容器之间的安全边界定义上。BeastMachine认为安全措施是通用的，而RainyDayTmrw则强调了EC2虚拟机作为安全边界的重要性。
+• 实际操作困难：ranger_danger的评论突出了IAM权限管理在实际应用中的复杂性，特别是在需要精确控制权限的情况下。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44818501" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://github.com/mendableai/open-lovable" target="_blank">Open Lovable</a>
                 </h3>
                 <div class="story-meta">
@@ -288,271 +520,6 @@ Type.ai成立于2023年，团队规模为3人，位于纽约。公司鼓励多�
 • 对工具功能的不同需求和期望，例如对React应用转换和最小化JS的需求。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44854120" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/liquidmetal-dev/flintlock" target="_blank">Flintlock – Create and manage the lifecycle of MicroVMs, backed by containerd</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Palmik</span> |
-                    <span>评分: 49</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-08-10 15:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Flintlock 是一个用于创建和管理微虚拟机（MicroVMs）生命周期的服务，支持 Cloud Hypervisor 和 Firecracker 虚拟机监控器（VMMs）。它最初由 Weaveworks 开发，现由社区维护，是 Liquid Metal 项目的一部分，可通过 Cluster API Provider Microvm 进行编排。Flintlock 通过 gRPC 或 HTTP API 实现微虚拟机的创建、删除和生命周期管理，支持使用 OCI 镜像和 cloud-init 等配置元数据，并即将支持 CNI 网络配置。此外，它还提供 Prometheus 指标收集功能。项目文档提供了入门教程和贡献指南，兼容多个版本的 Firecracker 和 Cloud Hypervisor，采用 MPL-2.0 许可证。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕"Backed by containerd"及相关技术概念的 confusion 和新技术的出现
-
-不同观点：
-• [rzzzt 的观点] 认为 "Backed by containerd" 这一表述令人困惑，直到查阅文档后才明白其具体用途。他指出，containerd 用于镜像拉取等任务，而不是作为容器运行时。他提供了一个文档链接来支持自己的理解，并暗示文档对澄清概念有帮助。
-
-• [ofrzeta 的观点] 首次听闻 "Cloud Hypervisor" 技术，感叹在当前领域中跟上所有新技术的进展非常困难。这表明新技术层出不穷，增加了学习和适应的挑战。
-
-补充讨论：
-• rzzzt 引用的文档片段解释了 containerd 的具体功能，特别是它不作为容器运行时使用，而是用于其他目的（如拉取镜像）。
-• ofrzeta 提到的 "Cloud Hypervisor" 是一个新的技术，反映出在云计算和虚拟化领域，技术更新速度快，专业人士需要不断学习和适应新工具。
-
-争议焦点：
-• 对于 "Backed by containerd" 的表述存在理解上的困难，rzzzt 认为文档可以更好地澄清这一点。
-• 新技术（如 "Cloud Hypervisor"）的快速出现使得保持技术更新成为一个挑战，不同背景和经验的人可能对此有不同看法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44855868" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://research.eye.security/consent-and-compromise/" target="_blank">Abusing Entra OAuth for fun and access to internal Microsoft applications</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: the1bernard</span> |
-                    <span>评分: 315</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-08-09 21:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讲述了作者如何意外获取微软内部22个服务的访问权限。作者在写文档时，注意到微软的短链接服务aka.ms，并好奇访问其主页，发现一个登录界面。经过多次尝试，作者通过一个多租户配置错误的工程中心应用，成功访问了微软内部工程门户，查看到大量敏感信息。该问题源于Entra ID在多租户应用中的认证和授权处理不当，导致外部用户可通过同意提示获取内部访问权限。作者随后向微软安全响应中心报告了该问题，并探讨了其他可能受影响的微软服务。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：微软Entra ID及相关云服务的文档和安全性问题
-
-不同观点：
-• Contortion和Too认为微软的Entra ID文档混乱、难以理解，尤其是OAuth2配置方面，文档充斥着难以理解的术语和无用的链接，导致开发者只能盲目尝试。
-• Medhir作为前微软项目经理，指出了多租户应用授权中的潜在问题，并提供了更详细的验证建议，强调仅验证租户可能导致安全漏洞。
-• Beoberha强调了Entra的复杂性以及仅依赖认证 token 作为唯一安全层的风险，认为网络安全应受到更多重视。
-• Muststopmyths对云服务的整体安全性表示怀疑，尤其对内部应用可从外部网络访问感到不解。
-• Bobbyraduloff关注Windows构建服务器上的漏洞，认为即使是非零日漏洞，也可能造成严重影响。
-• Keyframe对微软整体的安全实践提出批评，提到了近期发生的密钥泄露等事件。
-• Yyyk建议避免使用Entra进行授权（AuthZ），认为自建授权系统更安全。
-• Denysvitali和Moi2388批评微软安全漏洞的奖励机制以及Entra ID在多租户应用管理中的不足。
-• Victor106认为Okta比Azure更具优势，尽管价格更高，但安全性更好。
-• 9cb14c1ec0指出OAuth实现中常混淆认证和授权，导致类似问题。
-• Rootsudo认为该问题不仅影响微软，也影响使用微软365/Office 365的其他组织。
-• Firesteelrain建议微软采用更安全、经过验证的服务主体管道。
-• Fock关注该问题是否会有CVE编号，担心云服务提供商可能忽视此问题。
-
-补充讨论：
-• 文档问题：多个评论指出微软文档的混乱和不实用，导致开发者难以正确配置服务。
-• 安全问题：讨论中多次提到仅依赖认证token的危险性，强调网络安全的重要性。
-• Entra ID的多租户管理问题：Moi2388指出Entra ID不支持黑名单或白名单功能，增加了安全隐患。
-• 对云安全的整体质疑：部分评论对云服务的整体安全性提出质疑，尤其对微软的实践表示不信任。
-• 奖励机制的争议：对微软漏洞奖励机制的不满，尤其对于未支付奖励的情况。
-
-争议焦点：微软Entra ID文档的质量和云服务的安全性，特别是授权和认证的实现与管理。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44850681" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://world.hey.com/dhh/the-framework-desktop-is-a-beast-636fb4ff" target="_blank">The Framework Desktop is a beast</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lemonberry</span> |
-                    <span>评分: 196</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-08-08 20:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要介绍了Framework Desktop台式电脑的优异性能和独特设计。该电脑体积小巧（4.5升），运行安静，即使在高负载下也无噪音。它采用了AMD Ryzen AI Max 395+处理器，适合小型机身，性能卓越，尤其在多核工作负载下表现突出，比Beelink SER8和SER9更快。相比苹果M4 Max和M4 Pro，其多核性能分别快40%和50%。尽管在单核性能上不如苹果，但在实际使用中差异不大。Framework Desktop在价格上也具有优势，64GB RAM和2TB NVMe的配置售价1,876美元，而类似规格的Mac Studio售价高达3,299美元。总体而言，Framework Desktop在性能和性价比上都非常出色，尤其适合开发者使用Docker等多核工作流程。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AMD RDNA 架构、硬件设备的选择与比较、Framework Desktop的评价与性价比、Linux在企业环境中的应用、AI工作负载与硬件兼容性
-
-不同观点：
-• [Archit3ch] 认为 RDNA 3.5 缺乏 Matrix Cores（类似于Nvidia的Tensor Cores），而这些硬件加速器在机器学习（ML）工作负载中将变得越来越重要。相比之下，Nvidia在2022年推出了带有Tensor Cores的消费级显卡，而AMD的RDNA 4要到2025年才会在桌面端推出。对非ML工作负载的影响尚不确定。
-
-• [paolomainardi] 关注的是在企业环境中，Linux系统缺乏类似Apple硬件中固件级远程设备管理的功能，认为这是阻碍Linux在企业中推广的主要障碍。
-
-• [lvl155] 建议AMD推出更高性能的桌面级芯片，并提出将两个桌面级芯片放在一块主板上的设想，以提高计算能力。
-
-• [ilaksh] 对Framework Desktop和GMKtec AI Mini Ryzen AI Max+ 395 128GB mini PC进行了比较，质疑两者在硬件和价格上的差异，并询问是否有人进行过直接对比。
-
-• [Kirth] 对AMD芯片与M4 Max的比较感到困惑，不确定这是否意味着AMD芯片在性能上已经达到同等水平，以及这对设备上的LLM（大语言模型）意味着什么。
-
-• [politelemon] 对Framework Desktop以较低价格实现高性能表示好奇，并询问为什么普通用户无法通过类似方式在PCPartPicker上组装出类似的机器。
-
-• [jamesgill] 对Framework Desktop持批评态度，认为其更像是一种噱头营销，性价比不高，且没有显著区别于其他桌面电脑的特点。
-
-• [fmajid] 取消了Framework Desktop的订单，转而购买HP Z2 Mini G1a，原因是希望替代Mac Studio，并对Apple的软件质量不满。虽然HP更贵，但具备ECC RAM和10G Ethernet等优势。
-
-• [ashleyn] 关注AMD GPU在生成式AI工作流中的兼容性问题，认为目前大多数AI工作流都依赖于CUDA，AMD GPU在这方面可能存在劣势。
-
-• [kristianp] 提到Framework Desktop的图形卡具有一定的灵活性，可以通过移动主板到不同机箱并使用PCIe插槽来安装外部GPU，但高性能显卡可能会受到带宽限制。
-
-• [damonll] 建议在Mac上使用Orbstack作为引擎以获得更好的性能，认为这比Docker快至少两倍。
-
-• [Xenoamorphous] 表达了对硬件评测和性能指标（如bogomips）的不在乎，可能代表了一部分不关注技术细节的用户观点。
-
-• [ThinkBeat] 认为相关评论像广告，可能对内容的真实性或偏向性表示怀疑。
-
-• [Jtsummers] 对Framework Desktop的定位提出质疑，认为在桌面电脑市场，用户已经有很多选择，而Framework Desktop在可修复性方面不如其笔记本产品，甚至不如其他桌面电脑。这与其DIY梦制造商的品牌形象不符。
-
-• [dustingetz] 认为Framework Desktop在2000美元的价位上提供了相当高的计算性能。
-
-补充讨论：
-• 争议焦点：Framework Desktop的性价比和定位是讨论中的一个争议点。部分用户（如jamesgill）认为其更像噱头，而其他用户（如dustingetz）则认为在这个价位上性能出色。
-• 不同设备间的比较：多个评论提到了不同硬件设备之间的比较，如Framework Desktop与GMKtec mini PC、HP Z2 Mini等，显示出用户在选择硬件时的多样化需求和考虑因素。
-• AMD与Nvidia在硬件加速器上的差距：Archit3ch强调了AMD在硬件加速器方面的落后，而Nvidia和Apple已经在这方面有了显著进展，可能影响未来ML工作负载的表现。
-
-</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44841262" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/jxmnop/status/1953899426075816164" target="_blank">Curious about the training data of OpenAI's new GPT-OSS models? I was too</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: flabber</span> |
-                    <span>评分: 199</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-08-09 21:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章提到在x.com网站上，某些与隐私相关的浏览器扩展程序可能会导致问题。建议用户禁用这些扩展程序，然后重试访问网站。文章提醒用户不必担心，可以尝试再次操作。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对一项涉及编程语言生成模型分析的评论及其相关争议
-
-不同观点：
-• ComputerGuru认为该分析缺乏严谨性和科学性，指出没有提供如何生成1000万个“随机示例”的细节，且在发现分类器可能出错后仍继续使用数据。他强调如果自己在分析中发现异常，会认为整个输出和方法不可用，直到找出问题所在。
-• jdfr则关注分析中的结果，特别是Perl语言在生成文本中出现的频率，认为这反映了Perl的灵活性而不是训练数据的实际情况，并通过提供相关链接支持其观点。
-• k310提到访问某些图像需要登录，并表示不愿意为此付出额外努力，类似于对访问限制的抱怨。
-
-补充讨论：
-• orbital-decay提到在没有可读性训练/约束的情况下，模型输出从英语逐渐变为“Neuralese”的现象，并解释这是奖励机制的自然结果。
-• greenchair质疑模型是否仅通过强化学习训练来解决特定任务，并询问是否已达极限。
-• esperent对“Neuralese”这一术语不理解，并寻求解释。
-• james-bcn表示对分析过程不理解，请求他人解释。
-• ma2rten推测模型在后期训练中被训练来响应提示，而不是重现提示本身，因此在空提示情况下会输出异常。
-• flabber询问如何访问未被限制的分析版本。
-• puttycat和revskill对OpenAI模型不再说英语的说法表示困惑，寻求解释。
-• pinoy420提到模型在处理版权内容方面的能力，并分享了一个具体案例。
-
-争议焦点：
-- 分析的科学严谨性和数据可靠性。
-- 对模型输出中特定编程语言出现频率的合理解释。
-- 对“Neuralese”概念的理解和定义。
-- 访问受限内容的解决方案。
-- 模型在不同提示下的行为及其解释。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44850260" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://melonking.net/" target="_blank">Melonking Website</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thecsw</span> |
-                    <span>评分: 129</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-08-10 03:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是一个欢迎页面，带有复古网络风格。页面提到用户即将离开“信息高速公路”，并建议启用自动播放音频，推荐使用Firefox浏览器以获得最佳体验。页面背景音乐为johnny_ripper的《by the sea》，整体氛围轻松愉快，充满怀旧感，属于一个个人或趣味网站的入口。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对复古风格网站的评价和讨论
-
-不同观点：
-• [PenguinRevolver] 认为网站周一关闭的设计很愚蠢，类似于Steam的周二维护，但提到可以通过技术手段绕过。
-• [throwanem] 拒绝参与类似melonking的网站活动，表达对这种网站不感兴趣。
-• [Rendello] 分享了一次遇到类似新潮复古网站的经历，提到该网站有动画效果，比如语言切换动画。
-• [neom] 对网站使用iframes等复古元素表示赞赏，并讨论了网站用户是经历过旧互联网的人还是重新创造旧互联网的年轻人。
-• [userbinator] 提到对网站内容的预期错误，指出网站与"melon"字面意思无关，带有幽默感。
-
-补充讨论：
-• [fleebee] 对论坛和留言板的活跃感到温暖，认为有一种树屋的氛围。
-• [YeGoblynQueenne] 强调网站没有无限滚动和AJAX，但 back 按钮有效，认为这是旧互联网的风格。
-• [uncircle] 对网站在Firefox上表现良好表示赞赏，认为互联网因此变得很酷。
-• [crtasm] 分享了自己在Rhizome上的艺术家简介，表明该网站起源于一个周末主页项目。
-• [okonomiyaki3000] 认为这是真正的万维网，应该有的样子。
-• [treetalker] 提供了关于"Fav Hyperlinks"页面上链接的位置信息。
-• [camgunz] 提到自己最喜欢的类似网站是superbad.com，能让他回想起17岁时的感受。
-• [bharatgel] 简单表达了对网站设计的赞赏，称之为纯粹的天才。
-• [righthand] 提到网站可能会让CPU升温，暗示对网站技术性能的担忧。
-
-争议焦点：
-- 网站设计是否愚蠢（[PenguinRevolver] vs. 其他对复古网站持积极态度的用户如[fleebee]、[okonomiyaki3000]）。
-- 网站用户群体的身份问题，是旧互联网经历者还是重新创造者（[neom]）。
-- 网站技术性能问题，特别是CPU升温的担忧（[righthand]）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44852582" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
