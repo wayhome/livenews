@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-11 23:17 (北京时间)
+            最后更新时间: 2025-08-12 02:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,53 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://squadrick.dev/journal/going-faster-than-memcpy" target="_blank">Going faster than memcpy</a>
+                    <a href="https://dafoster.net/articles/2025/07/22/designing-software-in-the-large/" target="_blank">Designing Software in the Large</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: snihalani</span> |
-                    <span>评分: 111</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-08-11 04:59</span>
+                    <span>作者: davidfstr</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-08-11 14:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要讨论了在处理大容量二进制消息时，`memcpy` 操作在进程间共享内存复制中耗时较多的问题。作者通过性能分析发现，使用 `memcpy`（实际为 `memmove` 实现）在处理大于512KB的消息时效率不理想，因此尝试寻找更快的内存复制方法。
-
-文章详细分析了 `glibc` 中 `memmove` 的实现，特别是针对未对齐内存块的向量化优化（使用AVX指令集，每次复制32字节）。它解释了 `memmove` 相比 `memcpy` 能够处理内存重叠的优势，并描述了如何通过硬件的增强rep movs优化和非临时存储指令（NT）来提升性能。
-
-最终，作者通过理解底层实现和调优，探索了替代方案以加速内存复制操作。</p>
+                    <p>《Designing Software in the Large》一文讨论了大型可维护软件设计中的复杂性问题及其解决方法。复杂性表现为修改代码时牵一发而动全身（变更放大）、开发者需掌握大量信息（高认知负荷）以及不明确的修改需求（未知未知）。复杂性的原因包括依赖性（如代码间的强耦合）、重复代码、异常处理、继承和时间分解。为降低复杂性，应设计“深模块”，即通过小接口提供大量功能，减少模块间依赖。模糊命名、不一致和文档不足会导致代码晦涩（不直观），增加认知负荷。文章建议采取战略性方法，注重代码清洁和问题修复，而非仅关注新功能实现，以防止复杂性累积。使用一致的命名、代码风格和工具如自动格式化器有助于保持代码一致性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：内存复制操作的性能优化、正确性及其实现细节
+                    <div class="comments-summary">主要讨论点：软件设计中的复杂性、策略实施以及理论基础
 
 不同观点：
-• [Sesse__] 认为非临时指令（NT instructions）与操作的正确性无关，它们主要用于缓存管理，提示缓存系统不需要将数据保留在缓存中，可能完全跳过缓存或仅使用特定小区域。
-• [userbinator] 指出内存复制基准测试中的常见问题是没有在完成数据复制之前进行序列化访问，导致计时不准。他提到REP MOVS指令在具备ERMSB的CPU上应表现出色。
-• [mojo-ponderer] 对文章末尾图表的真实性提出质疑，指出不同数据块大小下传输速度的巨大波动不合理。
-• [Arech] 认为作者未明确如何控制硬件缓存，这使得结果的可靠性存疑。
-• [PaulHoule] 解释图表，认为优化复制仅在小缓冲区（4KB）下表现更好，而大缓冲区（如16MB）下与标准库复制性能接近。
+• [stereolambda] 认为在大型项目中保持良好的设计和意图非常困难，尤其是在面对大量贡献者补丁和Jira任务时。他指出，组织上强制执行战略是一个问题，且那些热衷于为组织制定规则的人可能并不是最合格的程序员。此外，自动工具（如linters）通常只关注表面的、局部的问题，从而支持小团队生产力阵营的观点。
+
+• [Warwolt] 对《软件设计哲学》一书持批评态度，认为该书尽管意图良好，但缺乏对已有丰富理论的参考。他将软件设计与科学理论发展和建模联系起来，强调精确描述事物的重要性。他批评了将复杂性仅归结为认知负荷的做法，认为这使得书中的内容和文章总结显得即兴且缺乏理论基础。
+
+• [runningmike] 对文章表示赞赏，并提到在为商业问题创建系统时，简单很快会变得复杂。他分享了一个免费书籍链接，为对工具感兴趣的人提供简化系统的建议。
 
 补充讨论：
-• [waschl] 提到零拷贝IPC（进程间通信）技术，建议发送方直接在共享内存中分配数据以避免完整链的memcopy操作，并询问这种优化在IPC中的标准做法及相关库。
-• [davrosthedalek] 质疑文章中提到的循环数据复制方法在处理重叠数据时的正确性，认为如果目标指针指向源数据内部，可能会覆盖未复制的部分。
-• [jesse__] 希望看到更多的性能对比，而不仅仅是文章末尾的小图表。
-• [coxley] 对项目名称"Shadesmar"表示赞赏，没有涉及技术讨论。
-• [EGreg] 对memcpy的实现机制感到困惑，认为只需指示起始点和长度，不明白为何CPU需要持续发出复制指令。
-• [brucehoult] 建议坚持使用`std::memcpy`，因其在性能和适应硬件架构方面表现优异，且不假设内存对齐。但提到在RISC-V机器上，手写向量化`memcpy`可能比标准库实现快2到3倍。
-• [dataflow] 误以为文章内容与c-blosc库相关。
-• [kvemkon] 提出是否可以利用DMA（直接内存访问）进行高效的RAM到RAM数据复制。
-• [adwn] 对多线程并行化复制数据的效率表示怀疑，认为除非在NUMA系统中，否则单核通常能饱和系统内存控制器的带宽，多线程优化超出一般memcpy的范围。
+• [Warwolt] 强调软件设计中的理论基础，尤其是与科学理论和数学理论的联系，对简单/复杂的定义提出了不同的看法，认为应关注结构的“大小”而非理解的难易程度。
+• [stereolambda] 提到了组织管理中的实际问题，尤其是规则制定者与实际编程能力之间的可能脱节，以及自动工具在处理复杂设计问题上的局限性。
+• [runningmike] 提供了一个实用资源，旨在帮助处理软件设计中的复杂性问题。
 
 争议焦点：
-• 内存复制操作的缓存管理和指令选择。
-• 内存复制基准测试的准确性。
-• 不同数据块大小下内存复制性能的巨大波动是否合理。
-• 多线程并行化在内存复制操作中的实际效果。</div>
+• 软件设计复杂性的定义及其理论基础：[Warwolt] 批评了将复杂性仅归结为认知负荷的看法，强调了理论基础的重要性，而其他评论者更关注实际应用和工具。
+• 组织管理与实际编程能力之间的矛盾：[stereolambda] 指出了在组织中规则制定者可能不是最佳程序员的问题，这涉及软件开发中的管理和执行层面的挑战。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44860847" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44864467" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -118,27 +106,196 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://publicdomainreview.org/collection/christening-of-lady-elisabeth-of-hesse/" target="_blank">Flowers of Fealty: Commemoration of the Christening of Elisabeth of Hesse (1598)</a>
+                    <a href="https://bscholl.substack.com/p/move-fast-and-dont-break-safety-critical" target="_blank">How Boom uses software to accelerate hardware development</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: prismatic</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-08-10 21:55</span>
+                    <span>作者: flabber</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-08-10 19:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了1598年工程师兼雕刻师Wilhelm Dilich创作的插图作品《Historische Beschreibung der Kindtauf des Fräuleins Elisabeth zu Hesse》（《黑塞的伊丽莎白小姐洗礼描述》），该作品记录了1596年黑森-卡塞尔公主伊丽莎白受洗时为期四天的盛大庆祝活动。活动包括烟火、骑士比武以及神话和历史角色的盛装游行，如汉尼拔、亚历山大大帝和朱利叶斯·凯撒等。Dilich在作品前言中谦逊地将自己比作古希腊哲学家第欧根尼，仅作为观察者记录这一盛事。他还将此作品献给黑森-卡塞尔的贵族，希望它能永久纪念这些欢乐时刻。
+                    <p>无法获取文章内容</p>
+                </div>
 
-此外，该手稿后来由一位不知名艺术家在1606年前补充了水彩花卉绘画，包括郁金香、紫罗兰和牡丹，这些增添似乎与原作形成对话。手稿中还有拉丁文诗歌祝福公主像花朵般茁壮成长，并结合了牧羊人与骑士比赛的场景。Dilich在文中将公主描绘为一位带来新生的丰饶女神，象征希望和复兴。</p>
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[XB-1超音速喷气机的研发意义及其商业前景]
+
+不同观点：
+• 支持者观点：
+  - XB-1是世界上第一架独立开发的超音速喷气机，具有历史性突破
+  - 仅50人的团队成功设计、建造并试飞，展示了技术实力
+  - 公司计划在5年内交付商用超音速客机，展示了雄心
+
+• 质疑者观点：
+  - 原型机与商用客机差异巨大（除速度外），难以证明商业可行性
+  - 仅进行6次突破音障测试后就退役，数据收集不足
+  - 更像是吸引投资者的展示，而非实质性的技术开发
+  - "vaporware"（雾件）疑虑：可能只是概念炒作
+
+• 中立观望观点：
+  - 希望公司成功，但对当前进展持保留态度
+  - 需要看到更多实质性进展才能判断真实性
+
+补充讨论：
+• 争议焦点：
+  - 原型机测试的充分性与商业化的关联性
+  - 公司资源分配的合理性（高投入vs.有限测试）
+  - 技术演示与真实产品开发之间的差距
+
+• 值得关注的后续发展：
+  - 公司是否能按计划在5年内交付商用产品
+  - 后续是否会公布更多测试数据和技术细节
+  - 投资者反应和资金持续情况</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44857643" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://aarol.dev/posts/zig-simd-substr/" target="_blank">Faster substring search with SIMD in Zig</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 147</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-08-11 09:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了如何在Zig语言中使用SIMD（单指令多数据）技术优化子字符串搜索，使其性能比标准库中的`std.mem.indexOf`提高约60%。作者基于Wojciech Muła的SIMD友好算法，通过提取目标字符串的首尾字符并利用AVX2指令集进行批量比较，大幅减少了内存访问次数。文章详细讲解了算法原理、Zig实现细节（包括使用`@Vector`和`@splat`等SIMD特性）以及最后的回退处理，并通过基准测试验证了性能提升。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Zig语言中使用SIMD优化子字符串搜索的优缺点及其在标准库中的适用性]
+
+不同观点：
+• [第一种观点：支持SIMD优化]
+  - 支持者认为子字符串搜索是一个基础操作，容易成为性能瓶颈，因此值得优化。
+  - 举例：广泛使用的子字符串搜索实现通常经过高度优化。
+  - 争议焦点：是否应将SIMD优化加入标准库。
+
+• [第二种观点：对SIMD优化的实用性持保留态度]
+  - 认为子字符串搜索在快速语言如Zig中很少成为瓶颈，因此不值得加入标准库。
+  - 争议焦点：优化是否真的能带来显著的性能提升。
+
+• [第三种观点：关注最新SIMD指令集的应用]
+  - 建议关注如AVX-512、SVE & SVE2或RVV等最新指令集，以获得更高性能。
+  - 举例：StringZilla项目中使用了K寄存器和非临时加载/存储操作。
+  - 争议焦点：是否应优先使用最新指令集而非传统SIMD。
+
+• [第四种观点：关注最坏情况下的性能]
+  - 指出在某些特定情况下（如搜索大量重复字符），算法可能退化为O(m*n)。
+  - 建议考虑如KMP算法作为后备方案以保证O(m+n)复杂度。
+  - 争议焦点：是否需要处理最坏情况下的性能问题。
+
+补充讨论：
+• [其他优化建议]
+  - 使用SIMD进一步优化循环内的字符串比较操作，而不仅仅是初步搜索。
+  - 考虑数据对齐以匹配缓存行大小，提升内存访问效率。
+
+• [语言与平台兼容性]
+  - Zig的SIMD操作是否足够透明以支持跨平台兼容性。
+  - 是否应添加更多SIMD内联函数以支持更复杂的SIMD算法。
+
+• [Unicode支持]
+  - 提问该优化是否适用于非ASCII字符（如Unicode）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44862414" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://opuslabs.substack.com/p/learn-reflect-apply-prepare" target="_blank">Learn, Reflect, Apply, Prepare: The Four Daily Practices That Changed How I Live</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: opuslabs</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-11 16:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44858645" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44865834" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bbc.com/news/articles/cjr11qqvvwlo" target="_blank">Wikipedia loses challenge against Online Safety Act verification rules</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: phlummox</span> |
+                    <span>评分: 49</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-08-11 16:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Wikipedia has lost a legal challenge against the UK's Online Safety Act rules, which could require the platform to verify user identities, impacting volunteer editors' privacy and safety. The Wikimedia Foundation sought a judicial review, arguing the rules are too broad and could mistakenly classify Wikipedia as a "Category 1" platform, subjecting it to stricter regulations intended for large social media companies. Although the High Court rejected Wikipedia's challenge, the ruling emphasized the government's responsibility to protect the platform. The decision leaves open the possibility of future legal challenges if the regulations significantly disrupt Wikipedia's operations. The UK government welcomed the ruling, stating it supports the Act's goal of creating a safer online environment.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英国《在线安全法案》对Wikipedia的影响及不同立场
+
+不同观点：
+• **支持法案的政府立场**  
+  - 政府欢迎高等法院的判决，认为法案有助于创造更安全的网络环境  
+  - 强调法案对所有人的保护作用（但被反驳为"仅保护部分人"）  
+
+• **反对法案的Wikipedia及用户立场**  
+  - 法案要求Category 1平台验证用户身份，威胁维基百科的匿名编辑模式（核心争议点）  
+  - 具体担忧：  
+    - 隐私和安全风险（vaylian强调自由互联网的价值）  
+    - 可能限制敏感内容（如政治丑闻、移民数据）的编辑和传播（bArray举例）  
+    - 实际效果适得其反：促使用户使用VPN绕过限制（bArray预测）  
+
+• **法案技术适用性质疑**  
+  - ndriscoll指出维基百科不符合Category 1定义（缺乏算法推荐系统）  
+  - mathiaspoint批评立法者误解互联网运作方式  
+
+• **激进反对意见**  
+  - 建议维基百科直接屏蔽英国访问（MattPalmer1086、josefritzishere）  
+  - jmclnx提出通过封锁施压可能获得豁免  
+
+补充讨论：  
+- 法案引发的连锁反应预测：未来政府可能废除法案、推动英国宪法制定（bArray）  
+- 互联网自由与监管的根本矛盾：vaylian指出法案"倒洗澡水连孩子一起倒掉"的弊端  
+- 争议焦点集中在对匿名编辑的冲击及法案实际执行效果</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44866208" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -153,8 +310,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: decide1000</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2025-08-11 10:10</span>
                 </div>
 
@@ -165,19 +322,85 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Mistral与生态系统的连接程度
+                    <div class="comments-summary">主要讨论点：开源模型生态中，Mistral等公司发布模型权重的做法及其与社区工具（如llama.cpp）的关系
 
 不同观点：
-• 批评观点：认为Mistral与生态系统"脱节"（disconnected），可能指其技术路线、社区互动或应用支持方面存在问题，但未提供具体案例
-• 质疑观点：用户用引号和感叹词表达惊讶，暗示这种"脱节"现象可能被低估或未被广泛认知
-• 潜在辩护观点：虽然未直接表达，但原评论的引号使用可能暗示对"disconnected"说法的保留态度
+• hodgehog11认为，虽然Mistral等公司免费发布模型权重值得赞赏，但他们将模型发布后，却让社区自行解决模型实现的问题，尤其是在llama.cpp经常出现问题的情况下。这使得社区在使用这些模型时面临困难。hodgehog11还提到，Ollama正在试图通过减少对llama.cpp的依赖，直接与训练模型的公司合作，以实现同步发布，解决当前的问题。
+
+• baggiponte对Mistral在生态系统中的“脱节”现象表示惊讶，似乎认同hodgehog11关于Mistral与其他社区工具和资源联系不紧密的观点。
 
 补充讨论：
-• 争议焦点在于如何定义和评估"连接程度"，缺乏具体指标说明
-• 讨论未涉及具体的技术或生态案例，停留在感性认知层面
-• "生态系统"具体指代范围不明确（开发者社区/企业合作/技术兼容性等）</div>
+• hodgehog11指出，llama.cpp经常破坏基本功能，导致其成为不可靠的合作伙伴，这是Mistral等公司减少对其依赖的原因之一。
+• Ollama的新策略是通过与训练模型的公司直接合作，实现同步发布（如GPT-OSS），以解决当前模型实现中的问题。
+• 评论中隐含的争议焦点在于，开源模型公司是否应更积极地参与和支持社区工具的开发和维护，以确保模型能够顺利被社区使用。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44862583" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://opensource.googleblog.com/2025/08/whats-new-in-iceberg-v3.html" target="_blank">Apache Iceberg V3 Spec new features for more efficient and flexible data lakes</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: talatuyarer</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-08-11 17:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Apache Iceberg V3通过创新设计解决了数据湖的核心挑战。主要改进包括：1）采用二进制删除向量（Roaring位图）实现高效的行级删除，显著提升CDC场景性能；2）引入默认列值功能，元数据级操作实现即时模式变更，避免大规模数据重写；3）增强数据类型支持（如VARIANT、时空类型）和纳秒级时间戳；4）新增行级血缘追踪，强化数据治理。这些特性共同推动开放数据湖仓架构发展，模糊了数据湖与数据仓库的界限。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Iceberg V3版本的优缺点及文档可读性
+
+不同观点：
+• [第一种观点] hodgesrm认为Iceberg V3的规范文档可读性不足，建议通过阅读Java API的Javadoc来理解。他提供了Javadoc的链接作为替代方案。
+• [第二种观点] talatuyarer则对Iceberg V3的新功能持积极态度，特别提到了删除向量和默认列值等特性，认为这些特性提高了事务效率和模式演变的便捷性。
+
+补充讨论：
+• 争议焦点在于文档的可读性与新功能的实用性之间的权衡。hodgesrm关注的是文档的易用性，而talatuyarer则更注重功能的实际价值。
+• 讨论中没有直接反驳，但两种观点分别从不同角度评价了Iceberg V3，形成了互补的视角。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44866677" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://max.engineer/failover-to-hi" target="_blank">Failover to Human Intelligence</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hakunin</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-11 16:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章《Failover to Human Intelligence》由Max Chernyak撰写，讨论了尽管AI技术日益强大，但人类监督和干预的必要性。作者担心如果AI系统出错，可能需要快速的人为干预，尤其是在复杂系统中。与人类编写的代码不同，AI生成的代码在出错时可能无人能完全理解或修复。即便AI能存储大量信息，人类仍需熟悉代码库以备不时之需。作者质疑完全依赖AI自我维护的可行性，特别是在AI服务器宕机的情况下。因此，他主张人类应继续参与代码的阅读、审查和编写，与AI协作而非被取代，以确保在需要时能够有效干预。这种人类与AI协作的模式比完全依赖AI更为可靠。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=44866544" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -192,8 +415,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: sbirulo</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 1</span> |
                     <span>发布时间: 2025-08-07 14:21</span>
                 </div>
 
@@ -204,7 +427,15 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：该评论对“物理模拟器”和“下落沙子模拟器”的命名提出了不同看法，并推荐了相关学习资源。
+
+不同观点：
+• 评论者认为“下落沙子模拟器”比“物理模拟器”更贴切，暗示后者可能过于宽泛或不够准确。
+• 评论者对这类模拟器表现出兴趣，并推荐了一个具体的学习资源（https://maxbittker.com/making-sandspiel），表明其对该领域的了解和推荐价值。
+
+补充讨论：
+• 虽然没有直接争议，但评论者提出的命名差异可能引发关于这类模拟器分类和命名的进一步讨论。
+• 推荐的资源链接为其他感兴趣的读者提供了深入学习的机会，可能成为讨论的延伸点。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=44824811" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -217,272 +448,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://magazine.sebastianraschka.com/p/from-gpt-2-to-gpt-oss-analyzing-the" target="_blank">GPT-OSS vs. Qwen3 and a detailed look how things evolved since GPT-2</a>
+                    <a href="https://mattwie.se/no-sleep-till-agi" target="_blank">Optimizing my sleep around Claude usage limits</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ModelForge</span> |
-                    <span>评分: 449</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-08-10 15:06</span>
+                    <span>作者: mattwiese</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-08-11 01:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>OpenAI最近发布了新的开源权重大语言模型gpt-oss-120b和gpt-oss-20b，这是自2019年GPT-2以来的首次。这些模型经过优化，可以在本地运行。文章分析了从GPT-2到gpt-oss的架构进步，包括与Qwen3的宽深比权衡、注意力偏置和MXFP4优化等细节。新模型依旧基于Transformer架构，主要改进来自数据和算法调整，而非重大架构变化。gpt-oss-20b可在消费级GPU上运行，而gpt-oss-120b则需要更高配置。文章还比较了GPT-2与gpt-oss的演变，讨论了去除Dropout等技术细节，并提及了刚发布的GPT-5。总体而言，新模型在保持Transformer优势的同时，通过算法优化提升了本地运行能力。</p>
+                    <p>作者为了最大化利用Claude Pro订阅服务，调整了自己的睡眠时间。由于Claude每五小时重置一次使用限制，作者借鉴单人航海者的短睡眠方式，每隔几小时小睡以适应Claude的使用周期。通过这种方式，作者在开发B2B SaaS项目时大幅提高了工作效率。尽管缺少REM睡眠可能有健康风险，作者认为这种方法有效帮助他在Claude使用限制内完成更多工作。他还计划应对Anthropic可能提高订阅费用的情况，甚至考虑设置警报以优化使用时间。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[GPT-OSS和Qwen3模型的性能比较及技术特点]
+                    <div class="comments-summary">主要讨论点：[是否应该调整睡眠时间以优化Claude使用限制]
 
 不同观点：
-• GPT-OSS的优势在于其优化的架构设计，如RoPE、SwiGLU等技术，以及MXFP4量化带来的高效性，使其能在消费级硬件上运行大型模型（如20B参数模型在16GB显卡上运行），降低了研究和开发的准入门槛。  
-• Qwen3在实际测试中表现更优，特别是在代码生成和逻辑推理任务上，如qwen3-coder能快速生成代码并执行复杂操作，而GPT-OSS在相同任务中表现较差甚至无法完成。  
-• GPT-OSS被认为更偏向于推理任务，而Qwen3在知识检索和代码生成方面表现突出，这可能反映了模型设计的不同侧重点。  
+• **支持调整睡眠时间**  
+  - [rappatic]认为每月多花180美元购买Claude Max比牺牲睡眠更划算  
+  - [mareko]分享个人经历，通过调整睡眠时间成功完成论文并进入理想博士项目  
+  - [__MatrixMan__]尝试过多阶段睡眠，认为时间连续性体验有趣（但最终因容错性差放弃）
+
+• **反对牺牲睡眠健康**  
+  - [TheCowboy]建议创建多个账号或用脚本自动化请求，批评睡眠剥夺的长期健康风险  
+  - [dalemhurley]强调充分休息能提高效率，推荐替代工具（GPT-5/Full.CX MCP）  
+  - [cookiengineer]用代码比喻警告"健康换金钱不可逆"，称周超50小时的工作不值得  
+
+• **技术解决方案派**  
+  - [ltbarcly3]提出用定时任务分割Claude使用时段  
+  - [dlcarrier]建议本地运行模型避免限流  
 
 补充讨论：
-• 争议焦点在于模型性能的对比，部分用户认为GPT-OSS在数学推理任务上表现优异（如接近DeepSeek R1的性能），而其他用户则强调Qwen3在实际应用中的高效和可靠。  
-• 技术细节争议：有用户对GPT-OSS的SwiGLU实现提出疑问，认为其代码中未明确体现4倍维度的扩展，可能存在理解或实现上的误差。  
-• 开源定义争议：有用户指出，仅提供模型权重并不等同于开源，需符合更严格的开源定义。  
-• 训练数据的影响：有用户提出疑问，GPT-OSS已训练2.1百万小时，进一步增加训练时间是否能显著提升性能，这一问题尚未有明确答案。</div>
+- 争议焦点：短期效率提升vs长期健康代价（[mareko]的成功案例 vs [cookiengineer]的警告）  
+- 幽默调侃：[judge123]称此为"年度最疯狂生产力技巧"，[rightrighton87]自嘲竞争压力  
+- 历史参照：[Duanemclemore]提及达芬奇睡眠法及计算机领域传统  
+- 极端案例：[000ooo000]直指原方案"完全非最优"，[plusfour]用简短语谴责这种行为</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44855690" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://uecker.codeberg.page/2025-08-10.html" target="_blank">Generic Containers in C: Safe Division Using Maybe</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: uecker</span> |
-                    <span>评分: 64</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-08-11 05:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何在C语言中实现类型安全的泛型容器，重点讨论了受Haskell启发的`maybe`类型。作者通过一个安全的整数除法函数示例，展示了如何使用`maybe`处理可能不存在的返回值（如除零错误）。文章详细解释了`maybe`的宏实现方式，并指出最初版本遗漏了对INT_MIN/-1溢出的检查。通过编译器优化和未定义行为检查，最终实现了一个被静态证明无溢出的安全除法函数。作者也指出这种方法虽然能提高安全性，但仍无法完全保证C程序的内存安全。文末提供了相关代码库链接供进一步实验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[C++中std::optional<int>的实现与C语言中类似功能的创造性实现]
-
-不同观点：
-• GCC生成与C++的std::optional<int>基本相同的汇编代码，但返回结果无法通过寄存器传递（内联函数可以解决此问题）。[nly]
-• 在C语言中实现类似功能时，可能会引发未定义行为，尤其是在错误处理中使用空指针时，尽管可以通过空指针消毒剂在运行时捕获。[nextaccountic]
-• 对在C语言中实现高级抽象的创造性方法表示赞赏。[BiraIgnacio]
-• 建议扩展功能，如maybe_divide的签名和操作集合，以提升易用性，并探讨其实现的便捷性。[yobbo]
-• 质疑为何不直接使用其他语言，认为在C中实现这些功能会引入不必要的复杂性，除非是出于兴趣或学习目的。[rowanG077]
-
-补充讨论：
-• 争议焦点在于在C语言中实现高级抽象的必要性和复杂性，以及是否应该直接使用其他语言。
-• 讨论中提到了实现细节（如汇编代码和未定义行为）和功能扩展的建议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44860908" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://bernsteinbear.com/blog/compiling-a-lisp-12/" target="_blank">Compiling a Lisp: Lambda lifting</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: azhenley</span> |
-                    <span>评分: 139</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-08-10 22:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了使用Python重写Ghuloum教程中的Lambda提升过程，原C版本有1200行代码，而Python版本仅300行。作者去除了S-expression读取器和指令编码，改为文本汇编。Lambda提升需要跟踪绑定变量、自由变量，以及递归过程中生成的代码。文章详细描述了如何处理`let`和`lambda`表达式中的变量绑定，区分自由变量和绑定变量，并提供了相应的测试案例。此外，文中还解释了如何处理基本运算符等内置函数，以及如何对`if`表达式进行递归处理。最终，通过一个示例展示了Lambda提升的具体实现方法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕编译器、lambda lifting技术以及LISP和Python在AI领域应用的讨论
-
-不同观点：
-• Jtsummers提供了受Ghuloum论文启发的三本编译器书籍，强调了不同编程语言（如Racket和Python）在编译器设计中的应用，并提供了书籍链接，特别是对实现过程的语言无关性进行了推荐。
-• WantonQuantum深入分析了Ghuloum论文中的“lambda lifting”技术，特别是如何处理复杂常量以及两种不同的实现方法：通过将常量提升到程序顶部和使用全局内存位置。
-• FrustratedMonky提出了一个与主题不完全相关的问题，询问为什么LISP没有成为AI模型的主要语言，而Python却成为了主流，推测可能与Python库的易用性和广泛的社区支持有关。
-• kazinator分享了在TXR Lisp编译器中实现lambda lifting的具体方法，详细描述了如何通过代码转换和load-time-value机制来实现这一技术，并提供了具体的VM指令和寄存器操作的示例。
-
-补充讨论：
-• 讨论中涉及了对lambda lifting技术的具体实现细节，包括不同的优化策略和在不同编译器中的实现方式。
-• FrustratedMonky提出的关于LISP和Python在AI领域地位变化的问题引发了一些思考，虽然没有在评论中得到完全解答，但指出了库生态和社区接受度在编程语言流行度中的重要性。
-• kazinator的回复展示了一个具体的编译器实现案例，提供了技术细节和实现过程，对于理解lambda lifting在实际编译器中的应用非常有帮助。
-
-争议焦点：
-• 主要争议点在于为什么LISP没有如预期那样成为AI领域的主流语言，而Python却取而代之。FrustratedMonky提出了这个问题，但没有深入解答，留下了开放性的讨论空间。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44858892" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.windowscentral.com/artificial-intelligence/former-google-exec-even-ceo-on-tech-chopping-block" target="_blank">Ex-Google Exec Says "The Idea That AI Will Create New Jobs Is 100% Crap"</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pjmlp</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-08-11 13:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>谷歌前高管莫·贾瓦德警告称，AI将取代包括CEO在内的所有工作岗位。尽管AI发展面临数据瓶颈，但已快速渗透职场，替代重复性工作。Salesforce等公司已用AI处理半数任务，微软研究显示作家、程序员等40种职业最易被取代。贾瓦德认为AI将全面超越人类，未来需实行全民基本收入。虽然AI可能导致失业潮，但也可能帮助改善工作生活平衡，将人类从繁重劳动中解放出来。多位科技领袖预测，AI将重塑就业市场和货币体系。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI是否创造新的就业机会，以及相关观点的争议。
-
-不同观点：
-• **AI创造新工作机会**  
-  - 用户[janitor77se]认为，自动化历史表明工作机会不会消失，而是会转型。AI不是通用人工智能（AGI），不会取代人类，而是会自动化流程并提高效率。企业可以通过AI扩展服务，创造更多收入来源，从而可能增加就业。
-  - 论据：历史上自动化并未导致大规模失业，而是改变了工作性质。
-
-• **AI不会创造新工作机会**  
-  - 用户[jqpabc123]引用“AI创造新工作机会是100%的废话”的观点，认为AI不会带来新的就业机会，类似大规模增税（如关税）也不会创造就业。
-  - 用户[throwawayoldie]进一步质疑AI能否解决气候问题，同时指出AI可能大幅增加能源消耗，间接影响就业。
-
-• **质疑利益冲突**  
-  - 用户[hooverd]提出，前谷歌高管可能因自身利益（如拥有AI公司）而支持AI创造就业的观点，暗示其言论可能存在偏见。
-
-补充讨论：
-- 争议焦点在于AI对就业的长期影响是积极的（转型与扩展）还是消极的（取代与减少）。  
-- 讨论还涉及AI的其他潜在影响，如能源消耗和气候问题，间接关联到就业和经济议题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44863633" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/Beariish/bolt" target="_blank">Show HN: Bolt – A super-fast, statically-typed scripting language written in C</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: beariish</span> |
-                    <span>评分: 136</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-08-10 17:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Bolt是一款高性能、实时优化、静态类型的嵌入式编程语言，采用C语言实现，具有快速编译、轻量化和易嵌入等特点。它支持丰富的类型系统，能够提前捕获错误，并可轻松与原生代码集成。Bolt依赖于C标准库和libm，提供文件和系统IO等模块，但这些可以灵活配置。目前，Bolt主要支持x64架构，并提供CMake构建系统生成静态库和CLI工具。尽管Bolt尚未稳定，可能存在编译器错误，但它在MSVC、GCC和Clang上基本功能正常。Bolt使用MIT许可证，并鼓励贡献者提交错误修复和优化，但新功能需经过充分讨论和论证。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕Bolt语言设计和实现的多个方面展开的讨论，包括性能优化、语法设计、嵌入式系统支持、错误处理以及与其他语言的比较。
-
-不同观点：
-• **性能优化和解释器设计**：
-  ◦ [haberman] 支持在Bolt的解释器中使用尾调用优化，并引用了相关博客文章，展示了这种技术如何在其他语言中提升性能。
-  ◦ [JonChesterfield] 则对尾调用优化持怀疑态度，认为直接在字节码中处理函数标识符可能更有效，并建议参考WASM解释器和Luajit的实现。
-
-• **语法设计和导入声明**：
-  ◦ [perlgeek] 反对将导入符号放在导入语句的首位，认为这样会掩盖符号的来源，建议参考Java、Python和Perl等语言的做法。
-  ◦ Typescript是一个例外，它采用类似Bolt的导入语法。
-
-• **嵌入式系统支持**：
-  ◦ [conaclos] 指出Bolt依赖双精度浮点数，不适合嵌入式系统，这类系统通常不支持浮点运算。
-  ◦ [MobiusHorizons] 补充说明，在开发社区中，“嵌入式场景”通常被理解为嵌入式系统，而非嵌入式解释器。
-
-• **内存管理和错误处理**：
-  ◦ [cookiengineer] 对Bolt的返回签名、内存管理、引用/指针支持提出疑问，并建议参考Koka语言的效应基于错误类型系统。
-  ◦ 对Bolt的错误处理方式表示担忧，认为在调试大型代码库时可能会遇到困难。
-
-• **与其他语言的比较和命名**：
-  ◦ [themonsu] 对Bolt的命名表示不满，建议换个名字。
-  ◦ [freeopinion] 建议将Bolt与Q语言进行对比测试，以增加彼此的曝光度。
-
-• **语法建议和功能需求**：
-  ◦ [tayistay] 建议增加`var`关键字，以区分可变和不可变变量声明。
-  ◦ [Fraterkes] 对Bolt的内存占用和创建快速脚本语言的过程感兴趣，并询问相关文档。
-  ◦ [merksoftworks] 关注Bolt在MacOS和aarm64架构上的可移植性问题。
-  ◦ [memophysic] 询问Bolt对断点和调试服务器的支持情况。
-
-• **其他评论**：
-  ◦ [kiririn] 认为Bolt让人联想到Pawn语言。
-  ◦ [Forgret] 对Bolt的发展表示祝福，并希望它能变得流行。
-
-补充讨论：
-• 争议焦点在于Bolt的性能声称和实际优化手段，尤其是尾调用优化的适用性和效果。
-• 对语法设计的不同偏好反映了不同开发者的使用习惯和编程语言背景。
-• 嵌入式系统的支持问题引发了对Bolt应用场景的进一步思考。
-• 对内存管理和错误处理的讨论揭示了Bolt在实际应用中可能遇到的挑战。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44856935" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://eblong.com/zarf/zweb/lists/" target="_blank">Lists and Lists: Basics of Lisp through interactive fiction (1996)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: prathyvsh</span> |
-                    <span>评分: 52</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-08-07 08:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章简要介绍了《Lists And Lists》这款互动小说（IF）游戏，提供了游戏的基本信息和玩法指导，并引导读者返回Zarf的互动小说页面。最后提示等待Parchment加载完成。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[交互式小说的历史、技术实现及用户体验]
-
-不同观点：
-• [怀旧与历史]  
-  - noufalibrahim 推荐纪录片《Get Lamp》，强调交互式小说的历史重要性，并提到Inform 7语言的创新性。  
-  - pjmlp 简短回应，回忆MUD（多用户地下城）时代，表达对早期文本游戏的怀念。
-
-• [技术细节与挑战]  
-  - kqr 讨论Scheme与Lisp的区别，提出逻辑谜题的挑战，强调equal?与eqv?的差异及解决方案的复杂性。  
-  - protocolture 以幽默方式展示与交互式系统的对话失败，反映自然语言处理的局限性。
-
-补充讨论：
-- 争议焦点：交互式系统的自然语言处理能力（protocolture的体验 vs. noufalibrahim对Inform 7的赞赏）。  
-- 其他注意点：kqr的谜题示例展示了交互式小说的教育潜力，而protocolture的对话凸显了用户体验的挑战。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=44821848" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=44860015" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
