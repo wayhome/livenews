@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-08-30 08:55 (北京时间)
+            最后更新时间: 2025-08-30 11:26 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,58 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.ycombinator.com/companies/thunder-compute/jobs/sS6QzTi-founding-developer-advocate-contract-to-hire" target="_blank">Thunder Compute (YC S24) Is Hiring</a>
+                    <a href="https://marcoapp.io/blog/offline-first-landscape" target="_blank">Offline-First Landscape – 2025</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cpeterson42</span> |
-                    <span>评分: 1</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-08-29 17:00</span>
+                    <span>作者: Onavo</span> |
+                    <span>评分: 98</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-08-29 16:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Thunder Compute是一家位于旧金山的初创公司，提供低成本GPU云服务。该公司正在招聘一名开发倡导者（合同转正），职责包括建立开发者社区、创建教程内容、提供产品反馈等。要求应聘者具备3年以上经验、出色的沟通能力和编程技能（Python优先），熟悉AI基础设施更佳。职位提供10-15万美元年薪及股权，初期为2个月合同期，之后转为全职。公司团队规模4人，采用全员线下办公模式，目前处于种子轮融资阶段。应聘需提交作品案例及社区运营经历。</p>
+                    <p>本文主要介绍了Marco团队在开发跨平台邮件应用时遇到的离线优先技术挑战。文章详细描述了团队最初选择WatermelonDB作为解决方案的过程，包括其数据库无关性、开源特性等优势，但随后发现其存在严重性能问题（需将整个数据库加载到内存）、同步机制缺陷和维护不足等问题。随着项目推进，团队意识到该方案无法满足大规模邮件数据的离线处理需求，最终决定放弃WatermelonDB，转而寻找更适合的离线优先解决方案。文章反映了开发复杂离线功能时面临的技术决策困境和架构调整过程。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：[离线优先（offline-first）和本地优先（local-first）应用的数据库解决方案及其技术挑战]
+
+不同观点：
+• **Replicache+Orama 和 InstantDB 的支持者**  
+  - isaachinman 提到 Replicache+Orama 的成功使用，并推荐 InstantDB 作为新项目的选择。  
+  - local_surfer 强调 Triplit 1.0 的性能提升（10倍），认为它是大规模数据项目的隐藏宝藏。  
+  - stopachka（Instant 创始人）列举了 InstantDB 的近期改进（类型支持、排序、响应式查询等），强调其开发体验（DX）的优化。
+
+• **OPFS（Origin Private File System）的倡导者**  
+  - dfabulich 指出现有工具（如 PowerSync、ElectricSQL 等）均基于 IndexedDB，而 OPFS 提供了更高效的底层存储，尤其适合 WASM SQLite 的直接运行。  
+  - hakanshehu 分享了自己在开源协作应用中使用 SQLite+OPFS 的经验，认为其性能表现优异，且通过 Kysely 实现了代码复用。  
+  - rudedogg 提到 OPFS 是新兴技术，能避免 IndexedDB 的性能瓶颈。
+
+• **IndexedDB 的批评与辩护**  
+  - fmajid 批评 IndexedDB 基于 SQLite 的冗余设计，认为 WebSQL 的弃用是错误。  
+  - nmjenkins 反驳称 Fastmail 直接使用 IndexedDB（仅添加 Promise 封装）即可支持多 GB 邮箱数据，性能良好。  
+  - cfu28 指出 IndexedDB 查询可能比网络请求更慢，且客户端数据库缺乏成熟的迁移工具。
+
+• **其他替代方案与争议**  
+  - kaz-inc 介绍了自研的 FileDB 和 FlatDB，通过文件系统抽象和同步算法优化 IndexedDB 的使用。  
+  - rudedogg 推荐 RxDB，认为其文档数据库更友好，并提到 SQLite 的类型和查询计划限制。  
+  - cfu28 分享尝试 RxDB 和 LokiJS 的经验，指出内存数据库的规模限制（几百 MB）。
+
+补充讨论：
+• **争议焦点**：  
+  - OPFS 是否真正解决了 IndexedDB 的性能问题？  
+  - 客户端数据库是否适合大规模数据（如 victorbjorklund 提问的“多大算太大”）？  
+  - 离线优先与本地优先的界限（MerrimanInd 的提问）。  
+
+• **技术趋势**：  
+  - OPFS 成为新工具的基础（如 SQLite 直接运行）。  
+  - 同步算法和跨平台兼容性（如 hakanshehu 的 Kysely 抽象）是开发重点。  
+
+• **用例争议**：scarface_74 质疑电子邮件场景的实用性，认为离线优先可能是“伪需求”。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45066592" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45066070" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -94,8 +127,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: Michelangelo11</span> |
-                    <span>评分: 124</span> |
-                    <span>评论数: 16</span> |
+                    <span>评分: 133</span> |
+                    <span>评论数: 17</span> |
                     <span>发布时间: 2025-08-27 06:23</span>
                 </div>
 
@@ -125,35 +158,187 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[如何进入游戏行业并取得成功]
+                    <div class="comments-summary">主要讨论点：如何进入游戏行业或独立开发游戏，以及当前行业现状和挑战。
 
 不同观点：
-• **入门门槛降低但竞争激烈**  
-  - 如今制作游戏比以往更容易（如Garry's Mod、Unity/Unreal等工具普及），但市场过度饱和，成功更多集中在少数头部作品（如《空洞骑士》《星露谷物语》）。  
-  - 类比音乐行业：设备普及导致行业“去专业化”，但主流成功仍属于老牌工作室。
+• **入门与技能培养**  
+  - JanSolo和lentil_soup强调通过小型项目（如控制台游戏或迷你游戏）积累经验，注重技术能力和完成度。  
+  - chickenzzzzu提出综合学习编程和3D艺术，并强调工具开发和面试准备的重要性。  
+  - manas96建议专攻稀缺领域（如物理模拟或图形编程）以提升竞争力。
 
-• **技术能力与项目经验优先**  
-  - 求职核心是展示技术能力（如C++）、解决问题的好奇心，以及完成项目的执行力（JanSolo）。  
-  - 建议从小型项目入手（如扫雷、俄罗斯方块），逐步积累经验（lentil_soup）。  
-  - 避免同时担任设计和编程角色，专注打磨小而精的作品（lentil_soup）。
+• **行业现状与挑战**  
+  - tiniuclx和fidotron指出市场饱和和“去专业化”趋势，成功更多集中在头部工作室或偶然爆款。  
+  - bob1029和fidotron批评行业高压环境，认为自出版或平台（如Roblox）可能是更可持续的选择。  
+  - fidotron甚至悲观预测AI生成游戏的颠覆性未来，建议远离行业。
 
-• **游戏编程的特殊性与挑战**  
-  - 游戏开发与其他软件工程差异巨大，需掌握引擎、物理、渲染等附加技能，且代码优化常需牺牲“整洁性”（h1fra）。  
-  - 争议点：游戏编程是否比其他领域更难？部分认为其复杂性被低估。
-
-• **行业前景悲观论**  
-  - 当前游戏行业生存环境恶劣，未来可能被AI生成内容颠覆（如“全息甲板”式体验），传统岗位风险高（fidotron）。  
-  - 建议转向Roblox/UEFN等平台，利用现成工具快速开发（fidotron、bstsb）。
-
-• **小众领域专业化建议**  
-  - 稀缺技能（如引擎/图形/物理编程）更易获得机会，但需数学和底层编程能力（manas96）。
+• **成功路径争议**  
+  - bentt认为在线展示作品并获得关注是求职关键，而smeeger反驳称多数游戏失败源于设计者脱离用户需求。  
+  - bstsb支持Roblox等平台的优势（如现成受众），但承认其盈利模式和儿童安全问题存在争议。
 
 补充讨论：
-- **自我验证与市场反馈**：通过在线作品获取关注是能力的重要指标，缺乏反响可能意味着需要提升或转型（bentt）。  
-- **教育与证书争议**：尽管行业存在“无意义证书主义”，但优质教育仍可能提供优势（chickenzzzzu）。  
-- **质量决定论**：多数游戏失败源于设计者脱离用户需求，真正注重用户体验的作品仍稀缺（smeeger）。</div>
+- **教育争议**：chickenzzzzu提到“无谓的学历主义”，但认为名校背景仍有助于求职。  
+- **技术争议**：h1fra认为游戏开发与其他软件工程差异极大，需掌握多领域知识（如物理、引擎）。  
+- **行业未来**：jayd16观察到游戏向“全模组化”发展，类似Minecraft或Roblox的模式可能主导。  
+- **资源推荐**：proteal和pphysch分别提到s&box开发日志和Chris Wilson的YouTube频道作为学习参考。  
+
+争议焦点：  
+1. 是否应专注于小型项目（如lentil_soup主张）还是直接尝试复杂系统（如manas96建议）？  
+2. 传统游戏开发是否仍有前途（fidotron的悲观预测 vs. bentt的“在线展示”策略）？  
+3. 平台（如Roblox）的利弊权衡（bstsb的支持与fidotron的行业批判）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45036052" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://spectrum.ieee.org/ai-for-coding" target="_blank">Why AI Isn't Ready to Be a Real Coder</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: WolfOliver</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-08-29 15:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了AI在编程领域的现状与局限性。作者指出，尽管AI编码工具不断发展，但仍无法完全取代人类程序员。AI在代码生成方面存在准确性和可靠性问题，需要与人类开发者协作。文章强调，AI编码能力的进步取决于与人类建立信任关系，以及在实际开发环境中的持续优化。目前AI更适合作为辅助工具，而非独立开发者。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[AI能否取代程序员，及其对编程行业的影响]
+
+不同观点：
+• AI只是一种工具，不会完全取代程序员，但会提高生产力和改变工作方式（manoDev, pamelafox, xaindume）
+  - 类比MS Word和Photoshop，AI会带来新的生产力水平
+  - AI可以作为辅助工具，特别是在不熟悉的语言或框架中
+  - "数学家使用计算器"的类比
+
+• AI会降低对初级程序员的需求，但资深工程师仍不可替代（MorehouseJ09, jbstack, mikewarot）
+  - 资深工程师在抽象思维和系统设计方面具有优势
+  - AI可能已经能替代部分初级程序员的工作
+  - AI目前只能胜任初级编程角色，无法进行工程管理
+
+• AI将从根本上改变编程行业，可能导致程序员薪资下降（WheelsAtLarge）
+  - AI使更多人能成为程序员
+  - 编程可能变得像文职工作
+  - 减少对"编程工程师"的需求，增加"编程文员"
+
+• AI存在固有缺陷，无法完全取代人类程序员（crooked-v, kazinator）
+  - AI会"懒惰"地宣称完成不完整的任务
+  - AI只是概率性地生成代码，仍需人工评估
+
+补充讨论：
+- 争议焦点：AI是工具还是替代者？是否会造成程序员失业？
+- 关于AI使用方式的讨论：需要精心设计的提示和环境定制（pamelafox, kstenerud）
+- 现有编程工具的问题可能被AI掩盖而非解决（narag）
+- 反对二元对立的观点，认为人机协作是未来（strangescript, jjangkke）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45065343" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.xml.com/articles/2017/02/14/why-you-should-be-using-xslt-30/" target="_blank">Why You Should Be Using XSLT 3.0 (2017)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: protomolecool</span> |
+                    <span>评分: 28</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-08-26 13:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了XSLT 3.0的新特性及其优势。XSLT最初用于将XML转换为XSL-FO格式，现已发展成支持多种格式转换。尽管旧版XSLT 1.0仍广泛使用，但升级到3.0版本十分简便，只需更换处理器即可。XSLT 3.0的主要改进包括支持JSON转换，通过json-to-xml()函数可将JSON数据转换为XML处理后再转回JSON或其他格式，极大扩展了应用范围。文章还展示了如何将JSON员工数据转换为XML并重新组织数据结构的示例，说明升级的必要性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：XSLT的优缺点及其适用性
+
+不同观点：
+• 支持XSLT的观点：
+  - JoshTriplett认为XSLT在XML协议绑定和代码生成方面表现良好，并且至今仍在使用
+  - hackrmn认为XSLT值得重新审视，它没有获得应有的关注和"15年辉煌"
+  - therealmarv提到有开源项目在推进XSLT 3.0的Rust实现
+
+• 反对XSLT的观点：
+  - roadside_picnic对XML/XSLT持负面态度，认为现代技术状态更可取
+  - diegof79指出XSLT在用户体验/开发者体验(UX/DX)方面存在问题：
+    - 代码可读性差
+    - 调试工具缺乏
+    - 难以构建简化使用的UI工具
+    - 举例说明JSON转换在JS中只需1-2行，而XSLT需要大量命名空间导入
+  - poshmosh分享实际经验，在音乐流媒体行业处理大量XML文件时，XSLT面对模式变更时表现糟糕
+
+补充讨论：
+• 争议焦点：
+  - XSLT是否仍然有用还是已经过时
+  - XSLT的可读性和易用性问题
+  - 是否存在替代方案(如Python、JS)更适合现代开发
+
+• 相关讨论：
+  - Google Chrome计划移除XSLT支持引发了关于XSLT的讨论(Streisand效应)
+  - 有社区仍在积极推动XSLT发展(XSLT 3.0的Rust实现)</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45026013" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://taylor.town/flunking-anthropic" target="_blank">Flunking my Anthropic interview again</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2025-08-29 14:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者连续两次应聘Anthropic公司开发岗位失败的经历。第一次因操作失误被拒，而这次尽管完成了秘密作业、额外开发了展示项目并发布博客，作品还上了HackerNews头条，仍遭拒绝。作者表达了对公司的尊重与对AI技术的热爱，但难掩失落，自我怀疑是否"不够优秀"。通过文字宣泄情绪后，作者最终选择接受现实，表示会继续努力前行，并鼓励有相似经历的读者。全文展现了求职挫折中的脆弱与自我重建过程，情感真挚动人。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[求职被拒后的自我认知与应对策略]
+
+不同观点：
+• 拒绝并不反映个人能力：多位评论者（jp57, pyzhianov, 4ndrewl）指出，招聘决定受多种因素影响（如岗位数量、竞争者数量、团队偏好），与候选人能力无关。jp57用"accept==0 bit"比喻说明拒绝信息本身不包含具体反馈，pyzhianov将招聘比作"选择齿轮"的机械过程。
+
+• 自我披露的争议：kashunstva认为公开自称"怪异"（原文提到）可能不利于求职，建议自然展现个性；而mft_反驳说既然能识别"怪异"行为，就可以选择控制；n4r9则支持保持真实，认为自我反思是优点。
+
+• 情感投入的合理性：vsri, endymion-light等建议不要过度在意单一拒绝，强调自我价值独立于招聘决定；但kev009和rurp认为对未获得的工作过度投入情感是不健康的，ilc更以亲身经历说明"理想公司"可能名不副实。
+
+• 招聘流程的质疑：michaelcampbell质疑"完美候选人"的期望，4ndrewl解释招聘可能是阈值筛选而非绝对排名，siva7和leecarraher则追问具体面试细节是否影响结果。
+
+补充讨论：
+- 争议焦点：是否应该为求职改变个性（"怪异"争议），以及如何正确归因拒绝原因
+- 实用建议：endymion-light提出"继续前进"的行动导向，us-merul建议拓宽求职范围
+- 隐喻使用：jp57的"二进制拒绝信号"、pyzhianov的"齿轮比喻"、ilc的"白象比喻"等增强了观点表现力</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45064284" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -217,98 +402,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://clickhouse.com/blog/eight-principles-of-great-developer-experience-for-data-infrastructure" target="_blank">Data engineering and software engineering are converging</a>
+                    <a href="https://www.ycombinator.com/companies/thunder-compute/jobs/sS6QzTi-founding-developer-advocate-contract-to-hire" target="_blank">Thunder Compute (YC S24) Is Hiring</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: craneca0</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-08-29 18:43</span>
+                    <span>作者: cpeterson42</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-29 17:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了数据工程与软件工程的融合趋势，指出当前数据基础设施主要服务于分析师，而现代应用需要实时数据支持用户体验和AI功能。文章分析了传统事务型数据库和分析平台的不足，提出ClickHouse在性能和成本上的优势，并介绍MooseStack工具包如何为ClickHouse提供现代化的开发者体验（DX），包括Git版本控制、本地优先开发、开源原生等八大核心原则，帮助工程师更高效地构建数据驱动型应用。</p>
+                    <p>Thunder Compute是一家位于旧金山的初创公司，提供低成本GPU云服务。该公司正在招聘一名开发倡导者（合同转正），职责包括建立开发者社区、创建教程内容、提供产品反馈等。要求应聘者具备3年以上经验、出色的沟通能力和编程技能（Python优先），熟悉AI基础设施更佳。职位提供10-15万美元年薪及股权，初期为2个月合同期，之后转为全职。公司团队规模4人，采用全员线下办公模式，目前处于种子轮融资阶段。应聘需提交作品案例及社区运营经历。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[数据工程与软件工程的关系及数据工程师的角色定位]
-
-不同观点：
-• **数据工程本质是软件工程**  
-  - CalRobert认为数据工程从一开始就是软件工程的一部分，但被不懂软件的业务分析师稀释了定义  
-  - giantg2类比为前后端分工，认为使用无代码工具的数据工程师实质是分析师  
-  - banku_brougham指出Zillow将数据工程师岗位命名为"大数据软件工程师"，强调编程（Python）在流程编排中的核心地位  
-
-• **工程能力与数据处理的专业分野**  
-  - mynameisash提出双维度标准：既要掌握软件工程原则（如CI/CD），也要具备PB级数据处理的优化能力（索引设计/近似计算）  
-  - getnormality提出两个标准：使用支持抽象的真实编程语言（非仅SQL）+可接受的数据规模反馈周期  
-
-• **行业现实与理想状态的矛盾**  
-  - zamalek批评现存问题：缺乏可重复性规范（直接提交笔记本代码到主干）、虚假的SDLC实践  
-  - botswana99揭示组织约束导致的"工具骑师"现象：无自动化测试/部署、手工环境配置造成的职业倦怠  
-
-争议焦点：  
-1. 核心技能边界：SQL/无代码工具的使用是否应作为数据工程师的判定标准  
-2. 行业命名混乱：分析师与工程师的职称混淆问题  
-3. 技术债务根源：组织流程缺陷（如强制工具标准化）vs个人工程能力不足  
-
-补充讨论：  
-- zurfer指出技术光谱两端共存（dbt/无代码工具vs编程代理）的现状  
-- SrslyJosh质疑"二者趋同论"背后的商业动机  
-- getnormality提出通过数据子采样加速测试的实践方案</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45067867" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://stocks.apple.com/AhdbAHU1_T5C4wexYNtJxjw" target="_blank">Trump's Global Tariffs Found Illegal by US Appeals Court</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: newman314</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-08-29 23:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是一则简短的通知，提示读者如果故事没有自动打开，可以点击或轻触屏幕尝试。文末附有隐私政策、使用条款和版权声明，注明由苹果公司2025年所有权利保留。内容主要为操作提示和法律信息，无实质性故事内容。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：特朗普政府全球关税政策的合法性及法院裁决的影响
-
-不同观点：
-• **支持法院裁决的观点**  
-  - 认为特朗普政府通过紧急法律实施全球关税超出了其法定权限  
-  - 法院裁定这些关税非法，但允许其暂时继续执行以等待进一步审理  
-  - 举例：联邦巡回上诉法院支持国际贸易法院的裁决，认为特朗普错误引用了法律  
-
-• **反对法院裁决的观点**  
-  - 可能认为特朗普政府有权通过紧急法律保护国家经济利益  
-  - 上诉法院虽然裁定关税非法，但允许其继续执行，显示政策有一定合理性  
-  - 争议焦点：总统在贸易政策中的权力边界  
-
-• **程序性讨论的观点**  
-  - 上诉法院要求下级法院重新考虑是否应全面禁止关税，还是仅适用于案件相关方  
-  - 讨论点：法院裁决的范围和影响，是否应更广泛或更有限  
-
-补充讨论：  
-- 争议焦点在于总统权力的界限和紧急法律的适用性  
-- 法院裁决的暂时性可能导致政策不确定性，影响国际贸易关系  
-- 讨论中未明确提及具体经济或政治后果，但隐含了对全球贸易环境的潜在影响</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45070481" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45066592" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -378,101 +490,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://marcoapp.io/blog/offline-first-landscape" target="_blank">Offline-First Landscape – 2025</a>
+                    <a href="https://jakub.kr/components/will-change-in-css" target="_blank">What Does will-change In CSS Do?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Onavo</span> |
-                    <span>评分: 92</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-08-29 16:20</span>
+                    <span>作者: ssernikk</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-08-27 09:07</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要介绍了Marco团队在开发跨平台邮件应用时遇到的离线优先技术挑战。文章详细描述了团队最初选择WatermelonDB作为解决方案的过程，包括其数据库无关性、开源特性等优势，但随后发现其存在严重性能问题（需将整个数据库加载到内存）、同步机制缺陷和维护不足等问题。随着项目推进，团队意识到该方案无法满足大规模邮件数据的离线处理需求，最终决定放弃WatermelonDB，转而寻找更适合的离线优先解决方案。文章反映了开发复杂离线功能时面临的技术决策困境和架构调整过程。</p>
+                    <p>CSS中的`will-change`属性用于提前通知浏览器某个元素的某些属性即将发生变化，以便浏览器进行性能优化。它主要针对`transform`、`opacity`等GPU友好属性，浏览器可能会为元素创建独立的GPU层，从而跳过布局和绘制步骤，直接进行合成，提升动画流畅度。但过度使用会浪费资源，应仅在需要动画的元素上针对具体属性使用。现代浏览器已具备良好的优化能力，但在复杂动画中合理使用`will-change`仍能显著提升首帧表现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：离线优先（offline-first）和本地优先（local-first）应用的数据库解决方案及其技术挑战。
+                    <div class="comments-summary">主要讨论点：[CSS的合理使用范围及其复杂性]
 
 不同观点：
-• **IndexedDB的实用性与局限性**  
-  - [kaz-inc] 开发了基于IndexedDB的FileDB和FlatDB，解决了多标签编辑和跨设备同步问题。  
-  - [fmajid] 指出IndexedDB底层依赖SQLite，批评WebSQL的弃用是错误。  
-  - [rudedogg] 认为IndexedDB性能较差，文档型数据库更友好，但同步约束（如外键）是挑战。
-
-• **Origin Private File System (OPFS)的潜力**  
-  - [dfabulich] 推荐OPFS作为替代方案，认为WASM SQLite+OPFS是更优解。  
-  - [hakanshehu] 通过OPFS实现SQLite的Web应用，分享跨平台代码复用经验。  
-  - [rudedogg] 提到OPFS正在被广泛采用以绕过IndexedDB的性能问题。
-
-• **其他工具与框架的对比**  
-  - [stopachka] 为InstantDB辩护，强调其近期功能改进和开发者体验优化。  
-  - [cfu28] 分享使用RxDB和LokiJS的挫折，指出客户端数据库工具链不成熟。  
-  - [nmjenkins] 主张直接使用IndexedDB，以Fastmail为例证明其性能可接受。
-
-• **离线优先的适用场景争议**  
-  - [victorbjorklund] 提问本地优先应用的数据库规模上限。  
-  - [scarface_74] 质疑电子邮件场景的离线需求，认为这是“伪需求”。
+• [vintagedave]认为CSS不应涉及实现细节，而应关注API设计，暗示当前某些CSS功能可能越界。
+• [Figs]提到will-change属性的实际用途有限，主要用于解决特定浏览器兼容性问题（Leaflet/WebKit问题）。
+• [diath]质疑CSS绘制过程是否真的主要在CPU上完成，认为GPU可能承担了大部分工作，引发对CSS性能优化的讨论。
+• [mirkodrummer]对CSS的复杂性表示不满，认为新功能增加了代码维护难度，且长期存在的问题未得到解决。
 
 补充讨论：
-- **同步与迁移挑战**：[cfu28] 和 [rudedogg] 均提到客户端数据库的同步逻辑复杂，缺乏成熟的迁移工具。  
-- **技术演进动态**：[isaachinman] 更新了原文未涵盖的新工具进展（如Replicache+Orama）。  
-- **争议焦点**：是否应依赖IndexedDB（性能与底层限制） vs. 转向OPFS等新技术。</div>
+• [divan]提供的2016年链接可能涉及CSS的历史争议或持续性问题，暗示讨论具有长期性。
+• 争议焦点：CSS是否过度复杂化（工具价值vs维护成本）、性能优化细节（CPU/GPU分工）、功能边界（API设计vs实现干预）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45066070" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://todaythings.substack.com/p/this-is-my-brain-on-leeches" target="_blank">This is my brain on leeches</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: aebtebeten</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-08-27 09:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[水蛭的现代用途及人们对水蛭的不同看法]
-
-不同观点：
-• [水蛭的科学价值]  
-  - nycticorax指出水蛭是神经生物学的重要模型生物，因其神经系统简单且神经元易于识别，适合教育和研究。  
-  - culi提到水蛭在医院手术中的应用，特别是再植手术和显微手术中，因其分泌的抗凝血剂能促进血流。
-
-• [水蛭的实用功能]  
-  - LeoPanthera提到水蛭曾用于天气预报（Tempest Prognosticator），尽管效果可能不稳定。  
-  - amelius分享了一个实用技巧：防蚊喷雾可以让水蛭快速脱离皮肤。
-
-• [对水蛭的恐惧与厌恶]  
-  - BobBagwill以幽默口吻表达了对水蛭的厌恶，提到在游泳或徒步时如何避免水蛭，甚至开玩笑说应该“从太空核平”。  
-  - wagwang表示虽然愿意尝试水蛭疗法，但对水蛭在血液中产卵有非理性恐惧。
-
-• [对水蛭的趣味性与知识性讨论]  
-  - vintagedave和threemux认为这篇文章既令人恶心又引人入胜，符合Hacker News的趣味性标准。  
-  - ChrisMarshallNY和qrush补充了水蛭在现代医学中的实际应用，例如美国手术室仍在使用水蛭。
-
-补充讨论：  
-- 争议焦点：水蛭的实际效用与人们对它的心理抵触之间的对比（如wagwang的恐惧与culi的科学应用）。  
-- 讨论关系：从科学价值到实用技巧，再到个人感受，形成了多角度的讨论链条。  
-- 其他注意点：BobBagwill的幽默评论为讨论增添了轻松氛围，而Leeches USA的链接（ChrisMarshallNY提供）则展示了水蛭的商业化现状。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45037109" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45037120" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -487,8 +533,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: Bogdanp</span> |
-                    <span>评分: 65</span> |
-                    <span>评论数: 16</span> |
+                    <span>评分: 73</span> |
+                    <span>评论数: 19</span> |
                     <span>发布时间: 2025-08-29 15:31</span>
                 </div>
 
@@ -499,87 +545,42 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数学是被发明还是被发现的，以及数学对象（如实数、整数）在现实中的本质和存在性。
+                    <div class="comments-summary">主要讨论点：[数学对象（如实数、整数）的本质及其与物理现实的关系，以及数学是发明还是发现]
 
 不同观点：
-• **数学是被发明的**  
-  - 认为数学是一套人为制定的规则和系统，因为有用而被遵循（如getnormality的观点）。  
-  - 数学对象是抽象的，不是像岩石那样的实体。  
-  - 引用奥卡姆剃刀原则，认为不应为解释自然模式而引入更多神秘实体。
+• **构造主义/有限论观点（andrewla）**：认为康托尔的实数概念不物理现实，物理世界更接近连续量的近似计算，数学连续统是一种抽象。
+  - 论据：物理系统中的状态涉及连续量，但无限精度在现实中不存在。
+  
+• **数学工具主义（getnormality）**：数学只是一套人为制定的规则，数学对象并非像岩石那样真实存在。
+  - 论据：数学是解决实际问题的工具，添加更多抽象实体只会增加复杂性（奥卡姆剃刀原则）。
 
-• **数学是被发现的**  
-  - 认为数学对象（如整数、实数）是宇宙中固有的，独立于人类意识存在（如schuyler2d的观点）。  
-  - 引用柏拉图主义，认为数学对象属于一个独立的“理念”领域。  
-  - 例子：毕达哥拉斯定理的自然显现（如tboyd47提到3、4、5的整数关系）。
+• **物理连续统与数学连续统分离（LegionMammal978）**：物理连续统存在，但实数线可能是人类构造的虚构模型。
+  - 论据：数学连续统是实用工具（如微积分），物理连续统可能比数学连续统更复杂或更奇异。
 
-• **数学是模型而非现实**  
-  - 认为数学是对现实的近似或抽象（如andrewla和LegionMammal978的观点）。  
-  - 连续性和无限精度（如实数）可能是人类构造的虚构，物理世界可能更接近离散或有限精度。  
-  - 争议焦点：物理连续性与数学连续性的关系（如zarzavat认为宇宙需要无限可分性但不需无限精度）。
+• **数学发现论（schuyler2d）**：数学是被发现的，而非发明。
+  - 论据：数学结构独立于人类存在，类似于“看不见的墙”仍然存在。
 
-• **数学对象的“现实性”争议**  
-  - 复数曾被视作“虚构”，但如今在工程和物理中被广泛应用（如state_less和zamalek的观点）。  
-  - 争议焦点：是否存在不可数无限（如zarzavat认为其纯属人类想象）。  
-  - 神学视角：如tboyd47认为数学的奇迹体现了神性，而athrowaway3z认为整数更基础，无需神学预设。
+• **复数优先性（zamalek）**：实数可能是复数的特例（x+0i），复数更自然地描述物理现象（如波动）。
+  - 例子：波是物理现实的基础，复数更自然地描述波。
+
+• **有理数优先性（zarzavat）**：宇宙需要无限可分（稠密集），但不需要无限精度（完备集）。
+  - 论据：完备集（如实数）是数学构造，物理中无证据支持不可数无限。
+
+• **整数与实数关系（creddit）**：整数包含于实数，因此不能认为实数更“永恒”而整数是人为创造。
+  - 论据：数学包含关系表明两者本质相似。
+
+• **数学与宗教观念（tboyd47）**：数学中的“神圣”概念与宗教观念（如犹太教、基督教、伊斯兰教）相关，神创造了整数和实数。
+  - 论据：数学中的奇迹（如毕达哥拉斯定理）显示神性。
 
 补充讨论：
-- **计算与物理的关系**：andrewla提出计算是物理宇宙的核心过程，数学连续性是近似工具。  
-- **数学的局限性**：stephc_int13提醒数学模型可能存在缺陷（如模拟假说）。  
-- **幽默与隐喻**：如chuckadams用编程语言调侃神性与数学的关系，entaloneralie将神比作程序。  
-- **跨学科争议**：ajuc质疑“原因比结果更真实”的原则，反映哲学分歧。</div>
+- **争议焦点**：数学是发明还是发现？物理世界是否需要数学连续统？
+- **其他观点**：
+  - 复数比实数更基础（zamalek）。
+  - 数学模型的局限性（stephc_int13）。
+  - 整数比实数更基础（athrowaway3z）。
+  - 幽默观点：God是FRACTRAN程序（entaloneralie）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45065425" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.zdnet.com/article/meta-might-be-secretly-scanning-your-phones-camera-roll-how-to-check-and-turn-it-off/" target="_blank">Meta might be secretly scanning your phone's camera roll</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mdhb</span> |
-                    <span>评分: 196</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2025-08-29 12:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Meta可能未经用户明确同意就开启了扫描手机相册的功能，为用户提供AI建议（如旅行亮点、拼图等）。虽然这些AI建议仅用户可见且不会用于广告投放，但引发了隐私担忧。部分用户发现相关设置默认开启，而自己并未主动授权。文章介绍了如何通过Facebook应用检查并关闭该功能：依次进入菜单、设置和隐私、设置，找到相关选项进行调整。ZDNET强调其测评独立客观，但通过联盟链接获得佣金不影响内容真实性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户隐私保护与Meta（Facebook）应用的数据访问行为  
-
-不同观点：  
-• **支持用户隐私保护与审计日志**  
-  - [nomilk] 认为苹果应提供应用访问照片/视频的审计日志，以增加透明度和开发者责任。  
-  - [cj] 建议利用苹果的隐私设置限制应用访问权限，避免授予全盘照片访问权。  
-
-• **对Meta行为的批评与不信任**  
-  - [brk]、[hypersoar]、[jkubicek] 等用户因Meta应用未经允许上传或扫描照片而卸载应用，并长期避免使用Meta产品。  
-  - [Workaccount2]、[polytely] 批评Meta道德败坏，认为其故意设计侵犯隐私的功能。  
-
-• **技术替代方案与隐私实践**  
-  - [matt_s] 主张通过浏览器使用服务而非安装应用，减少隐私风险。  
-  - [markus_zhang] 提出使用功能单一的设备（如“傻瓜手机”）隔离敏感操作以保护隐私。  
-  - [everdrive] 通过工具（如Pi-hole）发现并阻断Meta应用的实时竞价（RTB）数据请求。  
-
-补充讨论：  
-- **争议焦点**：Meta是否应被默认视为不可信任，以及用户是否有责任主动规避其产品（如[petralithic]质疑为何有人仍使用Meta应用）。  
-- **历史事件影响**：剑桥分析丑闻等事件被多次提及（如[petralithic]），作为用户应警惕Meta的论据。  
-- **技术细节**：部分评论（如[mtmail]）引用专利和报道，揭示Meta如何通过图像识别和元数据分析用户数据。  
-
-其他注意点：  
-- 部分用户（如[emchammer]）通过完全弃用Meta产品表达立场，而[arnejenssen]提到类似行为也发生在其他社交应用（如Snapchat）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45062910" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
