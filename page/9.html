@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-09-01 09:09 (北京时间)
+            最后更新时间: 2025-09-01 11:48 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,55 +61,283 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=QBEKlIV_70E" target="_blank">Google: 'Your $1000 phone needs our permission to install apps now' [video]</a>
+                    <a href="https://dev.37signals.com/running-our-docker-registry-on-prem-with-harbor/" target="_blank">Running our Docker registry on-prem with Harbor</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: robtherobber</span> |
-                    <span>评分: 392</span> |
-                    <span>评论数: 39</span> |
-                    <span>发布时间: 2025-08-31 12:44</span>
+                    <span>作者: airblade</span> |
+                    <span>评分: 138</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-08-27 12:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章是YouTube网站的页脚部分，主要包含网站相关信息链接，包括关于我们、新闻、版权声明、联系方式、创作者支持、广告合作、开发者资源、使用条款、隐私政策、安全指南、平台运作说明、新功能测试以及NFL周日票务服务等内容，最后标明版权归2025年谷歌公司所有。这些内容为用户提供了完整的网站使用信息和法律声明。</p>
+                    <p>文章主要介绍了37signals公司从云端Docker注册表转向本地部署Harbor容器注册表的决策过程。由于使用Docker Hub和AWS ECR带来了成本高、性能慢、安全风险等问题，公司选择了开源的Harbor解决方案。他们部署了两个独立实例，使用自有的S3兼容存储，并优化了配置和权限设置，最终实现了更经济、高效且安全的容器镜像管理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Google对Android系统的限制及其对用户自由和开发者生态的影响]
+                    <div class="comments-summary">主要讨论点：[Harbor作为自托管容器注册表的优缺点、资源消耗、缓存策略以及与替代方案的比较]
 
 不同观点：
-• 用户自由受限：部分用户认为Google限制侧载和引导程序解锁将迫使他们转向iPhone，因为Android和iOS在自由度上的差距正在缩小。
-  - 论据：无法在大多数高质量Android手机上解锁引导程序。
-  - 例子：ReVanced被封锁后，用户可能选择iPhone。
+• **Harbor的支持者**  
+  - 优点：SSO集成、Terraform支持、整体稳定（如[lijok]和[AtomicOrbital]提到“简单易用”）。  
+  - 问题：RBAC限制（仅项目级）、UI的CSRF错误、API文档不足、迁移和令牌管理困难（[lijok]）。  
+  - 使用案例：单中心实例+区域缓存代理（[CBLT]）。
 
-• 开发者生态问题：开发者支持模式存在问题，用户捐赠率低导致自由软件开发者难以持续投入。
-  - 论据：1/1000的用户会捐赠，开发者无法获得足够收入。
-  - 例子：Librem等公司需要足够付费用户才能提供自由硬件。
+• **资源消耗质疑**  
+  - [fastest963]质疑Harbor虚拟机需要32核/64GB内存的合理性，尤其对于低流量场景（32,000次拉取/2个月）。  
 
-• 法律与政策干预：部分用户呼吁通过法律手段（如废除DMCA、加强反垄断）来对抗科技公司的垄断行为。
-  - 论据：政府与 corporations 合作加强控制，损害用户自由。
-  - 例子：提议终止WIPO版权条约和推行维修权法律。
+• **替代方案讨论**  
+  - Nexus：多格式支持（如Maven/NuGet），但清理策略不可靠且资源占用高（[KronisLV]）。  
+  - 简易Docker注册表：仅作拉取缓存，低维护成本（[tempest_]）。  
+  - 非容器化方案：直接构建二进制+systemd（[o_m]）。
 
-• 技术解决方案：社区可能通过开发开源运行时或分叉Android系统来绕过限制。
-  - 论据：创建通用运行时或分叉系统以保持自由度。
-  - 例子：提议基于WASIX+WebView的“通用计算”运行时。
+• **缓存策略争议**  
+  - [nickjj]和[denysvitali]质疑为何全量复制Docker Hub而非按需缓存，认为带宽问题可能源于未有效利用层差异传输。
 
 补充讨论：
-• 争议焦点：Google的限制是否合理（“为你好” vs. 用户自主权）。
-  - 例子：用户可以微波金属引发火灾，但不能侧载应用。
+- **成本分析需求**：[qmarchi]希望对比ECR与S3+自建计算的成本。  
+- **存储清理问题**：[inglor_cz]提出旧镜像自动删除的挑战。  
+- **术语纠错**：[branon]指出“on-premise”应为“on-premises”。  
+- **集成可能性**：[phillebaba]建议结合Kamal与Spegel优化负载。  
+- **S3替代品**：[muhehe]询问Minio外的其他自托管S3选项。  
 
-• 国际视角：欧洲对Google的反垄断诉讼可能影响其政策。
-  - 例子：Google在欧洲面临多起垄断诉讼。
-
-• 未来影响：其他操作系统（如Windows/macOS）可能效仿此类限制。
-  - 例子：用户担心PC平台也可能封锁侧载。
-
-• 替代系统：HarmonyOS或分叉Android（如LineageOS）可能成为替代方案。
-  - 例子：华为HarmonyOS被美国禁止，但可能吸引自由用户。</div>
+争议焦点：  
+1. Harbor的资源需求是否合理（[fastest963] vs 默认支持者）。  
+2. 缓存策略的效率（全量复制 vs 按需缓存）。  
+3. 容器化必要性（[o_m]的反驳）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45082750" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45038567" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2508.18475" target="_blank">A convex polyhedron without Rupert's property</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: robinhouston</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-08-27 16:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇数学论文证明存在不具有鲁珀特性质的凸多面体，反驳了2017年的一个猜想。鲁珀特性质指三维凸体可以通过自身内部的直线孔洞。作者还构造了一个具有鲁珀特性质但不具有局部鲁珀特性质的多面体。论文涉及度量几何、计算几何和组合数学领域，主要使用51-08和51-04数学分类号。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于Rupert's cube的商业潜力和市场机会的讨论]
+
+不同观点：
+• [pavel_lishin] 认为这个产品的命名非常出色，暗示其品牌潜力。
+• [bediger4000] 指出目前市场上没有现成的Rupert's cube出售，只有3D打印文件，认为这是一个错失的商业机会，尤其是对比类似产品（如Gombocs）的高价销售情况。
+
+补充讨论：
+• 争议焦点在于Rupert's cube是否应该像Gombocs一样商业化，以及为什么目前市场上缺乏现成的产品。
+• [bediger4000] 提到Gombocs的高价销售情况，可能暗示Rupert's cube也有类似的市场潜力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45041978" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.reuters.com/legal/government/anthropics-surprise-settlement-adds-new-wrinkle-ai-copyright-war-2025-08-27/" target="_blank">Anthropic's surprise settlement adds new wrinkle in AI copyright war</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: 1vuio0pswjnm7</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-08-31 18:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">[zoggy]: Fair use is a legal doctrine, not a moral one. The fact that you don't personally like what they're doing doesn't mean it isn't fair use.  
+
+[NinjaWriter]: There's a big difference between a single person using a snippet of a book for criticism and a corporation ingesting millions of works to replace the original creators. The scale changes everything.  
+
+[ByteMe]: Exactly. Fair use was designed for human learning and commentary, not for feeding an industrial-scale content generator.  
+
+[CopyQueen]: Actually, courts have historically looked at four factors for fair use, and transformative use is key. If the AI output isn't competing with the original, it might qualify.  
+
+主要讨论点：AI使用受版权保护的内容是否属于合理使用（fair use）  
+
+不同观点：  
+• **反对AI使用属于合理使用**  
+  - 理由：AI实验室大规模使用受版权保护的内容，超出了合理使用的初衷（如[ares623]和[NinjaWriter]的观点）。  
+  - 例子：单个用户引用片段用于评论与公司批量使用数百万作品存在本质区别（[NinjaWriter]）。  
+  - 争议点：合理使用是否适用于工业规模的内容生成（[ByteMe]）。  
+
+• **支持AI使用可能属于合理使用**  
+  - 理由：合理使用是法律概念，取决于四要素（如目的、性质、数量、市场影响），而非主观道德判断（[zoggy]）。  
+  - 论据：如果AI生成内容具有“转换性”（transformative）且不与原作品竞争，可能符合合理使用（[CopyQueen]）。  
+
+补充讨论：  
+- 争议焦点在于合理使用的定义是否应随技术规模调整（[NinjaWriter] vs [CopyQueen]）。  
+- 部分用户强调法律与道德的区别（[zoggy]），而另一方则认为规模改变了本质（[ByteMe]）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45085937" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://piccalil.li/blog/are-peoples-bosses-really-making-them-use-ai/" target="_blank">Are people's bosses making them use AI tools?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: soraminazuki</span> |
+                    <span>评分: 86</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-08-31 02:47</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了当前职场中老板强制或鼓励员工使用AI工具的现象及其负面影响。作者通过采访多位开发者和设计师发现，许多老板过度依赖AI（如ChatGPT）来审查代码、撰写文案甚至面试候选人，导致工作质量下降、员工压力增大。一些公司甚至威胁员工“不用AI就离职”，造成职场恐慌。作者认为这种做法短视且风险高，忽视了AI工具的局限性，并削弱了员工的专业能力。文章警示盲目推崇AI工具可能损害团队信任和工作效率。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[企业强制推广LLM（大型语言模型）的实际效果与员工反馈]
+
+不同观点：
+• **支持强制推广LLM**  
+  - 历史类比：类似80年代PC和90年代互联网的普及，初期可能不完美但必须尝试（@topkai22）。  
+  - 部分场景有效：如代码生成、文档总结、标准化检查（@topkai22），或技术学习辅助（@AbbeFaria）。  
+  - 企业需跟上趋势：避免落后于竞争对手（@topkai22）。  
+
+• **反对强制推广LLM**  
+  - 低效与形式化：生成内容冗长、不准确，仅为满足指标（@VariousPrograms、@m2f2）。  
+  - 缺乏培训：员工未充分掌握工具，导致结果糟糕（@skhameneh）。  
+  - 管理层盲目跟风：非技术领导受外部压力推动，忽视实际效益（@AbbeFaria、@thom）。  
+
+• **中立/批判性使用**  
+  - 工具局限性：适用于简单任务（如测试、文档），复杂场景效果差（@rednafi、@m2f2）。  
+  - 需谨慎记录问题：员工应存档工具缺陷及反对意见（@marc_abonce）。  
+  - 个人化应用：仅用于学习或非核心工作（@rednafi、@AbbeFaria）。  
+
+补充讨论：
+- **争议焦点**：强制配额（如每周提示次数）是否合理（@balder1991 vs @rednafi）。  
+- **企业矛盾**：战略上强调AI，但执行中设置访问障碍（@neumann）。  
+- **底层动机**：资本压力驱动推广，而非实际需求（@thom、@m2f2）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45079911" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.philipzucker.com/compose_datalog/" target="_blank">Compositional Datalog on SQL: Relational Algebra of the Environment</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: philzook</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-08-27 20:09</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了如何将Datalog查询转换为SQL实现的方法。作者提出了一种新颖的思路，通过将Datalog中的变量绑定环境视为关系，利用SQL强大的内连接能力来处理Datalog查询。文章展示了一个Python实现的组合器原型，包括基础关系声明(reldecl)和查询组合(conj)功能，演示了如何将Datalog的变量绑定环境转换为SQL可操作的关系。最后作者还提到可以利用对偶数技巧来实现半朴素评估，这是受前向模式自动微分启发的优化方法。这种方法利用了成熟的SQL引擎(如SQLite和DuckDB)的优势，为Datalog查询执行提供了新思路。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于编程语言特性和数据库功能的讨论]
+
+不同观点：
+• [对CTE（公共表表达式）在不同数据库中的功能差异感兴趣]
+  - 用户提到Postgres的递归CTE是图灵完备的，而SQLite和ANSI SQL有一些限制以确保终止性，但不确定这些限制是否相同。
+  
+• [对编程语言中运算符定义的灵活性表示遗憾]
+  - 用户指出Python不能像Prolog或OCaml那样添加新的运算符，导致无法使用更易读的中缀语法，特别是对于像“:-”这样的逻辑操作符，不得不使用容易引起误解的符号如“<=”。
+
+补充讨论：
+• [对文章内容的兴趣与阅读障碍的矛盾]
+  - 另一位用户表示对文章内容非常感兴趣，但由于缺乏必要的背景知识而感到难以立即阅读，导致文章在浏览器标签中停留未读。这反映了技术文章的可访问性和读者背景知识的重要性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45044525" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ckpinnegar.xyz/save-dont-bookmark.html" target="_blank">Save, Don't Bookmark (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wslh</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-08-31 17:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章批判了传统浏览器书签的局限性，指出它们只是保存网址而非内容，容易因链接失效而变成"数字坟墓"。作者推荐使用SingleFile等工具直接保存完整网页（包括文本、图片等），认为这种方法具有诸多优势：内容永不失效、可离线访问、支持全文搜索、能保存不同时间点的版本，且保存的文件可自由处理。文章强调互联网内容转瞬即逝，建议主动保存有价值的信息。最后还推荐了其他存档工具和方法。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于网络信息保存工具和方法的讨论]
+
+不同观点：
+• [个人开发工具的实用性]  
+  - kevinfiol分享了自己开发的工具Arkive，但最终选择了更成熟的Linkding，认为后者有更好的支持和功能。  
+  - 这引发了对个人工具与成熟工具之间选择的讨论。
+
+• [传统工具的持续维护]  
+  - zahlman提到Lynx（一款文本浏览器）仍在积极维护，并强调了其维护者对其他重要工具的贡献。  
+  - 这一观点突出了传统工具在技术生态中的持久价值。
+
+• [网络信息保存的可靠性问题]  
+  - jll29指出即使是DOIs（数字对象标识符）这样设计为“永久”的标识符也存在失效问题，主要原因是出版商倒闭或关闭。  
+  - 这一观点引发了关于网络信息保存可靠性和长期性的担忧。
+
+• [对过去工具的怀念]  
+  - mdp2021表达了对Scrapbook浏览器扩展的怀念，认为过去的工具更高效和简单。  
+  - 这一观点反映了对技术工具演变的复杂情感，可能引发关于工具进步与用户体验的讨论。
+
+补充讨论：[其他值得注意的讨论点]  
+- 争议的焦点可能在于个人开发工具与成熟工具之间的选择，以及对传统工具价值的评价。  
+- 讨论中还隐含了对网络信息长期保存的担忧，尤其是依赖第三方服务或出版商的情况。  
+- 对过去工具的怀念可能引发关于技术工具是否真正“进步”的讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45085055" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -169,25 +397,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.mcpstack.org/use/github/mcp-server/with/claude-code" target="_blank">Using GitHub MCP server with Claude code</a>
+                    <a href="https://www.nature.com/articles/s41377-025-01916-9" target="_blank">15-Fold increase in solar thermoelectric generator performance</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hgarg</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-08-31 12:20</span>
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 157</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-08-26 17:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了如何将GitHub MCP服务器与Claude Code集成，以增强Claude Code的功能。主要内容包括：1) 集成后可实现在Claude Code中直接使用GitHub工具管理仓库、自动化工作流和代码分析；2) 详细的分步安装指南，涉及GitHub安装、Claude Code配置和MCP服务器设置；3) 配置方法，通过在CLAUDE.md文件中添加服务器信息；4) 测试方法和常见问题解决方案；5) 集成后的下一步建议，如探索GitHub功能和加入MCP社区。适用于开发人员和团队使用。</p>
+                    <p>本文介绍了一种通过飞秒激光光谱工程和热管理技术提升太阳能热电发电机(STEG)性能的方法。研究团队在热端采用飞秒激光处理将普通钨材料转变为选择性太阳能吸收体(W-SSA)，实现了80%以上的高温吸收效率；在冷端通过激光处理将铝材料制成超高效微型散热器(μ-dissipator)，冷却性能提升2倍。同时设计了温室腔体减少40%的热对流损失。这些创新使STEG的发电量提升了15倍，而重量仅增加25%。该高效STEG可广泛应用于无线传感器网络、可穿戴设备和医疗传感器等领域。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：[新型太阳能热电发电机（STEG）的效率、应用潜力及其与其他技术的比较]
+
+不同观点：
+• **效率质疑**：有评论指出作者未提供具体效率数据，认为其效率极低（如仅能点亮LED），并质疑其与光伏电池的比较价值。
+• **应用潜力**：部分用户认为STEG在散射光或阴天环境下仍可工作，适用于太阳能电池表现不佳的场景（如1%效率虽低，但较早期设计提升15倍）。
+• **技术改进重点**：有人认为该研究的突破主要在激光图案化金属吸收太阳能，而非热电效率本身，激光技术更易实现。
+• **其他应用场景**：包括核电站（简化冷却系统）、CPU/GPU散热器、固态空调（接受低效以降低成本），以及军事热伪装（存储热能而非扩散）。
+• **争议焦点**：  
+  - 对“15倍提升”是否应为“15次方”（32,000倍）的误解。  
+  - 热电的卡诺效率是否显著低于太阳能电池。  
+  - 能否与太阳能电池结合使用（如叠加应用）。
+
+补充讨论：
+• 散热器技术的改进可能具有广泛经济价值（如铝散热片性能提升）。  
+• 伦理争议：军事应用优先还是应对气候危机的技术开发。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45082623" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45030038" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -198,37 +440,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=45086296" target="_blank">Hacker News Alternativies</a>
+                    <a href="https://en.wikipedia.org/wiki/Shepard_tables" target="_blank">Shepard Tables</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: default_</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-08-31 19:31</span>
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-08-31 21:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>谢泼德桌错觉是由心理学家罗杰·谢泼德于1990年提出的著名视错觉现象。该错觉通过两个完全相同的平行四边形（或梯形）旋转90度后呈现，当被看作三维桌子时，人们会错误感知它们的形状和大小差异达20-25%。研究发现，这种错觉源于大脑自动将二维图形解释为三维物体的机制，即使知道错觉原理也难以消除其效果。自闭症儿童对该错觉的敏感度低于正常儿童。该错觉被归类为几何尺寸错觉，曾获2009年"年度最佳错觉"奖。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：寻找类似Hacker News（HN）的替代平台
-
-不同观点：
-• [runningmike] 认为问题虽然好，但提问位置不对，并指出类似问题已被多次提出。提到Slashdot曾是HN的前身，但被广告机器人占据。提供了两个HN的旧帖链接作为参考。
-• [CTOSian] 推荐了https://twostopbits.com，主要关注复古内容。
-• [8organicbits] 认为最接近的替代品是https://lobste.rs/。
-• [FromTheArchives] 推荐了https://tildes.net/，但指出其活跃度和信息量不如HN。
-• [fsflover] 提供了Lemmy社交网络的链接（https://join-lemmy.org/和维基百科页面），暗示其作为替代选项。
-
-补充讨论：
-• 争议焦点在于各推荐平台的活跃度和内容质量是否足够与HN匹敌。
-• 讨论中提到的平台各有侧重：复古内容、技术讨论、去中心化社交网络等，显示出用户对替代平台的不同需求。
-• 部分用户通过提供旧帖链接暗示类似讨论已多次发生，可能认为问题重复或无新意。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45086296" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45087133" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -286,272 +516,6 @@
 争议焦点主要集中在"互联网地主"这一概念的适用性，以及该网站资源对不同技术水平用户的实用性。支持者看重其教育价值，批评者则质疑其概念基础和现实适用性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45075384" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s41377-025-01916-9" target="_blank">15-Fold increase in solar thermoelectric generator performance</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 157</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-08-26 17:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了一种通过飞秒激光光谱工程和热管理技术提升太阳能热电发电机(STEG)性能的方法。研究团队在热端采用飞秒激光处理将普通钨材料转变为选择性太阳能吸收体(W-SSA)，实现了80%以上的高温吸收效率；在冷端通过激光处理将铝材料制成超高效微型散热器(μ-dissipator)，冷却性能提升2倍。同时设计了温室腔体减少40%的热对流损失。这些创新使STEG的发电量提升了15倍，而重量仅增加25%。该高效STEG可广泛应用于无线传感器网络、可穿戴设备和医疗传感器等领域。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[新型太阳能热电发电机（STEG）的效率、应用潜力及其与其他技术的比较]
-
-不同观点：
-• **效率质疑**：有评论指出作者未提供具体效率数据，认为其效率极低（如仅能点亮LED），并质疑其与光伏电池的比较价值。
-• **应用潜力**：部分用户认为STEG在散射光或阴天环境下仍可工作，适用于太阳能电池表现不佳的场景（如1%效率虽低，但较早期设计提升15倍）。
-• **技术改进重点**：有人认为该研究的突破主要在激光图案化金属吸收太阳能，而非热电效率本身，激光技术更易实现。
-• **其他应用场景**：包括核电站（简化冷却系统）、CPU/GPU散热器、固态空调（接受低效以降低成本），以及军事热伪装（存储热能而非扩散）。
-• **争议焦点**：  
-  - 对“15倍提升”是否应为“15次方”（32,000倍）的误解。  
-  - 热电的卡诺效率是否显著低于太阳能电池。  
-  - 能否与太阳能电池结合使用（如叠加应用）。
-
-补充讨论：
-• 散热器技术的改进可能具有广泛经济价值（如铝散热片性能提升）。  
-• 伦理争议：军事应用优先还是应对气候危机的技术开发。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45030038" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://agentclientprotocol.com/overview/introduction" target="_blank">Agent Client Protocol (ACP)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: vinhnx</span> |
-                    <span>评分: 268</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2025-08-30 12:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了Agent Client Protocol（ACP），这是一个标准化代码编辑器与AI编程助手之间通信的协议。ACP旨在解决当前AI编程助手与编辑器集成存在的三大问题：集成成本高、兼容性有限和开发者锁定。通过类似语言服务器协议（LSP）的方式，ACP使兼容编辑器能够接入所有ACP兼容的AI助手，实现双方的独立创新和自由组合。协议采用JSON-RPC通过stdio通信，默认使用Markdown格式文本，目前支持Zed和neovim编辑器，以及Gemini等AI助手。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI代理与IDE/编辑器之间的通信协议标准化及其必要性]
-
-不同观点：
-• 支持标准化协议的观点：
-  - 认为标准化有助于减少切换成本，促进竞争（cube2222）
-  - 期待协议能获得广泛采用，解除对特定IDE的依赖（baggiponte）
-  - 标准化协议可能促使更多编辑器集成AI功能（akattelu）
-
-• 反对或质疑标准化协议的观点：
-  - 认为现有协议（如LSP）可能已足够，无需新协议（greatgib）
-  - 指出协议命名冲突问题（darkbatman）
-  - 认为现阶段应优先构建实际应用而非制定标准（hari-trata）
-
-• 替代方案的观点：
-  - 主张"提示编程"模式，完全避免AI与编辑器的直接交互（mg）
-  - 建议改进现有工具（如diff视图）而非创建新协议（xmorse）
-
-补充讨论：
-• 技术实现细节的关注点：
-  - 文件搜索与未保存文件的同步问题（vlaaad）
-  - 协议实现形式（JSON-RPC vs JSON over SSE）（adobrawy）
-  - 现有部分实现的存在（tekacs）
-
-• 争议焦点：
-  - 是否真的需要新的通信协议（greatgib vs akattelu）
-  - 标准化时机的分歧（hari-trata vs 其他支持者）
-  - AI交互模式的根本差异（直接集成 vs 人类式协作）
-
-• 幽默/讽刺观点：
-  - 对LLM需要专门协议表示不解（gijoeyguerra）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45074147" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=45086249" target="_blank">Ask HN: Which Open Source License to Choose for a Python Language Server</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: davidhalter</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-08-31 19:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：选择开源许可证对项目发展和盈利的影响
-
-不同观点：
-• MIT/Apache许可证支持快速采用和公司赞助，但无法防止代码被私有化重新分发（Burnsedia）
-• GPL/AGPL许可证提供更强的控制和许可收入，但可能影响采用率（Burnsedia）
-• EUPL是AGPL的替代选择，同样保护SaaS但更易读且不"病毒式传播"（lieks）
-• 现有MIT许可项目已建立社区信任，更严格许可证可能阻碍采用（nylonstrung）
-• AGPL可能面临企业法律部门的反对，影响采用（gkoos）
-• 对于LSP这类工具，AGPL的限制可能不必要（bananapub）
-
-补充讨论：
-- 争议焦点：许可证选择应优先考虑快速采用还是直接盈利
-- 其他建议：考虑商业许可证直接盈利（brudgers）
-- 特殊考虑：开发工具类项目（如LSP）的特殊许可证需求
-- 社区因素：现有竞争项目的许可证现状对采用率的影响</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45086249" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://savingcountrymusic.com/rick-beato-is-right-to-rant-about-music-copyright-strikes/" target="_blank">Rick Beato is right to rant about music copyright strikes</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: breve</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-08-31 05:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>音乐博主Rick Beato近日公开批评音乐版权制度的严苛问题，指出唱片公司过度使用自动化系统打击音乐片段的使用，即便这些使用明显符合合理使用原则。他特别点名环球音乐集团，认为其做法不仅损害创作者推广音乐的机会，也不利于自身利益。文章还提到，类似问题已存在多年，但行业始终未能解决，导致许多音乐播客被迫停更或删除内容。作者呼吁音乐行业应适应播客等新媒体形式，制定更合理的版权政策，平衡各方利益。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：音乐版权制度的现状、问题及可能的解决方案
-
-不同观点：
-• **版权制度不公**（rsp1984, Veserv, prox）
-  - 工程师发明需要复杂且昂贵的专利申请流程，而音乐自动获得100多年保护
-  - DMCA规定的法定赔偿金额过高（750-150,000美元/作品）
-  - 现行系统明显偏向音乐产业，技术公司屈服于行业压力
-
-• **版权滥用问题**（jimnotgym, strken）
-  - 数百项虚假版权主张构成骚扰
-  - 虚假DMCA主张缺乏法律后果
-
-• **合理使用辩护**（neilv）
-  - Rick Beato的视频是合法的合理使用（教育目的）
-  - 短片段的合理使用应受保护
-
-• **解决方案建议**
-  - 强制许可扩展（Veserv）：建议对录音也实行强制机械许可
-  - 便捷授权系统（rglover）：建立在线音乐许可商店
-  - 抵制策略（bambax, aquir, stevage）：通过盗版/抵制/直接支持艺术家来"饿死"唱片公司
-  - 技术规避（userbinator）：使用不受版权保护的AI音乐
-
-争议焦点：
-1. 版权保护期限和强度的合理性（音乐vs专利）
-2. DMCA法定赔偿金额是否过高
-3. 虚假版权主张的法律后果缺失
-4. 技术检测系统的准确性与公正性（camgunz）
-
-补充讨论：
-• 音乐产业创新滞后（talove）
-• 版权期限延长的经济学论证（ggm）
-• 艺术家与粉丝间的中间商问题（aquir）
-• YouTube内容检测技术的问题（camgunz）
-
-产业态度分歧：
-- 传统音乐产业：坚持严格版权保护
-- 内容创作者/技术界：主张改革现行制度
-- 听众/消费者：部分支持抵制策略</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45080618" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://andrewmarder.net/firefox/" target="_blank">Hardening Firefox – a checklist for improved browser privacy</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: amarder</span> |
-                    <span>评分: 171</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-08-30 11:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是一份Firefox隐私设置指南，提供了三个主要方面的优化建议：基础隐私设置（如更换默认搜索引擎为DuckDuckGo、开启HTTPS-only模式）、推荐扩展程序（如uBlock Origin、ClearURLs等），以及高级配置（通过about:config调整首方隔离等参数）。作者选择Firefox而非基于Chromium的Brave，主要看重Mozilla非营利性质和开源承诺。文章最后指出某些设置可能导致网站功能异常，需权衡取舍。同时还提到尚处开发阶段的Ladybird浏览器值得期待。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Firefox浏览器隐私保护的有效性及相关替代方案
-
-不同观点：
-• Firefox隐私设置不足
-  - Firefox内置多种追踪服务（如New Tab、Sync、Pocket等）
-  - 即使启用所有隐私设置，仍可能被指纹识别（Tor是唯一有效方案但会影响支付网站使用）
-  - 建议使用主机防火墙（如LittleSnitch）进行更精细控制
-
-• 对Firefox的彻底不信任
-  - 隐私设置可能被自动恢复或静默修改（如默认启用Cloudflare DoH事件）
-  - 认为Firefox是Google的"特洛伊木马"，阻碍其他浏览器发展
-  - 建议使用LibreWolf等强化版本
-
-• 技术改进建议
-  - 应禁用机器学习功能（browser.ml.*）以节省电量
-  - 建议将Firefox放入沙箱（如Linux的bubblewrap）
-  - 需要更底层的网络请求控制（拦截/修改请求、JS执行控制）
-
-• 替代浏览器推荐
-  - Orion浏览器（Webkit内核，兼容Chrome/Firefox扩展）
-  - LibreWolf（专门强化的Firefox分支）
-
-补充讨论：
-- 争议焦点：Firefox是否真正保护隐私 vs 仅是"表面工程"
-- 特殊使用场景问题：HTTPS-only模式可能影响本地开发（localhost访问）
-- 指纹识别困境：用户希望获得"最常见指纹"而非完全消除指纹
-- 信任问题：如何验证DuckDuckGo等隐私服务的真实性（黑箱问题）
-- 开发者回应：承认检查清单是"进行中工作"并寻求反馈</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45073746" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
