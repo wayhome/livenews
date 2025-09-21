@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-09-21 20:22 (北京时间)
+            最后更新时间: 2025-09-21 23:12 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,44 +61,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lwn.net/Articles/1033955/" target="_blank">Bringing restartable sequences out of the niche</a>
+                    <a href="https://swatson555.github.io/posts/2025-09-16-compiling-with-continuations.html" target="_blank">Compiling with Continuations</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-09-20 19:01</span>
+                    <span>作者: swatson741</span> |
+                    <span>评分: 81</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-09-17 03:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Linux内核中的可重启序列（restartable sequences）功能，该功能自2018年4.18内核版本引入，旨在提高多线程应用的性能。尽管最初主要用于特定场景，但随着时间推移，其应用范围逐渐扩大，尤其在GNU C库（glibc）中开始支持该功能后，使用频率增加。
-
-可重启序列通过设置共享内存区域，让内核在中断线程执行时能识别关键代码段，并通过跳转到指定地址来处理中断，从而避免并发问题。虽然该功能需要汇编编写关键代码段且仅限Linux使用，但其在提高系统调用效率（如`sched_getcpu()`）和优化锁性能方面展现了潜力。
-
-随着可重启序列从边缘功能逐渐成为主流，一些兼容性问题也随之浮现，可能需要修改用户空间ABI接口来解决。文章还提到未来可能结合时间片扩展（time-slice extension）功能进一步优化关键代码段的执行效率。</p>
+                    <p>这篇文章评论了《Compiling with Continuations》一书，认为它虽然深入讲解了标准ML和continuation的实用技术，但缺乏练习题且内容编排晦涩难懂，更像一本供研究者引用的"炫技"书籍。书中介绍了MiniML语言、词法分析、语法分析等编译器实现细节，重点讨论了CPS（Continuation Passing Style）语言及其优化技术，包括闭包转换等核心问题的解决方案。尽管该书1992年出版时声称是编译器开发者的必读之作，但实际影响有限，主要价值在于系统阐述了标准ML的相关技术。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[rseq（Restartable Sequences）的设计是否合理，以及是否有更好的替代方案]
+                    <div class="comments-summary">主要讨论点：[对1992年出版的《Compiling with Continuations》一书的评价及其实际应用价值]
 
 不同观点：
-• **反对rseq设计的观点**：
-  - rseq要求每个调用者为每个目标平台编写自定义汇编代码，增加了使用复杂性。
-  - 认为许多用例可以通过CPU局部变量（如x86的GS段）实现，无需依赖rseq。
-  - 现有的原子指令（即使是宽松内存序）在性能上已经足够，但语言层面缺乏更轻量级的RMW原语（如`memory_order_volatile`或`memory_order_none`）。
-
-• **支持rseq或提出改进的观点**：
-  - 虽然rseq需要编写汇编代码，但它提供了更底层的控制，可能在某些高性能场景中更优。
-  - 提到内核已经使用CPU局部变量，但用户态进程需要静态绑定CPU或自行调度，这可能限制了灵活性。
+• **批评观点（dmvdoug）**：认为书评不合理，因为它以2025年的标准批评一本1992年的书，且未考虑当时的受众。书评还错误地期望这本书作为广泛阅读的入门书籍，而实际上它面向的是特定领域的研究者。
+• **支持观点（tikotus）**：实际应用了书中的CPS（Continuation-Passing Style）转换技术，成功实现了Lisp/Scheme的编译器，并认为CPS对异步编程（如async/await）非常有用。
+• **中立观点（mrkeen）**：承认书中缺乏练习是一大缺点，但认为它在CPS转换方面很有价值，并推荐后续论文作为补充。他还提到自己后来因为类型推断问题转而使用ANF（A-Normal Form）。
+• **历史视角（peterfirefly）**：指出call/cc（call-with-current-continuation）在当时（尤其是美国西北部和加州）的Lisp/Scheme社区中很流行，但现在已经不那么重要。他认为这本书在当时很有价值，但对不关心call/cc的读者来说可能不相关。
+• **极端观点（matheusmoreira）**：质疑书中技术的实际应用价值，认为如果没有人在C语言中实现过，这些技术可能从未真正被应用。
 
 补充讨论：
-- **争议焦点**：rseq的复杂性与性能优势之间的权衡。
-- **潜在改进建议**：呼吁C标准增加更轻量级的内存序选项（如`memory_order_none`），以简化高性能编程。
-- **技术背景**：讨论了用户态与内核态在调度和CPU绑定上的差异，暗示rseq可能在用户态场景中显得冗余。</div>
+• **争议焦点**：书评是否合理，以及书中技术（如CPS和call/cc）的实际价值和影响力。
+• **技术讨论**：CPS与ANF的对比，以及它们在类型推断和异步编程中的应用。
+• **历史背景**：call/cc的流行与衰落，以及它在现代编程语言中的地位。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45316266" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45271493" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -109,48 +102,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://weuseelixir.com/" target="_blank">Show HN: WeUseElixir - Elixir project directory</a>
+                    <a href="https://davidsimon.com/the-wire-hd-with-videos/" target="_blank">The Wire in HD (2015)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: taddgiles</span> |
-                    <span>评分: 205</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-09-19 20:25</span>
+                    <span>作者: tosh</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-09-20 20:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了使用Elixir编程语言的各种应用程序、库和公司目录。内容包括多个使用Elixir的知名项目和企业，如Oban（Elixir的健壮作业处理工具）、Absinthe（Elixir的GraphQL工具包）、X-Plane 12（飞行模拟器）以及Pepsico等公司。文章旨在展示Elixir在现实世界中的广泛应用，并鼓励用户免费添加自己的应用程序或浏览所有列表。</p>
+                    <p>这篇文章是David Simon对已故好友Bob Colesberry的深情回忆。Bob是一位低调但极具才华的电影人，曾与多位著名导演合作，并在《火线》等剧中担任重要角色。作者坦言自己从Bob那里学到了许多电影制作知识，尤其是镜头语言和视觉叙事技巧。尽管Bob不善言辞，但他在影像创作方面有着非凡的洞察力。文章特别提到当HBO决定将《火线》转为高清版时，作者第一反应就是"Bob会怎么做"，表达了对这位挚友专业素养的尊重和怀念。全文充满对这位幕后英雄的敬意，也流露出对未能及时给予Bob应有赞誉的遗憾。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Elixir编程语言的应用、优势及WeUseElixir目录的改进建议]
-
-不同观点：
-• **Elixir的支持者**：
-  - taddgiles、pixelmonkey、kylecazar、shomp、recroad等用户赞扬Elixir的功能性编程、并发性和社区支持。
-  - 例子：shomp提到Elixir在非营利科技公司中降低成本的效果；recroad提到Liveview提高了生产力。
-  - 论据：Elixir适合构建高并发的Web应用，且开发体验愉快。
-
-• **对Elixir的犹豫**：
-  - pixelmonkey虽然对Elixir印象深刻，但仍认为从Python转向Elixir存在心理障碍。
-  - fbn79对基于VM的语言（如Elixir/Erlang）持怀疑态度，担心其抽象化可能带来问题。
-
-• **WeUseElixir目录的改进建议**：
-  - tommypalm建议增加过滤功能、允许用户提交其他公司的使用证据，并优化目录页面的分类筛选。
-  - didip提议将目录改为基于YAML的Git仓库，以减少用户注册的麻烦。
-
-补充讨论：
-- **争议焦点**：
-  - Elixir与Erlang/Gleam的选择（k__提问）：部分新项目仍选择Erlang而非Elixir，引发对语言适用场景的讨论。
-  - VM抽象化的利弊（fbn79 vs 其他支持者）：是否牺牲底层控制以换取开发效率。
-
-- **其他讨论点**：
-  - 用户分享了更多Elixir项目（jamauro、mmaia）和公司案例（_kidlike提到Kagi）。
-  - desireco42认为WeUseElixir是寻找工具和公司的实用资源，避免了低效的信息搜索。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45306120" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45317272" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -161,48 +131,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lenowo.org/viewtopic.php?t=5" target="_blank">Playing “Minecraft” without Minecraft (2024)</a>
+                    <a href="https://discovery.kaust.edu.sa/en/article/25936/micro-leds-boost-random-number-generation/" target="_blank">Micro-LEDs boost random number generation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: coolcoder613</span> |
-                    <span>评分: 151</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-09-19 02:13</span>
+                    <span>作者: giuliomagnifico</span> |
+                    <span>评分: 65</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-09-16 21:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一种无需官方Minecraft游戏也能体验Minecraft的方法。主要步骤包括：
-1. 使用Cuberite搭建1.12.2版本的Minecraft服务器
-2. 通过ViaProxy协议转换器解决版本兼容问题
-3. 使用Minosoft客户端(Kotlin编写)连接游戏
-
-文章详细说明了每个组件的下载安装步骤，以及如何配置连接。最后还提供了当服务器默认开启在线验证模式时的解决方法（修改设置文件中的Authenticate参数）。这种方法完全使用社区开发的替代方案，不涉及任何Mojang官方代码。</p>
+                    <p>沙特阿拉伯和美国的科学家团队开发出一种基于微型LED的量子随机数生成器（QRNG），能以9.375 Gbit/s的超高速率产生真正的随机数，比现有技术快数十倍。这种技术利用氮化镓微型LED（尺寸5-100微米）自发发射的光强量子涨落，通过简化光电系统架构，实现了低成本、低功耗的解决方案。所有测试样品均通过美国国家标准与技术研究院（NIST）的严格随机性检测。未来研究将聚焦于构建微型LED二维阵列提升速率，并开发包含片上光电探测器的全集成QRNG芯片。该技术有望推动数据加密、金融模拟等领域的应用发展。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于Minecraft的重新实现和替代方案的讨论]
+                    <div class="comments-summary">主要讨论点：[Micro-LED量子随机数生成器的实用性和创新性]
 
 不同观点：
-• [支持开源重新实现的观点]
-  - tossit444认为Minecraft的成功在于其开放性和粉丝的创造力，开源重新实现（如Minosoft）接近原版体验
-  - mclau157提出未来可能使用ThreeJS等技术重新实现Minecraft
+• **实用性观点**（gsliepen）：认为Micro-LED随机数生成器并非革命性技术，因为现有技术（如普通灯泡+摄像头）已能高效生成真随机数，论文的核心在于优化系统设计和消除偏差。
+  - 论据：光子检测本身依赖量子效应，且现有传感器的量子效率不足100%，已具备随机性。
+  
+• **技术质疑观点**（skinwill）：质疑Micro-LED方案与传统PN结噪声生成器的区别，认为可能只是“放大噪声”，且缺乏明显的随机性优势。
+  - 争议焦点：光子测量是否真的提供更好的随机性？是否需要更简单的替代方案？
 
-• [推荐替代方案的观点]
-  - anthk推荐使用Minetest加上完整游戏模块，认为它在老旧设备上性能更好
-  - jasonlotito提到Vintage Story让他对Minecraft失去兴趣，暗示存在更好的替代品
+• **安全性担忧**（p1necone）：提出潜在的攻击方式（如通过主板电源波动影响输出），质疑系统的抗干扰能力。
+  - 讨论关系：回应技术实现细节，但未直接反驳其他观点。
 
-• [关于Spigot服务器的争议]
-  - mcv对Spigot服务器的性质表示困惑（是否基于原版代码），同时批评微软账户系统的强制迁移政策
-  - 争议焦点：Spigot的技术实现方式及其与官方代码的关系
+• **术语混淆问题**（ginko）：指出“QRNG”在量子随机数（Quantum RNG）和拟随机数（Quasirandom）中的命名冲突，可能引发误解。
 
 补充讨论：
-- accrual提到"扁平化"更新（1.12.2到1.13的命名变更）对兼容性的影响
-- bixilon指出某些重新实现（如Minosoft）原生支持旧版本，无需代理
-- hamish-b提供了网站存档链接，反映实际使用中的技术问题</div>
+- 其他方案提及（ericdotlee）：以幽默方式提到“熔岩灯”作为随机数生成器的替代方案，暗示传统方法仍受关注。
+- “Paper Tiger”质疑（privatelypublic）：未展开讨论，但隐含对论文实际价值的怀疑。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45297258" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45268575" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -213,38 +176,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://writings.stephenwolfram.com/2025/09/the-ruliology-of-lambdas/" target="_blank">The Ruliology of Lambdas</a>
+                    <a href="https://arstechnica.com/tech-policy/2025/09/internet-archives-big-battle-with-music-publishers-ends-in-settlement/" target="_blank">Internet Archive's big battle with music publishers ends in settlement</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: marvinborner</span> |
-                    <span>评分: 130</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-09-15 19:28</span>
+                    <span>作者: coloneltcb</span> |
+                    <span>评分: 350</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-09-15 22:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了λ演算（Lambda Calculus）的基本概念和应用。λ演算是抽象计算的一种纯形式，起源于20世纪30年代Alonzo Church的研究。文章探讨了如何用λ表达式表示整数（Church numerals）和进行基本计算（如beta规约），并讨论了变量命名冲突问题及其解决方案（如de Bruijn索引和组合子）。此外，还比较了λ演算与其他计算模型（如组合子）的异同，并分析了其计算能力和局限性。文章结合Wolfram语言的示例，展示了λ演算在实际计算中的应用及其丰富的规则学特性。</p>
+                    <p>互联网档案馆与音乐出版商就“Great 78项目”版权诉讼达成保密和解。该项目旨在数字化保存早期虫胶唱片音乐，但被多家唱片公司指控侵权，索赔金额一度高达7亿美元。互联网档案馆曾辩称下载量极低且未影响唱片公司收益，但最终选择和解。这已是该机构继去年与图书出版商诉讼败诉后，再次以保密赔偿结束版权纠纷。学者质疑唱片公司诉讼带有报复性，实为打压互联网档案馆在版权合理使用边界的探索。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Wolfram关于lambda calculus的帖子的价值、可视化方法和术语问题]
+                    <div class="comments-summary">主要讨论点：[Internet Archive（IA）面临的版权诉讼问题及其未来前景]
 
 不同观点：
-• **批评观点**（zelphirkalt）: 帖子内容冗长且缺乏重点，特别是未解释自创术语"ruliology"，导致阅读体验不佳。可视化部分看似深入，但实际无实质性内容。
-• **支持观点**（bubblyworld）: 认为帖子是对lambda calculus基础的有趣探索，可视化虽不完美但提供了抽象概念的直观理解，具有启发性。
-• **补充资源观点**（tromp, russellsprouts, pcfwik）: 提供相关资源链接（如功能性busy beaver研究、动画视频、"To Dissect a Mockingbird"），建议更系统或直观的替代方案。
-• **幽默/调侃观点**（20wenty, the__alchemist, antonvs）: 调侃Wolfram帖子长度难读完（类比大卫·福斯特·华莱士的书），或讽刺其用Mathematica的Lisp风格混淆lambda calculus本质。
-• **中立评价**（deviation）: 简短肯定其为"不错的咖啡读物"。
-• **学术关联观点**（theGnuMe）: 推测其工作可能重新发现了Church-Turing论题。
+• **IA自身管理问题**  
+  - badlibrarian指出IA在诉讼中发现的技术债务和流程混乱问题，使其难以捍卫理想的未来愿景。  
+  - KnuthIsGod认为IA已沦为“杂乱档案库与盗版网站的混合体”。  
+  - tokai提到IA存在大量盗版内容（如电影），可能继续引发法律纠纷。
 
-补充讨论：
-- **争议焦点**：帖子是否真正提供了lambda calculus的新见解（vs. 仅是形式化包装或冗余可视化）。
-- **术语争议**："ruliology"未定义引发困惑，反映作者与读者间的信息不对称。
-- **风格分歧**：部分读者欣赏其"漫游式"探索（bubblyworld），另一部分认为缺乏结构性（zelphirkalt）。</div>
+• **版权执法双重标准争议**  
+  - Bender质疑为何YouTube（YT）未被追究，而IA成为目标，推测是因IA缺乏YT的法律资源与官僚资本。  
+  - ethagnawl以UMG对YouTuber Rick Beato的滥诉为例，批评版权方（如唱片公司）滥用权力，试图垄断内容访问权。  
+  - josefritzishere指出版权诉讼中“无需证明实际损害”的特权现象，认为司法偏袒大版权持有者。
+
+• **IA的价值与存续担忧**  
+  - ayaros强调IA是人类宝贵资源，但担忧其未来存续，认为非技术群体对其认知不足。  
+  - textfiles以反讽语气呼吁关注IA现状，隐含对其困境的无奈。  
+  - MomsAVoxell提议IA应由美国国会图书馆接管并获得公共资金支持。
+
+• **法律与技术解决方案争议**  
+  - NoNameHaveI建议将IA服务器迁至马绍尔群岛以规避版权执法。  
+  - amanaplanacanal质疑DMCA是否应覆盖此类情况，但指出报道未明确说明细节。  
+  - ilamont追问IA董事会独立性，认为其缺乏透明治理可能加剧法律风险。
+
+补充讨论：  
+- **争议焦点**：版权法的公平性（如对IA与YT的差异执法）、IA的运营合法性（是否过度越界）及非营利组织的治理透明度。  
+- **潜在影响**：qingcharles提及IA近期大量内容被删除，引发用户对审查的担忧；djoldman关注公开财务文件可能揭露的赔偿成本。  
+- **行业态度**：ethagnawl与badlibrarian均指出，版权方（如唱片公司）可能通过诉讼压制创新，但实际损害难以量化。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45253926" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45255785" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -255,63 +231,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://webassembly.org/news/2025-09-17-wasm-3.0/" target="_blank">WASM 3.0 Completed</a>
+                    <a href="https://www.historytoday.com/archive/feature/slavery-after-abolition-revolt-amelia" target="_blank">Slavery After Abolition: Revolt on the Amelia</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 1074</span> |
-                    <span>评论数: 58</span> |
-                    <span>发布时间: 2025-09-17 18:16</span>
+                    <span>作者: samclemens</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-09-17 05:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>WebAssembly（Wasm）3.0标准正式发布，这是继2.0版本后的重大更新。主要新特性包括：支持64位地址空间，将内存上限从4GB提升至16EB（实际受硬件限制）；允许单个模块使用多个内存空间，便于安全隔离和工具整合；引入垃圾回收机制，为编译器提供基本内存管理支持；扩展引用类型系统，增强类型安全性；新增尾调用优化，提升函数调用效率；提供原生异常处理机制，提高跨语言兼容性；并优化了向量指令集，增强硬件适配性。这些改进显著扩展了Wasm在Web和非Web环境中的应用能力。</p>
+                    <p>1811年，非法奴隶船"阿米莉亚号"在西非海岸发生起义，被囚禁的非洲人用木板武装反抗，成功夺取船只并返回非洲。与1781年"宗号"合法奴隶船事件不同，这次起义揭露了一个横跨四大洲的跨国奴隶贸易犯罪网络，涉及查尔斯顿、萨尔瓦多、利物浦和卡宾达等地。起义不仅挫败了罪犯掩盖罪行的企图，更使这一全球性非法奴隶贸易体系曝光。文章强调这起事件展现了被奴役者的反抗如何揭露国际犯罪网络。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[WebAssembly (WASM) 3.0 的新功能、应用场景及开发者体验]
+                    <div class="comments-summary">主要讨论点：对历史文章网站（historytoday.com）的付费墙（paywall）政策的不满和质疑
 
 不同观点：
-• **对64位支持及内存限制的关注**  
-  - jjcm 对64位默认支持表示兴奋，认为这将解除32位限制对Web应用（如在线视频编辑器）的束缚，同时关注移动设备是否会保持现有的内存限制。
+• [rendaw]：认为文章虽然看起来有趣，但付费墙政策（5美元/月或免费试用）过于繁琐且不划算，即使1美元无附加条件阅读也可能考虑
+- 论据：提到创建账户和密码的麻烦，甚至不愿盗版
+- 立场：反对现有付费模式
 
-• **垃圾回收（GC）功能的引入与讨论**  
-  - j0e1 对WASM GC表示惊叹，认为它是低级的自动内存管理工具。  
-  - jasonthorsness 指出当前GC功能不足以支持C#运行时，质疑其实际适用语言。  
-  - preommr 强调GC并非万能，仍需围绕WASM抽象编写代码，可能仍以C++或Rust为主。
-
-• **WASM与DOM交互的争议**  
-  - cedws 批评WASM未能实现与DOM的直接交互，认为其偏离了最初的Web目标。  
-  - hinkley 同样对缺乏DOM支持表示失望，并讽刺性地设定了三年后的提醒。
-
-• **开发者体验（DX）的批评**  
-  - alabhyajindal 抱怨WASM作为编译器目标的开发者体验不佳，批评Binaryen.js文档不足。
-
-• **多内存与WebGPU资源映射的期待**  
-  - flohofwoe 探讨多内存功能是否可避免WebGPU资源映射时的额外拷贝。
-
-• **语言特定需求的呼吁**  
-  - bborud 希望WASM能提供更高效的方式处理Go结构体，减少复杂性和脆弱性。  
-  - phkahler 期待OpenMP支持以优化Solvespace的Web构建。
+• [crazygringo]：质疑为何无法阅读的付费墙文章能获得高赞（40+），通常其他主要网站至少有人能提供非付费链接
+- 论据：指出HN（Hacker News）通常允许付费墙文章，但通常有人能提供访问途径
+- 立场：质疑社区投票机制对无法访问内容的合理性
 
 补充讨论：
-• **WASM 3.0的版本发布模型**  
-  - re 对WASM转向版本化发布模型表示惊讶，并讨论其与“常青”模型的关系。
-
-• **开发者工具的改进建议**  
-  - spankalee 呼吁AssemblyScript转向WASM GC，放弃对非GC运行时的支持。
-
-• **技术限制与标准化问题**  
-  - modeless 询问16GB内存限制的技术原因，以及JS堆大小是否同步放宽。
-
-争议焦点：
-1. WASM GC的实际适用性及其对高级语言的支持能力。  
-2. WASM是否偏离了最初的Web目标，尤其是缺乏DOM交互功能。  
-3. 开发者体验的不足是否阻碍了WASM的广泛采用。</div>
+- 争议焦点：付费墙内容的可访问性与社区投票机制之间的合理性
+- 讨论关系：crazygringo的评论是对rendaw观点引发的更广泛讨论的延伸，关注点从个人不满转向社区机制问题</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45279384" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45272147" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -322,13 +273,61 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://old.reddit.com/r/LocalLLaMA/comments/1nlu3cd/the_iphone_17_pro_can_run_llms_fast/" target="_blank">The iPhone 17 Pro can run LLMs fast</a>
+                    <a href="https://github.com/msuzen/isingLenzMC" target="_blank">Statistical Physics with R: Ising Model with Monte Carlo</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: oliverchan2024</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-09-21 02:46</span>
+                    <span>作者: northlondoner</span> |
+                    <span>评分: 114</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-09-19 09:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>isingLenzMC是一个用于模拟经典伊辛模型的R包，核心采用C语言编写。它通过Metropolis和Glauber蒙特卡洛方法实现一维伊辛模型的单自旋翻转动力学模拟，支持周期性边界条件。该包提供精确解的计算工具，可应用于统计物理中的自旋玻璃、磁性材料等研究，以及神经网络等合作现象分析。项目包含相关论文数据集，涉及有效遍历性和异常扩散研究。采用GPL-3许可证，包含R接口和核心C库，支持深度学习、统计力学等多个研究主题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[该GitHub仓库的特殊价值、蒙特卡洛方法的学习资源、模拟效率优化以及术语使用的差异]
+
+不同观点：
+• **仓库价值争议**  
+  - [epistasis] 质疑该仓库的特殊性，指出其方法已发表十年且近期更新有限，但承认其获得的关注高于一般科学方法仓库。  
+  - [frustratedSpin] 直接否定其价值，认为模拟一维Ising模型仅是本科生作业级别的内容。  
+
+• **蒙特卡洛方法学习资源**  
+  - [DrNosferatu] 寻求适合初学者的蒙特卡洛方法教程或书籍。  
+  - [evanb] 提供HMC（哈密顿蒙特卡洛）在Ising模型中的应用论文和代码链接作为实用资源。  
+
+• **模拟效率问题**  
+  - [chistev] 提出蒙特卡洛模拟速度过慢影响使用体验，寻求优化方案。  
+
+• **术语偏好与地域关联**  
+  - [nakamoto_damacy] 探讨使用"Statistical Physics"而非"Statistical Mechanics"是否反映作者背景（如欧洲）或研究范围更广。  
+
+补充讨论：  
+- [northlondoner] 补充赞扬R生态系统对可重复研究的支持，但未直接参与争议。  
+- 争议焦点：仓库的实际价值（基础教学工具 vs. 过时/无意义）以及术语差异的隐含信息。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45299625" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.reuters.com/business/media-telecom/trump-mulls-adding-new-100000-fee-h-1b-visas-bloomberg-news-reports-2025-09-19/" target="_blank">Trump to impose $100k fee for H-1B worker visas, White House says</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mriguy</span> |
+                    <span>评分: 1332</span> |
+                    <span>评论数: 231</span> |
+                    <span>发布时间: 2025-09-19 19:59</span>
                 </div>
 
                 <div class="summary-section">
@@ -338,27 +337,30 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[LLM-based Siri的未来发展及其潜在影响]
+                    <div class="comments-summary">主要讨论点：[H-1B签证政策的改革及其对美国劳动力市场和移民系统的影响]
 
 不同观点：
-• [支持技术进步的观点]
-  - [Drblessing] 对本地LLMs的未来感到兴奋，认为到2030年8b模型可能像今天的顶级模型一样强大。
-  - [guidedlight] 关注Apple可能推出的基于LLM的Siri，并猜测是否会仅限于Pro设备。
-  
-• [担忧隐私和滥用的观点]
-  - [notepad0x90] 表达了对LLMs在智能设备上运行的担忧，认为人类滥用技术可能导致严重后果，如心理影响、信用评估和政治操纵。
-  - 强调需要法律和监管来防止滥用，并指出现有隐私法律的不足。
+• **支持高额费用和限制**  
+  - 认为H-1B签证被滥用，压低本地工资（如印度外包公司通过H-1B雇佣廉价劳动力）。  
+  - 建议提高最低工资门槛（如$200k）或征收高额费用（如$100k）以筛选“真正的高技能人才”。  
+  - 例证：Bloomberg报道称半数H-1B签证被印度中介公司用于低薪替代本地劳工。  
 
-补充讨论：
-• [技术限制与争议]
-  - [guidedlight] 提到Apple可能未在iPhone发布会上提及Pro设备独占功能，这可能引发用户不满。
-  - [dzhiurgis] 简短评论，似乎对技术速度表示怀疑，但未展开讨论。
+• **反对一刀切政策**  
+  - 认为高额费用或关闭H-1B会加速企业离岸外包（如迁至印度、加拿大），损害美国竞争力。  
+  - 批评政策“残酷”，如要求现有H-1B持有者24小时内返美否则罚款$100k。  
+  - 例证：用户分享自身通过H-1B成为公民的经历，认为现行政策虽不完美但仍是重要移民通道。  
 
-争议焦点：
-• LLMs在智能设备上的广泛应用是否会带来不可控的隐私和安全风险？
-• 现有的法律和监管是否足够应对LLMs带来的新挑战？</div>
+• **主张结构性改革**  
+  - 建议取消H-1B配额，改为按薪资比例征税（如50%附加费），既允许高薪引进人才，又防止工资压制。  
+  - 提出应赋予H-1B持有者换工作的自由，避免雇主剥削（如当前绑定雇主的制度导致低薪和虐待）。  
+  - 争议点：如何防止员工自行支付费用变相“购买”工作签证？  
+
+补充讨论：  
+- **政策漏洞与腐败风险**：豁免条款（“国务卿裁量权”）被质疑可能滋生贿赂或政治寻租。  
+- **替代方案效果**：企业已转向墨西哥等近岸外包，显示政策可能无法保护本地就业，反而推动离岸化。  
+- **人道争议**：现有H-1B持有者面临的不确定性（如家庭分离、职业中断）引发伦理批评。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45319584" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45305845" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -369,50 +371,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pnpm.io/blog/releases/10.16" target="_blank">Pnpm has a new setting to stave off supply chain attacks</a>
+                    <a href="https://improbable.com/ig/winners/" target="_blank">IG Nobel Prize Winners 2025</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ivanb</span> |
-                    <span>评分: 234</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-09-18 07:12</span>
+                    <span>作者: JeremyTheo</span> |
+                    <span>评分: 137</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-09-20 11:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>pnpm引入了两项主要更新：1) 新增`minimumReleaseAge`设置，可延迟安装新发布的依赖包（默认1440分钟/1天），降低安装恶意包的风险，并支持通过`minimumReleaseAgeExclude`设置例外包；2) 新增"finder functions"功能，允许在`.pnpmfile.cjs`中定义查找函数，通过`--find-by`参数按自定义条件（如peerDependencies）搜索依赖关系。此外还修复了Node.js 24下的弃用警告、发布tar.gz文件支持等若干问题。</p>
+                    <p>搞笑诺贝尔奖（Ig Nobel Prize）旨在表彰那些"先让人发笑，后引人思考"的科学研究。2025年的获奖研究包括：文学奖授予长期记录指甲生长的已故医生；心理学奖研究告诉自恋者他们很聪明的影响；营养学奖研究蜥蜴对披萨的偏好；儿科奖探讨母乳中大蒜味对婴儿的影响；生物学奖验证斑马纹奶牛是否能避免蚊虫叮咬；化学奖则研究食用特氟龙塑料增加食物体积的效果。这些看似荒诞的研究实则体现了科学探索的趣味性和创新思维。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[如何通过延迟安装或权限控制来防范软件供应链攻击]
+                    <div class="comments-summary">主要讨论点：[Ig诺贝尔奖的获奖研究及其社会意义]
 
 不同观点：
-• **延迟安装策略的支持者**
-  - `postepowanieadm` 指出等待3天安装可能无法及时检测到问题。
-  - `the_mitsuhiko` 提到 `uv` 工具支持通过 `--exclude-newer` 参数安装旧版包（如14天前的版本），并认为这种功能应更广泛采用。
-  - `OskarS` 质疑JS生态的快速更新文化，认为生产环境应等待更长时间（如6个月）以确保稳定性。
-  - `chr15m` 极端认为应无限延迟升级，强调升级需谨慎。
+• **幽默与科学价值并存**  
+  - [the_af]认为部分研究看似搞笑但有实际科学意义，例如奶牛斑马条纹防蝇实验可能验证了斑马条纹的功能假说。  
+  - [cs702]提到心理学获奖研究（智商反馈与自恋关联）虽引人发笑，但值得深思。
 
-• **依赖锁定与选择性更新**
-  - `dwoldrich` 主张通过精确版本锁定（`--save-exact`）和禁用自动更新（如 `npm update`）来减少风险，依赖工具（如Dependabot）提示安全更新。
+• **常识性争议**  
+  - [usrnm]质疑“酒精提升外语能力”研究获奖合理性，认为这是常识，引发对奖项评选标准的讨论。  
+  - [qwertytyyuu]调侃性提议“食用特氟龙增加饱腹感”，[eulgro]反驳其忽视PFAS毒性，反映部分研究可能脱离现实风险。
 
-• **权限控制系统提议**
-  - `keraf` 建议借鉴Deno或移动应用的权限模型，要求包声明所需权限（如 `--allow-net`），限制敏感操作。
-
-• **信任审计与基础设施改进**
-  - `nicoburns` 提出基于代码审查和信任网络的方案，要求包管理器仅安装通过足够手动审查的版本。
-
-• **生态系统问题批评**
-  - `kardianos` 批评NPM的设计鼓励盲目更新，且依赖树庞大难以审计，对比Go的包管理更合理。
+• **奖项扩展可能性**  
+  - [shireboy]建议增设赞助机制，支持“冷门但有趣”的研究，引发对科学资助边界的探讨。  
+  - [belter]半开玩笑提议加入Avi Loeb的外星探测器研究，隐含对当前科研热点争议的讽刺。
 
 补充讨论：
-- **工具支持**：`calyhre` 和 `h4ch1` 分别提到Yarn和Bun正在实现类似功能（如 `minimumReleaseAge`），但后者认为非完美解决方案。
-- **NPM的滞后**：`Ozzie_osman` 质疑为何NPM未引入此类功能。
-- **技术细节争议**：`Flimm` 讨论包年龄的计算方式，强调需依赖注册中心而非包作者提供的元数据。
-- **文化反思**：`gausswho` 将延迟更新延伸到对科技公司隐私剥削的抵制，提倡使用开源替代品。</div>
+- 争议焦点在于奖项如何平衡幽默性与科学严谨性，以及是否应鼓励非常规研究（如[timthorn]提到的活动展示获奖者交流）。  
+- 部分用户（如[JeremyTheo][erk__]）更关注奖项传播价值，通过分享链接推动公众参与。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45286526" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45312228" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -423,41 +417,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://feedmaker.fly.dev" target="_blank">Feedmaker: URL + CSS selectors = RSS feed</a>
+                    <a href="https://www.meforum.org/middle-east-quarterly/why-arabs-lose-wars" target="_blank">Why Arabs Lose Wars (1999)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mustaphah</span> |
-                    <span>评分: 165</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-09-19 21:14</span>
+                    <span>作者: testdelacc1</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-09-21 09:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一款名为"Feed maker"的工具，它可以帮助用户快速从任意网站生成RSS订阅源。用户可以选择预设模板（如《华盛顿邮报》最受欢迎文章、《纽约时报》最多转发文章等），也可以自定义设置，包括输入目标网址、设置订阅标题、通过CSS选择器指定内容项、标题、描述和链接等元素。工具还提供可选功能，如是否包含项目元数据、是否清除URL参数等，并支持测试功能。该工具由Kevin Schaul开发，旨在简化RSS订阅源的创建过程。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[RSS生成工具的轻量化实现与现有工具的比较]
+                    <div class="comments-summary">主要讨论点：[关于Kenneth M. Pollack的著作及其价值的讨论]
 
 不同观点：
-• **轻量化实现支持者**（如mg）：提倡使用极简代码（如48行Python脚本）生成RSS，避免依赖重型框架（如Django），推荐标准库或轻量模块（如lxml）解析HTML。
-  - 论据：展示无依赖的原子化实现（atomfeed.py），强调可维护性和低开销。
-
-• **工具多样化推荐**（如bradbeattie、danielheath）：推荐其他工具如RSS-Bridge或Go语言方案，支持JS渲染（通过chromedriver）或邮件集成功能。
-  - 论据：RSS-Bridge的通用性；Go方案的多设备同步和离线支持。
-
-• **技术替代方案提议**（如gottlobflegel、ZYbCRq22HbJ2y7）：提出XSLT样式表或HTML转Markdown等方案，避免CSS选择器依赖。
-  - 例子：XSLT直接处理HTML源文件；类似Firefox阅读模式的转换。
+• [TFA的观点] Kenneth M. Pollack的著作《Arabs at War》（2002）是基于他的博士论文，对军事历史非常有价值，尤其是其中的历史部分。但《Armies of Sand》（2019）的理论部分被认为并未显著增加理解。
+• [silexia的观点] 文章展示了精英制度（meritocracies）比社会主义制度（socialistic systems）表现更好的功能性原因，暗示Pollack的著作在这方面有重要贡献。
 
 补充讨论：
-- **争议焦点**：工具复杂度与功能扩展的平衡（轻量vs.多功能）。
-- **兼容性质疑**（crazygringo）：关注生成RSS的字段缺失（如日期、guid）对订阅服务（如Blogtrottr）的影响。
-- **部署顾虑**（int0x29）：开放代理的安全风险导致私有化倾向。
-- **前沿设想**（zekenie）：提出DOM操作的"MapReduce"概念，探索Web原语的可能性。</div>
+• [testdelacc1的补充] 提供了一个镜像链接，可能是为了方便读者获取原文或其他相关资源。
+• 争议焦点在于Pollack的第二本书《Armies of Sand》是否对其理论部分有实质性贡献，TFA认为没有，而silexia则可能间接肯定了Pollack的整体贡献。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45306701" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45321232" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -468,66 +454,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/cactus-compute/cactus" target="_blank">Launch HN: Cactus (YC S25) – AI inference on smartphones</a>
+                    <a href="https://pup-e.com/goodbye-rubygems.pdf" target="_blank">Ruby Central's Attack on RubyGems [pdf]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: HenryNdubuaku</span> |
-                    <span>评分: 121</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-09-18 15:40</span>
+                    <span>作者: jolux</span> |
+                    <span>评分: 669</span> |
+                    <span>评论数: 37</span> |
+                    <span>发布时间: 2025-09-19 08:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Cactus是一个高效能的AI推理引擎，专为手机和小型AI设备优化，尤其针对ARM CPU设计，兼顾低功耗和低发热。相比Llama.cpp等框架，Cactus在CPU上性能更高（如iPhone 13 Pro达38-40 token/s），模型文件更小（如Qwen3-0.6B-INT8仅420MB）。其架构包含底层SIMD内核、统一计算图、高层Transformer引擎和兼容OpenAI的API接口。支持工具调用和多种量化格式（如INT8），适用于Android/iOS设备，但不推荐x86/AMD/NVIDIA平台。未来计划支持更多模型和硬件加速（如NPU/DSP）。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Cactus产品的功能、性能、许可模式及商业应用]
+                    <div class="comments-summary">主要讨论点：Ruby Central对RubyGems和Bundler的管理权变更引发的争议
 
 不同观点：
-• 正面评价：用户[coco]称赞Cactus易于使用，能在手机上快速运行不同模型，并以Pixel 9 Pro为例展示性能。
-• 技术疑问：[MrDrMcCoy]询问是否支持多计算单元（GPU/NPU）并行，并提出对RK3588芯片性能的期待，同时询问是否会扩展至音频/图像处理。
-• 许可争议：[pzo]和[asdfrgtfhgnjn]对许可证从Apache 2.0变更为非商业表示不满，认为破坏了信任，后者还担心法律风险。[cientifico]质疑“开源但商用需付费”的表述矛盾。
-• 性能与商业权衡：[nicktay]关注Flutter应用中本地模型与云API的成本性能比较，[VladVladikoff]直接询问盈利模式。
-• 技术问题：[giveita]反馈Android模型下载冻结问题，建议改进存储方案；[nextworddev]关心电池消耗；[ApolloRising]提议增加联网模式；[potato-peeler]和[dcreater]分别询问微调和网页搜索功能。
+• **反对Ruby Central的行为**  
+  - 认为Ruby Central的行为是“敌对接管”，未经警告移除长期维护者并集中控制权，破坏了社区的信任和开源精神。  
+  - 强调社区驱动的治理模式应基于贡献者的能力和社区信任，而非雇佣关系或意识形态。  
+  - 要求恢复被移除维护者的权限，并建立透明的治理机制。  
 
-补充讨论：
-• 混淆澄清：[ks2048]指出文档中Apple设备与x86工具链的说明存在歧义，建议添加iOS性能对比基准。
-• 应用体积：[mritchie712]询问集成Qwen3 600m模型后的应用大小。
-• 展示争议：[dcreater]注意到应用商店展示Claude Haiku模型，可能引发模型支持范围的疑问。</div>
+• **支持或中立态度**  
+  - 有人认为Ruby Central的行为可能是出于维护基础设施安全的考虑，但承认沟通不足。  
+  - 部分人表示愿意等待Ruby Central的解释，暂不急于下结论。  
+  - 提到Marty（Ruby Central的Open Source Lead）可能是出于善意行动，尽管过程中有失误。  
+
+• **对未来的担忧**  
+  - 担心Ruby Central的举动会导致社区分裂，甚至可能引发Rails Foundation建立自己的gem注册表。  
+  - 有人认为类似事件（如NPM、WordPress）反映了企业接管开源项目的趋势。  
+
+补充讨论：  
+- **争议焦点**：Ruby Central的行为是否属于“敌对接管”，以及其动机是否合理。  
+- **社区反应**：部分人呼吁赞助商施压Ruby Central，甚至考虑建立替代基础设施。  
+- **后续行动**：Ruby Central计划举办Q&A会议解释事件，Homebrew项目也在尝试调解。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45291024" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://research.google/blog/deep-researcher-with-test-time-diffusion/" target="_blank">Deep researcher with test-time diffusion</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: simonpure</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-09-20 16:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Google研究团队推出TTD-DR框架，首次将研究报告写作模拟为扩散过程：通过深度研究代理自主起草初稿，并利用高质量检索信息进行多轮修订。该系统包含两大创新算法：基于自我进化的组件优化提升各环节质量，结合检索去噪实现报告级精修。测试表明，该方法在长篇幅报告写作和多跳推理任务中达到最先进水平。TTD-DR模仿人类研究流程，通过研究计划生成、迭代搜索和最终报告合成三阶段架构，配合持续自我进化机制，显著提升了AI代理的研究报告质量与连贯性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45314752" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45299170" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
