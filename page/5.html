@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-09-22 23:20 (北京时间)
+            最后更新时间: 2025-09-23 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,40 +61,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://hostvix.com/linkedin-will-soon-train-ai-models-with-data-from-european-users/" target="_blank">LinkedIn will soon train AI models with data from European users</a>
+                    <a href="https://www.maragu.dev/blog/what-if-we-treated-postgres-like-sqlite" target="_blank">What if we treated Postgres like SQLite?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: skilled</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-09-22 09:33</span>
+                    <span>作者: markusw</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-09-22 13:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>LinkedIn将于2025年11月3日起使用欧洲用户数据训练生成式AI模型，涵盖欧盟/欧洲经济区、英国和瑞士用户。该公司以"合法利益"为法律依据，允许用户选择退出数据共享，并承诺不包含私信内容。此举扭转了2024年因批评而暂停的计划。训练数据将包括个人资料、公开内容（帖子、文章、评论）以及简历和求职答案，但不包含私信。同时，部分地区的微软广告个性化数据共享也将扩大。用户可通过账户设置中的"生成式AI改进数据"选项控制未来数据使用，但不影响已训练的模型。LinkedIn强调这些AI功能的使用不受用户选择影响。</p>
+                    <p>本文探讨了将PostgreSQL像SQLite那样作为本地数据库使用的可能性。作者赞赏SQLite的简单高效，但也羡慕Postgres丰富的扩展生态和成熟社区（如pgvector扩展）。他提出可以关闭Postgres的网络访问，仅通过Unix套接字连接，使其运行在单一服务器上，类似SQLite的本地文件模式。虽然这会增加服务器配置的复杂度，但相比SQLite的扩展编译等问题可能更具优势。作者认为这个想法值得尝试，并邀请读者分享相关经验。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[LinkedIn计划使用用户数据训练AI模型的合法性和潜在影响]
+                    <div class="comments-summary">主要讨论点：[在本地应用中使用类似SQLite的轻量级数据库方案，以及PostgreSQL是否适合作为替代方案]
 
 不同观点：
-• **反对使用LinkedIn数据训练AI**
-  - 数据质量低：用户认为LinkedIn内容多为AI生成的“励志”废话或企业思想领袖的无意义言论（如[thimabi]、[Havoc]）。
-  - 法律争议：质疑“合法利益”是否符合GDPR标准（如[senko]提供文档链接分析），且“选择退出”机制不充分（如[untrimmed]指出已训练模型不受影响，[zelphirkalt]认为应立法禁止此类行为）。
-  - 社会风险：担忧AI会强化“内卷文化”（如[blitzar]讽刺“4点冰浴”生存论）。
+• PostgreSQL数据目录格式不稳定且不便于移植，不能像SQLite那样简单地打包移动（eirikbakke）
+  - 论据：不同架构或编译选项可能导致兼容性问题
 
-• **嘲讽LinkedIn内容生态**
-  - 认为平台内容已无价值，充斥伪深度思考和骗局（如[rich_sasha]对比Instagram的“可爱宠物”，[toolis]调侃学习B2B销售的“尴尬帖子”）。
-  - 预测AI生成结果会更荒诞（如[elzbardico]讽刺虚假招聘广告）。
+• 某些应用（如DaVinci Resolve）已经在本地桌面环境中使用PostgreSQL（mutagen）
 
-补充讨论：
-- **争议焦点**：GDPR合规性（“合法利益”是否成立）与数据使用的事后控制（选择退出的实际效力）。
-- **延伸比喻**：将LinkedIn比作“另一个Facebook”（[numericcitizen]）或电影《Multiplicity》中的克隆混乱（[thatjoeoverthr]）。
-- **用户态度**：部分人庆幸未注册（[heikkilevanto]），另一些人则对AI学习企业销售话术的结果感到“兴奋”（反讽，如[toolis]）。</div>
+• 对于测试场景，PostgreSQL的LocalDB模式（类似MSSQL）是个好方案，但生产环境仍推荐SQLite（bob1029）
+  - 论据：SQLite的线程内运行可减少内存带宽消耗
+  - 争议焦点：性能差异是否显著
+
+• 可以通过Docker容器化PostgreSQL实现轻量级部署（8organicbits）
+  - 论据：已在单VM环境中成功运行并处理HN流量高峰
+  - 补充：测试时使用`eatmydata`关闭同步可提升速度
+
+• SQLite的核心优势在于进程内运行简化部署（kissgyorgy）
+  - 争议焦点：与PostgreSQL的IPC通信开销问题（tptacek补充）
+
+替代方案讨论：
+• 使用pglite模拟SQLite体验（emschwartz）
+• 通过DuckDB的PostgreSQL扩展实现兼容（srameshc）
+• 在Go应用中嵌入PostgreSQL（nu11ptr）
+• 关注新的sqlite-vector扩展（marcobambini）
+• ElectricSQL作为另一种选择（reactordev）
+
+资源限制讨论：
+• SQLite更适合资源受限环境，向量搜索等高级功能本身就需大量内存（OutOfHere）
+• DuckDB因文件式存储和PG功能支持被视为折衷方案（munchlax）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45331009" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45333190" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -105,45 +118,270 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://martinalderson.com/posts/what-happens-when-coding-agents-stop-feeling-like-dialup/" target="_blank">What happens when coding agents stop feeling like dialup?</a>
+                    <a href="https://holdtherobot.com/blog/xcode-is-the-worst-professional-software-i-have-ever-used/" target="_blank">Xcode Is the Worst Piece of Professional Software I Have Ever Used</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: martinald</span> |
-                    <span>评分: 48</span> |
+                    <span>作者: chmaynard</span> |
+                    <span>评分: 24</span> |
                     <span>评论数: 9</span> |
-                    <span>发布时间: 2025-09-21 12:11</span>
+                    <span>发布时间: 2025-09-22 08:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文主要讨论了AI编码助手的使用体验和发展趋势。作者指出当前主流AI模型（如Claude Code）存在可靠性差、速度慢（30-60tok/s）等问题，使用体验类似90年代拨号上网。尽管AI代币使用量暴增50倍，但基础设施承受巨大压力。作者尝试了速度更快（2000tok/s）的Cerebras Code，但质量仍不及Claude。文章将AI编程辅助发展分为三个阶段：GPT3.5的不可靠阶段、GPT4的代码片段辅助阶段，以及当前需要人工监督的CLI代理阶段。作者预测下一步发展可能是通过更高速度实现半自动化并行任务处理，但同时指出当前低速模型会破坏开发流程的连续性。</p>
+                    <p>文章主要吐槽Xcode开发工具的各种问题：编译器经常无法正常类型检查，报错信息模糊；项目配置文件难以阅读且容易出错；模拟器功能不完善且文档不准确；SwiftUI预览功能实际效果与宣传差距大；苹果的bug追踪系统不透明，开发者难以查询已知问题。作者认为Xcode不仅存在大量bug，更糟糕的是苹果对此遮遮掩掩，导致开发者浪费大量时间解决本应公开的问题。整个开发体验充斥着模糊性和误导性，与苹果在WWDC上的光鲜展示形成鲜明对比。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[LLM是否真正提高开发者生产力及使用体验]
+                    <div class="comments-summary">主要讨论点：[Apple开发工具和生态系统的用户体验和开发者支持问题]
 
 不同观点：
-• **质疑LLM生产力提升**  
-  - 认为AI降低认知参与度，表面提高生产力实则可能降低  
-  - 以AI生成代码缺乏上下文为例，指出长期可能造成代码库维护问题  
-  - 类比TikTok等即时满足产品，批评AI助长舒适最大化倾向  
+• [Apple开发工具质量差]  
+- 观点：iTunes、iCloud等软件在Windows上表现糟糕，苹果只关注盈利产品（SilverElfin）  
+- 证据：Xcode随机断开iOS设备连接，且重连困难（x0x0）  
+- 争议焦点：是否因智能手机双头垄断才让开发者不得不接受苹果生态（sschueller）
 
-• **支持LLM生产力价值**  
-  - 强调正确使用AI可显著提升效率（如代码审查场景）  
-  - 用户（@mmmllm）认为当前响应速度恰到好处，便于实时监督修正  
-  - 用户（@infecto）肯定Cursor等工具的平衡性，体现实际工作流适配价值  
+• [开发者体验存在系统性缺陷]  
+- 观点：SwiftUI文档不足，库支持被无故弃用（apples_oranges）  
+- 案例：首次使用Mac发布Flutter应用时遭遇连环障碍（asdfbank）  
+- 对比：Android Studio/IntelliJ更受青睐（a456463, yiyayo110）
 
-• **技术可靠性争议**  
-  - 引用Anthropic服务不稳定案例，担忧AI依赖导致"工厂停工"式风险  
-  - 对OpenRouter排名数据（Grok领先）表示怀疑，反映基准透明度问题  
+• [工具链存在两极分化]  
+- 观点：虽然Xcode问题多，但分析工具优于Visual Studio（apples_oranges）  
+- 矛盾点：Google Play商店的发布流程比苹果更差（sschueller）
 
 补充讨论：
-- **集成方式分歧**：强烈反对IDE深度集成（反感自动补全干扰），与期待本地化模型（@howmayiannoyyou）形成对比  
-- **认知参与悖论**：核心争议在于AI辅助是否削弱开发者对代码的掌控感（@bryanlarsen提及"心流"打断问题）  
-- **市场格局观察**：用户期待更多工具选择（如Cursor替代品），同时预测本地模型将冲击云端商业模式</div>
+- 苹果被指控"反开发者"：包括文档差、需要"讨好"苹果才能获取用户（dtagames）  
+- 替代方案争议：有人认为应优先使用开放Web技术或现有游戏引擎（dtagames）  
+- 新手困境：非Mac用户首次接触苹果开发工具时存在严重认知断层（asdfbank）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45322030" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45330736" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.blog/open-source/whats-next-for-git-20-years-in-the-community-is-still-pushing-forward/" target="_blank">What's next for Git? 20 years in, the community is still pushing forward</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mikece</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-09-22 17:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>今年是Git诞生20周年，Git已成为从个人项目到大型代码库的默认版本控制系统。为庆祝这一里程碑，GitHub采访了Git创始人Linus Torvalds，并将在Git Merge 2025大会上探讨Git的未来发展方向，包括性能提升、SHA-256安全升级、用户体验优化以及AI与Git的协作等新趋势。GitHub还邀请了专家讨论如何教导AI代理正确使用Git，并展示相关工具。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45336430" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=Lb4FDtAwnqU" target="_blank">What if AMD FX had "real" cores? [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-09-18 20:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是YouTube平台的版权声明和政策说明，内容包括版权信息、联系方式、创作者广告合作、开发者条款、隐私政策、平台安全指南、YouTube工作原理、新功能测试说明，以及NFL周日门票的相关信息。文末标注版权归谷歌公司所有（© 2025 Google LLC）。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Bulldozer架构的FX系列CPU是否具有真正的核心及其性能表现]
+
+不同观点：
+• [支持FX系列有真正核心的观点]
+  - Yizahi认为FX-8350有8个ALU和8个FPU（每个128位宽），满足核心的定义，不应与Intel的超线程技术混淆。
+  - Zardoz84补充指出FX系列确实有真正的核心，只是每两个核心共享浮点单元。
+
+• [对FX系列性能持批评态度的观点]
+  - wmf认为FX系列性能低于Intel，且芯片面积更大，无法挽救其市场表现。
+  - HankStallone提到FX-8350在运行ffmpeg时因过热而崩溃，反映了其实际使用中的问题。
+
+• [对Phenom II的怀旧与性能肯定]
+  - FancyFane表达了对Phenom II的特殊情感，并指出在某些基准测试中它仍能胜过现代CPU。
+  - magicalhippo提到在时钟速度相同的情况下，Phenom II表现优于Bulldozer，但Bulldozer理论上可以运行得更快。
+
+补充讨论：
+- magicalhippo提出的疑问引发了关于Bulldozer架构设计可能改进的讨论，即是否可以通过操作系统禁用部分核心来优化性能。
+- stn8188分享了个人使用FX系列的经历，表明尽管性能有限，但在特定场景下（如旧游戏）仍能胜任。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45294711" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://mattjhall.co.uk/posts/be-careful-with-go-struct-embedding.html" target="_blank">Be careful with Go struct embedding</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mattjhall</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-09-21 23:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文警告Go语言中结构体嵌入(Struct Embedding)功能可能带来的陷阱。文章通过示例说明，当多个嵌入结构体包含相同字段名时，Go会优先访问最外层字段而非报错，这可能导致预期外的行为。作者以实际工作中遇到的类似问题为例，提醒开发者在使用结构体嵌入时要特别小心这种字段名冲突的情况。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Go语言中结构体嵌入（struct embedding）的行为及其合理性
+
+不同观点：
+• Go允许不同深度的嵌入结构体存在同名字段，这是有意为之的设计，目的是防止外部库的结构体变更影响现有代码（divan）。例如，外部库未来新增字段不应导致用户代码无法编译。
+• 结构体嵌入是一个设计缺陷，应该被限制使用（nemo1618, alpb）。多位开发者表示在实践中经常后悔使用嵌入，认为它容易导致混淆和错误。
+• 直接访问嵌入字段（如`opts.URL`）是不明确的，应该强制使用完整路径（如`opts.FooService.URL`）以避免歧义（desumeku）。
+• Go的选择器（selector）行为是明确的：优先选择最浅深度的字段（joahnn_s）。这是语言规范的一部分，行为符合预期。
+
+补充讨论：
+• 争议焦点：是否应该允许不同深度的同名字段存在，以及直接访问嵌入字段是否合理。
+• 技术细节：编译器通过深度优先搜索处理字段选择，但对同深度的同名字段会报错（tymscar）。
+• 实用案例：有开发者表示在某些场景（如AWS客户端封装）中嵌入是唯一清晰的解决方案（lowmagnet）。
+• 工具支持：部分IDE能检测这种潜在问题（bilbo-b-baggins）。
+• 设计权衡：这是语言设计中的一个微妙权衡，严格限制会影响灵活性（divan）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45327531" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://finance.yahoo.com/news/top-economists-jerome-powell-agree-123000061.html" target="_blank">Economists agree that the nightmare of hiring Generation Z is real</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: 01-_-</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-09-22 17:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>2025年，美国25岁以下年轻人尤其是应届毕业生的失业率飙升，成为经济领域最令人担忧的问题之一。美联储主席鲍威尔和多位经济学家指出，这一现象主要源于美国特有的“低招聘、低解雇”经济环境，而非人工智能的冲击。尽管AI对部分初级岗位有影响，但整体经济放缓和招聘紧缩才是主因。
+
+与其他国家年轻人失业率下降不同，美国青年就业困境尤为突出。高盛和瑞银的分析显示，劳动力市场流动性降低导致年轻人更难找到工作，平均求职周期延长。未受高等教育的蓝领工人受影响较小，部分人甚至通过技工职业获得高收入。
+
+专家警告，经济低迷期开始职业生涯可能导致长期收入下降和财富积累困难，对Z世代和少数族裔求职者影响尤为严重。历史表明，经济衰退期毕业生的薪资劣势可能持续10-15年。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：低流动率劳动力市场对年轻人就业的影响及可能的原因。
+
+不同观点：
+• **Goldman Sachs经济学家Pierfrancesco Mei的观点**：
+  - 在低流动率劳动力市场中，找工作所需时间更长。
+  - 自20世纪90年代末以来，职位再分配（新职位创造和现有职位消失的速度）一直在下降。
+  - 2025年，职位流动率仍低于疫情前水平，这一现象在各行业和各州普遍存在。
+  - 年轻人受影响最大：2019年，年轻失业者在低流动率州平均需要10周找到新工作，现在需要12周。
+
+• **greyb补充的信息**：
+  - 提供了Powell的讲话和UBS的报告链接，可能涉及劳动力市场的其他相关分析或数据。
+
+• **never_inline的讽刺性评论**：
+  - 以幽默方式提出Gen Z可能依赖ChatGPT等工具完成工作，暗示年轻人就业行为的变化。
+
+补充讨论：
+- 争议焦点：低流动率劳动力市场对年轻人的具体影响是否被夸大，以及技术进步（如AI工具）是否加剧了这一现象。
+- 讨论关系：Pierfrancesco Mei的数据和分析是核心，greyb提供了扩展阅读，never_inline则以讽刺方式提出了另一种可能的影响因素。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45336365" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://paulkrugman.substack.com/p/hey-lets-undermine-americas-technology" target="_blank">Hey, Let's Undermine America's Technology, Education and Research</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pavel_lishin</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-09-22 16:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45335583" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://newscenter.lbl.gov/2025/09/18/optimized-materials-in-a-flash/" target="_blank">Optimized Materials in a Flash</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gnabgib</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-09-18 23:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>美国伯克利实验室开发了名为AutoBot的自动化AI实验平台，大幅加速了金属卤化物钙钛矿等先进材料的研发优化。该平台整合机器人、机器学习与自动分析技术，仅用几周就完成传统方法需耗时一年的5000种参数组合筛选，成功率高达99%。AutoBot通过迭代学习循环，在5-25%湿度环境下成功制备高质量薄膜，解决了该材料工业化生产的关键难题。这项发表在《先进能源材料》的研究为光学材料的大规模制造提供了创新解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45296221" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -190,322 +428,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.mozillafoundation.org/en/campaigns/tell-the-eu-dont-break-encryption-with-chat-control/" target="_blank">Tell the EU: Don't Break Encryption with "Chat Control"</a>
+                    <a href="https://marcobambini.substack.com/p/why-local-first-apps-havent-become" target="_blank">Why Local-First Apps Haven't Become Popular?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: nickslaughter02</span> |
-                    <span>评分: 281</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-09-22 10:01</span>
+                    <span>作者: marcobambini</span> |
+                    <span>评分: 99</span> |
+                    <span>评论数: 48</span> |
+                    <span>发布时间: 2025-09-22 13:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>欧盟正在推进一项名为"聊天监控"的危险监控法案，要求科技公司扫描所有人的私人信息，包括端到端加密内容。这将强制采用"客户端扫描"技术，在信息发送前就能查看私人内容，为黑客、企业和政府监控大开方便之门。该法案不仅会削弱隐私保护，还将彻底改变网络生活方式。Mozilla基金会呼吁欧盟：保护加密技术、拒绝削弱安全的措施、咨询专家意见。目前各国立场不一，民众可通过签署请愿书和联系议员表达反对意见。"客户端扫描"技术存在误判风险，一旦加密被削弱，敏感数据将面临被盗风险。该法案将影响WhatsApp、Signal等主流通讯和云存储服务。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[欧盟提出的"聊天控制"（Chat Control）政策对隐私、加密技术和监控的影响]
+                    <div class="comments-summary">主要讨论点：[本地优先（Local-First）应用的流行度不足的原因及其技术挑战]
 
 不同观点：
-• **反对Chat Control的观点**  
-  - 类比强制安装家庭监控摄像头，虽然可能有助于犯罪调查，但会侵犯隐私，且容易被黑客利用（m12k）。  
-  - 破坏加密技术只会伤害守法公民，犯罪分子仍会使用非法加密手段（catoc）。  
-  - 欧盟此举可能为威权国家要求科技公司开类似后门提供借口（untrimmed）。  
-  - 普通用户的隐私将被默认监控，而重视隐私的人会转向其他加密工具（gloosx）。  
-
-• **支持或理解政策初衷的观点**  
-  - 政策制定者可能认为仅针对坏人破解加密是有益的，但忽略了技术现实（palata）。  
-  - 尽管政策可能被滥用，但初衷是打击儿童性虐待材料（CSAM）（catoc提及政策表面理由）。  
-
-• **中立或技术性讨论**  
-  - 政策是否会真正“破解”加密，还是仅禁止加密（seydor）？  
-  - 提议先对欧盟立法者的通信进行公开试验（sschueller）。  
+• **技术挑战论**：认为分布式系统的复杂性（如CAP定理、同步冲突）是本地优先应用难以普及的主要原因。例如，gritzko指出分布式系统很难，而lordnacho提到同步问题无法完美解决。
+• **商业模式论**：认为本地优先应用缺乏流行的商业模型。xorvoid和sylens指出，SaaS和广告支持的免费模式更有利可图，而本地优先应用的数据主权和加密特性难以商业化。
+• **用户体验论**：认为用户需求已转向多设备同步和实时协作，离线优先的实用性有限。robmccoll和candiddevmike提出，大多数用户更关注实时性和最新数据，离线编辑的需求较少。
+• **技术解决方案论**：认为现有技术（如CRDTs、Tailscale、PouchDB）可以推动本地优先应用的发展。czx111331提到Loro CRDTs简化了开发，而VikingCoder认为Tailscale等技术可以降低开发门槛。
+• **历史案例论**：指出历史上已有类似技术（如Lotus Notes、Groove Networks），但未能普及。PaulHoule和andsoitis提到这些技术的遗产被忽视或整合到现代产品中。
 
 补充讨论：
-- **争议焦点**：政策的实际效果是否与宣称目标一致，以及是否会导致大规模监控。  
-- **国际影响**：其他国家（如中国、俄罗斯、美国）可能从安全或经济角度受益（BSDobelix、bradley13）。  
-- **用户应对**：部分用户建议转向更安全的通信工具（johnisgood）。  
-- **政策反复性**：类似提案屡次被否决但仍可能卷土重来（fl0id、permo-w）。</div>
+• **争议焦点**：关于同步冲突的处理方式（如0xffff2对“无冲突”设计的质疑）和本地优先应用的实际需求（如robmccoll对离线编辑必要性的质疑）。
+• **开发者视角**：MathMonkeyMan提到本地优先应用对用户更有利，但开发难度更高；czx111331强调开发工具的重要性。
+• **未来展望**：poisonborz提出“本地”定义的演变，认为自托管和集中存储可能是更可行的解决方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45331217" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cnbc.com/2025/09/21/south-koreas-president-lee-trump-investment-financial-crisis.html" target="_blank">South Korea's President says US investment demands would spark financial crisis</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: donsupreme</span> |
-                    <span>评分: 184</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2025-09-22 02:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>韩国总统李在明警告，若接受美国当前贸易要求而无保障措施，韩国可能重蹈1997年金融危机的覆辙。美韩7月口头达成协议，美国将降低特朗普时期对韩商品关税，换取韩国3500亿美元投资，但因投资方式争议尚未签署正式协议。李在明表示，若无货币互换协议，按美方要求现金投资将导致韩国外汇危机。他同时谈及近期美国移民局突袭现代汽车工厂逮捕数百名韩国工人事件，称虽引发民愤但不会破坏韩美同盟。贸易谈判中，韩方提出建立外汇互换机制缓冲投资冲击，但美方态度尚不明确。李在明强调韩国与已达成协议的日本情况不同，谈判需保证商业合理性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45328579" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.pixelpusher.club/p/i-forced-myself-to-spend-a-week-in" target="_blank">I forced myself to spend a week in Instagram instead of Xcode</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: wallflower</span> |
-                    <span>评分: 251</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-09-21 14:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>开发者Daniel Hour强迫自己一周不写代码，专注在Instagram上进行应用营销。他每天发布叙事性内容吸引用户，联系健身工作室和教练寻求合作，并尝试不同形式的创意内容（如FAQ和短信风格广告）。尽管过程艰难且耗时长，他获得了与知名健身平台的合作机会和用户积极反馈。这次实验让他意识到营销与开发同样重要，不能只依赖“酒香不怕巷子深”的理念。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：独立开发者在产品开发和营销中的策略与方法
-
-不同观点：
-• [rdrd] 分享了内容创作的策略，强调记录想法和与用户互动的重要性，认为真实性是避免竞争的关键。
-• [kristianp] 批评使用虚假故事和伪造信息的营销方式，主张通过真实用户反馈来推广产品。
-• [nicbou] 支持与用户紧密互动的方法，通过解决实际问题来优化产品内容，认为细节比大功能更重要。
-• [upmostly] 提出了一种“SaaS Schedule Sandwich”的时间管理方法，平衡开发和营销的时间分配。
-• [yoshyosh] 建议专注于TikTok/Reels等短视频平台，认为这些平台的传播效果优于24小时消失的Stories。
-• [nextworddev] 认为独立应用市场已死，必须投入资金才能获得回报。
-
-补充讨论：
-• [johannesberlin] 提到了法律风险，提醒开发者注意品牌名称的使用。
-• [mattfrommars] 讨论了移动开发的工具选择，提出了对Swift和XCode的担忧，偏好跨平台工具如React Native。
-• [alexchantavy] 强调了营销的重要性，认为“Build it and they will come”是错误的观念。
-
-争议焦点：
-• 营销手段的争议：是否应该使用虚假信息（如伪造短信）来吸引用户，还是坚持真实用户反馈。
-• 工具选择的争议：是否应该使用原生开发工具（如Swift/XCode）还是跨平台工具（如React Native）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45322819" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.rskey.org/~mwsebastian/miscprj/results.htm" target="_blank">Calculator Forensics (2002)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ColinWright</span> |
-                    <span>评分: 77</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-09-18 18:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章列出了多种计算器型号对特定数学公式"arcsin(arccos(arctan(tan(cos(sin(9))))))"的计算结果，并按结果值排序。结果显示不同品牌和型号的计算器（如APF、Casio、Sharp、HP等）给出了从0.0到8.99998762105不等的数值，反映了不同芯片组和计算器设计的精度差异。测试数据包含计算器型号、芯片组及显示类型（VFD、LCD等）等信息，可作为评估计算器精度的参考依据。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[不同计算器在计算特定数学表达式时的结果差异及其原因]
-
-不同观点：
-• **支持从父页面开始讨论**  
-  - [LeoPanthera]认为应从父页面开始，以获取完整背景信息，并提供了链接。
-
-• **数学计算结果的差异**  
-  - [avipars]通过Wolfram Alpha计算，给出了一个精确结果（0.424...），与某些计算器的结果不同。  
-  - [OskarS]提到`math.h`在浮点和双精度下的计算结果接近9，但未完全匹配任何选项，指出超越函数的精度问题。  
-  - [petters]指出数值计算困难，因为中间值接近余弦函数的局部最大值。
-
-• **对计算器性能的评论**  
-  - [tiahura]对HP-48的结果表示失望。  
-  - [qiqitori]验证了Commodore SR-37的结果与SR-36一致（9.08210803）。  
-  - [harshreality]希望看到更多现代计算器（如HP Prime、TI Nspire等）的测试结果。
-
-• **幽默与哲学讨论**  
-  - [kazinator]调侃“计算器是否犯下了数值分析的罪行”。  
-  - [quirkot]提出哲学问题：如果AGI的芯片给出错误答案，它如何自知？
-
-补充讨论：
-- **争议焦点**：计算结果的正确性及其原因，尤其是超越函数的精度问题。  
-- **历史背景**：[_trampeltier]提到曾向年轻人展示该网站，说明其教育意义。  
-- **重复讨论**：[tomhow]指出此前已有多次相关讨论，并提供了历史链接。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45293438" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.plover.com/2025/09/21/#what-changed-twice" target="_blank">My new Git utility `what-changed-twice` needs a new name</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jamesbowman</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-09-21 21:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是Mark Dominus（陶敏修）的个人博客文章，介绍了自己开发的一个名为`what-changed-twice`（临时命名为Fred）的Git工具。该工具主要用于分析多次修改的文件，帮助用户在多个提交中识别并整理相关的更改。作者还提供了工具的使用示例和输出报告的解释，并邀请读者为工具建议更好的名称。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于工具命名和功能的讨论]
-
-不同观点：
-• 支持现有名称 "what-changed-twice"：认为名称清晰表达了功能（[GuB-42]、[squeaky-clean]），虽然"twice"可能不完全准确，但简洁易懂。
-• 反对现有名称：认为名称不够直观（[handsclean]），建议使用更具体的名称如 "group-commits-by-file"。
-• 提出新名称建议：如 "git squash-report"（[quuxplusone]）、"git-repeatedly-changed"（[zahlman]）、"git-delta"（[allseeingimei]）等。
-• 功能扩展讨论：认为工具可以进一步扩展功能，如构建依赖图、自动化cherry-pick等（[gorgoiler]）。
-
-补充讨论：
-• 输出格式争议：有人认为高度缩写的提交ID增加了复杂性（[nferraz]），建议简化输出。
-• 功能局限性：指出工具在语义层面可能无法完全避免冲突（[eru]），仅适用于文本层面。
-• 其他工具参考：提到了类似功能的工具如Jujutsu的"absorb"命令（[codewritero]）和"gather"算法（[MontagFTB]）。
-
-争议焦点：
-• 名称的准确性与直观性：是否应该保留现有名称或采用更具体的新名称。
-• 功能范围：工具是否应该仅限于当前功能，还是可以扩展更多功能。
-• 输出格式：是否应该简化输出，避免冗余信息。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45327059" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/bodadotsh/npm-security-best-practices" target="_blank">Show HN: Tips to stay safe from NPM supply chain attacks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bodash</span> |
-                    <span>评分: 76</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-09-21 21:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章总结了防止NPM供应链攻击的安全最佳实践。主要建议包括：开发者应固定依赖版本、包含锁文件、禁用生命周期脚本、设置最小发布年龄、使用权限模型并减少外部依赖；维护者需启用双重认证、创建有限访问令牌、生成来源声明并检查发布文件；其他建议还有使用私有注册表、审计监控工具及支持开源软件。文章涵盖了npm、bun、deno、pnpm和yarn等多种包管理器的安全配置方法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[如何防范Node.js和NPM生态系统中的供应链攻击]
-
-不同观点：
-• **反对使用npx的观点**  
-  - npx会在执行时解析依赖，难以预测和执行代码的版本，不利于SBOM（软件物料清单）合规性。  
-  - 2022年的“colors事件”表明npx可能导致依赖问题突然爆发。
-
-• **依赖管理和锁定版本的重要性**  
-  - 建议使用`npm ci`确保锁定文件中的依赖版本一致（HoyaSaxa）。  
-  - Rockslide认为锁定每个依赖的精确版本过于极端，推荐使用默认的lockfile机制。  
-
-• **开发环境和CI/CD的安全实践**  
-  - condiment提到在无互联网连接的CI环境中手动管理node_modules，虽然繁琐但能提高安全性。  
-  - aiahs建议将开发环境放入Docker容器以隔离风险。  
-
-• **全局模块和编辑器扩展的风险**  
-  - abejfehr指出全局模块（如`yarn global add`）和编辑器插件（如ESLint、Prettier）可能自动安装最新版本，带来安全隐患。  
-  - 缺乏对这些场景的有效解决方案。
-
-• **语言和生态系统层面的改进需求**  
-  - dwoldrich认为Node/NPM存在根本性安全问题（如原生二进制混入、未维护包泛滥），呼吁被更安全的替代技术取代。  
-  - jimbohn建议在语言层面定义“白名单上下文”以限制模块行为（如禁用系统命令、网络访问）。  
-
-• **工具和社区的补充建议**  
-  - ashishbijlani推荐使用Packj工具检测供应链攻击的迹象（如Shell调用、网络通信）。  
-  - lrvick主张极端简化依赖：要么彻底审查所有依赖，要么基于标准库自行实现功能。  
-
-补充讨论：
-- **争议焦点**：是否应强制锁定所有依赖版本（Rockslide vs. 其他强调严格锁定的观点）。  
-- **未被充分讨论的话题**：本地开发环境隔离（aiahs提出）和编辑器插件的自动依赖更新风险（abejfehr）。  
-- **新兴工具**：vet（indigodaddy推荐）和Packj（ashishbijlani）被提及为解决方案的一部分。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45326754" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://newsletter.infiniteretry.com/dough-circuits-led-caterpillar/" target="_blank">Teach Kids Electronics Using Dough: Light Up Caterpillar Project</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ekuck</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-09-18 22:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个有趣的儿童电子手工项目——利用导电面团制作LED发光毛毛虫。项目材料包括彩色导电面团、LED灯、9伏电池等，通过将LED灯连接在面团之间形成电路。文章分步骤详细讲解了制作过程：连接电池、塑形毛毛虫、接通电源、安装LED灯，以及常见问题解决方法。这个项目既能培养孩子的动手能力，又能让他们学习基础电路知识。最后鼓励读者分享作品，并提醒安全收纳材料。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[导电面团在儿童电路教学中的有效性和实用性]
-
-不同观点：
-• **批评观点**：导电面团在电路教学中效果不佳  
-  - 难以防止面团球互相接触，导致元件烧毁  
-  - 与传统工具（如Snap Circuits或面包板）相比体验较差  
-  - 缺乏极性保护模块，实用性受限  
-  - 论点核心：面团未显著优于普通元件袋的教学价值  
-
-• **支持观点**：导电面团可作为趣味入门工具  
-  - 举例：用面团制作发光毛毛虫项目（9V电池+LED）  
-  - 强调其适合儿童的安全性和操作性（需监督）  
-  - 能直观展示极性、电路和导电性等核心概念  
-  - 论点核心：通过可塑媒介激发兴趣，适合低龄启蒙  
-
-补充讨论：  
-争议焦点在于面团的实际教学价值——一方认为其技术缺陷掩盖了教育意义，另一方则看重其感官互动对初学者的吸引力。支持方通过具体项目案例回应了反对方的技术性质疑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45295704" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45333021" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
