@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-01 09:04 (北京时间)
+            最后更新时间: 2025-10-01 11:41 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,76 +61,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2509.22906" target="_blank">Extract-0: A specialized language model for document information extraction</a>
+                    <a href="https://weliveindetail.github.io/blog/post/2025/09/30/tpde-in-llvm-orc.html" target="_blank">Using the TPDE Codegen Back End in LLVM Orc</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: henriquegodoy</span> |
-                    <span>评分: 179</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-09-30 16:31</span>
+                    <span>作者: weliveindetail</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-09-30 10:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>该论文介绍了Extract-0，一个专为文档信息提取优化的70亿参数语言模型。通过创新的合成数据生成、LoRA监督微调以及GRPO强化学习方法，Extract-0在1000个多样化文档提取任务基准测试中取得了0.573的平均奖励值，超越了GPT-4.1等更大规模模型。研究采用高效训练策略，仅修改0.53%的模型参数，并引入基于语义相似度的新型奖励函数来处理信息提取中的模糊性问题。结果表明，特定任务的优化可以产生超越通用系统且计算资源需求更低的模型。</p>
+                    <p>TPDE是由TUM研究人员开源的LLVM单次编译后端，支持LLVM 19/20版本，主要用于实现低延迟代码生成。文章详细介绍了如何将TPDE集成到LLVM ORC JIT中，通过覆盖LLJITBuilder的CreateCompileFunction成员，使用TPDECompiler替代默认后端。TPDE目前支持ELF系统和x86_64/aarch64架构，实验显示其编译速度比标准LLVM快4倍。虽然LLJITBuilder需要依赖LLVM原生后端，但TPDE理论上可以完全替代它。文章提供了GitHub演示项目展示具体实现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[模型微调的效果、数据集划分问题、专用模型与通用模型的比较]
+                    <div class="comments-summary">主要讨论点：[TPDE与LLVM在编译性能上的比较及优化建议]
 
 不同观点：
-• **质疑数据集划分和方法论**
-  - [mnkv]和[dylanjcastillo]指出模型在训练和测试中使用了同一数据集的不同部分，可能导致过拟合或评估不准确。
-  - [dylanjcastillo]提到训练和测试数据是按块划分而非按文档划分，模型可能已经“见过”评估文档的其他部分。
+• TPDE作者观点：
+  - 当前基准测试存在多个问题，包括多线程导致的性能下降（LLVM慢1.5倍，TPDE慢6.5倍），未正确比较未优化的LLVM后端（应使用CodeGenOptLevel::None），以及测试用例不具代表性（使用i24而非更常见的i16）。
+  - 优化后TPDE的编译时间为140ms，LLVM为730ms，TPDE快5.2倍，而非通常的10-20倍，瓶颈在于JITLink的性能问题（占用55%的TPDE编译时间）。
+  - TPDE自带更快的JIT mapper以解决JITLink的性能问题。
+  - LLVM虽然功能强大，但其JIT API设计导致性能难以优化。
 
-• **支持专用模型和微调的有效性**
-  - [trjordan]认为未来AI的突破将来自针对特定任务的微调模型，通用模型在某些任务上表现不佳。
-  - [era37]和[just-the-wrk]认为模型将变得更小、更专用化，类似“昆虫化”的演化。
-  - [mountainriver]反驳认为微调无效的观点，指出小规模投资可以超越前沿模型。
-
-• **对研究结果的质疑和补充建议**
-  - [Jimmc414]和[tom_wilde]质疑模型在真实场景中的泛化能力，建议测试更多样化的数据或标准基准。
-  - [whakim]提到虽然专用模型表现好，但需要考虑成本和ROI，尤其是闭源模型的性价比。
-
-• **对研究意义的评价**
-  - [giancarlostoro]认为专用模型的结果不意外，但仍令人印象深刻。
-  - [jrm4]认为开源和小规模AI解决方案更可能解决实际问题，而大规模投资可能带来泡沫。
+• 其他用户观点：
+  - 对TPDE的发展表示兴奋，并询问作者对Cranelift（另一种编译器后端）的看法。
 
 补充讨论：
-- **争议焦点**：模型是否真正泛化，还是仅仅在特定数据集上表现良好。
-- **其他讨论点**：训练成本（[esafak]提到$196）、模型可用性（[uxcolumbo]询问模型链接）、未来AI发展方向（[lenerdenator]期待个人设备上的快速学习能力）。</div>
+- 争议焦点：基准测试的公平性和代表性，以及TPDE与LLVM在实际性能上的差距原因。
+- 讨论关系：TPDE作者详细回应了基准测试的问题，并解释了性能差距的原因，其他用户则进一步询问了与其他编译器后端的比较。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45427634" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://laist.com/news/climate-environment/rancho-palos-verdes-cloastal-bluff-landslide-ocean" target="_blank">400 feet of coastal bluff in California plummets toward the ocean</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: geox</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-09-30 23:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>9月27日，美国加州Rancho Palos Verdes发生400英尺（约122米）海岸悬崖坍塌事件，悬崖下滑约60英尺（约18米）。官方表示此次坍塌与附近持续数年的地质活动无关，未造成公共财产损失或人员伤亡，仅4栋住宅后院出现严重土壤损坏。当地已关闭相关区域并建议业主聘请地质工程师评估风险。该市近年来因降雨增多导致葡萄牙湾地区频繁发生山体滑坡，已造成约20栋房屋无法居住，市政应对费用高达6600万美元。目前市政府正计划收购危险区域房屋并改造成开放空间。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45432478" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45423994" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -186,139 +149,6 @@
 - 开源社区是否应回归“酷而古怪”的协作模式，而非HR化（[trwcock]）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45423014" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/1024bees/dang" target="_blank">Show HN: JPDB, GDB for Your Waveforms</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 1024bees</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-09-30 21:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了JPDB，一个针对预硅CPU波形调试的GDB风格调试工具。主要功能包括单步执行代码、设置断点和查看波形值。文章提供了使用方法（需要波形文件、Python映射文件和ELF文件）、系统要求（Python 3.10+）、安装说明（通过cargo安装）以及映射文件的编写规范。还解答了常见问题，如对超标量CPU和不同指令集的支持情况，以及与波形查看器Surfer的集成方式。JPDB由dang（GDB服务器）、shucks（GDB客户端）和TUI界面组成，底层使用了wellen库。目前主要支持RV32G指令集，开发者表示会根据用户需求扩展功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[用户对工具的初步体验反馈]
-
-不同观点：
-• [Buklau4ever]：对工具的初步体验持正面态度，认为工具“neat”（简洁/好用），表达了对工具的认可。
-
-补充讨论：
-• 这是一个简短的个人体验反馈，缺乏具体细节或与其他工具的对比。
-• 目前没有其他用户参与讨论，因此无法形成争议或更深入的讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45431526" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ssg.dev/safe-zero-copy-operations-in-c/" target="_blank">Safe zero-copy operations in C#</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sedatk</span> |
-                    <span>评分: 180</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-09-29 23:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了C#语言的灵活性，既支持高级抽象编程（类似Java），也支持低级不安全代码（如指针操作）。重点分析了C#中数组边界检查对性能的影响，通过示例代码展示了编译器在不同情况下是否消除边界检查，并对比了安全代码与不安全指针操作的性能差异。最后指出虽然指针操作能提升性能，但存在安全隐患（如缓冲区溢出），并暗示C#可以通过安全方式实现高性能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Spans和slice-like结构在现代编程语言中的安全内存操作的应用和性能优势]
-
-不同观点：
-• [积极支持使用Spans的观点]
-  - bob1029强调Span<T>在性能上的显著优势，特别是在避免GC压力和内存分配方面。
-  - mwsherman通过Go和C#的对比，指出Spans解决了C#中子字符串分配的问题，并提到Go从一开始就设计了类似Spans的功能。
-  - Freedom2分享了实际项目中从string.Substring转向ReadOnlySpan<char>的成功经验，显著减少了GC压力。
-
-• [对Spans的补充和替代方案]
-  - buybackoff提出MemoryMarshal.GetArrayDataReference<T>和refs作为Spans的替代方案，适用于需要极致性能的场景，尤其是在处理数组元素时避免边界检查。
-  - pjmlp指出Spans和slice-like结构并非新概念，早在上世纪90年代的Oberon、Modula-3等语言中已有类似功能，并批评现代语言对这些特性的采纳速度过慢。
-
-• [对Spans适用性的质疑]
-  - progmetaldev虽然认可Spans的潜在价值，但对其在.NET CMS（如Umbraco）中的实际性能提升表示怀疑，尤其是在短生命周期的页面请求场景中。
-  - hahn-kev询问Spans与Rust中的类似功能相比如何，暗示对Spans的安全性和性能的进一步探讨。
-
-补充讨论：
-• [技术细节和实现]
-  - rkagerer提出关于硬件是否支持边界检查的问题，引发了对性能优化底层机制的讨论。
-  - titzer介绍了Virgil语言中的ranges特性，认为其比slices更优，尤其是可以安全引用内存映射缓冲区。
-  - uecker提到C语言中也有类似功能，扩展了讨论的语言范围。
-
-• [历史和背景]
-  - smilekzs分享了微软内部早期尝试实现string_view的混乱情况，突显了Spans标准化的重要性。
-
-争议焦点：
-• Spans在实际项目中的性能提升是否显著，尤其是在短生命周期场景（如CMS）中。
-• Spans与其他语言（如Go、Rust）中的类似功能相比如何，尤其是在安全性和性能方面。
-• Spans是否真的是创新，还是对早期语言特性的重新包装。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45420001" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://discourse.nixos.org/t/the-sc-prepared-to-lie-to-us-and-what-we-can-do-about-it-whistleblow/70103" target="_blank">The SC prepared to lie to us, and what we can do about it</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kblissett</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-09-30 22:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SC的定义和解释
-
-不同观点：
-• SC是Software Carpentry的缩写，这是一个教授科学家基本计算技能的非营利组织。（提供具体解释）
-• SC是StarCraft的简称，这是一款知名的即时战略游戏。（提供另一种解释）
-• SC可能指Super Collider，一种音频编程语言。（第三种解释）
-• SC也可以代表South Carolina（南卡罗来纳州）。（地理相关的解释）
-
-补充讨论：
-• 用户询问SC的含义时没有提供上下文，导致可能有多种解释
-• 这是一个典型的缩写歧义案例，说明在交流中使用缩写时需要明确上下文
-• 不同领域的专业人士可能会对SC有不同的第一联想（计算机教育、游戏、音频编程等）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45431958" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -395,6 +225,163 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=45418675" target="_blank">Ask HN: What are you working on? (September 2025)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: david927</span> |
+                    <span>评分: 287</span> |
+                    <span>评论数: 503</span> |
+                    <span>发布时间: 2025-09-29 20:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：不同领域的个人项目和创新解决方案
+
+不同观点：
+• **食品安全与透明化**  
+  - Laboratory.love通过众筹独立检测食品中的内分泌干扰物，强调消费者驱动的市场压力能促使供应链更清洁。  
+  - 争议焦点：FDA与欧盟对BPA安全标准的巨大差异是否反映了监管滞后。
+
+• **医疗技术创新**  
+  - Stevepotter的膝关节手术机器人系统旨在降低成本、缩短手术时间，挑战传统手动切割和高价现有方案。  
+  - 争议焦点：新技术是否真能平衡成本与安全性。
+
+• **历史地图与GIS工具**  
+  - Pastmaps.com提供“老地图版Google Maps”，满足历史爱好者需求，但创始人面临AI浪潮下的FOMO（错失恐惧症）。  
+  - 讨论点：小众工具如何通过有机增长维持盈利。
+
+• **文化体验与本地经济**  
+  - DeadChefsSociety通过主题晚餐俱乐部支持本地餐厅，并计划扩展为生活方式品牌。  
+  - 讨论点：如何从活动策划转型为可持续品牌。
+
+• **技术与开源争议**  
+  - Jamesponddotco的ISBN数据库和Shelvica图书馆管理工具可能开源，但面临许可选择（如EUPL 1.2）的权衡。  
+  - 争议焦点：开源是否会影响商业化潜力。
+
+补充讨论：
+- **跨领域创新共性**：多数项目源于个人痛点（如食品安全、医疗效率、图书馆管理），强调透明化（Laboratory.love）、简化（Circuitscript）或低成本（手术机器人）。  
+- **技术工具的双重性**：如Typegres既挑战传统ORM，又依赖PostgreSQL的深度集成，反映技术栈的演进矛盾。  
+- **小众市场的生存策略**：Pastmaps和DeadChefsSociety通过垂直领域和社区驱动实现增长，而非追逐主流趋势。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45418675" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://tasvideos.org/8991S" target="_blank">Bad Apple but it's played inside Super Mario Bros</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: carlesfe</span> |
+                    <span>评分: 202</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-09-29 09:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了作者如何通过工具辅助演示（TAS）在《超级马里奥兄弟》游戏中实现任意代码执行（ACE），并播放《Bad Apple!!》音乐视频。作者利用了对NES硬件的深入理解，解决了模拟器不准确的问题，使演示在实机上同步运行。文章详细讲解了ACE的工作原理、图形和音频的实现方法，以及优化过程，包括将音乐转化为按键输入和使用差分脉冲编码调制。此外，作者还分享了制作过程中的技术细节、挑战和解决方案，并附上了相关代码和统计信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[该项目的工作原理、技术细节以及与经典游戏《超级马里奥兄弟》(SMB)的关系]
+
+不同观点：
+• **技术原理困惑**  
+  - [crazygringo] 提出多个疑问：数据来源不明、为何需要先运行SMB、与SMB的实际关联性、与自定义ROM的区别，以及项目挑战的具体参数。核心争议在于缺乏背景信息，导致难以理解项目本质。
+
+• **技术实现解析**  
+  - [userbinator] 指出项目使用了类似早期有损视频压缩的“矢量量化编解码器”（VQ）原理，并认为作者独立发现这一理论值得赞赏。  
+  - [baobun] 追问技术细节：负载大小、按键输入次数、音频样本是实时流式传输还是完全存储在NES内存中。  
+
+• **硬件可行性讨论**  
+  - [atulvi] 询问是否可通过改装控制器在真实硬件上实现，延伸了技术落地的可能性。
+
+• **音效表现评价**  
+  - [mbStavola] 误以为音频是后期叠加，后惊讶于其通过控制器输入实现的高质量效果。  
+  - [p0w3n3d] 认为生成的音频比原版更具8-bit风格，尤其是低音部分。
+
+• **项目潜力扩展**  
+  - [srcoder] 调侃性提问“能否运行《毁灭战士》”，反映对项目极限的探索兴趣。
+
+补充讨论：
+- 争议焦点在于项目的技术透明度和目标定义（如[crazygringo]质疑的“挑战参数”）。  
+- 部分用户（如[userbinator]）试图从学术角度解释原理，而其他人更关注实际体验（音效、硬件兼容性）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45411831" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2509.22906" target="_blank">Extract-0: A specialized language model for document information extraction</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: henriquegodoy</span> |
+                    <span>评分: 179</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-09-30 16:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>该论文介绍了Extract-0，一个专为文档信息提取优化的70亿参数语言模型。通过创新的合成数据生成、LoRA监督微调以及GRPO强化学习方法，Extract-0在1000个多样化文档提取任务基准测试中取得了0.573的平均奖励值，超越了GPT-4.1等更大规模模型。研究采用高效训练策略，仅修改0.53%的模型参数，并引入基于语义相似度的新型奖励函数来处理信息提取中的模糊性问题。结果表明，特定任务的优化可以产生超越通用系统且计算资源需求更低的模型。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[模型微调的效果、数据集划分问题、专用模型与通用模型的比较]
+
+不同观点：
+• **质疑数据集划分和方法论**
+  - [mnkv]和[dylanjcastillo]指出模型在训练和测试中使用了同一数据集的不同部分，可能导致过拟合或评估不准确。
+  - [dylanjcastillo]提到训练和测试数据是按块划分而非按文档划分，模型可能已经“见过”评估文档的其他部分。
+
+• **支持专用模型和微调的有效性**
+  - [trjordan]认为未来AI的突破将来自针对特定任务的微调模型，通用模型在某些任务上表现不佳。
+  - [era37]和[just-the-wrk]认为模型将变得更小、更专用化，类似“昆虫化”的演化。
+  - [mountainriver]反驳认为微调无效的观点，指出小规模投资可以超越前沿模型。
+
+• **对研究结果的质疑和补充建议**
+  - [Jimmc414]和[tom_wilde]质疑模型在真实场景中的泛化能力，建议测试更多样化的数据或标准基准。
+  - [whakim]提到虽然专用模型表现好，但需要考虑成本和ROI，尤其是闭源模型的性价比。
+
+• **对研究意义的评价**
+  - [giancarlostoro]认为专用模型的结果不意外，但仍令人印象深刻。
+  - [jrm4]认为开源和小规模AI解决方案更可能解决实际问题，而大规模投资可能带来泡沫。
+
+补充讨论：
+- **争议焦点**：模型是否真正泛化，还是仅仅在特定数据集上表现良好。
+- **其他讨论点**：训练成本（[esafak]提到$196）、模型可用性（[uxcolumbo]询问模型链接）、未来AI发展方向（[lenerdenator]期待个人设备上的快速学习能力）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45427634" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://chipsandcheese.com/p/amds-epyc-9355p-inside-a-32-core" target="_blank">AMD's EPYC 9355P: Inside a 32 Core Zen 5 Server Chip</a>
                 </h3>
                 <div class="story-meta">
@@ -424,25 +411,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://typesanitizer.com/blog/6-programmers.html" target="_blank">Six Programmers and the Type System</a>
+                    <a href="https://www.thedrive.com/news/its-time-to-bring-tiny-evs-like-the-honda-n-one-e-to-the-us" target="_blank">It's Time to Bring Tiny EVs Like the Honda N-One E to the US</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-09-30 18:30</span>
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-10-01 01:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>六名习惯动态类型语言的程序员对静态类型系统充满好奇，各自持有不同观点：有人认为是数学证明工具，有人视其为高级代码检查器，也有人认为是领域建模或性能优化手段。他们拜访大学计算机系后，在教室的黑板和投影中各自找到了支持自己观点的证据（形式化验证、IDE提示、领域模型、类型注释、程序安全性、性能基准）。最终，前同事带他们去食堂点餐，暗示静态类型系统可能像菜单一样具有多重用途。故事以开放式结局呈现了技术认知的主观性。</p>
+                    <p>本田发布了首款电动轻自动车N-One e，售价约1.8万美元，将在日本发售。这款复古电动车灵感来自1960年代的N360车型，续航183公里，空间实用，有望挑战日产樱花在日本迷你电动车市场的地位。作者对比了菲亚特Topolino等小型电动车，认为美国市场也应引入这类高效迷你电动车，适合短途出行，同时建议家庭可搭配大型SUV应对不同需求。文章呼吁车企尝试在美国推出这类小型电动车。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：[电动汽车市场的发展方向和消费者需求]
+
+不同观点：
+• **[支持小型电动汽车]**  
+  - 论点：小型电动汽车更高效，适合日常通勤和购物需求  
+  - 论据：需要更小的电池、电机，减少能源消耗和对公共基础设施的磨损  
+  - 建议：政府政策应鼓励资源高效利用  
+
+• **[支持多样化市场]**  
+  - 论点：市场应同时容纳大型和小型电动汽车，满足不同需求  
+  - 论据：类比过去大众甲壳虫的成功，说明小型车市场长期存在  
+  - 例子：大型车适合家庭长途旅行，小型车适合日常通勤  
+
+补充讨论：  
+- **争议焦点**：电动汽车是否应优先发展小型化，还是保持多样化  
+- **市场偏好**：消费者需求是否更倾向于小型高效车辆，还是多功能大型车辆  
+- **政策角色**：政府是否应通过政策引导市场向小型化发展</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45429291" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45433275" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -453,25 +456,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.aboutamazon.com/news/devices/amazon-new-echo-devices-alexa-plus" target="_blank">The next generation of AI-powered Echo devices, purpose-built for Alexa+</a>
+                    <a href="https://factory.ai/news/terminal-bench" target="_blank">Agentic system design for software development</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cglong</span> |
-                    <span>评分: 3</span> |
+                    <span>作者: fzliu</span> |
+                    <span>评分: 4</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-10-01 00:22</span>
+                    <span>发布时间: 2025-09-30 19:14</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>亚马逊发布四款全新Echo设备，专为新一代AI助手Alexa+打造。这些设备搭载定制芯片AZ3/AZ3 Pro和Omnisense传感平台，具备更强的边缘计算能力和环境感知功能，可实现更自然流畅的交互体验。新款Echo Dot Max采用双扬声器系统，音质提升显著；Echo Studio体积缩小40%但支持空间音频技术；两款Echo Show智能显示屏配备1300万像素摄像头。所有新品开箱即享Alexa+服务，能更智能地完成家居控制、日程管理等任务。价格从99.99美元起，现已开放购买。</p>
+                    <p>这篇文章介绍了名为Droid的AI软件开发代理在Terminal-Bench基准测试中取得58.75%的最高分，成为当前最佳表现的系统。文章强调代理设计（而非仅模型选择）是决定性能的关键因素，Droid在所有前沿模型上都实现了领先性能。文章分析了Droid成功的三大设计要素：分层提示策略（包括工具描述、系统提示和系统通知）、针对特定模型的优化架构，以及工具设计原则。测试结果显示，Droid在不同模型上的表现都超过了实验室自己的代理和多模型代理，证明了单一驱动模型仍有提升空间。文章还指出，随着新一代模型的快速发展，需要重新思考如何优化提示策略来指导模型行为。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45432935" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45429892" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank">Effective context engineering for AI agents</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jshchnz</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-09-30 19:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了人工智能领域新兴的"上下文工程"概念及其重要性。随着AI代理从单一提示优化转向更复杂的多轮交互，管理有限的上下文窗口成为关键挑战。文章指出，虽然LLM能处理大量数据，但随着上下文长度增加，模型的信息检索能力会下降（称为"上下文衰减"）。这源于Transformer架构的n²计算复杂度限制和训练数据分布特点。相比专注于编写提示的"提示工程"，"上下文工程"更强调在整个推理过程中动态管理和优化上下文状态（包括系统指令、工具、历史消息等）。作者认为，上下文是有限资源，需要像人类工作记忆一样精心管理。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45429841" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
