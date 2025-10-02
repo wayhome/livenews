@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-02 17:15 (北京时间)
+            最后更新时间: 2025-10-02 20:26 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,150 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://shkspr.mobi/blog/2025/09/can-you-use-gdpr-to-circumvent-blueskys-adult-content-blocks/" target="_blank">Can you use GDPR to circumvent BlueSky's adult content blocks?</a>
+                    <a href="https://cognition.ai/blog/blockdiff" target="_blank">Blockdiff: We built our own file format for VM disk snapshots</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: furkansahin</span> |
-                    <span>评分: 120</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-09-30 08:50</span>
+                    <span>作者: cyanf</span> |
+                    <span>评分: 81</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-10-01 03:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讨论了《在线安全法案》与欧盟《通用数据保护条例》(GDPR)之间的潜在冲突。作者以社交平台Bluesky为例，指出该平台采取了折中方案：未验证年龄的用户无法接收色情内容和非公开私信。但用户仍可通过GDPR的数据访问权获取自己的私信内容，尽管这一过程耗时64天。作者认为，虽然这可能被视为在线安全的漏洞，但实际上不太可能被滥用，因为繁琐的申请流程本身就会引起关注。文章揭示了数据隐私保护与在线安全监管之间的微妙平衡关系。</p>
+                    <p>本文介绍了CognitionAI团队开发的blockdiff工具，这是一个用于快速创建虚拟机磁盘块级差异和快照的开源工具。为了解决EC2虚拟机启动和快照速度慢的问题（EC2快照需30分钟），团队开发了自己的otterlink虚拟机管理程序，将快照时间缩短至几秒，提升200倍。blockdiff文件格式通过仅存储差异块实现了紧凑、即时、零开销的快照功能，其核心利用Linux内核XFS文件系统的写时复制技术。文章还对比了其他方案（如二进制差异、OverlayFS和ZFS）的局限性，解释了为何选择开发专用工具。该工具已开源，适用于需要频繁快照的开发环境和安全隔离场景。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Bluesky的年龄验证、私信（DM）功能和去中心化问题
+                    <div class="comments-summary">主要讨论点：[blockdiff工具的设计选择、性能优化及潜在应用场景]
 
 不同观点：
-• **年龄验证与DM限制**  
-  - [driverdan]认为阻止DM不合理，因为骚扰行为在公开场合同样可能发生  
-  - [petercoher]则对DM问题持中立态度，建议将其设为只读模式  
+• **qcow2未被充分评估**  
+  - 支持者认为qcow2已满足需求（快照、共享只读基础镜像），实现仅需700行代码  
+  - 反方指出qcow2计算差异效率低，但可通过分离读写文件优化  
+  - 争议焦点：是否因评估不足错过更优方案  
 
-• **DM加密问题**  
-  - [bArray]批评Bluesky的DM未加密，认为应强制使用端到端加密（E2E）  
-  - Bluesky官方解释DM未加密是为了信任与安全目的  
+• **性能对比与实现细节争议**  
+  - 用户质疑EC2快照性能（对比CEPH的"blazing fast"体验）  
+  - 要求公开基准测试细节（如qemu-img的copy_file_range使用情况）  
 
-• **去中心化质疑**  
-  - [irusensei]和[tonyhart7]认为Bluesky并未真正实现去中心化，仍存在类似传统平台的验证问题  
-  - [greatgib]进一步批评Bluesky仍是“围墙花园”，与Twitter无异  
+• **替代技术方案提议**  
+  - 推荐VDO瘦配置+LVM2或QCOW2树状结构（vmess工具）  
+  - 建议评估overlaybd项目相似功能  
+  - 争议焦点：是否需要文件系统级支持（如ZFS/BTRFS的send/receive）  
 
-• **隐私与安全问题**  
-  - [jay_kyburz]对通过电子邮件验证账户所有权的安全性提出质疑，担心可能被滥用  
+• **设计选择质疑**  
+  - 为何选择XFS而非ZFS/BTRFS  
+  - 自研hypervisor（otterlink）的必要性与复杂度  
+  - 文件同步机制（fiemap vs LSEEK_DATA/HOLE）的稳健性讨论  
 
 补充讨论：
-- [latexr]讽刺高资金投入未必带来优质服务，反映对VC公司的普遍不信任  
-- [swiftcoder]肯定Bluesky公开流程的价值，认为有助于发现流程漏洞</div>
+• **应用场景扩展**：公共云CI/CD加速、hypervisor无关性需求  
+• **易用性批评**：图表缺失alt文本影响可访问性  
+• **法律问题**：代码库未添加许可证  
+• **情绪反馈**：部分用户对技术深度表达敬佩，同时自嘲理解困难</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45423363" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45433926" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cursor.com/changelog/1-7" target="_blank">Cursor 1.7</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mustaphah</span> |
+                    <span>评分: 112</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-10-01 13:51</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了Cursor Agent在2025年9月29日发布的1.7版本更新内容，包括：新增自动补全功能、beta版Hooks脚本扩展能力、团队全局规则设置、beta版提示词深度链接分享、菜单栏监控功能、新增图片文件直接读取支持等。同时还包含2项改进和25个补丁更新。这些新功能旨在提升用户体验和工作效率。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Cursor编辑器的市场竞争力与未来前景]
+
+不同观点：
+• **Cursor优势减弱论**  
+  - 认为Cursor最初的优势（如状态管理、AI编辑）已被VSCode等竞品赶超（[mohsen1]提到Kilo Code的Orchestrator模式更高效）  
+  - 批评其核心功能（如自动补完）依赖收购而非自主研发（[deaux]指出SuperMaven整合问题）  
+  - 用户流失加速，竞品（Claude Code、Augment等）性价比更高（[deaux]、[justhw]）  
+
+• **Cursor仍有价值论**  
+  - 部分用户肯定其深度IDE集成和多模型切换灵活性（[oersted]认为Claude Code的CLI鼓励盲目依赖AI）  
+  - 沙盒终端等新功能受关注（[simonw]询问技术实现细节）  
+
+• **中立/观望态度**  
+  - 承认Cursor的自动补完曾领先，但质疑当前竞品是否更优（[axwdev]提问替代方案）  
+  - 部分用户因习惯或订阅惯性继续使用（[saos]表达喜爱，但未尝试竞品）  
+
+补充讨论：
+- **争议焦点**：Cursor的30亿美元估值合理性（[sersi]质疑其技术壁垒与稳定性）  
+- **用户体验痛点**：  
+  - 用量统计不透明（[hansonkd]批评计费设计）  
+  - 安全性问题（[whywhywhywhy]举例Claude 4.5设置弱密码）  
+- **行业趋势**：AI编码工具从代码生成转向"Agent Loop"优化（[mohsen1]、[mdale]对比5k vs 20k行代码审查模式变化）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45437735" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cs.cornell.edu/courses/cs6110/2015sp/textbook/Simon%20Thompson%20textbook.pdf" target="_blank">Type Theory and Functional Programming (1999) [pdf]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: fanf2</span> |
+                    <span>评分: 175</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-10-01 07:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[函数式编程的优缺点及其未来发展趋势]
+
+不同观点：
+• **支持函数式编程**  
+  - 理论基础扎实，类似关系型数据库和SQL，有望长期存在  
+  - 逐步被广泛采用  
+
+• **反对函数式编程**  
+  - 实践中并未带来更高的安全性和优雅性  
+  - 产生的代码质量差  
+
+• **关于类型理论的讨论**  
+  - 质疑类型理论为何总是与函数式编程绑定  
+  - 提出是否可以将类型理论应用于命令式语言  
+
+补充讨论：
+- **争议焦点**：函数式编程的实际价值（安全性与代码质量）  
+- **其他讨论**：  
+  - 是否有适合深入学习函数式编程的材料  
+  - 书籍的印刷版本是否可得  
+  - 关于递归定义、数学符号与AI理解的哲学讨论（但与核心主题关联较弱）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45435100" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -168,6 +273,146 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.heise.de/news/Chefin-der-Signal-App-droht-mit-Rueckzug-aus-Europa-10688792.html" target="_blank">Signal threatens to leave Europe if Chat Control is accepted</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: HelloUsername</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-10-02 07:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Signal是否会因欧盟的聊天控制法案而退出欧盟市场]
+
+不同观点：
+• **Signal可能退出欧盟**  
+  - 论据：Signal的服务模式与欧盟的聊天控制法案不兼容，法案通过后他们可能被迫退出欧盟市场  
+  - 例子：评论提到“they have to quit EU if chat control is passed”
+
+• **支持Signal的立场**  
+  - 论据：Signal坚持隐私保护的立场值得赞赏，这是他们在治理问题上的最佳选择  
+  - 例子：评论称赞“signals oversight for maintaining their stance”，并认为Meredith在倡导基本原则方面做得很好  
+
+• **Signal的替代方案**  
+  - 论据：用户推荐使用其他加密聊天工具（如Qrypt.chat）作为替代  
+  - 例子：评论直接提供了“https://qrypt.chat”链接  
+
+• **Signal的用户基础问题**  
+  - 论据：Signal在欧洲的用户基数较小，退出可能影响不大  
+  - 例子：评论讽刺地提到“all 4 users of it will be very sad”，暗示Signal在欧洲未广泛普及  
+
+补充讨论：  
+- 争议焦点：Signal是否真的会因为法案退出欧盟，以及这种退出对用户和市场的实际影响  
+- 讨论关系：部分用户支持Signal的立场，而另一些用户则对Signal的市场表现持悲观态度，甚至推荐替代方案</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45447185" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://shkspr.mobi/blog/2025/09/can-you-use-gdpr-to-circumvent-blueskys-adult-content-blocks/" target="_blank">Can you use GDPR to circumvent BlueSky's adult content blocks?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: furkansahin</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-09-30 08:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了《在线安全法案》与欧盟《通用数据保护条例》(GDPR)之间的潜在冲突。作者以社交平台Bluesky为例，指出该平台采取了折中方案：未验证年龄的用户无法接收色情内容和非公开私信。但用户仍可通过GDPR的数据访问权获取自己的私信内容，尽管这一过程耗时64天。作者认为，虽然这可能被视为在线安全的漏洞，但实际上不太可能被滥用，因为繁琐的申请流程本身就会引起关注。文章揭示了数据隐私保护与在线安全监管之间的微妙平衡关系。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Bluesky的年龄验证、私信（DM）功能和去中心化问题
+
+不同观点：
+• **年龄验证与DM限制**  
+  - [driverdan]认为阻止DM不合理，因为骚扰行为在公开场合同样可能发生  
+  - [petercoher]则对DM问题持中立态度，建议将其设为只读模式  
+
+• **DM加密问题**  
+  - [bArray]批评Bluesky的DM未加密，认为应强制使用端到端加密（E2E）  
+  - Bluesky官方解释DM未加密是为了信任与安全目的  
+
+• **去中心化质疑**  
+  - [irusensei]和[tonyhart7]认为Bluesky并未真正实现去中心化，仍存在类似传统平台的验证问题  
+  - [greatgib]进一步批评Bluesky仍是“围墙花园”，与Twitter无异  
+
+• **隐私与安全问题**  
+  - [jay_kyburz]对通过电子邮件验证账户所有权的安全性提出质疑，担心可能被滥用  
+
+补充讨论：
+- [latexr]讽刺高资金投入未必带来优质服务，反映对VC公司的普遍不信任  
+- [swiftcoder]肯定Bluesky公开流程的价值，认为有助于发现流程漏洞</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45423363" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.dopaminemarkets.com/p/the-business-of-sports-betting-is" target="_blank">Economics of sportsbooks and why they ban the best bettors</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: _1729</span> |
+                    <span>评分: 74</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-09-30 23:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇深度分析揭示了体育博彩行业的盈利模式：博彩公司主要通过吸引不专业的赌徒投注来获利，尤其是高风险的多重投注（parlays），而会限制或封禁那些盈利的专业赌客（sharps）。文章指出，美国博彩公司如DraftKings和FanDuel依赖法律允许的"拒绝服务权"来排除高价值客户，并通过产品设计（如名人推荐、社交证明）诱导新手投注高利润的复杂赌注。博彩公司的生存之道在于吸引大量每年平均亏损100美元的休闲赌徒，因为少数专业赌客的大额盈利会抵消上千名普通赌徒的亏损。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[体育博彩业的盈利模式、税收影响及道德争议]
+
+不同观点：
+• **盈利模式与客户获取成本**：用户mind_orbit指出，即使大多数赌客是输家，体育博彩公司仍需关注客户终身价值（LTV）与获客成本（CAC）的平衡，否则可能亏损。
+• **赔率设定与市场风险**：efavdb认为庄家通过平衡两边投注来确保利润，但低交易量时难以实现。constantcrying建议采用预测市场模型来固定收入，减少庄家风险。
+• **税收与行业未来**：lesuorac提到未来市场可能因免州税而更具竞争力，snide则批评高税率导致更多输家和间接社会成本。
+• **道德争议**：toofy和Retric分别批评博彩业的掠夺性本质，并呼吁禁止该行业。
+• **替代方案**：Buttons840和jon_richards提出无需庄家的对赌或社交投注模式，WalterBright则对比赌博与股票投资的ROI，推荐后者。
+
+补充讨论：
+• **争议焦点**：博彩业的盈利是否依赖剥削赌客（如toofy与snide的批评），以及替代模式（如预测市场或社交投注）的可行性。
+• **行业动态**：matt_daemon指出庄家需平衡“专业赌客”与普通赌客的利益，LatteLazy则讽刺性地建议利用赌瘾账户牟利。
+• **标题党**：ThrownOffGame的夸张标题暗示媒体报道的倾向性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45432627" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://dl.acm.org/doi/10.1145/359024.359031" target="_blank">Design of the SCHEME-78 Lisp-based microprocessor (1980)</a>
                 </h3>
                 <div class="story-meta">
@@ -207,65 +452,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=45447372" target="_blank">Ask HN: Why does every website ask me to accept cookies?</a>
+                    <a href="https://github.com/JohnBlood/awesome-basic" target="_blank">Basic Dialects, IDEs, and Tutorials</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: chistev</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-02 08:21</span>
+                    <span>作者: andsoitis</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-10-01 05:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章介绍了一个名为"awesome-basic"的开源项目，该项目整理了各种BASIC编程语言的方言、集成开发环境(IDE)和教程资源。主要内容包括：
+
+1. 列出了多种BASIC方言，如AppGameKit、B4X、BaCon、BASIC-256等跨平台实现
+2. 提供了BASIC相关的IDE、编辑器和工具
+3. 包含杂项资源和教程
+4. 项目采用CC0-1.0许可证，托管在GitHub上
+5. 目标是汇集优质的BASIC编程资源，帮助初学者和专业开发者
+
+该项目可作为BASIC编程语言的参考资源集合。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于GDPR和Cookie合规性对用户体验的影响]
+                    <div class="comments-summary">主要讨论点：[QB64.org网站现状及BASIC语言的现代适用性]
 
 不同观点：
-• **合规必要性观点**  
-  支持者认为GDPR和ePrivacy指令要求网站在使用非必要Cookie前必须获得用户同意，这是保护用户隐私的重要措施。即便对用户体验有所影响，合规仍是必要的，尤其是在欧盟境内。论据包括法律要求和隐私保护的重要性。
-
-• **用户体验优先观点**  
-  反对者指出，Cookie弹窗严重干扰了用户体验，尤其是在全球范围内（即使非欧盟用户也会受到影响）。例子包括旧版uBlockOrigin的自动拒绝功能曾有效屏蔽弹窗，但新版缺失此功能，导致用户再次被弹窗困扰。争议焦点在于隐私保护与用户体验之间的平衡。
+• [maybewhenthesun]认为QB64.org网站现状不佳，疑似被AI生成的广告内容充斥，可能是一个被废弃的开源项目被商业化利用的例子。
+• [riidom]指出标题应全部大写为BASIC，强调语言的名称规范。
+• [pjmlp]怀念Turbo Basic等旧版BASIC，但质疑其在现代环境中的实用性。
+• [WillAdams]建议对BASIC项目列表进行分类，以便更好地筛选适合现代开发的项目。
 
 补充讨论：
-• 技术解决方案的局限性：旧版工具的失效（如uBlockOrigin被Google弃用）和新版功能缺失（如Lite版本无自动拒绝）加剧了问题，引发用户对工具替代方案的讨论。  
-• 全球化影响：即使部分用户不在欧盟，仍被迫接受Cookie弹窗，凸显了互联网政策的地域性与实际执行之间的矛盾。</div>
+• 争议焦点在于QB64.org网站的真实性和BASIC语言的现代价值。
+• [maybewhenthesun]的评论引发了对开源项目维护和商业化的关注。
+• [WillAdams]的建议反映了开发者对项目信息组织和可访问性的需求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45447372" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://danluu.com/people-matter/" target="_blank">Individuals Matter</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thelastgallon</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-10-01 22:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文主要批评企业在管理和人力资源决策中忽视员工个体差异的常见错误。作者指出，企业在制定工作计划时常常假设员工是可互换的，但实际上员工的能力和专长差异很大，这种假设会导致项目执行不力。此外，企业的HR系统往往将员工简化为"人头"数字，不考虑实际能力和价值，导致招聘和留任优秀人才困难。作者举了两个具体案例：一个高产出工程师因薪酬调整不合理离职；HR部门为提高员工流动率导致优秀人才流失。文章揭示了企业管理中过分标准化、忽视个体价值的弊端。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45444544" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45434511" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -314,215 +538,6 @@
 • **其他注意点**：[zparky]分享了类似主题的Henon Attractor帖子，表明社区对此类话题的持续兴趣。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45427059" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://oshub.org/projects/retros-32/posts/defer-resource-cleanup-in-c-with-gccs-magic" target="_blank">Defer: Resource cleanup in C with GCCs magic</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: joexbayer</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-09-30 07:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何使用GCC特有的`cleanup`属性和嵌套函数在C语言中实现类似Go语言的`defer`机制，用于自动资源清理。作者首先展示了基础的`cleanup`属性用法，但指出其存在安全性问题。随后介绍了一种结合嵌套函数的改进方案，可以更安全地实现延迟执行清理代码的功能。文章还探讨了通过`always_inline`属性优化性能的方法，减少了函数调用的开销。虽然这种方法依赖于GCC扩展且不具备可移植性，但为C语言资源管理提供了一种有趣的探索方向。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[`defer`特性的实现方式、优缺点及在不同语言中的表现]
-
-不同观点：
-• **支持`defer`作为关键字优化**  
-  - 认为`defer`应作为编译器关键字而非宏实现，以便在优化和调试中保持清晰性（babel_）。  
-  - 提到C2y技术规范（TS25755）可能直接引入`defer`关键字，优化实现更高效（scoopr、babel_）。  
-
-• **对嵌套函数和Trampolines的担忧**  
-  - 指出GCC的嵌套函数依赖Trampolines，需可执行栈，存在安全风险（majke）。  
-  - 描述符替代方案虽避免可执行栈，但仍需间接调用，性能或安全性存疑（majke）。  
-
-• **批评Go语言的`defer`设计**  
-  - 认为Go的`defer`脱离代码块执行，与C++/Rust等语义不同，且缺乏线程安全和静态检查（lionkor）。  
-
-• **对`cleanup`替代方案的争议**  
-  - 认为`cleanup`属性是RAII的劣质替代，但反驳称`free(NULL)`无问题，简单`if`可解决（pwdisswordfishz）。  
-
-• **反对复杂特性**  
-  - 对非常规功能（如`defer`）可能导致的意外问题表示警惕（letmetweakit）。  
-
-• **提倡使用C++或其他方案**  
-  - 建议直接使用C++的RAII（mgaunard）。  
-  - 认为内存清理需求因竞技场分配器（arenas）而降低（grodes）。  
-
-补充讨论：  
-- 争议焦点：`defer`是否应通过宏或编译器原生支持实现，以及其与RAII的优劣对比。  
-- 其他讨论包括嵌套函数的安全代价、Go语言设计缺陷，以及内存管理替代方案（如竞技场）的影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45422717" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.amplifypartners.com/blog-posts/why-tigerbeetle-is-the-most-interesting-database-in-the-world" target="_blank">TigerBeetle is a most interesting database</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 209</span> |
-                    <span>评论数: 32</span> |
-                    <span>发布时间: 2025-10-01 11:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了TigerBeetle数据库的创新之处及其设计理念。TigerBeetle采用与传统数据库完全相反的设计思路：缓慢编写代码、完全依赖确定性模拟测试（DST）、零第三方依赖。它专注于金融交易场景，将借贷记账作为原生功能而非SQL，解决了传统SQL数据库在处理高频交易时的性能瓶颈。此外，TigerBeetle使用Zig语言开发，采用静态内存分配和Viewstamped复制协议等独特技术，为应对全球日益增长的实时交易需求提供了高性能解决方案。文章还探讨了该数据库的测试集群VOPR和生产环境断言等特色功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[TigerBeetle数据库的设计理念、性能、适用场景及其与其他数据库的比较]
-
-不同观点：
-• [支持TigerBeetle的设计理念]
-  - vrnvu：赞赏TigerBeetle的单入口、零依赖、确定性测试等设计原则，认为这些实践在Rust和Go中非常有效。
-  - SchwKatze：认为TigerBeetle应推广双入口模型到非金融场景，如库存管理和票务系统。
-
-• [对TigerBeetle的性能和适用性提出质疑]
-  - sgarland：指出单节点数据库（如MySQL）在高QPS下表现良好，质疑TigerBeetle对多节点的必要性。
-  - dangoodmanUT：认为TigerBeetle对传统OLTP的批评不公平，指出其性能对比忽略了高 contention 场景的实际处理能力。
-  - mkleczek：担忧TigerBeetle缺乏多核支持和水平扩展能力，限制了长期 scalability。
-
-• [技术实现和功能限制的讨论]
-  - wiradikusuma：指出TigerBeetle在Cloudflare Workers支持和认证机制上的不足。
-  - kamranjon：对TigerBeetle的分布式设计感到困惑，询问多区域部署的细节。
-  - BrentOzar：明确TigerBeetle不支持SQL。
-
-• [与其他数据库的比较]
-  - websiteapi：认为FoundationDB（FDB）具备类似特性，但缺乏良好的上层抽象。
-  - danielbarla：提到SpacetimeDB可能比TigerBeetle更具吸引力。
-
-• [对文章动机的质疑]
-  - blenderob和mtlynch：指出文章作者是TigerBeetle的投资方，可能存在偏见。
-
-补充讨论：
-- flir：支持在生产环境中启用断言，认为失败的断言是重要的反馈。
-- ksec：认为TigerBeetle的设计理念是25年前的常态，希望其获得更多认可。
-- justinclift：反驳“SQL数据库过时”的观点，指出它们已随时代更新。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45436534" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://codeberg.org/" target="_blank">Codeberg Reaches 300k Projects</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: welovebunnies</span> |
-                    <span>评分: 195</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-10-01 16:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Codeberg是一个由德国柏林非营利组织Codeberg e.V.运营的开源代码托管平台。它强调社区驱动、尊重隐私和自由文化，不追踪用户或出售数据，服务器位于欧洲。平台拥有30万项目和19万用户，1100多名成员。Codeberg通过会员捐赠和志愿者贡献维持运营，鼓励用户加入会员或捐款支持其独立性和发展。所有软件均为自由软件，欢迎开发者参与改进。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Forgejo和Gitea分叉后哪个更优，Codeberg作为Forgejo的SaaS服务是否更受欢迎]
-
-不同观点：
-• [Forgejo/Gitea功能相似，但Codeberg作为SaaS服务可能更具优势]  
-  - 用户提到Forgejo和Gitea都能处理问题、拉取请求、签名提交、CI/CD等，功能相似。  
-  - Codeberg作为Forgejo的SaaS服务，可能有更多资源，但可能更偏向SaaS而非自托管。  
-
-• [Codeberg比GitHub更受欢迎]  
-  - 用户认为Codeberg界面响应更快，且由慈善机构运营，不会“恶化”（enshittify）。  
-  - 用户批评GitHub越来越差，尤其是强推AI功能。  
-
-• [GitHub的历史优势]  
-  - 用户提到GitHub曾经对私有仓库收费，现在免费，可能仍有一些历史优势。  
-
-补充讨论：
-• [Codeberg的潜力]  
-  - 用户询问Codeberg是否支持部署到Cloudflare，表明对Codeberg功能的兴趣。  
-  - 用户对Codeberg达到30万项目表示祝贺，显示对其发展的乐观态度。  
-
-争议焦点：
-• Codeberg是否真的比GitHub更好，尤其是在功能和流行度方面。  
-• Forgejo和Gitea的分叉后，哪个项目更成功，是否有明显优劣。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45439955" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://capnfabs.net/posts/fuji-raf-compression-algorithm/" target="_blank">How does lossless compression in Fuji RAF files work? (2020)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dsego</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-09-26 18:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者在纽约Recurse中心研究富士RAF文件无损压缩算法的经历。作者为了编写自己的RAW文件处理器，决定深入理解富士的压缩技术，而非依赖现有的LibRaw库。富士的压缩算法是自适应的差分压缩，主要包括三个步骤：1）将图像分割为垂直条纹；2）按颜色向量重组传感器数据；3）通过特定的交错顺序压缩颜色向量数据。这一过程虽然复杂，但能大幅减小文件体积而不损失质量。作者最终成功实现了该算法的解码，并在多核CPU上获得了6倍的性能提升。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：富士相机RAF文件处理性能及其压缩技术的讨论
-
-不同观点：
-• 富士用户对RAF文件的兴趣与技术实现
-  - the_lucifer表达了对富士XT-3相机RAF文件处理技术的浓厚兴趣，甚至考虑重新实现相关代码以理解其工作原理
-  - 这表明富士的RAW处理技术具有独特的技术特点
-
-• RAF文件在Lightroom中的性能问题
-  - yboulkaid指出富士RAF文件是唯一让Lightroom处理困难的RAW格式
-  - 特别提到即使在M1 Mac上也出现风扇高速运转现象
-  - 强调这不是个别现象，摄影论坛上有多人报告相同问题
-
-• RAW文件压缩方式的争议
-  - vjvjvjvjghv提到摄影论坛中关于未压缩RAW和无损压缩RAW孰优孰劣的持续争论
-  - 暗示富士的压缩技术可能是这些讨论的一部分
-
-补充讨论：
-争议焦点：
-1. RAF文件为何对Lightroom特别不友好（文件大小不是唯一因素）
-2. 富士使用的压缩技术是否影响了图像质量或处理效率</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45389716" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
