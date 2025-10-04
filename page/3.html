@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-04 08:56 (北京时间)
+            最后更新时间: 2025-10-04 11:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,39 +61,192 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://refactoringenglish.com/blog/software-essays-that-shaped-me/" target="_blank">The Software Essays That Shaped Me</a>
+                    <a href="https://russellw.github.io/arenas" target="_blank">Arenas in Rust</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-09-30 23:40</span>
+                    <span>作者: welovebunnies</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-10-03 19:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章总结了作者20年编程生涯中影响最深的几篇软件工程文章。主要包括Joel Spolsky的《Joel测试：12步写出更好代码》，提出了评估软件开发团队的12个关键问题；Alexis King的《解析而非验证》，主张通过类型系统提升代码安全性；Fred Brooks的《没有银弹》，分析了软件工程的本质复杂性；以及其他多篇关于技术选择、测试设计、用户输入处理等方面的经典文章。这些文章从不同角度改变了作者的编程思维方式，涵盖了团队管理、代码质量和工程实践等重要主题。</p>
+                    <p>这篇文章讨论了在Rust语言中实现双向链表等循环引用数据结构的挑战。Rust基于所有权原则的内存管理机制使得处理循环引用变得复杂。作者分析了几种解决方案，重点介绍了使用arena（内存池）和handle（索引）的方法，虽然这看似回归了手动内存管理，但相比C/C++仍具有内存安全的优势。文章指出内存安全问题具有非确定性和安全风险两大特性，而Rust的设计能有效规避这些风险，特别是在处理对抗性输入时尤为重要。作者认为在现代编程环境中，几乎所有的软件都需要考虑安全问题，这使得Rust的内存安全特性变得至关重要。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[测试代码是否需要自己的测试代码]
+                    <div class="comments-summary">主要讨论点：[Rust中内存管理的安全性与实现方式，特别是关于Arenas（内存池）和手动内存管理的争议]
 
 不同观点：
-• [支持测试代码需要自己的测试代码]
-  - 用户eternityforest提出希望能有更好的工具来明确测试测试代码的内容，例如内联标注"这段代码不应该做什么，如果没有测试能捕捉到它这样做就是问题"。
-  - 隐含论据：测试代码本身可能存在错误或遗漏，需要验证其有效性。
+• **Arenas的局限性**  
+  - jmull和mwkaufma认为Arenas并不能完全避免手动内存管理的问题，如数组越界可能导致数据损坏（“stomping on neighboring data”），从而引入非确定性和安全问题。  
+  - pizlonator进一步指出，Arenas可能通过OOB（Out-of-Bounds Access）攻击导致远程代码执行漏洞。
 
-• [反对过早讨论此话题]
-  - 用户jauntywundrkind认为这个话题很好，但现在讨论为时过早（Too Soon）。
-  - 引用了一个HN帖子（303点赞，3天前发布，47评论）作为背景参考。
-  - 暗示该话题可能已经被充分讨论过或需要更多时间沉淀。
+• **Arenas的实用性**  
+  - crq-yml认为Arenas是“stupid simple”的早期绑定方法，能够限制错误的爆炸半径，尽管无法完全避免错误。  
+  - IshKebab支持Arenas在树结构等场景中的实用性，认为它优于C风格的指针操作，但希望Rust能提供更好的原生支持。
+
+• **指针与硬件的关系**  
+  - wasmperson反驳“指针是硬件概念”的观点，认为指针和数组索引都是语言层面的抽象，真正的硬件概念是间接寻址。  
+  - sfpotter指出传统指针双向链表在现代硬件中仍然适用，尤其是负载较大的场景。
+
+• **Rust生态与安全性工具**  
+  - echelon提议在Cargo中引入功能限制策略（如禁止unsafe代码、限制依赖深度等），以提升生态安全性和开发效率。  
+  - Animats探讨了Rust中反向链接（back-link）问题的编译时解决方案，认为这是未来需要关注的方向。
 
 补充讨论：
-- 争议焦点在于测试代码验证的必要性与讨论时机是否成熟。
-- jauntywundrkind的回应可能暗示：1）该话题已有现成讨论资源 2）社区需要时间消化现有讨论 3）当前不适合重启该话题。</div>
+- **争议焦点**：Arenas是否能真正提供内存安全性，还是仅仅转移了问题（如从指针错误转为数组越界）。  
+- **实现效率**：wasmperson和sfpotter就双向链表在现代硬件中的必要性展开讨论，前者认为其过时，后者举例证明其仍有用武之地。  
+- **语言设计权衡**：crq-yml对比了早期绑定（如Arenas）和晚期绑定的优劣，强调Rust允许回退到简单方案，但未将其设为默认。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45432656" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45467032" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://salykova.github.io/gemm-cpu" target="_blank">Advanced Matrix Multiplication Optimization on Multi-Core Processors (2024)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: skidrow</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-10-01 07:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个用C语言优化FP32矩阵乘法（matmul）的实现过程，目标是支持所有现代x86-64处理器并与BLAS库竞争性能。作者参考了OpenBLAS等BLAS库的设计，采用FMA3和AVX2指令集进行优化，同时避免了AVX-512以确保更广泛的处理器兼容性。文章详细讲解了如何安装和测试OpenBLAS，并通过调整线程数、内核大小和分块尺寸等超参数来达到最佳性能。作者在AMD Ryzen 7 9700X等CPU上进行了性能测试，并提供了代码实现（sgemm.c）。虽然该实现表现良好，但BLAS库在AVX-512支持的CPU上可能更具优势。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[技术文章的易读性和矩阵乘法实现的性能]
+
+不同观点：
+• 技术文章的易读性受到称赞。用户[cgio]表示即使是对技术新手来说，文章也非常易懂，强调了文章的可访问性。
+• 矩阵乘法实现的性能受到关注。用户[bee_rider]指出该实现超越了MKL（英特尔数学核心库），尤其是在处理大型方阵时，表现令人印象深刻。
+• 文章内容的深度和质量得到认可。用户[mindcrime]认为这类高质量的内容是吸引他继续关注HN（Hacker News）的原因，并表达了希望有更多时间深入研究和实现矩阵乘法包的愿望。
+
+补充讨论：[时间投入与兴趣之间的冲突]  
+用户[mindcrime]虽然对技术内容充满热情，但也提到了时间不足的问题，反映了技术爱好者在深入研究和实际实现之间的常见矛盾。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45435272" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://sunshowers.io/posts/cancelling-async-rust/" target="_blank">Cancelling async Rust</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 160</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-10-03 16:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是作者在RustConf 2025上关于异步Rust中取消操作的演讲文稿。主要内容分为三部分：
+
+1. **什么是取消**：介绍了异步Rust中取消操作的概念和重要性，指出虽然功能强大但难以彻底推理。
+
+2. **取消机制分析**：深入探讨了取消的工作原理，提供了思考方式。通过代码示例展示了在通道收发操作中添加超时可能导致的错误。
+
+3. **解决方案**：给出了实际建议，并分享了在生产代码中发现和修复的真实bug。作者结合自己在Oxide Computer Company的工作经验，强调了异步Rust在复杂系统中的广泛应用及其挑战。
+
+文章还对比了同步Rust中的取消实现方式（如标志检查、特殊panic和终止进程），为理解异步取消提供了背景。作者表达了对异步Rust的热爱，并分享了自己在cargo-nextest和Oxide的工作经历。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：异步Rust中的取消（cancellation）机制及其安全性问题
+
+不同观点：
+• **对文章标题的批评**  
+  - [CaptainOfCoit]认为标题具有误导性，建议改为更准确的“Cancellations in async Rust”。  
+  - [nijaar]调侃标题可能引发误解（联想到DEI话题）。
+
+• **对取消安全性的讨论**  
+  - [CodeBrad]赞赏文章区分了“取消安全性”（cancel safety）和“取消正确性”（cancel correctness）。  
+  - [tison]提到Rust的Future类似于C++的移动语义，取消可能导致状态无效，并分享了实践中记录“取消安全性”属性的经验。  
+  - [Panzerschrek]强调`await`是潜在的返回点，需避免在必须连续的操作间使用。
+
+• **对取消行为的争议**  
+  - [alembic_fumes]质疑问题的本质，认为Future未被驱动完成时取消是预期行为，建议通过分离任务解决。  
+  - [Animats]指出用例不明确，认为资源耗尽时的行为（如丢弃、阻塞或崩溃）才是核心问题，而非取消本身。
+
+• **技术提案与补充材料**  
+  - [Matthias247]分享了关于强制Future完成运行和统一同步/异步取消机制的提案。  
+  - [bryanlarsen]希望引入`async drop`以改进取消安全性。
+
+补充讨论：
+- **争议焦点**：取消是否是异步Rust的固有问题（[alembic_fumes] vs. [tison]）。  
+- **实践案例**：[foota]和[ossopite]分别提到超时处理和通道操作中的取消陷阱。  
+- **新手困惑**：[arifalkner]指出初学者可能不理解`select!`和`Abortable()`的取消机制。  
+- **语言对比**：[beanjuiceII]表达对Rust复杂性的不满，而[nofriend]则反问Rust是否已通过RAII解决资源管理问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45464632" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nima101.github.io/dft" target="_blank">Discrete Fourier Transform</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pykello</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-09-30 05:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了如何使用快速傅里叶变换(FFT)在O(NlogN)时间复杂度内高效计算两个多项式的乘法。作者首先展示了传统多项式乘法(O(N²))的局限性，然后提出通过值表示法可以将乘法转化为点积运算(O(N))。关键在于利用FFT在系数表示和值表示之间快速转换：通过选择正负对称的采样点，将问题分解为两个更小的子问题，递归求解。虽然实数采样点可能导致平方后丢失负值信息，但引入复数采样点(如单位根)可以解决这个问题，最终实现多项式乘法的高效计算。文章还提供了Python代码示例展示实际应用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[多项式乘法和FFT/NTT的应用以及相关资源的适用性]
+
+不同观点：
+• [关于多项式乘法中FFT与NTT的选择]
+  - amirhirsch指出在进行多项式乘法时，为了避免精度问题，可以选择使用NTT（数论变换）而非FFT，因为NTT在有限整数环上使用单位根，能够保证精确的整数卷积。
+
+• [关于学习资源的形式偏好]
+  - tverbeure表示尽管通常更喜欢文字内容，但推荐了一个关于相同主题的视频，认为其质量非常高，值得每年观看。同时指出文章标题（以及HN帖子）不太准确，认为讨论的是FFT而非DFT（离散傅里叶变换）。
+
+• [关于文章的受众定位]
+  - lomase认为这篇文章似乎是为已经对FFT有深入了解的人写的，可能对初学者不太友好。
+
+补充讨论：
+- [争议点]
+  - 文章的标题是否准确（FFT vs DFT）引发了讨论，tverbeure认为标题有误导性。
+  - 文章的内容深度是否适合广泛受众，lomase认为文章更适合已有FFT知识的读者。
+
+- [其他值得注意的点]
+  - aeve890的评论似乎与主题无关，可能是误发或无关内容，未参与核心讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45422315" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -108,8 +261,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: gmays</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 0</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2025-10-03 22:29</span>
                 </div>
 
@@ -120,225 +273,27 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45468579" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jackhopkins.github.io/factorio-learning-environment/versions/0.3.0.html" target="_blank">Show HN: FLE v0.3 – Claude Code Plays Factorio</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: noddybear</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-10-03 19:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了Factorio学习环境(FLE)v0.3.0 SDK的发布，这是一个用于测试智能体在长期规划、推理和世界建模方面能力的开放自动化评估平台。新版本主要改进包括：支持无头环境扩展，实现大规模实验；兼容OpenAI Gym接口；提供开发者工具简化实验流程。文章还展示了Claude代码在Factorio中的实际应用案例，通过程序化交互逐步建立自动化工厂的过程。该平台旨在推动多模态智能体研究和长时程交互环境下的智能体测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Claude玩Factorio的科学意义和游戏设定]
+                    <div class="comments-summary">主要讨论点：[对AI科学家和共产主义者进行比较的合理性]
 
 不同观点：
-• [娱乐与科学结合的观点]
-  - 用户bottydim以幽默的方式指出，PhD学生可能需要长时间玩Factorio来进行科学研究，暗示游戏可以作为学术研究的工具。
-  
-• [游戏设定的疑问]
-  - 用户yeasku询问游戏中是否禁用了bitters和cliffs，关注游戏的具体设置和玩法。
+• [ghaff的观点]  
+  - 认为反对"不加批判地采纳"任何事物是常识，尽管常识并不常见。  
+  - 隐含观点：对新技术或思想应保持批判性态度，避免盲目接受。
 
-• [技术整合的赞赏]
-  - 用户georgeh4cks表达了对‘Claude plays’整合的喜爱，认为这是一项出色的工作，侧重于技术实现的积极评价。
-
-• [相关讨论的延伸]
-  - 用户dang提供了其他相关的讨论链接，展示了Factorio在AI和多智能体协调方面的研究背景，扩展了讨论的深度。
-
-• [直播体验的正面反馈]
-  - 用户kyars称赞直播效果很棒，强调实时观看的体验。
-
-补充讨论：[争议的焦点]
-- 目前讨论中没有明显的争议点，更多的是对不同方面的兴趣和赞赏。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45466865" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.pragmaticengineer.com/asked-to-do-something-illegal-at-work/" target="_blank">Asked to do something illegal at work? Here's what these software engineers did</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bschne</span> |
-                    <span>评分: 190</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-10-02 08:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年10月2日更新：2021年，学生贷款初创公司Frank的CEO查理·贾维斯（Charlie Javice）曾施压一名软件工程师伪造客户数据，并声称"不会有人因此坐牢"，但该工程师拒绝后被证明是正确的——贾维斯最终因欺诈罪被判7年监禁。  
-
-文章通过三个真实案例警示工程师面对公司违法行为时应如何应对：  
-1. **FTX案例**：前工程总监Nishad Singh在发现公司挪用客户资金后，未及时举报或离职，反而继续参与并从中获利，最终面临最高75年监禁。  
-2. **Frank案例**：工程师拒绝伪造数据，避免了法律风险，而CEO贾维斯被判刑。  
-3. **通用建议**：发现违法行为时，应立即寻求法律建议、举报或辞职，切勿试图"弥补"或从中获利。  
-
-核心教训：工程师需坚守职业道德，拒绝参与非法行为，否则将承担严重后果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：职场中面对不道德或非法要求时的应对策略及其后果
-
-不同观点：
-• **拒绝并举报**：多位评论者（如moron4hire、exasperaited）强调应坚持原则，拒绝不合理要求，并通过辞职或向监管机构举报来保护自己。moron4hire的例子显示，拒绝可能导致项目终止，但个人能保持清白。
-• **现实压力与困境**：jmward01、andy99等指出，单纯说“不”在实际中可能面临失业、经济压力或报复。jmward01呼吁需要更完善的举报人保护机制。
-• **专业伦理与行业规范**：sltr提议通过签署职业道德准则（如ACM/IEEE）来抵御不合理要求，尤其在灰色地带（如隐私设置）中提供依据。
-• **系统性掩盖问题**：zero_k和comrade1234揭露大企业或高层常掩盖不当行为，内部举报可能无效（如律师包庇），建议直接联系外部监管机构。
-• **渐进式妥协的风险**：bschne和andy99提到，许多问题并非黑白分明，员工可能因压力或信息不对称而逐步卷入非法行为，事后追责困难。
+• [birdalbrocum的观点]  
+  - 强烈反对将AI科学家与共产主义者相提并论，认为这种比较显示了无知。  
+  - 批评原文作者既不了解历史，也不理解世界运作方式。  
+  - 隐含立场：AI发展与政治意识形态不应被简单类比。
 
 争议焦点：
-1. **“说‘不’的可行性”**：Rygian和jmward01认为理想化的拒绝忽视现实报复风险，而moron4hire等则以自身经历反驳，认为坚持原则最终可行。
-2. **举报途径的有效性**：zero_k主张跳过内部流程直接外部举报，而comrade1234的例子显示外部举报也可能被压制（如联络人隐瞒）。
+- 将AI科学家比作共产主义者的历史类比是否合理  
+- 新技术支持者是否真的忽视了历史教训  
 
 补充讨论：
-• **心理与经济成本**：bschne强调，即使未违法，对抗不道德行为可能导致 burnout 或职业中断，需权衡个人承受力。
-• **行业文化差异**：exasperaited批评硅谷高收入群体对伦理的漠视，对比早期科技行业的职业操守。
-• **预防与选择雇主**：moron4hire和exasperaited指出，入职前识别“危险信号”（如雇主价值观）能减少后续伦理困境。</div>
+- 双方均未详细展开具体论据，争论停留在立场表达层面  
+- 隐含更广泛的讨论：技术进步与历史教训的关系</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45447536" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://vincentrolfs.dev/blog/ts-var" target="_blank">The Temporal Dead Zone, or why the TypeScript codebase is full of var statements</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: vincentrolfs</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-10-01 14:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章解释了为什么TypeScript代码库中仍然大量使用`var`声明变量，而不是更现代的`let`和`const`。主要原因与"时间死区"(TDZ)有关：`let`和`const`虽然提供了更好的作用域控制和错误预防机制，但在运行时检查TDZ会带来显著的性能开销。TypeScript团队发现，将部分声明改为`var`后获得了约8%的性能提升。尽管`var`存在变量提升和作用域泄漏等问题，但在性能优先的情况下，TypeScript选择了这种"复古"的做法。作者最后调侃这可能是TypeScript考虑迁移到Go语言的又一个理由。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[JavaScript中`let`和`const`的性能问题及其设计背后的原因]
-
-不同观点：
-• **性能与设计权衡**  
-  - `sjrd`认为`let`和`const`有显著的性能开销，Scala.js编译器默认生成`var`以提高性能。  
-  - `twistedpair`指出问题的根源在于JavaScript的作用域设计和JIT编译机制。  
-
-• **改进建议与优化**  
-  - `spankalee`提议V8引擎应实现更智能的TDZ（暂时性死区）消除，以减少不必要的检查，并分析了不同情况下TDZ检查的必要性。  
-
-• **语言特性与开发者态度**  
-  - `taejavu`认为这是词法作用域的正常行为，开发者应理解或接受其特性。  
-  - `benatkin`批评JavaScript的设计（如React的`onChange`）过于混乱和不直观。  
-
-• **工具链与实现细节**  
-  - `adzm`质疑为何不在构建阶段处理`let`和`const`的转换，而非在源码中直接使用`var`。  
-  - `craftkiller`解释了变量提升（hoisting）机制，认为这是JavaScript的固有特性。  
-
-补充讨论：  
-- **争议焦点**：TDZ检查的性能开销是否值得优化（`spankalee`与默认实现的分歧）。  
-- **概念澄清**：`Goofy_Coyote`对“变量泄漏”的疑问，实际是变量提升的表现（`craftkiller`补充）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45437903" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jacobsherin.com/posts/2025-08-16-bplustree-compare-borrow-merge/" target="_blank">A B+ tree node underflows: merge or borrow?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jasim</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-09-30 16:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了B+树在节点下溢（节点占用空间低于最小值）时的两种平衡策略：合并优先和借用优先。合并优先通过合并节点回收空间，提高空间利用率但可能导致级联重新平衡，影响写性能；借用优先通过重新分配键值避免合并，提升写入速度但可能长期导致空间浪费。两种策略都需要悲观锁定，影响并发性能。现代OLTP系统采用复杂策略来权衡空间和时间效率。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45427774" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://thejpster.org.uk/blog/blog-2025-09-28/" target="_blank">Pre-Emptive Multi-Tasking on Arm Cortex-M</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 33</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-09-30 21:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何在Arm Cortex-M微控制器上使用Rust语言实现一个抢占式实时操作系统(RTOS)。作者首先概述了现有C语言RTOS(如FreeRTOS、ThreadX等)和Rust语言RTOS(如embassy、RTIC等)的选择，然后深入探讨了RTOS的核心概念，包括多任务、优先级调度和实时性保证。文章重点讲解了用Rust实现RTOS的关键技术，如任务栈管理、调度算法和上下文切换，并提供了一个简单示例。作者旨在帮助嵌入式开发者，特别是安全关键系统开发者，理解如何在Rust中构建基本的RTOS功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：RTIC（Real-Time Interrupt-driven Concurrency）框架的性质及其与传统RTOS的区别  
-
-不同观点：  
-• **RTIC是一种高效的并发框架**：评论者认为RTIC并非传统意义上的RTOS，而是一种利用Cortex-M NVIC（嵌套向量中断控制器）作为硬件加速调度器的并发框架，特别适合嵌入式实时应用。  
-• **RTIC的独特优势**：RTIC在Rust中提供编译时无死锁的保证，这一点使其在实时系统中具有显著优势，尤其是在资源受限的嵌入式环境中。  
-• **是否需要RTOS**：评论者提出需要先明确是否真的面临RTOS问题，暗示RTIC可能更适合某些场景，而不需要完整的RTOS功能。  
-
-补充讨论：  
-• **RTIC与传统RTOS的对比**：RTIC通过硬件加速和编译时检查简化了调度和并发管理，而传统RTOS通常更复杂，提供更多的功能（如任务管理、内存分配等）。  
-• **适用场景的争议**：争议焦点可能在于RTIC是否足以替代RTOS，或者是否仅适用于特定类型的实时应用（如中断驱动的低延迟任务）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45431489" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45468579" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -393,47 +348,31 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/jmsdnns/webbol" target="_blank">Webbol: A minimal static web server written in COBOL</a>
+                    <a href="https://en.wikipedia.org/wiki/Old_Stockholm_telephone_tower" target="_blank">Old Stockholm Telephone Tower</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: simonpure</span> |
-                    <span>评分: 109</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-10-03 14:13</span>
+                    <span>作者: ZeljkoS</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-10-02 07:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个名为Webbol的极简静态网页服务器项目，该项目使用COBOL语言编写，基于GnuCOBOL编译器。主要特点包括：从当前目录提供静态文件服务、自动检测常见文件类型的MIME类型、支持基本HTTP状态码、具有路径遍历攻击防护功能。项目结构清晰，包含多个模块文件，如HTTP处理、文件操作、路径工具等。使用方法简单，只需编译后运行即可在8080端口启动服务。项目支持常见文件类型，但存在单线程处理、无SSL支持等局限性。该项目展示了COBOL语言在现代系统编程中的应用可能性。</p>
+                    <p>这篇文章介绍了瑞典斯德哥尔摩的一座老式电话塔（Telefontornet）。该塔建于1887年，高80米，最初用于连接约5500条电话线。1890年建筑师Fritz Eckert为其增加了装饰性塔楼。随着地下电缆技术的普及，该塔在1913年失去原有功能，1939年后改为广告用途。1952年遭遇火灾损坏后，于1953年因安全隐患被拆除。这座电话塔见证了19世纪末至20世纪中叶瑞典通讯技术的发展历程。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[COBOL在现代开发中的使用和意义]
+                    <div class="comments-summary">主要讨论点：[Half-Life: Alyx VR游戏中Citadel设计的可能灵感来源]
 
 不同观点：
-• [支持COBOL的观点]
-  - COBOL在企业应用中仍有广泛使用（如90%的业务操作仍依赖COBOL）。
-  - 固定格式模式（fixed format mode）具有历史魅力，适合追求原汁原味的开发体验。
-  - COBOL可以用于现代Web开发（如通过CGI和RPC层处理HTTP请求并生成HTML/XML）。
-• [质疑COBOL的观点]
-  - COBOL代码冗长且难以理解，甚至比汇编语言更不优雅。
-  - 固定格式模式对现代开发者不友好，工具支持不足。
-  - COBOL的标准文档难以理解，学习曲线陡峭。
-• [中立/探索性观点]
-  - COBOL的安全性（如内存访问控制）与传统语言（C/Rust）的对比值得探讨。
-  - COBOL在Web开发中的实际应用（如通过CALL "socket"实现网络功能）引发技术好奇。
-  - COBOL的注释文化挑战了“代码应自文档化”的现代假设。
+• [ZeljkoS]认为某个外部来源可能是Citadel设计的灵感来源，并提供了Reddit链接作为参考。
+• [sans_souse]对ZeljkoS的观点表示赞同，认为这个灵感来源非常惊人。
 
-补充讨论：
-• 争议焦点：
-  - COBOL是否适合现代开发（实用性 vs. 历史价值）。
-  - 固定格式模式的必要性（传统魅力 vs. 开发效率）。
-• 其他讨论：
-  - COBOL的学习资源（如会议、幽默项目“COBOL on Cogs”）和社区支持。
-  - COBOL在特定场景（如政府网站）的遗留痕迹（如固定宽度HTML输出）。</div>
+补充讨论：[目前讨论较为简短，没有出现明显的争议或不同立场。主要聚焦于对Citadel设计灵感的猜测和对其惊人程度的认同。]</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45463251" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45447057" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -444,46 +383,122 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://buttondown.com/blog/ringo-email-as-an-ai-interface" target="_blank">Email was the user interface for the first AI recommendation engines</a>
+                    <a href="https://www.theverge.com/news/792032/discord-customer-service-data-breach-hack" target="_blank">Discord customer service data breach leaks user info and scanned photo IDs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: coloneltcb</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-10-03 17:27</span>
+                    <span>作者: healsdata</span> |
+                    <span>评分: 58</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-10-04 00:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>1994年，电子邮件成为AI音乐推荐引擎的首个用户界面。MIT研究人员提出社交过滤理论，认为人们过去的偏好可以预测未来的喜好。音乐推荐系统Ringo通过收集用户喜爱的艺术家信息，再平均分发推荐列表，成功帮助数千用户发现新音乐。与此同时，Xerox PARC开发的Tapestry利用用户对电子邮件的评分和互动来过滤信息，为后来的推荐系统奠定了基础。这些早期尝试展示了群体智慧的潜力和电子邮件作为通用界面的可能性。</p>
+                    <p>Discord遭遇第三方客服供应商数据泄露，黑客获取了部分用户的支持请求信息，包括姓名、用户名、邮箱和信用卡后四位数字，以及少量政府身份证照片。黑客试图勒索Discord，但未直接入侵Discord系统。Discord已采取措施，包括撤销供应商访问权限、通知数据保护部门和执法机构，并向受影响用户发送通知邮件。完整信用卡号和密码未被泄露。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[早期互联网时代电子邮件作为用户界面的应用及其演变]
+                    <div class="comments-summary">主要讨论点：[政府ID验证的必要性与风险]
 
 不同观点：
-• 电子邮件在早期互联网中作为用户界面的重要性
-  - mg提到通过电子邮件收集用户反馈，并最终发展出基于服务器端代码和数据库的音乐、电影和书籍推荐系统（Gnoosic、Gnovies、Gnooks）。
-  - sedatk补充了Bitnet和Fidonet网络中电子邮件作为远程服务界面的例子，如通过电子邮件进行FTP操作和用户数据库查询。
-  - deadlyllama分享了通过电子邮件获取网页文本渲染的服务，展示了电子邮件在资源受限环境中的实用性。
-
-• 电子邮件在现代互联网中的价值
-  - yepguy认为电子邮件仍然是互联网上最好的工具之一，尽管需要有效的管理策略，但希望更多服务能更好地利用电子邮件进行通知和用户交互。
-
-• 早期推荐系统的技术背景与争议
-  - DonaldFisk和BubbleRings讨论了早期电影和音乐推荐系统（如MORSE、Ringo/Firefly）的技术细节，强调这些系统基于协同过滤而非现代意义上的AI。
-  - crazygringo指出协同过滤是简单的统计学方法，不应被归类为AI，并对当前将一切技术贴上AI标签的趋势表示不满。
-
-• 早期技术的商业与专利影响
-  - BubbleRings分享了其专利故事，探讨了早期专利在互联网发展中的潜在价值，以及商业决策对个人生活的深远影响。
+• [PaulKeeble]认为政府ID验证从一开始就是糟糕的主意，尤其是由未经证实的公司执行，未来会导致大规模的ID盗窃犯罪。他以互联网公司被黑的历史为例，强调数据泄露的必然性。
+• [jml7c5]引用Discord的声明，指出泄露的政府ID图片数量较少，仅限于一小部分因年龄申诉而提交的用户，暗示风险可能被夸大。
+• [Fnoord]提到荷兰的法律禁止公司索取ID，除非是政府。他建议展示经过审查的版本或使用Yivi（Irna）应用，只分享必要信息（如是否成年）。他强调公司不应保留不必要的数据，引用Schneier的观点，称数据是“有毒资产”。
+• [throw3141592]主张立法禁止存储非必要个人数据，认为这是解决问题的简单方法。
 
 补充讨论：
-- 争议焦点：早期推荐系统是否属于AI。crazygringo明确反对将其归类为AI，认为这是统计学范畴；而其他评论者（如DonaldFisk）虽未直接称之为AI，但强调了其技术贡献。
-- 技术演变：从电子邮件作为界面到现代Web服务的过渡，展示了互联网技术的快速发展。
-- 历史价值：dvrp建议现代AI从业者应更多参考早期RFC和技术历史，认为其中蕴含许多未被充分挖掘的价值。</div>
+• 争议焦点在于政府ID验证的风险是否被夸大，以及如何平衡身份验证需求与隐私保护。
+• Fnoord和throw3141592的观点相似，都强调数据最小化原则，但Fnoord提供了具体的技术解决方案（Yivi），而throw3141592则呼吁法律干预。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45465392" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45469436" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vincentrolfs.dev/blog/ts-var" target="_blank">The Temporal Dead Zone, or why the TypeScript codebase is full of var statements</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: vincentrolfs</span> |
+                    <span>评分: 66</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-10-01 14:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章解释了为什么TypeScript代码库中仍然大量使用`var`声明变量，而不是更现代的`let`和`const`。主要原因与"时间死区"(TDZ)有关：`let`和`const`虽然提供了更好的作用域控制和错误预防机制，但在运行时检查TDZ会带来显著的性能开销。TypeScript团队发现，将部分声明改为`var`后获得了约8%的性能提升。尽管`var`存在变量提升和作用域泄漏等问题，但在性能优先的情况下，TypeScript选择了这种"复古"的做法。作者最后调侃这可能是TypeScript考虑迁移到Go语言的又一个理由。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：JavaScript 中 `let`、`const` 和 `var` 的性能差异及 TDZ（Temporal Dead Zone）的影响
+
+不同观点：
+• **性能优先**：`let` 和 `const` 由于 TDZ 检查导致性能损耗，因此 Scala.js 编译器默认使用 `var` 以获得更好的性能，同时保留源代码中的 `val` 和 `var` 语义。
+• **TDZ 优化**：V8 可以通过简单的启发式方法在解析阶段消除不必要的 TDZ 检查，从而提升性能。但目前缺乏相关基准测试证明 TDZ 检查是性能瓶颈。
+• **语言设计问题**：JavaScript 的作用域设计和 JIT 编译方式是导致 TDZ 检查成本高的根本原因。建议使用其他语言（如 Go）编写工具链以提高性能。
+• **语义清晰**：`let` 是块作用域的最佳选择，因为它不需要复杂的 TDZ 检查，初始值为 `undefined`，行为更接近 `var`。
+• **编译阶段处理**：应该将 `let` 和 `const` 转换为 `var` 的优化放在构建阶段，而不是源代码中直接使用 `var`。
+
+补充讨论：
+• **变量提升（Hoisting）**：JavaScript 的变量提升行为导致 `var` 声明的变量在声明前可访问（值为 `undefined`），而 `let` 和 `const` 由于 TDZ 限制会抛出错误。
+• **代码示例争议**：有评论认为示例中的“变量泄漏”说法不准确，因为 `undefined` 只是表示变量未初始化，而非真正的泄漏。
+• **开发者体验**：部分开发者认为 JavaScript 的语法设计（如 TDZ）增加了不必要的复杂性，而另一些则认为这是语言特性，开发者应适应或忽略。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45437903" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/jmsdnns/webbol" target="_blank">Webbol: A minimal static web server written in COBOL</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: simonpure</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-10-03 14:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个名为Webbol的极简静态网页服务器项目，该项目使用COBOL语言编写，基于GnuCOBOL编译器。主要特点包括：从当前目录提供静态文件服务、自动检测常见文件类型的MIME类型、支持基本HTTP状态码、具有路径遍历攻击防护功能。项目结构清晰，包含多个模块文件，如HTTP处理、文件操作、路径工具等。使用方法简单，只需编译后运行即可在8080端口启动服务。项目支持常见文件类型，但存在单线程处理、无SSL支持等局限性。该项目展示了COBOL语言在现代系统编程中的应用可能性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[COBOL在现代开发中的使用和价值]
+
+不同观点：
+• COBOL的固定格式模式（fixed format mode）具有历史魅力，适合追求原汁原味的开发者（neoeno）
+• COBOL仍然是某些企业的核心业务工具，甚至在Web开发中有创新应用（throwaway-18）
+• COBOL代码的可读性和自文档化能力受到质疑（nonethewiser）
+• COBOL的安全性和与现代语言（如C或Rust）的比较引发疑问（jrmg）
+• COBOL的学习资源和社区支持仍然存在（beny23, brightball, pelagicAustral）
+
+补充讨论：
+• COBOL在Web开发中的历史痕迹（GartzenDeHaes）
+• COBOL项目的复杂性和与其他语言的对比（john-tells-all）
+• COBOL相关项目和工具的分享（pelagicAustral, pantulis）
+• COBOL在现代开发中的持久性和适应性（tangus, ape4）
+
+争议焦点：
+• COBOL是否适合现代开发（neoeno vs john-tells-all）
+• COBOL的安全性和与现代语言的比较（jrmg的提问尚未得到明确回答）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45463251" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
