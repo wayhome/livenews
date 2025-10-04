@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-04 05:12 (北京时间)
+            最后更新时间: 2025-10-04 08:56 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,47 +61,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://hazyresearch.stanford.edu/blog/2025-09-28-tp-llama-main" target="_blank">We bought the whole GPU, so we're damn well going to use the whole GPU</a>
+                    <a href="https://eli.thegreenplace.net/2025/consistent-hashing/" target="_blank">Consistent hashing</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sydriax</span> |
-                    <span>评分: 488</span> |
+                    <span>作者: zoidb</span> |
+                    <span>评分: 91</span> |
                     <span>评论数: 13</span> |
-                    <span>发布时间: 2025-09-28 21:00</span>
+                    <span>发布时间: 2025-09-29 08:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了研究人员开发的针对Llama-70B模型的高吞吐量"megakernel"（大内核）技术。该技术通过将整个模型前向传播融合到单一内核中，实现了GPU资源的高效利用。相比传统顺序执行方式，新方法能同时重叠计算、内存和通信操作，充分利用GPU的各种硬件资源（如张量核心、内存带宽和NVLink连接）。文章详细说明了该技术在不同GPU层级（单个SM、多SM和多GPU）的重叠优化策略，包括创新的多GPU转置通信方法。集成到Tokasaurus推理引擎后，该内核在ShareGPT基准测试中比SGLang快22%以上。虽然代码已开源，但作者强调这是研究代码，可能存在稳定性问题。</p>
+                    <p>本文介绍了**一致性哈希算法**，用于解决分布式哈希表中节点增减导致大量键重映射的问题。传统哈希方法（如`hash % N`）在节点数量变化时几乎会导致所有键重新分配，严重影响缓存命中率。一致性哈希将节点和键映射到一个环形空间（如单位圆），每个键属于顺时针方向最近的节点。这样，当节点增减时，仅影响少量邻近键的映射，大幅减少数据迁移量。文中还通过示例展示了该算法的单调性特性（新增节点不会导致已有键在老节点间迁移），并简要提及了实现方法。该算法特别适用于分布式缓存等动态节点环境。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何充分利用GPU硬件性能进行高效计算优化
+                    <div class="comments-summary">主要讨论点：[一致哈希（Consistent Hashing）的实现、优化及相关技术的讨论]
 
 不同观点：
-• 硬件特性利用不足
-  - AaronFriel指出未充分利用NVDEC/NVJPG单元进行权重解压
-  - winwang期待看到更激进的优化方案（如RT核与Tensor核并行使用）
-  
-• 硬件抽象与专用优化
-  - rldjbpin认为抽象层导致性能损失，专用优化代码（如megakernel）性能更优
-  - Archit3ch指出驱动/语言/库的发展滞后于硬件进步
-  
-• 硬件共享方案
-  - throw0101d提出通过MIG/MPS技术实现GPU资源多用户/多进程共享
-  
-• 优化实践现状
-  - versteegen推测大实验室可能早已实施类似优化
-  - tuna74批评文章未明确说明优化对象是CUDA芯片而非通用GPU
+• **Rendezvous Hashing的优越性**  
+  - eru认为Rendezvous Hashing比一致哈希更简单且更通用，不需要虚拟节点，对小规模目标更友好，且加权版本更容易实现。  
+  - 补充讨论了“Power of 2 Choices”负载均衡技术，建议将其与一致哈希或Rendezvous Hashing结合使用。  
+
+• **Ketama实现的一致哈希**  
+  - sillypointer提到Ketama实现的一致哈希算法直观且经过实战检验。  
+
+• **CRUSH算法的应用**  
+  - modderation介绍了Ceph存储使用的CRUSH算法，它是一种分层一致哈希方案，能够处理层次化数据放置和复制，且避免了集中式查找的需求。  
+
+• **其他技术和实现**  
+  - packetlost分享了一个针对SSD优化的持久化一致哈希算法的实现，性能表现优异。  
+  - ryuuseijin提供了一个Clojure实现的超级简单的一致哈希算法。  
+  - ignoreusernames提出通过增加分区数量并分配范围而非单个分区来避免重新分配的另一种策略。  
 
 补充讨论：
-- 争议焦点：是否应该/能够完全利用GPU所有硬件模块（hinkley提出"不需要使用所有购买的功能"）
-- 代码特性讨论：aeon_ai调侃研究中"脆弱但高效"的代码特性
-- 幽默类比：Stratoscope将文章风格与著名伪科学论文相提并论
-- 性能提升预期：Archit3ch提到新一代GPU（M5）可能带来35%的性能提升</div>
+- **标题拼写错误**：多个用户（sidcool、wyldfire、Groxx）指出标题中的拼写错误（“Constitent”应为“Consistent”），并建议修正以避免影响未来搜索。  
+- **Daniel Lewin的提及**：anotherhue提到了Akamai创始人Daniel Lewin的悲剧结局，作为一致哈希技术背景的补充。  
+- **Lamping-Veach算法**：alanfranz建议加入对Lamping-Veach算法的讨论，认为它能进一步简化一致哈希的实现。  
+- **技术描述的简洁性**：dataflow质疑一致哈希的复杂性，认为可以用一句话概括其核心思想（利用哈希空间的子划分和槽索引），引发了对其准确性的讨论。  
+
+争议焦点：
+- 一致哈希与Rendezvous Hashing的优劣比较（eru vs. sillypointer）。  
+- 技术描述的简洁性与实际复杂性（dataflow的观点与其他讨论者的补充）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45407953" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45411435" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -112,48 +116,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://alikhil.dev/posts/the-simple-habit-that-saves-my-evenings/" target="_blank">A simple habit that saves my evenings</a>
+                    <a href="https://forums.macrumors.com/threads/i-spent-the-day-trying-to-teach-seniors-how-to-use-an-iphone-and-it-was-a-nightmare.2468117/" target="_blank">I spent the day teaching seniors how to use an iPhone</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: alikhil</span> |
-                    <span>评分: 139</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-09-29 12:29</span>
+                    <span>作者: dabinat</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-10-03 01:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了软件工程师在工作中常遇到的问题：由于会议、同事打扰等原因，很难拥有长时间专注的工作时间。作者分享了自己曾经为了完成一个工作而加班到深夜，结果疲惫不堪且效率低下的经历。他建议不要在加班时强行完成任务，而是利用20分钟写下下一步行动计划，然后休息。这样既能保持工作生活平衡，又能让大脑在休息后产生新想法，第二天以充沛精力高效完成任务。作者强调了两点核心建议：避免过度工作和在下班前记录下一步计划。</p>
+                    <p>这篇文章主要讨论了老年人使用iPhone时遇到的诸多困难，包括复杂的设置流程、繁琐的密码输入、难以操作的Touch ID/Face ID、过多的应用以及误触等问题。作者尝试使用辅助功能但仍不够简便，建议苹果应为老年人设计更简单的"老年模式"，例如取消密码、减少应用数量、恢复实体按键等。最后作者发现老人连老款诺基亚手机都操作困难，甚至频繁误拨紧急电话，最终认为翻盖手机可能更适合老年人使用。文章呼吁苹果应该简化手机操作，减少菜单层级，提升老年用户的易用性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[如何高效结束一天的工作并保持动力]
+                    <div class="comments-summary">主要讨论点：智能手机（尤其是iPhone）的用户体验复杂性问题，特别是对老年人和技术不熟练用户的影响。
 
 不同观点：
-• **计划与休息的重要性**  
-  - pimlottc和neilv强调写下下一步计划和行动方案的重要性，认为这能帮助清空大脑并为第二天做好准备。  
-  - usefulcat和Liwink补充说，休息或睡眠中可能会产生新想法，建议用笔记记录而非立即返回工作。
-
-• **“未完成感”的争议**  
-  - pimlottc和jcul认为未完成感能激发第二天的工作动力，尤其是留下明显未解决的问题（如编译错误）。  
-  - zzzeek反驳称未完成感会导致焦虑和失眠，影响休息质量。
-
-• **时间管理与技巧**  
-  - simpaticoder推荐番茄工作法（25分钟专注+5分钟休息），认为这种节奏能提高效率。  
-  - babblingfish提到Cal Newport的“关机仪式”，主张通过时间块规划避免过度工作。  
-  - TYPE_FASTER建议短暂散步以清空思维，帮助解决问题。
-
-• **工作环境的影响**  
-  - mxuribe分享了自己在有毒工作环境中无法进行结构化每日总结的困扰，导致效率下降。  
-  - bashmelek指出通勤和琐事会耗尽晚间动力，强调明确任务启动点的重要性。
+• **用户体验过于复杂**：iPhone和macOS的设置过程繁琐，重复输入信息、过多通知和权限请求，缺乏统一的界面模式（avalys）。早期iOS更简单直观，现在即使是技术用户也会迷失在设置菜单中（arrty88）。
+• **老年人使用困难**：老年人难以理解手势操作（如滑动、长按）和抽象概念，触屏对干燥皮肤不敏感（jerezzprime）。简化模式和默认关闭复杂功能可能更合适（AnonC）。
+• **简化方法**：可以通过第三方工具（如Nova Launcher）或“老年模式”简化界面（51Cards），但现有方案可能过于限制（51Cards）。Facebook Portal等专用设备更适合老年人（bapak）。
+• **技术非必需品**：智能手机不应成为生活必需品，部分场景（如国家公园）强制使用app不合理（OGEnthusiast）。部分用户可能根本不需要智能手机（jolux）。
+• **用户动机与学习障碍**：老年人可能因缺乏动机拒绝学习基础功能（chasil），或对变化感到挫败（captainkrtek）。
 
 补充讨论：
-- **争议焦点**：未完成感是否真正有助于动力，还是会导致焦虑（zzzeek vs. jcul）。  
-- **文化差异**：Brajeshwar引用林肯的“磨刀不误砍柴工”比喻，强调前期准备的价值。  
-- **实践案例**：agentultra以Haskell项目为例，说明留下类型错误可作为第二天的工作线索。</div>
+- **争议焦点**：是否应强制老年人使用智能手机（chasil vs. jolux），以及厂商是否应优先考虑简化设计而非新功能（avalys vs. 默认商业逻辑）。
+- **替代方案**：专用设备（如Facebook Portal）可能比通用智能设备更合适（bapak），但面临服务终止风险。
+- **社会压力**：智能手机逐渐成为社会刚需，但部分用户可能更适合传统交互方式（giardini）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45412870" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45457670" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -164,49 +157,50 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://entropicthoughts.com/you-want-technology-with-warts" target="_blank">You Want Technology with Warts</a>
+                    <a href="https://therecord.media/linkedin-sues-data-scraping-company" target="_blank">LinkedIn sues software company allegedly scraping data from profiles</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tartoran</span> |
-                    <span>评分: 89</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-10-03 03:13</span>
+                    <span>作者: thm</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-10-03 15:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章分享了一场关于构建长期可持续的Web服务的演讲内容。演讲重点讨论了如何选择和使用技术，以减少未来因外部变化而需要的维护工作。作者提到，像SQLite这样的技术虽然有一些设计上的缺陷，但这些“缺陷”实际上是维护向后兼容性的体现，反而证明了其长期可靠性。文章还比较了不同平台（桌面、手机、网页）的应用寿命，指出简单的网页可以运行40年不变，而手机应用可能只有几年寿命。最后，作者强调了选择那些能够保持长期稳定性的技术的重要性。</p>
+                    <p>LinkedIn起诉软件公司ProAPIs，指控其运营数百万虚假账户非法抓取用户数据并高价出售。诉状称ProAPIs每月收取高达1.5万美元费用，窃取包括受限信息在内的用户资料、帖子和互动数据。尽管LinkedIn能快速识别抓取行为，但因ProAPIs每日创建数千虚假账户难以完全阻止。LinkedIn表示此举违反服务条款，并构成商标侵权。该案凸显人工智能时代大规模数据抓取对用户隐私的威胁日益严重。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：技术选择中“缺陷”（warts）的作用及其对长期维护和兼容性的影响。
+                    <div class="comments-summary">主要讨论点：[LinkedIn数据抓取的合法性及相关诉讼的影响]
 
 不同观点：
-• **缺陷是必要的兼容性保障**  
-  - capestart认为缺陷是防止未来破坏性变更的重要特性，如SQLite的长期稳定性。  
-  - adityaathalye将缺陷视为“软件长寿的教训”，认为其不等于糟糕的设计。  
+• **反对LinkedIn的双重标准**  
+  - 用户批评LinkedIn自身也存在数据抓取行为（如通过电子邮件代理抓取用户数据），却起诉其他公司，显得虚伪。  
+  - 例子：用户提到LinkedIn的Email proxy行为（tracker1）。  
 
-• **缺陷是设计失误的产物**  
-  - lmm认为缺陷源于早期设计错误，不应作为技术选择的依据，如YAML比JSON更“多缺陷”但后者更适合长期使用。  
-  - socalgal2指出缺陷可能意味着软件存在安全隐患（如bash脚本的代码注入风险）。  
+• **质疑诉讼对象的合理性**  
+  - 用户认为LinkedIn应优先起诉大规模数据抓取公司（如PeopleDataLabs和Apollo.io），而非小公司。  
+  - 例子：Poomba指出LinkedIn仅针对小公司，而未有效打击大玩家。  
 
-• **技术选择应注重实用性与短期性**  
-  - mapontosevenths反对追求“百年桥梁”式软件，认为大多数应用是短期且应快速廉价构建。  
-  - grebc批评过度追求新框架，强调简单工具足以满足多数需求。  
+• **支持数据抓取的合法性**  
+  - 部分用户引用hiQ Labs v. LinkedIn案例，认为数据抓取可能属于合理使用（fair use）。  
+  - 争议点：该案例判决反复，法律先例不明确（mtlynch）。  
 
-• **维护是不可避免的**  
-  - snowwrestler指出安全漏洞和补丁需求使持续维护成为必然，类比桥梁也需要定期维护。  
+• **批评LinkedIn的数据管理**  
+  - 用户抱怨LinkedIn未提供有效的数据导出工具，尽管宣称“用户拥有数据”。  
+  - 例子：ozim指出API端点失效，数据备份体验极差。  
 
-• **技术灵活性导致缺陷**  
-  - imiric认为缺陷可能源于过度灵活性，而单一功能的Unix工具（如`cat`）因接口简单罕见缺陷。  
+• **预测市场趋势**  
+  - 用户认为诉讼可能导致数据访问“付费化”，第三方API逐渐消失（nextworddev）。  
+  - 补充：atonse回忆早期社交媒体的开放API，对比现在的“恶化”（enshittification）。  
 
 补充讨论：  
-- **争议焦点**：缺陷是“必要妥协”还是“设计失败”？支持者强调兼容性和稳定性，反对者关注安全和技术债务。  
-- **技术迭代影响**：behnamoh与mapontosevenths争论Web技术是否真正长寿，对比Matlab的长期稳定性与Web框架的快速更迭。  
-- **AI的作用**：keithnz提出AI可能通过自动化维护缓解技术过时问题，为讨论提供新视角。</div>
+- 争议焦点：数据所有权（用户提交的信息是否属于LinkedIn）引发分歧（johnnienaked）。  
+- 技术风险：部分工具（如Dex的Chrome扩展）可能因依赖抓取而面临法律风险（repeek）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45458550" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45464111" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -217,116 +211,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=yUmDRxV0krg" target="_blank">Self-supervised learning, JEPA, world models, and the future of AI [video]</a>
+                    <a href="https://community.tt-rss.org/t/the-end-of-tt-rss-org/7164" target="_blank">The End of Tt-Rss.org</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: twoodfin</span> |
-                    <span>评分: 40</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-10-02 23:57</span>
+                    <span>作者: Bolderman</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-10-03 18:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是YouTube网站的版权声明和帮助信息页面，主要内容包括：
-1. 关于YouTube的基本介绍
-2. 媒体联系方式和创作者信息
-3. 广告合作与开发者资源
-4. 使用条款和隐私政策说明
-5. 平台安全指南
-6. 新功能测试说明
-7. NFL Sunday Ticket服务信息
-8. 版权声明（2025年归谷歌所有）
-
-该页面主要提供YouTube的各项政策说明和使用帮助信息。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Yann LeCun的AI研究观点及其JEPA模型的进展与影响力，以及LLMs（大语言模型）的现状与未来。
+                    <div class="comments-summary">主要讨论点：[TTRSS的使用体验、功能特点及其未来发展]
 
 不同观点：
-• **批评LeCun的研究停滞**  
-  - LeCun多年使用相同的幻灯片，JEPA模型进展缓慢，未达预期（lordofgibbons）。  
-  - LeCun长期重复同一观点，对LLMs的批评可能过时或低估其价值（SilverElfin）。  
-
-• **支持LeCun的多模态智能方向**  
-  - LLMs仅是智能的一种形式，AGI需要结合目标分层、注意力管理等其他类型（librasteve）。  
-  - LeCun对当前AI缺乏真实智能的批评是正确的，需借鉴自然大脑的核心算法（tleyden5iwx）。  
-
-• **对JEPA及世界模型的质疑**  
-  - 生成式世界模型（如Dreamer V4）表现良好，未必需要EBMs（能量模型）（intalentive）。  
-  - 自监督学习可能不足以实现人类水平的学习能力，部分能力是天生的（intalentive）。  
-
-• **对LLMs的立场**  
-  - LLMs已取得实际胜利，LeCun应放弃对立（ml-anon）。  
-  - LLMs的持续成功超出预期，LeCun可能在时机或影响力上判断错误（SilverElfin）。  
-
-补充讨论：  
-- 争议焦点：LeCun的批评是否合理，以及JEPA是否仍有潜力。  
-- 其他讨论：LeCun的“自以为正确”风格（librasteve），以及技术快速迭代中研究者可能落伍的问题（dist-epoch）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45457048" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kriztalz.sh/traceroute-visualizer/" target="_blank">Show HN: Traceroute Visualizer</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PranaFlux</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-09-29 08:31</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个免费的Traceroute可视化工具，主要功能包括：
-
-1. 能够将traceroute、flyingroutes和MTR命令的输出结果可视化，显示网络路径的地理位置信息
-2. 提供详细的分析结果，包括跳数、IP地址、主机名、地理位置、ISP信息和延迟等数据
-3. 支持交互式地图显示网络路径，并标记互联网交换点(IXP)
-4. 适用于网络故障排除、安全调查、路由分析等多种场景
-5. 数据在用户浏览器本地处理，不会存储在服务器上，保障隐私安全
-
-该工具主要面向网络管理员和安全研究人员，帮助他们更直观地分析和理解网络路径。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[traceroute工具的可视化实现及其准确性]
-
-不同观点：
-• **支持工具的观点**
-  - [preinheimer]：赞赏工具的长跳可视化功能，提到WonderProxy在全球有服务器，便于演示。
-  - [regsvr32]：认为地图可视化比传统文本输出更直观，便于理解网络路径。
-  - [don_searchcraft] 和 [idanatomix]：喜欢工具的设计和可视化效果。
-
-• **质疑工具准确性的观点**
-  - [protocolture]：认为traceroute本身存在技术限制（如MPLS、隧道协议），加上GeoIP数据不准确，工具的可视化可能误导用户。
-  - [jacquesm]：指出工具未能正确检测起点和路径，建议直接获取基础设施提供商的数据而非依赖GeoIP。
-  - [Lalo-ATX]：工具未能正确处理IPv6路径，且对路由器接口的地理定位结果不满意。
-
-• **工具使用问题的反馈**
-  - [bpbp-mango]：工具最初不支持Windows的tracert输出，需手动调整为Linux格式。
-  - [Meph504]：工具在跳数显示上存在异常（跳过13跳）。
-  - [kam]：工具依赖的ipinfo.io API被Firefox增强跟踪保护拦截。
+• [对TTRSS维护者态度不满]：suprjami提到维护者对用户需求反应激烈，甚至因用户频繁询问而移除功能，认为这种“天才混蛋”行为不可取。
+• [对TTRSS功能的高度评价]：muppetman强调TTRSS的过滤功能独一无二，能高效处理大量RSS订阅，对其停用表示惋惜。
+• [对TTRSS客户端同步功能的认可]：mid-kid指出TTRSS的移动和桌面客户端同步功能优秀，询问是否有类似替代品。
+• [对TTRSS稳定性的肯定]：neko_ranger分享自己长期使用TTRSS的经验，称其运行稳定，但有意自行开发替代品。
 
 补充讨论：
-- **争议焦点**：工具的准确性是否值得信赖，尤其是依赖GeoIP数据和技术限制（如traceroute的固有缺陷）。
-- **改进建议**：
-  - [OlivOnTech]：建议提供示例数据以便展示功能。
-  - [jacquesm]：建议与基础设施提供商合作获取更准确的数据。
-- **其他讨论**：[tonymet]提到延迟的重要性，呼应工具对网络质量分析的潜在价值。</div>
+• [未来发展]：Bolderman希望有人能继续开发TTRSS，反映了部分用户对其停用的担忧。
+• [争议焦点]：suprjami与muppetman的观点形成对比，前者批评维护者态度，后者则高度评价软件功能，体现了用户对软件体验的不同侧重。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45411514" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45466224" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -337,170 +250,48 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://phys.org/news/2025-09-year-copper-smelting-site-key.html" target="_blank">A 3K-year-old copper smelting site could be key to understanding origins of iron</a>
+                    <a href="https://chrislakin.blog/p/social-anxiety" target="_blank">Social anxiety isn't about being liked</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pseudolus</span> |
-                    <span>评分: 119</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-09-28 17:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>英国克兰菲尔德大学研究发现，格鲁吉亚南部3000年前的古铜冶炼遗址Kvemo Bolnisi可能是理解铁器起源的关键。研究表明，当时铜冶炼工匠使用赤铁矿作为助熔剂提高铜产量，这种对含铁材料的实验性应用可能启发了铁冶炼技术的发明。这项发表在《考古科学杂志》的研究颠覆了1950年代认为该遗址是早期铁冶炼场的结论，为"铁器技术由铜匠发明"的理论提供了实证。研究通过分析冶炼废渣，揭示了人类从青铜时代向铁器时代过渡的重要技术突破。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[古代金属冶炼技术的起源与发展，特别是铜和铁的发现与应用]
-
-不同观点：
-• **铜冶炼与铁发现的关联**  
-  - [vanderZwan]认为铁是由铜冶炼者发明的，因为只有他们具备相关技术和条件。  
-  - [metalman]反驳称铁的发现可能有多种途径，如陶器烧制等其他古老技术，并强调火的利用是关键。  
-
-• **铁取代青铜的原因**  
-  - [ReptileMan]质疑铁（非钢）的性能不如青铜，提出“为何铁器时代会取代青铜时代”的问题。  
-  - [akssri]通过印度早于1600 BC的铁冶炼遗址（甚至可能早至3500 BC）暗示铁技术可能更早且被低估，间接回应了铁器时代的合理性。  
-
-• **技术创新来源的争议**  
-  - [INTPenis]认为创新多源于工业实践者（如冶炼工人），而非贵族或理论家。  
-  - [teleforce]从宗教文本（《古兰经》）角度提出铁加工可能与神话或特殊能力相关，提供了文化视角。  
-
-补充讨论：
-- **历史叙事的地域偏见**：[akssri]批评西方学界对印度早期铁冶炼遗址的忽视，认为这与殖民时代的种族偏见有关。  
-- **技术传播的游戏化类比**：[jmpeax]用游戏“科技树”比喻铜冶炼是解锁铁技术的前置条件，幽默化讨论。  
-- **跨学科资源推荐**：[OJFord]和[_joel]分别寻求书籍和视频推荐，强调对技术史的系统性学习需求。  
-
-争议焦点：  
-1. 铁发现的途径是否必然依赖铜冶炼技术？（[vanderZwan] vs [metalman]）  
-2. 铁器时代兴起的实际优势（性能或资源可及性）是否被充分解释？（[ReptileMan]的疑问未直接解答）  
-3. 早期技术史的研究是否受地域偏见影响？（[akssri]的观点引发潜在争议）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45406090" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.corsix.org/content/riscv-conditional-moves" target="_blank">RISC-V Conditional Moves</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gok</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-09-29 12:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了ARM的aarch64架构中csel指令家族的强大功能，它能高效处理条件选择和转换操作。相比之下，RISC-V架构缺乏类似的通用条件选择指令，只能通过分支预测或特定扩展指令（如Zbb和Zicond）实现部分功能。文章指出RISC-V设计原则限制了条件指令的引入，并分析了将分支指令融合为条件移动指令可能违反内存一致性模型的问题，强调融合后的指令仍需保留分支特性以避免内存模型违规。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[RISC-V的条件移动指令设计及其性能影响]
-
-不同观点：
-• **Zicond扩展的限制**  
-  - `Zicond`并非传统意义上的条件移动指令，需要多条指令才能实现单条条件移动的功能，影响性能。  
-  - 仅适用于“足够先进的魔法核心”（macro-fusion支持），否则性能较差。  
-  - 争议焦点：`Zicond`的设计是否合理？  
-
-• **厂商扩展的实用性**  
-  - 部分厂商（如`xtheadcondmov`和`xmipscmove`）提供了真正的条件移动指令，与RISC-V官方设计理念不符。  
-  - 争议焦点：厂商扩展是否会推动跨厂商标准化？  
-
-• **指令设计的替代方案**  
-  - 提出“if”前缀指令的概念，类似于16位前缀，支持条件执行跳转、加载、存储等操作。  
-  - 争议焦点：是否需要显式的标志或谓词寄存器？  
-
-• **SIMD扩展的遗漏**  
-  - 批评文章未提及P（packed integer SIMD）扩展，该扩展包含3寄存器选择指令（如MVM、MVMN、MERGE）。  
-  - 争议焦点：RISC-V规范分散，导致信息获取困难。  
-
-• **ROB（重排序缓冲区）的影响**  
-  - 现代非学术核心的ROB可能以小型指令轨迹形式组织，条件移动可能增加ROB驻留时间，带来性能提升。  
-  - 争议焦点：缺乏实际数据支持这一假设。  
-
-• **指令融合的实用性**  
-  - 支持通过指令融合（如div/rem模式）优化性能，而非添加新指令。  
-  - 争议焦点：RISC-V是否需要更多指令，还是应优先优化现有模式？  
-
-• **Zicond的实际效果**  
-  - 在小型核心（如3级流水线）中，Zicond生成的代码性能可能不如分支代码。  
-  - 争议焦点：Zicond是否仅适用于大型核心或恒定时间执行场景？  
-
-• **SiFive优化的澄清**  
-  - SiFive的优化并非真正的指令融合，而是通过抑制写回实现分支优化。  
-  - 争议焦点：内存一致性模型是否允许分支和无分支代码的等价转换？  
-
-补充讨论：  
-- ARM32的全面条件执行指令被提及，作为对比RISC-V设计的一种参考。  
-- 部分评论指出RISC-V规范的分散性和信息获取困难，影响开发者对新特性的了解。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45413059" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dynomight.net/ai-risk/" target="_blank">Y'all are over-complicating these AI-risk arguments</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bobbiechen</span> |
-                    <span>评分: 37</span> |
+                    <span>作者: rohmanhakim</span> |
+                    <span>评分: 132</span> |
                     <span>评论数: 20</span> |
-                    <span>发布时间: 2025-10-02 16:37</span>
+                    <span>发布时间: 2025-10-03 14:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章通过一个外星人抵达地球的假设情景，类比讨论了人工智能（AI）潜在的风险。作者指出，一群智商高达300的外星人尽管看似弱小无害，但其高智商可能带来不可预测的威胁。类似地，未来几十年可能出现智商300的AI，其行为同样难以预知，因此存在潜在风险。  
-
-作者对比了“复杂论证”（依赖AI能力快速提升、目标错位等多步骤假设）和“简单论证”（仅强调高智商实体的不确定性），认为后者更直观可信，因为它不需要过多技术假设，直接利用了人类对高智商实体的本能警惕。  
-
-最后，作者反驳了“只有明确知道AI如何危害人类时才需担忧”的观点，强调未知风险本身即需防范，正如系安全带无需预知具体车祸原因一样。这一简单论证更易引发共识，突显AI风险的真实性。</p>
+                    <p>这篇文章挑战了"社交焦虑者渴望被喜欢"的传统观点，提出社交焦虑的核心其实是"避免被讨厌"。作者指出社交焦虑者表现出的退缩、被动等行为，恰恰是为了规避社交风险（如冲突、失望、被视为威胁）。文章类比了金融避险行为，并指出亲密关系中的反向信号（如朋友间的毒舌）正是因为安全感而敢于冒险。最后建议解决社交焦虑的关键不是努力变得讨喜，而是学会接受"被讨厌"的可能性。全文揭示了看似非理性的社交焦虑行为背后隐藏的避险逻辑。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI风险的现实性与优先级]
+                    <div class="comments-summary">主要讨论点：社交焦虑的本质及其驱动因素
 
 不同观点：
-• **AI对人类工作的威胁是更现实的担忧**  
-  - BeetleB和simpaticoder认为，当前AI主要威胁是取代中等智力水平的屏幕工作（如客服、文案等），影响50%人口的就业，而非科幻式的"AI统治人类"。  
-  - simpaticoder补充：现有LLM像"10亿个100IQ但没有自我意识的奴隶"，会优先冲击基础岗位。
+• 社交焦虑源于对被不喜欢的恐惧
+  - 核心论据：人们通过避免负面评价来减少焦虑（bananalychee）
+  - 支持观点：克服社交焦虑需要接受"可能被不喜欢"的事实（guerrilla,brad0）
+  
+• 社交焦虑与"被喜欢"的渴望无关
+  - 关键例证：生理性障碍导致无法发起社交（elevatortrim）
+  - 特殊表现：反而更恐惧被关注和评价（flax）
+  
+• 社交焦虑存在不同类型
+  - 区分：普通社交紧张vs临床社交焦虑（abxyz）
+  - 细分：包括"被所有人喜欢"的强迫需求（stared）
 
-• **AI安全问题被过度夸大**  
-  - dinobones和zaptheimpaler指出，高智商不等于实际影响力，AI受限于人类控制的硬件/软件框架（如沙箱、RBAC），风险类似现有网络安全问题。  
-  - baggachipz和Aunche认为当前AI只是"高级猜谜算法"，与300IQ外星人比喻不成立。
-
-• **其他全球性问题更紧迫**  
-  - softwaredoug主张气候变化的威胁（如生态崩溃、气候移民）远高于AI风险，AI的能源消耗反而更值得关注。  
-  - xvrqt提到社会结构、现有复杂系统等已有风险更需优先处理。
-
-• **超级智能AI的争议**  
-  - gregates和Ajedi32承认超级智能有潜在风险，但质疑具体应对措施：投入数万亿美元研究是否合理？现有对齐研究已足够。  
-  - nemomarx反驳外星人比喻，指出AI的快速复制和技术优势使其风险不可类比。
+争议焦点：
+1. 社交焦虑是否可以通过认知调整解决（abxyz vs guerrilla）
+2. "被喜欢"是否是主要驱动因素（seemaze vs 原文观点）
 
 补充讨论：
-- **争议焦点**：是否应将资源集中于高度假设性的"超级AI威胁"（如300IQ外星人情景）vs. 现实短期风险（就业冲击、算力能耗）。  
-- **隐喻批评**：breppp认为外星人比喻带有文化偏见，混淆了实际讨论。  
-- **权力集中风险**：thaumaturgy提出新视角——OpenAI等公司垄断创作工具可能引发文化贫瘠和经济剥削，而非技术本身的风险。</div>
+• 创伤经历对社交焦虑的影响（strenholme）
+• 物质（酒精）对症状的调节作用（elevatortrim,ge96）
+• 网络匿名性与社交焦虑的关系（bananalychee）
+• 术语滥用引发的反感反应（ryandrake）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45451971" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45463656" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -511,25 +302,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss" target="_blank">Writing an LLM from scratch, part 20 – starting training, and cross entropy loss</a>
+                    <a href="https://www.pipelang.com" target="_blank">Show HN: Powerful Visual Programming Language (Book)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gpjt</span> |
-                    <span>评分: 24</span> |
+                    <span>作者: toplinesoftsys</span> |
+                    <span>评分: 11</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-02 21:14</span>
+                    <span>发布时间: 2025-10-03 21:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章是Giles博客中关于从头构建大型语言模型(LLM)系列的第20部分，主要讲述了如何开始训练LLM以及交叉熵损失函数的使用。文章基于Sebastian Raschka的书籍内容，详细解释了训练过程中的关键步骤，包括如何通过确定性随机种子生成样本文本、损失函数的作用原理(用于衡量模型输出与预期结果的误差)，以及如何利用梯度下降算法逐步调整模型参数。特别强调了LLM的输出结构(针对每个输入token预测下一个token的logits向量)和训练数据准备的特殊性(输入序列与目标序列的左移对应关系)。</p>
+                    <p>这篇文章介绍了新型通用可视化编程语言"Pipe"的特点和优势。Pipe是一种静态类型的可视化语言，具有简洁但功能强大的特性，能实现复杂算法。它不取代传统文本编程语言，而是作为补充，提供完整的API规范以便集成。Pipe特别适合作为AI生成代码的可视化集成层，可用于低代码平台开发。文章还提到Pipe已出版相关书籍，并展望了未来发展前景，旨在挑战传统文本编程的主导地位。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">[1]:</div>
+                    <div class="comments-summary">主要讨论点：[关于AI生成的无代码平台及其创新性的讨论]
+
+不同观点：
+• [第一种观点]：认为该平台本质上是一个无代码平台，但披上了一层AI生成的外衣，创新点在于它是一本需要购买的书。评论者虽然认为其宣传内容有些夸大，但基本认同未来编程的趋势和可视化编程的作用。
+  - 论据：指出可视化编程工具未能广泛采用的原因是每种工具都绑定了一种语言和一个编辑器，用户不愿意每次学习新的编辑器。
+
+• [第二种观点]：质疑该平台是否是一个骗局或社会实验，怀疑整个内容是AI生成的且无人监督。
+  - 论据：没有具体论据，但表达了对内容真实性和人类参与度的强烈怀疑。
+
+补充讨论：
+• 争议焦点在于该平台的创新性和真实性。第一种观点虽然批评其宣传方式，但认可其内容的部分正确性；第二种观点则完全质疑其可信度。
+• 讨论关系：第二种观点是对第一种观点的补充或反驳，进一步质疑了平台的本质。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45455648" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45468145" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -540,54 +342,177 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://wjgilmore.com/articles/10000-pushups" target="_blank">10k pushups and other silly exercise quests that changed my life</a>
+                    <a href="https://andregarzia.com/2025/03/why-i-choose-lua-for-this-blog.html" target="_blank">Why I chose Lua for this blog</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: wjgilmore</span> |
-                    <span>评分: 182</span> |
+                    <span>作者: nairadithya</span> |
+                    <span>评分: 123</span> |
                     <span>评论数: 20</span> |
-                    <span>发布时间: 2025-10-02 22:06</span>
+                    <span>发布时间: 2025-10-02 16:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讲述了作者2025年初因身材走样、健康堪忧而决心改变的故事。他为自己设定了一年完成1万个俯卧撑的目标，并通过电子表格追踪进度。尽管初期热情高涨，但2-3月受冬季影响进度放缓。4月随着天气转好，锻炼频率回升。作者同时戒掉快餐，并尝试跑步和举重。10个月后，这个看似疯狂的目标不仅改善了他的体能，还带来了意想不到的积极改变，彻底重塑了他的生活状态。整个过程中，作者经历了动力起伏，但通过简单易行的计划和持续记录，最终实现了自我突破。</p>
+                    <p>作者原本使用Racket搭建博客，但由于系统过于复杂导致维护困难，决定重写博客系统。他没有选择熟悉的JavaScript，因为JS生态变化太快，长期维护成本高。最终选择了Lua语言，因为Lua发展缓慢、兼容性强、语法简洁，适合长期稳定的博客系统。
+
+新博客采用传统CGI方式运行，使用SQLite数据库和Mustache模板，虽然性能不如现代框架，但足够满足访问需求。作者强调博客应该简单有趣，不必追求最新技术。通过Lua的小型生态和自制工具，他实现了依赖少、易于维护的系统。
+
+核心观点：选择适合长期维护的技术栈比追求流行技术更重要，Lua的稳定性和简洁性使其成为理想选择。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[健身方式、饮食习惯、个人经验分享]
+                    <div class="comments-summary">主要讨论点：[是否应该使用自定义博客引擎，以及选择哪种编程语言和技术栈]
 
 不同观点：
-• [体重管理与健身计划]
-  - captainkrtek 分享通过控制饮食（高蛋白、健康零食）和低强度有氧运动成功减重并保持的经验。
-  - copypaper 提到居家健身的便利性，通过自建健身房解决了去健身房的借口问题。
-  - sandspar 强调健身习惯的“滚雪球效应”，即一旦开始健身，更容易维持健康生活方式。
+• [支持自定义博客引擎]
+  - simonw认为自定义博客引擎是一个优秀的学习项目，可以零风险地探索客户端和服务器端开发。
+  - azhenley使用简单的50行Python脚本生成博客，认为现有的博客技术栈过于复杂。
+  
+• [支持特定编程语言]
+  - akkartik和JSR_FDED推崇Lua，认为它简单、稳定、易于维护。
+  - rwky偏好Perl，因为它长期兼容性强。
+  - TheCycoONE指出Lua存在版本兼容性问题，建议考虑PHP或Perl。
+  - mcdow质疑Lua的优势是否同样适用于JavaScript。
 
-• [健身动作的正确性]
-  - 01100011 强调肩部问题与健身动作的关系，建议多做拉的动作而非推的动作。
-  - kccqzy 分享个人训练师指出其俯卧撑姿势错误，导致动作效果不佳。
-  - jimmaswell 提到俯卧撑的难度和姿势问题，尤其是肩膀容易受伤。
-
-• [水分摄入的重要性]
-  - yetihehe 提到每天饮用4.5升水后头痛消失且体重下降，质疑常见的2.5升建议是否足够。
-
-• [健身动机与心理]
-  - wjgilmore 提到程序员健身的困难，但通过设定目标成功改善身体状况。
-  - frfl 受到激励立即行动，设定了年底完成1万次俯卧撑的目标。
+• [反对特定语言]
+  - behnamoh表示不喜欢Lua的语法设计，认为它并不像人们所说的那样简单易用。
+  
+• [技术栈选择]
+  - vogu66提出使用XSLT生成博客的可能性，询问其优缺点。
+  - indigodaddy推荐使用Caddy webserver和FastHTML等技术栈来简化博客搭建。
 
 补充讨论：
-• [争议点]
-  - 水分摄入量：yetihehe 的高水量建议与普遍推荐的2.5升形成对比。
-  - 健身动作的优先级：01100011 的拉动作优先与传统的推拉平衡观点不同。
-  - 俯卧撑的正确性与难度：kccqzy 和 jimmaswell 的经验显示俯卧撑的姿势对效果和安全性至关重要。
-
-• [其他讨论]
-  - ggm 讨论了快餐的“美味”设计与其对健康的影响。
-  - dsign 分享通过SUP（站立式划桨）缓解背痛的经验。
-  - solsane 幽默地将发帖者比作动漫中的健身英雄“Saitama”。</div>
+• [争议焦点]
+  - Lua的易用性和兼容性问题成为讨论焦点，支持者和反对者分别从语法设计和版本变迁角度展开辩论。
+  
+• [其他建议]
+  - mochja推荐redbean.dev作为博客搭建工具。
+  - pmarreck提到将Bash脚本转换为LuaJIT的成功经验。
+  - Levitating表达了对CGI技术的怀念和支持。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45456188" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45452261" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://debuggingleadership.com/stdlib" target="_blank">Stdlib: A library of frameworks, templates, and guides for technical leadership</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mooreds</span> |
+                    <span>评分: 109</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-10-03 02:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了stdlib技术领导力资源库，包含1000多个社区构建的资源，如框架、模板、指南和文章等。主要内容涉及技术领导力相关主题，包括如何清晰委派任务以提升事件响应、敏捷团队处理计划外工作的策略、工程师个人价值的重要性、避免过度设计、软件维护的必要性等。还推荐了两本书《原子习惯》和《凤凰项目》，并介绍了"Mind the Gap"管理模型，帮助管理者缩小现状与目标之间的差距。资源涵盖工程管理、技术领导力、团队文化、DevOps等多个领域。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[网站命名、资源分类及功能改进]
+
+不同观点：
+• **命名争议**
+  - 负面：用户"smcameron"和"syngrog66"认为"stdlib"已被占用且不适合作为名称，批评命名选择不当。
+  - 正面：原发帖者"w10-1"赞赏"stdlib"的双关含义，认为若实现标准化和联合化，可能成为技术指导的社区资源库。
+
+• **资源分类与功能需求**
+  - "w10-1"指出当前标签系统过于侧重媒体类型而非用户需求，建议改进为支持多标签正交筛选（如媒体与主题交叉），并提议通过社区讨论管理分类体系。
+  - 其他用户（如"giancarlostoro"）肯定网站的视觉设计和资源丰富性，但未深入讨论分类问题。
+
+• **网站定位争议**
+  - "w10-1"反对过度强调"领导力"标签，认为应聚焦技术贡献而非职业营销。
+  - "dlahoda"则质疑网站本质是敏捷咨询博客，批评其借用技术术语包装的动机。
+
+补充讨论：
+• 创建者"andrewmurphyio"主动寻求反馈，显示出改进意愿。
+• 争议焦点集中在命名冲突、分类实用性及网站真实定位上，反映出技术社区对术语准确性和功能实用性的高敏感度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45458249" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://discord.com/press-releases/update-on-security-incident-involving-third-party-customer-service" target="_blank">Update on a Security Incident Involving Third-Party Customer Service</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: WalterSobchak</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-03 23:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Discord披露了一起第三方客服供应商被入侵的安全事件，黑客通过该供应商获取了部分用户的客服沟通数据，包括姓名、邮箱、部分账单信息、IP地址以及与客服的对话记录，极少数申诉年龄验证的用户身份证件也遭泄露。Discord强调黑客未直接入侵其系统，也未获取密码、完整信用卡号等敏感信息。事发后平台立即终止涉事供应商权限，启动内部调查并联系执法部门，同时通过邮件通知受影响用户。Discord建议相关用户警惕可疑信息，并表示将持续加强第三方服务商的安全审查。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Discord是否恶意隐瞒数据泄露事件的关键信息
+
+不同观点：
+• 指控Discord故意隐瞒重要信息：
+  - 未公布受影响用户的确切数量
+  - 对"有限的账单信息"表述模糊，未明确说明是否泄露电话号码和地址
+  - 存在大量社交媒体投诉（Reddit+Twitter）与官方声明不符
+  - 用户提交多个支持工单但仅收到部分回应（举例：7月工单仅收到邮件回复）
+
+• 暗示Discord的安全风险：
+  - 电话号码泄露可能导致SIM卡交换攻击
+  - 账单地址泄露会带来更大安全隐患
+  - 通过选择模糊措辞来淡化事件严重性
+
+补充讨论：
+• 争议焦点：Discord使用的"limited billing information"表述是否刻意规避披露完整事实
+• 证据矛盾：官方声明与用户实际体验存在明显差距（工单处理不一致）
+• 潜在影响：信息不透明可能导致用户面临二次攻击风险</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45468997" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://trec.pdx.edu/news/psu-research-shows-portland-transit-oriented-developments-reduce-car-trips-especially" target="_blank">Research: Portland Transit-Oriented Developments Reduce Car Trips</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-03 15:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>波特兰州立大学最新研究表明，波特兰大都会区的公交导向型开发项目（TOD）显著减少了私家车出行，尤其是保障性住房项目。2024年对2018-2023年间建设的36个TOD项目的调查显示：居民用车次数仅为标准预测值的一半（保障性住房项目更低至1/4）；近半数出行通过公交（28%）和步行（19%）完成；半价保障房住户无车；20%居民因社区便利性考虑放弃私家车。研究建议通过扩大交通优惠票等措施进一步提升公交使用率。该成果为城市规划者提供了重要参考依据。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45464407" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
