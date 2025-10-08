@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-08 14:21 (北京时间)
+            最后更新时间: 2025-10-08 17:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,54 +61,64 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://animebythenumbers.substack.com/p/worse-crunchyroll-subtitles" target="_blank">Why did Crunchyroll's subtitles just get worse?</a>
+                    <a href="https://brooker.co.za/blog/2025/10/05/locality.html" target="_blank">Locality, and Temporal-Spatial Hypothesis</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 246</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-10-03 04:24</span>
+                    <span>作者: jandrewrogers</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-06 17:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章主要讨论了数据库设计中的**时空局部性假说**（Temporal-Spatial Hypothesis）。作者Marc Brooker（AWS工程师）从Postgres的异步I/O性能差异引出核心观点：  
+
+1. **局部性原理**是数据库性能的关键，包括**时间局部性**（近期访问的数据可能再次访问）和**空间局部性**（访问附近数据的可能性）。  
+2. **时空局部性假说**认为，**写入时间相近的数据会被同时读取**，因此应存储在相邻位置。这一假说在流式系统和时间序列数据库中成立，但哈希数据库（如DynamoDB）或使用UUID主键的关系型数据库会刻意打破此假说以避免写入热点。  
+3. 传统关系型数据库常使用时序主键（如自增ID），虽可能增加写入竞争，但部分系统通过弱化顺序保证来优化性能。  
+
+文章结合实例分析了不同数据库设计对局部性原理的应用与取舍。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Crunchyroll字幕质量下降的原因及影响]
+                    <div class="comments-summary">[cluckindan]: You're assuming the database can't optimize writes based on other factors besides primary key locality.  
+
+[devops_guru]: Actually, modern databases like PostgreSQL do optimize writes regardless of PK locality—they use WAL (Write-Ahead Logging) and buffer management to batch writes efficiently.  
+
+[sql_skeptic]: But doesn't UUIDv4 as a PK still cause fragmentation? Even with WAL, random inserts lead to page splits, hurting performance on HDDs.  
+
+[index_fan]: True, but with SSDs, fragmentation matters less. The real issue is index bloat—UUIDs make indexes larger, slowing down range scans.  
+
+[db_optimizer]: Not if you use UUIDv7! Time-ordered UUIDs reduce randomness, keeping locality closer to auto-increment INT.  
+
+[perf_nerd]: But migrating from UUIDv4 to UUIDv7 is non-trivial. Is the gain worth the effort compared to just using BIGINT?  
+
+主要讨论点：[UUID作为主键对数据库写入性能的影响及优化策略]
 
 不同观点：
-• [字幕质量下降是由于裁员和外包]
-  - bonecrusher2102指出，高质量字幕需要大量手工操作，但商业公司不愿投入时间。
-  - egypturnash提到Crunchyroll最近的裁员可能导致了字幕团队的流失，推测可能用AI替代人工。
-  - tonyhart7直接指出Crunchyroll可能将字幕工作外包给以色列的AI初创公司。
+• **UUIDv4的随机性导致性能问题**  
+  - 论点：随机插入（如UUIDv4）会导致页分裂（page splits），尤其在HDD上性能下降明显。  
+  - 例子：索引膨胀（index bloat）影响范围查询（range scans）。  
 
-• [Crunchyroll的技术决策影响了字幕体验]
-  - ff2400t解释了Crunchyroll使用.ass格式的技术原因，但认为转向更简单的格式会降低字幕质量。
-  - o11c质疑为什么行业不使用透明叠加技术来降低成本。
+• **现代数据库的优化能力**  
+  - 论点：数据库（如PostgreSQL）通过WAL和缓冲区管理可以优化写入，不完全依赖主键局部性。  
+  - 例子：批量写入（batched writes）能缓解随机插入的部分问题。  
 
-• [市场竞争和商业模式限制了字幕质量]
-  - PebblesHD分享了澳大利亚市场的例子，说明并购导致服务质量下降。
-  - makeitdouble提出建立字幕/配音市场的想法，认为这样可以解决许多问题。
-  - jmward01提到Crunchyroll的其他用户体验问题，如移除评论和添加无法跳过的广告。
+• **UUIDv7的改进作用**  
+  - 论点：时间序UUID（如UUIDv7）减少了随机性，接近自增INT的局部性优势。  
+  - 争议焦点：迁移成本（如从UUIDv4到UUIDv7）是否值得性能提升。  
 
-• [用户对字幕质量的不满]
-  - socalgal2和totallymike举例说明了字幕中的严重错误，尤其是专有名词的翻译问题。
-  - renewiltord表示因为字幕质量差而多次取消订阅。
+• **硬件的影响**  
+  - 论点：SSD降低了碎片化的影响，但索引大小仍是问题。  
+  - 对比：HDD对随机写入更敏感。  
 
 补充讨论：
-• [争议焦点]
-  - 字幕质量下降的根本原因是商业决策（裁员、外包）还是技术限制？
-  - 是否有可行的商业模式能够支持高质量的字幕服务？
-
-• [其他值得注意的讨论点]
-  - bonecrusher2102提到动漫粉丝对产品的热情和苛刻，强调产品设计中需要考虑用户满意度。
-  - PebblesHD和jmward01讨论了市场上缺乏竞争对手的问题。
-  - makeitdouble提出了一个创新的解决方案，即建立字幕/配音市场。</div>
+- 自增BIGINT作为替代方案的简单性被提及，但未深入讨论其适用场景（如分库分表时的局限性）。  
+- 讨论集中在OLTP场景，未涉及OLAP或混合负载的影响。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45458973" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45493681" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,48 +129,83 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.newscientist.com/article/2486216-orcas-are-bringing-humans-gifts-what-does-it-mean/" target="_blank">Orcas are bringing humans gifts</a>
+                    <a href="https://www.bloomberg.com/features/2025-3m-pfas-toxic-legacy-turnaround/" target="_blank">3M May Escape Toxic Chemical, PFAS Manufacturing Legacy</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: wslh</span> |
-                    <span>评分: 154</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-10-04 01:00</span>
+                    <span>作者: speckx</span> |
+                    <span>评分: 108</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-10-07 13:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>加拿大和新西兰的研究人员观察到虎鲸多次试图与人类分享食物，如海豹、鸟类和水母等，这种行为可能是虎鲸表现出利他主义并能够识别其他物种意识的迹象。研究发现，虎鲸在群体内部会分享猎物，而现在它们也将这种行为扩展到人类身上，显示出跨物种的好奇心和实验精神。这表明虎鲸具有普遍利他主义能力，并能理解其他个体的心理状态。研究人员认为这种行为有助于减少不确定性并探索环境关系。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[虎鲸为何会向人类赠送食物或其他物品]
+                    <div class="comments-summary">主要讨论点：[PFAS的危害、责任归属及法律后果]
 
 不同观点：
-• **虎鲸为维持良好关系**  
-  - [K0balt]认为虎鲸可能意识到人类影响它们的生存，因此通过赠送行为维持关系。  
-  - 提到历史上虎鲸与捕鲸者的合作（如“伊甸园的虎鲸”），以及近期伊比利亚半岛虎鲸攻击船只的现象，推测其行为可能有复杂动机。
+• **PFAS的危害与影响**
+  - [siliconcow] 强调PFAS的危害是代际累积的，即使后续未暴露也会产生异常。
+  - [tristor] 指出PFAS污染全球，难以避免，个人需付出巨大努力减少接触。
+  - [more_corn] 认为3M明知PFAS有害仍持续生产，导致全球污染。
 
-• **虎鲸的智力与行为复杂性**  
-  - [giorgioz]指出虎鲸能理解“诱饵”概念，赠送行为可能是礼物或诱捕策略。  
-  - [K0balt]强调人类容易低估高智商动物的行为 sophistication（如“海豚安提法”玩笑）。  
-  - [Peteragain]从声呐视角提出人类与虎鲸的生理相似性，暗示虎鲸可能将人类视为同类。
+• **责任归属与法律后果**
+  - [more_corn] 主张3M应承担全部责任，认为公司应早在70年代就承认问题并公开研究。
+  - [jmyeet] 对比普渡制药（Purdue）和萨克勒家族（Sacklers）的案例，批评美国法律对企业的纵容，指出中国对类似行为的严厉处罚。
+  - [calvinmorrison] 认为有限责任公司（LLC）是问题的根源，暗示企业结构助长了不负责任的行为。
 
-• **与其他动物行为的类比**  
-  - [dredmorbius]和[tdeck]分别提到豹海豹和猫的类似行为，认为赠送可能是一种本能或社交习惯。  
-  - [mistermuckle]类比人类钓鱼时的“分享”，暗示行为可能无深层动机。
-
-• **神秘化或拟人化解释**  
-  - [reaanb2]调侃虎鲸在“安抚破坏它们世界的神（人类）”。  
-  - [danw1979]指出虎鲸行为的两面性（赠送vs攻击），反映其不可预测性。
+• **可能的解决方案与未来展望**
+  - [yapyap] 预测企业将通过政治捐款逃脱法律制裁，但公众对其声誉的负面看法难以扭转。
+  - [IlikeKitties] 质疑个人是否有能力或意愿对抗企业高层，暗示问题难以解决。
 
 补充讨论：
-- **争议焦点**：行为是否出于智力策略（如政治动机、诱饵）还是本能/偶然。  
-- [lordnacho]提出未解决的问题：虎鲸如何选择赠送对象？人类是否曾回馈？  
-- [barrenko]补充虎鲸与人类共享长寿特性，暗示社会性行为的进化基础。</div>
+- **争议焦点**：企业是否应承担全部责任，以及法律是否足够严厉（如普渡制药案例与中国案例的对比）。
+- **其他讨论点**：PFAS的普遍性（如非粘锅与其他用途的区别）、历史案例（如2008年金融危机后的追责缺失）以及企业道德（如3M的知情隐瞒）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45469541" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45502748" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://healeycodes.com/compiling-a-forth" target="_blank">Compiling a Forth</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: healeycodes</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-10-06 13:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章作者出于对Forth语言的兴趣，开发了一个类Forth语言的字节码编译器和虚拟机，并配有可视化演示。Forth是一种基于栈的语言，使用数据栈和返回栈进行操作。作者详细说明了如何实现基本功能如数字打印、变量声明、循环等，并展示了一个累加计算的示例程序。文章还介绍了词法分析过程（将源代码转换为标记）和直接生成字节码的编译过程，跳过了传统编译器构建抽象语法树的步骤。最后提到虚拟机需要处理指令列表和变量分配，变量会被转换为内存地址索引。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Forth语言的本质及其实现的争议]
+
+不同观点：
+• Forth的核心精神在于交互性：用户[onetom]认为Forth的交互性是核心，强调了编辑、编译和执行的一体化工作流，以及其在资源受限环境中的优势。他提供了Chuck Moore的ColorForth作为例子，说明Forth如何通过极简设计实现强大功能。
+• 对tokenizer设计的质疑：用户[Quitschquat]指出简单的tokenizer可能无法处理Forth中的特殊情况，如."指令，暗示现有的实现可能不够完善。
+• Forth作为解释器设计的起点：用户[codr7]认为Forth是设计解释器或语言的优秀起点，并分享了自己的项目来支持这一观点。
+• 现有实现偏离Forth本质：用户[armitron]批评当前实现完全误解了Forth的要点，建议阅读jonesforth以理解Forth的正确实现和引导方式。
+
+补充讨论：
+• 争议焦点：主要集中在现有实现是否真正捕捉到了Forth的精髓，特别是在交互性和一体化工作流方面。
+• 用户[roggenbuck]虽然未直接参与争议，但其评论表明文章激发了创建Forth类语言的兴趣，反映了Fth作为一种设计灵感的吸引力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45491470" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -192,6 +237,93 @@
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45510315" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/remysucre/cranky-news" target="_blank">Show HN: Read Kagi News on Playdate</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: remywang</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-07 23:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了remysucre开发的cranky-news项目，这是一个将Kagi新闻适配到Playdate掌机的镜像网站。用户可以通过安装Constellation浏览器并将http://cranky.news添加至收藏夹来访问，也支持在Playdate SDK模拟器中测试。项目采用MIT许可证，主要使用Python(96.6%)和HTML(3.4%)开发，目前有1个star和0个fork。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45510291" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=ce463e435757" target="_blank">Linux 6.18 UDP receive performance improved by 47%, under DDoS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: limoce</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-08 01:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了网站使用Anubis系统来防止AI公司大规模爬取数据导致服务器过载的防护措施。Anubis采用类似Hashcash的工作量证明机制，对小规模访问影响轻微，但能显著增加大规模爬取的成本。该系统是临时方案，未来将通过识别无头浏览器等方式进一步优化。同时提示用户需要启用现代JavaScript功能才能正常使用该网站。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45511072" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.qt.io/blog/qt-6.10-released" target="_blank">Qt 6.10 Released</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jcelerier</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-08 01:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Qt 6.10版本正式发布，带来了多项新功能和改进。主要亮点包括：新增Flexbox布局系统，支持SVG和Lottie格式的矢量动画；提升了C++代码与QML开发的Qt Quick UI之间的数据交换便利性；增强了无障碍功能，自动适配高对比度系统设置，改善了屏幕阅读器等辅助技术的支持。此外，还推出了新的SearchField控件和FilledSurface图表模块，优化了开发者体验。该版本兼容多种平台，提升了应用的可访问性和用户体验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45511202" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -247,198 +379,6 @@
   - 自托管工具生态正在丰富，逐渐接近Heroku的功能水平（pelagicAustral）。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45501279" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://developers.openai.com/apps-sdk/" target="_blank">Apps SDK</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: alvis</span> |
-                    <span>评分: 457</span> |
-                    <span>评论数: 66</span> |
-                    <span>发布时间: 2025-10-06 18:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>OpenAI推出ChatGPT Apps SDK预览版，供开发者提前构建和测试应用。官方提供了应用设计指南和开发者规范，强调应用需符合质量、安全和政策标准。开发流程包括规划用例、搭建MCP服务器和部署应用，并提供元数据优化、安全隐私及问题排查等指导文档。正式应用提交通道将于年内开放。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：ChatGPT作为未来通用用户界面的潜力和局限性，以及OpenAI平台战略的影响。
-
-不同观点：
-• **支持ChatGPT作为通用界面**  
-  - ChatGPT正成为网络探索的起点，覆盖地图、购物、航班预订等基础功能。  
-  - 工程和基础设施是过去两年的瓶颈，现在公司更愿意与OpenAI合作。  
-  - OpenAI将成为平台，用户只需提出需求，平台通过连接其他应用（如邮箱、日历）完成任务。  
-
-• **质疑ChatGPT的交互方式**  
-  - 聊天界面可能更适合隐藏在严格的用户界面范式后。  
-  - 语言交互不如视觉元素直观，用户需要记住应用名称（如Zillow）并输入聊天框。  
-  - 可能引入广告或“优先发现”作为 monetization 策略，损害用户体验。  
-
-• **技术局限性**  
-  - 当前“应用”实则是MCP服务器，功能单一，用户需主动拉取内容。  
-  - 硬编码的输入输出模式在复杂需求（如高级筛选或跨应用参考）中表现脆弱。  
-  - 生成式UI（动态创建界面）更具潜力，但尚未成熟。  
-
-• **平台战略的争议**  
-  - OpenAI通过“应用”品牌化MCP，使其更易被终端用户接受。  
-  - 开发者可能免费为OpenAI构建应用，强化其垄断地位，却蚕食自身机会。  
-  - 未来AI可能自动化软件开发，使传统SaaS应用商品化。  
-
-补充讨论：
-- **历史对比**：类似2018年聊天机器人平台（如Alexa Skills）的复兴，但技术更先进。  
-- **争议焦点**：ChatGPT能否真正替代传统应用，还是仅作为补充？  
-- **商业模式**：OpenAI可能通过收入分成而非广告盈利，但用户对其中心化控制表示担忧。  
-- **技术透明度**：文档不清晰，交互元素（如iFrame）的实现方式存疑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45494558" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.france24.com/en/live-news/20251001-swiss-glaciers-shrank-by-a-quarter-in-past-decade-study" target="_blank">Swiss glaciers have shrunk by a quarter since 2015, study says</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 111</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-10-07 14:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[气候变化对冰川的影响及其感知差异]
-
-不同观点：
-• **数据驱动的观点（lolc）**  
-  - 提供GLAMOS网站的数据，显示瑞士冰川数量的动态变化（因消失或分裂而增减）。  
-  - 强调客观测量和科学记录的重要性。  
-
-• **情感与认知脱节的观点（username223）**  
-  - 认为美国人对气候变化的冷漠源于缺乏直观的冰川消退体验，而欧洲阿尔卑斯和加拿大等地因直接可见的冰川退缩（如梯子延伸、停车场迁移）更容易感知其严重性。  
-  - 指出抽象数据（如1.5℃升温）与具象变化（冰川消失）对公众意识的差异影响。  
-
-• **悲观与无力的观点（ncr100）**  
-  - 表达对气候变化问题的情感恐惧，但自认无法提出建设性意见，反映个体面对宏大议题的无力感。  
-
-• **讽刺与实用主义观点（pfannkuchen）**  
-  - 调侃冰川消退为“免费地产”，暗指人类适应性，但也隐含对问题严峻性的轻视。  
-
-补充讨论：  
-- **争议焦点**：气候变化感知的差异是否源于地理条件（如冰川可见性）？如何弥合抽象数据与公众行动之间的鸿沟？  
-- **讨论关系**：username223的观察回应了lolc的数据，提出“感知差距”问题；pfannkuchen的讽刺可能针对前者的悲观情绪。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45503882" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.seangoedecke.com/ai-research-with-codex/" target="_blank">GPT-5-Codex is a better AI researcher than me</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: codeclimber</span> |
-                    <span>评分: 56</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-10-07 10:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文作者尝试在笔记本电脑上用5分钟训练最强的AI模型，并与GPT-5合作进行研究。最初训练出的180万参数Transformer模型生成的故事虽不完美但有一定连贯性。随后，作者使用OpenAI的GPT-5-codex和Codex工具改进研究流程，生成的文本质量明显提高。作者将这种依赖AI辅助的研究称为"氛围研究"，描述了与Codex合作进行模型训练和优化的迭代过程。实验使用了TinyStories数据集，并比较了n-gram模型与神经网络的性能差异，发现虽然n-gram模型训练速度快，但在长文本连贯性上表现不佳。整个研究过程展示了AI辅助工具如何帮助非专业研究人员进行AI实验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI在研究和编码中的应用及其效果]
-
-不同观点：
-• **AI能力被高估**  
-  - [numeri]认为作者和AI的水平仅相当于初级NLP课程学生，研究过于基础  
-  - [Aurornis]指出LLM生成的报告常包含错误信息，尤其在健康领域易受伪科学影响  
-  - [ath3nd]质疑GPT-5的真实研究能力，指出企业AI项目高失败率  
-
-• **AI提升效率但存在局限**  
-  - [yomismoaqui]承认AI在基础任务（如编程、语言学习）中优于人类，但天花板提升需AGI  
-  - [kubb]提到AI能快速启动项目，但复杂开发时仍需人工干预  
-  - [mountainriver]反驳负面评价，认为"vibe coding"实际效果良好  
-
-• **技术原理与商业炒作争议**  
-  - [tomp]探讨N-gram蒸馏技术的优势，提出教师-学生模型分布学习的假设  
-  - [petesergeant]怀疑OpenAI声称用GPT-5自动化研究的真实性，认为可能是估值炒作  
-  - [moralestapia]认为标题反映的是作者自身专业水平而非AI能力  
-
-补充讨论：  
-- 争议焦点：AI是否真正具备前沿研究能力（如[numeri]vs[mountainriver]）  
-- [Cheer2171]指出所谓"研究"实为已解决问题，批评作者过度依赖AI工具  
-- [conartist6]的讽刺评论反映部分人对AI狂热者的反感情绪</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45501326" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://healeycodes.com/compiling-a-forth" target="_blank">Compiling a Forth</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: healeycodes</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-10-06 13:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了作者如何构建一个类似Forth语言的字节码编译器和虚拟机。Forth是一种基于堆栈的语言，作者详细解释了其核心概念，包括数据栈和返回栈的运作方式、单词（类似函数）的执行流程、DO/LOOP循环结构以及变量的使用方法。文章展示了如何通过词法分析将源代码转换为令牌，并直接生成字节码，而无需构建抽象语法树。作者还提供了可视化工具来展示整个系统的运行机制，最后用一个计算斐波那契数列的例子说明这些功能的实际应用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Forth语言的本质和设计原则，以及相关编译器和虚拟机的实现]
-
-不同观点：
-• [第一种观点] Forth的核心精神在于其交互性，编辑、编译和执行的紧密结合使其能够在资源受限的环境中运行和演进。这种设计避免了诸如"使用哪个版本的编译器"等问题，并且通过立即模式单词实现了类似D-lang、Rust或Zig的`comptime`特性。例子包括Chuck Moore的ColorForth，其ATA IDE磁盘驱动程序仅需几行代码。
-• [第二种观点] Forth是设计解释器/语言的优秀起点，可以作为初学者编写解释器的工具包。例如，有人尝试开发一个工具包（shi）来简化解释器的编写过程。
-• [第三种观点] 对于Forth来说，简单的分词器（tokenizer）可能不是好主意。Forth需要读取下一个空格分隔的内容，并判断其是应该编译还是运行。例如，简单的分词器可能无法正确处理像`.”`这样的指令。
-
-补充讨论：
-• [其他重要观点] 文章激发了人们创建自己的Forth-like语言的兴趣，表明Fth的设计理念和简洁性对开发者有很强的吸引力。
-• [争议焦点] 主要争议在于Fth的核心精神是什么，以及如何最好地实现或扩展Fth的特性。例如，交互性和简洁性是否是Fth不可妥协的核心，以及如何在现代编程环境中平衡这些特性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45491470" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
