@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-09 14:20 (北京时间)
+            最后更新时间: 2025-10-09 17:17 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,41 +61,140 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://julialang.org/blog/2025/10/julia-1.12-highlights/" target="_blank">Julia 1.12 highlights</a>
+                    <a href="https://vitalik.eth.limo/general/2025/10/05/memory13.html" target="_blank">Memory access is O(N^[1/3])</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pella</span> |
-                    <span>评分: 159</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-10-08 18:42</span>
+                    <span>作者: jxmorris12</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-10-05 20:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Julia 1.12主要更新内容包括：新增--trim功能以减少编译时间和二进制大小；允许重新定义常量（结构体）并支持"世界年龄"机制；新增追踪编译和执行过程的命令行标志和宏；默认启用1个交互线程的多线程功能改进；构建工具支持BOLT优化；@atomic宏系列新增引用赋值语法；Pkg包管理器新增Workspace和Apps功能；LLVM IR改用指针类型；测试集支持重现RNG状态。这些改进提升了Julia的性能、开发体验和多线程能力。</p>
+                    <p>这篇文章探讨了计算机内存访问时间应建模为O(N^(1/3))而非传统认为的O(1)。作者从理论和实证两方面论证：理论上，基于光速限制和三维空间特性，内存增大8倍会使访问距离增加2倍；实践中，不同层级内存(寄存器、缓存、RAM)的延迟数据也支持这个立方根关系。文章以密码学算法优化为例，说明考虑内存访问的立方根特性对预计算表大小的选择至关重要，过大反而会降低性能。作者在实际二进制域运算中发现128MB的预计算表比8GB的更高效，验证了这一模型的实际意义。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Julia 1.12版本的更新内容及其对开发效率的影响，以及Julia语言在当前编程生态系统中的竞争力]
+                    <div class="comments-summary">主要讨论点：内存访问时间是否遵循O(N^1/3)的复杂度规律，以及该理论模型是否适用于实际计算机架构。
 
 不同观点：
-• **积极评价新功能**：用户如jakobnissen、andyferris和__grob对Julia 1.12的新功能（如struct重定义、--trim功能和包应用）表示高度赞赏，认为这些改进显著提升了开发效率和语言实用性。
-• **对生态系统发展的担忧**：doctoboggan和blindseer对Julia生态系统的成长速度表示担忧，认为社区增长缓慢，核心包维护者少，且面临Python和Rust的激烈竞争。
-• **对Julia在ML领域的竞争力**：clickety_clack和cyberax认为Julia在机器学习（ML）领域未能取代Python，尽管Julia在技术上有优势，但Python已经占据了主导地位。
-• **对新功能的实际效果**：alhirzel和blindseer对--trim功能的实际效果持保留态度，认为在非玩具项目中可能难以实现静态推断。
+• **支持O(N^1/3)的观点**  
+  - LegionMammal978引用Bekenstein bound，认为内存访问时间下限为O(sqrt(n))，但并行局部随机访问可以优化。  
+  - cosmos0072通过寄存器（0.3 ns/2560 B）和RAM（80 ns/32 GiB）的数据，推算内存访问时间为O(N^1/3)，但指出整体访问时间应为O(N^4/3)。  
+  - aapoalas认为该模型在无竞争CPU的随机访问速度估算中有实用价值，尽管不完全精确。
+
+• **反对O(N^1/3)的观点**  
+  - AdamH12113指出内存容量增长与访问时间无关，实际访问时间由PCB和集成电路的二维特性决定，而非体积。  
+  - strongpigeon认为缓存层级的设计是人为优化的结果，并非自然几何规律，IBM等大型机的缓存可能不遵循此规律。  
+  - bawolff质疑模型的实用性，认为缓存命中更接近阶跃函数，而非平滑的N^1/3关系。  
+
+• **理论与实际脱节的批评**  
+  - j2kun批评“GPT的回答”不能作为实证论据，缺乏基准测试或文献支持。  
+  - dmitrygr指出数学表述错误，应修正为“访问某一缓存级别的全部内存时间为O(N^1/3)”，并认为修正后的结论无实际意义。  
+  - luizfelberti提到冯·诺依曼模型忽略内存访问延迟，实际更接近分布式系统或Actor模型。
 
 补充讨论：
-• **BOLT优化**：sundarurfriend询问BOLT优化是否为默认构建，并探讨其潜在的成熟度和缺点。
-• **Julia的未来前景**：blindseer认为Julia的发展速度不足以在2025年成为主流语言，可能要到2030年才能实现。
-• **开发者生产力**：blindseer提到Rust开发者在使用Julia后转向Rust，认为Rust在某些方面更具生产力。
+- andy99提出实际性能需结合计算优化（如乘法运算可能快于查表）。  
+- ddtaylor认为该模型更适用于最坏情况下的摊销时间分析。  
+- 争议焦点：O(N^1/3)是描述单次访问还是整体访问时间？模型是否过度简化了硬件设计的复杂性？</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45484999" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://en.wikipedia.org/wiki/Ortega_hypothesis" target="_blank">Ortega hypothesis</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Caiero</span> |
+                    <span>评分: 137</span> |
+                    <span>评论数: 28</span> |
+                    <span>发布时间: 2025-10-08 16:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了科学界关于科学进步来源的两个对立假说：奥尔特加假说和牛顿假说。奥尔特加假说认为科学进步主要由大量普通科学家的微小贡献积累而成，而牛顿假说则认为科学进步主要依赖于少数杰出科学家的重要工作。通过引用分析研究发现，大多数重要论文主要引用少数杰出科学家的成果，这似乎支持牛顿假说。但文章也指出引用数据可能存在偏差，不能完全反映科学工作的实际价值。此外，文章澄清了奥尔特加假说与哲学家奥尔特加·加塞特原意的差异，指出他只是认为某些领域需要普通人完成系统性工作，而非主张科学进步主要依靠平庸之人。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[科学进步是由天才科学家推动还是由大量普通科学家的累积贡献推动]
+
+不同观点：
+• **普通科学家的累积贡献更重要**  
+  - jasperry认为普通科学家的主要贡献在于传承领域知识，维持科学发展的基础  
+  - pessimist以水星近日点测量为例，说明基础数据积累对广义相对论验证的关键作用  
+  - TrainedMonkey提到“牛顿假说”（站在巨人肩膀上）和资源分配对研究的影响  
+
+• **天才科学家的框架性作用更关键**  
+  - rcpt引用Ortega的观点，认为天才科学家创造框架，普通人在框架内工作  
+  - aerhardt推荐Ortega的《大众的反叛》，书中提出“大众个体”概念，隐含对精英引领的认同  
+  - nhatcher将讨论与库恩的“范式转移”理论关联  
+
+• **混合作用论**  
+  - karmakaze认为天才与普通贡献者无需对立，并举AlexNet的例子说明技术、硬件、数据缺一不可  
+  - alphazard指出互联网时代难以单纯通过独立发现的时间差判断突破难度  
+
+补充讨论：
+- **争议焦点**：如何量化评估两类科学家的贡献（lumost提出学术界层级对引用的干扰，pavel_lishin质疑高知名度科学家的引用是否代表实际相关性）  
+- **方法论质疑**：xpe追问假说如何转化为可测试预测，ckemere批评引用指标不足以反映真实影响（如交流、报告等非正式渠道的作用）  
+- **历史案例**：aerhardt详述Ortega的思想价值，dang补充过往相关讨论链接</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45517674" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.tymscar.com/posts/intellijollamaconnectionmystery/" target="_blank">When Curl Works but IntelliJ Doesn't: The Ollama Connection Mystery</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tymscar</span> |
+                    <span>评分: 68</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-10-05 00:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者在使用IntelliJ IDEA连接本地Ollama服务时遇到的网络问题。虽然通过curl命令可以正常访问服务的HTTPS和HTTP端点，但在IntelliJ中测试连接时却显示失败。作者排除了HTTPS支持、macOS本地网络权限和防火墙等问题后，通过查看日志发现是JVM默认尝试IPv6连接而导致的。通过在IntelliJ的VM选项中添加`-Djava.net.preferIPv4Stack=true`参数强制使用IPv4协议栈后问题解决。文章强调了当Java应用程序无法连接而命令行工具可以时，应优先检查JVM的IPv6相关设置。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[IPv6和IPv4在网络连接中的优先级问题，以及Java在处理这些协议时的表现]
+
+不同观点：
+• **gopalv**：认为问题出在DNS记录配置不当，特别是AAAA记录中包含了IPv4地址，导致Java无法正确处理。建议修复DNS记录或调整Java配置。
+• **misja111**：指出Java默认使用IPv6，但可以通过设置`java.net.preferIPv4Stack`为`true`来强制使用IPv4。但这样做会牺牲对IPv6-only主机的连接能力。
+• **frogger8**：提出在macOS中通过修改`/etc/gai.conf`文件来调整IPv4和IPv6的优先级，从而在不完全禁用IPv6的情况下优先使用IPv4。
+• **cyberax**：分享了Python中类似的问题，指出缺乏Happy Eyeballs协议是IPv6部署不顺利的主要原因之一。
+• **JohnMakin**：提到AWS Client VPN不支持IPv6，导致在某些情况下请求失败，唯一的解决办法是禁用IPv6解析。
+
+补充讨论：
+• **WatchDog**提出了一个关键问题：为什么Java在直接使用IP地址时也会失败？这引发了关于Java网络栈实现细节的讨论。
+• **syntaxing**和**LilBytes**分别提到了使用代理工具（如mitmproxy）和回退OpenSSL版本作为解决问题的替代方法。
+• **ActorNightly**直接批评了Java的使用，暗示Java可能是问题的根源。
 
 争议焦点：
-• Julia是否能够在ML领域与Python竞争。
-• --trim功能在实际项目中的可行性和效果。
-• Julia生态系统的发展速度和社区支持是否足够支撑其未来的广泛采用。</div>
+• Java的网络栈实现是否合理，特别是在处理IPv6和IPv4时的默认行为。
+• 是否应该完全禁用IPv6，还是通过调整优先级来平衡两种协议的使用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45519263" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45477983" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -106,71 +205,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=OmVHkL0IWk4" target="_blank">Oral History of Ken Thompson [video]</a>
+                    <a href="https://www.qualcomm.com/news/releases/2025/10/qualcomm-to-acquire-arduino-accelerating-developers--access-to-i" target="_blank">Qualcomm to acquire Arduino</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: alphazard</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-10-09 03:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是YouTube网站的版权声明和用户指南页面，主要内容包括：版权信息、联系方式、创作者支持、广告合作、开发者资源、服务条款、隐私政策、平台安全说明、功能介绍说明，以及NFL周日门票服务。最后标注版权归属谷歌公司所有。该页面主要提供平台各项政策说明和法律声明。（199字）</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45523267" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.blog/developer-skills/github/download-your-data/" target="_blank">Download all of your GitHub data</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jcbhmr</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-10-09 05:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>GitHub推出了数据导出功能，允许用户轻松下载个人账户的所有数据，包括个人资料、仓库内容、互动记录等。用户可在账户设置中申请导出，数据将以Git和JSON格式提供，7天内有效。该功能旨在提高透明度，让用户更好地掌控自己的数据，并支持数据备份或迁移到其他平台。此外还提供了迁移API供组织使用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45523871" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://knowablemagazine.org/content/article/society/2025/how-corruption-interplays-with-social-norms" target="_blank">Corruption: When Norms Upstage the Law</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-09 02:26</span>
+                    <span>作者: janjongboom</span> |
+                    <span>评分: 1240</span> |
+                    <span>评论数: 83</span> |
+                    <span>发布时间: 2025-10-07 13:00</span>
                 </div>
 
                 <div class="summary-section">
@@ -180,19 +221,32 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[法律执行与社会期望在反腐败中的作用]
+                    <div class="comments-summary">主要讨论点：Qualcomm收购Arduino的影响及Arduino在微控制器市场的未来地位
 
 不同观点：
-• BrenBarn认为文章过于强调社会期望而忽略了法律执行的重要性。他指出法律应该是规定性的而非描述性的，认为改变需要通过法律强制执行，即使这可能不受欢迎。他以卢旺达的成功案例为例，指出严格的审计和高调的起诉实际上是法律执行的一部分。他还质疑了“告诉人们腐败比他们想象的少”这种方法的有效性，认为这种做法过于软弱，且如果腐败实际上比想象的更严重，这种方法就失去了意义。
-  
-• gsf_emergency_4则通过瑞士的直接民主和非正式传统来讨论“旋转门”现象，指出尽管这种非正式的传统在历史上有效，但近期由于一些丑闻，瑞士开始转向正式化政策。他认为旋转门是功能性国家的支柱，需要通过政策视角来分析。
+• **支持Arduino的价值**  
+  - Arduino是许多人的微控制器入门平台，具有情感价值和教育意义（geerlingguy）。  
+  - Arduino的开源和易用性使其在低量商业产品中仍有优势（phoehne）。
+
+• **对收购的负面预期**  
+  - Qualcomm可能将Arduino品牌作为营销工具，限制开放性（angry_octet）。  
+  - 担忧未来Arduino的开放性和开源属性会被削弱（greatgib）。  
+  - Qualcomm的封闭支持模式可能破坏Arduino的社区友好性（reflexe, magtux）。
+
+• **Arduino的市场竞争力下降**  
+  - ESP32和Raspberry Pi等替代品性能更强、价格更低，已占据市场主导地位（chpatrick, tylergetsay, calibas）。  
+  - Arduino框架被认为过时且效率低下，不适合严肃开发（estimator7292）。
+
+• **Qualcomm的潜在机会与改进建议**  
+  - 如果Qualcomm开放供应链和支持，可能扩大市场（magtux）。  
+  - 建议提供低价摄像头模块、参考设计和优质文档以吸引开发者（babl-yc）。
 
 补充讨论：
-• BrenBarn和gsf_emergency_4的观点之间存在一定的争议，焦点在于法律执行与社会期望在反腐败中的相对重要性。BrenBarn更倾向于法律执行的强制性，而gsf_emergency_4则强调了非正式传统和政策分析的重要性。
-  
-• BrenBarn还提出了一个伦理问题，即“应该如何”与“实际如何”之间的区别，认为法律和伦理应该是规定性的，而不是描述性的。</div>
+- **争议焦点**：收购是否会彻底改变Arduino的开源本质，或仅作为Qualcomm的营销工具。  
+- **历史对比**：类似Intel的Galileo/Edison失败案例被提及，质疑大公司能否在爱好者市场成功（MountDoom）。  
+- **中国市场的对比**：中国硬件生态因开放供应链而更具活力（magtux）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45522855" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45502541" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -203,13 +257,68 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.ft.com/content/87d4dcfe-f66a-4aad-bba9-394e9fc77c1d" target="_blank">The agony and ecstasy of restoring a Fra Angelico masterpiece</a>
+                    <a href="https://it-notes.dragas.net/2025/10/08/the-email-they-shouldnt-have-read/" target="_blank">The email they shouldn't have read</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-05 22:06</span>
+                    <span>作者: miniBill</span> |
+                    <span>评分: 319</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-10-08 12:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了一位IT专业人士遭遇供应商锁定的真实经历。作者受公共机构委托评估开源邮件系统替代方案，初期测试顺利并成功实施迁移。随后另一家机构B也准备改用该系统，却在正式终止原供应商合同时发现隐藏条款导致无法解约。更诡异的是，供应商似乎提前获知了客户的迁移计划，包括作者提供给第三方机构C的报价。文章揭露了IT行业中某些供应商通过隐蔽条款和商业监视实施客户锁定的恶劣手段，强调了数据自主权的重要性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[故事的真实性、公司合规问题、商业间谍行为、匿名披露的合理性]
+
+不同观点：
+• **故事真实性存疑**  
+  - [hluska]认为故事细节不合常理（如无律师介入、公司未采取行动），质疑其真实性。  
+  - [rossdavidh]指出故事仅为单方叙述且无法验证，可能是“ragebait”（激怒式钓鱼帖）。  
+  - [m-s-y]和[megiddo]质疑匿名披露的动机，认为可能是虚构创作。  
+
+• **公司合规与恶意行为**  
+  - [thisisit]通过亲身经历批评高管无视合规（如擅自联系供应商、数据安全违规），并指出高层滥用权力的普遍性。  
+  - [citizenpaul]分享类似经历，揭露其他公司通过监控代码关键词进行商业间谍活动，认为这种行为已成行业常态。  
+  - [chuckadams]从法律角度质疑故事中公司读取邮件的行为违法，可能导致合同无效。  
+
+• **匿名披露的争议**  
+  - [megiddo]主张“点名羞辱”（Name and Shame），认为匿名削弱了故事的影响力。  
+  - [OptionOfT]期待实名爆料以增加可信度。  
+  - 反对观点隐含在质疑真实性的评论中（如[m-s-y]认为匿名可能掩盖虚构）。  
+
+补充讨论：  
+- **商业合同陷阱**：[Workaccount2]强调细读合同条款的重要性，尤其是商业合作。  
+- **技术依赖风险**：[clownpenis_fart]以游戏开发为例，指出依赖竞争对手的技术（如Office 365）可能导致无意识的数据泄露。  
+- **供应商锁定问题**：[indoordin0saur]提及Oracle等供应商的“锁定”策略，暗示故事可能涉及类似行为。  
+
+争议焦点：  
+1. 故事是否真实？支持者以亲身经历佐证，反对者认为细节不合理且缺乏证据。  
+2. 匿名披露是否合理？一方认为应实名揭露恶行，另一方怀疑匿名动机。  
+3. 公司不当行为的普遍性：部分评论认为此类问题是行业常态，另一部分则认为故事过于极端。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45515657" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.tomorrowstechnician.com/tpms-sensor-ids-why-where-and-when/" target="_blank">Tire Pressure Sensor IDs: Why, Where and When (2015)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: walterbell</span> |
+                    <span>评分: 42</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-10-06 11:28</span>
                 </div>
 
                 <div class="summary-section">
@@ -219,9 +328,26 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：TPMS（胎压监测系统）的安全性、实用性及其潜在问题
+
+不同观点：
+• **TPMS作为监控工具的风险**  
+  - EvanAnderson提到TPMS可能被用于监控车辆进出，尽管ALPR（自动车牌识别）正在取代这种功能  
+  - hackernewsdhsu认为TPMS是另一种监控手段，建议回归传统手动检查胎压的方式  
+
+• **TPMS的技术缺陷**  
+  - mystraline详细列举了TPMS的安全问题：数据未签名容易被伪造、序列号未加密可能导致车辆跟踪、某些豪华车会因TPMS故障强制减速或进入“跛行模式”  
+  - 争议焦点：TPMS的设计是否过于依赖未加密的明文数据，且无法关闭  
+
+• **TPMS的实用性争议**  
+  - lisbbb批评TPMS是推高汽车成本的“不必要”功能  
+  - jsharkey则通过分享克隆TPMS传感器的经验，展示了其便利性（无需季节性更换后重新学习）  
+
+补充讨论：  
+- baphomet88f的评论未直接参与核心讨论，但提及了TPMS作为无线组件与仪表盘的关联性  
+- EvanAnderson的“幽默插曲”虽无关技术讨论，但反映了TPMS在用户端的认知模糊性</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45485705" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45490202" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -232,44 +358,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nobelprize.org/prizes/chemistry/2025/popular-information/" target="_blank">Nobel Prize in Chemistry 2025</a>
+                    <a href="https://3quarksdaily.com/3quarksdaily/2024/09/the-paradoxical-efficient-market-hypothesis.html" target="_blank">The paradoxical efficient market hypothesis (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pykello</span> |
-                    <span>评分: 274</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-10-08 09:49</span>
+                    <span>作者: tkhattra</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-10-08 02:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年诺贝尔化学奖授予北川进、理查德·罗布森和奥马尔·亚吉，以表彰他们在金属有机框架(MOF)领域的开创性贡献。三位科学家首次设计出这种多孔晶体材料，其内部巨大的空腔可容纳不同分子，具有广泛应用前景。MOF可用于从沙漠空气中收集水分、净化水质、捕获二氧化碳、储存氢气等环保领域，也可用于药物输送、水果保鲜等日常生活。这项研究始于1974年罗布森在教学中的灵感，他通过木质分子模型发现原子固有特性可构建新型分子结构。他们的工作为化学创造了全新的"分子房间"，推动了数万种MOF材料的开发。</p>
+                    <p>本文讨论了有效市场假说（EMH）的核心观点及其矛盾性。EMH认为股票价格已反映所有相关信息，其强弱版本取决于信息范围。文章指出EMH存在悖论：若多数投资者相信市场有效，就会忽视新信息，导致市场失效；反之，若投资者认为市场无效而积极寻找机会，反而会使市场趋于有效。因此，EMH只有在大多数投资者不相信它时才成立，这种自相矛盾的特性使其显得既反直觉又古怪。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[MOFs（金属有机框架）的科学意义、应用前景及诺贝尔奖的合理性]
+                    <div class="comments-summary">主要讨论点：[有效市场假说（EMH）的合理性和市场行为的实际表现]
 
 不同观点：
-• **支持MOFs的科学价值**  
-  - Owenversteeg指出MOFs相比沸石具有更高的表面积（1000-7000+ m²/克）和可理性设计的特性，尽管目前成本较高，但前景广阔。  
-  - Isoprophlex通过亲身经历验证MOFs的表面积优势，并认为其实验结果令人震撼。  
-  - BurningFrog列举了MOFs在沙漠集水和二氧化碳捕获等领域的潜在应用，认为其实用性极高。
+• **EMH的支持者**：认为市场价格反映了所有可用信息，尽管可能存在短期波动，但长期来看市场是有效的。例如，Tazerenix指出EMH描述了市场在大量独立参与者寻找超额收益时的行为，而非市场应该如何行为。
+• **EMH的批评者**：认为市场价格并不总是反映真实价值，尤其是在市场危机或泡沫时期。derf_引用Richard Bookstaber的观点，指出流动性需求是价格波动的主要原因，而非价值本身。
+• **市场行为的复杂性**：flave和Nevermark强调市场的复杂性，指出不同投资者（如养老金基金和零售投资者）有不同的投资目标和时间框架，导致价格形成机制的多样性。
+• **市场的投机性**：whatever1和janalsncm将市场比作赌场或凯恩斯选美比赛，认为价格更多由投机行为而非基本面决定。
+• **信息处理的时间差**：mg和water9指出信息处理和市场反应之间存在时间差，认为EMH忽略了信息传播和处理的滞后性。
 
-• **对MOFs实际应用的质疑**  
-  - Batterychem调侃MOFs的“唯一实际用途是生产JACS论文”，暗示其应用尚未成熟。  
-  - Shevy-java认为今年的诺贝尔奖“有些无聊”，缺乏“史诗感”，可能反映对MOFs创新性的保留态度。
-
-• **对文章细节的批评**  
-  - Ripe指出文章中“metal–organic”连字符和遗漏撇号等语法问题，认为这些小错误影响了阅读体验。  
-  - Octoth0rpe对文章中“几克MOF-5的表面积相当于足球场”的单位表述感到困惑，认为缺乏严谨性。
-
-补充讨论：  
-- **MOFs的跨学科影响**：Nee1r提到将MOFs与语言建模结合的研究，展示了其跨界潜力。  
-- **历史背景**：Metacelsus指出MOFs在过去十年已是化学领域的热点，获奖并不意外。  
-- **争议焦点**：MOFs的实际应用价值（如BurningFrog的乐观展望与Batterychem的讽刺形成对比）以及诺贝尔奖的选择标准（Shevy-java的“无聊”评价）。</div>
+补充讨论：
+• **争议焦点**：EMH是否能够解释市场的所有行为，尤其是在极端事件（如市场危机或泡沫）中。
+• **实际应用**：randomtoast提到技术分析和机器学习在识别市场模式中的应用，暗示市场可能并非完全随机。
+• **市场参与者的多样性**：GMoromisato和daft_pink讨论了市场参与者的行为如何影响EMH的有效性，指出市场行为是动态和复杂的。
+• **统计效率与价格正确性**：rich_sasha区分了统计上的信息效率和价格是否正确的问题，指出市场可能在统计上有效但仍可能长期偏离基本面。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45514164" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45511294" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -334,100 +454,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://wherever.audio" target="_blank">Show HN: I built a local-first podcast app</a>
+                    <a href="https://www.nobelprize.org/prizes/chemistry/2025/popular-information/" target="_blank">Nobel Prize in Chemistry 2025</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: aegrumet</span> |
-                    <span>评分: 48</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-10-08 16:46</span>
+                    <span>作者: pykello</span> |
+                    <span>评分: 274</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-10-08 09:49</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>2025年诺贝尔化学奖授予北川进、理查德·罗布森和奥马尔·亚吉，以表彰他们在金属有机框架(MOF)领域的开创性贡献。三位科学家首次设计出这种多孔晶体材料，其内部巨大的空腔可容纳不同分子，具有广泛应用前景。MOF可用于从沙漠空气中收集水分、净化水质、捕获二氧化碳、储存氢气等环保领域，也可用于药物输送、水果保鲜等日常生活。这项研究始于1974年罗布森在教学中的灵感，他通过木质分子模型发现原子固有特性可构建新型分子结构。他们的工作为化学创造了全新的"分子房间"，推动了数万种MOF材料的开发。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对一款本地优先、功能丰富的播客应用的反馈和建议]
+                    <div class="comments-summary">主要讨论点：[MOFs（金属有机框架）的科学意义、应用前景及诺贝尔奖的合理性]
 
 不同观点：
-• **期待地域性本地播客功能**  
-  - [kornork] 希望应用能优先显示用户所在地区的本地播客，认为当前功能未完全满足地域性需求。
+• **支持MOFs的科学价值**  
+  - Owenversteeg指出MOFs相比沸石具有更高的表面积（1000-7000+ m²/克）和可理性设计的特性，尽管目前成本较高，但前景广阔。  
+  - Isoprophlex通过亲身经历验证MOFs的表面积优势，并认为其实验结果令人震撼。  
+  - BurningFrog列举了MOFs在沙漠集水和二氧化碳捕获等领域的潜在应用，认为其实用性极高。
 
-• **赞赏本地优先和自包含架构**  
-  - [miloignis] 认为应用的本地优先和便携架构非常扎实，并询问是否计划开源前端以便自托管。  
-  - [phildini] 喜欢将数据和AI保留在本地的设计理念。
+• **对MOFs实际应用的质疑**  
+  - Batterychem调侃MOFs的“唯一实际用途是生产JACS论文”，暗示其应用尚未成熟。  
+  - Shevy-java认为今年的诺贝尔奖“有些无聊”，缺乏“史诗感”，可能反映对MOFs创新性的保留态度。
 
-• **对用户体验的积极评价**  
-  - [sdotdev] 称赞网站的无摩擦用户体验，认为其他开发者应学习。  
-  - [wedrawmonsters] 欣赏网站没有烦人的弹窗和注册要求。  
-  - [jcul] 认为这是最令人印象深刻的PWA，特别提到离线下载和播放速度调整等功能。
-
-• **功能改进建议**  
-  - [kethinov] 询问是否会推出Electron或Tauri版本，并希望支持直接下载音频文件到本地目录的流程。  
-  - [suprnurd] 对播客显示“需要代理”的标识感到好奇，希望了解原因。
-
-• **对AI搜索功能的意外认可**  
-  - [jcul] 最初对AI搜索功能持怀疑态度，但实际使用后发现其效果不错，尤其对发现新播客有帮助。
-
-补充讨论：
-- **争议焦点**：用户对“本地优先”的理解不同，部分用户（如[kornork]）期待地理意义上的本地化，而其他人（如[miloignis]）更关注数据存储和处理的本地化。
-- **技术细节讨论**：[miloignis]和[kethinov]分别对开源和技术架构提出了具体问题，显示开发者社区对透明性和灵活性的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45518127" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mwi.westpoint.edu/a-clausewitzian-lens-on-modern-urban-warfare/" target="_blank">A Clausewitzian lens on modern urban warfare</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bryanrasmussen</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-10-08 11:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨了克劳塞维茨的军事理论在现代城市战中的适用性。作者指出，尽管克劳塞维茨没有经历过现代城市战，但他提出的"战争是政治的延续"、"战争三位一体论"（暴力、偶然性和政治从属性）等核心观点仍能解释当代城市战的本质特征。文章通过克劳塞维茨亲历的攻城战和历史战役说明，城市既是战略枢纽也是国家意志的象征。现代城市战将平民、战斗人员和政策目标压缩在同一空间，放大了战争的复杂性和模糊性。作者认为，克劳塞维茨的理论不仅适用于拿破仑时代，也是理解未来城市冲突的重要工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[现代战争中的道德、战略与战术的平衡，以及克劳塞维茨理论在当代冲突中的应用]
-
-不同观点：
-• **道德与战略的冲突**  
-  - WillAdams认为现代战争放弃了道德高地，忽视了人民的自决权，这与克劳塞维茨的理论背道而驰。  
-  - mamonster反驳称，实际战争（如加沙和乌克兰）中，道德约束反而会削弱军队士气，胜利需要更残酷的手段（如轰炸、围困）。  
-
-• **克劳塞维茨理论的适用性**  
-  - vonnik批评作者过度依赖克劳塞维茨，脱离现实，认为现代战争的关键是控制供应链、能源和信息节点。  
-  - iammjm认为文章过于抽象，与当前战争（如俄乌冲突）的“网格化”毁灭现实脱节。  
-
-• **战争的政治工具性**  
-  - themafia强调战争应是政治的最后手段，而非政治阶层操纵经济的工具。  
-  - maxglute指出，现代战争（如美国代理战争）需要道德外衣来说服民众，但其实际动机是现实主义利益。  
-
-• **文章的实用性与学术性争议**  
-  - falcor84和ckemere批评文章缺乏具体策略，仅提供抽象思考框架，未解决实际问题。  
-  - unraveller和golem14以讽刺态度指出文章对现实冲突的无力指导。  
+• **对文章细节的批评**  
+  - Ripe指出文章中“metal–organic”连字符和遗漏撇号等语法问题，认为这些小错误影响了阅读体验。  
+  - Octoth0rpe对文章中“几克MOF-5的表面积相当于足球场”的单位表述感到困惑，认为缺乏严谨性。
 
 补充讨论：  
-- **争议焦点**：现代战争中道德约束是否妨碍胜利，以及克劳塞维茨理论是否过时。  
-- **现实案例**：俄乌冲突、加沙战争被多次引用，作为批评抽象理论的依据。  
-- **政治动机**：多篇评论质疑战争背后的政治和经济驱动，而非纯粹的“战略清晰”。</div>
+- **MOFs的跨学科影响**：Nee1r提到将MOFs与语言建模结合的研究，展示了其跨界潜力。  
+- **历史背景**：Metacelsus指出MOFs在过去十年已是化学领域的热点，获奖并不意外。  
+- **争议焦点**：MOFs的实际应用价值（如BurningFrog的乐观展望与Batterychem的讽刺形成对比）以及诺贝尔奖的选择标准（Shevy-java的“无聊”评价）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45515146" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45514164" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -438,36 +502,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://paid.ai/blog/ai-agents/paid-gitlaw-introducing-legal-contracts-built-for-ai-agents" target="_blank">Legal Contracts Built for AI Agents</a>
+                    <a href="https://chuniversiteit.nl/papers/svelte-is-fast" target="_blank">Svelte is that fast</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: arnon</span> |
-                    <span>评分: 67</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-10-08 12:55</span>
+                    <span>作者: SlackingOff123</span> |
+                    <span>评分: 106</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-10-08 19:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了专为AI代理设计的Master Services Agreement（MSA）的重要性。传统SaaS合同不适用于自主决策、持续运行和动态学习的AI代理，存在责任归属和数据所有权等法律风险。新的Agentic MSA明确了三点：1）代理是工具而非自主员工，责任归属清晰；2）限制AI幻觉输出带来的责任风险；3）规范数据所有权和训练权限，提供透明选项。这一法律框架解决了AI代理公司面临的合同与产品不匹配问题，有助于合理收费和商业化发展。</p>
+                    <p>这篇文章讨论了JavaScript框架的性能比较问题，指出大多数在线基准测试过于简单或不准确。作者在2021年的一项学术研究中比较了Angular、React、Vue、Svelte和Blazor的性能，虽然数据有些过时但仍具参考价值。研究分析了两种主要的渲染策略：虚拟DOM（React、Vue、Blazor采用）和数据绑定（Angular、Svelte采用）。虚拟DOM通过比较组件树差异来更新UI，可能带来额外开销；而数据绑定则直接跟踪绑定值来更新DOM。研究还指出Blazor使用WebAssembly需要通过JavaScript互操作层访问DOM，会增加开销。总的来说，不同框架在创建元素时性能相近，但在更新元素时渲染策略会带来明显差异。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI代理在合同中的责任归属问题]
+                    <div class="comments-summary">主要讨论点：[Svelte框架的当前状态、版本更新、生态系统、性能比较及前端开发的整体趋势]
 
 不同观点：
-• **Neywiny**：认为AI代理的责任应归属于提供服务的企业，类比承包商和分包商的关系。举例说明如果AI代理出错（如发送错误邮件或设置错误电压），责任应由企业承担，而非AI本身。
-• **Animats**：支持合同明确AI代理作为工具而非自主员工的法律地位，强调客户在使用AI代理时应负责参数设置和监督。提到合同中的条款（如Section 1.2）保护企业免于承担AI自主决策的责任，并对比博彩行业的责任承担模式（3%-5%收入用于赔偿）。
-• **ataha322**：质疑传统合同结构是否能适应学习和行为变化的AI系统，认为这可能成为比AI本身更大的壁垒。
-• **jrm4**：反对完全免除AI的管理决策责任，认为这是不负责任的规避行为。
-• **nadis**：建议更明确地说明GitLaw和CommonPaper的合作关系及合同修改的具体差异，否则直接使用CommonPaper的版本更合适。
+• **对Svelte版本更新的不满**  
+  - byearthithatius认为现代JS生态变化过快，Svelte的频繁更新（如Runes语法）让人难以适应，类似于公司中无意义的频繁重构。  
+  - SeanAnderson和maz1b指出文章基于过时的Svelte 3.x，而当前版本是5.x，变化显著。
+
+• **Svelte的实用性与生态支持**  
+  - Ameo认为Svelte仍是2025年构建Web应用的最佳选择，尽管Runes语法初期不受欢迎，但适应后不影响效率。提到IBM Carbon Design等高质量组件支持。  
+  - codegeek质疑Svelte的生态成熟度和生产环境适用性，担心其未达到React/Vue的采用规模。
+
+• **性能与其他技术的比较**  
+  - Evan-Almloff反驳Blazor因WASM性能差的说法，指出Leptos/Dioxus等框架可达到原生JS速度。  
+  - pmarreck认为Svelte的声明式模型效率高，类比NixOS的操作速度优势。  
+  - EMM_386纠正Angular必须遍历整个组件树的观点，提到OnPush策略和脱离zone.js的可能性。
+
+• **前端开发的整体批评**  
+  - lukev表达对前端领域高迭代低创新的失望，认为技术进步多为“重新排列家具”，未实质提升开发效率或用户体验。  
+  - pier25质疑Blazor的流行程度，并指出文章引用的2022年数据已过时。
 
 补充讨论：
-• **争议焦点**：AI代理的责任归属问题，是应由企业承担还是客户承担，以及如何通过合同条款明确这一点。
-• **其他讨论**：传统合同结构是否能适应动态AI系统（ataha322），以及UI/技术问题（n8m8提到的Firefox和uBlock Origin的兼容性问题）。</div>
+- **争议焦点**：Svelte频繁更新的必要性（实用主义vs.技术演进）、WASM性能的实际限制、前端生态的“假性进步”。  
+- **其他讨论**：LLM对小众框架（如Svelte）的代码生成支持（Ameo）、Solid框架的缺失比较（maz1b）、Runes语法对用户流失的影响（dwaltrip）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45515640" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45519915" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
