@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-15 02:21 (北京时间)
+            最后更新时间: 2025-10-15 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,51 +61,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.geocod.io/code-and-coordinates/2025-10-02-from-millions-to-billions/" target="_blank">Scaling request logging with ClickHouse, Kafka, and Vector</a>
+                    <a href="https://tritium.legal/blog/glitch" target="_blank">Ideas on Glitching in Rust</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mjwhansen</span> |
-                    <span>评分: 131</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-10-08 09:56</span>
+                    <span>作者: piker</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-14 16:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Geocodio公司如何通过从MariaDB迁移到ClickHouse、Kafka和Vector等技术栈，解决了每月处理数十亿请求时的日志记录问题。最初使用MariaDB和TokuDB存储引擎的方案在规模扩大后出现了性能下降、查询超时等问题，特别是在TokuDB被弃用后更显不足。新架构利用ClickHouse的高性能分析能力、Kafka的消息队列和Vector的数据收集器，实现了可扩展的请求跟踪系统，确保了计费和支持工作流的可靠性。</p>
+                    <p>本文介绍了在Rust开发中保证程序稳定性的两个实用技巧：1) 使用`panic_or_return!`宏在正式环境中避免程序崩溃（转为优雅降级），而在调试环境中保留panic信息便于调试；2) 用有限循环替代无限递归防止栈溢出，同时在调试环境中通过panic暴露问题。作者以法律文档软件Tritium为例，说明这些方法能在处理复杂规范（如Docx）时提高稳定性，同时指出过度使用"失败继续"模式可能是代码异味，暗示应逐步完善底层实现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：选择合适的工具和技术方案来处理高吞吐量的请求日志和计费数据。
+                    <div class="comments-summary">主要讨论点：[在程序中处理不可恢复错误的合适方式]
 
 不同观点：
-• **Kafka + Vector + TigerBeetle + 对象存储方案**
-  - 支持者：solatic
-  - 论据：ClickHouse不适合计费和单个请求的查询，更适合统计分析延迟等数据。
-  - 方案细节：使用Kafka/PubSub进行消息传递，TigerBeetle处理计费，对象存储存储请求详情，Iceberg/S3表用于业务分析。
+• **反对静默返回默认值**：认为使用`panic`、`expect`和`assert`是为了维护程序的不变量，处理那些本不该发生的逻辑错误。静默返回默认值（如`On Error Resume Next`）是灾难性的，因为它掩盖了问题，可能导致更严重的后果。
+  - 论据：`panic`等机制明确表示“程序员可能犯了严重错误”，而静默处理会隐藏这些错误。
+  - 例子：类比`On Error Resume Next`的历史问题，说明静默处理的危害。
 
-• **ClickHouse优化方案**
-  - 支持者：rozenmd, saisrirampur, nasretdinov, ch2026
-  - 论据：ClickHouse性能优越，查询速度快（50-70ms），支持异步插入（async_insert）和缓冲表（buffer table），简化架构。
-  - 方案细节：使用ClickHouse的async_insert功能，优化分区和主键，直接消费Kafka消息（通过ClickHouse Kafka集成或ClickPipes）。
-
-• **Redis作为缓冲层的方案**
-  - 支持者：pachico, mperham
-  - 论据：Redis操作简单，可以作为缓冲层，配合定时任务（如每分钟的cron job）处理数据。
-  - 例子：pachico提到他们使用Redis作为队列，效果良好。
-
-• **Vector独立缓冲方案**
-  - 支持者：est
-  - 论据：Vector可以独立缓冲写入操作，无需Kafka，简化架构。
-  - 例子：est曾用Vector缓冲ElasticSearch写入，运行稳定。
+• **支持合理的错误恢复机制**：认为如果错误处理机制能在发布模式下触发“保存工作并重启”的逻辑，确保用户不丢失数据且程序恢复到已知良好状态，则是更合理的方式。
+  - 论据：这种机制既避免了静默处理的隐患，又能提供更好的用户体验。
+  - 例子：提出“保存并重启”作为替代方案。
 
 补充讨论：
-- **争议焦点**：是否需要Kafka作为中间件。部分人认为Kafka增加了不必要的复杂性（ch2026, est），而另一些人则认为Kafka是必要的（solatic）。
-- **其他工具比较**：fnord77提问ClickHouse与Druid、Pinot或Star Tree的比较，但目前讨论中未深入展开。
-- **实际案例**：albertgoeswoof提到他们在mailpace.com仍主要依赖Postgres，但对未来的扩展感到担忧。</div>
+- 争议焦点：是否应该在发布模式下完全禁用`panic`等机制，还是应该用更智能的方式处理它们。
+- 讨论关系：第二种观点是对第一种观点的补充，提出了一种折中的解决方案，而非完全反对第一种观点的核心立场。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45514213" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45582298" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -116,38 +103,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://passt.top/passt/about/" target="_blank">Passt – Plug a Simple Socket Transport</a>
+                    <a href="https://blog.burkert.me/posts/llm_evolution_character_manipulation/" target="_blank">LLMs are getting better at character-level text manipulation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-10-06 23:27</span>
+                    <span>作者: curioussquirrel</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-10-13 19:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了passt和pasta两个工具，它们都是用于网络层转换的工具。passt在Layer-2网络接口和本地Layer-4套接字之间进行转换，无需特权即可使用，可作为Slirp的替代品。pasta则针对Linux网络命名空间，通过tap接口转发流量，支持本地连接的快速路径，避免了NAT的需求。
-
-文章详细说明了这两个工具的动机和特点，包括支持的协议（IPv4、IPv6、TCP、UDP、ICMP等）以及未来可能添加的功能。passt和pasta的设计目标是简化网络转换层，提高性能，并减少对特权操作的依赖。</p>
+                    <p>这篇文章测试了新一代大型语言模型（如GPT-5或Claude 4.5）在字符操作、字符计数以及解码加密任务上的表现。结果显示，相比早期模型，新一代模型在这些任务上表现显著提升。例如，GPT-4.1及以上版本能够准确替换句子中的字符，而GPT-5甚至在低推理模式下也能正确完成任务。在字符计数任务中，GPT-4.1和GPT-5表现较好，但仍有部分模型在复杂情况下出错。此外，模型在处理Base64和ROT20加密任务时也展现出一定的解码能力，尤其是在明确提示下表现更佳。总体而言，新一代模型在字符级任务上的能力有明显进步。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Probox软件的功能特点及其优势]
+                    <div class="comments-summary">主要讨论点：[LLM在字符计数、拼写识别、解码等方面的表现及系统提示的变化]
 
 不同观点：
-• [vollbrecht] 赞赏Probox的解释性图片设计，指出其亮点在于图片中的元素可以直接链接到相应的源代码，方便用户快速查阅和理解实现细节。
-  
-• [evertheylen] 认为Probox的杀手级功能是自动传递容器中暴露的端口，无需重新创建容器并指定不同的端口映射选项（-p）。这一功能显著简化了网络配置流程，提升了用户体验。他通过个人博客链接进一步解释了这一功能的实际应用场景。
+• **LLM在特定任务上的表现改进**  
+  - simonw指出Claude 4及更高版本的系统提示中删除了显式计数字符的说明，可能表明模型能力已无需此类提示。  
+  - malshe提到GPT 5在解决拼图游戏（如Quartiles）时表现有所提升，但仅在使用推理模式时有效，且仍有幻觉风险。  
 
-• [nezirus] 提供了Passt在Podman中的使用背景，指出Passt是Podman 5.0及以上版本中默认的rootless网络解决方案，并对流量密集型容器有明显的性能提升。他通过GitHub链接展示了Podman文档中关于这一技术的教程。
+• **LLM在基础任务上的持续缺陷**  
+  - jazzyjackson批评ChatGPT在拼写识别（如区分“littoral”和“literal”）上的失败，导致无法满足用户需求。  
+  - hansonkd指出ChatGPT 5在罗马数字处理上仍存在严重问题，如范围错误和字符计数错误。  
+  - zeroq以幽默方式讽刺LLM在字符计数任务中的荒谬回答（如“strawberry”中不存在的7个字母R）。  
+
+• **对测试LLM底层能力的争议**  
+  - viraptor质疑测试LLM字符级任务的意义，认为这是模型设计初衷之外的功能，建议通过编程工具解决此类问题以终止讨论。  
+  - necovek则从技术角度探讨了模型如何可能通过训练学习Base64解码，但对其具体实现机制表示好奇。  
 
 补充讨论：
-• [evertheylen]和[nezirus]的观点之间存在一定的关联性，前者强调Probox的网络功能优势，后者则补充了类似技术（Passt）在其他工具（Podman）中的应用和效果。
-• 争议焦点不明显，但可以注意到不同用户对Probox的功能价值有不同的侧重点：有人关注其易用性和设计细节，有人则更看重具体的网络功能改进。</div>
+- **争议焦点**：LLM是否应该被优化以处理字符/拼写/编码等底层任务，还是应专注于更高层次的语义理解。  
+- **用户需求差异**：部分用户（如jazzyjackson）因实际场景（如无网络环境）依赖LLM的基础功能，而其他用户（如viraptor）认为此类需求应通过专用工具解决。  
+- **幽默回应**：atleastoptimal通过故意拼错单词（“rearry rove”）调侃LLM的拼写问题，反映社区对模型缺陷的戏谑态度。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45497474" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45572478" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -158,378 +151,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.makeuseof.com/androids-sideloading-limits-are-anti-consumer-move-yet/" target="_blank">Android's sideloading limits are its most anti-consumer move</a>
+                    <a href="https://thezvi.substack.com/p/openai-15-more-on-openais-paranoid" target="_blank">OpenAI #15: More on OpenAI's Paranoid Lawfare Against Advocates of SB 53</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: josephcsible</span> |
-                    <span>评分: 434</span> |
-                    <span>评论数: 32</span> |
-                    <span>发布时间: 2025-10-13 15:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>谷歌将在2025年10月起实施新规，要求侧载应用开发者必须通过政府ID或联系方式验证身份，2026年9月强制执行。此举名义上是保护用户安全，但实际上限制了Android开源生态的自由性，可能导致NewPipe等非官方应用无法安装。虽然谷歌声称此举类似机场安检，但批评者认为这只是变相控制，且已验证身份不等于应用安全。新规主要影响主流设备，但不适用于刷机或去谷歌化的手机。这可能是谷歌最反用户的一次政策调整，损害了Android的开放精神。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google限制Android用户从Play Store外安装应用（侧载）的合理性及影响
-
-不同观点：
-• **支持用户自由安装**  
-  - [itg]：选择Android的主要原因是可以自由安装应用，限制后可能转向iPhone  
-  - [jim201]：需反垄断干预，设备制造商不应控制用户安装软件的权限  
-  - [HiPhish]：应称其为“自由安装”而非“侧载”，强调这是计算机的基本权利  
-  - [GeekyBear]：Google曾以“开放”宣传Android，现行为涉嫌欺诈  
-
-• **支持Google限制侧载**  
-  - [vayup]：Google需优先保护普通用户安全，即使限制技术用户；Android仍是相对开放的平台  
-  - （补充：以机场ID检查类比，强调安全与隐私优先）  
-
-• **质疑实际影响与替代方案**  
-  - [freefaler]：Google可能不关心小众技术用户，但这是通用计算权利被侵蚀的趋势  
-  - [ohman876]：讨论硬件替代品（如PinePhone、Librem）的可行性  
-  - [miclill]：希望推动Linux手机系统发展  
-
-争议焦点：
-1. **用户权利与安全的平衡**：是否应以牺牲技术用户自由为代价保护普通用户？  
-2. **术语争议**：“侧载”是否被污名化？（[HiPhish] vs [vayup]的立场差异）  
-3. **法律与市场垄断**：[charles_f]指出Google与苹果类似行为的不同结果，[jim201]呼吁反垄断行动。  
-
-补充讨论：
-- **F-Droid的未来**（[glenstein]）：验证机制是否允许第三方商店存活？  
-- **长期趋势**（[freefaler]）：桌面系统（如Windows/macOS）也可能效仿限制。  
-- **技术替代方案**（[dhbradshaw]）：AR眼镜是否成为下一个开放平台？  
-
-关键论据：
-- 安全案例：[rclkrtrzckr]指出Play Store同样存在恶意软件，质疑限制有效性。  
-- 所有权定义：[a456463]认为这是对硬件所有权的攻击。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45569371" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://spillhistorie.no/2025/10/03/legends-of-the-games-industry-roger-dean/" target="_blank">Roger Dean – His legendary artwork in gaming history (Psygnosis)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thelok</span> |
-                    <span>评分: 87</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-10-13 14:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>英国传奇艺术家罗杰·迪恩的职业生涯跨越多个领域，从家具设计（如"海胆椅"）到音乐专辑封面（为Yes和Asia乐队创作经典封面），再到游戏行业。他1980年代进入游戏界，为日本游戏《The Black Onyx》设计封面，并为英国发行商Psygnosis创作了著名的猫头鹰标志及命名。迪恩的作品在全球售出超1亿份，影响力远超游戏行业。文章基于对他的深度访谈，重点探讨了他在游戏领域的创作历程和灵感来源。（199字）</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Roger Dean的艺术作品及其在不同领域的影响]
-
-不同观点：
-• [艺术家的跨领域影响]
-  - ChrisMarshallNY提到Dean的艺术作品对他自己的艺术创作有很大启发，尤其是在游戏ZPC中的插图。
-  - milchek指出Dean不仅创作了乐队封面艺术，还设计了Tetris的标志，并提到Psygnosis后来在PC和PS1上的游戏。
-  - johnea通过Yes乐队的专辑封面了解Dean的作品，并对其未来主义图像印象深刻，尤其是Relayer专辑的封面。
-
-• [游戏封面艺术的魅力]
-  - hn_acc1回忆了Barbarian游戏的封面艺术，认为它是Atari ST场景中的“圣杯”。
-  - xbar表达了对游戏画面与Roger Dean封面艺术一样精美的渴望。
-  - teddyh批评Terrorpods的封面艺术，认为它是基于《世界之战》的插图制作的，游戏内容与封面不符，属于“铲子软件”策略。
-
-• [个人与艺术的互动]
-  - hagbard_c分享了他如何在学生时代模仿Dean的“坠落行星碎片穿过云层”的画作，并用普通家用涂料完成。
-  - blueberry_47提到在旧金山亲眼见到Dean的原作，如Red Dragon和Blue Desert，感到非常震撼。
-  - nickdothutton回忆90年代访问Dean办公室的经历，感觉像是“访问未来”。
-
-补充讨论：
-• [争议点]
-  - teddyh对Terrorpods封面艺术的批评与其他用户对Dean艺术的普遍赞美形成对比，争议焦点在于封面艺术是否与游戏内容相符。
-
-• [其他讨论]
-  - doublerabbit幽默地提到父母的观点，认为购买黑胶唱片更多是为了艺术品而非音乐，强调了艺术品的重要性。
-  - andrewgleave分享了马恩岛邮政局发行的Roger Dean和Rick Wakeman邮票，展示了Dean艺术的影响力扩展到了邮票设计领域。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45568708" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ruudvanasseldonk.com/2025/abstraction-not-syntax" target="_blank">Abstraction, not syntax</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: unripe_syntax</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-10-13 08:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了YAML等配置格式的局限性，指出TOML、JSON变体等替代方案虽在语法上有所不同，但核心差异在于数据模型。作者通过云存储桶配置示例说明，格式转换无法解决重复代码和人为错误问题，真正关键在于抽象能力。文中展示了使用RCL语言的配置方案，通过循环和计算消除了区域错误和过期时间错误，提高了可维护性。最后指出生成式配置虽好，但需考虑目标程序支持度等新问题。核心观点是：配置格式之争不应停留在语法层面，支持抽象能力才是关键改进方向。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[配置语言的表达力与简洁性之间的权衡]
-
-不同观点：
-• **支持简洁配置语言（如CSV、TOML、YAML）**
-  - 认为配置语言应保持简单，避免复杂编程特性（如循环、条件）
-  - 例子：dapperdrake主张接近CSV的简洁性，weavejester提出通过改进数据结构（如edn格式）替代编程逻辑
-  - 争议点：过度简化可能导致重复或易错（如radarsat1提到“同一区域所有桶”的隐含假设问题）
-
-• **支持图灵完备配置语言（如HCL、RCL）**
-  - 认为需要编程特性（循环、抽象）解决复杂配置问题
-  - 例子：rednafi指出Python生成JSON更灵活；theknarf推崇HCL的可复用模块
-  - 争议点：可能引入复杂性和不可预测性（kgen强调直接阅读配置的透明度）
-
-• **中间立场**
-  - teo_zero建议在声明式语言中加入有限扩展（如bash参数展开）
-  - yawnxyz提出“代码生成可读文本”的双向方案
-
-补充讨论：
-- **工具链问题**：Splizard指出语言服务器支持不足是核心痛点
-- **社区分歧**：JohnMakin反驳“YAML已过时”的流行观点，认为语法争议被夸大
-- **历史演变**：gorgoiler批评YAML被误用为RPC替代品，导致不必要的间接性
-- **新方案涌现**：vivzkestrel调侃MAML等新语言的快速出现反映行业焦虑
-
-争议焦点：
-1. 配置语言是否应该具备图灵完备性（如循环、抽象）
-2. YAML等现有方案的实际缺陷是否被高估
-3. 在“配置即代码”与“人类可读性”之间如何取舍</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45566198" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simonwillison.net/2025/Oct/13/nanochat/" target="_blank">Nanochat</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bilsbie</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-10-14 00:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Andrej Karpathy发布了一个名为nanochat的开源项目，实现了类似ChatGPT的完整LLM训练和推理流程。该项目代码简洁（约8000行Python+Rust），可在价值100美元的8XH100 GPU节点上4小时训练出能对话的561M参数模型。模型默认使用FineWeb-Edu等数据集训练，包含网页前端和后端服务。已有开发者将其移植到Hugging Face并支持CPU运行。文章作者尝试在Mac上运行该模型，获得了基本的对话输出。该项目展示了低成本训练和部署LLM的可能性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于在较小硬件上运行代码的可行性及其限制
-
-不同观点：
-• [Tepix]：支持在较小硬件上运行代码的可能性
-  - 论据：通过省略torchrun和使用梯度累积，可以在单GPU上运行代码并获得相似结果，但需要更长时间。
-  - 例子：如果GPU的VRAM小于80GB，可以通过调整超参数（如降低--device_batch_size）来避免内存溢出。
-  - 限制：需要更多的技术知识来进一步优化，如将batch size降至1以下。
-
-• [ultimatefan1]：无关或调侃性评论
-  - 内容：简短且与主题无关的评论“No seagull?”，可能是调侃或误入讨论。
-
-补充讨论：
-- 争议焦点：无实质性争议，但[Tepix]的评论引发了关于硬件限制和技术调整的详细讨论。
-- 讨论关系：[Tepix]的评论提供了具体的技术解决方案，而[ultimatefan1]的评论与主题无关，未形成有效讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45575051" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sjbaker.org/steve/omniv/matrices_can_be_your_friends.html" target="_blank">Matrices can be your friends (2002)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 120</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-10-13 10:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章通过可视化方法解释了OpenGL矩阵的工作原理。作者建议将4x4矩阵想象成一个附着在物体上的小立方体的变换：前三列代表旋转后的新坐标轴方向，最后一列前三项表示平移量。文章展示了如何通过观察立方体顶点位置的变化来直观理解矩阵变换效果，而无需复杂数学计算。这种方法可以帮助图形编程新手更直观地处理物体的旋转、平移、缩放等变换操作。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[矩阵的表示方式、应用场景以及数学理解]
-
-不同观点：
-• [shiandow]认为矩阵在内存中的布局没有严格的数学理由，倾向于将矩阵视为列向量的集合，并强调M[i][j]应为第i行第j列的元素。
-• [Viliam1234]指出不同数学分支可能有不同的矩阵布局规则，建议明确说明以避免混淆。
-• [the__alchemist]从图形编程的角度出发，认为在实际应用中矩阵的使用较少，更倾向于使用向量和四元数。
-• [getnormality]批评数学教育的不足，认为线性代数应该教会学生旋转等操作的数学本质，而非依赖视觉直觉。
-• [percentcer]强调矩阵的列可以解释为变换后的基向量，这是理解矩阵的关键。
-• [a_e_k]推荐注重几何直觉的线性代数书籍，帮助视觉思维者更好地理解矩阵。
-• [zkmon]认为矩阵代表了更基本的数学真理，广泛应用于各个领域，不仅仅是数字网格。
-• [the__alchemist]补充指出新手程序员对矩阵的困惑，与物理和化学中对矩阵的处理相比显得简单。
-
-补充讨论：
-• [pavlov]提到文章的年代问题，但认为矩阵部分仍然适用。
-• [jdoliner]对文章标题的误导表示不满。
-• [globalnode]对文章的配色方案提出批评。
-
-争议焦点：
-• 矩阵的布局是否有严格的数学依据（shiandow vs Viliam1234）。
-• 矩阵的实际应用价值（the__alchemist vs getnormality）。
-• 数学教育是否足够直观（getnormality vs a_e_k）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45566766" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.mptcp.dev/" target="_blank">MPTCP for Linux</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: SweetSoftPillow</span> |
-                    <span>评分: 122</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-10-13 09:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了多路径TCP（MPTCP），它是标准TCP的扩展协议（RFC 8684），允许设备通过多个网络接口同时传输数据。MPTCP能聚合带宽、选择低延迟路径，并在某路径故障时无缝切换。其核心技术包括子流创建、路径管理和数据包调度。MPTCP支持无缝切换（如智能手机网络切换）、最优网络选择和带宽聚合等应用场景。Linux系统从5.19版本开始支持内核和用户空间两种路径管理模式，6.8版本引入了数据包调度功能，6.10版本进一步完善了MPTCP功能集，包括TCP回退机制和调试工具支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[MPTCP的技术优势、应用现状及未来发展]
-
-不同观点：
-• MPTCP在Apple设备上的成功应用
-  - Apple设备默认启用MPTCP，实现Wi-Fi和LTE无缝切换
-  - "Wi-Fi Assist"功能利用MPTCP提升用户体验
-  - Linux服务器需手动配置，客户端支持有限
-
-• MPTCP的实际需求存在争议
-  - 有人认为Tailscale等工具已减少对MPTCP的需求
-  - 但酒店等场景下仍存在可靠连接的需求
-
-• MPTCP的推广障碍
-  - Chromium等主流软件尚未原生支持
-  - 开发者反馈缺乏明确的处理支持方案
-  - 需要更多实际用例推动采用
-
-补充讨论：
-• 技术替代方案探讨
-  - SCTP作为早期多路径传输协议为何未普及（争议焦点）
-  - OpenMPTCProuter等第三方解决方案的表现
-
-• 未来发展前景
-  - Linux社区持续改进MPTCP支持
-  - RFC8684的前提假设受到质疑（IP模块本身具备多接口负载均衡能力）
-  - 需要更多实际部署案例证明其价值</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45566441" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.walmart.com/ip/SANTA-SMAGICAL-PHONE/16364964771" target="_blank">Show HN: AI toy I worked on is in stores</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Sean-Der</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2025-10-12 14:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是一个验证是否为人类的提示页面，要求用户按住按钮确认身份。页面底部提供了《使用条款》《隐私政策》的链接，以及不出售个人信息和请求个人信息的选项。最后标注了沃尔玛商店公司的版权信息。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI圣诞老人玩具的利弊及技术实现]
-
-不同观点：
-• **支持与兴奋**
-  - [_kb]：提到澳大利亚的免费电话服务，孩子很喜欢，并计划引入现代技术（如越狱）增加趣味性。
-  - [LarsDu88]：表示有兴趣将其作为ESP32项目。
-  - [patapong]：认为这是AI的有趣应用，并询问是否可以连接自己的服务器。
-  - [Jaxkr]：称赞产品，并表示愿意为孩子购买或自己动手制作。
-
-• **担忧与批评**
-  - [zephyreon]：担心孩子会提出不切实际的要求（如后院建水上乐园），AI可能会过度承诺。
-  - [ugh123]：质疑如何确保孩子与LLM对话的安全性。
-  - [mosura]：担心技术可能被用于不那么健康的用途。
-  - [gyomu]：批评技术商业化（如Walmart销售），质疑其对儿童行为和信念的影响，认为传统方式（如写信）更有意义。
-
-• **技术实现讨论**
-  - [architectonic]：询问本地运行LLM所需的计算资源，以及如何优化语音合成和识别。
-  - [deanputney]和[Waterluvian]：讨论60分钟通话时间用尽后的处理方式（如是否变为砖块或降级为预加载音频）。
-  - [daniel_iversen]：幽默地提到LLM可能被滥用（如教孩子社交工程）。
-
-补充讨论：
-- **争议焦点**：主要集中在技术的伦理影响（如商业化、儿童安全）和实际体验（如通话时间限制）。
-- **其他讨论**：
-  - [flunhat]：开玩笑提到AI可能揭穿圣诞老人的谎言，但随后祝贺产品成功。
-  - [leakycap]：祝贺产品上市，并指出Walmart链接问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45558375" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://forum.cursor.com/t/why-the-push-for-agentic-when-models-can-barely-follow-a-single-simple-instruction/137154" target="_blank">Why the push for Agentic when models can barely follow a simple instruction?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: fork-bomber</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-10-14 07:08</span>
+                    <span>作者: paulpauper</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-14 19:41</span>
                 </div>
 
                 <div class="summary-section">
@@ -539,34 +167,336 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LLMs（大型语言模型）在实际应用中的效果、可信度及市场宣传与实际体验的差距
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45583907" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://echojs.com/" target="_blank">Echo JS: a HN-style site for JavaScript news</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ayaros</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-14 15:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了作者团队如何改进UI库，从最初的自定义组件逐步转变为结合Radix UI的混合方案。他们分析了自定义组件在维护性和可访问性方面的局限性，并探讨了采用Radix UI这类现代化工具库的优势。最终采取的"混合Radix"方法既保留了部分核心自定义组件，又整合了Radix UI的强大功能，在开发效率、可维护性和用户体验之间取得了平衡。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45581239" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thalamusgme.com/blogs/cortex-core-clerkship-grades-and-transcript-normalization" target="_blank">GPT-5o-mini hallucinates medical residency applicant grades</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: medicalthrow</span> |
+                    <span>评分: 142</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2025-10-14 15:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>GME发文回应了关于Cortex核心实习成绩转录标准化功能的反馈。主要内容包括：承认收到少数关于自动提取成绩不准确的报告，但强调原始成绩单始终准确无误；说明该工具仅用于参考比较，不会影响筛选算法；建议项目主管核对原始成绩单，申请人无需主动联系项目方；承诺持续优化工具并与医学院合作减少歧义。GME重申对透明度的承诺，强调该功能旨在提高效率而非替代人工审核。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[使用LLMs从PDF中提取医学成绩信息的可行性和风险]
 
 不同观点：
-• **批评LLMs的实际效果**  
-  - varun_chopra认为LLMs在代码生成中表现不佳，常忽略简单指令，生成不存在的库，且对新颖代码无能为力，仅适合辅助性任务（如语法检查）。  
-  - Julien_r2和hansmayer质疑代理（Agent）技术的实际规模化应用，认为其多为营销噱头，仅适用于宽松的副业场景或低质量办公任务（如PPT生成）。  
+• **支持LLMs提取信息**
+  - beernet：认为模型幻觉不是新问题，公司反应得当，提供了纠正和反馈机制。
+  - kbyatnal：虽然PDF解析困难，但结合VLM和HTML/Markdown输入可以显著改善准确性。
+  - anotherpaulg：建议分块处理和多次验证以减少错误，认为LLM作为OCR工具非常有用。
 
-• **认为用户使用方式影响体验**  
-  - thor-rodrigues指出部分用户对LLMs的期望过高（如仅输入“fix this”），但也承认上层管理过度炒作AI的“万能”属性。  
-  - fabian2k提到提示（prompting）技巧和经验对结果的影响，但失败案例仍不可预测，导致时间浪费。  
+• **反对LLMs提取信息**
+  - Aurornis：认为手动验证的需求削弱了工具的实用性，质疑其实际价值。
+  - nisten：批评缺乏测试和验证机制，认为这是不负责任的软件开发。
+  - lukeschlather：指出使用小型模型（如GPT-5-mini）会导致高错误率，应使用更高性能的模型。
 
-• **归因于市场炒作与经济动机**  
-  - hansmayer和JCM9认为资本推动是主因，企业为估值和股票价格强行推广未成熟技术，导致“垃圾内容”泛滥。  
-  - mnky9800n讽刺性地提出需“绩效改进代理”（PIPA）监督LLMs，暗指技术不可靠性被营销掩盖。  
+• **中立或技术探讨**
+  - simonw：讨论视觉LLMs的错误是否应称为“幻觉”，认为这是一个不同的技术问题。
+  - socrateswasone：指出“幻觉”是人为定义的，模型本质上是统计预测。
+  - bobbyprograms：建议重新思考预训练方法以减少幻觉问题。
 
-• **部分肯定LLMs的价值**  
-  - mnky9800n和fabian2k承认LLMs在生成模板代码或边缘案例检查中确有帮助，但失败时无明确错误提示。  
+补充讨论：
+- **争议焦点**：是否应将LLMs用于高风险的医学成绩提取，尤其是在缺乏严格验证的情况下。
+- **技术改进建议**：多次验证、分块处理、结合VLM和HTML/Markdown输入、使用更高性能的模型。
+- **用户体验**：owenthejumper提到此类系统增加了申请者的压力，呼吁关注用户体验。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45581029" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://strudel.cc" target="_blank">Strudel REPL – a music live coding environment living in the browser</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: birdculture</span> |
+                    <span>评分: 200</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-10-13 18:37</span>
+                </div>
 
-争议焦点：  
-1. **LLMs的可靠性**：是否因用户使用不当（如提示不明确）导致效果差，还是模型本身存在根本缺陷？  
-2. **代理技术的实用性**：是真实的工具革新，还是资本驱动的泡沫？  
-3. **市场宣传与现实的差距**：CEO和VC的“魔法”宣传是否误导了公众预期？  
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Strudel音乐编程工具的功能、优势、技术背景及用户体验]
+
+不同观点：
+• **用户体验与易用性**  
+  - [ge96] 提到界面设计有趣但存在混淆，暗示UI可能有改进空间  
+  - [lovehashbrowns] 强调即使非音乐专业人士也能通过即时文档参考快速上手并享受创作乐趣  
+  - [awongh] 赞赏滑块等交互设计，认为符合现代工具需求（引用Bret Victor理念）  
+
+• **技术实现与比较**  
+  - [raffael_de] 指出Strudel是TidalCycles的JS移植版，对比SuperCollider/sclang的技术差异，批评sclang语法但肯定其功能性  
+  - [awongh] 认为JS生态更适合当前工具开发，旧工具存在“非我发明”（NIH）问题  
+  - [iainctduncan] 提出Csound+WASM作为更开放的替代方案，展示技术多样性  
+
+• **社区与扩展性**  
+  - [amanzi] [mamonoleechi] [polotics] 推荐YouTube上的教学/演示视频，强调社区资源丰富  
+  - [chwzr] 介绍Flok的协作功能（Hydra可视化+CRDT同步），突出实时协作可能性  
+  - [ako] 设想AI与Strudel结合的应用场景（自动生成/转录音乐）  
+
+• **技术问题与兼容性**  
+  - [zahlman] 报告AudioContext未定义的运行时错误，涉及浏览器安全设置  
+  - [999900000999] 询问本地运行方案（Node.js），反映跨平台需求  
+  - [mamonoleechi] 讨论Linux版AppImage的可用性问题  
 
 补充讨论：  
-- jeswin强调需具体说明任务类型，否则讨论无意义，暗示当前争议可能源于用例差异。  
-- nurettin以Gemini Pro为例，指出长期未解决的基础功能问题（如文件更新失败），质疑技术成熟度。</div>
+- **命名趣味性**：[mamonoleechi] 提到软件名称灵感来自甜点Strudel，增添社区文化色彩  
+- **争议焦点**：sclang的语法设计（[raffael_de]称其“比PHP更丑陋”）引发对音乐编程语言友好性的讨论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45577080" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45571822" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lmsys.org/blog/2025-10-13-nvidia-dgx-spark/" target="_blank">NVIDIA DGX Spark In-Depth Review: A New Standard for Local AI Inference</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: yvbbrjdr</span> |
+                    <span>评分: 72</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-10-14 01:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>NVIDIA DGX Spark是一款紧凑型高性能AI推理工作站，采用全金属机身设计和香槟金配色，配备USB-C供电、高速网络接口等。核心硬件采用GB10 Grace Blackwell超级芯片，具备1 PFLOP的FP4稀疏张量性能，128GB统一内存可支持大模型加载。测试显示，它在运行中型模型和批处理任务时表现优异，但内存带宽可能成为瓶颈。相比数据中心产品，DGX Spark首次将高性能AI推理带入消费市场，适合开发者原型设计和研究使用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[DGX Spark与Mac Studios及其他设备的性能比较，以及DGX Spark的设计定位和市场价值]
+
+不同观点：
+• **DGX Spark的优势**
+  - 专为AI开发设计，与Nvidia企业级硬件和软件栈一致（aurareturn）
+  - 高速互连（200Gb/s）支持多设备协同和RDMA（hank808）
+  - 128GB统一内存，适合大规模模型开发（SethTro）
+
+• **Mac设备的竞争力**
+  - M5系列可能提供更高的本地推理性价比（aurareturn, themgt）
+  - M1/M2 Ultra的高内存带宽（800GB/s）在部分场景表现更优（whitehexagon）
+  - MLX后端未充分利用可能导致Mac性能被低估（andrewgleave）
+
+• **其他竞品的表现**
+  - Strix Halo（Zen5+256GB/s内存）以更低价格（$2k）提供竞争性性能（pixelpoet, limece）
+  - Ryzen AI Max在部分测试中性价比更优（incomingpain）
+
+• **争议焦点**
+  - DGX Spark是否过度牺牲本地推理性能以推广多设备方案（whitehexagon vs. aurareturn）
+  - 价格合理性：$4k vs. 5090显卡或二手M2 Ultra（SethTro, whitehexagon）
+  - 代表性测试缺失（如Strix Halo对比）（pixelpoet）
+
+补充讨论：
+- 幽默吐槽：金属泡沫外观像钢丝球（jerlam），噪音和游戏性能无关提问（ta12653421）
+- 对Nvidia产品策略的批评：人为限制功能以推动高端销售（andrewstuart）
+- 替代方案调侃：买5台Mac mini更划算（mwilcox）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45575127" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://tidbits.com/2025/10/09/how-to-turn-liquid-glass-into-a-solid-interface/" target="_blank">How to Turn Liquid Glass into a Solid Interface – TidBITS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tambourine_man</span> |
+                    <span>评分: 55</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-10-14 19:27</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>苹果新推出的Liquid Glass界面设计在全平台系统增加了透明度和模糊效果，但许多用户认为这会分散注意力或影响阅读体验。文章详细介绍了如何在macOS中调整相关设置：通过"减少透明度"使菜单栏、小组件等变得不透明；"增强对比度"可进一步突出界面元素；还提供了完全禁用Liquid Glass的终端命令，但作者不建议这样做，因为这会导致某些界面问题。文章指出最佳方案是仅使用"减少透明度"功能，必要时配合"增强对比度"设置。此外，还可以通过终端命令针对特定应用单独关闭Liquid Glass效果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：iOS 26的Liquid Glass UI设计及其用户体验问题  
+
+不同观点：  
+• **批评Liquid Glass设计**：多位用户认为新的Liquid Glass UI设计糟糕，导航变差，透明度问题影响可读性（如[magnuspaaske]、[andy_xor_andrew]、[montroser]）。  
+• **尝试适应或部分接受**：部分用户尝试调整设置（如开启“减少透明度”）或等待改进（如[kridsdale3]提到iOS 26.1测试版的边框功能）。  
+• **开发者视角**：开发者指出可通过修改配置文件临时禁用Liquid Glass，但怀疑其长期有效性（如[ChrisMarshallNY]、[OGEnthusiast]）。  
+
+补充讨论：  
+• **争议焦点**：Liquid Glass的实用性与美观性是否值得投入大量开发资源（[montroser]）。  
+• **具体问题**：键盘bug（[thehours]）、通知中心可读性（[ebbi]）、UI元素不一致（如圆角半径差异，[jspash]）。  
+• **用户态度分化**：部分用户拒绝升级（[baq]），另一些人通过辅助功能设置改善体验（[flohofwoe]、[ThouYS]）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45583787" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://progressdb.dev/docs/blog-thread-first" target="_blank">Thread First – A model for chat experiences</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hasante</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-10-12 14:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[ProgressDB的技术选择是否合理，是否应该使用传统SQL数据库而非专用存储引擎]
+
+不同观点：
+• **支持传统SQL数据库的观点**
+  - 认为ProgressDB的功能可以通过标准SQL数据库（如PSQL）实现
+  - 举例说明可以通过精心设计的索引和分区达到类似效果
+  - 强调SQL数据库是经过实战检验的系统，可靠性高
+  - 指出使用专用系统会导致供应商锁定问题
+  - 认为重新实现这些功能的成本很低
+
+• **质疑ProgressDB可用性的观点**
+  - 指出ProgressDB网站当前无法访问
+  - 这一事实可能暗示着系统可靠性问题
+
+补充讨论：
+- 争议焦点在于专用存储引擎与传统SQL数据库的权衡
+- 一方强调工程实践和成熟度，另一方未直接回应但通过可用性问题间接质疑
+- 讨论中提到了"vendor lock-in"（供应商锁定）这一重要考量因素
+- 技术实现细节（如索引设计、查询性能）是核心讨论内容</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45558566" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.washingtonpost.com/business/2025/10/13/manufacturing-artificial-intelligence/" target="_blank">America is getting an AI gold rush instead of a factory boom</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: voxleone</span> |
+                    <span>评分: 259</span> |
+                    <span>评论数: 29</span> |
+                    <span>发布时间: 2025-10-13 14:48</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI和数据中心投资是否挤占了制造业资源，以及制造业面临的挑战和未来发展方向。
+
+不同观点：
+• **制造业的长期价值与稳定性**
+  - [mikewarot]：制造业设备寿命长达数十年，而数据中心硬件寿命仅数月，投资后者是短视行为。
+  - [lnsru]：工厂管理复杂，西方人难以忍受重复性劳动，制造业面临人才短缺问题。
+  - [nemo44x]：年轻人更看重灵活性而非高薪，制造业难以吸引稳定员工。
+
+• **AI与制造业的关系**
+  - [rmoriz]：AI可作为“虚拟工厂”生成长期价值的代码或流程，但当前被误用为低效聊天工具。
+  - [mNovak]：数据未显示数据中心投资挤占工业投资，两者未必互斥。
+  - [lallysingh]：投资者可能等待AI自动化制造业成熟后再投入，避免设备过时。
+
+• **制造业的社会与经济地位**
+  - [syntaxing]：美国机械工程师待遇差，社会对制造业缺乏尊重。
+  - [mullingitover]：美国战略转向服务业是长期选择，重建制造业是政治噱头，且核威慑使传统战争需求降低。
+
+• **中国制造业的竞争模式**
+  - [shunia_huang]：中国制造业优势并非来自自动化，而是通过降低质量、加速产品迭代刺激消费需求。
+
+补充讨论：
+- **争议焦点**：数据中心投资是否挤占制造业资源（[mikewarot] vs [mNovak]）。
+- **其他讨论**：
+  - [potato3732842]：行政工作膨胀挤占生产时间，需降低 clerical labor 成本。
+  - [nashashmi]：数据中心高能耗推高市场电价。
+  - [usrxcghghj]：国家应优先投资教育、研究和可再生能源。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45568915" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
