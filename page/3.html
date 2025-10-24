@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-24 20:27 (北京时间)
+            最后更新时间: 2025-10-24 23:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,60 +61,279 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pytorch.org/blog/introducing-pytorch-monarch/" target="_blank">PyTorch Monarch</a>
+                    <a href="https://planetscale.com/blog/benchmarking-postgres-17-vs-18" target="_blank">Benchmarking Postgres 17 vs. 18</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jarbus</span> |
-                    <span>评分: 288</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-10-23 10:15</span>
+                    <span>作者: bddicken</span> |
+                    <span>评分: 155</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-10-14 15:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>PyTorch团队推出Monarch分布式编程框架，旨在简化复杂的机器学习工作流程（如预训练、后训练）在异构环境中的部署。传统PyTorch采用多控制器模型，难以应对异步、动态和硬件故障等挑战。Monarch创新性地采用单控制器模型，让开发者像编写单机Python程序一样操作整个集群资源，隐藏分布式计算的复杂性。
-
-主要特点包括：
-1. 将集群资源组织为可编程的"网格"结构，支持直接操作
-2. 渐进式故障处理机制
-3. 控制平面与数据平面分离
-4. 无缝集成PyTorch分布式张量计算
-5. 提供进程网格和Actor网格两种核心抽象
-
-框架通过Python原生语法（类、函数、循环等）实现分布式算法，支持从本地开发到大规模GPU集群的平滑扩展。</p>
+                    <p>本文主要对比了Postgres 17和18的性能表现，特别是18版本新增的io_method配置选项（包括sync、worker和io_uring三种模式）。通过sysbench在四种不同EC2实例配置上进行oltp_read_only基准测试，结果显示在网络存储环境下，18的sync和worker模式优于17和io_uring；而在本地NVMe磁盘上，各模式性能相近。整体上，Postgres 18在单连接和高并发场景下均有显著性能提升，尤其是对I/O密集型工作负载。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Monarch项目的技术特点、与其他技术的比较以及潜在问题]
+                    <div class="comments-summary">主要讨论点：[PostgreSQL 18的性能测试结果及其影响因素]
 
 不同观点：
-• **技术定位与比较**  
-  - [chandureddyvari] 认为Monarch提供基础设施原语，与Tinker等托管微调服务不同，可能可以构建类似Tinker的服务在Monarch之上。  
-  - [valzam] 和 [fadedsignal] 分别询问Monarch是否类似Ray或OpenMPI，显示对其技术类别的困惑。  
-  - [logicchains] 认为Monarch功能不如Jax强大，后者有优化跨节点通信的编译器。
+• **AIO在PostgreSQL 18中的实际应用有限**  
+  - [anarazel]指出AIO在18中仅适用于顺序扫描、位图扫描和vacuum等操作，而索引范围扫描仍需等待19或20版本。  
+  - 补充提到数据校验和的默认设置变化可能带来额外开销。
 
-• **技术实现与性能**  
-  - [pjmlp] 指出Monarch采用Python前端和Rust后端，类似PyTorch的“氧化”趋势。  
-  - [alyxya] 对比自己的单控制器PyTorch扩展，认为Monarch使用cloudpickle和消息分发设计有趣，但质疑自定义内核支持和通信控制粒度。  
-  - [semessier] 批评Monarch依赖CUDA和GPUDirect RDMA，认为OpenUCX会是更好选择。
+• **性能测试的统计显著性存疑**  
+  - [cowsandmilk]质疑测试缺乏误差条和统计显著性分析，无法确认差异是否真实存在。
 
-• **设计哲学争议**  
-  - [bjourne] 反对“隐藏分布式复杂性”的设计，认为透明架构更优，并举PHP为例说明隐藏复杂性可能导致问题。  
-  - [milancurcic] 和 [jonapro] 分别将Monarch比作Fortran coarrays和Beowulf，显示对其设计历史的看法。
+• **存储类型对性能的影响**  
+  - [cheema33]强调网络存储性能较差，而本地NVMe磁盘在17和18版本间性能差异不大。  
+  - [alberth]进一步认为NVMe速度极快，模式选择（如worker vs io_uring）对性能影响微乎其微。
+
+• **云服务的IOPS成本问题**  
+  - [jackdoe]批评云服务IOPS成本高昂，对比本地NVMe RAID10的低成本高吞吐，并抱怨云环境下的查询设计限制和性能不稳定问题。
+
+• **PostgreSQL 18的升级与功能期待**  
+  - [fourseventy]询问在生产环境中升级到18时是否应考虑worker模式。  
+  - [DicIfTEx]关注`pg_dumpall`的`--format`选项是否会在18或19版本中推出。
 
 补充讨论：
-- **潜在问题与改进**：  
-  - [porridgeraisin] 指出文档中 scalability numbers 的引用缺失。  
-  - [SomaticPirate] 发现文案中的拼写错误，怀疑使用LLM校对。  
-  - [nothrowaways] 呼吁FB将PyTorch基金会化以避免被“搞砸”。  
-
-争议焦点：  
-1. Monarch的技术定位是否清晰（与Ray/Jax/OpenMPI等对比）。  
-2. “隐藏复杂性”的设计是否合理（透明性 vs 易用性）。  
-3. CUDA依赖是否限制了跨平台兼容性。</div>
+- **技术细节争议**：  
+  - [rastignack]询问是否支持直接IO以避免双缓冲，并质疑io_uring在此场景下的作用。  
+- **生态与工具**：  
+  - [samlambert]提及Vitess for Postgres的进展。  
+  - [p_zuckerman]关注Timescale扩展的兼容性。  
+- **可视化与部署**：  
+  - [novoreorx]称赞图表美观并询问生成工具。  
+  - [nodesocket]讨论从Bitnami迁移到官方Docker镜像的路径问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45680237" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45581305" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://imageconverter.dev/" target="_blank">Show HN: A fast, privacy-first image converter that runs in browser</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wainguo</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-24 12:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个免费的在线图片转换工具，支持JPEG、JPG、PNG和WebP格式，最大50MB文件。所有转换都在浏览器本地完成，不上传服务器，保证隐私安全。转换过程保持原图质量和尺寸，透明背景转为白色。目前支持单个文件转换，未来可能有批量处理功能。该工具无需注册，无水印，且可离线使用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：产品隐私政策与实际实践的矛盾  
+
+不同观点：  
+• **质疑隐私承诺的真实性**：  
+  - 指出产品虽然声称“隐私优先”和“无广告”，但实际上使用了cookies和追踪器（如n.clarity.ms、google-analytics、adtrafficquality.google），这与宣传不符。  
+  - 论据：列举了具体的追踪工具作为证据，说明隐私政策存在矛盾。  
+
+• **支持商业化但反对虚假宣传**：  
+  - 表示理解产品需要通过分析工具和广告盈利，但认为应诚实说明，而非标榜“隐私优先”误导用户。  
+  - 论据：明确提出商业化行为本身合理，但需与宣传一致。  
+
+补充讨论：  
+- 争议焦点在于产品是否在隐私承诺上存在“虚假宣传”或“过度包装”。  
+- 讨论隐含对用户信任的呼吁：企业应更透明地披露数据收集行为，而非仅依赖营销话术。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45693904" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.first.org/tlp/" target="_blank">Traffic Light Protocol</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: eXpl0it3r</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-24 12:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>《交通信号灯协议(TLP)2.0版》是FIRST组织制定的信息共享标准，定义了四个分级标签：RED(仅限个人接收者)、AMBER(限于组织内部及客户)、GREEN(可共享给社区成员)、CLEAR(公开信息)。协议规定了标签的正确使用方式，包括在邮件、文档中的标注格式及颜色编码标准(RGB/CMYK/Hex)。信息发布者有责任确保接收者遵守共享范围，接收者如需扩大共享必须获得明确授权。TLP旨在促进敏感信息安全共享，但不影响任何司法管辖区的信息公开法律。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[TLP（Traffic Light Protocol）的定义和应用中的困惑]
+
+不同观点：
+• **TLP定义的模糊性**  
+  - woodruffw认为TLP中关于“社区或组织”的定义不清晰，导致无法明确判断信息访问权限是否被违反。  
+  - 论据：在实际操作中（如安全披露或禁运），缺乏明确的决策流程。  
+
+• **替代方案的实用性**  
+  - woodruffw建议直接明确列举应获得非公开信息访问权限的个人或组织实体。  
+  - 论据：这种方式在实际操作中更简单、更易执行。  
+
+补充讨论：  
+- 争议焦点在于TLP的灵活性与实用性之间的平衡。TLP的模糊定义可能带来灵活性，但也可能导致执行困难。  
+- 讨论隐含了对标准化协议（如TLP）与实际操作需求之间脱节的批评。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45694111" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lwn.net/Articles/1043103/" target="_blank">Date bug in Rust-based coreutils affects Ubuntu 25.10 automatic updates</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: blueflow</span> |
+                    <span>评分: 223</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-10-23 20:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Ubuntu 25.10因Rust版date命令的bug导致自动更新失效，影响云部署、容器镜像和桌面服务器系统。该问题已在rust-coreutils 0.2.2-0ubuntu2.1及以上版本修复。Ubuntu正逐步将核心工具迁移至Rust版本（如uutils和sudo-rs），但这次事件表明新工具仍需充分测试。社区对此有不同看法，有人认为这是必要过渡，也有人担忧过早替换成熟C工具的风险。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Rust重写coreutils的合理性及问题]
+
+不同观点：
+• 支持Rust重写：
+  - 认为长期来看Rust重写是好事，尽管短期会有问题（如`date -r`功能错误）
+  - 示例：用户[aero-glide2]表示"这正是我们发现问题的途径"，只要在LTS前修复即可
+  - 用户[evil-olive]指出具体bug是文件修改时间显示错误而非时区问题
+
+• 反对Rust重写：
+  - 认为重写经过几十年验证的C工具不必要且危险
+  - 用户[anonnon]批评这是"狂热行为"，并引用历史事件：uutils开发者曾用错误基准宣称其sort更快（实际因忽略locale导致）
+  - 用户[IlikeKitties]指出重写动机是许可证（GPLv3→MIT）而非安全
+
+• 对Ubuntu版本的批评：
+  - 用户[igravious]直接批评25.10版本"不可用"
+  - 用户[ok123456]要求"回归原版"
+
+补充讨论：
+- 争议焦点：
+  1. Rust文化是否适合核心工具（[superkuh]称Rust文化是"前沿"而非"稳定"）
+  2. 重写的真实动机（安全改进 vs 许可证变更）
+- 幽默回应：[sudahtigabulan]提到Ubuntu下个版本命名梗"Grateful Guinea-Pig"
+- 技术细节缺失：多人要求具体补丁链接但未获完整回复</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45686919" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://developers.redhat.com/articles/2025/10/15/clang-bytecode-interpreter-update" target="_blank">Clang Bytecode Interpreter Update</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tbaeder</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-15 08:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[网页设计导致浏览器后退按钮功能异常]
+
+不同观点：
+• [用户批评网页设计]
+  - 批评网页设计导致后退按钮功能异常，需要多次点击才能退出页面
+  - 指出从未见过后退按钮会回到章节锚点的情况
+  - 使用"bikeshed"一词暗示这是一个看似小但影响用户体验的问题
+
+补充讨论：
+- 争议焦点在于这种后退按钮行为是否属于设计缺陷
+- 暗示这种设计可能违反了用户的常规操作预期
+- 没有直接反驳观点，但问题描述本身已经形成了明确的批评立场</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45589786" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.volts.wtf/p/can-second-life-ev-batteries-work" target="_blank">Can “second life” EV batteries work as grid-scale energy storage?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: davidw</span> |
+                    <span>评分: 146</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-10-23 18:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了电动汽车（EV）电池在报废后作为电网规模储能设备的“二次生命”潜力。Redwood Energy公司的新部门计划将这些废旧电池连接成大型阵列，用于电网储能，以充分利用其剩余能量后再进行回收。公司首席技术官Colin Campbell表示，虽然“二次生命”电池的概念已讨论多年，但这是首次大规模部署。Redwood已建成一个离网设施，利用20兆瓦太阳能板和63兆瓦时的废旧电池为数据中心供电。文章还讨论了这种储能方式的成本、可行性及其在未来能源市场中的潜在规模。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：二手电动汽车电池是否适合用作电网规模的储能系统及其经济性和技术挑战。
+
+不同观点：
+• **悲观观点**  
+  - Redwood Materials面临困难，因为电动汽车电池寿命长（20年以上），回收或再利用的数量有限。  
+  - 电网储能的经济性存疑，包装、放置和控制成本高，且难以与低价的中国制造电池竞争。  
+  - 行业对使用二手组件过敏，缺乏标准化。  
+
+• **乐观观点**  
+  - 二手电动汽车电池仍有70-80%的容量，成本较低（50-100美元/kWh），适合电网储能。  
+  - V2L（车辆到负载）功能可以为家庭太阳能系统提供额外储能。  
+  - 部分公司（如Allye、Fellten）已在尝试规模化应用。  
+
+• **技术挑战观点**  
+  - 电池管理系统（BMS）和电池配置的标准化问题突出，不同厂商的设计差异大。  
+  - 热管理和安全认证是主要障碍，静态储能需重新认证，增加了成本和复杂性。  
+  - 循环寿命在再利用后可能进一步降低20%。  
+
+补充讨论：
+- **争议焦点**：经济可行性（二手电池的低成本是否能抵消集成和认证的高成本）与技术可行性（标准化和安全问题）。  
+- **新兴替代方案**：钠电池和LiFePO4电池可能成为更便宜的替代品。  
+- **政策与标准**：缺乏统一的充电和电池设计标准，影响再利用的推广。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45685007" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -167,52 +386,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://prog21.dadgum.com/210.html" target="_blank">Computer science courses that don't exist, but should (2015)</a>
+                    <a href="https://adrs-ucb.notion.site/moe-load-balancing" target="_blank">Automating Algorithm Discovery: A Case Study in MoE Load Balancing</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: wonger_</span> |
-                    <span>评分: 141</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2025-10-24 02:22</span>
+                    <span>作者: melissapan</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-10-23 22:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章提出了几门现实中不存在但值得开设的计算机科学课程，批判了过度强调面向对象编程、忽视用户体验和代码性能优化的现状。作者James Hague作为资深程序员，建议程序员不应沉迷技术本身，而要注重实现创意、学习历史经典软件，并提高命令行工具的用户体验。文章提倡打破常规思维，关注编程的本质而非形式。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[计算机科学课程中缺失但应开设的课程]
+                    <div class="comments-summary">主要讨论点：[ADRS框架在负载均衡算法中的应用及其效果]
 
 不同观点：
-• **重视计算机科学历史教育**  
-  - [corysama]和[markus_zhang]支持开设类似"CSCI 3300: Classical Software Studies"的课程，强调学习经典软件和计算机科学历史的重要性。  
-  - [zzo38computer]认为学习历史是必要的，但应与其他内容结合，而非单独依赖课程。  
-
-• **实用技能课程的需求**  
-  - [omosubi]提议开设调试课程，帮助开发者深入理解缺陷根源和使用工具。  
-  - [epalm]建议开设应对客户需求变化的课程，帮助年轻开发者管理项目期望。  
-  - [aryehof]提出一系列实用课程，如“方法论”和“历史与流行趋势”，关注实际开发中的问题。  
-
-• **编程语言与效率的讨论**  
-  - [d_silin]提出“CSCI 4020: Writing Fast Code in Slow Languages”，强调算法复杂度的重要性，即使在使用慢速语言时。  
-  - [a-dub]调侃“CSCI 2100: Unlearning Object-Oriented Programming”，反映对编程范式的争议。  
-
-• **伦理与职业素养课程**  
-  - [kelseyfrog]提议开设“CSCI 4810: The Refusal Lab”，模拟不道德的产品需求，要求开发者学会拒绝并依据职业标准辩护。  
-  - [zdc1]提到“PSYC 4410: Obsessions of the Programmer Mind”，讨论开发者对代码完美主义的执念可能分散对团队问题的关注。  
+• 支持与兴奋：作者accheng和SafeDusk对ADRS框架的快速应用和AlphaEvolve工具的进展表示兴奋，认为这是工程和算法挑战中的实际应用突破。
+• 质疑实用性：joaohaas认为这只是对现有负载均衡算法的重新实现，且5倍的加速并不令人印象深刻，尤其是在未考虑算法是否是瓶颈的情况下。
+• 技术细节讨论：kristjansson指出5倍的加速是指算法运行时间而非系统吞吐量，quc1k关注最终代码的可理解性和启发式方法的局限性。
+• 泛化性质疑：mavt6和snklt对方法的泛化性表示怀疑，认为它可能仅适用于特定类型的问题或特定系统（如vLLM）。
+• 实现与成本：maven5t强调低成本和高效的投资回报率（ROI），而taqpos则对AI进化设置的难度表示好奇。
 
 补充讨论：
-- [mnky9800n]对现有在线课程（如Coursera）的内容表示不满，认为应开设更多实用课程而非重复的机器学习内容。  
-- [0xbadcafebee]补充了一系列系统设计、安全工程和管理类课程的需求，强调可靠性和组织架构对软件质量的影响。  
-- [tdeck]和[rippeltippel]的评论带有调侃性质，反映开发者对工具和编程文化的吐槽。  
-
-争议焦点：
-- 是否需要单独开设“反OOP”课程（如CSCI 2100），还是应在初期教学中平衡多种编程范式。  
-- 历史课程的实际价值：是必要的背景知识，还是可以通过其他方式学习。</div>
+• 争议焦点：主要集中在5倍加速的实际意义、算法的泛化能力以及是否真正解决了负载均衡的核心问题。
+• 其他讨论：Noumenon72提到ADRS缩写未明确解释的问题，bgwalter则引用了类似研究的论文来支持“蛇形模式”的有效性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45690045" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45688236" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -227,8 +430,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: kamaraju</span> |
-                    <span>评分: 131</span> |
-                    <span>评论数: 12</span> |
+                    <span>评分: 153</span> |
+                    <span>评论数: 13</span> |
                     <span>发布时间: 2025-10-15 19:23</span>
                 </div>
 
@@ -239,29 +442,31 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[太阳能围栏的可行性、成本效益和设计优化]
+                    <div class="comments-summary">主要讨论点：[太阳能围栏项目的优缺点及实用性]
 
 不同观点：
-• **支持太阳能围栏的灵活性**  
-  - jagermo认为太阳能非常适合DIY爱好者，安装灵活且易于扩展，只需基本电力知识。  
-  - RatchetWerks喜欢太阳能围栏的概念，认为可以避免屋顶安装的漏水和维护问题，同时规避建筑退线要求。  
-  - just-the-wrk赞赏使用Ironridge导轨进行安装的设计。  
+• 支持太阳能围栏的观点：
+  - 太阳能围栏灵活、可扩展，适合DIY爱好者（jagermo）
+  - 避免了屋顶安装的漏水和服务责任（RatchetWerks）
+  - 巧妙地规避了建筑退让要求（RatchetWerks）
+  - 使用Ironridge导轨进行安装是一种创新方法（just-the-wrk）
+  - 垂直安装可以降低成本（nerdralph）
 
-• **对安装成本和设计的质疑**  
-  - bawolff对太阳能支架的高成本表示困惑，认为金属支架应该可以大规模生产降低成本。  
-  - nerdralph建议用镀锌角铁直接固定面板，比使用导轨更便宜。  
-  - npodbielski质疑垂直安装的效率，认为面板应最大化朝向太阳，垂直安装会导致能量损失。  
+• 质疑太阳能围栏的观点：
+  - 围栏安装成本高于面板本身（bawolff）
+  - 缺乏关于发电量和支撑需求的具体数据（ghtbircshotbe）
+  - 垂直安装可能不如倾斜安装高效（voidUpdate）
+  - 围栏下方的巨大空隙可能不实用（Havoc）
+  - 非最佳角度安装会降低面板效率（npodbielski）
 
-• **对具体设计的改进建议**  
-  - 0cf8612b2e1e认为安装照片显示面板可能被遮挡，建议提供更广角的照片。  
-  - voidUpdate询问面板是否为边界围栏，并质疑垂直安装的效率，建议根据地理位置调整角度。  
-  - Havoc喜欢概念但担心围栏下方的巨大缝隙可能影响实用性。  
-  - woodpanel提醒木质支柱容易腐烂，建议保持木材间的距离。  
+• 其他重要观点：
+  - 太阳能项目的政府政策不稳定影响安装意愿（DaveZale）
+  - 木质支柱容易腐烂，需要注意维护（woodpanel）
 
-补充讨论：  
-- DaveZale提到太阳能政策的不稳定性，如关税和联邦激励措施的消失，影响了家庭太阳能安装的可行性。  
-- gnabgib分享了相关项目的链接，提供了更多背景信息。  
-- 争议焦点主要集中在垂直安装的效率是否合理，以及支架成本是否可以进一步降低。</div>
+补充讨论：
+- 争议焦点：太阳能围栏的实际效率与美观性（npodbielski vs RatchetWerks）
+- 讨论关系：多个评论者对安装成本和实用性提出疑问，支持者则强调其灵活性和创新性
+- 值得注意：部分用户分享了实际安装经验（nerdralph）和政府政策的影响（DaveZale）</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45597198" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -274,281 +479,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://bradley.chatha.dev/blog/dlang-propaganda/asn1-compiler-in-d/" target="_blank">I spent a year making an ASN.1 compiler in D</a>
+                    <a href="https://info.varnish-software.com/blog/how-memory-maps-mmap-deliver-25x-faster-file-access-in-go" target="_blank">How memory maps (mmap) deliver faster file access in Go</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: BradleyChatha</span> |
-                    <span>评分: 222</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-10-23 12:47</span>
+                    <span>作者: ingve</span> |
+                    <span>评分: 114</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-10-23 21:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者用D语言开发了一款名为dasn1的ASN.1编译器，目前仍处于未完成状态。文章分享了开发过程中的心得：ASN.1语法复杂但有趣，D语言适合代码生成，但也面临规范晦涩、实现繁琐等挑战。开发动机源于想为TLS实现x.509证书解析，虽然过程痛苦，但已能解析部分证书并开始TLS 1.3的实现。文章揭示了ASN.1这一90年代古老规范在现代生活中的广泛应用。</p>
+                    <p>本文介绍了内存映射（mmap）技术在Go语言中的应用及其性能优势。内存映射通过将文件直接映射到虚拟内存，避免了昂贵的系统调用，使文件访问速度大幅提升。测试数据显示，mmap的随机查找和迭代操作比传统ReaderAt方法快25倍以上。然而，mmap在写入操作中存在性能问题，特别是当页面未映射到物理内存时。文章还分享了作者在实际项目中使用mmap优化HTTP文件系统的经验，实现了显著的性能提升。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[ASN.1的设计、使用及其优缺点，以及D语言的特性和潜力]
+                    <div class="comments-summary">### 主要讨论点：mmap与常规文件读取的性能比较及适用场景
 
-不同观点：
-• ASN.1的优点：ASN.1被认为是一个强大的类型系统，尤其在安全领域，其过度规范的格式有助于减少解析的不确定性（如deepsun和cryptonector的观点）。
-• ASN.1的缺点：ASN.1被批评为过度复杂和难以实现，尤其是在嵌入式系统中（如horizion2025和nicce的观点）。此外，有人认为ASN.1鼓励过度规范，不适合松散耦合的系统（如OhMeadhbh的观点）。
-• D语言的优点：D语言因其单元测试的灵活性、枚举和联合类型的支持以及契约编程而受到赞誉（如usrbinenv的观点）。有人认为D语言在实时数据流处理方面有潜力成为“杀手级应用”（如teleforce的观点）。
-• D语言的潜力：尽管D语言有其优点，但它需要找到一个独特的应用场景才能像Python一样流行（如teleforce的观点）。
+### 不同观点：
+• **mmap性能优势**：
+  - 随机读取时性能显著提升（如klevdb案例）。
+  - 避免数据复制，直接返回内存切片，减少缓存未命中（buybackoff）。
+  - 适合跨进程共享数据或内核管理缓存的场景（liuliu, kragen）。
 
-补充讨论：
-• ASN.1的历史背景：ASN.1被视为企业文化和学术文化冲突的产物，尤其是在协议战争中（如talkingtab的观点）。
-• ASN.1的实现挑战：实现ASN.1标准可能会非常耗时，尤其是在处理非合规实现时（如horizion2025和lepicz的观点）。
-• ASN.1的替代方案：有人质疑如果在今天，是否会选择ASN.1还是其他序列化格式如protobuf或thrift（如Keyframe的观点）。
-• XML模式的争议：XML模式被认为在实际应用中可能不如直接解析数据有用（如cbondurant的观点）。
+• **mmap性能劣势**：
+  - 顺序读取时CPU预取效果差，依赖页错误（philippta）。
+  - 页错误导致不可预测的延迟（gustavpaul）。
+  - Go运行时对页错误的处理不佳，可能引发线程停滞（nteon）。
 
-争议焦点：
-• ASN.1的实际价值：一方面，ASN.1被认为在安全领域有其不可替代的优势；另一方面，它被批评为过于复杂和不适合现代松散耦合的系统。
-• D语言的未来发展：D语言的特性和潜力受到认可，但其是否能找到一个独特的应用场景以推动其流行仍存争议。</div>
+• **适用场景争议**：
+  - **支持**：适合只读或低频更新的数据（如CDB格式）、大文件随机访问（karel-3d, gethly）。
+  - **反对**：微优化在HTTP等网络I/O主导的场景中意义有限（benjiro）。
+  - **中立**：需权衡异步I/O（如io_uring）的复杂性（liuliu）。
+
+### 补充讨论：
+1. **争议焦点**：
+   - 25倍性能提升是否真实：buybackoff认为基准测试未实际触碰数据，kragen通过计算指出小数据量时可能成立。
+   - SIGBUS风险：gustavpaul强调未复制数据时文件截断会导致崩溃。
+
+2. **其他要点**：
+   - 调试困难：Go中mmap内存占用不显示于pprof（karel-3d）。
+   - 历史对比：habibur质疑现代系统下mmap是否仍优于`fread`（因文件缓存普及）。
+
+3. **案例分歧**：
+   - 成功案例：LLaMA（MayCXC）、klevdb（Ingon）显示显著提升。
+   - 失败案例：Varnish用户反馈移除mmap以优化性能（kragen）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45681200" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://openai.com/index/openai-acquires-software-applications-incorporated" target="_blank">OpenAI acquires Sky.app</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: meetpateltech</span> |
-                    <span>评分: 129</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-10-23 17:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Sky应用的收购及其在苹果生态系统中的潜在影响]
-
-不同观点：
-• **支持Sky团队的观点**  
-  - [TheAmazingRace]指出Ari（Sky的创始人）在OSx86时代就表现出色，对其未来表现持乐观态度。  
-  - [stopachka]和[rpwilcox]提到Sky团队曾开发Shortcuts/Workflow.app，称赞他们是优秀的技术人才。
-
-• **苹果生态系统战略的猜测**  
-  - [the_duke]认为苹果近期收购Sky、Sorra和Atlas可能是为了对抗与Anthropic的合作，而非OpenAI。  
-  - [technocrat8080]推测Sky的功能可能会整合到macOS的ChatGPT应用中，但对Atlas的角色存疑。
-
-• **对Sky技术价值的质疑**  
-  - [luma]提问Sky如何在iOS上实现机器人流程自动化（RPA），并探讨其技术难点和独特性。  
-  - [mentalgear]质疑Sky的竞争优势，认为苹果可能直接克隆或开源社区会推出更好的替代方案。
-
-• **OpenAI与苹果关系的讨论**  
-  - [WorldPeas]猜测OpenAI和苹果是否会像AOL-TimeWarner一样合并，但认为这种合并可能因技术范式转变而过时。  
-  - [troupo]批评苹果在AI领域落后，而OpenAI正在抢占其应有的位置。
-
-补充讨论：
-- [rco8786]对Sky的具体功能表示困惑，指出其官网信息不足。  
-- [an0malous]提到Sam Altman的投资基金与Sky的关联，暗示潜在的利益关系。  
-- [gigatexal]提出Sky可能成为改进Siri的基础。  
-
-争议焦点：
-1. Sky的技术价值是否足以在苹果生态中立足？  
-2. 苹果的收购是战略防御还是主动创新？  
-3. OpenAI与苹果的未来关系是合作还是竞争？</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45684236" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://datatracker.ietf.org/doc/html/rfc863" target="_blank">RFC 863 – Discard Protocol</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gurjeet</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-10-24 04:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>RFC 863定义了一个简单的丢弃协议(Discard Protocol)，主要用于网络调试和测试。该协议提供两种服务方式：1)基于TCP的连接服务，服务器在TCP端口9监听，接收并丢弃所有传入数据；2)基于UDP的数据报服务，服务器在UDP端口9监听，丢弃收到的所有数据报。两种服务均不发送任何响应。该协议被指定为ARPA互联网社区的标准实现方案。(199字)</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：TCP和UDP端口9（Discard服务）的设计意图及其在现代互联网中的意义。
-
-不同观点：
-• TCP-based Discard服务的合理性：用户理解TCP-based Discard服务的功能，认为其完成连接握手、发送ACK等行为有意义，但质疑UDP-based Discard服务的设计，认为它与直接丢弃数据包无异。
-• UDP-based Discard服务的背景推测：用户推测设计者可能预期主机总会回复不需要的数据包并发送ICMP错误，因此静默丢弃数据包的情况在当时可能很少见，且被视为连接故障的指标。
-• 幽默观点：用户调侃UDP:9是互联网上部署最广泛的服务，并将其比作“/dev/null as a service”和“网络化的webscale数据库”。
-
-补充讨论：
-• RFC 864的提及：用户提到RFC 864（Discard协议的标准），并指出其曾经有用，但如今可能成为DDoS放大攻击的载体。
-• 争议点：UDP-based Discard服务的实际用途和设计意图是否合理，以及其在现代互联网中的安全风险（如DDoS攻击）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45690871" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.yahoo.com/news/articles/us-investigates-waymo-robotaxis-over-102015308.html" target="_blank">US probes Waymo robotaxis over school bus safety</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gmays</span> |
-                    <span>评分: 103</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-10-23 12:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国国家公路交通安全管理局（NHTSA）对Waymo约2000辆自动驾驶汽车展开初步调查，原因是其无人驾驶出租车可能未遵守校车停靠时的交通安全法规。此前媒体报道了一起佐治亚州事件，Waymo车辆在遇到闪灯停靠的校车时未保持静止，而是绕过校车继续行驶。Waymo表示已改进相关系统并将发布软件更新。目前Waymo在美国多个城市运营1500多辆自动驾驶汽车，累计行驶里程超1亿英里。NHTSA去年曾结束对其涉及22起潜在违规事件的调查。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[自动驾驶汽车在面对校车时的行为规范及其与人类司机的对比]
-
-不同观点：
-• **支持自动驾驶汽车的观点**
-  - 自动驾驶汽车可以通过软件更新快速修复问题，而人类司机则需要长时间的宣传教育和高成本的执法（krisoft）。
-  - Waymo在每乘客英里的死亡和事故率上优于人类司机，且错误罕见并能通过数据分析快速修复（atleastoptimal）。
-  - 自动驾驶汽车在某些情况下（如校车停靠）的行为可能更安全，因为它们可以避免人类司机的分心或鲁莽驾驶（Avi-D-coder）。
-
-• **质疑自动驾驶汽车的观点**
-  - 自动驾驶汽车在面对校车或其他特殊场景时可能反应不当，且其技术尚未完全成熟（m0llusk）。
-  - 校车的闪烁灯光和停车标志在所有角度都应可见，自动驾驶汽车不应以此为借口（SoftTalker）。
-  - 自动驾驶汽车在复杂环境（如校车停靠或学校区域）中的规则遵守仍需进一步明确（jmpman）。
-
-• **中立或补充讨论的观点**
-  - 校车规则的文化差异：美国要求所有车辆在校车停靠时停车，而其他国家（如澳大利亚）则没有类似规定（anitil）。
-  - 自动驾驶汽车可能需要独立的交通规则，以适应其技术特点（Avi-D-coder）。
-  - 校车与其他自动驾驶汽车的通信可能在未来提升安全性（llsf）。
-
-补充讨论：
-- **争议焦点**：自动驾驶汽车在面对校车时的行为是否合理，以及其技术是否足以应对复杂交通场景。
-- **讨论关系**：支持者强调其快速修复和安全性优势，质疑者则指出其技术局限性和规则模糊性。中立观点提供了文化差异和未来改进的可能性。
-- **其他注意点**：部分评论提到了自动驾驶汽车在紧急情况或特殊场景（如学校区域）中的表现，以及对硬件改进的需求（standardUser）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45681147" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://journals.sagepub.com/doi/10.1177/2515245917744314" target="_blank">Introduction to the concept of likelihood and its applications (2018)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sebg</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-23 22:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[概率（probability）与似然（likelihood）的概念区别及其理解难度]
-
-不同观点：
-• **语言障碍导致理解困难**：评论者认为英语非母语可能是导致混淆概率与似然概念的原因之一。具体表现为需要较长时间才能区分两者的差异。
-• **概念定义的核心差异**：评论者明确指出了概率与似然的关键区别：
-  - 概率：在模型（假设）为真的前提下，观察数据的可能性。
-  - 似然：在观察到数据的前提下，模型（假设）为真的可能性。
-• **隐含的学习挑战**：虽然未直接争议，但评论提到“embarrassing amount of time”，暗示统计概念对非专业人士或非母语者可能存在较高认知门槛。
-
-补充讨论：
-• 该评论未涉及其他观点争议，但通过个人经历反映了统计学中基础概念的教学或传播可能存在普遍性问题（尤其是跨语言场景）。
-• 值得注意的术语对比：评论者用“probability of data”和“likelihood of model”的对照句式强化了概念区分，这种表述方式本身可能成为教学参考。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45688443" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simonwillison.net/2025/Oct/22/living-dangerously-with-claude/" target="_blank">Living Dangerously with Claude</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: FromTheArchives</span> |
-                    <span>评分: 165</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-10-22 12:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>西蒙·威尔逊在旧金山的Claude Code Anonymous聚会上发表了演讲，探讨了使用Claude Code的“YOLO模式”（跳过权限检查的高风险模式）的利弊。他分享了三个在48小时内完成的成功项目，展示了该模式的高效性，允许他在后台运行任务的同时专注于其他工作。然而，他也警告了该模式的危险性，尤其是“提示注入”攻击的风险，可能导致敏感信息泄露。演讲强调了在使用高效AI工具时平衡便利性与安全性的重要性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Claude代码助手的安全性和使用模式]
-
-不同观点：
-• **支持YOLO模式的高效性**  
-  - [almosthere]认为YOLO模式可大幅提升生产力，例如并行执行服务器维护任务  
-  - [boredtofears]采用折中方案：先人工审核规范，再开启全自动模式  
-
-• **质疑YOLO模式的风险性**  
-  - [pdntspa]指出在大型项目中会破坏代码规范和协议  
-  - [jampa]强烈反对跳过权限检查，举例可能造成数据库误删等灾难  
-  - [matthewdgreen]警告被提示注入攻破的AI代理可能产生安全隐患  
-
-• **安全解决方案争议**  
-  - [mike_hearn]认为虚拟化优于沙箱，指出sandbox-exec实际未被弃用  
-  - [stuaxo]提议采用Qubes隔离环境  
-  - [lacker]指出现有沙箱可能过度限制（如阻断GitHub API）  
-  - [danielbln]提到官方已推出沙箱功能  
-
-补充讨论：
-- 命名争议：[jampa]建议像React那样使用警示性参数名
-- 成本问题：[zxilly]担忧大规模使用的令牌成本
-- 权限管理：[jampa]推荐使用权限白名单替代全局跳过
-- 中间立场：[igor47]和[boredtofears]主张人工审核+自动执行的混合模式
-
-争议焦点：
-1. 效率与安全性的平衡点  
-2. 最佳防护手段（沙箱/虚拟化/权限控制）  
-3. YOLO模式的命名是否弱化了风险提示</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45668118" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45687796" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
