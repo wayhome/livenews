@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-26 11:39 (北京时间)
+            最后更新时间: 2025-10-26 14:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,55 +61,187 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.baro.dev/p/the-future-of-python-web-services-looks-gil-free" target="_blank">The future of Python web services looks GIL-free</a>
+                    <a href="https://blog.matthewbrunelle.com/testing-out-ble-beacons-with-beacondb/" target="_blank">Testing out BLE beacons with BeaconDB</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gi0baro-dev</span> |
-                    <span>评分: 160</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-10-19 10:38</span>
+                    <span>作者: zdw</span> |
+                    <span>评分: 43</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-10-25 20:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年10月发布的Python 3.14版本在"无GIL"解释器上取得重大突破：无GIL支持进入第二阶段（不再视为实验性功能），性能损耗从35%降至5-10%。文章通过FastAPI（ASGI）和Flask（WSGI）两种Web框架测试了标准版和无GIL版的性能差异，重点关注模拟I/O密集型场景（10ms延迟）的表现。测试使用Granian服务器和rewrk工具进行，旨在验证无GILPython是否能让Web服务摆脱多进程的内存浪费，实现更高效的并发处理。作者强调基准测试应聚焦特定场景而非泛化比较。</p>
+                    <p>本文主要讲述了作者使用GrapheneOS系统时对基于网络的位置服务的研究经历。Mozilla曾推出Mozilla定位服务(MLS)，但已于2024年停止服务，取而代之的是beaconDB项目。作者购买了两个BLE信标设备(Feasy FSC-BP104D)进行实验，计划通过NeoStumbler收集数据并上传至beaconDB数据库。文章详细解释了BLE信标的技术原理、不同类型(如iBeacon、Eddystone等)及其应用场景。作者选择短距离信标以提高定位精度，并调整了设备设置。最后提到beaconDB提供了无需API密钥的地理定位端点，相较于MLS更加开放。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Python 3.14中GIL移除的影响及相关讨论]
+                    <div class="comments-summary">主要讨论点：[BLE信标的技术细节、应用案例及其替代技术]
 
 不同观点：
-• **GIL移除的技术挑战与必要性**
-  - [rogerbinns]指出移除GIL后需要大量C代码更新以确保线程安全，否则可能导致崩溃和数据损坏。他提供了json模块的修改示例，并呼吁CPython发布工具检测线程安全问题。
-  - [btbuilder]认为这是CPython的重大进步，但Python在并行模式上仍落后于Go和Java的协程/虚拟线程。
+• **关于BLE信标的法律许可和可持续性**  
+  - [ghm2180]提到Mozilla MLS因法律诉讼被终止，询问当前项目的许可和可持续性差异，以及维持项目所需的支持。  
+  - 争议焦点：非商业用途项目的法律风险与长期可行性。
 
-• **性能影响的争议**
-  - [Zsfe510asG]通过基准测试指出，移除GIL后全局变量访问的性能显著下降（18%-44%），并批评社区对类似问题的双重标准。
-  - [NeutralForest]则对社区努力和调试体验表示乐观，引用py-free-threading项目。
+• **关于BLE信标的传输频率**  
+  - [anitil]对信标传输频率（约1Hz）表示惊讶，认为基于纽扣电池供电的设备应更慢（如每10秒到1分钟）。  
+  - 补充讨论：是否特定设备或场景需要更高频率？
 
-• **实际应用与迁移体验**
-  - [shdh]和[natdempk]关注升级到3.14的实际价值，尤其是Granian在生产环境的运行效果。
-  - [nodesocket]询问从Flask+gevent迁移到FastAPI或3.14的性能收益。
+• **BLE信标的实际应用案例**  
+  - [gsibble]分享了2014年开发的酒吧自动开/关标签应用，但因定位精度和市场推广难度未能商业化。  
+  - 例子：通过BLE信标实现无感支付，但受限于技术成熟度和部署成本。
+
+• **BLE信标的替代技术**  
+  - [vaxman]认为BLE信标已被UWB（超宽带）和苹果的Nearby Interactions API淘汰。  
+  - 争议焦点：BLE是否仍具竞争力，或已被更精确的技术取代？
 
 补充讨论：
-• **工具与生态支持**
-  - [rogerbinns]强调需要工具辅助检测线程安全问题。
-  - [natdempk]提及等待库对自由线程的支持。
-
-• **异步模型争议**
-  - [Spivak]支持“每线程一个事件循环”模型，认为其管理更简单。
-  - [mkoubaa]误认为WSGI已使用独立GIL的子解释器（实际为GIL共享）。
-
-• **其他调侃与批评**
-  - [Waterluvian]调侃版本命名（PyPi）。
-  - [callamdelaney]批评Python日益臃肿。
-
-争议焦点：
-1. GIL移除后的性能损耗是否可接受（[Zsfe510asG]的基准测试 vs 社区普遍乐观态度）。
-2. 异步模型的最佳实践（事件循环每线程 vs 其他方案）。</div>
+- [JKCalhoun]提出是否存在类似“战争驾驶”的BLE信标扫描活动，暗示对信标地理分布的探索兴趣。  
+- [RicoElectrico]观察到住宅楼中大量非标准BLE信标设备，引发对设备来源和用途的疑问。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45633311" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45706705" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://thebaffler.com/salvos/belittled-magazine-robbins" target="_blank">Belittled Magazine: Thirty years after the Sokal affair</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Hooke</span> |
+                    <span>评分: 46</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-10-25 21:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章回顾了1996年“索卡尔事件”后《社会文本》杂志的生存与反思。物理学家艾伦·索卡尔在该刊发表了一篇故意荒谬的论文，声称重力是社会和语言建构的，以此揭露某些学术领域的轻信。尽管当时该刊遭受广泛嘲笑，甚至被建议停刊，但它坚持了下来，原因在于其长期发表的重要左翼学术成果，如对种族、性别建构论的探讨具有进步政治意义。文章指出，虽然“建构论”曾被过度延伸，但杂志始终保持着马克思主义批判传统。30年后的今天，该刊已更审慎地看待科学与权力的关系，而索卡尔事件也成为了学术诚信与文化战争的标志性案例。（199字）</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Sokal事件的影响及其对学术界和公众认知的启示]
+
+不同观点：
+• **支持Sokal的观点**  
+  - Sokal的恶作剧成功揭露了《Social Text》等期刊的学术不严谨性，尤其是在后现代主义和批判理论领域（tkgally, bm3719）。  
+  - 认为Sokal的行为是对学术界政治化和低标准的一种合理批评（bm3719）。  
+
+• **批评Sokal的观点**  
+  - Sokal的恶作剧是对社会建构主义的误解，混淆了社会事实和物理事实的区别（voidhorse）。  
+  - 认为Sokal的行为是一种“类别错误”，并未真正理解他所批评的学术领域的核心论点（voidhorse）。  
+  - 指出Sokal的批评过于片面，忽略了 Lacan 等思想家的实际贡献（bm3719）。  
+
+• **中立或反思性观点**  
+  - Sokal事件是互联网时代前“把关人”媒体的一个标志性案例，但也预示了未来网络自媒体的泛滥（tkgally）。  
+  - 事件反映了学术界普遍存在的“发表压力”和低质量问题，不仅限于人文领域，科学领域也存在类似问题（tomlockwood）。  
+  - 提到Bogdanov丑闻，指出学术评审系统的漏洞不仅限于人文领域，科学领域同样存在（ylabidi）。  
+
+补充讨论：
+- **争议焦点**：Sokal的恶作剧是否真正揭示了学术不严谨，还是仅仅是一种误解和片面攻击（voidhorse vs. bm3719）。  
+- **后续影响**：部分评论提到Sokal事件与当前AI生成内容和政治反智主义的关联（photonthug）。  
+- **学术与政治**：讨论中学术领域的政治化问题被多次提及，尤其是批判理论领域的政治倾向（bm3719）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45707194" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/barodeur/llm_rescuer" target="_blank">Show HN: LLM Rescuer – Fixing the billion dollar mistake in Ruby</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: barodeur</span> |
+                    <span>评分: 73</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-10-24 12:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个名为LLM Rescuer的实验性Ruby gem项目，旨在用AI动态处理运行时错误，特别是解决调用nil对象方法时的NoMethodError问题。该项目通过调用GPT来猜测开发者意图并返回可能的替代值，但强调不适用于生产环境，可能会带来不可预测的行为和安全风险。文章以幽默夸张的语言描述了项目的工作原理、安装方式、使用示例以及潜在问题（如高额API费用和不可靠的响应），并指出这是一个仅供教育和娱乐的概念验证项目。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[AI和LLM在未来编程和API设计中的潜在应用及其影响]
+
+不同观点：
+• **讽刺性观点**：认为未来REST API将被LLM取代，导致不可预测的结果（如浏览器随机返回奶酪或动物收容所热线）。这种观点以夸张的方式表达了对AI过度依赖的担忧。
+  - 例子：用户[crowfunder]描述的2030年场景。
+  - 补充：用户[cwmoore]提到“取决于AI今天觉得什么有趣”，进一步强调了不可预测性。
+
+• **技术可行性观点**：认为动态修复或容错计算是可行的，并引用历史研究支持。
+  - 例子：用户[antonvs]引用2004年的“Failure-Oblivious Computing”论文，说明动态检测和修复错误的技术已有基础。
+  - 例子：用户[mowkdizz]提到用Ruby元编程动态修复不存在的函数调用。
+
+• **实用性与讽刺的混合观点**：认为这种技术可能被非讽刺性地使用，尽管存在荒谬性。
+  - 例子：用户[empiko]猜测会有非零数量的人认真使用这种技术。
+  - 例子：用户[ramanvarma]调侃只有“床下的树莓派”生产环境会这样。
+
+• **幽默与批评并存的观点**：认为这种想法既“可怕”又“有趣”，体现了对技术发展的复杂态度。
+  - 例子：用户[actsasbuffoon]称其为“令人愉悦的可怕想法”。
+
+补充讨论：
+- **争议焦点**：AI动态修复或生成代码的可靠性与安全性是否值得信赖。
+- **开发者视角**：用户[knowitnone3]提出LLM可能在开发阶段捕获错误，暗示其潜在工具价值。
+- **经济成本**：用户[kayodelycaon]提到“黑五价格”负担不起，暗示技术普及的经济门槛。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45694051" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://edera.dev/stories/tarmageddon" target="_blank">Tarmageddon: RCE vulnerability highlights challenges of open source abandonware</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: vsgherzi</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-10-22 06:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Edera团队在2025年KubeCon大会上披露了名为TARmageddon（CVE-2025-62518）的高危漏洞，影响Rust库async-tar及其多个分支（包括流行的tokio-tar）。该漏洞严重性评级8.1（高危），可能导致远程代码执行（RCE），影响uv、testcontainers等多个重要项目。由于tokio-tar已被废弃且无人维护，修复过程面临巨大挑战：Edera被迫跨多个分支（包括astral-tokio-tar等）协调修复，并联系下游项目进行升级。漏洞源于TAR解析器对PAX和ustar头文件大小处理不一致的问题，攻击者可利用此漏洞实施文件覆盖和供应链攻击。Edera建议用户立即升级到已修复版本或迁移至活跃分支。该事件凸显了开源废弃软件维护的严重问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Python和Rust生态系统中的依赖包维护和安全漏洞问题]
+
+不同观点：
+• [Astral代表woodruffw的观点]：虽然tar解析差异是一个严重问题，但在Python生态中风险较小，因为tar仅用于源码分发，而源码分发本身在设计上就允许任意代码执行。这更多是一个混淆手段，而非新的攻击特权。
+• [TealBLAHAJ的观点]：真正令人担忧的不是漏洞本身，而是当crate（Rust包）无人维护时，修补过程变得极其脆弱。
+• [lvass的疑问]：质疑为什么crates.io维护者不像NPM那样直接干预修复废弃包的问题。
+• [bn-l的问题]：指出Rust中废弃仓库很常见，询问原因。
+• [greatgib的困惑]：表达对Rust作为"安全语言"却仍出现漏洞的困惑。
+• [jedisct1的观点]：通过链接文章讨论Rust生态系统现状。
+• [Edera代表denhamparry]：提供漏洞披露方的联系方式，愿意回答问题。
+
+补充讨论：
+• 争议焦点在于：1)漏洞的实际影响范围（Python vs其他生态系统）；2)不同包管理器（crates.io vs NPM）对废弃包的处理方式差异；3)Rust作为"安全语言"的预期与现实差距。
+• 讨论关系：从具体漏洞分析扩展到生态系统维护的广泛问题，特别是Rust生态的特殊挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45665513" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -218,169 +350,12 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://newpipe.net/blog/pinned/announcement/newpipe-turns-10/" target="_blank">NewPipe Is Turning 10</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-25 22:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>开源视频播放器NewPipe迎来10周年。这款最初由志愿者开发的应用已发展为拥有协会组织、维护团队和数百万用户的成熟项目。过去5年中，团队成立了德国非营利组织NewPipe e.V.，并启动了代码重构和新播放器开发计划。2024年协会首次雇佣两名开发者进行兼职开发。当前项目仍处于重构阶段，面临代码老化、谷歌技术限制等挑战，特别是谷歌对第三方应用商店的限制政策。但团队保持乐观，计划完成重构后推出全新Kotlin版本，并与视频创作者探讨盈利模式问题。开发者们表示将坚持开发，继续寻找技术解决方案。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[用户对NewPipe的喜爱及其用途]
-
-不同观点：
-• [正面评价]  
-- 用户bbkane表达了对NewPipe的高度喜爱，特别提到其在下载儿童视频方面的实用性，尤其是为飞机旅行做准备。  
-- 例子：明确提到“下载儿童视频”是核心使用场景，并表示感谢开发者的贡献。  
-
-补充讨论：[潜在的其他用途]  
-- 虽然评论未直接提及，但NewPipe作为开源YouTube客户端，可能还有其他功能（如背景播放、无广告等）未被具体讨论，但这些可能是用户喜爱的原因之一。  
-- 争议点：无直接争议，但隐含对版权问题的潜在讨论（下载视频可能涉及版权争议，但用户未提及）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45707575" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ngmdb.usgs.gov/nationalgeology/" target="_blank">The Cooperative National Geologic Map</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rob</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-10-23 00:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了美国国家地质地图数据库（NGMDB）网站的功能和使用指南。该网站是美国地质调查局（USGS）与各州地质调查机构合作的成果，提供标准化的地质图层数据，用于资源管理、风险评估等决策支持。
-
-主要功能包括：1）通过交互式地图查询地质单元和材料信息；2）可选择四种主要地质图层（地表、第四纪、前第四纪和前寒武纪）；3）支持四种不同样式的地质图层展示（国家综合、来源地质、地质材料和年代）；4）提供关键词筛选和自定义搜索功能；5）可调整地图透明度、图例显示和应用主题模式（包括深色模式）。
-
-网站还提供了详细的帮助指南、数据下载链接和反馈渠道，鼓励用户提供改进建议。未来将持续更新，增加更多定制化功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45676867" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://eli.thegreenplace.net/2011/08/25/load-time-relocation-of-shared-libraries/" target="_blank">Load-time relocation of shared libraries (2011)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: saltypal</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-25 20:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要探讨了现代操作系统如何通过加载时重定位（load-time relocation）实现共享库的使用，重点以32位x86架构的Linux系统为例。文章首先解释了可执行文件通常加载到固定的内存地址，而共享库由于无法预知其加载地址，需要动态加载器（dynamic loader）在运行时进行调整。作者介绍了两种主要解决方法：加载时重定位和位置无关代码（PIC），并着重分析了加载时重定位的实现方式。通过编译一个未使用`-fPIC`选项的共享库示例，展示了共享库如何从地址`0x0`开始链接，并在加载时由动态加载器调整地址。文章为后续讲解PIC奠定了基础。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：计算机科学教育中的理论与实践平衡  
-
-不同观点：  
-• **强调理论教育的重要性**  
-  - 作者提到自己在文理学院获得的CS学位，强调了伦理、AI历史等理论课程的价值。  
-  - 认为这些课程提供了独特的视角，是不可替代的。  
-
-• **补充实践知识的必要性**  
-  - 作者提到通过阅读关于程序加载和内存管理的文章（如glibc作者的《What Every Programmer Should Know About Memory》）弥补了实践知识的不足。  
-  - 这些内容在实际编程（如性能分析和调试）中非常有用。  
-
-补充讨论：  
-- **理论与实践的结合**：作者认为理想的教育应该兼顾理论和实践，但现实中可能需要通过自学补充实践部分。  
-- **争议焦点**：是否有必要在本科阶段深入学习底层细节（如ABI、内存管理），还是应该留到职业发展中学习。  
-- **参考资料的价值**：作者推荐的几篇文章和书籍（如Ulrich Drepper的文章）被作为实践知识的典范。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45706660" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://luksamuk.codes/pages/learn-apl.html" target="_blank">"Learn APL" Notes</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-25 20:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是作者整理的APL语言学习笔记，主要参考了APL Wiki教程和GNU APL手册。内容涵盖了APL的基础知识，包括算术运算、变量赋值、表格操作、函数编写等，并介绍了APL特有的符号和运算规则。笔记中还包含大量代码示例，展示了APL从右到左的执行顺序、双重用途函数等特性，以及如何处理负数和列表运算。作者强调这不是全面的APL指南，而是供自己未来查阅的参考资料，并建议使用支持APL字符的等宽字体。文章最后列出了进一步学习的主题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[GNU APL的使用体验及其符号输入方法，以及APL符号的历史编码问题]
-
-不同观点：
-• [smartmic的观点]
-  - GNU APL的使用体验良好，支持通过C语言的FFI进行扩展。
-  - 推荐使用自定义的XCompose定义来输入APL2符号，这种方法基于符号的记忆法设计输入和弦。
-  - 提供了具体的GitHub链接作为示例。
-
-• [mmooss的观点]
-  - 提出了关于APL符号在Unicode编码之前的历史编码方式的疑问。
-  - 关注APL符号从1960年代开发到被Unicode收录之间的编码历史。
-
-补充讨论：
-- 争议焦点：无直接争议，但mmooss的问题引发了关于APL符号编码历史的潜在讨论。
-- 讨论关系：mmooss的问题是对smartmic分享的APL使用体验的补充，可能引发对其他用户关于APL历史编码知识的分享。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45706755" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
                     <a href="https://www.seangoedecke.com/good-code-reviews/" target="_blank">Mistakes I see engineers making in their code reviews</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: zdw</span> |
-                    <span>评分: 75</span> |
-                    <span>评论数: 17</span> |
+                    <span>评分: 96</span> |
+                    <span>评论数: 18</span> |
                     <span>发布时间: 2025-10-25 04:42</span>
                 </div>
 
@@ -400,29 +375,21 @@
                     <div class="comments-summary">主要讨论点：[代码审查的最佳实践和原则]
 
 不同观点：
-• **个人偏好 vs. 客观标准**  
-  - [siva7] 认为代码审查不应强加个人偏好，避免制造团队紧张和时间浪费。  
-  - [OptionOfT] 认为代码风格应与代码库保持一致，维护者有权提出异议。  
+• [ramanvarma] 认为代码审查不应过分关注一致性和长期优化，而应注重短期进展。过度追求长期纯净性可能导致大型代码库的混乱。
+• [siva7] 强调不应在审查中强加个人偏好，因为软件开发有多种解决方案，过度干预会浪费时间和引发团队紧张。
+• [OptionOfT] 持更严格的态度，认为代码应与现有代码库风格一致，除非有明确理由。他依赖工具自动化格式化，避免人工干预。
+• [suralind] 不同意“不要留下太多评论”的观点，认为遵循标准和规范的代码更易读。如果PR需要100条评论，也应如此。
+• [dakiol] 认为审查的目的是提出改进建议，而非“把关”，应在提出建议后批准PR。
+• [hexbin010] 补充建议本地检出分支进行审查，以避免环境差异导致的问题。
 
-• **审查技巧**  
-  - [criemen] 主张在脑中思考“我会怎么写？”以发现问题，但仅在客观问题时提出评论。  
-  - [hexbin010] 建议本地检出分支审查，因为环境和工具可能不完美。  
-
-• **评论数量**  
-  - [dakiol] 认为审查者应提出改进建议但不应阻碍合并。  
-  - [suralind] 认为如果代码需要大量评论以符合标准，则应提出，但避免重复评论。  
-  - [Learner100] 和 [jaxelr] 对评论数量的合理性有争议，前者认为100条评论不可接受，后者认为评论数量应与变更规模成正比。  
-
-• **工具与自动化**  
-  - [awithrow] 和 [cadamsdotcom] 强调工具（如 linting）的重要性，减少人工审查风格问题。  
-  - [dchuk] 提出利用 LLM 自动化审查流程的可能性。  
+争议焦点：
+• [makeitdouble] 与文章观点冲突，认为非阻塞性评论不应被忽略，评论本身应被视为阻塞性，除非明确标记为可选。
+• [AndyNemmity] 反对在PR中讨论无关问题，认为这会分散注意力并增加审查复杂度。
 
 补充讨论：
-- **争议焦点**：是否应在审查中允许个人偏好影响决策（如 [siva7] vs. [OptionOfT]），以及评论数量是否应有限制（如 [suralind] vs. [Learner100]）。  
-- **其他讨论**：  
-  - [makeitdouble] 对“非阻塞评论可能被忽略”提出质疑，认为评论本身应被视为重要反馈。  
-  - [donatj] 分享审查中需注意文件路径错误的实际案例。  
-  - [moltar] 询问是否使用标准化评论工具（如 Conventional Comments）。</div>
+• [awithrow] 和 [cadamsdotcom] 讨论了工具化的重要性，认为代码审查工具应提供更高层次的视图，并依赖自动化工具处理风格和语法问题。
+• [dchuk] 提出利用LLM自动化审查流程，降低认知负担。
+• [Learner100] 和 [jaxelr] 对“过多评论”的看法存在分歧，前者认为100条评论不合理，后者认为评论数量应与变更规模成正比。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45701404" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -516,6 +483,55 @@
 • 虽然没有其他用户直接回应此评论，但该观点反映了工具命名可能存在的不清晰问题，值得开发者关注。命名应当更直观地反映工具的功能或用途，避免用户产生错误的初步联想。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45706545" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://pbxscience.com/ubios-chinas-alternative-to-uefi-and-the-new-era-of-firmware-standards/" target="_blank">Ubios: China's Alternative to UEFI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: 1970-01-01</span> |
+                    <span>评分: 24</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-10-23 20:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>中国推出自主固件标准UBIOS，由全球计算联盟发布，华为等企业共同制定。UBIOS采用统一虚拟总线(UVB)架构，支持分布式计算和芯粒技术，相比传统BIOS/UEFI具有现代芯片架构适配、统一通信层和分布式支持等创新特点。这一标准的推出是中国技术自主战略的关键举措，旨在减少对外国技术的依赖，应对美国技术封锁，同时推动国内技术生态发展，涉及国家安全和产业升级多重考量。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[中国自主研发的UBIOS系统的意义与前景]
+
+不同观点：
+• [支持者观点]
+  - 认为UBIOS是中国在技术自主创新上的重要突破，有助于减少对美国系统的依赖（hackandthink）
+  - 提到中国在标准化方面的努力（如HDMI/DisplayPort替代方案），认为竞争是好事（ramshanker）
+
+• [怀疑者观点]
+  - 质疑UBIOS的实际用途，认为更像是对外展示实力的“姿态”而非实用技术（BobbyTables2）
+  - 提到可能的安全隐患，如数据回传和硬编码密钥问题（caherrerapa）
+  - 认为美国的科技封锁政策反而可能促使中国加速自主创新（Andrex）
+
+• [中立/技术讨论观点]
+  - 对UBIOS的技术实现提出疑问（如是否支持完整IP协议栈）（_blk）
+  - 希望听到行业专家（如bcantrill）的专业评价（znpy）
+  - 质疑文章写作质量，认为内容重复像AI生成（fyrn_）
+
+补充讨论：
+- 争议焦点主要集中在UBIOS的实际价值（技术突破vs政治象征）和潜在风险（安全/兼容性问题）
+- 讨论中多次将UBIOS与其他中国技术标准（RISC-V/LoongArch）的成败进行类比
+- 部分评论体现出对中美科技竞争的长期影响的不同预期</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45686707" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
