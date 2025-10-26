@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-10-26 09:03 (北京时间)
+            最后更新时间: 2025-10-26 11:39 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,39 +61,224 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.makeuseof.com/ai-features-being-rammed-down-our-throats/" target="_blank">I'm drowning in AI features I never asked for and I hate it</a>
+                    <a href="https://blog.baro.dev/p/the-future-of-python-web-services-looks-gil-free" target="_blank">The future of Python web services looks GIL-free</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gnabgib</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-26 00:29</span>
+                    <span>作者: gi0baro-dev</span> |
+                    <span>评分: 160</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2025-10-19 10:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章作者Raghav Sethi批评AI技术正在破坏消费科技产品和互联网体验。他认为AI功能多为营销噱头而非实用改进，如Google Gemini取代Assistant后效率更低，微软Copilot强行植入Windows系统，Arc浏览器转型AI后失去特色。他还指出生成式AI导致网络内容同质化，社交媒体充斥机器人内容，Reddit和Google搜索也难以提供真实讨论和有效信息。作者认为企业盲目追求AI趋势反而降低了产品品质和用户体验，互联网正失去真实性和价值。</p>
+                    <p>2025年10月发布的Python 3.14版本在"无GIL"解释器上取得重大突破：无GIL支持进入第二阶段（不再视为实验性功能），性能损耗从35%降至5-10%。文章通过FastAPI（ASGI）和Flask（WSGI）两种Web框架测试了标准版和无GIL版的性能差异，重点关注模拟I/O密集型场景（10ms延迟）的表现。测试使用Granian服务器和rewrk工具进行，旨在验证无GILPython是否能让Web服务摆脱多进程的内存浪费，实现更高效的并发处理。作者强调基准测试应聚焦特定场景而非泛化比较。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Linux与Windows操作系统的用户体验比较及AI技术的强制推行问题]
+                    <div class="comments-summary">主要讨论点：[Python 3.14中GIL移除的影响及相关讨论]
 
 不同观点：
-• [MX Linux用户对Windows 10和11的不满]
-  - Windows系统因频繁更新和预装软件（如Candy Crush）影响性能。
-  - 用户不喜欢Windows的锁屏小部件和强制使用Edge浏览器。
-  - 对Windows 11的AI功能持负面态度，认为其是不必要的“垃圾”。
-  
-• [对AI技术的看法]
-  - 认为AI技术在某些场景下有实际用途，但不应该强制推送给所有用户。
-  - 强调用户应有选择权，而不是被单方面强制接受AI功能。
+• **GIL移除的技术挑战与必要性**
+  - [rogerbinns]指出移除GIL后需要大量C代码更新以确保线程安全，否则可能导致崩溃和数据损坏。他提供了json模块的修改示例，并呼吁CPython发布工具检测线程安全问题。
+  - [btbuilder]认为这是CPython的重大进步，但Python在并行模式上仍落后于Go和Java的协程/虚拟线程。
+
+• **性能影响的争议**
+  - [Zsfe510asG]通过基准测试指出，移除GIL后全局变量访问的性能显著下降（18%-44%），并批评社区对类似问题的双重标准。
+  - [NeutralForest]则对社区努力和调试体验表示乐观，引用py-free-threading项目。
+
+• **实际应用与迁移体验**
+  - [shdh]和[natdempk]关注升级到3.14的实际价值，尤其是Granian在生产环境的运行效果。
+  - [nodesocket]询问从Flask+gevent迁移到FastAPI或3.14的性能收益。
 
 补充讨论：
-- 争议焦点在于操作系统是否应该强制集成某些功能（如AI），而不是让用户自主选择。
-- 讨论中还提到了用户体验的差异，Linux系统因其简洁性受到部分用户青睐，而Windows则因预装软件和强制更新受到批评。</div>
+• **工具与生态支持**
+  - [rogerbinns]强调需要工具辅助检测线程安全问题。
+  - [natdempk]提及等待库对自由线程的支持。
+
+• **异步模型争议**
+  - [Spivak]支持“每线程一个事件循环”模型，认为其管理更简单。
+  - [mkoubaa]误认为WSGI已使用独立GIL的子解释器（实际为GIL共享）。
+
+• **其他调侃与批评**
+  - [Waterluvian]调侃版本命名（PyPi）。
+  - [callamdelaney]批评Python日益臃肿。
+
+争议焦点：
+1. GIL移除后的性能损耗是否可接受（[Zsfe510asG]的基准测试 vs 社区普遍乐观态度）。
+2. 异步模型的最佳实践（事件循环每线程 vs 其他方案）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45708066" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45633311" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/danirod/jacqueline" target="_blank">Jacqueline – A minimal i386 kernel written in Pascal (2019)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: peter_d_sherman</span> |
+                    <span>评分: 66</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-10-22 17:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个名为Jacqueline的实验性i386架构内核项目，使用Pascal语言（Free Pascal方言）开发。作者出于兴趣创建该项目，但表示不会像之前的NativeOS项目那样持续开发，仅计划让系统能在模拟器中编译运行。文章阐述了选用Pascal进行底层开发的原因，包括其指针操作、内存地址访问和内联汇编等特性，以及Free Pascal能生成标准对象文件的优势。最后简要说明了项目设置要求（i386-elf工具链、Free Pascal环境等）和使用QEMU运行内核的方法。项目开源在GitHub上，主要采用Pascal（59.9%）、汇编（24.6%）和Makefile（15.5%）实现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[使用Pascal编写i386架构的实验性bootloader的可行性和意义]
+
+不同观点：
+• [支持实验性项目]
+  - danirod（作者）表示这是一个原型项目，主要目的是验证非C/Rust语言能否用于bootloader开发，尽管缺乏运行时支持，但仍具有趣味性。
+  - james_marks和jacquesm表达了对项目的喜爱和支持。
+  - pjmlp赞赏这种非C/C++的实验，并提到1980年代有OS使用Pascal。
+• [对Pascal的质疑]
+  - HeavyStorm调侃作者选择Pascal是自虐行为，暗示Pascal不适合此类开发。
+• [对低层编程语言的讨论]
+  - deaddodo反驳Pascal不适合低层编程的观点，指出C、Algol等语言最初也不是为低层编程设计，但都提供了必要的特性（如原始指针和独立环境编译能力）。
+• [对i386架构的选择]
+  - phendrenad2认为i386是玩具OS的理想目标，因为它既具有挑战性，又避免了过度野心。
+
+补充讨论：
+• [个人经历分享]
+  - sedatk分享了自己17岁时编写bootloader的类似经历，虽然没有完成，但回忆起来很有趣。
+  - nn3展示了Pascal内核的简单代码示例，强调了其“裸机Hello World”的性质。
+• [争议焦点]
+  - 主要争议在于Pascal是否适合用于低层编程（如bootloader开发），以及这种实验性项目的实际价值。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45672494" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.robotsgottalents.com/post/asimo" target="_blank">Honda's ASIMO (2021)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: nothrowaways</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-10-25 20:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>ASIMO是本田公司2000年推出的著名人形机器人，2018年停产。它身高130厘米，重54公斤，旨在帮助人类完成家务或辅助行动不便者。ASIMO能识别移动物体、姿势、手势和声音，具备人脸识别和多语言应答功能，采用锂电池供电，续航1小时。本田1980年代开始研发人形机器人，历经E系列（1986-1993）和P系列（1993-1997）原型机，最终开发出ASIMO。2018年后本田停止ASIMO开发，转向更实用的机器人应用技术。ASIMO的名字致敬科幻作家艾萨克·阿西莫夫。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[机器人技术的发展现状与Asimo的历史地位]
+
+不同观点：
+• **[怀旧与失望]**  
+  - mholt认为Asimo曾代表未来，但后续发展令人失望，家用机器人仍不如专用电器高效  
+  - 举例：洗碗机器人 vs 洗碗机  
+
+• **[技术传承]**  
+  - bitwize指出Asimo的行走技术（屈膝缓冲）至今仍有实用价值  
+  - 个人案例：用于缓解膝关节疼痛的"Asimo步态"  
+
+• **[技术进步论]**  
+  - HarHarVeryFunny承认Asimo曾是尖端技术（SOTA），但强调现代机器人（如Atlas）在动态运动方面已有质的飞跃  
+  - 对比案例：Asimo的基础动作（绕圈跑/爬楼梯） vs Atlas的跑酷/后空翻  
+  - 批评Teslabot的动态平衡技术退步，质疑其仍处于Asimo时代水平  
+
+补充讨论：
+• **争议焦点**：机器人技术是否真正进步  
+  - 支持方：Atlas证明运动控制已突破  
+  - 反对方：Teslabot显示基础平衡问题未解决  
+• **未来方向共识**：需突破传感器/抓取器技术和AI适应性  
+• **历史评价**：Asimo作为早期标杆的技术局限性 vs 现代应用场景的更高要求</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45706744" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://newpipe.net/blog/pinned/announcement/newpipe-turns-10/" target="_blank">NewPipe Is Turning 10</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: birdculture</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-25 22:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>开源视频播放器NewPipe迎来10周年。这款最初由志愿者开发的应用已发展为拥有协会组织、维护团队和数百万用户的成熟项目。过去5年中，团队成立了德国非营利组织NewPipe e.V.，并启动了代码重构和新播放器开发计划。2024年协会首次雇佣两名开发者进行兼职开发。当前项目仍处于重构阶段，面临代码老化、谷歌技术限制等挑战，特别是谷歌对第三方应用商店的限制政策。但团队保持乐观，计划完成重构后推出全新Kotlin版本，并与视频创作者探讨盈利模式问题。开发者们表示将坚持开发，继续寻找技术解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[用户对NewPipe的喜爱及其用途]
+
+不同观点：
+• [正面评价]  
+- 用户bbkane表达了对NewPipe的高度喜爱，特别提到其在下载儿童视频方面的实用性，尤其是为飞机旅行做准备。  
+- 例子：明确提到“下载儿童视频”是核心使用场景，并表示感谢开发者的贡献。  
+
+补充讨论：[潜在的其他用途]  
+- 虽然评论未直接提及，但NewPipe作为开源YouTube客户端，可能还有其他功能（如背景播放、无广告等）未被具体讨论，但这些可能是用户喜爱的原因之一。  
+- 争议点：无直接争议，但隐含对版权问题的潜在讨论（下载视频可能涉及版权争议，但用户未提及）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45707575" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ngmdb.usgs.gov/nationalgeology/" target="_blank">The Cooperative National Geologic Map</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rob</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-23 00:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了美国国家地质地图数据库（NGMDB）网站的功能和使用指南。该网站是美国地质调查局（USGS）与各州地质调查机构合作的成果，提供标准化的地质图层数据，用于资源管理、风险评估等决策支持。
+
+主要功能包括：1）通过交互式地图查询地质单元和材料信息；2）可选择四种主要地质图层（地表、第四纪、前第四纪和前寒武纪）；3）支持四种不同样式的地质图层展示（国家综合、来源地质、地质材料和年代）；4）提供关键词筛选和自定义搜索功能；5）可调整地图透明度、图例显示和应用主题模式（包括深色模式）。
+
+网站还提供了详细的帮助指南、数据下载链接和反馈渠道，鼓励用户提供改进建议。未来将持续更新，增加更多定制化功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45676867" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -147,169 +332,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://pytorch.org/blog/torchcomms/" target="_blank">Torchcomms: A modern PyTorch communications API</a>
+                    <a href="https://luksamuk.codes/pages/learn-apl.html" target="_blank">"Learn APL" Notes</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: paladin314159</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-25 20:00</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-10-25 20:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Facebook开源了PyTorch分布式通信新框架Torchcomms，旨在支持超10万GPU的大规模AI训练。该框架提供基础API和新后端NCCLX，具备以下特性：支持快速原型设计，实现异构硬件兼容，提供故障容忍能力，支持单向通信和设备中心化操作。Torchcomms采用开放开发模式，目标是成为PyTorch分布式训练的核心基础，未来将逐步整合PyTorch分布式功能。该框架解决了现有NCCL等后端在超大规模训练中的局限性，为下一代AI系统提供更灵活、高效的通信支持。</p>
+                    <p>这篇文章是作者整理的APL语言学习笔记，主要参考了APL Wiki教程和GNU APL手册。内容涵盖了APL的基础知识，包括算术运算、变量赋值、表格操作、函数编写等，并介绍了APL特有的符号和运算规则。笔记中还包含大量代码示例，展示了APL从右到左的执行顺序、双重用途函数等特性，以及如何处理负数和列表运算。作者强调这不是全面的APL指南，而是供自己未来查阅的参考资料，并建议使用支持APL字符的等宽字体。文章最后列出了进一步学习的主题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对工具名称的理解和反馈]
+                    <div class="comments-summary">主要讨论点：[GNU APL的使用体验及其符号输入方法，以及APL符号的历史编码问题]
 
 不同观点：
-• 用户认为工具的名称容易引起误解，第一印象让人联想到与无线通信相关的工具集。
+• [smartmic的观点]
+  - GNU APL的使用体验良好，支持通过C语言的FFI进行扩展。
+  - 推荐使用自定义的XCompose定义来输入APL2符号，这种方法基于符号的记忆法设计输入和弦。
+  - 提供了具体的GitHub链接作为示例。
 
-补充讨论：[其他值得注意的讨论点]
-• 虽然没有其他用户直接回应此评论，但该观点反映了工具命名可能存在的不清晰问题，值得开发者关注。命名应当更直观地反映工具的功能或用途，避免用户产生错误的初步联想。</div>
+• [mmooss的观点]
+  - 提出了关于APL符号在Unicode编码之前的历史编码方式的疑问。
+  - 关注APL符号从1960年代开发到被Unicode收录之间的编码历史。
+
+补充讨论：
+- 争议焦点：无直接争议，但mmooss的问题引发了关于APL符号编码历史的潜在讨论。
+- 讨论关系：mmooss的问题是对smartmic分享的APL使用体验的补充，可能引发对其他用户关于APL历史编码知识的分享。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45706545" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nbcnews.com/health/health-news/tiny-eye-implant-special-glasses-legally-blind-patients-can-read-rcna238488" target="_blank">People with blindness can read again after retinal implant and special glasses</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 8bitsrule</span> |
-                    <span>评分: 249</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-10-21 08:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>科学家研发了一种2毫米×2毫米、30微米厚的视网膜植入装置，用于治疗年龄相关性黄斑变性（AMD）导致的失明。该装置通过手术植入视网膜下方，替代受损的光敏细胞，并与装有红外摄像头的眼镜配合使用。在38名晚期AMD患者的临床试验中，80%的患者视力在植入一年后获得显著改善，部分患者能恢复阅读和日常生活功能。该设备由美国Science Corporation开发，已申请欧洲市场认证。研究为目前无法治愈的老年性失明提供了新的治疗希望。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[视网膜植入技术的临床应用及其潜在问题]
-
-不同观点：
-• **技术可行性与手术实施**  
-  - [epmaybe] 指出这项技术虽然先进，但视网膜下手术技能在现代眼科医生中已不常见，未来由谁来提供此类手术是个问题。  
-  - 同时质疑是否需要手术，认为患者可能仅通过放大镜就能改善视力，需进一步研究验证。
-
-• **长期服务与商业化风险**  
-  - [RodgerTheGreat] 担忧长期服务计划不足，以 Second Sight Medical Products 为例，暗示商业化可能带来后续支持问题。  
-
-• **技术的社会与文化影响**  
-  - [felixhummel] 提出“赛博朋克式”担忧，讨论可被黑客攻击的植入设备可能引发的伦理问题。  
-  - [firecall] 则以《星际迷航》中的角色类比，强调技术对未来生活的科幻式影响。  
-
-• **患者视角与替代方案**  
-  - [lynx97] 从盲人视角呼吁提前关注无障碍技术开发，强调开源社区的重要性。  
-  - [cjaackie] 提问如何降低年龄相关性黄斑变性风险，关注预防而非治疗。  
-
-• **技术效果争议**  
-  - [yieldcrv] 对“临床意义显著的视力改善”表述提出质疑，认为实际效果可能有限。  
-
-补充讨论：  
-- [danielcpaiva] 单纯表达对技术的赞赏，未展开具体论点。  
-- 争议焦点：技术实际效用（是否需要手术）、长期商业化风险、社会伦理影响。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45653639" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.datacenterdynamics.com/en/news/proenergy-offers-repurposed-jet-engines-to-data-cent/" target="_blank">ProEnergy repurposes jet engines to power data centers</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: JumpCrisscross</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-10-25 19:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[使用退役飞机发动机改装为燃气涡轮发电机用于数据中心的可行性及环境影响]
-
-不同观点：
-• **支持观点**  
-  - 退役飞机发动机改装为燃气涡轮发电机是一种资源回收利用的方式（mikkupikku）。  
-  - 此类改装设备（如GE的LM2500）虽然效率较低（35-39%），但启动快、重量轻，适合船舶和峰值电厂使用（mikkupikku）。  
-  - 这种方案可以降低长期投资风险，尤其在AI行业可能存在泡沫的情况下（pfdietz）。  
-
-• **反对观点**  
-  - 飞机发动机设计初衷是产生推力而非发电，其热力学效率可能低于专为发电设计的涡轮机（WalterBright）。  
-  - 使用化石燃料为高能耗的AI提供动力是环境不友好的行为（hannob）。  
-  - 这种行为是在以牺牲地球为代价推动资本主义和AI发展（saubeidl）。  
-  - 应该禁止此类行为，停止寻找新的方式燃烧天然气（snorrah）。  
-
-• **调侃观点**  
-  - 将涡轮机装在风力发电机上，使其同时发电（thehappypm）。  
-
-补充讨论：  
-- 争议焦点在于环境成本与经济效率之间的权衡。支持者认为这是资源再利用和降低投资风险的手段，而反对者则强调其对环境的负面影响。  
-- mikkupikku提到此类技术并非新想法，但改装设备的效率问题仍是讨论的核心。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45706534" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://newpipe.net/blog/pinned/announcement/newpipe-turns-10/" target="_blank">NewPipe Is Turning 10</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-10-25 22:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>开源视频播放器NewPipe迎来10周年。这款最初由志愿者开发的应用已发展为拥有协会组织、维护团队和数百万用户的成熟项目。过去5年中，团队成立了德国非营利组织NewPipe e.V.，并启动了代码重构和新播放器开发计划。2024年协会首次雇佣两名开发者进行兼职开发。当前项目仍处于重构阶段，面临代码老化、谷歌技术限制等挑战，特别是谷歌对第三方应用商店的限制政策。但团队保持乐观，计划完成重构后推出全新Kotlin版本，并与视频创作者探讨盈利模式问题。开发者们表示将坚持开发，继续寻找技术解决方案。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[用户对NewPipe的喜爱及其用途]
-
-不同观点：
-• [正面评价]  
-- 用户bbkane表达了对NewPipe的高度喜爱，特别提到其在下载儿童视频方面的实用性，尤其是为飞机旅行做准备。  
-- 例子：明确提到“下载儿童视频”是核心使用场景，并表示感谢开发者的贡献。  
-
-补充讨论：[潜在的其他用途]  
-- 虽然评论未直接提及，但NewPipe作为开源YouTube客户端，可能还有其他功能（如背景播放、无广告等）未被具体讨论，但这些可能是用户喜爱的原因之一。  
-- 争议点：无直接争议，但隐含对版权问题的潜在讨论（下载视频可能涉及版权争议，但用户未提及）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45707575" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45706755" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -436,81 +491,31 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.androidpolice.com/google-pixels-most-dangerous-bug-refuses-to-die/" target="_blank">Google Pixel's most dangerous bug: failing to call 911</a>
+                    <a href="https://pytorch.org/blog/torchcomms/" target="_blank">Torchcomms: A modern PyTorch communications API</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jsheard</span> |
-                    <span>评分: 50</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-10-24 22:12</span>
+                    <span>作者: paladin314159</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-25 20:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文报道了谷歌Pixel手机长期存在的紧急呼叫911故障问题。近期Pixel 9/10用户再次报告在美国运营商网络下无法拨通911，甚至有用户需耗时10分钟才能接通。加拿大运营商Bell曾发布警告通知Pixel 6-10用户可能遇到该问题。文章指出，尽管该问题反复发生多年且仅影响Pixel系列，谷歌仍未彻底解决这个攸关生命安全的重要缺陷，作者呼吁谷歌必须高度重视并与运营商合作永久修复此问题。</p>
+                    <p>Facebook开源了PyTorch分布式通信新框架Torchcomms，旨在支持超10万GPU的大规模AI训练。该框架提供基础API和新后端NCCLX，具备以下特性：支持快速原型设计，实现异构硬件兼容，提供故障容忍能力，支持单向通信和设备中心化操作。Torchcomms采用开放开发模式，目标是成为PyTorch分布式训练的核心基础，未来将逐步整合PyTorch分布式功能。该框架解决了现有NCCL等后端在超大规模训练中的局限性，为下一代AI系统提供更灵活、高效的通信支持。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Pixel手机拨打911紧急电话的自动拨号功能问题]
+                    <div class="comments-summary">主要讨论点：[对工具名称的理解和反馈]
 
 不同观点：
-• [乐观等待派]（sans_souse）：认为问题会得到解决，因为自己是付费用户，并已向Google提交支持工单，相信Google会尽快回复。
-• [质疑数据派]（jarofgreen）：质疑iPhone或三星用户是否也有类似问题，尽管这些品牌的用户基数更大。
-• [历史问题派]（alphabettsy）：指出类似问题在2022年Pixel 3的更新中就已经出现，暗示这是一个长期未解决的问题。
-• [功能对比派]（mikigraf）：提到CarPlay也有类似问题，即无法拨打特定联系人，暗示问题可能不仅限于Pixel手机。
-• [用户体验派]（vel0city）：详细描述了自己在紧急情况下拨打911时的困惑和恐慌，因为Pixel手机的自动拨号功能与常规拨号流程不同，导致用户误操作。
+• 用户认为工具的名称容易引起误解，第一印象让人联想到与无线通信相关的工具集。
 
-补充讨论：
-• [争议焦点]：Pixel手机的自动拨号功能是否设计合理，尤其是在紧急情况下是否会导致用户误操作。
-• [其他讨论点]（casey2）：以一种讽刺的语气提到“非bug”，认为这种设计在长期来看可能拯救更多生命，并暗示警察和紧急服务应该分开。这可能引发关于紧急服务设计和用户体验的更深层次讨论。</div>
+补充讨论：[其他值得注意的讨论点]
+• 虽然没有其他用户直接回应此评论，但该观点反映了工具命名可能存在的不清晰问题，值得开发者关注。命名应当更直观地反映工具的功能或用途，避免用户产生错误的初步联想。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45699618" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://en.andros.dev/blog/4e12225f/why-your-socialorg-files-can-have-millions-of-lines-without-any-performance-issues/" target="_blank">Why your social.org files can have millions of lines without performance issues</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tanrax</span> |
-                    <span>评分: 39</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-10-25 07:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Org Social 2.3+通过两种优化技术解决了传统社交源下载的效率问题：并发队列处理和HTTP Range分块下载。前者通过线程池同时处理多个下载任务，避免界面卡顿；后者仅下载文件头部和最近内容（而非整个文件），大幅节省带宽。系统能自动识别服务器兼容性（如Cloudflare/CDN不支持分块下载时会回退完整下载），实现跨平台100%兼容。最终将原本300KB/1500条的全量下载优化为仅获取所需内容（如10条最新动态），显著提升性能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Org-social作为基于Org Mode的去中心化社交网络的可行性和实用性
-
-不同观点：
-• [支持观点]
-- Org-social基于Org Mode，这是一个成熟且强大的文本编辑模式，适合技术用户
-- 去中心化的设计提供了更好的隐私控制和数据所有权
-- 使用纯文本格式存储数据具有长期可读性和版本控制的优势
-
-• [质疑观点]
-- mjmas暗示该系统可能需要处理大量代码行("s/Lines/Millions of Lines/")，暗示复杂性可能过高
-- Org Mode可能对非技术用户不够友好，限制了用户群体
-- 纯文本社交网络在功能丰富性上可能无法与传统社交平台竞争
-
-补充讨论：
-- 争议焦点在于这种技术导向的设计是否能吸引足够用户形成网络效应
-- 值得注意Org Mode社区已有的用户基础可能成为初期采用者
-- 讨论暗示了在简洁设计与功能完备性之间需要找到平衡点</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45701980" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45706545" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
