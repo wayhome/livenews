@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-02 09:04 (北京时间)
+            最后更新时间: 2025-11-02 11:43 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,40 +61,241 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/bagnalla/6502" target="_blank">Cycle-accurate 6502 emulator as coroutine in Rust</a>
+                    <a href="https://lalitm.com/perfetto-swiss-army-knife/" target="_blank">Perfetto: Swiss army knife for Linux client tracing</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bagnalla</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-01 14:41</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 136</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-10-31 11:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个用Rust编写的精确周期级6502处理器模拟器。作者指出了传统CPU模拟器的局限性——它们通常一次性执行完整条指令，导致难以精确模拟CPU与其他硬件组件（如NES的PPU图形处理器）之间的时序交互。
-
-为解决这个问题，作者使用Rust协程将6502实现为一个状态机，使其能够以单时钟周期为单位逐步执行。核心创新点是：
-1. 通过协程将指令分解为多个状态转换
-2. 每个时钟周期产生I/O事件（读/写）
-3. 保持与传统解释器相似的易读性
-
-该项目实现了6502处理器的周期精确模拟，包括所有寄存器、状态标志和内存总线操作，为开发精确的系统模拟器（如NES模拟器）提供了基础。</p>
+                    <p>这篇文章介绍了Perfetto这一多功能Linux追踪工具套件的核心功能和应用场景。作者在2025年Tracing Summit上展示了Perfetto如何帮助Linux内核、系统和嵌入式开发者调试性能问题。Perfetto包含数据收集工具、trace处理器和基于Web的可视化界面，支持多种追踪格式如perf.data和ftrace，并能通过SQL接口查询数据。文章重点演示了如何使用Perfetto UI分析一个模拟性能问题的Rust程序（生成Julia集），该程序偶尔会出现帧率下降的问题。作者提供了GitHub代码和追踪数据，说明Perfetto可以帮助开发者快速定位CPU相关问题。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对协程在隔离状态机和状态变更中的应用的讨论，以及对实现细节的关注]
+                    <div class="comments-summary">主要讨论点：[Perfetto工具的优缺点及使用场景]
 
 不同观点：
-• 支持协程应用的积极观点：用户skavi对协程表示非常乐观，认为其在隔离状态机和状态变更中有广泛应用潜力，类似于当前项目的实现方式。他还提到了另一个Rust项目effing-mad，该项目在协程基础上实现了效果系统，进一步展示了协程的潜力。
-• 对实现细节的疑问：skavi对当前项目中将协程装箱（boxed）返回而不是使用RPIT（Return Position Impl Trait）提出了疑问，认为这可能会导致一些优化机会的缺失，尽管影响可能不大。
+• **Perfetto的核心价值与设计初衷**
+  - Saagarjha认为Perfetto虽然是为Linux/Android设计，但其JSON格式兼容性和通用性使其成为广泛使用的“trace viewer”，但UI设计仍保留原生功能入口（如syscall trace），与实际使用场景（如GPU/网络分析）不匹配。
+  - Sunnyps提到Perfetto新增的CPU采样火焰图功能已接近Google内部工具水平，可能推动从EtwToPprof转向EtwToPerfetto。
+
+• **工具性能与用户体验争议**
+  - Yeko批评Perfetto操作延迟明显（缩放卡顿），影响使用效率。
+  - Saagarjha对比Apple Instruments，认为后者在交互设计（如快速定位问题调用栈）上更优，但承认其封闭性和性能缺陷。
+
+• **功能扩展与集成需求**
+  - Knlb和Teunlao强调SQL查询接口是核心优势，可动态生成和组合追踪数据。
+  - Mattyyeung提出嵌入Perfetto UI到本地工具的挑战，现有方案（如iframe+旧版Catapult）需升级但缺乏官方支持。
+  - Time4tea推荐Viztracer库快速生成Perfetto兼容输出，提升Python性能分析效率。
 
 补充讨论：
-• 提及的相关项目：effing-mad作为一个相关项目被提及，可能为讨论提供了更广泛的技术背景。
-• 技术细节争议：虽然skavi提出了对实现细节的疑问，但他也承认这种选择的影响可能不显著，这表明这是一个次要的技术讨论点而非主要争议。</div>
+- **争议焦点**：Perfetto的定位矛盾（专业工具 vs 通用查看器）和UI优化方向。
+- **隐藏需求**：Aaptel提出的内核级追踪性能开销问题未获解答，反映工具在高负载场景的适用性疑问。
+- **社区生态**：用户自发开发（如SQL查询、Etw转换工具）显示Perfetto的扩展潜力，但官方支持有限可能阻碍整合。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45781976" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45771019" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lil.law.harvard.edu/blog/2025/10/24/rethinking-data-discovery-for-libraries-and-digital-humanities/" target="_blank">Use DuckDB-WASM to query TB of data in browser</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mlissner</span> |
+                    <span>评分: 220</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-10-31 17:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了LIL（Library Innovation Lab）在构建Data.gov Archive Search项目时采取的新方法，旨在解决图书馆和数字人文项目长期以来面临的成本和访问性难题。传统方法需要在昂贵的服务器维护和有限的静态托管之间权衡，而LIL利用WebAssembly等技术（如DuckDB-Wasm），在用户浏览器中实现了高效查询大型远程数据集的功能。这种方法无需专用服务器，降低了运营成本，同时保持了数据的可发现性和长期可访问性。尽管存在性能优化等挑战，但这一模式为各类文化机构和学术项目提供了可持续、低成本的数据发现解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[DuckDB-WASM + parquet + S3的技术优缺点及适用场景]
+
+不同观点：
+• **技术问题与复杂性**  
+  - WASM版本功能不全（如不支持parquet压缩和懒加载），性能不佳且增加了构建复杂性。  
+  - WASM加载时间过长，影响用户体验。  
+  - 内存管理问题导致频繁崩溃（如OOM错误）。  
+  - 示例：某公司因这些问题最终改用REST API。
+
+• **技术潜力与创新性**  
+  - 结合S3、WASM和DuckDB可在浏览器中实现无后端数据查询，降低成本（如公共数据场景）。  
+  - 适合实时系统监控（如eBPF集成）或静态数据展示（如GitHub每日生成的数据库）。  
+  - 示例：joblist.today和yeet.cx展示了实际应用价值。
+
+• **适用场景争议**  
+  - 质疑在浏览器中处理大数据（如1TB）的必要性，认为应选择更适合的工具。  
+  - 支持者认为其适用于轻量级或特定场景（如数据探索、低成本解决方案）。  
+
+补充讨论：
+- **学习资源需求**：有人提问如何系统学习此类技术，暗示目前缺乏结构化指南。  
+- **扩展性与安全性**：讨论是否支持其他存储引擎（如RocksDB）及如何防御DDoS攻击（如使用Cloudflare）。  
+- **内存限制担忧**：对浏览器内存占用的疑问未被直接解答，凸显技术细节的模糊性。  
+
+争议焦点：  
+- WASM版本的成熟度是否足以支持生产环境，以及浏览器端大数据处理的合理性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45774571" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://linear.app/now/the-profitable-startup" target="_blank">The profitable startup</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: doppp</span> |
+                    <span>评分: 205</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2025-11-01 03:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章挑战了初创企业追求增长而忽视盈利的传统观念。作者以自身创办Linear的经历为例，指出小而精的团队、谨慎的招聘策略和控制成本是实现早期盈利的关键。盈利不仅能带来财务自由，还能让企业专注于产品价值和长期发展。文章建议初创企业衡量人均收入、理解风险状况、审慎招聘，并强调盈利并不意味着拒绝投资，而是掌握发展主动权。作者认为，在多数B2B软件领域，实现盈利比人们想象的更容易且明智。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[创业公司是否应该追求早期盈利，以及盈利与增长之间的关系]
+
+不同观点：
+• **支持早期盈利的观点**  
+  - [physicsguy]：低利率环境下，投资者更关注盈利能力，公司需要更早展示盈利潜力。  
+  - [timenotwasted]：赞赏从“独角兽”增长模式转向小而稳的盈利模式，认为这是一种行业趋势。  
+  - [arthurofbabylon]：盈利是掌握自身命运的关键，体现了开发者与客户之间的和谐关系。  
+  - [jillesvangurp]：通过自身经历说明投资者资金会让人变得懒惰，小团队和盈利导向更能保持专注和效率。
+
+• **质疑早期盈利的观点**  
+  - [palata]：认为盈利的成功案例存在“幸存者偏差”，许多公司无法盈利是因为市场时机或运气问题。  
+  - [joduplessis]：指出Linear的成功部分得益于长期私人测试期，这种条件并非所有公司都能具备。  
+  - [contrarian1234]：认为创业公司的核心是通过快速规模化超越竞争对手，盈利导向更像是小型企业的模式。  
+  - [madaxe_again]：过度追求盈利可能导致业务投入不足，最终失去长期增长潜力。
+
+• **中立或平衡观点**  
+  - [kylegalbraith]：强调商业模式多样性，Linear的方法不一定适用于所有公司。  
+  - [noodlesUK]：区分创业公司和小型企业的不同目标，认为两者各有价值。  
+  - [sergioisidoro]：虽然支持盈利模式，但指出投资者可能更关注高增长而非盈利能力。  
+
+补充讨论：
+- **争议焦点**：盈利与增长之间的权衡，以及创业公司是否应该以盈利为核心目标。  
+- **其他讨论点**：  
+  - [bingemaker]：质疑小规模模式是否能支持重大技术突破（如LLMs）。  
+  - [masterzachary]：批评部分小团队因过度筛选工程师而导致技术和管理问题。  
+  - [cmatza]：对小团队“只雇佣顶级工程师”的说法表示怀疑，认为普通工程师也能创造价值。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45778984" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ar5iv.labs.arxiv.org/html/1901.09056" target="_blank">WebAssembly vs. Native Code: Performance Analysis (WASM 45% Slower)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: birdculture</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-11-01 15:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文分析了WebAssembly（Wasm）与原生代码的性能差距。虽然之前的研究显示Wasm在小型科学计算内核上仅比原生代码慢10%左右，但这些测试用例规模较小（约100行代码），且无法运行完整的Unix应用。为此，作者开发了Browsix-Wasm工具，首次实现了在浏览器中直接运行未经修改的Wasm编译Unix应用。通过对SPEC CPU基准测试套件的评估，研究发现Wasm的性能显著落后：在Firefox和Chrome中分别平均慢45%和55%，峰值甚至达到2.08倍和2.5倍。性能下降的原因部分来自缺失的优化和代码生成问题，部分则是Wasm平台固有的限制。这表明当前Wasm的性能表现与其"接近原生速度"的目标仍有较大差距。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[该论文数据的可信度及是否需要更新基准测试]
+
+不同观点：
+• [数据已过时不可信]
+  - mdhb认为论文发布后变化很大，数据不再可信
+  - 隐含观点是技术发展迅速，旧数据可能误导当前判断
+
+• [建议重新运行基准测试]
+  - seg_lol指出论文来自2019年，建议在现有运行时上重新进行基准测试
+  - 提供了多个相关资源链接作为参考：
+    - Mastodon上的讨论(109833747279454645)
+    - Sightglass基准测试工具
+    - USENIX ATC 2019的相关演讲和资料
+
+补充讨论：
+- 争议焦点在于2019年的研究数据在当前(2023+)环境下的适用性
+- seg_lol通过提供多个权威资源链接来支持其"需要重新测试"的观点
+- 双方都隐含认同技术发展迅速的特点，但对旧数据的处理方式存在分歧</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45782473" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2510.21613" target="_blank">Beyond Smoothed Analysis: Analyzing the Simplex Method by the Book</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sebg</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-10-27 16:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文提出了一种名为"by the book analysis"的新算法分析框架，旨在缩小理论分析与实际应用之间的差距。不同于以往的平滑分析等框架，该方法不仅建模算法的输入数据，还建模算法本身。作者将该框架应用于单纯形法，证明在考虑实际实现中的输入缩放假设、可行性容忍度等因素后，单纯形法确实能达到多项式时间复杂度。论文指出新框架克服了平滑分析的若干弱点，其分析结果与算法在实际中的表现更为吻合。全文42页，涉及数据结构与算法、优化与控制等领域。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于多面体“平均宽度”定义是否应具有平移不变性的争议
+
+不同观点：
+• 质疑方观点：
+  - 指出论文中定义的"平均宽度"缺乏平移不变性（即P和P+x的平均宽度可能不同）
+  - 认为这与"宽度"一词的常规用法不符
+  - 建议改用"平均最远投影"、"平均峰值投影"或"平均阴影"等更准确的术语
+
+• 潜在辩护方（隐含）：
+  - 当前定义可能是作者有意为之（通过"Is that intended?"的提问暗示）
+  - 可能需要特定的数学应用场景支持这种非标准定义
+
+补充讨论：
+- 争议焦点在于术语的准确性和数学定义的合理性
+- 讨论体现了数学概念命名的重要性（术语应准确反映其数学性质）
+- 评论者提供了三个替代术语建议，显示出对概念本质的深入理解</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45722691" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -155,54 +356,69 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.natemeyvis.com/on-having-a-data-object/" target="_blank">On Having a Data Object</a>
+                    <a href="https://docs.pangolin.net/careers/software-engineer-full-stack" target="_blank">Pangolin (YC S25) is hiring a full stack software engineer (open-source)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Theaetetus</span> |
-                    <span>评分: 32</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-10-27 11:52</span>
+                    <span>作者: miloschwartz</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-10-31 17:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章批评了常见的数据对象模式（如ORM），指出其四大问题：
-1. 不同场景需要不同对象，强制统一会导致语义混乱；
-2. 迫使不同访问模式使用相同实现，造成代码臃肿；
-3. 核心类会变得过于庞大且难以维护；
-4. 实际增加了系统复杂度而非简化。
-
-作者建议根据具体场景采用更灵活的持久层管理方案，而非盲目遵循这种看似简单实则问题重重的模式。</p>
+                    <p>本文是Pangolin公司招聘全栈软件工程师的启事。职位要求3年以上工作经验，掌握TypeScript、Go、SQL等技术，熟悉云计算和网络概念。工作内容包括开发自托管平台的前后端、处理CI/CD流程等。公司提供12.5-16万美元年薪+股权、混合办公模式、搬迁补助等福利。招聘流程包括初步面试、付费开源项目评估等。应聘者需居住在或愿意搬迁至旧金山。Pangolin是一家专注于身份认证和零信任网络的开源基础设施公司。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[数据对象（如DTOs）与原始数据结构的优缺点比较，以及在何种情况下使用何种方法]
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45774198" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bikeshed.com/" target="_blank">Why should I care what color the bikeshed is? (1999)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: program</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-10-23 20:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章通过"自行车棚效应"（Bikeshed Effect）揭示了人们在讨论问题时的常见现象：越简单的问题往往引发越激烈的争论。文章指出，人们在面对复杂议题（如核电站建设）时倾向于信任专家意见，而对简单问题（如自行车棚颜色）却容易陷入无休止的争论，因为这能让参与者感到自己有贡献。作者以FreeBSD社区关于sleep(1)命令修改的争论为例，说明这种效应会浪费大量时间在琐碎问题上，而真正重要的事项却被忽视。最后建议人们应该学会区分问题的轻重缓急，不要在无关紧要的细节上过度争论。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[如何管理和避免“bikeshedding”（过度关注琐碎细节的讨论）]
 
 不同观点：
-• **反对过度使用DTOs**
-  - 作者认为数据对象（如User类）难以捕捉“用户”的本质，因为相关事实的组合爆炸式增长
-  - 举例：Login方法只需要email和password，但User类可能包含大量无关数据
-  - 支持使用原始数据结构（如map）而非数据对象，引用Rich Hickey的观点
-• **支持选择性使用DTOs**
-  - hexbin010认为DTOs应该在特定场景（如auth）中使用，避免单一DTO用于所有场景
-  - 举例：创建用户时需要password字段，但查询用户时不应包含该字段
-  - 承认完全遵循DDD会降低开发速度，需要找到折中方案
-• **反对DTOs的过度抽象**
-  - rokkamokka认为DTOs在大型MVC代码库中通常是多余的
-  - 举例：实际开发中更倾向于直接使用Models，并通过小方法映射到客户端所需格式
-  - 提到曾简化许多由初级开发者添加的DTOs
-• **支持灵活的数据访问工具**
-  - oftenwrong建议使用基本数据访问库（如jOOQ）以提高开发效率
-  - 支持为特定查询创建函数，而非为特定实体类型创建函数
-  - 认为ORM可以在不合适时跳过使用
+• [YZF] 提出一种管理方法：故意在提案中引入明显错误，让他人指出并修正，从而快速推进项目。这种方法可以避免无关紧要的讨论，如自行车棚的颜色。
+• [bluGill] 认为颜色选择虽看似主观，但对整体美观和一致性有影响。建议在讨论中给予每个人表达意见的机会，并通过妥协达成共识。
+• [kazinator] 强调应遵循已有的规范或一致性标准选择颜色。若无明确规定，可以参考现有自行车棚的颜色。
+• [wgjordan] 引用Brett Glass的反驳，指出过度使用“bikeshedding”标签可能忽视有价值的建议，甚至导致人才流失和项目落后。
 
 补充讨论：
-- **争议焦点**：是否应该完全遵循DDD原则，以及DTOs的使用是否增加了不必要的复杂性
-- **讨论关系**：hexbin010的观点是对作者和rokkamokka观点的折中，oftenwrong则提出了另一种解决方案
-- **其他注意点**：新开发者对代码的理解和维护的便利性（reillyse的观点）也是一个重要考虑因素</div>
+• [darth_avocado] 和 [furyofantares] 提到这篇文章的多次分享和历史感。
+• [waltbosz] 和 [JoshTriplett] 讨论了网站互动性和URL的趣味性。
+• [eviks] 质疑“bikeshedding”定义的解释力，认为无需争论也能展示贡献。
+• [hoofedear] 和 [kfogel] 表达了对“bikeshedding”这一术语的喜爱和其在非技术场景的实用性。
+
+争议焦点：
+• 是否所有琐碎讨论都应被视为“bikeshedding”？Brett Glass的反驳指出，过度标签化可能掩盖有价值的意见。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45719919" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45686678" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -309,259 +525,6 @@
 - 待解决问题：LLM输出可靠性验证（[clafferty]）、大规模处理架构（[atombender]）、大文档分块策略（[novoreorx]）</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45734865" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0328965" target="_blank">Sustainable memristors from shiitake mycelium for high-frequency bioelectronics</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 135</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-10-31 13:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章研究了一种基于香菇菌丝的新型可持续忆阻器，用于高性能生物电子学和神经形态计算。与传统半导体芯片和神经类器官相比，香菇菌丝网络展现出类似神经元放电的自适应电信号特性。实验表明，这种真菌忆阻器可通过电极接口进行训练，并在脱水后保持功能，工作频率高达5.85kHz，准确率达90±1%。此外，香菇还表现出抗辐射性，适合航空航天应用。这一发现为神经形态任务提供了可扩展、环保的平台，连接了生物电子学和非传统计算领域。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[真菌计算技术的可行性与前景]
-
-不同观点：
-• **支持真菌计算的潜力**  
-  - 真菌忆阻器在高频（5.85 kHz）下仍能保持90%准确度，且脱水后功能保留（[embedding-shape]）。  
-  - 香菇的抗辐射性可能适用于航空航天（[embedding-shape]）。  
-  - 类似“自然朋克”的设想，认为可通过无痛方式直接培育技术产品（[Razengan]）。  
-
-• **质疑真菌忆阻器的真实性**  
-  - 宏观尺度忆阻性可能是电极界面电化学的假象，缩小电极后现象消失（[physarum_salad]）。  
-  - 干燥生物材料因缺乏离子迁移性，无法展现真正的忆阻特性（[physarum_salad]）。  
-  - 研究未明确真菌存活状态对实验结果的影响（[physarum_salad]）。  
-
-• **对技术前景的争议**  
-  - 部分用户认为真菌计算可能规模化（[FieryTransition]想象真菌自组织计算），但另一部分质疑其实际应用价值（[joelthelion]）。  
-  - 争议焦点：真菌忆阻器是真实技术突破还是测量假象？  
-
-补充讨论：  
-- **文化联想**：用户提及科幻作品（如《雪崩》）中蘑菇技术的预言性（[lubujackson]）。  
-- **历史对比**：HP在忆阻器技术上的失败被调侃为“输给蘑菇”（[tengbretson]）。  
-- **生态伦理**：技术可能带来新的道德困境（如“作为椅子出生”的想象，[Razengan]）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45771796" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.apple.com/newsroom/2025/10/apple-reports-fourth-quarter-results/" target="_blank">Apple reports fourth quarter results</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mfiguiere</span> |
-                    <span>评分: 155</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-10-30 20:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>苹果公司2025年第四季度财报显示，公司季度营收达1025亿美元，同比增长8%，创历史新高。iPhone收入和服务收入均创新纪录。CEO库克表示9月推出了iPhone 17系列等新产品。CFO指出财年总营收达4160亿美元，活跃设备安装基数在各产品线和地区均创新高。董事会宣布每股派发0.26美元股息。财报电话会议将在10月30日直播。公司同时提醒投资者注意经济环境、供应链等风险因素。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[苹果公司的产品线和服务的重要性，iPhone的主导地位，Mac的未来前景，税收异常，以及AI和GPU的潜力]
-
-不同观点：
-• iPhone和服务的核心地位
-  - iPhone及其相关服务（如iCloud、音乐应用）是苹果公司的核心，iPhone 17和17 Pro仍是智能手机的黄金标准。
-  - iPhone的成功得益于其社交性和安全性，以及iCloud服务的无缝体验。
-  - 数据支持：iPhone销售额占总收入的50%以上，服务收入也远超其他硬件类别。
-
-• Mac的未来前景
-  - Mac销量虽然较低，但其高质量使得用户可以使用多年（如M1芯片设备），因此销量下滑并不令人担忧。
-  - 有人认为Mac被忽视，销量甚至低于iPad和可穿戴设备，但Mac的高质量可能使其在未来保持稳定。
-
-• 税收异常
-  - 2024年第四季度的异常高税收是由于欧洲法院的一项裁决导致的“一次性费用”，2025年税收恢复正常水平。
-
-• AI和GPU的潜力
-  - 有人质疑苹果为何不加入AI竞争，但有人认为苹果可能在M6芯片推出时通过外置GPU切入AI市场，尤其是在能效方面可能具有优势。
-
-补充讨论：
-• 争议焦点：iPhone是否已经“赢得”智能手机市场的竞争？有人认为Android与iPhone的竞争早已结束，iPhone占据绝对优势。
-• 其他值得注意的点：苹果的服务收入（如iCloud、App Store）已超过除iPhone外的所有硬件类别总和，显示出服务业务的强劲增长。
-• 供应链依赖：所有公司（包括苹果）都高度依赖台积电的芯片制造能力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45764986" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/joelseverin/linux-wasm" target="_blank">WebAssembly (WASM) arch support for the Linux kernel</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: marcodiego</span> |
-                    <span>评分: 15</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2025-11-01 16:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了 `linux-wasm` 项目，旨在构建一个能在 WebAssembly（Wasm）上运行的 Linux 系统。主要内容包括：
-
-1. **项目组成**：
-   - 使用 LLVM、Linux 内核、musl libc 和 BusyBox 等组件，并应用了多个补丁以支持 Wasm 架构。
-   - LLVM 提供了 clang 和 wasm-ld 工具链。
-   - Linux 内核增加了 Wasm 架构支持、binfmt 功能和 Web 控制台驱动。
-   - musl libc 和 BusyBox 也进行了修改以适配 Wasm。
-
-2. **构建与运行**：
-   - 提供了 `linux-wasm.sh` 脚本，用于下载、构建和运行系统。
-   - 支持在主机或 Docker 容器中构建。
-   - 构建时会生成 Linux 内核、musl libc、BusyBox 和 initramfs。
-
-3. **运行时环境**：
-   - 提供了一个 JavaScript Wasm 主机示例，用于启动和管理 Wasm 实例。
-   - Wasm 无 MMU，因此 Linux 需以 NOMMU 模式构建，程序需使用 `-fPIC/-shared` 编译。
-
-4. **Docker 支持**：
-   - 提供两种 Docker 容器：`linux-wasm-base`（基础构建环境）和 `linux-wasm-contained`（隔离构建环境）。
-   - 可通过 Docker 命令快速搭建开发环境。
-
-该项目为在 Web 上运行 Linux 系统提供了实验性支持，适合开发者探索 Wasm 和 Linux 的结合。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux WASM 实现的比较和 Firefox 的兼容性问题
-
-不同观点：
-• **对 Firefox 的担忧**  
-  - [evanjrowley] 希望 Firefox 的情况能有所改善，暗示 Firefox 在 WASM 支持或性能方面可能存在问题。
-
-• **技术方案对比**  
-  - [westurner] 提出与 `container2wasm` 方案的比较：  
-    - `container2wasm` 支持通过 Bochs/TinyEMU/QEMU 转换 x86_64/riscv64/AArch64 容器为 WASM，并在 WASI 运行时或浏览器中运行。  
-    - 提到其他相关项目（如 `vscode-container-wasm`）和 JupyterLite 的局限性（如缺少终端支持）。  
-    - 认为当前演示（Linux WASM）的加载速度优于其他类似方案（如 bash in WASM）。
-
-补充讨论：
-- 争议点可能集中在不同 WASM 转换方案的性能、兼容性和适用场景（如浏览器支持、容器化需求）。  
-- 未直接回应 Firefox 的具体问题，但隐含对跨浏览器兼容性的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45783074" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://fzakaria.com/2025/10/29/nix-derivation-madness" target="_blank">Nix Derivation Madness</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 182</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-10-31 14:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章作者Farid Zakaria分享了在使用Nix包管理系统时遇到的困惑：虽然系统中安装了Ruby，但其对应的构建推导文件（.drv）却不存在，且无法从NixOS缓存中获取。通过查询Nix数据库和二进制缓存，发现系统记录了一个推导文件，但实际存在的是另一个不同哈希值的推导文件，两者却指向相同的输出路径。作者进一步通过创建固定输出推导（FOD）的实验，解释了Nix系统中推导文件变化但输出路径不变的机制，揭示了Nix在构建过程中对固定输出内容的特殊处理方式。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Nix中的deriver字段问题及其未来改进方向]
-
-不同观点：
-• **edolstra**认为deriver字段是一个设计缺陷，因为它无法真正追踪Nix表达式的来源，尤其是在pre-flakes时代。他提到未来的Nix可能会引入更完善的来源追踪机制（provenance tracking），并提供了相关PR链接。
-• **ronef**支持edolstra的观点，指出deriver字段的错配问题在fixed-output derivations中尤为明显，并引用Eelco的评论进一步说明问题。他还提到Farid的其他文章值得关注。
-• **amelius**对Nix的整体设计提出批评，认为Nix虽然是一个伟大的研究项目，但现在需要彻底重写。他的评论带有一定的讽刺意味。
-• **beardsciences**询问Ca-derivations是否能解决这一问题，并提供了一个相关Wiki链接，表明Ca-derivations可能会将这些情况作为预期行为而非bug处理。
-• **huem0n**以幽默的方式表达了对Nix复杂性的困惑，承认自己无法理解这些技术细节。
-• **eviks**则对Nix存储路径的命名方式提出质疑，认为应该以更具语义的方式命名（如以“ruby-3.3.9”开头），以便文件列表更易读和排序。
-
-补充讨论：
-- 争议焦点主要集中在deriver字段的实用性和Nix的未来改进方向上，尤其是fixed-output derivations带来的问题。
-- Ca-derivations被提及作为潜在的解决方案，但其具体实现和效果仍需进一步讨论。
-- 命名方式的争议虽然与核心讨论点不完全相关，但也反映了用户对Nix设计细节的关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45772347" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://rfd.shared.oxide.computer/rfd/0609" target="_blank">Futurelock: A subtle risk in async Rust</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bcantrill</span> |
-                    <span>评分: 418</span> |
-                    <span>评论数: 36</span> |
-                    <span>发布时间: 2025-10-31 16:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Rust异步编程中一种特殊的死锁情况"futurelock"：当Future A持有的资源被Future B所需，而负责这两个Future的任务却不再轮询A时就会发生。文章通过一个具体示例展示了这种情况：在一个select!宏中，一个future在等待锁时被挂起，而另一个future在超时后尝试获取同一把锁，但由于前一个future未被丢弃导致死锁。这种死锁非常隐蔽，作者在oxidecomputer/omicron项目中也遇到了类似问题(#9259)。文章旨在提高开发者对这种特殊死锁模式的认识。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Rust异步编程中的取消安全和FutureLock死锁问题]
-
-不同观点：
-• **取消安全问题**：Rust的异步模型存在动态取消行为，类似C的内存安全问题，编译器无法提供帮助，可能导致崩溃、死锁或数据损坏。这与Rust的核心原则相悖。
-• **FutureLock死锁**：在`tokio::select!`中使用未完成的Future可能导致死锁，因为Future持有锁但无法被继续轮询。
-• **解决方案建议**：
-  - 使用`spawn`而非`select!`以避免FutureLock。
-  - 设计不公平的Mutex（可能带来"惊群效应"）。
-  - 让MutexGuard不可跨`await`（`!Send`）。
-  - 引入显式的取消信号（如Go的Context）。
-• **异步模型选择**：有人质疑为何Rust选择异步模式而非更简洁的Actor模型（如Erlang）。
-
-补充讨论：
-• **争议焦点**：
-  - Future取消的两阶段（停止轮询和销毁）是否应同步进行。
-  - Tokio的`select!`宏是否是问题的根源。
-• **其他讨论点**：
-  - 类似优先级反转的问题是否可通过Tokio的任务调度解决。
-  - 确定性模拟测试（如Turmoil）可能帮助发现此类问题。
-  - Rust是否需要强制在`await`点前释放变量以避免FutureLock。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45774086" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
