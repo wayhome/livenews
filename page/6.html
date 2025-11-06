@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-06 23:17 (北京时间)
+            最后更新时间: 2025-11-07 02:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,44 +61,429 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://seemann.io/posts/2024-10-26---p2p-quic/" target="_blank">A P2P Vision for QUIC (2024)</a>
+                    <a href="https://shnatsel.medium.com/the-state-of-simd-in-rust-in-2025-32c263e5f53d" target="_blank">The state of SIMD in Rust in 2025</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-11-05 14:06</span>
+                    <span>作者: ashvardanian</span> |
+                    <span>评分: 219</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-11-05 18:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文探讨了如何利用QUIC协议解决NAT穿越问题，改进传统的P2P网络连接方式。传统方法使用STUN进行地址发现、通过ICE协调打洞技术实现直连，以及依赖TURN中继服务器进行流量转发。但由于NAT实现方式多样，传统方案复杂且存在连接失败的情况。QUIC协议有望提供一个更全面的解决方案，涵盖从地址发现到UDP代理的全流程，从而简化并优化P2P网络连接过程。</p>
+                    <p>这篇文章总结了Rust语言在2025年对SIMD（单指令多数据）的支持现状。主要内容包括：
+
+1. SIMD的用途是通过单条指令处理批量数据来提高运算效率，在x86架构上理论最高可提速64倍。
+
+2. 不同硬件平台的SIMD实现：
+   - ARM称为NEON，所有64位ARM CPU都支持
+   - WebAssembly直接称为128位SIMD扩展
+   - x86从SSE2到AVX-512有多种扩展
+
+3. 兼容性问题：
+   - x86需要处理不同CPU的SIMD支持差异
+   - 可通过指定目标CPU或函数多版本化解决
+
+4. Rust中的四种SIMD实现方式：
+   - 自动向量化（编译器优化）
+   - 高级迭代器
+   - 可移植SIMD抽象
+   - 原始指令
+
+5. 自动向量化的限制，特别是浮点运算需要nightly版本编译器。
+
+文章最后提到Rust对SIMD的支持正在不断完善，但2025年某些功能仍处于开发中。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[NAT穿透（hole punching）的局限性及P2P网络的实现挑战]
+                    <div class="comments-summary">主要讨论点：[Rust中SIMD编程的现状、挑战及与其他语言的比较]
 
 不同观点：
-• **[NAT穿透的固有局限性]**  
-  - 观点：部分NAT设备行为不可预测或受企业控制，导致穿透无法实现。  
-  - 论据：未明确具体比例，但承认存在“一定比例”的节点无法穿透。  
-  - 争议焦点：是否需要明确不可穿透节点的比例（[1vuio0pswjnm7]建议补充数据）。
+• **SIMD在Rust中的实现困难**  
+  - 运行时自动检测SIMD扩展的支持非常痛苦  
+  - 需要在调用栈的每个函数上添加`#[target_feature]`注解以确保内联  
+  - 难以构建抽象，必须复制粘贴代码或使用宏生成  
+  - 例子：无法实现泛型`DataStructure<S>`，必须创建单独的类型如`DataStructureAVX2`和`DataStructureSSE`
 
-• **[第三方中继的必要性与争议]**  
-  - 观点1（反对强制中继）：默认通过第三方中继流量是“愚蠢的”，仅需为少数无法穿透的节点保留中继选项。  
-    - 论据：互联网已有大量中继资源（如Google），多数用户可避免依赖。  
-  - 观点2（隐含支持中继）：对少数节点而言，中继是必要备选方案。  
+• **Rust的自动向量化问题**  
+  - Rust对浮点运算的严格假设（位级可重现性）阻碍了自动向量化  
+  - 与C/C++相比，Rust在大多数浮点代码中无法实现自动向量化  
+  - 争议点：是否应该允许用户选择牺牲精度以换取性能优化  
+  - 论据：C/C++中通过指令编译器可以轻松实现自动向量化，且优化通常能提高精度（如减少舍入步骤）
 
-• **[P2P协议的技术实现差异]**  
-  - UDP协议优势：可通过双向认证实现P2P（[api]），而TCP因NAT穿透不可靠难以实现。  
-  - QUIC协议的挑战：依赖CA TLS证书导致中心化风险（[superkuh]），需集成ACME等复杂方案，易受法律/社会压力影响。  
+• **SIMD在其他语言中的表现**  
+  - C#在稳定版本中提供了更好的SIMD支持，包括通用向量类型和丰富的内部函数  
+  - Julia通过LLVM实现了优秀的自动向量化性能  
+  - 对比：Rust的`std::simd`仍停留在nightly版本，稳定性不足  
+
+• **SIMD的使用场景与需求**  
+  - 有人认为大多数情况下通过迭代和分块处理已足够，必要时可直接使用汇编  
+  - 有人质疑SIMD的实际使用率，认为它更多用于底层代码或特定库  
+  - 争议点：普通Rust/C程序员是否应期望编译器生成最优汇编  
 
 补充讨论：
-- **WebTransport的P2P潜力**：[jauntywundrkind]呼吁浏览器支持P2P WebTransport，但指出其规范进展停滞。  
-- **加密与网络架构**：[0-674-00671-2]提及SHA256签名和UDP哈希用于WAN到Tier1网络的流量加密，但未直接参与核心争议。</div>
+- **`std::simd`的稳定性问题**  
+  - 许多功能（如`std::simd`和生成器）长期停留在nightly版本，引发社区不满  
+  - 有人建议使用第三方库（如`wide`、`pulp`或`macerator`）作为替代方案  
+- **跨平台支持不足**  
+  - 当前SIMD实现主要针对x86，缺乏对ARM和RISC-V的完整支持  
+  - RISC-V甚至无法在用户空间探测扩展支持</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45822982" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45826348" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/7mind/izumi-chibi-ts" target="_blank">Chibi Izumi: Phased dependency injection for TypeScript</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pshirshov</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-11-01 01:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了 **izumi-chibi-ts**，这是一个基于 TypeScript 的依赖注入（DI）库，灵感来源于 Scala 的 Izumi Project 中的 **distage**。主要特点包括：  
+
+1. **核心功能**：类型安全绑定、异步支持、生命周期管理、工厂函数、条件绑定（如开发/生产环境）等。  
+2. **特色**：通过 `@Reflected` 装饰器实现自动依赖解析，避免重复配置。  
+3. **对比其他 DI 库**：提供了更全面的功能支持，如分阶段 DI、配置轴、类型安全等。  
+4. **快速入门**：通过 `ModuleDef` 定义模块，使用 `Injector` 生成实例。  
+5. **适用场景**：适用于需要灵活、类型安全且功能丰富的 DI 解决方案的 TypeScript 项目。  
+
+该库仍在开发中，可能存在不稳定因素，但提供了比现有 DI 库更强大的功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[phased dependency injection的含义及其在TypeScript中的实现和应用]
+
+不同观点：
+• [AlexErrant的疑问]：不确定“phased”在此处的具体含义，猜测可能是类似于SimpleInjector中的`.verify()`方法，用于检测依赖图中的生命周期/循环依赖错误。
+• [pshirshov的解释]：phased DI是一种简化版的依赖注入方法，首先将函数和构造函数转换为可运行时检查的实体（Functoids），然后跟踪依赖关系，进行冲突解决并构建操作的有向无环图（DAG），最后按拓扑顺序生成实例。这种方法的好处包括配置灵活、逻辑冲突少、早期验证等。
+• [tyleo的质疑]：不理解DI库的吸引力，认为通过接口和构造函数参数传递依赖更简单，避免了DI框架带来的依赖顺序或缺失依赖的问题。
+• [mininao的疑问]：询问在JS/TS中使用DI的优点，感觉DI在这些语言中显得笨拙且不符合脚本语言的特性。
+• [nkohari的观点]：认为JS/TS中的DI框架过于复杂，尤其是过度依赖装饰器来弥补缺乏运行时类型信息（RTTI）的不足，建议使用字符串标识符来管理依赖。
+
+补充讨论：
+• [ambicapter的调侃]：提到该项目是通过Claude部分手动审查完成的，尚未经过实战测试，可能存在一些问题。
+• [pshirshov的补充]：强调phased DI的易理解性和可移植性，指出其核心逻辑（Functoid和DAG形成）可以在任何语言中实现且代码量较少。
+• [争议焦点]：主要围绕DI在JS/TS中的实用性和复杂性，以及phased DI的具体实现和优势是否值得采用。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45778418" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://gothamist.com/news/ny-smartphone-ban-has-made-lunch-loud-again" target="_blank">NY smartphone ban has made lunch loud again</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hrldcpr</span> |
+                    <span>评分: 196</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-11-05 13:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>纽约皇后区的本杰明·卡多佐高中实施智能手机禁令后，校园生活发生显著变化。午餐时间变得热闹非凡，学生们开始玩桌游、面对面交流，教师捐赠了棋盘游戏帮助学生适应无手机生活。学校要求3100名学生将手机放入屏蔽信号的磁力袋中。
+
+调查显示，89%的教职员工认为禁令改善了校园环境，76%表示学生课堂参与度提高。学生反馈称阅读量增加、课堂讨论更活跃，但也有人抱怨失去手机使用自由。校方每天仍会收缴约30部违规手机。
+
+目前全美已有31个州和华盛顿特区实施类似禁令。虽然部分学生反对这一政策，但多数教育工作者认为禁令有助于提高学生专注力和社交能力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[手机禁令对学校社交环境和学生学习习惯的影响]
+
+不同观点：
+• **支持手机禁令的观点**  
+  - chis认为课堂使用手机会对学生社交技能产生负面影响，午餐时间比课堂更重要。  
+  - sp4cec0wb0y指出智能手机的普及导致社交结构迅速恶化，即使2014-2018年已有智能手机，但当时的情况比现在好。  
+  - causal担忧技术剥夺了年轻人的社交需求，尤其是儿童的交流与玩耍需求。  
+  - JumpCrisscross认为智能手机对未成年人的大脑发育可能有破坏性影响，尤其是非青少年儿童。
+
+• **反对或质疑手机禁令的观点**  
+  - bemmu提到学生使用AI或Google在课堂上快速获取答案，手机禁令迫使他们进行更深入的研究，但也暴露了技术依赖的问题。  
+  - havblue猜测手机禁令可能是为了对抗“直升机父母”的干预，而非教师的本意。  
+
+• **其他重要观点**  
+  - everdrive认为社会正在逐步形成关于智能手机使用的健康规范，尽管进展缓慢。  
+  - kevinfiol和sidewndr46对比了不同年代的学校午餐文化，前者认为午餐时间应该是喧闹的，后者则提到过去学校禁止午餐时说话。  
+  - zkmon和rs186对文章的写作风格提出批评，认为新闻内容被无关故事淹没或表达方式过于模式化。
+
+补充讨论：
+- 争议焦点：智能手机是否应该在学校被完全禁止，以及其对社交和学习的具体影响。  
+- duderific和duderific的评论引发了关于阅读习惯与手机使用关系的讨论。  
+- leptons的幽默评论“FOOD FIGHT!!”和cramcgrab的“No more kids cameras in the classroom”为讨论增添了轻松元素，但也反映了对学校纪律的关注。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45822539" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arnon.dk/the-trust-collapse-infinite-ai-content-is-awful/" target="_blank">The trust collapse: Infinite AI content is awful</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: arnon</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-11-06 10:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章讨论了AI内容泛滥导致的信任危机。随着AI工具让内容创作成本降至零，市场上充斥着大量看似专业但缺乏真实性的营销内容（如群发邮件、博客文章），导致人们难以辨别真伪。一位B2B销售专家表示，他已不再理会陌生联系，因为无法确认对方是真人还是AI生成的垃圾信息。作者指出，传统的营销漏斗（关注转化率）已失效，现在需要建立"信任漏斗"（注重长期关系和客户忠诚度）。由于AI生成的内容千篇一律且难以验证真实性，潜在客户倾向于将所有陌生信息视为噪音，这造成了严重的信号噪声比问题，使建立真实商业关系变得更加困难。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[技术发展的伦理与影响、信任机制的重建、AI内容的泛滥及其对社会的影响]
+
+不同观点：
+• [everdrive] 主张不惜一切代价推进技术发展，认为所有实验和冲动都应被实现，无论其对人类生活的负面影响。
+• [ChrisMarshallNY] 指出AI加速了企业的短命化，使低端骗局看起来更专业，增加了风险。
+• [guzik] 对社交媒体上的内容泛滥表示担忧，认为频繁发布无法产生有意义的内容。
+• [alexpotato] 引用Harari的观点，认为人类应通过建立可信机构来应对虚假信息。
+• [_the_inflator] 批评技术文档的混乱和低效，认为SEO优化牺牲了用户体验。
+• [tetris11] 对在线服务的不信任，更倾向于通过人际网络获取可靠推荐。
+• [stevetron] 对操作系统和技术的信任危机表示担忧，认为隐私侵犯和强制更新破坏了信任。
+• [heddycrow] 认为AI内容的泛滥可能迫使社会修复信任和奖励系统，尽管短期内痛苦。
+• [cantor_S_drug] 提出需要类似PageRank的算法来评估内容的可信度，区分AI生成的内容。
+• [realitydrift] 描述了“漂移原则”，认为AI导致内容过度优化，失去真实性。
+• [bee_rider] 担忧订阅模式的可持续性，希望回归一次性购买模式。
+• [slightwinder] 怀疑这是权力阶层故意削弱媒体信任的计划。
+• [Sharlin] 将信任危机类比为女性在在线约会中的体验。
+
+补充讨论：
+• 争议焦点在于技术发展的伦理边界和AI对社会信任机制的影响。
+• 讨论中提到AI如何使低质量内容看起来更专业，增加了识别真实信息的难度。
+• 部分评论者认为社会需要通过制度或技术手段重建信任，而另一些人则对现有解决方案表示怀疑。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45833496" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.tomshardware.com/tech-industry/big-tech/manufacturer-issues-remote-kill-command-to-nuke-smart-vacuum-after-engineer-blocks-it-from-collecting-data-user-revives-it-with-custom-hardware-and-python-scripts-to-run-offline" target="_blank">Vacuum bricked after user blocks data collection – user mods it to run anyway</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: toomanyrichies</span> |
+                    <span>评分: 335</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2025-11-01 17:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>工程师Harishankar发现其iLife A11智能扫地机器人未经同意持续向厂商发送数据，屏蔽相关IP后设备竟被远程锁定。拆解分析发现：1）设备存在严重安全隐患，可轻易获取root权限；2）实时上传包含家居3D地图的敏感数据；3）日志证实厂商通过远程指令强制停用设备。最终他通过改造实现了完全本地化运行，夺回数据控制权。事件揭露了廉价智能设备普遍存在的隐私风险——厂商通过远程服务器处理数据时，用户完全失去对信息的掌控权。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[智能设备的控制权、隐私问题及替代方案]
+
+不同观点：
+• [支持用户完全控制权]
+  - ethin认为公司应在用户购买后失去对技术的控制权，建议公司需购买用户数据的使用许可。
+  - userbinator赞同用户应拥有完全控制权，并指出其真空吸尘器是“非智能”的，易于维修。
+
+• [反对智能设备的隐私和安全问题]
+  - noir_lord因其对隐私和数据安全的担忧，拒绝使用智能设备，并选择传统设备。
+  - booleanbetrayal选择不将Roomba连接到互联网，以避免潜在问题。
+
+• [替代方案和技术解决方案]
+  - brenainn提到Valetudo项目，可作为替代固件以绕过厂商控制。
+  - dylan604建议开发手动控制设备，以解决智能设备的学习能力不足问题。
+
+• [对厂商行为的批评]
+  - markus_zhang表示将该公司从其列表中移除，反映对厂商行为的不满。
+  - bitwize批评厂商将关键功能依赖于云端，可能是由于技术能力不足。
+
+补充讨论：
+- StarGrit对机器人吸尘器的实际效果提出质疑，认为雇佣清洁工可能更高效。
+- sema4hacker表达了对工程师能力和时间的羡慕。
+- Sharlin以反问句表达了对当前智能设备生态的失望。
+- m463表示在购买前就阻止此类问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45783467" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.pnas.org/doi/10.1073/pnas.1900712116" target="_blank">Optimism associated with exceptional longevity (2019)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: RickJWagner</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-11-05 13:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[乐观与长寿的关系]
+
+不同观点：
+• **乐观直接影响长寿**  
+  - [nikolay]引用《长寿项目》研究，指出乐观者更少关注症状，暗示乐观态度本身可能延长寿命。  
+  - [Insanity]认为乐观降低压力水平，而长期压力有害健康，间接支持乐观与长寿的关联。
+
+• **乐观是结果而非原因**  
+  - [didibus]提出乐观可能由基因和环境塑造，长寿和乐观共同源于优势条件（如健康、幸运经历），而非乐观直接导致长寿。  
+  - [id]质疑相关性，指出健康和社会特权者更易乐观，而非乐观本身带来长寿。
+
+• **研究局限性争议**  
+  - [DenisM]指出研究中缺乏对财富的控制变量，可能混淆乐观与长寿的真实关系。  
+  - [lisbbb]以个人反例（悲观但长寿的父亲）质疑普遍结论，强调样本偏差问题。
+
+补充讨论：
+- **心理与生理的复杂交互**  
+  [fusslo]提到遗传、神经发育（如前额叶固化）和童年环境对行为和寿命的潜在影响，暗示乐观仅是多重因素之一。  
+- **行为建议与讽刺**  
+  - [unionjack22]建议通过减少社交媒体使用改善心态，呼应乐观的可塑性。  
+  - [RobotToaster][giantg2]等用户以幽默表达对研究的悲观反应，凸显主题的争议性。  
+
+争议焦点：  
+乐观是长寿的独立因素，还是其他优势条件（如健康、财富）的副产品？</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45822513" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=DAX2_mPr9W8" target="_blank">I was right about dishwasher pods and now I can prove it [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hnaccount_rng</span> |
+                    <span>评分: 366</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-11-04 20:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是YouTube平台的版权声明和使用条款，列出了关于平台运营的各项政策，包括版权保护、隐私政策、广告合作、开发者条款等内容，同时说明了新功能的测试安排和NFL周日门票服务。文末标注了2025年谷歌公司的版权信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：洗碗机清洁剂的使用效果、成本、环保性及用户偏好  
+
+不同观点：  
+• **支持粉末清洁剂**  
+  - 粉末清洁剂成本更低，效果优于或等同于胶囊（pods）。  
+  - 通过预洗（pre-wash）设计，粉末能更有效清除油脂（如花生酱测试）。  
+  - 用户反馈改用粉末后清洁效果显著提升（如hekkle、dprice1）。  
+  - 环保优势：部分粉末产品可生物降解且无香料（如Dirty Labs）。  
+
+• **支持胶囊清洁剂**  
+  - 胶囊使用方便，避免粉末撒漏或液体结块（如emtel）。  
+  - 用户偏好胶囊的便捷性，对小幅成本差异不敏感（如emtel购买Costco折扣装）。  
+  - 部分用户认为胶囊清洁效果已足够（如arjie）。  
+
+• **争议与疑问**  
+  - **效果测试争议**：ZeroGravitas质疑测试未充分证明粉末的预洗优势，或大品牌化学配方可能抵消胶囊的释放缺陷。  
+  - **环保问题**：胶囊外包装为塑料，非可降解（ZeroGravitas），而粉末更环保。  
+  - **市场供应**：RealityVoid指出粉末在部分地区被下架，疑似厂商推动胶囊销售。  
+
+补充讨论：  
+- **技术细节**：洗碗机需排空冷水以确保水温适合酶清洁（383toast），部分用户误用漂洗剂（spondyl）。  
+- **历史案例**：billfor囤积含磷酸盐清洁剂（已禁），认为其效果更佳，建议添加TSP（磷酸三钠）可能改善现代清洁剂。  
+- **维修与耐用性**：ErroneousBosh提到老式洗碗机因胶囊泡沫过多导致漏水，需手工修复。  
+
+争议焦点：  
+- 粉末与胶囊的实际清洁效果对比是否充分？  
+- 用户偏好（便捷性 vs. 成本/环保）是否合理？  
+- 厂商是否故意减少粉末供应以推广胶囊？</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45815419" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.ml.cmu.edu/2025/10/27/learning-from-failure-to-tackle-extremely-hard-problems/" target="_blank">Learning from failure to tackle hard problems</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: djoldman</span> |
+                    <span>评分: 79</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-10-30 18:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了BaNEL（贝叶斯负证据学习）算法，旨在解决机器学习中面临的极端困难问题，如药物发现和定理证明。这类问题的挑战在于成功样本极其稀少且奖励评估成本高昂。传统方法在零奖励情况下失效，而BaNEL仅利用失败样本进行训练，减少奖励评估次数，从而避免重复错误并提高成功率。文章对比了不同方法的优劣，指出BaNEL在功能性和低评估成本方面的优势。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[解决难题的关键方法及其在不同领域的应用]
+
+不同观点：
+• [axus]认为解决难题的关键在于知道问题已被他人解决，强调已有解决方案的重要性。
+• [abtinf]对机器学习研究的目标提出质疑，认为某些领域（如药物发现）与定理证明和算法问题解决不同，暗示可能存在政治或资金驱动的动机。
+• [richard___]提出问题，探讨减少负面样本的可能性是否也是一种有效方法，引发对替代方案的思考。
+• [qqxufo]强调失败的设计性学习，提出通过控制成本、频率和可观察性来优化失败的价值，并列举具体实践方法（如预演与复盘对称、区分噪声与意外）。
+
+补充讨论：
+• 争议焦点在于[abtinf]对机器学习研究目标的质疑，是否某些领域被不适当地纳入研究范围。
+• [qqxufo]的观点与[axus]形成对比，前者强调通过设计失败来学习，后者依赖已有解决方案。
+• [richard___]的提问为讨论提供了新的视角，即是否可以通过减少负面样本而非完全解决问题来达到目标。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45763262" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -157,362 +542,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bloomberg.com/news/articles/2025-11-06/us-economy-at-risk-of-weakening-with-growing-gap-between-rich-and-poor" target="_blank">'Jenga Tower' US Economy Teeters as Middle Class Pulls Back Spending</a>
+                    <a href="https://ptylr.com/posts/2025-09-28-librearm-breathing-new-life-into-qardioarm-devices" target="_blank">LibreArm – Breathing New Life into QardioArm Devices</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mousacre</span> |
+                    <span>作者: souterrain</span> |
                     <span>评分: 15</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-11-06 11:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45833908" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simonwillison.net/2025/Nov/5/brenda/" target="_blank">I’m worried that they put co-pilot in Excel</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: isaacfrond</span> |
-                    <span>评分: 452</span> |
-                    <span>评论数: 45</span> |
-                    <span>发布时间: 2025-11-05 08:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章以幽默口吻表达了对AI（Copilot）进入Excel的担忧。作者认为真正掌握Excel的是各公司财务部门的"Brenda"——这些默默无闻但精于Excel的中层员工。讽刺的是，当高管们用AI修改报表时，由于AI会产生幻觉错误，又缺乏Brenda的专业判断力，可能导致严重问题。文章暗示盲目依赖AI而忽视专业人士可能会带来风险。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI自动化在Excel等工具中的应用及其可靠性、安全性和用户接受度]
-
-不同观点：
-• **支持有限自动化**  
-  - 用户AkshatM认为自动化在可理解、可靠、可观察的任务中是可接受的，但AI因其不可预测性和缺乏护栏而令人不安。  
-  - 用户jwsteigerwalt建议通过Git连接工作簿来追踪AI的修改，以减少错误风险。
-
-• **反对AI在Excel中的应用**  
-  - 用户Havoc指出LLM在真实Excel场景中容易混淆并产生错误，且演示通常基于理想化数据。  
-  - 用户newscracker分享个人经历，称ChatGPT在复杂公式生成中频繁出错，导致时间浪费。
-
-• **对AI工具的实用性质疑**  
-  - 用户Dumblydorr批评微软强行推广Copilot等AI工具，认为其功能目前无用且存在安全风险。  
-  - 用户alienbaby强调使用AI仍需用户具备检查能力，节省时间有限。
-
-• **对自动化的替代性讨论**  
-  - 用户Esophagus4认为应减少依赖人工（如“Brenda”），转而优化流程实现自动化。  
-  - 用户snowwrestler指出多人协作（如“BaaS”）和确定性工具对会计的重要性，AI可能破坏这一基础。
-
-补充讨论：
-- **争议焦点**：AI的可靠性（如幻觉问题）和安全性（如数据泄露风险）是主要争议点。  
-- **用户态度分化**：部分用户对AI工具持乐观态度（如tempodox的娱乐性观点），而更多用户强调实际应用中的问题。  
-- **技术局限性**：现有AI模型（如ChatGPT）在复杂任务中表现不佳，用户期望与实际体验存在差距。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45820872" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://pncnmnp.github.io/blogs/timing-wheels.html" target="_blank">Timing Wheels</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pncnmnp</span> |
-                    <span>评分: 42</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-11-01 16:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章是《数据结构和算法的秘密世界》第五章的草稿，主要探讨了计时器的演变及其在计算机中的应用。作者从古老的计时工具（如沙漏、水钟）讲起，介绍了它们的历史用途，然后过渡到现代计算机中的计时器模块，重点讨论了"定时轮"这种高效管理计时器的数据结构，并对比了Linux系统中传统和现代的定时轮实现方式。文章兼具历史趣味性和技术深度，通过计时器的发展展现了时间测量技术的演进过程。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：文章对特定数据结构的描述是否准确和实用，以及定时器API的设计考量。
-
-不同观点：
-• **批评观点**：  
-  - 文章未提及关键概念“priority queue”，仅简单提到“heap”且内容像是复制粘贴的。  
-  - 认为大多数情况下应优先使用“priority queue”而非文中描述的数据结构。  
-  - 质疑文章的准确性，不建议将其作为学习资源。  
-  - 提出定时器API设计的分类需求（如“fire-and-forget”“owned但取消罕见”等），并批评Rust在复杂移动构造函数上的限制。
-
-• **支持观点**：  
-  - 认为文章是实用且有价值的资源，甚至订阅了RSS订阅源。  
-
-补充讨论：  
-- 争议焦点在于文章是否遗漏了关键概念（如“priority queue”）以及是否适合作为学习材料。  
-- 定时器API的设计分类（如取消频率）是一个延伸的技术讨论点。  
-- Rust与C++在移动构造函数上的差异被提及，但未深入讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45782702" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.afr.com/technology/microsoft-offers-refunds-after-tricking-customers-into-ai-upgrades-20251105-p5n81k" target="_blank">Refund requests flood Microsoft after tricking users into AI upgrades</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-11-06 13:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>微软AI助手Copilot的订阅用户因被误导购买高价服务而大规模申请退款，但微软因退款需求远超预期（高达270万不满用户）而无法立即兑现退款承诺。微软向部分用户解释称错误发送了取消订阅的链接。此事反映了微软在AI服务营销和客户管理方面的问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：用户对Microsoft Office 365及其AI功能（如Copilot）的不满与替代方案讨论
-
-不同观点：
-• **支持LibreOffice/Collabora Office**  
-  - 推荐LibreOffice作为免费替代方案，适合家庭/轻度使用，支持协作功能  
-  - 提及Collabora Office（基于LibreOffice的iOS版本），但指出在线协作版本需付费托管  
-  - 部分用户认为苹果自带办公软件已满足基本需求  
-
-• **对Microsoft Office 365及其AI功能的强烈不满**  
-  - 用户批评Copilot功能无用且干扰工作（如强制植入按钮、代码补全错误率高）  
-  - 抱怨无法降级订阅或取消AI功能，认为AI应作为可选附加服务而非强制捆绑  
-  - 指责微软采用“黑暗模式”（如隐藏经典订阅选项）和涨价策略不道德  
-
-• **对微软AI战略的失望**  
-  - 列举Copilot实际体验问题（如按键无效、菜单空白、代码建议不精准）  
-  - 认为AI功能尚未成熟，但被迫接受其存在，质疑其长期价值  
-
-补充讨论：
-- 争议焦点：微软是否故意隐藏非AI订阅选项（用户提供存档链接求证）  
-- 个别用户反驳“AI是泡沫”的观点（未展开论证）  
-- 讨论中提到通过修改注册表或使用旧版软件规避Copilot的极端做法</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45834932" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://thephp.foundation/blog/2025/11/05/design-contest-results/" target="_blank">PHP Design Contest Results</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: moebrowne</span> |
-                    <span>评分: 6</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-06 09:23</span>
+                    <span>发布时间: 2025-10-22 19:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章总结了PHP 8.5发布页面设计比赛的成果和经验教训。比赛由社区参与设计、评审和投票，最终Nuno Guerra获得冠军。主办方分享了未来改进方案：可能分设"品牌更新"和"全新概念"两个赛道；优化投票机制，使用专用工具并隐藏票数；调整评委与社区投票比例至50/50；提供详细说明并设置小额入围奖金。文章还公布了获奖名单及奖品，并指出比赛中的幽默作品虽未入围但获得荣誉提名。最后，主办方感谢所有参与者和赞助商JetBrains、Rector的支持，并邀请社区继续参与页面实现的讨论。</p>
+                    <p>本文讲述了作者如何通过逆向工程让已停产的QardioArm血压计重获新生的故事。当Qardio公司倒闭后，其配套App下架，导致硬件无法使用。作者通过蓝牙工具分析设备协议，破解了控制指令，开发出开源替代应用LibreArm。该应用功能简洁，直接将数据写入苹果健康应用。在上架App Store时，作者成功说服苹果该应用仅作为健康记录工具而非医疗设备。最终作者选择开源代码，让更多用户能继续使用闲置的QardioArm设备，展现了开源社区对硬件延续使用的重要性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：PHP新设计的评价及其对PHP基金会的影响  
-
-不同观点：  
-• **正面评价**：认为PHP的新设计既现代又保留了熟悉的风格，体现了社区的努力，是PHP基金会向前迈出的坚实一步。  
-• **补充讨论**：强调社区合作的重要性，认为这是PHP发展的关键因素。  
-
-补充讨论：  
-• 虽然没有直接争议，但隐含了对PHP未来发展的乐观态度，认为设计更新是积极信号。  
-• 讨论可能引发关于PHP在现代化进程中如何平衡创新与传统特性的进一步思考。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45833155" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.joaomordomo.com/files/books/ebooks/Peter%20Drucker%20-%20HBR%20-%2031%20Articles/What%20we%20can%20learn%20from%20Japanese%20management.pdf" target="_blank">Peter Drucker: What [American execs] can learn from Japanese management (1970) [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ssivark</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-06 06:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Mozilla在日本的客户支持问题及其与美国和日本决策方式的比较。
+                    <div class="comments-summary">主要讨论点：[用户对QardioArm产品的积极反馈和期待]
 
 不同观点：
-• 第一种观点：认为Mozilla在日本的支持问题反映了美国公司对本地文化的不敏感。支持者引用了德鲁克的经典观点，指出美国公司倾向于快速决策和执行，而日本公司更注重集体共识和长期关系。这种文化差异导致Mozilla在日本的支持服务未能满足本地用户的期望。
-• 第二种观点：认为问题并非文化差异，而是Mozilla内部管理不善。评论者指出，Mozilla在全球其他地区的支持服务也存在问题，这表明问题可能源于公司内部的资源分配或流程设计，而非特定文化背景。
-• 第三种观点：认为问题的根源在于开源项目的全球协作模式与本地化需求之间的冲突。开源项目通常依赖全球志愿者，但在某些地区（如日本）可能需要更多的本地化支持和专业团队。
+• 用户对QardioArm产品的使用体验非常满意，表达了对再次使用的期待。
+• 虽然没有直接反对意见，但其他评论可能会提到产品的具体功能或使用中的问题，例如准确性或易用性。
 
-补充讨论：
-• 争议焦点：问题的根源是文化差异还是管理不善。一方强调文化因素的重要性，另一方则认为管理问题是主因。
-• 值得注意的讨论点：有评论提到，Mozilla可以借鉴其他跨国公司在日本的成功经验，如更注重本地化团队建设和用户反馈机制。</div>
+补充讨论：[用户的情感表达和产品忠诚度]
+• 用户的评论充满热情，显示出对产品的高度认可和忠诚度。
+• 这种积极反馈可能对潜在用户产生正面影响，鼓励他们尝试该产品。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45832111" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/matisojka/qqqa" target="_blank">Show HN: qqqa – A fast, stateless LLM-powered assistant for your shell</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: iagooar</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-11-06 10:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍了qqqa项目，这是一个为命令行提供LLM（大语言模型）辅助的快速、无状态的CLI工具。它包含两个主要功能：
-1. `qq`：用于快速提问，获取单一问题的答案。
-2. `qa`：作为快速代理，可在确认后执行文件读写或命令运行等操作。
-
-项目特点包括：
-- 无状态设计，符合Unix哲学。
-- 支持OpenAI和Groq API（默认推荐Groq，因其速度快、成本低）。
-- 提供丰富的ANSI颜色格式化输出。
-- 可通过配置文件（`~/.qq/config.json`）设置API密钥和模型偏好。
-- 包含安全机制，如操作确认和无表情符号模式（`--no-fun`）。
-
-安装方法是从GitHub Releases下载预编译包，并通过`qq --init`或`qa --init`进行初始设置。项目强调简洁、安全和与Shell的良好兼容性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[CLI工具与LLM结合的实用性和现有类似工具的对比]
-
-不同观点：
-• [baalimago] 提到自己的项目clai有类似功能，并建议添加新特性如数据管道输入、配置文件和会话支持，认为自己的项目更成熟。
-• [pmarreck] 指出很多人已经开发了类似工具，并分享了自己的"ask"和"please"工具，强调"ask"具有记忆功能以支持后续问题。
-• [buster] 推荐使用askIt，认为其简洁高效（仅204行代码）。
-• [d4rkp4ttern] 介绍了自己的工具lmsh，使用Claude-code非交互模式，无需API密钥，并提到其基于Rust开发以提高性能。
-• [stevedsimkins] 认为aichat已经实现了类似且更强大的功能，但仍赞赏新工具遵循Unix哲学。
-
-补充讨论：
-• [ManuelKiessling] 提出了信任与安全问题，特别是在macOS上运行时出现的恶意软件警告，并对作者身份进行了验证。
-• [CGamesPlay] 询问工具是否支持链式调用，并对默认不上传终端历史的设置表示疑问。
-• [psychoslave] 关心是否支持本地LLM快速参数配置。
-• [armcat] 指出了README中关于Groq吞吐量的错误（应为1000 tokens/秒而非分钟）。
-
-争议焦点：
-• 新工具的创新性和必要性 vs 现有工具的成熟度（如clai、askIt、aichat等）。
-• 安全性问题（macOS警告和作者身份验证）。
-• 功能细节的准确性（Groq吞吐量描述错误）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45833811" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://codegood.co/writing/why-your-best-engineers-are-interviewing-elsewhere" target="_blank">Why Your Best Engineers Are Interviewing Elsewhere, CodeGood</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-11-05 13:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨了优秀工程师离职的根本原因：管理层与基层工程师之间的信息断层。文章指出，企业层级制度导致负面信息被层层过滤，高层管理者往往在员工决定离职后才得知问题。典型案例显示，工程师们早已知晓技术隐患，但信息经过层层过滤后，高管收到的只是"一切正常"的汇报，最终导致系统崩溃和人才流失。文章批评了"越级沟通"的禁忌，指出这种制度实际保护了中层管理者免于担责，却让高层基于失真信息做决策。作者建议高管应定期直接与基层员工沟通，才能及时发现问题，避免小问题演变成危机。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[工程师离职的原因及管理层与工程师之间的沟通问题]
-
-不同观点：
-• [工程师离职是由于管理层的不作为和官僚主义]
-  - 工程师无法影响决策或被迫从事繁琐工作（smcleod）
-  - 管理层层级过多导致效率低下（dzonga）
-  - 管理层忽视工程师的合理建议，事后却推卸责任（Viliam1234）
-
-• [工程师离职是由于双方沟通不畅和目标不一致]
-  - 工程师不了解公司的实际目标，公司也未明确传达（ivraatiems）
-  - 公司声称重视可靠性等，但实际行动与之相反（ivraatiems）
-  - 高层领导可能并不关心技术细节，只关注短期利益（dboreham）
-
-• [工程师离职是由于工作环境和待遇问题]
-  - 加薪可能不足以留住员工，尤其是当其他公司提供更高薪资时（Viliam1234）
-  - 监控系统设计不当导致工程师疲于应对虚假警报（Viliam1234）
-  - 工程师因同事离职而感到不安或工作负担加重（Viliam1234）
-
-• [管理层可以通过改进沟通和工具来解决问题]
-  - 采用跳级沟通和调查工具可以改善信息流通（esafak）
-  - 军事系统中的军官与士兵沟通模式值得借鉴（jjmarr）
-
-补充讨论：
-• 争议焦点：
-  - 高层领导是否真的不了解问题，还是故意忽视（dogleash）
-  - "现在发布，以后重构"的承诺是否可信（Viliam1234）
-  - 工程师离职的真实原因是薪资还是其他因素（Viliam1234）
-
-• 其他讨论：
-  - 作者的观点可能带有自我营销目的（ivraatiems）
-  - 在当前经济环境下，工程师离职的可能性是否依然高（pragmatic）
-  - 个人创业或自由职业可能是解决组织问题的出路（dboreham）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45822650" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45674227" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
