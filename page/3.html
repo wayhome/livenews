@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-11 11:44 (北京时间)
+            最后更新时间: 2025-11-11 14:21 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,43 +61,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://matklad.github.io/2025/11/09/error-ABI.html" target="_blank">Error ABI</a>
+                    <a href="https://www.phoronix.com/news/Linux-6.19-Patch-Would-MS-Ext" target="_blank">The Linux Kernel Looks to “Bite the Bullet” in Enabling Microsoft C Extensions</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 77</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-11-10 02:31</span>
+                    <span>作者: keyle</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-11-10 08:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了使用代数数据类型（ADT）处理错误的潜在性能问题，指出错误路径虽然罕见但会影响整个调用栈的性能，因为大尺寸的错误类型会导致函数返回时需要内存操作。成熟的错误处理库（如Rust的`failure`和`anyhow`）通过指针隐藏错误以减少开销，但这依赖全局分配器。文章探讨了几种优化错误处理的ABI方案，包括保持`Result<T, E>`与`T`相同的ABI、利用寄存器或状态标志传递错误，以及通过栈展开（unwinding）直接跳转到错误恢复地址。作者认为栈展开可能是最优方案，并强调应将错误处理的编程模型与实现细节分离。最终建议根据语言特性选择是否将错误处理作为语言的一等公民。</p>
+                    <p>Linux内核计划在6.19版本中默认启用微软C扩展（-fms-extensions），允许GCC和Clang编译器支持微软特有的C/C++语法。该功能可匿名嵌套结构体/联合体，简化代码并节省栈空间。虽然过去多次讨论未获通过，但此次补丁已进入kbuild-next开发分支，除非Linus Torvalds等核心开发者反对，否则很可能被合并。支持者认为统一启用该扩展能避免逐个案例论证，而反对者可能担忧引入微软专属语法的影响。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：静态链接程序中的ABI设计、错误处理机制的性能与实现方式、Rust中错误处理的优化策略。
+                    <div class="comments-summary">主要讨论点：[GNU编译器工具链中启用微软C扩展的争议与讨论]
 
 不同观点：
-• **Rigid ABIs的限制与优化**  
-  - fleventynine认为静态链接程序不需要严格的ABI，编译器应根据函数上下文优化ABI以减少不必要的复制和寄存器操作，这是LTO（链接时优化）的下一步发展方向。
-  - eqvinox建议在自定义ABI中直接扩展返回地址空间（如缓存行大小）以简化错误恢复路径，避免复杂的侧表查询。
+• **支持扩展的实用性观点**  
+  - 用户netbsdusers认为，使用bitfields可以使驱动代码更简洁安全，Windows驱动已大量使用，而Linux因多字节序问题依赖宏，代码更丑陋且易出错。  
+  - 用户fuhsnn和teo_zero提到，类似的扩展可通过`-fplan9-extensions`实现，且Plan9扩展功能更强大（如结构体继承）。  
 
-• **错误处理的实现与性能**  
-  - deathanatos反驳了“错误类型会传染性影响性能”的观点，以Rust的anyhow::Error为例，说明通过指针封装可以避免错误类型膨胀，同时保持堆栈效率。
-  - quotemstr指出错误处理不需要全局分配器，可以通过虚表（vtable）实现资源的释放，且ABI中未充分利用的寄存器可用于传递错误信息。
-  - aw1621107提到iex-rs项目通过侧表查询错误恢复地址的方式优化Result<T, E>的性能，可能优于传统实现。
+• **对扩展来源的争议**  
+  - 用户1718627440澄清，这是GNU工具链的“微软C扩展”，而非微软官方扩展。  
+  - 用户dataflow质疑过去拒绝扩展是否因“反微软情绪”，而非技术优劣，并指出GNU本身已使用`-std=gnu11`。  
 
-• **语言设计的选择与权衡**  
-  - malkia回顾了Java受检异常的优点与缺点（扩展性差），认为C++的异常处理更灵活。
-  - stmw对Rust社区频繁提出的“异常”和“垃圾回收”提案表示担忧，认为这些特性与Rust的设计初衷相悖。
+• **对改动意义的质疑**  
+  - 用户dooglius认为文章夸大争议，实际改动无关紧要，且内核开发者无理由反对。  
+  - 用户MangoToupe指出问题本质是C语言的不足，而非微软。  
 
-补充讨论：
-- 争议焦点：错误处理是否应牺牲灵活性（如Zig的简单错误码）以换取性能，还是通过复杂机制（如Rust的Result和堆分配）平衡性能与表达能力。
-- 技术细节：如ABI设计中寄存器的利用、堆分配的成本、错误恢复路径的实现方式（侧表 vs. 直接扩展返回地址）。</div>
+• **阴谋论与历史联想**  
+  - 用户jmclnx和mrlonglong提及微软“拥抱、扩展、消灭”策略，暗示潜在商业威胁。  
+  - 用户nurettin猜测微软可能放弃Windows，转向Linux。  
+
+补充讨论：  
+- 用户unwind指出GNU文档模糊，扩展具体功能不明确。  
+- 用户yinkindog偏离主题，称赞某内核程序员代码质量，侧面反映社区对代码风格的重视。  
+
+争议焦点：  
+1. 技术需求 vs. 意识形态：是否因扩展与微软相关而阻碍技术改进？  
+2. 扩展命名的敏感性：Plan9扩展更受欢迎，但微软标签引发争议。  
+3. 微软参与开源的信任问题：历史行为是否影响当前技术决策？</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45871688" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45873625" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -127,6 +135,143 @@
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45781725" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://renerocks.ai/blog/2025-11-02--tigerfans/" target="_blank">Building a high-performance ticketing system with TigerBeetle</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jorangreef</span> |
+                    <span>评分: 113</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-11-08 00:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者基于TigerBeetle金融交易数据库开发高性能票务系统的过程。TigerBeetle采用复式记账原理，通过设置运营账户、预算账户和消费账户来管理票务库存，利用严格的借贷平衡约束从根本上杜绝超卖问题。作者用Python搭建了包含FastAPI、SQLite和模拟支付系统的演示平台，实现了包含超时释放、支付回调等完整票务流程的原型。该系统最终性能达到977票/秒，比基准需求高出15倍。项目得到TigerBeetle创始人肯定，并作为开源案例展示（tigerfans.io）。整个开发过程仅用3天完成核心功能，随后19天进行优化。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Tigerbeetle的性能特点及适用场景，以及与传统数据库如PostgreSQL的比较]
+
+不同观点：
+• [ripberge] 强调在实际应用中，如售票系统，由于存在大量未完成购买（如预留票、机器人操作等），实际交易速度会远低于实验室测试速度。此外，复杂业务规则和座位算法会增加数据库调用的复杂性。
+• [kelseydh] 指出Tigerbeetle在批量处理交易时表现优异（约250,000次写入/秒），但在单笔交易处理时速度较慢（约105次写入/秒），建议通过微批量处理（microbatching）来提升实时工作负载的性能。
+• [vivzkestrel] 质疑为何不使用PostgreSQL，暗示PostgreSQL可能更适用于此类场景。
+• [kevinak] 对FastAPI与SQLite的性能表现提出疑问，认为SQLite在操作次数上应优于PostgreSQL。
+
+补充讨论：
+• [nickmonad] 讨论了"LiveBatcher"的持久性问题，担心服务器故障可能导致数据丢失，但后续澄清了架构设计确保请求只有在交易被发送到Tigerbeetle后才会返回。
+• [overfeed] 提供了Jepsen对Tigerbeetle的分析报告链接，可能涉及对其可靠性的进一步讨论。
+• 争议焦点：Tigerbeetle的批量处理优势与单笔交易性能之间的权衡，以及其与传统数据库如PostgreSQL的适用场景比较。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45852755" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://parkscomputing.com/page/i-hate-screenshots-of-text" target="_blank">I hate screenshots of text</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: paulmooreparks</span> |
+                    <span>评分: 151</span> |
+                    <span>评论数: 46</span> |
+                    <span>发布时间: 2025-11-11 01:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[是否应该使用截图来分享文本信息，尤其是在技术支持和协作场景中]
+
+不同观点：
+• **支持使用截图**：
+  - 截图快速、通用，适用于所有应用程序（如[kjellsbells]和[crazygringo]提到）。
+  - 保留文本格式（如代码缩进、语法高亮、表格对齐等），避免因平台差异导致的格式混乱（[crazygringo]和[jv22222]强调）。
+  - 提供视觉上下文，帮助接收者更好地理解问题（[albert_e]和[jv22222]提到）。
+  - 适用于移动设备或社交平台分享（[al_be_back]补充）。
+
+• **反对使用截图**：
+  - 截图不便于搜索、复制或编辑文本（[thundergolfer]和[VladVladikoff]指出）。
+  - 在移动设备上查看截图时体验差（如缩放困难、图像降质，[VladVladikoff]提到）。
+  - 应直接分享文本或链接以提升效率（[thundergolfer]的“Slack提问规则”和[cnees]的实践）。
+  - 依赖OCR技术（如Apple的自动识别）可能不可靠（[Footprint0521]的失败案例）。
+
+• **中立或折中观点**：
+  - 同时提供截图和原始文本/链接，兼顾上下文与实用性（[albert_e]建议）。
+  - 平台功能缺陷（如Teams的代码块支持差）可能导致截图成为无奈选择（[pavon]提到）。
+
+补充讨论：
+- **争议焦点**：截图的便利性与功能局限性之间的权衡，以及不同场景下的适用性（如技术支持 vs. 社交分享）。
+- **技术改进建议**：增强截图元数据（如嵌入URL、坐标等，[gyomu]提出），或优化文本分享的UI体验（[romaniitedomum]批评LLM解析的冗余）。
+- **文化差异**：新手程序员倾向于截图，而经验者更倾向直接文本（[VladVladikoff]观察到）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45883124" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.pimaker.at/texts/rvc1/" target="_blank">Linux in a Pixel Shader – A RISC-V Emulator for VRChat</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-11-10 21:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一位开发者如何在VRChat平台上，通过像素着色器（pixel shader）模拟RISC-V架构，成功运行Linux内核。该项目名为rvc，使用2048x2048像素的整数格式纹理存储64MB内存和CPU状态，通过Unity的自定义渲染纹理实现帧间状态转换。尽管VRChat不支持计算着色器，但开发者利用像素着色器完成了这一挑战，使模拟器能在NVIDIA 2080 Ti上以250 kHz的频率运行，并成功启动Linux 5.13.5。项目展示了VRChat社区的创造力，并获得了广泛关注和积极反响。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[在VRChat中利用像素着色器模拟Linux系统的技术实现及其潜在应用]
+
+不同观点：
+• [技术实现的难度与创新性]
+  - accrual认为将Linux塞入像素着色器的技术难度极高，比使用Unity制作基础内容要复杂1-2个数量级。
+  - MobiusHorizons指出GPU和CPU的计算模型差异巨大，但对运行速度（250kHz）表示惊讶和赞赏。
+
+• [标题的准确性争议]
+  - majorchord建议标题应注明年份（2021）以避免误导。
+  - jjtheblunt质疑为何标题使用“像素着色器”而非更通用的“可编程着色器”，暗示标题可能不够准确。
+
+• [技术的潜在应用]
+  - lawlessone提出是否可以用类似技术模拟其他设备（如旧游戏机），探讨了技术的扩展可能性。
+  - snvzz则从技术趋势角度评论，认为RISC-V架构的普及是必然的，可能与技术的底层实现相关。
+
+补充讨论：
+• 社区与创意：whoknowsidont和accrual（提到Udon Bird Sanctuary）强调了VRChat社区的创造力和活力。
+• 技术的情感反应：einsteinx2用“cursed”表达了对技术的复杂情感（既惊讶又喜爱）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45881404" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -190,43 +335,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://research.roundtable.ai/captcha-benchmarking/" target="_blank">Benchmarking leading AI agents against Google reCAPTCHA v2</a>
+                    <a href="https://gordonbeeming.com/blog/2025-10-03/taming-the-ai-my-paranoid-guide-to-running-copilot-cli-in-a-secure-docker-sandbox" target="_blank">The Paranoid Guide to Running Copilot CLI in a Secure Docker Sandbox</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mdahardy</span> |
-                    <span>评分: 100</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-11-10 16:38</span>
+                    <span>作者: pploug</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-11-04 13:14</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文测试了Claude Sonnet 4.5、Gemini 2.5 Pro和GPT-5三款主流AI模型在解决Google reCAPTCHA v2验证码上的表现。结果显示：Claude表现最佳（60%成功率），Gemini次之（56%），GPT-5最差（28%）。研究发现GPT-5因过度思考和反复修正导致超时率更高，而所有模型在静态验证码上表现最好，跨图块验证码最差。这表明AI的深度推理能力与实际任务表现并不总是正相关，过度思考反而会降低效率。研究建议开发者需平衡AI的推理速度和决策效率。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[CAPTCHA的有效性、可访问性及AI对其的破解能力]
+                    <div class="comments-summary">主要讨论点：[开源工具的安全性和适用性，特别是在代码开发和CTF（Capture The Flag）环境中的应用]
 
 不同观点：
-• **CAPTCHA的可访问性问题**  
-  - 认为CAPTCHA是排他性和能力歧视的（如padolsey），指出其对认知、视觉、运动等障碍人士不友好，音频版本也无法解决问题。  
-  - 争议焦点：CAPTCHA是否违背无障碍原则，是否应被淘汰。
+• **支持使用Docker及其相关工具**  
+  - [jaytaylor] 提到其公司开源的Leash工具，支持Docker和macOS原生模式，提供了对代码代理的详细控制和可见性，并计划扩展功能以支持gh cli的认证透传。  
+  - [codazoda] 分享了自己在CTF中构建的类似容器（llm-jail），用于支持AI工具的使用，表明Docker在特定场景下的实用性。
 
-• **CAPTCHA的人类表现与AI破解能力**  
-  - 人类用户（如jameslk、daveguy）反馈CAPTCHA识别准确率不高（50%-90%），但AI（如Gemini）已能部分破解（如xnx）。  
-  - 争议焦点：CAPTCHA是否仍能有效区分人类与AI，尤其是未来AI进步后（如kjok）。  
-
-• **CAPTCHA的技术改进与替代方案**  
-  - 有人建议改进技术（如cedws提出拼接图块输入视觉模型），而另一些人（如mehdibl）认为专用模型比通用AI更适合此类任务。  
-  - 争议焦点：CAPTCHA是否需要技术升级，或直接废除（如ajsnigrutin主张“不想被爬就别发到网上”）。
+• **反对将Docker视为安全沙箱**  
+  - [udev4096] 强调Docker本身并非安全沙箱，建议使用更专业的工具如gvisor或kata runtime来实现真正的沙箱隔离，对Docker的安全性提出质疑。
 
 补充讨论：
-- **历史背景**：PaulHoue指出早期（2009年）已有神经网络破解CAPTCHA，暗示其技术可能过时。  
-- **企业配置**：alexnewman提到企业用户可通过后台配置CAPTCHA，但未说明是否与reCAPTCHA协作。  
-- **未来展望**：rkagerer调侃AI通过CAPTCHA才是真正的图灵测试，反映对技术发展的黑色幽默。</div>
+- 争议焦点在于Docker是否足够安全以用于隔离敏感操作。[udev4096]的观点与其他两位形成对比，突显了安全性和便利性之间的权衡。  
+- [jaytaylor]和[codazoda]展示了Docker在开发环境和CTF中的实际应用，而[udev4096]则从安全角度提出了更严格的要求。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45877698" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45810658" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -283,49 +422,6 @@
 3. Rust是否是最优解，抑或硬件改进或渐进优化C/C++更实际？</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45879012" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://jslegenddev.substack.com/p/what-caused-performance-issues-in" target="_blank">What caused performance issues in my tiny RPG</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-11-10 23:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[游戏开发中遇到的性能问题及其原因分析]
-
-不同观点：
-• [hresvelgr] 认为现代软件（框架/引擎）存在问题，指出在Love2D或Godot等其他引擎中不会发生类似性能问题。
-• [nine_k] 强调渲染少量对象时性能下降至48fps是不合理的，认为框架或方法存在根本性问题，并以Chrome处理100k 3D对象的例子作为对比。
-• [gwbas1c] 质疑垃圾回收器（GC）是否是性能问题的根源，提出需要具体数据支持，并询问对象管理和清理机制（如是否调用close/remove方法）。
-• [philipwhiuk] 认为可以通过修改底层代码解决抽象层引入的问题，并建议先完成项目再尝试新技术。
-• [codazoda] 提到GemShell的性能问题可能与浏览器兼容性有关（非Safari/Chrome时表现较差）。
-• [hinkley] 指出性能问题可能与“回流问题”（reflow）和“200%问题”有关。
-• [kg] 对作者在简单场景中遇到的严重性能问题表示惊讶，怀疑底层库（如kaplay）存在潜在性能缺陷。
-
-补充讨论：
-- 争议焦点：性能问题的根源是框架/引擎设计缺陷（如[hresvelgr]和[nine_k]）、垃圾回收机制（[gwbas1c]）、还是开发者的实现方式（如[hinkley]提到的reflow问题）。
-- 对比案例：Chrome高效处理大量3D对象（[nine_k]）与当前项目的低性能形成鲜明对比。
-- 解决方案分歧：是否应直接修改底层代码（[philipwhiuk]）或更换工具（如[codazoda]推荐的GemShell）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45882305" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -396,135 +492,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.tensorflow.org/2020/05/pose-animator-open-source-tool-to-bring-svg-characters-to-life.html" target="_blank">Pose Animator – An open source tool to bring SVG characters to life (2020)</a>
+                    <a href="https://physics.aps.org/articles/v18/178" target="_blank">Zeroing in on Zero-Point Motion Inside a Crystal</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jerlendds</span> |
-                    <span>评分: 147</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-11-04 12:26</span>
+                    <span>作者: lc0_stein</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-11-10 21:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了Pose Animator，一款基于TensorFlow.js的开源工具，利用PoseNet和FaceMesh模型实现浏览器中的实时人体动作捕捉，并将SVG矢量角色动画化。文章详细说明了该工具的技术设计，包括骨骼动画原理、骨骼绑定流程（解析SVG文件、计算骨骼权重、实时更新关键点位置等），以及为设计师提供的自定义角色指南。工具通过90个关键点和78根骨骼组成的预设骨架结构，能精确捕捉面部表情和全身动作，相比仅更新边界框的工具更具表现力。设计师可通过调整SVG文件中预设骨架的位置来适配不同角色。</p>
+                    <p>2025年11月5日《物理》期刊报道，南京大学团队在接近绝对零度的纳米晶体中首次观测到由晶格量子涨落（零点运动）引发的异常光发射现象。研究人员使用铅卤化物钙钛矿纳米晶体进行实验，在4K低温下发现本应停止的激子发光现象持续存在，证明晶格量子振动产生了足够能量。该发现不仅首次在固体材料中直接观测到零点运动效应，还提出了利用该效应实现4K以下极低温冷却的新思路，突破了传统氦低温系统的极限。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[该3D动画技术的相似工具、历史背景及艺术效果的评价]
+                    <div class="comments-summary">主要讨论点：海森堡不确定性原理的解释及其应用
 
 不同观点：
-• 技术相似性：用户提到多个类似工具（如claythis.com、dibulo.com/world/frutball、sketch.metademolab.com、fairanimateddrawings.com），认为这类技术并非新颖，最早可追溯至2020年或更早。
-• 艺术评价：用户认为尽管技术上有趣，但生成的动画效果显得“怪异”（uncanny），尤其是向量补间动画常导致不自然的视觉效果。
-• 应用场景：有用户分享了自己用TensorFlow.js开发的类似游戏（如守门员控制游戏），强调其趣味性和实用性，适合儿童和成人休闲使用。
+• [taneq]的观点：认为海森堡不确定性原理主要与观察（即粒子间的相互作用）有关，观察不可避免地会改变被观察的属性，而与意识无关。
+• [rokkamokka]的隐含观点：通过提到“Star gate zero point modules”，似乎在讨论量子涨落或零点能的应用，暗示不确定性原理可能导致运动无法完全停止（即存在量子涨落）。
 
 补充讨论：
-• 争议焦点：技术的创新性——部分用户认为这是“Temu版VTuber”（低成本模仿），而其他用户则通过列举历史工具佐证其非前沿性。
-• 幽默与疑问：用户调侃“为什么必须是面条怪兽”（noodlebeast），并询问是否有非TensorFlow的现代替代方案（htrp），反映对技术迭代和多样性的关注。</div>
+• 争议焦点在于海森堡不确定性原理的核心解释——是观察导致的属性改变，还是自然存在的量子涨落。
+• [taneq]的观点更偏向于量子力学中传统的“观察者效应”解释，而[rokkamokka]的引用则指向原理在零点能或量子涨落中的应用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45810116" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#parameters" target="_blank">Registered OAuth Parameters</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-04 12:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文列出了OAuth协议相关的多个注册表，包括：访问令牌类型、授权端点响应类型、扩展错误注册表等。各注册表规定了专家审核流程和变更控制方（主要为IETF），并提供了不同格式的数据下载（CSV、XML等）。访问令牌类型包含Bearer、PoP、DPoP等标准；授权端点响应类型包含code、id_token等8种类型；错误注册表定义了invalid_request等13种标准错误代码。这些注册表为OAuth协议的实现提供了标准化参考。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[该新闻是否具有报道价值]
-
-不同观点：
-• 认为该新闻没有报道价值：
-  - 提问者"efitz"直接质疑"Why is this news?"，暗示该新闻缺乏重要性或公共意义
-  - 可能认为事件过于平常或与公共利益无关
-
-补充讨论：
-- 该评论引发了关于新闻选择标准的潜在讨论
-- 未提供具体反对理由，属于开放式质疑
-- 可能需要更多背景信息来判断新闻价值（如新闻具体内容、发生背景等）
-- 反映了部分受众对媒体内容选择的困惑或不认同
-
-争议焦点：
-- 新闻报道的价值判断标准
-- 公众兴趣与新闻价值的关系
-
-其他注意：
-- 这是单条简短评论，缺乏对立观点直接交锋
-- 需要结合被评论的新闻内容才能更准确判断立场合理性
-- 可能代表部分读者对媒体内容"琐碎化"的担忧</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45810001" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.seattletimes.com/seattle-news/law-justice/redmond-turns-off-flock-safety-cameras-after-ice-arrests/" target="_blank">Redmond, WA, turns off Flock Safety cameras after ICE arrests</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dredmorbius</span> |
-                    <span>评分: 294</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2025-11-10 18:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国雷德蒙市因移民及海关执法局（ICE）在Flock摄像头附近逮捕7人，暂停使用该监控系统。此前，华盛顿大学报告显示联邦机构未经许可访问了至少18个城市的Flock数据，引发隐私担忧。虽然警方确认ICE未获取雷德蒙数据，但市民仍担心信息滥用。近期，多个城市调整了Flock设置。法院最新裁决认定Flock拍摄的车辆照片属于公共记录，需依法公开，加剧了争议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Flock摄像头的争议及其使用影响
-
-不同观点：
-• **反对Flock摄像头的声音**  
-  - 用户helterskelter提到PNW地区居民普遍不喜欢Flock摄像头，甚至有人采取极端手段破坏或移除。  
-  - sleepybrett和cipehr指出摄像头数据被判定为公共记录，可能导致隐私泄露，这是居民反对的主要原因之一。  
-
-• **支持公共记录透明的观点**  
-  - seltzered_和cipehr引用法院判决，认为Flock摄像头拍摄的照片应作为公共记录公开，符合公共记录法要求。  
-  - Tom Lehto的视频（链接）进一步解释了公民如何合法获取交通摄像头数据。  
-
-• **对移民执法与摄像头关系的争议**  
-  - snickerbockers和pton_xd质疑为何反对摄像头的“界限”在于移民执法，认为监控系统本就应被反对，而非仅因涉及移民问题才引发争议。  
-  - notepad0x90则延伸讨论移民政策与基础设施问题，认为解决移民问题的关键在于系统性改革，而非单纯依赖监控。  
-
-补充讨论：  
-- cogogo提到Flock Safety公司的背景，暗示技术背后的商业利益可能影响公众态度。  
-- outside1234和echelon反映了公众对这些摄像头普及的担忧和学习曲线。  
-- gnarlouse和dredmorbius的评论较为中立，前者提及具体城市，后者澄清标题信息。  
-
-争议焦点：  
-1. Flock摄像头的隐私问题与公共记录法的冲突。  
-2. 移民执法是否应成为反对监控系统的核心争议点。  
-3. 监控技术的普及是否超越了公众的接受度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45879101" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45881056" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
