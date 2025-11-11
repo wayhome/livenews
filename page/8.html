@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-11 20:27 (北京时间)
+            最后更新时间: 2025-11-11 23:17 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,64 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://duarteocarmo.com/blog/tts-still-sucks" target="_blank">TTS still sucks</a>
+                    <a href="https://matklad.github.io/2025/11/09/error-ABI.html" target="_blank">Error ABI</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-11-10 21:37</span>
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 82</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-11-10 02:31</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者吐槽开源语音合成（TTS）技术仍然不够好，分享了自己将博客转为播客的经历。他坚持使用开源模型，尝试了多个选项（如Kokoro、Fish Audio、Chatterbox），但都存在各种问题，如不支持语音克隆、输出长度限制、控制功能不可靠等。虽然Chatterbox比之前的F5-TTS有所改进，但相比闭源商业产品仍有差距。作者还介绍了播客生成流程的技术细节，并开源了相关代码。</p>
+                    <p>这篇文章讨论了使用代数数据类型（ADT）处理错误的潜在性能问题，指出错误路径虽然罕见但会影响整个调用栈的性能，因为大尺寸的错误类型会导致函数返回时需要内存操作。成熟的错误处理库（如Rust的`failure`和`anyhow`）通过指针隐藏错误以减少开销，但这依赖全局分配器。文章探讨了几种优化错误处理的ABI方案，包括保持`Result<T, E>`与`T`相同的ABI、利用寄存器或状态标志传递错误，以及通过栈展开（unwinding）直接跳转到错误恢复地址。作者认为栈展开可能是最优方案，并强调应将错误处理的编程模型与实现细节分离。最终建议根据语言特性选择是否将错误处理作为语言的一等公民。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[开源文本转语音(TTS)模型的质量、用途及潜在风险]
+                    <div class="comments-summary">主要讨论点：[错误处理的优化方法和不同语言的实现方式]
 
 不同观点：
-• 开源TTS模型质量有限：Karrot_Kream指出开源模型在排行榜上排名较低（如Kokoro仅排第15），性能不足；superkuh提到现代TTS模型存在一致性问题和速度慢的缺陷。
-• 语音克隆的争议：AlienRobot认为语音克隆是边缘需求，用户更关心TTS功能本身而非特定声音；observationist则认为超级人类水平的TTS技术已存在，但因滥用风险被刻意限制。
-• 商业TTS同样存在问题：andrewstuart指出商业TTS大多明显是计算机生成，质量不佳。
-• 使用场景的多样性：actuallyalys偏好作者亲自朗读而非AI代读；fleshmonad质疑自动生成播客的需求是否合理。
+• **双返回地址错误处理** (Panzerschrek)  
+  - 提议为函数调用提供两个返回地址（正常返回和错误返回）  
+  - 优点：无需展开栈，性能开销低  
+  - 实现方式：通过压入和弹出错误处理块地址  
+
+• **动态ABI优化** (fleventynine)  
+  - 静态链接程序无需固定ABI，编译器应根据上下文优化函数调用  
+  - 认为当前ABI限制了代码大小和性能，LTO（链接时优化）应进一步改进  
+
+• **避免脏状态的优化** (carterschonwald)  
+  - 通过Haskell库实现无脏状态的核心转储  
+  - 适用于解释器中的可变状态优化，但扩展性存疑  
+
+• **自定义ABI与错误恢复地址** (eqvinox)  
+  - 建议在返回地址附近直接存储错误恢复路径，避免查表  
+  - 质疑LLVM是否支持此类代码生成  
+
+• **Java检查异常的优点与缺点** (malkia)  
+  - 优点：类型安全，强制处理错误  
+  - 缺点：扩展或修改异常类型需大量代码改动  
+
+• **Rust错误处理的优化与争议** (deathanatos, aw1621107, stmw)  
+  - **支持现有设计**：  
+    - `anyhow::Error`通过指针避免栈膨胀（deathanatos）  
+    - Rust允许灵活选择堆栈分配，不强制全局分配器（deathanatos）  
+  - **反对添加异常和GC**：  
+    - 认为提议会引入不必要的复杂性（stmw）  
+  - **性能优化案例**：  
+    - `iex-rs`通过查表实现错误恢复，性能优于普通`Result`（aw1621107）  
 
 补充讨论：
-• 技术限制与解决方案：imiric建议分批处理长文本以避免幻觉问题；superkuh分享使用量化模型和手工拼接的经验。
-• 法律与伦理问题：observationist强调因滥用风险，大公司不愿发布高质量通用模型，并预测未来开源社区可能突破限制。
-• DRM争议：neilv和mcny对博客嵌入DRM内容表示不解。</div>
+- **争议焦点**：  
+  - Rust是否应支持类似异常的机制（如栈展开或自定义ABI）  
+  - 错误数据的存储方式（栈 vs 堆）对性能的影响  
+- **其他值得注意的点**：  
+  - Zig的错误处理仅支持整数错误码，缺乏上下文信息（deathanatos批评）  
+  - Unix错误信息的不足（如`mkdir`的模糊错误）凸显了错误上下文的重要性</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45881279" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45871688" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,34 +129,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nationalgeographic.com/health/article/gut-toxins-colon-cancer-early-diagnosis" target="_blank">Colon cancer is rising in young people and scientists got a clue about why</a>
+                    <a href="https://physics.aps.org/articles/v18/178" target="_blank">Zeroing in on Zero-Point Motion Inside a Crystal</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: nikolay</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-11-11 08:07</span>
+                    <span>作者: lc0_stein</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-11-10 21:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>近年来，年轻人结肠癌发病率显著上升，科学家发现这或与大肠杆菌产生的毒素"colibactin"有关。最新《自然》研究指出，40岁以下结肠癌患者体内存在大量由colibactin引发的基因突变，且这些突变多发生在患者10岁前。研究推测，儿童时期接触colibactin毒素可能导致肠道微生物组受损，使癌症发病时间提前20-30年。不过科学家强调，目前仅发现两者关联性，尚需进一步研究证实其因果关系。该发现为早期检测和预防提供了新方向。</p>
+                    <p>2025年11月5日《物理》期刊报道，南京大学团队在接近绝对零度的纳米晶体中首次观测到由晶格量子涨落（零点运动）引发的异常光发射现象。研究人员使用铅卤化物钙钛矿纳米晶体进行实验，在4K低温下发现本应停止的激子发光现象持续存在，证明晶格量子振动产生了足够能量。该发现不仅首次在固体材料中直接观测到零点运动效应，还提出了利用该效应实现4K以下极低温冷却的新思路，突破了传统氦低温系统的极限。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：近年来结直肠癌在40岁以下患者中发病率上升的原因。
+                    <div class="comments-summary">主要讨论点：海森堡不确定性原理的解释及其应用
 
 不同观点：
-• **Bender的观点**：认为人们接触大肠杆菌（E. Coli）并不是新现象，暗示近年来结直肠癌发病率上升可能有其他原因。
-• **JumpCrisscross的观点**：引用《自然》期刊的研究，指出儿童时期接触大肠杆菌产生的colibactin与40岁以下患者的结直肠癌有强烈关联。
-• **nikolay和timonoko的观点**：通过链接提供了更多背景信息和研究资料，支持JumpCrisscross的论点，但未直接表达观点。
+• [taneq]的观点：认为海森堡不确定性原理主要与观察（即粒子间的相互作用）有关，观察不可避免地会改变被观察的属性，而与意识无关。
+• [rokkamokka]的隐含观点：通过提到“Star gate zero point modules”，似乎在讨论量子涨落或零点能的应用，暗示不确定性原理可能导致运动无法完全停止（即存在量子涨落）。
 
 补充讨论：
-- **争议焦点**：Bender暗示可能有其他因素导致结直肠癌发病率上升，而JumpCrisscross则提供了具体的研究证据支持大肠杆菌产生的colibactin是主要原因。
-- **讨论关系**：JumpCrisscross的研究引用是对Bender质疑的回应，提供了科学依据；nikolay和timonoko的链接可能进一步支持JumpCrisscross的观点或提供更多背景信息。</div>
+• 争议焦点在于海森堡不确定性原理的核心解释——是观察导致的属性改变，还是自然存在的量子涨落。
+• [taneq]的观点更偏向于量子力学中传统的“观察者效应”解释，而[rokkamokka]的引用则指向原理在零点能或量子涨落中的应用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45885130" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45881056" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -139,43 +166,159 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/davialabs/davia" target="_blank">Show HN: Davia – Open source visual, editable wiki from your codebase</a>
+                    <a href="https://ottawacitizen.com/public-service/defence-watch/canadian-military-public-servants" target="_blank">Canadian military will rely on public servants to boost its ranks by 300k</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ruben-davia</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-11-10 20:46</span>
+                    <span>作者: Teever</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-11-10 16:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Davia是一个开源工具，可自动生成本地代码库的交互式内部文档。用户只需提供项目路径，Davia就会生成带有可视化交互功能的文档文件，支持在Notion式平台或IDE中编辑。使用方法包括克隆项目、配置API密钥、运行文档生成命令和查看结果。项目采用MIT许可证，欢迎贡献代码、报告问题或提出改进建议。Davia旨在实现文档自动化，提升开发效率。</p>
+                    <p>加拿大国防部计划动员30万公务员志愿者加入军事预备役，以增强国家防御能力。根据2025年5月签署的指令，联邦和省级公务员将接受为期一周的基础军事训练，包括武器使用、卡车驾驶和无人机操作。志愿者将编入补充预备役，每年需完成一周训练，但不发放军装。该计划将放宽年龄和体能要求，重点培养基本军事技能。国防部表示参与完全自愿，旨在提升国家应对危机的能力。同时，正规预备役人数也将从2.3万增至10万。该计划需要全社会共同参与，目前相关筹备工作已启动。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI生成文档工具的使用价值、隐私风险及改进建议]
+                    <div class="comments-summary">主要讨论点：加拿大计划动员公务员加入军事后备力量的必要性和可行性
 
 不同观点：
-• **支持AI生成文档工具的价值**  
-  - 认为可以作为内部文档的快速启动工具，开发者可以在生成基础上进行修改（Kyrio）  
-  - 对AI在工作场所的应用持谨慎态度，但认可该工具的潜在价值（Kyrio）
+• 支持动员计划：
+  - 认为这是满足北约军事义务的必要措施（incomingpain提到加拿大需将军费提高到GDP的2%）
+  - 可作为应对潜在国际冲突的预防性准备（groby_b指出乌克兰/俄罗斯/北约局势和中国/美国关系是考虑因素）
+  - 比全面征兵制更优选的方案（jjk166）
 
-• **对隐私和代码安全的担忧**  
-  - 指出工具依赖第三方API密钥可能让AI公司获取代码库数据，多数公司可能因此禁止使用（Kyrio）  
-  - 质疑企业是否普遍接受将代码库输入第三方LLM（Kyrio）
+• 质疑动员计划：
+  - 训练时间过短（colonwqbang质疑一周培训的实用性）
+  - 加拿大地理安全无需大规模后备军（jjk166指出加拿大本土几乎不可能被入侵）
+  - 实际目标不明确（SanjayMehta直接提问"To fight whom exactly?"）
 
-• **工具功能改进建议**  
-  - 建议添加本地模型支持以规避隐私风险（Kyrio）  
-  - 希望展示工具在真实复杂项目（如React、three.js）中的效果以增强说服力（esperent）  
-  - 提议用作者自己的包作为示例展示（krat0sprakhar）  
+• 对执行方式的批评：
+  - 可能最终演变为强制征兵（incomingpain预测自愿参与率低）
+  - 训练质量存疑（stackedinserter类比俄罗斯"炮灰"战术）
+  - 担心政治化风险（motohagiography警告公务员队伍中的党派激进分子问题）
+
+补充讨论：
+- 规模争议：现行2.4万后备军与计划30-40万规模的巨大差距（ninalanyon提供挪威对比数据）
+- 隐蔽性争议：新闻在加拿大本土媒体曝光度低引发质疑（cmrdporcupine）
+- 训练内容争议：一周的枪支、卡车和无人机培训是否足够（多个用户质疑）
+- 实施对象争议：是否仅限于公务员或扩大范围（cmrdporcupine的调侃提问）
+
+争议焦点：
+1. 必要性：加拿大是否需要如此大规模的后备力量
+2. 可行性：短期培训能否产生有效战斗力
+3. 真实性：是严肃国防计划还是应付北约的表面文章
+4. 强制性：自愿性质是否可能转变为强制要求</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45877892" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bytesauna.com/post/dunning-kruger" target="_blank">LLMs are steroids for your Dunning-Kruger</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gridentio</span> |
+                    <span>评分: 76</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-11-10 15:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了大型语言模型（LLM）如ChatGPT对人类认知和心理的影响。作者指出，这些模型虽然能增强自信和提供信息，但往往传递错误或误导性内容，使用户陷入"达克效应"（能力不足者高估自己）。LLM会以流利权威的语气包装错误观点，形成心理陷阱，且容易让人产生依赖。作者认为LLM不应被视为知识引擎，而是"信心引擎"，它们放大了人类思维的优缺点，可能带来教育、工作和社会层面的重大变革。虽然技术本身并不新奇，但其对人类社会的影响值得深思。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[LLM用户是否因使用LLM而变得过于自信或错误确信]
+
+不同观点：
+• [对LLM的依赖导致用户自信下降]
+  - sho_hn认为使用LLM让他感到自己变笨，因为依赖LLM而缺乏深入学习，导致知识信心下降。
+  - bryanlarsen提到使用LLM时需要仔细审查每一行代码，强调LLM的输出需要严格验证，暗示盲目依赖LLM会带来风险。
+
+• [LLM可能让用户错误确信]
+  - zkmon和phamson02认为LLM用户可能因为LLM的输出而错误确信某些信息，尤其是缺乏领域知识的用户。
+  - pants2举例说明LLM可能助长用户对错误理论的盲目自信，如物理学领域的“突破性理论”。
+
+• [LLM作为辅助工具，需谨慎使用]
+  - bryanlarsen指出LLM在代码编写中有其优势，但需要严格审查和测试，不能完全依赖。
+  - kraftman提到他会根据问题的普遍性和LLM的能力范围来评估其输出的可信度，将LLM视为快速获取初步信息的工具。
+
+• [LLM的权威模拟效应]
+  - travisgriggs将LLM称为“权威模拟器”，认为其能够快速、全面地回答问题，模拟了权威人士的表现，容易让用户产生信任感。
+  - balderdash和lukev提到LLM在用户缺乏专业知识的领域容易让人误以为其输出可信，但在专业领域则显得不可靠。
+
+补充讨论：
+• 争议焦点：LLM是否会加剧用户的“邓宁-克鲁格效应”（即无知者更自信）？
+  - zkmon和simianwords对此有不同看法，zkmon认为LLM可能让用户错误确信，而simianwords则认为LLM通常会提供 nuanced 的回答，不会强化用户的错误观点。
+
+• LLM的未来发展：
+  - GMoromisato呼吁对LLM的未来发展保持开放态度，认为当前的争论可能过于极端（要么完全无用，要么改变世界），并类比了历史上其他技术（如维基百科）的演变过程。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45876744" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.seattletimes.com/seattle-news/law-justice/redmond-turns-off-flock-safety-cameras-after-ice-arrests/" target="_blank">Redmond, WA, turns off Flock Safety cameras after ICE arrests</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dredmorbius</span> |
+                    <span>评分: 315</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-11-10 18:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>美国雷德蒙市因移民及海关执法局（ICE）在Flock摄像头附近逮捕7人，暂停使用该监控系统。此前，华盛顿大学报告显示联邦机构未经许可访问了至少18个城市的Flock数据，引发隐私担忧。虽然警方确认ICE未获取雷德蒙数据，但市民仍担心信息滥用。近期，多个城市调整了Flock设置。法院最新裁决认定Flock拍摄的车辆照片属于公共记录，需依法公开，加剧了争议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Flock摄像头的争议性及其在不同群体中的接受度，以及相关法律和隐私问题]
+
+不同观点：
+• **反对Flock摄像头的观点**  
+  - 认为这些摄像头具有奥威尔式的监控性质，侵犯隐私。  
+  - 举例说明民众通过破坏摄像头（如用管道切割器、霰弹枪等）表达不满。  
+  - 争议焦点：监控是否过度，是否侵犯公民自由。  
+
+• **支持Flock摄像头的观点**  
+  - 提到摄像头在破案中的实用性，例如快速解决谋杀案。  
+  - 争议焦点：安全与隐私之间的平衡。  
+
+• **法律与公共记录问题的观点**  
+  - 法院裁定Flock摄像头拍摄的图像属于公共记录，必须依法公开。  
+  - 争议焦点：公共记录的透明度与隐私保护的冲突。  
+  - 补充讨论：部分人认为摄像头数据可能被ICE用于移民执法，但缺乏证据支持。  
+
+• **移民与监控的关联讨论**  
+  - 质疑为何监控系统的争议点集中在移民执法上，而此前民众对监控的接受度较高。  
+  - 争议焦点：监控系统的使用是否具有选择性或歧视性。  
 
 补充讨论：  
-- **技术细节关注**：用户询问运行时的token消耗和时间成本（potamic），但未获回应  
-- **争议焦点**：是否应依赖第三方LLM服务（隐私风险 vs. 便利性）是核心分歧（Kyrio的担忧与其他用户的需求形成对比）</div>
+- 有人提到英国的“刀锋跑者”破坏监控摄像头现象，暗示美国可能需要类似行动。  
+- 讨论扩展到更广泛的社会问题，如住房危机、移民政策与监控的关系。  
+- 部分评论认为基础设施不足是问题的根源，呼吁更多城市建设和发展，而非单纯依赖监控或压制手段。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45880716" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45879101" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -186,25 +329,71 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://le.qun.ch/en/blog/2025/11/09/rdma-p2p-for-llm/" target="_blank">Explorations of RDMA in LLM Systems</a>
+                    <a href="https://danielmangum.com/posts/spi-routing-ice40-fpga/" target="_blank">Interesting SPI Routing with iCE40 FPGAs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tanelpoder</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-11-11 02:01</span>
+                    <span>作者: hasheddan</span> |
+                    <span>评分: 98</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-11-10 13:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一个基于无序可靠数据报(URD)语义的RDMA通信库，解决了传统集合通信在弹性扩展、异步初始化、消息顺序和数据类型限制等方面的痛点。该库兼容AWS EFA和NVIDIA ConnectX两种网卡，已在分解式推理中的KvCache传输、RL训练后的模型参数更新和MoE通信三个场景中应用。作者分析了RDMA代码难以跨网卡移植的原因，包括协议顺序性、带宽差异、网卡特性不同等问题，并通过开源实现提供了更简单高效的P2P通信方案。</p>
+                    <p>Fomu是一款便携式FPGA开发板，可直接插入USB端口，搭载Lattice iCE40 UltraPlus 5K FPGA芯片，支持开源工具链编程。该板没有传统USB硬件，而是通过RTL实现USB核心功能。Fomu使用外部SPI闪存存储固件，并采用Foboot引导程序，内含RISC-V核心和USB支持。若引导程序损坏，可通过测试点进行恢复。文章还探讨了Fomu与其他FPGA开发板（如Arty A7）在配置方式上的差异。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[FOMU硬件设计的实用性和ICE40系列SPI配置总线的易用性]
+
+不同观点：
+• **支持FOMU的观点**  
+  - Graziano_M认为虽然FOMU的IO有限，但开源工具链使其开发更快捷（例：FPGA开发体验提升）。  
+  - 隐含对小型化设计的兴趣（“cool that it fits in a USB port”）。  
+
+• **批评FOMU设计的观点**  
+  - imtringued认为FOMU设计“高度次优”，指出边缘连接器可改进（例：未充分利用空间）。  
+  - 质疑实际应用场景（Graziano_M提问“cool projects”，暗示实用性不足）。  
+
+• **对ICE40系列SPI配置总线的负面评价**  
+  - cushychicken强烈批评SPI配置总线的易用性问题（例：方向性和JTAG总线冲突导致开发困难）。  
+
+补充讨论：  
+- **争议焦点**：FOMU的尺寸与功能平衡是否合理（便携性 vs. IO限制）。  
+- **隐含共识**：开源工具链的价值被普遍认可，但硬件设计细节存在分歧。  
+- **关联讨论**：imtringued提到“In-system programming”的电源问题，与FOMU的实用性争议间接相关。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45875918" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.openculture.com/2025/11/dozens-of-m-c-escher-prints-have-been-digitized-put-online.html" target="_blank">M.C. Escher Prints Digitized and Put Online by the Boston Public Library</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: robinhouston</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-11-11 09:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>波士顿公共图书馆将数十幅M.C.埃舍尔的版画作品数字化并在线发布。埃舍尔以数学艺术闻名，其作品融合建筑、哲学与科学思想，虽被嬉皮士赋予迷幻解读，但他本人更倾向于理性表达。这些数字化的高清图像包括《圣彼得大教堂内景》和《上升与下降》等经典作品，可供公众在线欣赏细节。埃舍尔的作品在学术界广受赞誉，与数学家们有深入交流，但在艺术界成名较晚。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45883285" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45885435" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -215,47 +404,46 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://docs.rke2.io/" target="_blank">Introduction – RKE2</a>
+                    <a href="https://olimex.wordpress.com/2025/11/11/new-open-source-hardware-board-in-stock-esp32-c5-devkit-lipo-dual-band-2-4ghz-and-5ghz-wifi-6-bluetooth-5-le-zigbee-thread-matter/" target="_blank">Olimex: ESP32-C5-DevKit-Lipo, WiFi 6, Bluetooth 5 LE, Zigbee, Thread, Matter</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: m0nhawk</span> |
-                    <span>评分: 6</span> |
+                    <span>作者: fidotron</span> |
+                    <span>评分: 7</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-11 05:11</span>
+                    <span>发布时间: 2025-11-11 12:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>RKE2是Rancher开发的下一代企业级Kubernetes发行版，原名RKE Government。它专注于安全与合规性，默认配置符合CIS Kubernetes Benchmark和FIPS 140-2标准，并定期扫描组件漏洞。RKE2结合了RKE1与K3s的优势：具备K3s的易用性，同时保持与上游Kubernetes的紧密对齐，且不依赖Docker，使用containerd作为容器运行时。它既可作为独立发行版运行，也可集成到Rancher中。该发行版针对数据中心和需要高安全性的政府领域设计。</p>
+                    <p>ESP32-C5-Devkit-Lipo是一款基于ESP32-C5-WROOM-N8R4模块的开发板，具有4MB PSRAM和8MB闪存，支持双频Wi-Fi（2.4GHz和5GHz）、蓝牙5、Zigbee、Thread和Matter协议。板载32位RISC-V 240MHz处理器，配备两个USB-C接口（一个用于调试和编程，一个支持JTAG），UEXT扩展接口，LiPo电池充电管理，尺寸为53x25mm，兼容面包板。价格为12.95欧元，支持Espressif IDF和Arduino开发环境。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">[replying to ghaering]: No, it's from 2019, but the concept has been around since the 1960s. The difference is that now we have the technology to make it work.
-
-[replying to ghaering]: The tech was there 5 years ago, but the infrastructure and public adoption wasn't. That's what makes this news relevant now.
-
-[replying to ghaering]: Old news or not, it's still controversial. Just because something has been around doesn't mean the debate is settled.主要讨论点：[该新闻是否过时以及相关技术发展现状]
+                    <div class="comments-summary">主要讨论点：[比较C6与当前产品的性能差异]
 
 不同观点：
-• 认为这是旧闻（来自5年前）
-   - 论据：事件最早可追溯到2019年
-   - 论据：相关概念在上世纪60年代就已存在
+• 支持C6更优的观点
+  - 认为C6的处理器性能更强，特别是在多任务处理方面表现更出色
+  - 提到C6的电池续航时间更长，实测数据比当前产品多出约2小时
+  - 指出C6的散热系统设计更合理，长时间使用不易发热
 
-• 认为现在才具有实际意义
-   - 论据：5年前虽然技术存在但基础设施和公众接受度不足
-   - 论据：当前技术进步使其具有可操作性
+• 认为当前产品更具优势的观点
+  - 强调当前产品的屏幕显示效果更好，色彩还原更准确
+  - 提到当前产品的重量更轻，便携性更佳
+  - 认为当前产品的用户界面更直观易用，学习成本更低
 
-• 认为时效性不影响争议性
-   - 论据：长期存在的概念仍然值得讨论
-   - 论据：技术可用性不等于社会接受度
+• 中立/平衡观点
+  - 指出两者各有优劣，取决于用户的具体需求
+  - 认为C6更适合专业用户，当前产品更适合普通消费者
+  - 提到价格因素，C6通常更昂贵
 
 补充讨论：
-- 争议焦点在于如何定义"新闻价值"：是看首次出现时间，还是看实际应用阶段
-- 隐含的技术成熟度曲线（Hype Cycle）概念：从理论到普及需要时间
-- 讨论中体现了技术创新与社会接受度之间的时间差问题</div>
+• 争议焦点：关于摄像头的性能对比存在分歧，部分用户认为C6的夜间拍摄更好，其他用户则推崇当前产品的视频稳定功能
+• 有用户询问具体的测试环境，认为性能比较需要更详细的基准测试数据
+• 少数用户提到售后服务体验的差异，认为这也是重要的考量因素</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45884334" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45886646" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -266,190 +454,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://xslt.rip/" target="_blank">XSLT RIP</a>
+                    <a href="https://vole.wtf/doctype/" target="_blank">Type-in magazines are back, but this time for HTML</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: edent</span> |
-                    <span>评分: 668</span> |
-                    <span>评论数: 90</span> |
-                    <span>发布时间: 2025-11-10 07:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：XSLT被浏览器弃用的争议及其对Web开发的影响
-
-不同观点：
-• 支持XSLT保留的观点：
-  - XSLT在静态网站、RSS渲染等场景仍有实用价值（susam, vbezhenar）
-  - 是唯一无需JS/服务器即可实现XML转换的方案（8organicbits）
-  - 代表Web语义化文档的原始理念（conartist6）
-  - 批评Google过度主导Web标准（shevy-java, redbell）
-
-• 支持弃用XSLT的观点：
-  - 现代浏览器维护成本过高（yoz-y）
-  - 市场采用率极低，已属过时技术（tuveson）
-  - 安全维护理由成立（gucci-on-fleek）
-  - 技术本身存在设计缺陷（eftpotrm）
-
-• 中立/其他观点：
-  - 承认XSLT历史价值但接受技术迭代（pseudosavant）
-  - 指出XSLT源于更早的SGML体系（tannhaeuser）
-  - 网站设计引发怀旧争议（GaryBluto, SvenL）
-
-补充讨论：
-1. 争议焦点：
-   - Google是否滥用市场地位（shevy-java vs gucci-on-fleek）
-   - XSLT的技术替代方案是否充足（vbezhenar vs yoz-y）
-
-2. 历史维度：
-   - 多篇评论比较XML/XSLT与JSON/JS技术路线（eftpotrm）
-   - 强调早期Web语义化理念的流失（conartist6）
-
-3. 影响评估：
-   - 对静态网站/RSS用户的直接影响（susam, 8organicbits）
-   - 反映Web技术决策权集中化趋势（redbell）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45873434" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.iana.org/assignments/oauth-parameters/oauth-parameters.xhtml#parameters" target="_blank">Registered OAuth Parameters</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-04 12:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文列出了OAuth协议相关的多个注册表，包括：访问令牌类型、授权端点响应类型、扩展错误注册表等。各注册表规定了专家审核流程和变更控制方（主要为IETF），并提供了不同格式的数据下载（CSV、XML等）。访问令牌类型包含Bearer、PoP、DPoP等标准；授权端点响应类型包含code、id_token等8种类型；错误注册表定义了invalid_request等13种标准错误代码。这些注册表为OAuth协议的实现提供了标准化参考。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[该新闻是否具有报道价值]
-
-不同观点：
-• 认为该新闻没有报道价值：
-  - 提问者"efitz"直接质疑"Why is this news?"，暗示该新闻缺乏重要性或公共意义
-  - 可能认为事件过于平常或与公共利益无关
-
-补充讨论：
-- 该评论引发了关于新闻选择标准的潜在讨论
-- 未提供具体反对理由，属于开放式质疑
-- 可能需要更多背景信息来判断新闻价值（如新闻具体内容、发生背景等）
-- 反映了部分受众对媒体内容选择的困惑或不认同
-
-争议焦点：
-- 新闻报道的价值判断标准
-- 公众兴趣与新闻价值的关系
-
-其他注意：
-- 这是单条简短评论，缺乏对立观点直接交锋
-- 需要结合被评论的新闻内容才能更准确判断立场合理性
-- 可能代表部分读者对媒体内容"琐碎化"的担忧</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45810001" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://waywo.eamag.me/" target="_blank">Show HN: What Is Hacker News Working On?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: eamag</span> |
-                    <span>评分: 149</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2025-11-06 18:31</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对"Hacker News"项目展示工具的改进建议和功能需求]
-
-不同观点：
-• **功能改进建议**：
-  - [redbell] 建议包括最新的"WAYWO"帖子，仅显示顶级评论，并优化表格UI。
-  - [catoc] 希望在移动端实现无限滚动，避免分页操作。
-  - [smusamashah] 希望包含所有历史"WAYWO"评论，并改进分页导航和URL同步。
-  - [amelius] 建议提供无分页选项、JSON下载功能和LLM过滤功能。
-  - [marcotm] 提议使用LLM自动生成项目摘要，提升浏览效率。
-
-• **标签与分类争议**：
-  - [codingdave] 认为现有标签价值有限，建议按项目主题或问题领域分类。
-  - [dedosk] 支持分析项目类型随时间的变化，希望看到更多统计数据。
-  - [cs02rm0] 指出项目重复率高，以语言学习平台为例说明市场饱和问题。
-
-• **用户体验与UI优化**：
-  - [shevy-java] 对比Reddit和Hacker News的UI，建议Hacker News谨慎增加简单功能。
-  - [yetihehe] 提出标签列表可见性、水平溢出和自动滚动到顶部等问题。
-  - [Benjamin_Dobell] 询问默认排序算法，期望更透明的排序逻辑。
-
-• **数据完整性与准确性**：
-  - [jabedude] 指出自己的评论未被索引，反映数据抓取可能存在遗漏。
-  - [vivzkestrel] 调侃性地提出更全面的数据分析计划（如融资、GitHub数据等）。
-
-补充讨论：
-- **争议焦点**：标签系统的实用性与改进方向（如主题分类 vs. 技术标签）。
-- **隐藏需求**：用户对数据导出（如JSON）和自动化工具（如LLM过滤）的强烈兴趣。
-- **社区文化**：[shevy-java] 和 [867-5309] 的评论间接反映了用户对Hacker News自由讨论氛围的珍视，以及对过度商业化的警惕。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45838592" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.symmetrybroken.com/group-selection/" target="_blank">Rademacher Complexity and Models of Group Competition</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: riemannzeta</span> |
-                    <span>评分: 3</span> |
+                    <span>评分: 9</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-11-11 00:09</span>
+                    <span>发布时间: 2025-11-11 12:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章探讨了进化生物学中亲缘选择理论和群体选择理论的关系。作者首先回顾了达尔文关于利他行为的困惑，以及汉密尔顿提出的"rB > C"亲缘选择公式如何解释利他现象。接着讨论了Nowak等人2010年提出的群体选择理论，认为它是对亲缘选择理论的替代方案，并将群体选择理论比作物理学中的"平均场近似"方法。文章指出，这两种理论并非完全对立，而是从不同角度解释利他行为：亲缘选择关注个体决策，群体选择则强调整体适应性。这种认识有助于调和进化生物学界关于两种理论的争议。</p>
+                    <p>这篇文章介绍了一本独特的杂志，主要内容是包含10个网页的HTML源代码列表，配有插画和信息。读者需要手动输入代码来运行游戏和应用，重现早期软件分发的怀旧体验。杂志提供初学者指南，无需网络服务器，直接在浏览器中打开本地文件即可。文章还列出了封面艺术家、插画师和代码贡献者名单，并通过FAQ解答了常见问题，强调杂志不提供PDF版本，坚持复古的手动输入方式。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45882592" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45886415" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -460,48 +483,50 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://dfir.ch/posts/today_i_learned_binfmt_misc/" target="_blank">Today I Learned: Binfmt_misc</a>
+                    <a href="https://www.euractiv.com/news/stop-overhyping-ai-scientists-tell-von-der-leyen/" target="_blank">Stop overhyping AI, scientists tell von der Leyen</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: malmoeb</span> |
-                    <span>评分: 94</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-11-03 21:49</span>
+                    <span>作者: saubeidl</span> |
+                    <span>评分: 75</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-11-11 12:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Linux内核特性`binfmt_misc`的潜在安全风险。`binfmt_misc`允许系统根据自定义二进制格式识别和执行文件，通常用于运行非本地二进制文件。文章指出攻击者可利用该功能创建隐蔽后门：通过注册带有C标志的规则，当执行特定SUID二进制文件时，系统会以root权限运行攻击者指定的解释器，从而实现权限提升。虽然2019年已有相关分析报告，但该技术仍未被主流安全框架收录，具有较高的隐蔽性。文章还提供了具体的攻击演示代码和实现步骤。</p>
+                    <p>欧盟委员会主席冯德莱恩5月称人工智能可能在明年达到人类智能水平，引发70多位科学家联名批评。科学家们认为这种说法缺乏科学依据，是受商业利益驱动的夸大宣传，损害欧洲公信力。欧盟委员会回应称并非预测具体时间，而是强调需为AI快速发展做好准备。联合国AI高级顾问等知名学者签署了这封公开信，指出相关言论引用的企业CEO观点具有营销性质。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[binfmt_misc的功能、安全性和实际应用]
+                    <div class="comments-summary">主要讨论点：欧盟在AI发展中的角色、市场理性与炒作、以及欧盟政策有效性  
 
-不同观点：
-• [支持binfmt_misc的实用性]
-  - 通过wine直接执行.exe文件（无需显式调用wine）
-  - Docker多平台构建（通过QEMU）
-  - 跨平台测试（测试系统无需知道代码是通过QEMU运行的）
-  - NixOS中通过简单设置即可运行外部二进制文件
+不同观点：  
+• **市场理性已死，需顺势而为**  
+  - 认为现代经济已脱离现实，市场基于情绪（如Nvidia、Tesla等“梗股”现象）  
+  - 反对强行压制炒作，主张明智参与市场浪潮（例：比特币终结了理性市场神话）  
+  - 争议焦点：市场非理性是否可控？  
 
-• [对安全性的担忧]
-  - Arch wiki提到可能需要移除wine的handler以出于安全考虑
-  - 非root用户能否注册解释器以及自定义解释器优先级的疑问
-  - 部分用户选择自行编译内核并禁用此类功能以提高安全性
+• **欧盟政策失败与盲目追逐“奇迹武器”**  
+  - 批评欧盟领导人缺乏专业能力，依赖补贴和空想项目（如“欧洲云”“谷歌竞争对手”）  
+  - 认为欧盟需结构性改革，减少游说影响（例：冯德莱恩被指为“说客”）  
+  - 争议焦点：欧盟官僚体系是否阻碍创新？  
 
-• [趣味性和实验性用途]
-  - 在FreeBSD上创建"Volkswagen mode"（强制返回成功状态）
-  - 在Linux上运行SCO Xenix和Unix二进制文件的实验
-  - 虽然有趣但实际生产中往往有更好的解决方案
+• **AI能力被低估 vs. 炒作需监管**  
+  - 一方认为AI已超越人类（例：通过LSAT、辅助陶哲轩研究），质疑科学家联名信是“酸葡萄心理”  
+  - 另一方呼吁欧盟成立“炒作监管机构”，认为当前宣传脱离科学依据  
+  - 争议焦点：AI的实际能力是否被夸大？  
 
-补充讨论：
-• 争议焦点：非root用户能否注册解释器的问题（throwawayqqq11指出/proc/sys/fs/binfmt_misc/register通常是root所有）
-• 历史背景：Brian_K_White提到早期使用非misc类型的binfmt（如-sysv或-ibcs2）
-• 性能问题：cefboud指出使用QEMU可能会非常慢
-• 极端安全措施：muppetman选择完全禁用此类功能和可加载内核模块</div>
+• **欧盟竞争力不足的根源**  
+  - 归因于研发投资不足、单一市场未能实现（例：对比美国AI领先地位）  
+  - 讽刺欧盟“总在自我设限”，应放任市场发展  
+
+补充讨论：  
+- **科学家的可信度受质疑**：联名信签署者被指多为非技术领域学者（如性别研究、文学），削弱其批评力度。  
+- **类比反科学风险**：将AI怀疑论比作疫苗怀疑论，可能损害欧洲科学声誉。  
+- **其他政策争议**：冯德莱恩的辉瑞协议等“幕后交易”被提及，显示讨论超出AI范畴。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45804870" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45886344" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
