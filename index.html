@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-19 02:22 (北京时间)
+            最后更新时间: 2025-11-19 09:02 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,48 +61,54 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cloudflarestatus.com/?t=1" target="_blank">Cloudflare Global Network experiencing issues</a>
+                    <a href="https://blog.cloudflare.com/18-november-2025-outage/" target="_blank">Cloudflare outage on November 18, 2025 post mortem</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: imdsm</span> |
-                    <span>评分: 435</span> |
-                    <span>评论数: 168</span> |
-                    <span>发布时间: 2025-11-18 11:35</span>
+                    <span>作者: eastdakota</span> |
+                    <span>评分: 245</span> |
+                    <span>评论数: 34</span> |
+                    <span>发布时间: 2025-11-18 23:31</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年11月18日，Cloudflare全球网络出现故障，导致多客户遭遇500错误和仪表板/API服务中断。团队在11:48 UTC开始调查，12:03 UTC仍在处理中，12:21 UTC报告服务逐步恢复但错误率仍高于正常水平。同时，SCL（圣地亚哥）数据中心计划于当日12:00至15:00 UTC进行维护，可能导致延迟小幅上升。事件更新可通过邮件或短信订阅。（199字）</p>
+                    <p>2025年11月18日，Cloudflare因数据库权限变更引发全球服务中断。问题源于Bot管理系统使用的特征文件意外加倍，导致网络路由器软件崩溃。最初误判为DDoS攻击，后发现是配置问题。14:30开始恢复，17:06全面修复。影响包括CDN核心服务、Turnstile验证系统、Workers KV等多项功能。公司致歉并承诺改进流程，防止类似事件再次发生。此次故障凸显了Cloudflare作为互联网关键基础设施的重要性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Cloudflare服务中断的影响及互联网集中化的风险]
+                    <div class="comments-summary">### 主要讨论点：
+Cloudflare的大规模服务中断事件及其根本原因，特别是关于`.unwrap()`的使用、配置部署策略、错误监控和恢复过程。
 
-不同观点：
-• **对Cloudflare中断的幽默反应**  
-  - 用户调侃AWS和Cloudflare中断时的不同反应（entropoem）  
-  - DownDetector因依赖Cloudflare也无法访问（its_notjack、vinishbhaskar）  
+### 不同观点：
+#### 关于`.unwrap()`的使用：
+• **反对使用`.unwrap()`**：认为在关键基础设施中使用`.unwrap()`是不负责任的，因为它会导致线程崩溃，而不是优雅地处理错误（[ojosilva]）。  
+• **Rust的责任**：认为Rust编译器已经警告了可能的失败，但开发者选择忽略，这是“解析而非验证”的反模式（[ojosilva], [vsgherzi]）。  
+• **语言无关性**：认为这不是Rust的问题，任何语言都无法避免这种人为错误（[yoyohello13], [dzonga]）。  
 
-• **对互联网集中化的担忧**  
-  - 批评互联网过度依赖少数服务商（erdaltoprak、bratao）  
-  - 多个监控工具和公共服务（如巴黎自行车租赁）因Cloudflare中断而瘫痪（nnyms1、buybackoff）  
+#### 关于配置部署和错误处理：
+• **缺乏阶段性部署**：批评Cloudflare没有采用阶段性部署或回滚机制，导致问题迅速扩散（[otterley], [EvanAnderson]）。  
+• **错误处理不足**：新系统（FL2）的错误处理不如旧系统（FL），导致问题更严重（[testemailfordg2]）。  
+• **全局开关的风险**：质疑“全局开关”策略可能带来更大的风险（[otterley]）。  
 
-• **用户实际体验和故障排查**  
-  - 同事误以为自己的配置导致问题（itzjacki）  
-  - Cloudflare状态页面未及时更新故障信息（spapas82）  
-  - 部分请求失败，部分正常，显示服务降级（spapas82）  
+#### 关于监控和诊断：
+• **错误监控失效**：认为崩溃未被快速发现是监控系统的失败（[RagingCactus]）。  
+• **状态页面的巧合**：状态页面同时宕机增加了混淆，但未解释原因（[lukan]）。  
 
-• **对故障传播速度的观察**  
-  - 用户通过Hacker News等替代平台快速获取信息（helloguillecl）  
-  - 期待故障分析视频（ntoskrnl_exe）  
+#### 关于恢复时间和透明度：
+• **恢复时间过长**：质疑为什么恢复需要几个小时，是否应更快回滚配置（[gucci-on-fleek]）。  
+• **透明度表扬**：赞赏Cloudflare在24小时内发布事故报告的透明度（[SerCe]）。  
 
-补充讨论：  
-- **争议焦点**：是否应减少对单一服务商（如Cloudflare）的依赖，以降低系统性风险。  
-- **讽刺现象**：依赖Cloudflare的故障监控工具自身无法访问（nnyms1）。  
-- **隐藏问题**：公共服务（如交通系统）可能因类似故障瘫痪（buybackoff）。</div>
+### 补充讨论：
+• **行业教训**：提到类似CrowdStrike事件，认为行业仍未充分吸取教训（[otterley], [EvanAnderson]）。  
+• **影响规模**：指出26M/s的5xx错误持续两小时，影响巨大（[ed_mercer]）。  
+
+### 争议焦点：
+1. `.unwrap()`的使用是否合理，还是纯粹人为错误。  
+2. 配置部署策略是否应优先考虑安全性而非速度。  
+3. 监控系统是否足够灵敏以捕捉此类崩溃。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45963780" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45973709" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -113,46 +119,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.google/technology/developers/gemini-3-developers/" target="_blank">Gemini 3 for developers: New reasoning, agentic capabilities</a>
+                    <a href="https://corecursive.com/doomed-to-fail-with-burger-becky/" target="_blank">Rebecca Heineman – from homelessness to porting Doom</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: janpio</span> |
-                    <span>评分: 324</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-11-18 16:04</span>
+                    <span>作者: birdculture</span> |
+                    <span>评分: 53</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-11-18 23:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Google推出Gemini 3 Pro人工智能模型，该模型在AI基准测试和编码任务上表现优异。开发者可通过Google AI Studio、Vertex AI等平台使用该模型，定价为输入每百万token 2美元，输出每百万token 12美元。同时推出的Google Antigravity是一个代理开发平台，支持开发者通过自然语言进行"氛围编程"（vibe coding）。新模型还增强了多模态理解、视觉推理和终端工具使用能力，支持通过bash工具进行本地文件系统操作等任务。目前提供免费预览版，支持MacOS、Windows和Linux系统。</p>
+                    <p>本期播客讲述了游戏开发者Rebecca Heineman（绰号Burger Becky）将经典游戏《Doom》移植到3DO游戏机的坎坷经历。主要内容包括：
+
+1. 个人经历：Becky童年遭受家暴，通过赢得Atari比赛进入游戏行业，从街机维修起步成为"移植大师"。
+
+2. 3DO移植挑战：需在紧迫时限内完成引擎优化、硬件加速和多媒体功能，同时面临艺术资源、付款纠纷等问题。
+
+3. 开发危机：临近圣诞节截止日期时与发行商爆发冲突，因无法实现承诺的新武器功能遭拒付尾款。
+
+4. 行业建议：Becky分享了学习底层编程的经验，强调基础技能的重要性。
+
+故事展现了90年代游戏开发的高压环境，以及开发者面临的技术与商业双重挑战。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Gemini 3.0的性能、用户体验及与其他AI模型的比较]
+                    <div class="comments-summary">主要讨论点：Rebecca Heineman的贡献和近况，以及Corerecursive播客的质量变化
 
 不同观点：
-• [对Gemini 3.0持积极态度]  
-  - aerhardt认为Gemini 2.5 Pro在API项目中表现优于GPT-5，期待3.0的表现。  
-  - ponyous通过3D CAD模型生成测试，认为Gemini 3.0在空间理解和速度上远超其他模型。  
-  - eknkc在VSCode Copilot中尝试后，认为Gemini 3.0生成的代码优于Sonnet 4.5，解决方案更实用。  
+• **对Rebecca Heineman的赞赏与支持**  
+  - LarsDu88提到Heineman作为Interplay联合创始人和Doom 3DO移植者的贡献，并指出她为Fabien Sanglard的书籍提供了幕后照片。  
+  - jonny_eh补充了Heineman正在与癌症抗争的信息，并分享了她的GoFundMe链接，呼吁支持。  
 
-• [对Gemini 3.0持怀疑态度]  
-  - dudeinhawaii指出Gemini在代理能力上落后，认为它需要“量子飞跃”才能赶上竞争对手。  
-  - syedshahmir7214认为近期的AI模型发布过于炒作，实际改进有限。  
-  - aliljet质疑Gemini 3在SWE Bench上未领先的原因，希望获得更具体的解释。  
+• **对Corerecursive播客的批评**  
+  - fud101认为播客近期质量下降，特别批评最新一期内容糟糕，甚至比之前关于AI的单集更差，质疑主持人谈论AI时的专业性。  
 
-• [中立或观望态度]  
-  - srameshc处于AI疲劳期，回归问题导向的解决方案，不完全依赖AI。  
-  - wohoef对Gemini 2.5作为学习工具表示认可，但对基准测试数据的真实性持怀疑态度。  
-  - catigula指出当前LLM发布的差异难以直观理解，需要时间评估。  
-
-补充讨论：
-- 争议焦点：Gemini 3.0是否真正实现了技术突破，还是仅仅营销炒作（如syedshahmir7214 vs. alach11）。  
-- 用户体验问题：mccoyb提到Google模型的付费和使用流程不够直观，对比Anthropic和OpenAI的简洁性。  
-- 工具比较需求：icapybara询问Gemini CLI与Codex、Claude Code的对比，反映用户对横向评估的关注。</div>
+补充讨论：  
+- cognitive-sci的简短评论“Wow”可能表达了对Heineman近况或贡献的惊讶，但具体立场不明确。  
+- 争议焦点主要集中在Corerecursive播客的质量变化，fud101的观点较为尖锐，可能引发其他听众的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968043" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45973573" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -215,12 +222,127 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ericmigi.com/blog/pebble-rebble-and-a-path-forward/" target="_blank">Pebble, Rebble, and a Path Forward</a>
+                    <a href="https://www.blender.org/download/releases/5-0/" target="_blank">Blender 5.0</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: FrostKiwi</span> |
+                    <span>评分: 388</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-11-18 21:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Blender作为开源软件的成就与未来发展，及其在不同领域的应用和挑战]
+
+不同观点：
+• [Blender的成功案例]
+  - Blender是开源软件中少数能击败商业软件的案例，如Maya。
+  - 其他领域如办公软件、图像处理等开源软件仍落后于商业软件（如LibreOffice vs Microsoft Office，GIMP vs Photoshop）。
+  - Godot在游戏引擎领域可能成为下一个成功的开源软件。
+
+• [开源3D CAD的潜力]
+  - 希望开源软件能像Blender一样在3D CAD领域取得突破，挑战AutoDesk等商业软件。
+  - 开源CAD工具可以为工业玩家和小型用户提供更多自由和灵活性。
+
+• [Blender的技术更新与用户体验]
+  - Blender的更新频繁且功能丰富，如径向平铺、数组修饰符、体积散射等。
+  - 新功能如Convolve节点可能涉及AI技术，但主要用于图像处理。
+  - 用户对Blender的进步感到兴奋，尤其是图形编程语言的改进。
+
+• [Blender的兼容性问题]
+  - 存在ROCm/AMD驱动与Cycles渲染器的兼容性问题，导致GPU无法被检测。
+  - 自适应细分功能被误认为是Blender功能，实为Cycles功能。
+
+• [AI对3D工具的影响]
+  - 有人认为AI将在未来十年内使传统3D工具变得无用，尤其是对普通项目。
+  - 其他人则认为Blender等工具仍具有长期价值，建议深入了解其工作原理。
+
+• [AI对3D工具的未来影响]
+  - 担忧AI技术可能在10年内使传统3D工具（如Blender）变得多余，尤其是对于普通项目。
+  - 行业内的长期前景尚不明确，需关注AI如何改变工作流程。
+
+补充讨论：
+- 用户对Blender的更新速度和质量表示赞赏，认为其功能已足够强大，可能替代其他专业工具（如DaVinci Resolve）。
+- 对开源软件在不同领域的未来持乐观态度，但也认识到商业软件的统治地位短期内难以撼动。
+- 争议焦点：AI是否会取代传统3D工具，以及开源软件能否在更多领域复制Blender的成功。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45972519" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://antigravity.google/" target="_blank">Google Antigravity</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Fysi</span> |
+                    <span>评分: 177</span> |
+                    <span>评论数: 57</span> |
+                    <span>发布时间: 2025-11-18 15:47</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Google Antigravity产品的未来、功能及市场定位]
+
+不同观点：
+• 产品寿命质疑
+  - [greatgib]预测产品最多存活2年，暗示Google有快速关闭产品的历史。
+  - [bastawhiz]附和此观点，提到产品可能在Zed编辑器成熟时被关闭。
+
+• 技术问题与初期体验
+  - [craftkiller]指出产品初期存在技术配置问题（MIME类型错误），但迅速修复。
+  - [ayhanfuat]提到免费版存在配额限制问题，导致功能无法正常使用。
+
+• 产品创新性质疑
+  - [nasretdinov]和[mccoyb]认为产品只是VS Code的改装版，缺乏真正创新。
+  - [msci100]和[Slogsworth]将其与已关闭的Windsurf Wave 10比较，质疑其新颖性。
+
+• 工作流程评价
+  - [jihadjihad]和[spuz]批评"代理"工作流可能导致开发者脱离实际代码，增加技术债务。
+  - [TIPSIO]则赞赏其自动化工作流程，认为有潜力提升效率。
+
+• 命名与营销
+  - [bdn_]和[m-hodges]对产品命名表示困惑，联想到其他无关项目（Google Gravity/Python antigravity模块）。
+
+补充讨论：
+- 争议焦点：产品是否具有真正的技术创新，还是仅仅包装现有技术（VS Code+AI代理）。
+- 值得注意的是，多位用户提到Windsurf团队的合并历史，暗示这可能影响产品发展轨迹。
+- 关于"代理优先"开发模式的讨论两极分化，一方担忧开发者技能退化，另一方看好效率提升。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45967814" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ericmigi.com/blog/pebble-rebble-and-a-path-forward/" target="_blank">Pebble, Rebble, and a path forward</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: phoronixrly</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 7</span> |
+                    <span>评分: 304</span> |
+                    <span>评论数: 28</span> |
                     <span>发布时间: 2025-11-18 17:24</span>
                 </div>
 
@@ -231,31 +353,33 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Rebble与Core之间的分歧与合作前景]
+                    <div class="comments-summary">主要讨论点：[Rebble与Core Devices之间的争议，涉及开源生态系统的控制权、数据共享、信任与合作]
 
 不同观点：
-• [Rebble被指责缺乏进取心]
-  - 评论者xyzzy_plugh认为Rebble多年来有机会进一步发展但未能把握，现在似乎只关注"租金"而非创新。
-  - 指出Rebble除了维护原有功能外未创造显著价值，对其订阅模式表示不满。
-  - 认为Core在推动实际进展，而Rebble似乎感到被冷落。
+• [支持Rebble的观点]
+  - Rebble担心被Core Devices取代或边缘化，要求未来合作中的保障
+  - 强调Rebble对生态系统的贡献和投入（时间、金钱等）
+  - 认为Core Devices未充分认可Rebble的基础工作
+  - 对Core Devices的封闭部分（如应用前端）表示担忧
 
-• [沟通方式存在问题]
-  - dewey批评使用Discord作为开源项目主要沟通工具导致信息不透明，需要依赖博客转录才能了解决策过程。
-  - 示例：Core分叉PebbleOS1的决定未能有效公开传达。
+• [支持Core Devices的观点]
+  - Core Devices希望避免依赖第三方（Rebble）的关键服务，担心业务风险
+  - 主张应用商店数据应自由可用，不被单一组织控制
+  - 认为需要快速开发，而开源合作可能拖慢进度
+  - 强调其开发透明度（93%的提交来自Core员工或承包商）
 
-• [中立观望态度]
-  - bigstrat2003认为这是典型的"各执一词"局面，普通用户难以判断谁是谁非。
-  - 指出无论真相如何，最终损害的是用户社区利益。
-  - BoredPositron表示因这种不确定性而庆幸没有订购新产品。
-
-• [合作前景的谨慎乐观]
-  - John-Tony引用Eric Migicovsky的文章，描述了一个充满希望但紧张的重启局面。
-  - 提到Pebble OS已开源，新设备正在开发中，但与Rebble社区在数据所有权上存在分歧。
+• [中立/批评双方的观点]
+  - 双方都表现出不信任，导致僵局
+  - 争议中的"爬取数据"事件损害了信任
+  - 双方都过于强硬，未意识到相互依赖性
+  - 建议通过更明确的开源许可（如GPL/AGPL）解决问题
 
 补充讨论：
-- 争议焦点：Rebble与Core之间的信任与合作方式（xyzzy_plugh vs John-Tony）
-- 相关背景：这是对早前讨论(https://news.ycombinator.com/item?id=45960893)的后续（not_your_vase指出）
-- 用户反应：部分用户因此类纠纷对新产品持保留态度（BoredPositron）</div>
+- 争议焦点：数据控制权与未来合作模式
+- 相关事件：Core Devices被指控违反协议爬取Rebble数据
+- 替代方案讨论：BangleJS作为Pebble的替代品
+- 社区治理问题：Rebble被批评缺乏正式的组织结构
+- 开源哲学争议：完全开放 vs 适度控制的争论</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45969250" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -268,42 +392,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.igorslab.de/en/a-day-at-hetzner-online-in-the-falkenstein-data-center-insights-into-server-technology-cooling-production-rma-and-sustainability/" target="_blank">A Day at Hetzner Online in the Falkenstein Data Center</a>
+                    <a href="https://compellingsciencefiction.com/posts/the-code-and-open-source-tools-i-used-to-produce-a-science-fiction-anthology.html" target="_blank">The code and open-source tools I used to produce a science fiction anthology</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 70</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-11-18 16:18</span>
+                    <span>作者: mojoe</span> |
+                    <span>评分: 69</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-11-18 16:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章描述了作者参观德国Hetzner Online数据中心的过程。该数据中心规模庞大，布局精密，拥有模块化设计的服务器机架、自主服务器生产线和严格的安全处理流程。站点采用冗余能源供应和高效冷却系统，注重功能性和能源效率。整个园区占地广阔，各功能区域分散，员工日常需要长距离步行。数据中心从硬件生产到报废处理都贯彻了严谨的管理流程，展现了工业化运营的高度组织性。这次参观让作者深入了解了数据中心背后复杂的运营体系。</p>
+                    <p>程序员Joe Stech利用业余时间出版了科幻小说选集《Think Weirder》。他通过编程技能简化出版流程：使用YAML文件管理391篇候选小说，开发Python命令行工具跟踪编辑进度，最终用LaTeX自动排版。这套方法帮助他在照顾两个孩子的同时，高效完成了从选稿到出版的全过程，使选集一度成为亚马逊短篇故事类畅销书。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Hetzner数据中心的效率、功能及公司未来发展]
+                    <div class="comments-summary">主要讨论点：[出版电子书/选集的技术挑战与版权管理]
 
 不同观点：
-• [正面评价数据中心效率与环保]
-  - John-Tony赞扬Hetzner的Falkenstein数据中心高效、环保且安全，特别提到其免费冷却系统和低能耗。
-  - noir_lord补充说虽然Robot工具功能简单但非常有效，且自己在使用期间未遇到任何问题。
+• [技术挑战观点]
+  - A_D_E_P_T认为格式化和编辑不是主要问题，使用亚马逊KDP软件可以轻松完成，但获取故事版权非常困难，导致项目最终放弃。
+  - thangalin开发了自己的Markdown编辑器KeenWrite，用于生成PDF文件，强调技术工具的重要性。
+  - __mharrison__提到过去使用HTML和LaTeX制作电子书，现在会使用typst替代LaTeX。
 
-• [对公司未来发展的期待]
-  - ArtTimeInvestor希望Hetzner能上市，以便更透明地了解其业务表现，并与IONOS和OVH等公司进行比较。
-  - esafak提出疑问，询问像Hetzner这样的科技公司是否属于德国的Mittelstand（中小企业）。
-
-• [技术问题与额外信息]
-  - Freak_NL提供了数据中心的具体位置信息，满足了部分用户的好奇心。
-  - boldlybold指出视频无法播放的问题，并提供了视频链接。
+• [版权管理观点]
+  - A_D_E_P_T强调了获取故事版权的困难，即使联系到了一些著名作者，但仍有部分作者无法联系，导致项目失败。
+  - m-hodges对版权管理工具和系统感兴趣，询问了相关工具或系统如何帮助成功管理版权。
 
 补充讨论：
-• [对信息源的争议]
-  - IlikeKitties对Igors Lab提出了批评，认为其技术见解半可信且带有性别歧视和过时的幽默风格。这一点引发了关于信息源可信度和态度的争议。</div>
+• 争议焦点：技术工具是否能完全解决电子书出版的问题，还是版权管理才是最大的挑战。
+• 其他讨论点：不同年代的工具选择（如LaTeX vs. typst），以及开源工具（如KeenWrite）在电子书制作中的应用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968235" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45968121" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -314,46 +435,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://developers.googleblog.com/en/5-things-to-try-with-gemini-3-pro-in-gemini-cli/" target="_blank">5 Things to Try with Gemini 3 Pro in Gemini CLI</a>
+                    <a href="https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-Pro-Model-Card.pdf" target="_blank">Gemini 3 Pro Model Card [pdf]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: keithba</span> |
-                    <span>评分: 72</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2025-11-18 16:09</span>
+                    <span>作者: virgildotcodes</span> |
+                    <span>评分: 150</span> |
+                    <span>评论数: 55</span> |
+                    <span>发布时间: 2025-11-18 11:12</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>谷歌推出了Gemini 3 Pro模型，并集成到Gemini CLI中，为终端用户提供更强大的性能和生产力。该模型支持智能命令执行、复杂工程任务和定制化工作流。目前仅向Google AI Ultra订阅者和付费API用户开放，其他用户可加入等候名单。文章介绍了5种使用场景，包括通过自然语言生成可部署的3D图形应用等高级功能。用户需升级CLI至0.16.x版本并开启预览功能来体验。（198字）</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Gemini 3发布后的使用体验、模型表现及与其他工具的对比]
+                    <div class="comments-summary">主要讨论点：[Gemini 3 Pro的性能基准、架构改进、发布相关细节以及用户对模型的期待]
 
 不同观点：
-• [对Gemini 3发布的积极态度]
-  - [recitedropper] 对Gemini 3的发布表示兴奋，计划下载CLI并与其他工具（如Cursor、Claude Code等）进行性能对比。
-  
-• [对Gemini 3发布的负面体验]
-  - [lefrenchy] 无法通过CLI登录，多次在浏览器中登录后仍无法继续。
-  - [ipsum2] 遇到访问权限问题，批评Google的半成品发布策略。
+• **性能优势**  
+  - Gemini 3 Pro在多数基准测试中大幅领先其他模型（如Humanity's Last Exam、GPQA Diamond等），但在SWE Bench上表现与Sonnet 4.5和GPT-5.1相近，引发对模型在代理编码（agentic coding）能力上的讨论。  
+  - 用户认为指令遵循能力（如支持100-250条指令）比单纯的IQ提升更重要，建议新增相关基准测试。
 
-• [对Gemini 3模型行为的质疑]
-  - [embedding-shape] 指出演示视频中模型错误使用`git bisect`命令，认为模型在面对不可能的任务时仍会执行错误操作，未改进此问题。批评博客文章未经工程师审查。
+• **架构与训练**  
+  - 推测模型可能采用多层混合专家（Multi-layer Mixture of Experts）架构，基于Google Pathways的引用。  
+  - 部分用户质疑TPU宣传语（对比CPU而非GPU），认为其优势表述不足。  
+  - 讨论是否从零训练（from scratch）会保留Gemini 2.5 Pro的“独特体验”，同时表达对更长上下文（2M+）的期待。
 
-• [对当前模型生态的讨论]
-  - [chis] 分享了对不同模型（Cursor、Claude Code、Grok等）的使用体验和排名，认为保持对领先模型的跟踪既重要又累人。
-
-• [对CLI工具编程语言的偏好]
-  - [alecco] 不喜欢用JavaScript开发CLI工具，认为OpenAI转向Rust是正确的选择。
+• **发布与争议**  
+  - 文件泄露和临时下线引发对发布时间的猜测（如11月18日）。  
+  - “Google Antigravity”子域名和GitHub组织的出现被关联到Gemini 3，但具体用途不明。  
+  - 用户讽刺需增加“谄媚基准”（sycophancy benchmark）以评估模型的虚假赞同倾向。
 
 补充讨论：
-- [ChrisArchitect] 提供了更多讨论链接，指向Hacker News的相关话题。
-- 争议焦点：Gemini 3的发布质量和模型行为是否有所改进。</div>
+- **地域限制问题**：用户发现文档链接在西班牙被屏蔽，推测可能与敏感内容（如医疗堕胎信息）有关。  
+- **定价信息**：AI Studio泄露的定价显示长上下文（>200K tokens）成本显著提高（输入$4/输出$18）。  
+- **次要争议点**：Cloudflare故障分散了Gemini 3发布的关注度，部分用户认为TPU宣传缺乏竞争力。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968104" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45963670" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -364,51 +484,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.google/products/gemini/gemini-3/" target="_blank">Gemini 3</a>
+                    <a href="http://kev009.com/wp/2024/07/Lucent-5ESS-Rescue/" target="_blank">Lucent 7 R/E 5ESS Telephone Switch Rescue</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: meetpateltech</span> |
-                    <span>评分: 324</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-11-18 16:00</span>
+                    <span>作者: gjvc</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-11-18 23:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>2025年11月，谷歌推出最新AI模型Gemini 3，号称是其最智能的模型，具备卓越的推理能力和多模态理解。Gemini 3在理解用户意图、处理复杂任务方面表现突出，能更好地捕捉上下文和细微差别。该模型已集成至谷歌搜索、Gemini应用、AI Studio和Vertex AI等产品中。未来还将推出"深度思考"模式，为高级用户提供更强的推理功能。谷歌CEO表示，自Gemini系列推出两年来，其AI服务已拥有20亿月活用户，展现了显著影响力。此次更新标志着谷歌在通用人工智能(AGI)道路上的重要进展。</p>
+                    <p>很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Google Gemini 3模型的性能、市场策略及其在行业中的影响]
+                    <div class="comments-summary">主要讨论点：[对Bletchley Park历史设备再利用的欣赏，以及对电信系统历史价值的讨论]
 
 不同观点：
-• **支持Google的贡献与进步**  
-  - [bnchrch]认为Google是行业的平衡力量，列举了Gmail、Drive、Android等产品的成功，并赞赏其高薪和Worklife balance政策。
-  - [tylervigen]对Gemini 3在ARC-AGI-2基准测试中的表现（31.1% vs ChatGPT 5.1的17.6%）表示惊叹，认为其进步令人难以置信。
-  - [zone411]提到Gemini 3在Extended NYT Connections基准测试中创下新纪录（96.8分），远超其他模型。
+• [对历史电信系统的欣赏]  
+  - jakedata表达了对Bletchley Park中电话交换设备被重新用于计算的欣赏，认为这展现了电信系统在过去150年中的辉煌成就。  
+  - 尽管现代分组交换和IP技术是必然的，但jakedata也认为在这种过渡中失去了一些东西，并对爱好者们努力保存这段历史表示欣慰。
 
-• **对Google AI市场策略的质疑**  
-  - [bilekas]指出Google的AI用户数字可能被夸大，因为Google将AI强行整合到所有产品中（如搜索中的AI Overviews）。
-  - [gertrunde]质疑“2亿用户”的真实性，认为许多人可能只是被动接触到AI而非主动使用。
-  - [briga]对基准测试的可靠性提出疑问，怀疑模型可能通过训练集记忆答案而非真正理解任务。
+• [对资源与存储的关注]  
+  - g-mork提到保存这些历史设备是一个巨大的项目，并指出拥有足够的资源来存储这些设备是一种幸运。
 
-• **技术评测与实用性讨论**  
-  - [crawshaw]询问是否有实际用户评测Gemini 3的性能，尤其是与Opus/GPT5等模型的对比，表达了对Google营销宣传的怀疑。
-  - [energy123]指出Deep Think基准测试中工具开关对比的不公平性。
-  - [energy123]指出Deep Think基准测试中可能存在不公平比较（工具开启vs关闭）。
-
-• **对模型实用性和市场竞争的讨论**  
-  - [crawshaw]质疑Gemini 3的实际表现，希望听到实际用户（尤其是Opus/GPT5用户）的反馈。
-  - [coffeecoders]认为AI市场的赢家将是那些已经控制用户数字生活的平台（如Google、Apple、Microsoft），而非技术最先进的初创公司。
-  - [icyfox]对Gemini 3的定价表示满意，认为其性价比合理。
+• [对现存设备数量的好奇]  
+  - yborg对目前仍在运行的5ESS（一种电话交换系统）数量表示好奇，暗示了对这些历史设备现状的关注。
 
 补充讨论：
-- [stevesimmons]提到Gemini 3文档中的一个有趣的彩蛋（“context_engineering_is_the_way_to_go”）。
-- [qustrolabe]赞赏Google提供慷慨的免费访问，认为这有助于数据收集和模型改进。
-- [scrollop]分享了一个Gemini 3的实际应用案例（文本视频编辑器）。</div>
+- CaliforniaKarl的评论虽然简短，但提到了一篇2024年的文章，可能是对讨论的补充或背景信息的推荐。
+- 争议点不明显，但讨论中隐含了对技术演进中历史价值与现代需求之间平衡的关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45967999" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45973955" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -419,137 +528,61 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2511.09030" target="_blank">Solving a Million-Step LLM Task with Zero Errors</a>
+                    <a href="https://www.githubstatus.com/incidents/5q7nmlxz30sk" target="_blank">GitHub: Git operation failures</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Anon84</span> |
-                    <span>评分: 32</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-11-18 16:26</span>
+                    <span>作者: wilhelmklopp</span> |
+                    <span>评分: 313</span> |
+                    <span>评论数: 84</span> |
+                    <span>发布时间: 2025-11-18 20:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>论文提出MAKER系统，首次实现大语言模型（LLM）在百万级步骤任务中零错误运行。通过将任务极度分解为可被微型代理处理的子任务，并结合多代理投票机制进行逐步骤错误修正，该系统突破了现有LLM在长程任务中的性能瓶颈。研究表明，大规模模块化代理流程（MDAPs）比单纯改进LLM更有效，为组织和社会层面的复杂问题提供了可扩展解决方案。</p>
+                    <p>这篇文章介绍了GitHub状态通知的多种订阅方式，包括通过电子邮件、短信、Slack和Webhook接收GitHub事件（如创建、更新或解决故障）的通知。文章详细列出了各国电话区号，并提供了订阅时需要同意的隐私政策和服务条款。最后，报告了一起已解决的Git操作故障事件，表示服务已恢复正常，并承诺将分享详细的事故分析。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[递归分解任务并使用小型LLM代理逐步执行的有效性及适用性]
+                    <div class="comments-summary">主要讨论点：[近期大型软件系统频繁故障的原因及应对策略]
 
 不同观点：
-• [cs702] 认为该方法通过递归分解任务并使用小型LLM代理逐步执行，成功解决了复杂的Towers of Hanoi问题，但质疑其是否适用于更复杂、非机械化的任务。
-  - 论据：作者使用该方法成功解决了20个环的Towers of Hanoi问题（共100万步）。
-  - 质疑：不确定该方法是否能推广到更复杂的任务。
+• [故障频率上升的观点]
+  - aeldidi认为软件系统的韧性正在下降，列举了多个近期故障案例（AWS、Azure、Cloudflare、GitHub）
+  - 指出系统复杂性增加导致更多故障点，并通过自身工作经历说明改进措施（文档完善、测试增强等）的效果
+  - SteveNuts提问是否故障确实变多，还是只是报道增多，并探讨可能原因（预算削减、AI替代、规模扩张等）
 
-• [htrp] 指出该方法依赖于任务的极端模块化分解和高效的投票机制，但对其实用性持保留态度。
-  - 论据：模块化分解和投票机制在每一步允许错误修正。
-  - 质疑：该方法可能仅适用于玩具问题（toy problems）。
+• [企业生命周期与工程文化衰退的观点]
+  - captainkrtek提出科技公司的共同发展轨迹：从初创到追求利润导致工程文化衰退
+  - 指出大型云服务提供商内部也存在类似问题，基础服务质量下滑
+  - 质疑人们对云服务"大而不倒"的盲目信任
 
-• [awei] 提到该方法在处理步骤间有依赖关系或需要回溯的任务时可能存在局限性。
-  - 论据：某些任务需要根据前一步的结果动态调整后续步骤。
-  - 质疑：递归分解可能无法适应动态依赖的任务。
+• [去中心化解决方案的观点]
+  - mandus和JonChesterfield强调git本身的分布式特性，建议减少对GitHub的依赖
+  - JonChesterfield提出建立本地git缓存服务器的技术方案
+  - _jab质疑GitHub可靠性，考虑转向GitLab
 
-• [LMKIIW] 对论文的案例选择表示失望，认为Towers of Hanoi问题不足以体现标题的吸引力。
-  - 论据：案例过于简单，缺乏实际应用场景的吸引力。
-
-• [zer00eyz] 对论文的整体质量提出批评，认为缺乏创新性和实用性。
-  - 论据：未提及混合专家模型（MoE），案例选择薄弱。
-  - 质疑：论文缺乏实际应用价值，领域研究过于学术化。
-
-补充讨论：
-• [andai] 从个人角度支持该方法，认为类似方法对ADHD患者有效，并推荐论文中的图表（第1页）。
-• 争议焦点：该方法是否仅适用于简单任务（如Towers of Hanoi），以及其能否推广到更复杂的实际应用场景。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968362" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://chipsandcheese.com/p/strix-halos-memory-subsystem-tackling" target="_blank">Strix Halo's Memory Subsystem: Tackling iGPU Challenges</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: PaulHoule</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-18 16:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>AMD的Strix Halo移动处理器通过创新的内存子系统设计，解决了集成GPU面临的带宽、延迟与功耗挑战。其关键创新包括：采用32MB Infinity Cache作为GPU末级缓存，配合2MB L2缓存形成分级缓存体系；支持动态缓存策略调整，可通过驱动/固件更新优化性能；保持512B/cycle的高速互连带宽。测试显示该设计在保持移动平台能效的同时，显著提升了GPU内存性能，尤其对游戏等带宽敏感型负载效果突出。文章还揭示了缓存行为可能受操作系统进程状态和API参数影响等细节特性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AMD Ryzen 9 7940HS芯片在笔记本电脑市场的可用性问题]
-
-不同观点：
-• 硬件稀缺问题：评论者指出AMD Ryzen 9 7940HS芯片在笔记本电脑市场供应非常有限，特别是在欧洲地区，很难找到搭载该芯片的设备。这反映了当前市场上高端AMD芯片的供应不足问题。
-• 配置受限问题：评论者特别提到，即使能找到像华硕Z13这样的设备，也通常只有32GB RAM版本可选，暗示消费者选择空间受限。
+• [幽默/讽刺的观点]
+  - laurentiurad和personjerry将故障与AI革命联系起来进行调侃
+  - cjonas以轻松态度看待故障，视为休息机会
 
 补充讨论：
-• 该评论没有直接反对或批评AMD芯片本身的质量或性能，而是聚焦于市场供应和产品选择方面的限制。
-• 虽然简短，但评论揭示了高端AMD芯片设备在零售市场的可获得性问题，这可能会影响消费者的购买决策和AMD在高端市场的竞争力。</div>
+• 争议焦点：
+  - 故障频率是否确实上升（SteveNuts的提问）
+  - 集中化云服务与去中心化解决方案的优劣（mandus/captainkrtek的分歧）
+  - GitHub的可靠性问题（_jab的强烈批评）
+
+• 具体技术问题：
+  - OptionOfT详细列举GitHub Actions的各种故障表现
+  - lol768指出故障不仅限于HTTP操作，SSH同样受影响
+  - kennysmoothx提供紧急情况下的替代方案（直接编辑文件）
+
+• 应对策略：
+  - aeldidi分享的实际改进经验
+  - JonChesterfield提出的技术解决方案
+  - 部分用户表现出的无奈接受态度（chrsstrm）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968611" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://fabiensanglard.net/quake_chunnel/index.html" target="_blank">How Quake.exe got its TCP/IP stack</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: billiob</span> |
-                    <span>评分: 365</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2025-11-18 08:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了1996年发布的游戏《Quake》如何在DOS和Windows 95双平台运行的创新技术方案。开发团队id Software通过DJGPP编译器实现单个可执行文件quake.exe跨平台运行，利用DPMI接口兼容Windows 95的DOS扩展环境。特别值得注意的是，游戏能自动检测并优先使用Windows 95更先进的TCP/IP协议栈（而非昂贵的DOS方案），从而优化网络对战体验。文章还详细对比了DOS和Windows 95下运行Quake所需的不同组件及网络支持情况，展现了90年代中期游戏开发面临的技术挑战和巧妙解决方案。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Quake的历史技术细节、DOS/Win95环境下的开发挑战、网络多人游戏实现]
-
-不同观点：
-• **技术实现的复杂性**  
-  - cubefox引用John Carmack的观点，认为Quake同时开发网络功能和3D引擎过于雄心勃勃，应分阶段推进（如先推出“Network Doom”）。  
-  - nikanj反驳将Win95的DOS虚拟机与现代虚拟机概念混淆，指出其性能优化（如直接硬件访问VGA）是关键。
-
-• **开发工具与贡献者争议**  
-  - skrebbel质疑“DJGPP工程师”实为单人（DJ Delorie），推测id可能无偿请求功能添加，但未明确是否付费。  
-  - mmastrac提到DJGPP的长期影响力（如25年前的教程仍被搜索），侧面佐证其技术价值。
-
-• **网络多人游戏的演变**  
-  - badocr回忆DOS版Quake的TCP/IP实现（如Beame & Whiteside协议）的复杂性和高延迟，对比WinQuake更优体验。  
-  - sempron64对比90年代（电话拨号直连）与现代（依赖服务器/NAT穿透）的多人游戏设置便捷性差异。
-
-补充讨论：
-- **怀旧与技术史**：afandian提及“Chunnel”命名趣闻，fallingfrog分享串口线直连玩Quake的回忆，体现早期技术的创造性应用。  
-- **开发工具链的成就**：ggambetta和skrebbel分别强调DIY硬件（如并口声卡）和DJGPP工具链的工程难度。  
-- **时代背景争议**：ec109685认为1996年并非“远古”，已有成熟互联网和Mac TCP协议栈，反驳文章对技术落后的暗示。  
-
-争议焦点：  
-1. Win95的DOS虚拟机性能是否依赖现代VM概念（nikanj vs 其他未明言观点）。  
-2. Quake开发是否因功能堆砌导致效率低下（Carmack的反思 vs 未直接反驳的默认认可）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45962654" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45971726" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
