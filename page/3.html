@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-22 02:19 (北京时间)
+            最后更新时间: 2025-11-22 05:13 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,49 +61,291 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://portofcontext.com" target="_blank">Open Source and Local Code Mode MCP in Deno Sandboxes</a>
+                    <a href="https://taylor.town/pg-task" target="_blank">How/why to sweep async tasks under a Postgres table</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: pmkelly4444</span> |
-                    <span>评分: 66</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-11-13 16:53</span>
+                    <span>作者: ostler</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-11-21 18:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了Port of Context（PCTX）项目，旨在通过代码模式替代LLM工具调用，为AI代理提供安全的沙盒环境。该项目致力于将AI代理与现实世界连接，提供一个强大且开源的技术框架。文章末尾还提到PCTX Cloud的等待名单，并引导读者了解更多信息。</p>
+                    <p>这篇文章主张将异步任务处理直接整合到Postgres数据库中，而不是使用复杂的分布式系统。作者建议创建一个任务表(task table)，通过数据库事务确保数据一致性，避免两阶段提交的复杂性。这种方法简化了系统架构，利用Postgres的事务特性处理异步操作（如发送邮件），同时保持服务器端点的简洁高效。文章还讨论了错误处理、开发流程优化等优势，强调计算机应自动处理重试而非依赖人工干预。最后提供了具体实现代码示例，展示了如何将异步任务"隐藏"在数据库表中。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[项目技术实现、安全性与应用场景]
+                    <div class="comments-summary">主要讨论点：[关于如何处理两阶段提交（Two-Phase Commit）和远程系统操作的讨论]
 
 不同观点：
-• **技术实现选择**
-  - ethmarks质疑为何使用Deno作为JavaScript运行时，询问是否支持Python等其他语言（核心争议：沙箱的语言通用性）
-  - scosman建议改用轻量级容器以突破JS限制
-  - buremba分享类似方案（WASM+TypeScript转换）
-
-• **安全性考量**
-  - nsypteras指出用户对LLM生成代码的天然警惕性，提议远程执行环境方案
-  - orliesaurus强调权限模型的重要性（环境变量/网络/文件系统访问控制）
-  - daralthus反驳称文件系统访问是核心能力（争议焦点：安全与功能的平衡）
-
-• **性能优化**
-  - orliesaurus提出冷启动、内存占用及工具缓存等性能问题
-  - Fannon关注工具动态加载与上下文占用的效率对比
-
-• **应用场景扩展**
-  - ttoinou建议补充具体用例说明API简化效果
-  - randomoctopus询问依赖注入机制（如Cloudflare Workers式动态绑定）
+• [koolba] 认为文章中的方法不是真正的两阶段提交，而是无限期锁定数据库并祈祷在远程系统处理完成后事务能成功保存。他指出这种方法会消耗数据库连接，限制并发性，并且在事务失败时会无限重试。他建议使用支持幂等键的提供者来解决这个问题。
+• [rictic] 关注的是如何向用户传达进度和失败信息，尤其是在任务队列中。他指出许多类型的失败可能被忽视，用户可能会误以为任务已经完成，而实际上并未成功。
+• [morshu9001] 强烈反对在事务中进行远程过程调用（RPC），认为这是锁定数据库的最快方式。他建议使用两阶段提交来获得更大的灵活性和可见性。
 
 补充讨论：
-- 项目灵感来源（Anthropic原始设计）被多次引用作为技术参照
-- 本地化实验价值（orliesaurus）与商业化可能性（nsypteras）形成对比
-- 多个衍生项目（buremba/aberemia24）显示社区对该技术方向的活跃探索</div>
+• [rgbrgb] 推荐了一个开源的解决方案 graphile-worker，适用于 TypeScript/JavaScript 环境。
+• [stack_framer] 表达了对简单、无脑的服务器端点的偏好，但指出在工作环境中难以实施，因为同事们更喜欢复杂的“工程”解决方案。
+
+争议的焦点：
+• 是否应该在事务中进行远程操作（如发送邮件）。
+• 如何处理失败和重试机制，尤其是在没有幂等键支持的情况下。
+• 如何平衡简单性和工程复杂性，尤其是在团队环境中。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45917182" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46007267" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jcrowell.net/posts/whole-year-sat" target="_blank">Solving the Whole Year Puzzle with Z3</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jaycrowell</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-11-17 01:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者收到了一个名为"Whole Year Puzzle"的拼图游戏，需用俄罗斯方块样式的拼块覆盖日历网格，每天留出对应日期的两个空格。作者选择使用Z3求解器而非Knuth的Algorithm X来解决这个问题，将拼图转化为矩阵形式：每行代表一个拼块的可能放置方式，每列代表网格中的一个单元格。通过为每个可能的拼块位置创建布尔变量，并添加约束条件（确保每个单元格被恰好覆盖一次，每个拼块只使用一次），作者成功编写程序找出了全年每一天的所有可能解法。结果显示不同日期的解法数量差异很大，证明某些日期确实比其他日期更难解决。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[对Z3约束求解器的优缺点和使用体验的讨论]
+
+不同观点：
+• [正面评价]
+  - [matthewfcarlson]认为Z3非常出色，甚至激发了他将其3D打印出来的想法，表现出对Z3的高度赞赏和兴趣。
+
+• [负面评价]
+  - [thechao]虽然喜欢Z3的便利性，但指出了几个主要问题：
+    - 输入约束庞大且不可分解时，输出难以调试。
+    - 使用`assert_and_track()`和伪布尔代理时存在许多陷阱，尤其是在结合位向量和伪布尔时可能导致约束的强弱变化，从而改变问题的行为。
+    - 无法追踪内部语句，调试困难。
+    - 无法合理打印大型表达式，内部变量信息丢失且无法恢复。
+
+补充讨论：
+- [thechao]的评论引发了关于Z3在实际使用中的局限性和调试困难的讨论，尤其是对于复杂问题的处理能力。
+- 争议焦点在于Z3的调试功能和表达式打印能力是否足够友好，以及这些限制是否影响了其在复杂场景中的实用性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45950148" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.xbox-scene.info/articles/announcing-xbmc-40-for-the-original-xbox-r64/" target="_blank">XBMC 4.0 for the Original Xbox</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-11-21 15:18</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Discord宣布为初代Xbox推出XBMC 4.0媒体中心软件，这是自2016年3.5.3版本以来的首个重大更新。XBMC最初在2002年作为XboxMediaPlayer发布，后发展为支持Python插件和换肤引擎的XBMC，并衍生出Kodi和Plex两大主流媒体平台。新版XBMC 4.0移植了Kodi的现代界面Estuary，更新了底层GUI框架，并优化了游戏库系统，支持游戏元数据和模拟器ROM管理。此外还恢复了影视内容的在线元数据抓取功能，使这台20年前的老主机仍能胜任现代媒体中心角色。该版本与游戏定制版XBMC4Gamers相互独立，延续了初代Xbox的经典软硬件生态。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：XBMC（现为Kodi）在原始Xbox上的历史意义、技术成就及其对后续媒体播放器发展的影响。
+
+不同观点：
+• **XBMC的技术领先性**  
+  [KeplerBoy]认为XBMC在原始Xbox上的表现远超时代，并非仅因怀旧；[anonymousab]补充说其界面比Xbox 360的官方系统更流畅，凸显了微软的UI设计退步（争议焦点：商业产品与社区开发的优劣）。
+
+• **硬件改装的回忆与情怀**  
+  [caseyf7]和[filmgirlcw]分享了早期通过焊接改装Xbox的经历，强调社区的技术探索精神；[filmgirlcw]还提到对OG设备的持续支持感到敬佩。
+
+• **XBMC到Kodi的演变与争议**  
+  [unbehagen]作为早期贡献者，赞扬社区的开放性；[par]则因使用问题转向Plex，但批评其封闭性（争议焦点：开源与专有解决方案的取舍）。[GaryBluto]认为后续版本失去了早期魅力。
+
+• **持续开发的尊重**  
+  [jajuuka]对2025年仍有人维护原始Xbox的软件表示敬意，凸显项目的长期影响力。
+
+补充讨论：  
+• 命名调侃：[1970-01-01]讽刺微软命名逻辑，提议“XBMC 360”以呼应其兼容性。  
+• 争议焦点：微软官方UI设计（如广告增多）与社区开发体验的对比被多次提及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46005349" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.mongabay.com/short-article/2025/11/brazil-charges-31-people-in-major-carbon-credit-fraud-investigation/" target="_blank">Brazil charges 31 people in major carbon credit fraud investigation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: PaulHoule</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-11-21 18:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>巴西警方指控31人涉嫌在亚马逊地区进行大规模碳信用欺诈和土地掠夺。调查发现，两个REDD+碳信用项目（Unitor和Fortaleza Ituxi）在生成碳信用的同时，还被用于洗白非法采伐的木材。主要嫌疑人包括巴西最大个人碳信用卖家Ricardo Stoppe Júnior，他曾向多家国际公司出售碳信用。该犯罪网络还涉及腐败的政府官员。案件揭示了碳信用项目可能被滥用于掩盖非法活动的问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[碳信用市场的欺诈问题及其监管缺失]
+
+不同观点：
+• [碳信用市场普遍存在欺诈行为]
+  - nebezb指出购买假碳信用长期存在，且缺乏验证真实性的动力，主要价值在于新闻稿。
+  - shrubble补充说美国监管机构（如SEC）对审计不感兴趣，表现出“香料必须流动”的态度。
+  - worik认为整个碳信用概念本身就是欺诈性的，类似于天主教的“赎罪券”，通过付费来抵消“罪行”。
+
+• [碳信用在现代经济中的意义受到质疑]
+  - cheschire质疑碳信用在当前以AI为主导的经济中是否还有意义，暗示环境议题已被边缘化。
+
+• [监管和执法的不公平性]
+  - staplers批评执法机构对碳信用欺诈的处罚力度远低于对低级别毒品犯罪的暴力镇压，认为存在阶级偏见。
+
+补充讨论：
+• [具体案例的讨论]
+  - vkou引用了一起巴西REDD+项目的双重欺诈案例，指出犯罪分子屡教不改，凸显监管的失效。
+  
+争议焦点：
+• 碳信用市场是否本质上就存在欺诈性（worik与其他评论者的分歧）。
+• 监管机构是否选择性执法，偏向保护权贵利益（staplers的观点与其他评论的隐含对比）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46007294" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.astralcodexten.com/p/the-new-ai-consciousness-paper" target="_blank">The New AI Consciousness Paper</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 35</span> |
+                    <span>发布时间: 2025-11-21 16:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了人工智能意识研究的现状和挑战。作者指出目前关于AI意识的讨论质量普遍较低，并介绍了一篇由知名学者发表的重要论文，该论文聚焦计算理论视角下的意识研究。文章概述了三种主要的意识理论：循环处理理论、全局工作空间理论和高阶理论，认为这些理论都涉及某种"反馈"机制。尽管论文作者初步认为当前AI缺乏这些反馈机制而不具备意识，但整个领域仍存在大量未解之谜，研究结论也充满不确定性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[意识（consciousness）的本质、定义及其在人工智能中的应用与伦理问题]
+
+不同观点：
+• **现象学意识与访问意识的区别**  
+  - [advisedwang] 认为现象学意识（phenomenological consciousness）与访问意识（access consciousness）不应被混淆，但承认放弃二元论可能违反直觉，并举出人类决策与反射行为的例子说明直觉可能错误。
+
+• **意识是否需要物理基础**  
+  - [yannyu] 提出意识可能仅存在于文本宇宙中，但强调环境一致性（coherence of habitat）是关键，而当前LLMs缺乏稳定的符号世界，无法支持全局一致性。  
+  - [fpoling] 认为意识与时间流感知紧密相关，而物理学无法描述时间流感知，因此AI不可能具有意识。
+
+• **意识与权利的伦理问题**  
+  - [andai] 探讨如果LLMs有意识，是否应赋予其权利（如不被删除），并类比动物权利问题，提出如何界定“意识”门槛的难题。  
+  - [theoldgreybeard] 反对赋予机器权利，认为即使有意识的机器也应被视为低级生物，不应获得人权。
+
+• **意识的不可知论与主观性**  
+  - [armchairhacker] 认为意识无法被观测，因此一切事物“可能”有意识，但承认不同形式的意识（如AI与人类）可能无法直接比较。  
+  - [sega_sai] 质疑“意识”概念本身是否有用，因其难以定义和测量。
+
+• **意识的发展与结构**  
+  - [jbrisson] 强调意识需要通过发展过程获得（如发育神经生物学），而非单纯的设计或架构。  
+  - [andai] 提出“物质/结构”四分法（自然/人工物质与结构），探讨不同组合下意识的可能形式。
+
+补充讨论：
+- **争议焦点**：  
+  1. 意识是否需要物理基础（如[yannyu]与[fpoling]的对立）。  
+  2. 如何界定AI的权利（[andai]的伦理困惑与[theoldgreybeard]的反对）。  
+  3. 意识是否可简化计算（[measurablefunc]质疑布尔电路能否产生主观体验）。  
+- **其他讨论**：  
+  - [breckinloggins]用“魔法棒”比喻直观呈现现象学意识的“硬问题”。  
+  - [wk_end]提到对意识问题的直觉差异可能类似“心盲症”（aphantasia）。  
+  - [Imnimo]调侃依赖超级AI解答意识问题的可行性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46005928" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.stavros.io/posts/i-converted-a-rotary-phone-into-a-meeting-handset/" target="_blank">I converted a rotary phone into a meeting handset</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 120</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-11-12 09:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章作者热爱老式转盘电话，并收集了几部。他讨厌开会，一次开会时突发奇想，决定将一部老式西门子转盘电话改造成会议设备。通过3D打印连接器和RP2040微控制器，他让电话具备挂断会议、拨号输入功能，还能作为麦克风和扬声器使用。他利用AI助手Claude编写代码，避免了复杂的编程工作。这个项目既满足了他的怀旧情怀，又实现了实用功能，同时保持了电话的原貌。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[复古旋转拨号电话的现代改装及其用户体验]
+
+不同观点：
+• [复古电话改装的实用性]
+  - eniac111分享了自己的USB旋转拨号设备在IT会议上的趣味性。
+  - jtwaleson提到自己的无线蓝牙版本更酷，支持用旋转拨号拨打智能手机号码。
+  - freedomben寻找可直接通过USB连接的听筒设备，但没有找到满意的产品。
+
+• [改装技术和方法]
+  - foobarian提出是否可以通过敲击挂断按钮来模拟拨号，并分享了自己的经验。
+  - Medox讨论了使用蓝牙适配器的可能性，并考虑牺牲旧智能手机来实现功能。
+  - jjkaczor计划让老式旋转电话在收到企业通讯应用呼叫时响铃。
+
+• [用户体验和情感共鸣]
+  - sebastianconcpt强调了挂断电话的满足感是用户体验的重要组成部分。
+  - pvtmert喜欢挂断功能，认为可以在无聊的会议中“愤怒退出”。
+  - WesolyKubeczek幽默地指出长时间持握这种设备可能会导致手臂萎缩。
+
+• [AI和图像生成的讨论]
+  - voidUpdate提到文章展示了图像生成模型和语言模型的问题。
+  - ipython提到LLM生成的旋转电话图像中缺少“3”位置但有两个“8”。
+  - egorfine赞赏作者乐观地尝试用微控制器制作USB声卡。
+
+补充讨论：
+• [争议点]：复古电话的现代改装是否实用，以及改装技术的最佳方法。
+• [其他讨论点]：syUchs提到有营销人员将这种复古电话商业化销售；kleiba分享了相关的Seinfeld喜剧片段；villgax希望有人能制作类似Moto Razr的蓝牙设备。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45898185" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -118,8 +360,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: gurjeet</span> |
-                    <span>评分: 224</span> |
-                    <span>评论数: 16</span> |
+                    <span>评分: 236</span> |
+                    <span>评论数: 18</span> |
                     <span>发布时间: 2025-11-15 13:06</span>
                 </div>
 
@@ -145,26 +387,29 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：WebAssembly（Wasm）的技术特点、学习资源及其应用场景
+                    <div class="comments-summary">主要讨论点：[WebAssembly（Wasm）技术的优缺点、学习资源、应用场景及未来发展]
 
 不同观点：
-• WebAssembly的技术特点：
-  - Dwedit认为Wasm是解决JavaScript类型限制（如仅支持双精度浮点数、字符串和对象/数组）的有效方案，特别赞赏其支持字节数组作为堆栈/堆存储以及整数类型的能力，并推荐Zig作为C到Wasm的编译器。
-  - ethin虽然认可Wasm的技术价值，但批评其规范文档（尤其是二进制和文本格式部分）的可读性差，特别是使用OCaml风格的语法描述（SpecTec）而非EBNF，对非ML语言用户不友好。
+• 对Wasm技术的态度：
+  - ethin认为Wasm技术很酷，但规范存在不足，特别是语法表达方式不友好（使用OCaml和自定义语言而非EBNF）。
+  - Dwedit认为Wasm是解决JavaScript类型限制（如仅支持双精度浮点数）的“变通方案”，并赞赏Zig作为C到Wasm编译器的表现。
+  - chasil则批评运行时解释器（如Wasm）限制系统调用能力，更喜欢PHP的直接系统调用支持。
 
 • 学习资源评价：
-  - kowfm高度推荐《WebAssembly Ground Up》一书，认为其通过Ohm.js解析器示例清晰连接了规范与二进制格式，且代码结构优秀。
-  - James_K主张直接阅读Wasm规范，认为其内容编写精良，是学习的最佳途径。
-  - RhinoDevel补充MDN文档作为实用资源。
+  - pdubroy（书籍作者）推荐其著作和配套博客文章作为学习资源。
+  - kowfm和darccio高度评价该书籍，认为其结构清晰、代码优质，能有效帮助理解Wasm规范与二进制格式。
+  - James_K建议直接阅读Wasm规范，认为其编写极为优秀。
+  - RhinoDevel补充推荐MDN的WebAssembly文档作为学习资源。
 
-• 应用场景争议：
-  - fooker提出关于Wasm在多进程代码移植（如浏览器中运行命令行工具）的可行性问题，目前未得到明确解答，成为技术实用性的争议焦点。
-  - chasil从PHP开发者角度质疑运行时解释器（如Wasm）在系统调用访问上的限制，认为其约束性较强。
+• 技术应用与限制：
+  - amelius询问高性能并发垃圾回收器在Wasm中的实现可能性，反映对运行时性能的关注。
+  - fooker关注多进程代码移植到Wasm的可行性，特别是浏览器中运行命令行工具的需求。
+  - superjose将Wasm视为深入学习技术栈的“下一步”，体现其教育价值。
 
 补充讨论：
-- 社区对付费资源的态度：akst表示愿意为高质量完整内容付费，反映部分用户对系统化学习材料的付费意愿。
-- 技术细节关注：kyranjamie注意到书中JavaScript文件包含类型信息，暗示对类型系统的兴趣。
-- 作者互动：pdubroy作为书籍合著者主动提供额外资源（博客文章、解释器实现示例），增强读者信任。</div>
+- 争议焦点：Wasm规范的表达方式（ethin与James_K观点对立）及其实用性（Dwedit的“变通方案”论与chasil的系统调用限制批评）。
+- 工具链讨论：Zig被提及为优秀的C到Wasm编译器（Dwedit），Ohm.js用于解析器/词法分析器（kowfm）。
+- 社区贡献：gurjeet提到提交内容进入“二次机会池”，暗示HN的推荐机制。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=45937183" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -234,13 +479,68 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.heise.de/en/news/How-a-French-judge-was-digitally-cut-off-by-the-USA-11087561.html" target="_blank">How a French judge was digitally cut off by the USA</a>
+                    <a href="https://bytesauna.com/post/my-favorite-math-problem" target="_blank">My Favorite Math Problem</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: i-con</span> |
-                    <span>评分: 239</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-11-21 12:12</span>
+                    <span>作者: mapehe</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-11-17 11:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了一个经典的数学问题——残缺棋盘覆盖问题。作者移除了国际象棋棋盘对角线的两个同色角块后，探讨是否能用31块2x1的骨牌完全覆盖。答案是否定的，因为骨牌必须覆盖一黑一白，而残缺棋盘黑白格数量不等（32白30黑）。作者欣赏这个问题的简洁性、深刻性以及它体现的高等数学思维——通过抽象定义和证明来探讨存在性问题。文章还延伸到现代数学的抽象化趋势，以及计算机和AI在数学证明领域的应用前景，指出数学研究可能迎来重大变革。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[数学问题的趣味性与教育意义，以及相关问题的延伸讨论]
+
+不同观点：
+• **经典数学问题的延伸**  
+  - svat提到经典的8x8棋盘问题，并引用了Ralph E. Gomory的扩展问题（移除两个不同颜色的格子后是否可以用多米诺骨牌覆盖）。  
+  - j2kun提出了另一个变体：从棋盘上切掉一个角后，是否可以用3x1的多米诺骨牌覆盖剩余部分。  
+  - tromp则提出了一个更微妙的问题：用21个3x1的多米诺骨牌覆盖棋盘时，必须留下哪个唯一的方格（考虑对称性）。  
+
+• **数学问题的解决技巧**  
+  - evmar认为这类问题体现了数学思维的本质，即从表面问题看到深层的结构特性，类似于欧拉解决柯尼斯堡七桥问题的方法。  
+  - dhosek分享了一个快速解决代数问题的技巧（两个数的乘积为37，和为18，求其倒数和），强调了提前接触问题对解题速度的影响。  
+
+• **数学问题的通用性与理论应用**  
+  - rasse提问是否有通用的方法（如纽结理论）可以测试类似棋盘覆盖问题的不同排列方式。  
+  - lacker提出了一个关于格点的问题（五个格点中必有两个点的连线中间存在另一个格点），展示了数学问题的广泛性。  
+
+• **数学问题的趣味性与互动性**  
+  - EliRivers喜欢向他人解释这类问题，并观察他们尝试解决问题的过程，认为这是生活中的有益教训。  
+  - jrm4提出了一个关于锦标赛场次的问题，强调其简单的解释几乎不需要数学知识。  
+
+补充讨论：  
+- 部分评论者分享了个人经历或相关资源（如cochleari_major提供的链接和Numberfile视频）。  
+- 867-5309的评论略带幽默，提到了“心理游戏”的体验。  
+- vorticalbox提到了自己对Collatz猜想的兴趣，展示了数学问题的多样性。  
+
+争议焦点：  
+- 无显著争议，但讨论中体现了对数学问题不同层面的关注（如理论深度、解决技巧、教育意义等）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=45952654" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://london.publicinsights.uk" target="_blank">Show HN: Search London StreetView panoramas by text</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dfworks</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2025-11-20 18:27</span>
                 </div>
 
                 <div class="summary-section">
@@ -250,262 +550,28 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46003778" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dynomight.net/worse/" target="_blank">Make product worse, get money</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-11-21 15:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章质疑了人们普遍认为企业会故意提供劣质产品或服务以获取更多利润的观点。作者通过多个行业的例子（如约会软件、披萨店、汽车制造商等）指出，这种理论虽然看似合理，但过于简单化。他认为真正的原因是市场竞争和消费者偏好共同作用的结果——消费者往往更倾向于选择价格更低而非质量更高的产品，而非企业单方面的恶意行为。作者强调，理解为什么企业能够提供劣质产品的关键在于分析市场供需平衡和消费者实际选择，而非简单归因于企业贪婪。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46005388" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://apnews.com/article/sucker-fish-riding-whale-remoras-humpback-australia-69db9878c42b7d11e3755ecca4132588" target="_blank">A Whale-Surfing Fish</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gmays</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2025-11-11 23:59</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>科学家在澳大利亚海岸拍摄到罕见画面：印鱼（又称吸盘鱼）搭乘座头鲸进行"冲浪"。这些鱼利用头部吸盘吸附在鲸鱼身上，以死皮和鲸虱为食。研究发现当鲸鱼高速跃出水面时，印鱼能精准判断时机暂时松开，随后又快速返回原处。虽然这种共生关系被认为互惠互利，但观察显示鲸鱼可能对"搭便车者"感到厌烦，会通过频繁跃出水面试图甩掉它们。目前尚不清楚印鱼如何完成座头鲸长达1万公里的迁徙全程。在没有鲸鱼时，印鱼会吸附在其他大型海洋生物甚至潜水员身上。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[评论中提到的迪士尼/皮克斯电影创意及其潜在吸引力]
+                    <div class="comments-summary">主要讨论点：[文本搜索功能的局限性和改进需求]
 
 不同观点：
-• [创意支持者]  
-  - 认为这个关于小吸盘鱼的故事创意非常吸引人，适合迪士尼/皮克斯的风格  
-  - 提到了具体的剧情元素（如被鲸鱼甩下、结识新朋友、搭海豚便车等），认为这些冒险元素很有潜力  
-  - 暗示这个创意可以发展成一部完整的成长冒险动画片  
+• [tantalor]指出当前搜索功能只能匹配包含确切文本的内容，无法识别没有明确文本的视觉元素（如广告牌），认为应该改进以匹配任何相关内容。
+  - 例子：搜索"Batman"能找到海报但无法识别仅有蝙蝠侠图像的广告牌。
 
-补充讨论：  
-- 虽然只有一个评论，但通过详细的剧情描述展现了一个完整的电影框架  
-- 这个创意包含了经典的成长故事元素（不听父母话→遇到困难→克服困难）  
-- 海洋生物的设定为动画提供了丰富的视觉可能性  
-- 没有出现反对意见，但可以预见关于"是否太过套路化"的潜在争议</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45894585" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://nautil.us/ancient-roman-glass-reveals-a-hidden-language-1247932/" target="_blank">Ancient Roman Glass Reveals a Hidden "Language"</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: DrierCycle</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-11-15 14:55</span>
-                </div>
+• [rahimnathwani]发现搜索功能在处理多词查询时存在问题，无法正确匹配完整短语。
+  - 例子：搜索"Colliers Wood"（带或不带引号）只能匹配其中一个单词。
 
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>考古学家兼玻璃工匠Hallie Meredith在观察古罗马玻璃笼杯时，意外翻转杯体发现了长期被忽视的符号图案。通过系统研究4-6世纪的同类玻璃器，她发现这些十字、树叶和菱形等符号并非单纯装饰，而可能是古代工匠团体使用的视觉语言，类似"品牌标识"。未完成残片上的工具痕迹表明，这些需数年完成的精美作品由学徒、抛光师和雕刻师协作完成。这一发现颠覆了对古代工匠群体的传统认知，揭示了更多关于手工业组织的细节。相关研究成果已发表在《玻璃研究杂志》和《世界考古学》期刊上。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于"cage cups"（笼杯）的信息来源和相关讨论
-
-不同观点：
-• [第一种观点 - 原始来源支持者]
-- 认为应该优先参考华盛顿州立大学的原始新闻稿（https://news.wsu.edu/press-release/2025/11/13/hidden-signatu...）
-- 可能认为学术机构的原始研究更具权威性
-- 提供了关于"hidden signature"（隐藏签名）的具体研究信息
-
-• [第二种观点 - 维基百科支持者]
-- 建议参考维基百科关于"cage cups"的条目（https://en.wikipedia.org/wiki/Cage_cup）
-- 认为维基百科提供了更全面和易理解的背景信息
-- 可能认为群众协作的百科全书更适合快速了解基础知识
+• [Gooblebrai]抱怨搜索后出现付费订阅提示，暗示免费功能受限。
+  - 例子：输入文本后显示"Subscribe to Public Insights"的付费墙。
 
 补充讨论：
-- 争议焦点在于哪种信息来源更可靠/更适合：学术原始研究 vs 开放协作的百科全书
-- 讨论隐含了不同用户对信息获取方式的偏好差异
-- 维基百科条目可能包含了更广泛的历史背景，而原始研究则提供最新发现
-- 两种来源实际上可以互补使用，而非互斥</div>
+• [n1xis10t]提出技术扩展性问题，询问全球版本需要多少存储空间（以伦敦为基准）。
+• [dang]提供相关历史讨论链接，显示这是持续存在的问题（纽约和布鲁克林的文本搜索）。
+• [card_zero]简单补充了一个搜索失败的例子（"R Soles"未被找到）。
+
+争议焦点：
+- 核心争议在于搜索算法是否应该超越纯文本匹配（如加入图像识别），以及如何处理短语查询的准确性。
+- 付费墙问题也引发了关于服务商业模式的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45937830" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1627423" target="_blank">EXIF orientation info in PNGs isn't used for image-orientation: from-image</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: justin-reeves</span> |
-                    <span>评分: 69</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-11-21 13:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇Bug报告（编号1627423）指出Firefox在处理带有EXIF方向信息的PNG图片时，没有正确应用`image-orientation: from-image`属性，导致图片显示方向与JPEG不一致（即使两者EXIF信息相同）。该问题最早于5年前报告，1个月前被标记为重复问题并关闭，关联到另一个Bug（1682759）。报告提到Chrome和Safari也存在类似兼容性问题，涉及PNG规范中eXIf块的处理。最终确认该问题将在关联Bug的修复中解决。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[EXIF元数据（尤其是orientation标记）在不同软件和格式中的兼容性问题及解决方案]
-
-不同观点：
-• **EXIF元数据的普遍性问题**  
-  - [postalcoder] 指出不同软件对EXIF的支持不一致（如Apple Photos错误读取镜头信息），工具链割裂导致用户体验糟糕。  
-  - [malinens] 推荐ExifTool作为跨格式解决方案，但其输出可能仍被浏览器忽略（[afavour] 补充Safari/Chrome/Firefox不读取PNG末尾的EXIF）。  
-
-• **EXIF orientation标记的争议**  
-  - 反对派：[rkagerer] 认为orientation是"丑陋的妥协"，相机应直接旋转像素；[alexdbird] 赞成PNG不存储orientation以便调试。  
-  - 支持派：[donatj] 肯定其在JPEG中的价值（避免有损旋转），但质疑PNG等无损格式的必要性。  
-
-• **浏览器实现的痛点**  
-  - [mzur] 指出浏览器自动旋转导致图像工具兼容性问题，需用CSS hack解决；[omoikane] 补充Chromium曾因修复JPEG旋转破坏旧网站。  
-  - [pupppet] 担忧后期支持PNG orientation会导致历史图片意外翻转。  
-
-补充讨论：
-- **衍生工具与案例**  
-  - [t1234s] 提供EXIF orientation操作示例库；[seam_carver] 分享macOS Finder删除orientation标记的实践。  
-  - [LiamPowell] 和 [Linkd] 分别提到VLC的长期裁剪bug和HEIC格式的兼容性问题。  
-
-争议焦点：  
-1. orientation标记是否应存在（硬件预处理 vs 后期软件支持）  
-2. 浏览器是否应默认遵循EXIF rotation（用户体验 vs 开发成本）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46004364" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.yossarian.net/2025/11/21/We-should-all-be-using-dependency-cooldowns" target="_blank">We should all be using dependency cooldowns</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 70</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-11-21 14:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了依赖冷却期（dependency cooldowns）在开源供应链安全中的重要作用。作者指出大多数开源供应链攻击的有效期很短（通常不到一周），而设置依赖冷却期（如7-14天）可以显著减少这类攻击的影响。文章强调了依赖冷却期的三个优点：实证有效、易于实现（可通过Dependabot等工具免费设置）以及能促使安全供应商更快报告问题。尽管不是万能解决方案，但作者认为广泛采用依赖冷却期是缓解大多数供应链攻击的简单有效方法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：依赖更新的频率与安全性之间的平衡
-
-不同观点：
-• 立即更新派
-  - 认为应立即更新依赖以修复已知漏洞（如[jayd16]）
-  - 强调供应链攻击风险（如[cxr]主张通过源码控制完全规避）
-• 谨慎更新派
-  - 建议监控漏洞而非盲目更新（如[layer8][DrScientist]）
-  - 指出更新可能引入新问题（如[DrScientist]提到"用未知漏洞替换已知漏洞"）
-• 长期支持模式支持者
-  - 推崇Debian稳定版模式（如[gr4vityWall]）
-  - 呼吁库提供LTS版本（如[cosmic_cheese]）
-• 依赖精简倡导者
-  - 主张减少依赖数量和复杂度（如[cosmic_cheese][programmertote]）
-  - 通过动态集群等方式规避问题（如[programmertote]的AWS案例）
-
-补充讨论：
-1. 争议焦点：
-   - 漏洞发现机制（[pimlottc]质疑漏洞是否主要由安全厂商发现）
-   - "全行业延迟更新"的可行性（[Havoc][perlgeek]认为会降低社区监督效力）
-
-2. 实践方案：
-   - 代理监控+分批更新（[edoceo]）
-   - 人工审计机制（[nicoburns]提出的评审系统）
-   - 版本固定实践问题（[perlgeek]指出的npm使用误区）
-
-3. 行业差异：
-   - 不同技术栈的可行性差异（如[programmertote]对比数据/Web领域）
-   - 企业现实约束（如OKR优先级的案例）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46005111" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://rein.pk/over-regulation-is-doubling-the-cost" target="_blank">Over-regulation is doubling the cost</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bilsbie</span> |
-                    <span>评分: 126</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-11-20 22:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文作者在创建硬件公司时发现，过度监管成为最大障碍。监管拖延导致成本激增、创新受阻，甚至加剧环境污染。作者以两家公司为例：Charm Industrial通过生物油封存二氧化碳，但监管分类问题拖延了4年才解决；Revoy开发电动长途卡车也面临类似困境。监管本应保护环境，却因过于繁琐和模糊，反而阻碍了环保技术的应用。作者呼吁减少阻碍创新的监管，以释放新技术潜力，改善环境和生活质量。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">很遗憾您提到的相关内容目前无法提供。让我们换一个共同感兴趣的话题、继续聊聊吧。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45999038" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45995913" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
