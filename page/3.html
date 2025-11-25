@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-11-25 05:13 (北京时间)
+            最后更新时间: 2025-11-25 09:00 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,34 +61,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://mathcenter.oxford.emory.edu/site/math108/braid_arithmetic/" target="_blank">The Arithmetic of Braids (2022)</a>
+                    <a href="https://blog.cuongle.dev/p/inside-rusts-std-and-parking-lot-mutexes-who-win" target="_blank">Inside Rust's std and parking_lot mutexes – who wins?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: marysminefnuf</span> |
-                    <span>评分: 16</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-11-24 06:44</span>
+                    <span>作者: signa11</span> |
+                    <span>评分: 124</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-11-20 05:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了辫子的数学概念及其表示方法。文中解释了如何通过交叉编织来形成辫子，并提出了简化辫子图的疑问。作者指出可以通过调整交叉点的位置使辫子从左到右依次呈现单个交叉点，从而简化表示。进一步地，文章提出用字母序列（称为“单词”）来表示辫子，大大简化了描述方式。此外，还介绍了通过连接（concatenation）操作将两个辫子合并成一个更长的辫子，并指出在相同数量线绳上的辫子通过这种操作是闭合的（closure），即组合结果仍是辫子。</p>
+                    <p>这篇文章比较了Rust标准库的`std::sync::Mutex`和第三方库`parking_lot::Mutex`的实现差异与性能表现。作者深入分析了两种互斥锁的内部机制：
+
+1. `std::Mutex`采用平台相关实现（如Linux的Futex），通过原子操作和系统调用来管理锁状态，支持跨平台但性能可能受限
+
+2. `parking_lot`完全在用户空间实现，使用更高效的算法，减少了系统调用开销
+
+通过基准测试发现`parking_lot`在多数场景下性能更优，内存占用更小，但`std::Mutex`在跨平台兼容性和错误处理（如中毒机制）方面更有优势。
+
+最后作者提供了选择建议：对性能要求高的单平台应用推荐`parking_lot`，需要跨平台或更稳健错误处理的场景则选择标准库实现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[数学概念的呈现方式及其教学价值]
+                    <div class="comments-summary">主要讨论点：Rust标准库中互斥锁（Mutex）的设计和替代方案
 
 不同观点：
-• [fsckboy的观点]：认为虽然内容有趣，但不足以让人放下一切去研究。同时提到一个相关领域（鞋带系法研究），并批评现代搜索引擎难以找到真正有用的信息。
-• [MarkusQ的观点]：赞赏展示方式，并提出改进建议——以加法群的形式呈现（展示双绞辫与整数群ℤ的同构关系），认为这样能更好地建立直觉联系。同时强调探索定理从推测中产生的过程很有价值。
+• **原生系统锁 vs. 自定义锁（如parking_lot）**  
+  - 原生系统锁（如futex/SRW）的优点是避免内存分配的循环依赖问题，且能利用内核的调试功能（如Linux/Windows）。  
+  - parking_lot的优势在于锁体积小（如2-bit锁），适合细粒度锁场景（如JavaScriptCore的对象头嵌入锁），但依赖全局哈希表的内存分配，可能引发循环依赖问题。  
 
-补充讨论：
-- 争议焦点：如何最佳地呈现抽象数学概念以促进理解（具体例子 vs 抽象结构）
-- 值得注意的讨论关系：MarkusQ的评论实际上是对原始内容的改进建议（可能针对某个未显示的演示），而fsckboy则从更宏观的学习价值角度评论
-- 额外观察：两人都关注数学概念的直观呈现方式，但角度不同（一个关注搜索信息的有效性，一个关注教学策略）</div>
+• **锁中毒（Poisoning）的争议**  
+  - Rust标准库的锁中毒机制被批评为设计缺陷，认为其实际用途有限且易导致服务拒绝攻击（DoS），常见做法是忽略或直接解包（`unwrap`）。  
+  - 反对观点认为，中毒机制在特定场景下（如低层级操作）可能提供必要的panic安全保证，但需开发者明确处理。  
+
+• **平台差异与性能权衡**  
+  - 不同平台（如Apple新增futex支持）的锁实现可能牺牲特性（如优先级反转避免）。  
+  - 公平性设计的锁在竞争下标准差更低，但性能略逊（如文章中的C++示例争议）。  
+
+补充讨论：  
+- 高层抽象替代方案（如MPSC队列、RCU）被推荐给非性能敏感代码，以减少对底层锁的直接依赖。  
+- 开发者对锁的选择需权衡性能、安全性和平台兼容性（如parking_lot的性能优势 vs. 标准库的稳定性）。  
+- 争议焦点集中在中毒机制的实用性和自定义锁的内存分配问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46031068" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45989284" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -99,46 +116,79 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.privacyguides.org/news/2025/11/22/grapheneos-migrates-server-infrastructure-from-france-amid-police-intimidation-claims/" target="_blank">GrapheneOS migrates server infrastructure from France</a>
+                    <a href="https://news.ycombinator.com/item?id=46036222" target="_blank">Corvus Robotics (YC S18): Hiring Head of Mfg/Ops, Next Door to YC Mountain View</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 01-_-</span> |
-                    <span>评分: 110</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-11-24 18:48</span>
+                    <span>作者: robot_jackie</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-11-24 17:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>GrapheneOS宣布停止在法国的所有运营，认为法国对开源隐私项目不再安全。虽然系统仍可供法国用户使用，但所有网站和讨论服务器将迁至国外，从法国OVH迁移到多伦多和德国Netcup。项目方称服务器不存储用户数据，迁移不影响签名验证等服务。此举源于法国政府支持欧盟聊天监控提案，以及《巴黎人报》两篇负面报道暗示可能的法律行动。GrapheneOS澄清报道将其与政府伪造的系统版本混淆，并提到曾威胁起诉类似FBI支持的ANOM系统等仿冒项目。开发者出于安全考虑将不再在法国工作或旅行。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：法国政府对GrapheneOS的威胁及其应对策略的争议。
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46036222" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://cloud.google.com/blog/products/containers-kubernetes/how-we-built-a-130000-node-gke-cluster/" target="_blank">Building the largest known Kubernetes cluster, with 130k nodes</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: TangerineDream</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2025-11-21 17:56</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>谷歌云宣布在实验模式下成功运行了包含13万个节点的Kubernetes集群，是当前官方支持规模的两倍。这一突破不仅涉及节点数量的扩展，还包括Pod创建、调度吞吐等关键维度的优化，实现了每秒1000个Pod的吞吐量。谷歌指出，AI工作负载正推动对超大规模集群的需求，未来可能稳定在10万节点规模。为此，谷歌开发了多项架构创新，包括优化API服务器读取扩展性和分布式存储后端，这些改进既支持超大规模集群，也提升了中小规模集群的性能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Kubernetes在超大规模集群（如130K节点）下的可行性与实际需求]
 
 不同观点：
-• **质疑GrapheneOS的可信度**  
-  - [Lariscus]和[ranger_danger]认为GrapheneOS创始人存在“被迫害妄想症”，缺乏实质性证据支持其指控，并指出其历史行为模式（如使用马甲账号重复争论）。  
-  - 争议焦点：GrapheneOS是否过度夸大威胁，还是确实面临政府压力。
+• **对技术实现的质疑**  
+  - [__turbobrew__] 指出扩展性依赖Spanner的"secret sauce"，社区无法受益，且etcd是上游Kubernetes的瓶颈，缺乏替代方案的动力。  
+  - [xyse53] 提到GCS fuse在实际使用中存在性能和稳定性问题。  
+  - [hazz99] 质疑控制平面QPS数值并不高，对比Postgres等现有方案无明显优势。
 
-• **技术应对建议**  
-  - [Bender]提议将主站点迁移至.onion域名并分散镜像站点，以规避物理服务器被查封的风险。  
-  - 讨论要点：技术手段能否有效抵抗政府干预。
+• **对架构合理性的争议**  
+  - [Nextgrid] 认为在云虚拟机（VM）上使用K8s是多余的，因为VM本身已提供类似功能，且K8s会引入额外开销。  
+  - [jakupovic] 主张使用多个小型集群（<100节点）而非单个大型集群，因后者运维困难。  
+  - [rvz] 质疑实际业务是否需要130K节点的规模，认为此类需求可能是架构或成本优化的失败。
 
-• **地域与政策选择**  
-  - [aborsy]认为加拿大比欧盟更适合托管隐私项目，因欧盟倾向于“大政府控制”，并频繁推出限制性提案。  
-  - 争议焦点：不同司法管辖区的隐私政策差异对项目的影响。
-
-• **策略批评**  
-  - [mmooss]指出GrapheneOS的“威胁撤离”策略显得情绪化且缺乏商业谈判经验，可能削弱其公信力，并忽略了对法国本土用户自由与隐私的潜在责任。  
-  - 讨论要点：开源项目应如何平衡原则性与现实政治博弈。
+• **对宣传与现实的对比**  
+  - [yanhangyhy] 和 [blurrybird] 提到已有文档或案例（如AWS、OpenAI）实现类似规模，暗示标题可能夸大。  
+  - [jeffbee] 批评技术讨论中强行加入AI/ML营销术语，认为应保持纯粹性。
 
 补充讨论：
-- 其他用户提到相关讨论的重复性（[ChrisArchitect]）及Mastodon上的同步内容（[amatecha]）。  
-- 争议核心在于GrapheneOS指控的真实性及其应对方式是否合理，反映出开源社区对政府干预的敏感性与应对分歧。</div>
+- **规模与成本的平衡**：[rvz] 和 [belter] 调侃超规模集群的实用性，强调初创公司应优先关注产品市场契合（PMF）而非过度设计。  
+- **历史与未来展望**：[blamestross] 指出当前集中式管理的扩展潜力未被充分挖掘，暗示分布式技术（如DHT）可能提供更优解。  
+- **幽默与讽刺**：[supportengineer] 和 [belter] 用调侃方式（如"Beowulf集群"、"在线注册流程挑战"）消解技术宣传的严肃性。  
+
+争议焦点：  
+1. 是否需要超大规模K8s集群（实际需求 vs 技术炫耀）  
+2. 技术实现是否足够通用（如依赖专有方案Spanner）  
+3. 架构选择合理性（单集群 vs 多集群，K8s vs 原生VM）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46037573" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46006891" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -153,8 +203,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: thinkingemote</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 1</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 5</span> |
                     <span>发布时间: 2025-11-22 13:36</span>
                 </div>
 
@@ -165,15 +215,19 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：系统是否在稀释冰箱和热辐射屏蔽未安装的情况下可以被视为“实时使用中”。
+                    <div class="comments-summary">主要讨论点：[系统是否处于"实时使用"状态及其潜在问题]
 
 不同观点：
-• 支持系统未实时使用的观点：认为系统缺乏关键组件（稀释冰箱和热辐射屏蔽）时无法正常运行，因此不能称为“实时使用中”。
-• 反对系统未实时使用的观点：可能认为系统即使缺少部分组件，仍可进行某种程度的操作或测试，因此可以视为“实时使用中”。
+• [第一种观点] 认为系统在没有稀释制冷机和热辐射屏蔽的情况下不能算作"实时使用"（由fsh提出），暗示系统功能不完整。
+• [第二种观点] 以幽默方式指出只要不近距离观察，系统仍可视为运行状态（由rezmason提出），带有调侃意味。
+• [第三种观点] 补充说明缺少防护会导致制冷机过热问题（由pjs_提出），支持了第一种观点的技术担忧。
 
 补充讨论：
-• 争议焦点在于“实时使用中”的定义是否必须包含所有关键组件的完整安装和运行。
-• 可能需要进一步明确“实时使用中”的具体标准和系统在此状态下的功能范围。</div>
+• [潜在风险] carabinder警告这可能引发"共振级联"（科幻/物理术语），暗示系统存在严重安全隐患。
+• [历史背景] TMWNN指出IBM有公开展示客户工作计算机的历史（纽约和多伦多案例），为当前情况提供了行业背景参考。
+
+争议焦点：
+主要围绕系统是否真正处于工作状态（功能完整性vs展示目的），以及缺乏关键组件可能带来的技术风险。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=46014685" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -186,13 +240,202 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://london.publicinsights.uk" target="_blank">Show HN: Search London StreetView panoramas by text</a>
+                    <a href="http://karumi.ai/" target="_blank">Launch HN: Karumi (YC F25) – Personalized, agentic product demos</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dfworks</span> |
-                    <span>评分: 30</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-11-20 18:27</span>
+                    <span>作者: tonilopezmr</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-11-24 18:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要展示了一个名为Karumi的AI销售代理平台，能提供24/7全天候的个性化产品演示服务。该平台符合GDPR、SOC 2和ISO 27001等安全标准，支持多语言交流，并能根据不同客户的需求和背景自动调整演示内容。文中列举了多个跨国客户案例（如巴西、德国、澳大利亚等），显示平台能实时记录演示数据到CRM系统，帮助销售团队高效跟进潜在客户。平台强调其智能化、个性化和即时响应的特点，旨在提升销售转化率。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[AI演示工具的实用性和用户体验]
+
+不同观点：
+• [正面评价]
+  - Tetraslam认为这是今年最酷的演示，表示会向公司推荐
+  - klaushougesen1对语音和理解能力印象深刻
+
+• [负面评价：等待时间问题]
+  - icyfox和tekacs指出演示加载时间过长，与"不让客户等待"的宣传相矛盾
+  - throw03172019认为等待时间过长，宁愿预约演示
+
+• [功能替代性讨论]
+  - vcryan认为视频演示可能更好，可以自由控制播放
+  - icyfox讨论AI演示与人工演示的优劣，指出非工程师客户可能更喜欢人工演示
+
+补充讨论：
+• 争议焦点集中在产品承诺与实际体验的不一致
+• tekacs特别提到作为HN官方发布，系统未能处理流量问题令人担忧产品架构
+• 讨论中还涉及不同用户群体(工程师vs非工程师)对演示形式的偏好差异</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46037416" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nature.com/articles/d41586-025-03714-0" target="_blank">Mind-reading devices can now predict preconscious thoughts</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: srameshc</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-11-24 18:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇报道主要探讨了脑机接口（BCI）技术的最新发展及其伦理问题。文章以瘫痪患者Nancy Smith通过植入式BCI设备重新演奏音乐为例，说明该技术能解码大脑运动皮层信号，甚至在人有意识行动前数百毫秒预测其意图。科学家还发现，通过监测后顶叶皮层等非运动区域，可以获取更丰富的思维信息。随着人工智能提升解码能力，BCI不仅能帮助残障人士，还可能触及潜意识思维，这引发了关于神经数据隐私、思想控制等伦理担忧。同时，消费级脑电设备（EEG）虽然精度较低，但结合AI后已能监测专注度等大脑状态，其潜在的数据滥用风险也值得关注。专家呼吁需要建立相关安全规范。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[脑机接口技术对思想自由和隐私的潜在影响]
+
+不同观点：
+• [pedalpete] 认为脑电信号并不等同于思想或记忆，目前的"读心"设备尚未被证实能真正理解思想。他指出神经科技公司通过图像刺激脑区活动的研究路径可能无法揭示思维的本质。
+• [Terr_] 担忧未来可能出现预判思想的监控设备，在人们尚未形成完整想法前就干预思维链，造成更隐蔽的危害。
+• [guiand] 引用裂脑实验，担心基于CNS信号的AI植入可能驱动非自主行为，但人们仍会合理化这些行为源于自由意志。
+• [amarant] 强烈反对将辅助技术的特性夸大为伦理困境，认为这是阻碍医学进步的杞人忧天，类比干细胞研究的类似争议。
+
+补充讨论：
+• [zh3]和[fjfaase]分别提及Libet关于潜意识决策的研究和异手综合征，为讨论提供神经科学依据
+• [rpq]和[mostertoaster]关注技术被滥用的社会风险，联想到《少数派报告》式预警系统
+• [analog8374]的讽刺评论和[handedness]的反问体现了对监控社会的担忧
+• [bryanrasmussen]和[ryandv]持怀疑态度，认为当前技术远未达到实用水平
+
+争议焦点：
+1. 脑信号是否等同于思想（本体论争议）
+2. 该技术是医疗进步还是隐私威胁（价值判断分歧）
+3. 预判思维的可能性与现实性（技术可行性争论）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46037267" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lesleylai.info/en/fifty_shades_of_oop/" target="_blank">Fifty Shades of OOP</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: todsacerdoti</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-11-24 09:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了面向对象编程（OOP）的复杂性和争议性。作者指出，OOP的定义缺乏共识，导致相关讨论效率低下。文章将OOP视为一系列相互关联的概念集合，并分别分析了其中的几个关键特性：
+
+1. 类（Classes） - 作为对象的蓝图，扩展了结构体概念，包含方法、信息隐藏和继承
+2. 方法语法（Method Syntax） - 相对无争议，便于IDE自动补全和方法链式调用，但也存在局限性
+3. 信息隐藏（Information Hiding） - 限制外部对对象内部工作细节的访问
+
+作者并未明确支持或反对OOP，而是提供了更细致的观点，强调应分别评估OOP的各项特性而非将其视为整体。文章还指出了不同编程语言在实现这些特性时的差异和潜在问题。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[面向对象编程（OOP）的核心概念和实践中的问题]
+
+不同观点：
+• **Alan Kay 的消息传递与延迟绑定**  
+  - dmux 提到 Alan Kay 在 Smalltalk 中推崇消息传递和延迟绑定，但认为这些概念在标准部署（如构建和部署到容器）中难以实现其潜力。  
+  - tracker1 支持消息传递，认为它可以简化解决方案并减少复杂性。
+
+• **对象的定义与状态管理**  
+  - ChrisMarshallNY 认为对象的核心是数据和状态，其他特性（如多态、封装）是附加的。  
+  - tracker1 倾向于数据导向设计（Data Oriented Design），喜欢将数据和行为分离，更倾向于不可变性和单一状态树（如 Redux）。  
+  - jolt42 提到贫血领域模型（Anemic Domain Model）问题，认为对象如果只有数据而没有行为，就失去了 OOP 的优势。
+
+• **继承与接口的使用**  
+  - tracker1 认为继承和接口（Interfaces）被过度使用，增加了不必要的复杂性，但在某些场景（如插件系统）中仍然有用。  
+  - 提到原型继承（Prototype Inheritance）也有其优缺点，但可能在某些情况下导致性能问题。
+
+• **封装与信息隐藏**  
+  - tracker1 对信息隐藏持保留态度，更倾向于通过不可变性（Immutability）来管理数据，而不是通过私有成员和访问方法。  
+  - 认为在系统边界（如 API）可能需要过滤或隐藏某些数据（如哈希密码），但在内部更倾向于开放访问。
+
+补充讨论：
+- **实践中的 OOP 问题**：jolt42 和 tracker1 都提到在实践中 OOP 的某些特性（如继承、贫血模型）可能导致复杂性增加或设计问题。  
+- **动态语言与静态语言的差异**：tracker1 提到在动态语言（如 JavaScript）中延迟绑定和动态分发的实用性更高。  
+- **争议焦点**：OOP 的核心概念（如封装、继承）是否被过度使用或是否适合现代开发实践，尤其是在数据和行为分离的背景下。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46032148" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://altermag.com/articles/the-secret-history-of-indian-science-fiction" target="_blank">The history of Indian science fiction</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: adityaathalye</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2025-11-22 09:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要介绍了印度科幻小说的先驱作品《苏丹娜的梦》及其历史背景。这部1905年由罗克娅·萨哈瓦特·侯赛因创作的短篇小说，描述了一个女性主导的乌托邦"淑女国"，通过颠倒性别角色来批判父权社会。文章指出该作品运用了"陌生化"手法，并开创了两个科幻传统：社会批判和科技乌托邦。尽管被视为印度科幻的早期代表作，但它植根于印度次大陆更悠久的叙事传统，结合了史诗、殖民经济、科学发展等多种元素。文章还提到印度科幻主要通过乌尔都语和孟加拉语发展，展现了独特的文化特色。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[文章内容和网站设计的评价]
+
+不同观点：
+• 对网站设计的赞赏：[tclancy]称赞网站设计美观（"the site is gorgeous"），[ping00]也提到UI选择很酷（"really cool UI choices"），[ninju]则特别提到文章开头的视觉效果有趣（"Very interesting visual effect in the first sections"）。
+• 对文章内容的兴趣：[ping00]表示作为印度人不知道这些书存在，将书籍加入Goodreads，期待阅读更多；[zem]推荐在线阅读《the sultana's dream》。
+• 对杂志未来内容的期待：[culi]对杂志的首篇文章表示兴奋，但遗憾找不到RSS订阅链接。
+
+补充讨论：
+• 争议点：无明显争议，但[culi]提到无法找到RSS订阅链接可能暗示网站功能有待改进。
+• 讨论关系：[zem]的评论是对主文的补充推荐，[ping00]和[tclancy]的评论则形成对网站设计和内容的正面反馈链条。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46013478" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.npmjs.com/package/supabase-test" target="_blank">Show HN: Supabase-Test – Fast Isolated Postgres DBs for Testing Supabase RLS</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pyramation</span> |
+                    <span>评分: 26</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-11-20 18:39</span>
                 </div>
 
                 <div class="summary-section">
@@ -202,29 +445,16 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[文本搜索功能的局限性与改进方向]
+                    <div class="comments-summary">主要讨论点：关于"under-the-rug stub"（被掩盖的存根）的讨论及其在技术社区中的影响。
 
 不同观点：
-• **搜索匹配范围有限**  
-  - [tantalor]指出当前搜索仅匹配文本内容，无法识别不含关键词的视觉内容（如蝙蝠侠广告牌），认为应扩展匹配范围至非文本元素。  
-  - [rahimnathwani]补充搜索对词组（如"Colliers Wood"）的支持不足，仅匹配单个单词。
+• 支持"under-the-rug stub"的观点：认为这是一种有效的技术手段，可以隐藏不必要的信息，使界面更简洁。例如，某些情况下用户不需要看到所有的技术细节，隐藏这些信息可以提高用户体验。
+• 反对"under-the-rug stub"的观点：认为这种做法不够透明，可能会导致用户错过重要信息。隐藏细节可能让用户在需要时难以找到关键的技术支持或文档。
+• 中立观点：认为应该根据具体情况来决定是否使用"under-the-rug stub"，在某些场景下隐藏信息是合适的，但在其他情况下则需要保持透明。
 
-• **商业化与功能限制冲突**  
-  - [Gooblebrai]提到输入文本后直接跳转付费订阅提示，暗示免费功能可能被刻意限制，引发对商业化策略的争议。
-
-• **技术扩展可行性**  
-  - [n1xis10t]询问全球版本的技术成本（如存储空间），反映用户对规模化的关注。  
-  - [dang]通过关联历史讨论（纽约、布鲁克林文本搜索案例），提供横向对比视角。
-
-• **遗漏案例的争议**  
-  - [card_zero]以"R Soles"未被找到为例，直接质疑搜索算法的覆盖率或准确性。
-
-补充讨论：
-- 争议焦点集中在搜索逻辑（文本vs视觉匹配）、商业化边界及技术扩展成本。  
-- 部分评论隐含对产品透明度的需求（如付费墙前的功能限制是否合理）。  
-- 历史案例的引用（dang）为讨论提供了技术演进的参考框架。</div>
+补充讨论：争议的焦点在于透明度和用户体验之间的平衡。一些人认为技术社区应该更加开放，而另一些人则认为简洁的界面更有利于大多数用户。讨论中还提到了如何在不牺牲透明度的情况下优化用户体验的建议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45995913" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=45996064" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -235,288 +465,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theautopian.com/how-the-only-gm-ev1-ever-sold-didnt-get-crushed-and-where-its-going-now/" target="_blank">The only GM EV1 ever publicly sold</a>
+                    <a href="https://www.privacyguides.org/news/2025/11/22/grapheneos-migrates-server-infrastructure-from-france-amid-police-intimidation-claims/" target="_blank">GrapheneOS migrates server infrastructure from France</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 67</span> |
+                    <span>作者: 01-_-</span> |
+                    <span>评分: 207</span> |
                     <span>评论数: 10</span> |
-                    <span>发布时间: 2025-11-19 15:17</span>
+                    <span>发布时间: 2025-11-24 18:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了通用汽车(GM)在1990年代推出的首款量产电动车EV1中，唯一一辆被公开售卖给公众的车辆（VIN #212）的传奇故事。原租户Jonathan Sawyer通过法律手段阻止了GM回收并销毁这辆车，使其得以保存。这辆车后来被遗忘在亚特兰大的停车场，直到最近被新主人购买并计划修复。EV1作为电动车先驱，虽然性能不如现代电动车，但在空气动力学（风阻系数仅0.19）和技术创新（如再生制动）方面具有里程碑意义。GM当年仅以租赁方式提供EV1，后因成本问题召回并销毁了大部分车辆，仅保留了约40辆捐赠给博物馆和大学。这辆#212是此前未被公开的隐藏车辆，如今成为首辆合法售卖给公众的EV1。</p>
+                    <p>GrapheneOS宣布停止在法国的所有运营，认为法国对开源隐私项目不再安全。虽然系统仍可供法国用户使用，但所有网站和讨论服务器将迁至国外，从法国OVH迁移到多伦多和德国Netcup。项目方称服务器不存储用户数据，迁移不影响签名验证等服务。此举源于法国政府支持欧盟聊天监控提案，以及《巴黎人报》两篇负面报道暗示可能的法律行动。GrapheneOS澄清报道将其与政府伪造的系统版本混淆，并提到曾威胁起诉类似FBI支持的ANOM系统等仿冒项目。开发者出于安全考虑将不再在法国工作或旅行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[GM EV1电动车的历史、现状及其影响]
+                    <div class="comments-summary">主要讨论点：法国对GrapheneOS的威胁及其影响，以及GrapheneOS团队的反应是否合理。
 
 不同观点：
-• **历史意义与保护**  
-  - [madamelic] 分享了学校意外发现并修复GM EV1的经历，强调其历史价值和稀有性。  
-  - [robin_reala] 质疑EV1是否为“首款量产电动车”，指出20世纪初已有约3万辆电动车。
+• **质疑GrapheneOS团队可信度**  
+  - [Lariscus]和[ranger_danger]认为GrapheneOS创始人Micay有“被迫害妄想症”，并批评其缺乏实质性证据，只是夸大其词。  
+  - 例子：Micay被指多次在没有证据的情况下指控他人诽谤，且对质疑者态度防御性极强。  
 
-• **所有权与法律争议**  
-  - [potato3732842] 讨论了通过法律漏洞（如“非偷盗车辆无法处理”）使车辆长期处于法律灰色地带的现象，认为这一案例具有讽刺性。  
-  - [1970-01-01] 主张车辆应重新上路，作为对GM的抗议。  
-  - [Theodores] 提出复制EV1的可能性，但担忧GM的版权限制。
+• **支持GrapheneOS并批评法国政策**  
+  - [aborsy]认为欧盟政策倾向于“大政府控制”，建议将隐私项目迁移到更自由的加拿大。  
+  - [sunshine-o]批评欧洲在隐私、法治等领域的倒退，认为其正在失去吸引力。  
 
-• **技术与行业影响**  
-  - [api] 认为EV1技术超前，但因传统车企对燃油车的依赖而被扼杀，同时肯定特斯拉对电动车普及的推动作用。  
-  - [throw0101c] 引用纪录片《谁杀死了电动车？》，探讨EV1被废弃的多方原因（车企、政府、石油行业等）。
+• **技术解决方案建议**  
+  - [Bender]提议GrapheneOS使用.onion域名隐藏主服务器位置，并在多国设置镜像站点以规避政府压力。  
 
-• **争议焦点**  
-  - [rvba] 质疑故事中“车辆跨州后执法机构不作为”的合理性，认为这可能导致犯罪合法化，引发对法律漏洞的担忧。
-
-补充讨论：
-- 部分用户（如[adenta]）以幽默方式提及EV1的稀有性，暗示其已成为一种文化符号。  
-- 现代电池技术（如[Theodores]提到的铅酸电池替换）是否能为EV1复刻提供新可能，也是一个潜在的技术讨论点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45980608" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://krebsonsecurity.com/2025/11/is-your-android-tv-streaming-box-part-of-a-botnet/" target="_blank">Is your Android TV streaming box part of a botnet?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: todsacerdoti</span> |
-                    <span>评分: 57</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-11-24 18:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Superbox流媒体设备以400美元一次性付费提供2200多个付费频道，声称不违反版权法，但安全专家警告其强制用户网络为他人转发流量，可能涉及广告欺诈等网络犯罪。设备需替换Google Play商店为第三方应用商店，内置应用会将用户网络卷入住宅代理服务（如Grass），共享带宽给AI公司。尽管Superbox强调只销售硬件，但其实际使用方式存在较大安全隐患和潜在法律风险。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于Android TV设备可能成为僵尸网络一部分的担忧及其家庭网络安全问题]
-
-不同观点：
-• [bsimpson] 对标题中使用"Android TV"表示不满，认为这会引起误解，让人误以为正规购买的电视可能成为僵尸网络的一部分。实际上文章讨论的是盗版电视盒。
-• [ndiddy] 对大型连锁商店如Best Buy销售盗版电视盒表示惊讶，并思考商店如何在收入与破坏与电视及流媒体提供商关系之间权衡。
-• [0xWTF] 表达了对家庭网络安全的担忧，质疑普通用户是否有能力像企业一样运行复杂的网络安全监控系统。
-• [aerzen] 询问是否有软件可以在OpenWrt上运行以检测可疑流量，但指出家庭网络流量庞大且复杂，分析困难。
-• [j45] 建议至少应将此类Android设备视为潜在威胁，隔离在Guest网络或专用IoT网络中。
-
-补充讨论：
-争议焦点在于如何平衡便利性与安全性，以及普通用户在家庭网络安全方面应承担的责任和具备的能力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46037556" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lalitm.com/fixits-are-good-for-the-soul/" target="_blank">We stopped roadmap work for a week and fixed bugs</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lalitmaganti</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2025-11-23 16:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一种名为"fixit周"的团队工作模式。公司每季度安排一周时间，让45名工程师暂停常规工作，专门处理积压的小型问题和优化项目。通过简单的规则（每个任务不超过2天）和激励措施（积分排行榜、成就奖励），团队在一周内修复了189个问题。这种模式既提升了产品质量和开发效率，又增强了团队士气，让工程师特别是资深成员重新体验快速解决问题的成就感。作者认为这种关注细节的工作方式能区分产品的好坏，并分享了实施fixit周的具体方法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于"修复漏洞优先"的开发策略和"修复漏洞周"实践的有效性及争议]
-
-不同观点：
-• **支持"修复漏洞优先"策略**  
-  - BurningFrog: 强调在开发新功能前应先修复所有漏洞，确保代码库无漏洞更高效  
-  - stevoski: 以自身SaaS产品为例，证明优先修复漏洞能提升软件质量和客户满意度  
-  - julianlam: 回忆"修复漏洞周"是最有趣、高效且充实的经历，影响后续开发策略  
-
-• **质疑固定时间修复漏洞的实践**  
-  - Galxeagle: 认为"修复漏洞周"会导致团队推迟本可即时修复的问题，建议将修复工作纳入常规开发周期  
-  - inhumantsar: 认为"修复漏洞周"是一种反模式，主张工程师应有日常修复和重构的自主权  
-
-• **对"漏洞"定义的争议**  
-  - entropie: 指出部分所谓的"漏洞"实际上是低优先级需求或功能改进  
-  - PeterStuer: 质疑文章中"漏洞"的定义模糊，可能混淆了真正的错误与功能请求  
-
-• **关于漏洞修复时间的争论**  
-  - ChrisMarshallNY: 认为无法预估修复漏洞的时间，除非涉及重大重构  
-  - xnx: 认为漏洞应被视为未完成的功能，其修复时间与收益应与其他功能同等考量  
+• **策略性批评**  
+  - [mmooss]认为GrapheneOS的“威胁退出”策略显得情绪化且缺乏商业谈判经验，可能适得其反，并损害其他FOSS项目的声誉。  
 
 补充讨论：  
-- **管理压力与开发优先级的冲突**  
-  pmontra描述了常见的管理困境：紧急需求和功能开发不断打断漏洞修复，导致系统质量恶化  
-- **团队士气与文化影响**  
-  captainkrtek和jll29提到此类实践对团队士气和代码健康的积极影响  
-- **行业现状反思**  
-  troad批评软件行业将修复漏洞视为"特殊行为"的现状，暗示质量维护应成为基本准则</div>
+- 争议焦点在于GrapheneOS是否确实面临法国的威胁，以及其反应是否合理或过度。  
+- 部分用户（如[amatecha]和[ChrisArchitect]）提供了其他讨论链接，显示话题已在多个平台引发关注。  
+- [sunshine-o]的评论延伸至欧洲整体的竞争力问题，超出了GrapheneOS事件本身。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46024541" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.simpleguide.net/serflings.xhtml" target="_blank">Serflings is a remake of The Settlers 1</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: doener</span> |
-                    <span>评分: 127</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-11-22 08:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《Serflings》是一款对经典游戏《The Settlers 1》（或《Serf City》）的忠实复刻版本，保留了原版核心玩法并增加了高清分辨率、局域网对战等新功能。运行游戏需从原版复制特定文件（如SPAE.PA），支持DOS版和历史版的游戏文件。提供稳定版和开发版下载，需Java 17环境或集成运行时的版本。复刻版兼容原版存档，操作与原版一致，新增快捷键调整游戏速度、缩放等功能。支持多语言，包含原版所有任务和AI，但部分原版功能（如建筑替换）尚未实现。游戏可通过Ubisoft购买原版。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对《The Settlers》系列游戏的怀旧与现代延续的讨论]
-
-不同观点：
-• 对《The Settlers 1》和《The Settlers 2》的怀旧情感：
-  - [YoukaiCountry] 和 [oersted] 表达了对早期游戏的喜爱，特别是第二代的复杂物流系统和节点网格设计。
-  - [peepee1982] 提到第一代的简单性是其魅力所在。
-
-• 现代延续游戏的推荐：
-  - [slightwinder] 推荐了《Pioneers of Pagonia》，认为它是对最新官方《Settlers》游戏失败的回应，旨在服务老粉丝。
-  - [jamesu] 推荐了《The Colonists》作为现代3D替代品。
-
-• 开源克隆游戏的提及：
-  - [YoukaiCountry] 和 [saubeidl] 都提到了《Widelands》，一个开源的《Settlers II》克隆，带有额外功能。
-
-补充讨论：
-• 游戏机制的现实应用：
-  - [verytrivial] 幽默地提到将《Settlers》的资源移动算法应用于日常生活中。
-
-• 法律与道德问题：
-  - [falcor84] 提出了关于逆向工程和AI生成艺术以替代原始游戏文件的合法性问题。
-
-争议焦点：
-• [falcor84] 的评论引发了关于使用AI或人类重新创作游戏内容以规避版权问题的讨论，这是一个未解决的争议点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46013132" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.core77.com/posts/138995/Historically-Accurate-Airport-Dioramas-by-AV-Pro-Designs" target="_blank">Historically Accurate Airport Dioramas by AV Pro Designs</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-11-20 19:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>前航空公司飞行员Brian Keene退休后创立了AV Pro Designs公司，专门制作1:1400比例的历史精确机场微缩模型。这些模型基于档案照片和Keene的飞行经验，重现特定年代的著名机场，如70-80年代的JFK机场、80-90年代的LAX机场等。公司已完成肯尼迪、希思罗等机场模型，正在制作香港启德和巴黎戴高乐机场。作品主要销售给博物馆、机构和模型爱好者群体。特别值得一提的是，孟买机场模型采用了夜景设计，效果尤为惊艳。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[大型模型和历史场景模型的制作与现状]
-
-不同观点：
-• [怀旧与参观体验]  
-  - Wistar分享了对美国陆军工程兵团海湾模型的个人体验，强调其规模宏大和参观时的宁静感受，同时指出现在变得非常受欢迎，排队时间长。
-  - mwexler提到JFK模型的展示地点（TWA酒店大厅），并推荐了25分钟的参观时间，附上了视频链接供参考。
-
-• [技术与传统制作的对比]  
-  - michaelbuckbee认为现代技术（如EufyMake打印机或3D打印）可以大幅节省传统手工制作模型的时间，并以Adam Savage的评测视频为例说明现代技术的优势。
-
-• [历史准确性与视觉记忆的争议]  
-  - MarkusQ观察到老式场景模型略显泛黄/棕褐色，并质疑这是否是历史准确性的一部分，还是老照片的视觉效果。他提到自己记忆中的世界色彩鲜明，因此对模型的色调表示疑惑。
-
-补充讨论：
-- 讨论中涉及了传统模型与现代技术的对比，以及历史模型的视觉效果是否准确的争议。
-- Wistar和mwexler的评论更多关注参观体验和模型的展示，而michaelbuckbee和MarkusQ则从技术和历史准确性的角度提出了不同的观点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45996527" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://pluralistic.net/2025/11/18/im-not-bad/" target="_blank">Disney Lost Roger Rabbit</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: leephillips</span> |
-                    <span>评分: 319</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-11-18 16:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要讨论了迪士尼失去《谁陷害了兔子罗杰》版权控制的案例，并介绍了美国1976年《版权法》中的"转让终止"条款。该条款允许创作者在35年后收回已转让的版权权利，是少数真正保护创作者利益而非中间商利益的版权政策。文章指出，尽管版权期限不断延长，但创作者收入占比持续下降，原因是创意劳动市场被少数大型媒体公司垄断。作者认为，"转让终止"条款为创作者提供了与媒体公司谈判的新筹码，是重新平衡行业权力的重要工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[版权终止条款（Termination of Transfer）对创作者的影响及娱乐产业的垄断问题]
-
-不同观点：
-• **支持版权终止条款的观点**  
-  - 认为这是创作者对抗大公司的有力工具，尽管需要等待35年（如latexr的评论）。  
-  - 强调娱乐产业的垄断（如“五大出版商、四大工作室等”）使得创作者在谈判中处于弱势（如devsda、isodev的评论）。
-
-• **质疑版权终止条款的实用性**  
-  - 认为35年的等待时间过长，实际效果有限（如latexr、k__的评论）。  
-  - 指出即使创作者收回版权，也可能无法绕过现有合同或产业结构的限制（如mayoff的评论）。
-
-• **批评娱乐产业的剥削性**  
-  - 娱乐产业被指为最大的创作者剥削者，比AI的威胁更严重（如CuriouslyC的评论）。  
-  - 类比“给被霸凌的孩子更多午餐钱只会让霸凌者更富”凸显问题核心（如neves、gorgoiler的评论）。
-
-• **对具体案例的讨论**  
-  - 以《谁陷害了兔子罗杰》为例，讨论版权归属和续作的可行性（如mayoff、NoboruWataya的评论）。  
-  - 提到迪克·特雷西的版权案例，说明长期维护版权的重要性（如joecool1029的评论）。
-
-补充讨论：
-- **争议焦点**：版权终止条款是否真正有益于创作者，还是被娱乐产业的垄断结构所抵消。  
-- **其他讨论点**：  
-  - 科技行业也存在类似的垄断问题（如devsda的评论）。  
-  - 版权改革的需求普遍存在，但具体实施面临挑战（如BLKNSLVR的评论）。  
-  - 废弃软件（abandonware）的版权归属问题（如dec0dedab0de的评论）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=45968827" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46037573" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
