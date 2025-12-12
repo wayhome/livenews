@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-12-12 05:16 (北京时间)
+            最后更新时间: 2025-12-12 09:04 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,50 +61,140 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.metropolitanreview.org/p/giant-of-the-attic" target="_blank">Giant of the Attic: On the Majesty of Alan Moore</a>
+                    <a href="https://lwn.net/SubscriberLink/1047238/25c270b077849dc0/" target="_blank">A “frozen” dictionary for Python</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: CharlesW</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-11-28 22:05</span>
+                    <span>作者: jwilk</span> |
+                    <span>评分: 162</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2025-12-11 09:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了著名漫画作家艾伦·摩尔（Alan Moore）的现状和人生经历。72岁的摩尔已退出漫画界，专注于小说创作，正在写作五部曲系列《长伦敦》。文章描述了他隐居在英国北安普顿的生活状态，包括他的日常习惯、外貌特征和低调的个性。同时回顾了他的人生转折点：1989年离婚、失业后开始新生活，以及他在漫画界的辉煌成就（如《守望者》《V字仇杀队》等）。文章展现了摩尔从漫画大师到全职小说家的转变历程，以及他特立独行的生活方式。</p>
+                    <p>这篇文章介绍了Python社区提出的一项新提案PEP 814，旨在为Python添加不可变的字典类型"frozendict"。主要内容包括：
+1. 提案背景：当前Python字典可变性导致并发编程中共享数据存在风险
+2. frozendict特性：
+   - 不可变字典类型
+   - 与常规字典类似但不继承自dict
+   - 可哈希(当所有值都不可变时)
+   - 支持多种创建方式
+   - 保留键值插入顺序
+3. 应用场景：
+   - 提高并发安全性
+   - 可用于字典键、集合元素等需要不可变对象的场景
+4. 讨论情况：
+   - 社区反应总体积极
+   - 有人建议添加O(1)的原地冻结方法
+   - 提案已考虑标准库中多处可用frozendict替代dict的情况
+
+该提案旨在提供语言级别的不可变字典支持，增强Python在并发编程中的安全性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于Alan Moore的作品及其价值的讨论]
+                    <div class="comments-summary">主要讨论点：[Python是否应该引入frozendict类型，以及其优缺点和应用场景]
 
 不同观点：
-• [推荐"The Highbury Working"]  
-  - 认为该作品值得一听  
-  - 提供Discogs链接作为参考  
+• **支持引入frozendict**  
+  - 提供线程安全和并发编程中的安全性（[sevensor]）  
+  - 避免函数意外修改传入的字典（[sevensor]）  
+  - 缓存场景下的优化（[Strilanc]）  
+  - 其他语言（如Ruby、C#）已有成功实践（[ok123456]、[mwsherman]）  
 
-• [推崇Alan Moore的总体贡献]  
-  - 引用"Thejournalix"的文章链接  
-  - 强调Moore的创作价值  
+• **反对或质疑frozendict的实用性**  
+  - Raymond Hettinger认为“冻结字典是一个复杂且不太有用的功能”（[pansa2]）  
+  - 认为frozendict是“廉价的不可变数据模仿”，不如pyrsistent等库提供的真正不可变数据结构（[perrygeo]）  
+  - 线程安全问题：仅键不可变，值仍需加锁（[rurban]）  
 
-• [推荐"Top 10"漫画]  
-  - 认为这是其最喜欢的Moore作品  
-  - 附上维基百科链接供进一步了解  
-
-• [批评作品的写作风格]  
-  - 认为某些作品文字艰涩难读  
-  - 但仍承认其价值  
-
-• [推荐"Promethea"]  
-  - 表达对该作品的欣赏  
+• **替代方案讨论**  
+  - 使用`MappingProxyType`实现类似功能（[polyrand]）  
+  - 推荐pyrsistent库提供更完善的不可变数据结构支持（[code_biologist]、[perrygeo]）  
+  - 提出优化建议（如JIT优化构造性能）（[drhagen]）  
 
 补充讨论：
-• 争议焦点：作品的可读性与艺术价值的平衡  
-• 讨论关系：多数评论相互补充，共同构建对Moore作品的多维度评价  
-• 值得注意的是，尽管有对写作风格的批评，但所有评论都认可Moore作品的价值</div>
+- **与namedtuple的比较**（[sundarurfriend]）  
+  - frozendict支持动态键，而namedtuple是静态结构  
+  - API差异（如`.keys()` vs 固定字段）  
+- **类型系统扩展**（[codethief]）  
+  - 希望支持类似TypeScript的自动类型推断  
+- **语言设计争议**（[the__alchemist]）  
+  - 建议Python统一可变/不可变类型的接口设计</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46083184" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46229467" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://harpers.org/archive/2025/12/kicking-robots-james-vincent-humanoids/" target="_blank">Kicking Robots</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Hooke</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-12-06 21:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇题为《踢机器人》的文章探讨了人形机器人技术的现状与行业炒作现象。作者通过亲身测试Apptronik公司开发的Apollo人形机器人，揭示了当前机器人技术的实际水平。文章指出，虽然媒体和投资者对人形机器人充满期待（预测到2050年将有超过10亿台投入使用），认为它们能解决劳动力短缺问题，但实际测试显示现有技术仍处于早期阶段。作者通过推搡机器人的体验发现，尽管机器人能做出拟人化反应，其稳定性和功能距离商业应用还有差距。文章以诙谐方式对比了行业雄心与现实技术之间的鸿沟。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[通过踢东西来学习的方法及其有效性]
+
+不同观点：
+• [支持观点]
+  - 认为踢东西是一种有效的学习方法，特别是在儿童早期探索世界时。
+  - 举例说明儿童通过踢家具、宠物和同伴来学习物体的稳固性、可推倒性以及互动的可能性。
+  - 强调这是一种自然的学习方式，有助于儿童快速理解物理世界的基本规律。
+
+• [反对观点]
+  - 可能认为踢东西是一种暴力或不适当的行为，尤其是在涉及宠物和同伴时。
+  - 可能会质疑这种方法的教育价值，认为它可能导致不良行为或伤害他人。
+  - 可能会建议使用更温和的探索方式，如触摸或观察。
+
+补充讨论：
+- 争议焦点在于这种方法是否适用于所有学习情境，以及它是否会带来负面影响。
+- 讨论中还提到了一段YouTube视频（https://www.youtube.com/watch?v=dKjCWfuvYxQ），可能进一步探讨了这一话题，但具体内容未详述。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46176800" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.centauri-dreams.org/2025/12/11/a-tatooine-planet-directly-imaged/" target="_blank">A 'Tatooine' Planet Directly Imaged</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: JPLeRouzic</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-12-11 20:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>科学家首次直接拍摄到一个环绕双恒星运行的系外行星HD 143811 AB b。该行星质量约为木星的6倍，距离母星仅446光年，是已知围绕双星运行且距离最近的行星。研究人员通过重新分析2016-2019年双子座行星成像仪(GPI)的旧数据，结合凯克天文台和欧洲南方天文台的观测，确认了这一发现。这个年轻的恒星系统形成于约1300万年前，其双星每18天相互绕转一周，而行星绕双星公转周期约300年。这一发现为研究双星系统行星形成机制提供了新线索。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46236398" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -119,8 +209,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: dom96</span> |
-                    <span>评分: 114</span> |
-                    <span>评论数: 14</span> |
+                    <span>评分: 118</span> |
+                    <span>评论数: 15</span> |
                     <span>发布时间: 2025-12-08 14:42</span>
                 </div>
 
@@ -131,35 +221,27 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Python冷启动时间、Pyodide的限制与潜力、云服务（Cloudflare Workers/Lambda）的适用性与局限性]
+                    <div class="comments-summary">主要讨论点：[Python在Cloudflare Workers中的性能、兼容性和适用性]
 
 不同观点：
-• **Python冷启动时间问题**  
-  - [randomtoast] 批评Python的冷启动时间慢（100-300ms），与C/Rust/Go（<10ms）相比有明显差距，尤其在CLI脚本和管道操作中更为明显。
-  - [pedrozieg] 提到Pyodide通过快照技术（snapshot）优化冷启动，但要求严格区分初始化阶段和请求阶段，限制了传统Python模式（如随机数生成、I/O操作等）。
-
-• **Pyodide的潜力与限制**  
-  - [pedrozieg] 认为Pyodide的快照模型可能推动Python生态适应新的约束，但当前仅适用于部分场景。  
-  - [jtbaker] 指出Pyodide近期移除了多个关键库（如geopandas、polars），影响了数据/地理工作流的可行性。  
-  - [rcarmo] 对Pyodide的性能（如Pillow、Pandas）提出疑问，呼吁更多基准测试。  
-  - [resiros] 质疑库支持的限制是否会被Cloudflare长期投入解决。
-
-• **云服务（Cloudflare Workers/Lambda）的争议**  
-  - [ianberdin] 认为VPS/裸金属服务器更优，云服务的低延迟和低成本被管理复杂度抵消。  
-  - [scottydelta] 批评Cloudflare缺乏区域选择功能，不符合合规需求（如地理数据管控）。  
-  - [jeff17robbins] 指出AWS Lambda的SnapStart未被纳入对比，可能影响性能结论。  
-  - [BiteCode_dev] 质疑云服务的实际价值，认为仅适合临时脚本，不值得替代VPS。
+• Python冷启动速度慢：randomtoast指出Python脚本的冷启动时间（100-300ms）明显慢于C、Rust或Go（<10ms），尤其在CLI和管道操作中更为明显。
+• Cloudflare Workers + Pyodide的优势与限制：
+  - pedrozieg强调其通过快照技术（snapshot）实现快速冷启动（1秒内），但要求严格区分初始化阶段和请求阶段的状态管理，限制了传统Python模式的使用。
+  - orliesaurus提到支持Pyodide兼容包（如httpx、fastapi），但默认全局部署可能不符合区域合规要求，且原生扩展支持情况不明。
+  - jtbaker指出Pyodide移除了多个重要库（如polars、pyarrow），影响了地理/数据处理场景的适用性。
+• 与其他服务的对比：
+  - jeff17robbins认为未与AWS Lambda的SnapStart（快照优化）对比是不完整的。
+  - scottydelta批评Cloudflare缺乏区域选择功能，而AWS将其作为基础功能。
+• 适用性质疑：
+  - ianberdin认为VPS/裸机在管理和性能上优于Serverless（如Workers/Lambda）。
+  - BiteCode_dev质疑其仅适合轻量脚本，缺乏严肃用例。
 
 补充讨论：
-- **功能需求与改进建议**  
-  - [wg0] 提出Cloudflare D1数据库需支持动态创建，当前绑定限制阻碍用户级工作流。  
-  - [cloudflare728] 呼吁改进Next.js支持（如图片优化），当前性能评分下降显著。  
-  - [silverwind] 建议将快照技术贡献给CPython以改善原生性能。  
-
-争议焦点：
-1. **云服务 vs 传统服务器**：是否值得为低延迟/成本牺牲管理灵活性？  
-2. **Pyodide的适用性**：快照优化是否足以抵消库支持和开发模式的限制？  
-3. **功能缺失**：Cloudflare的区域支持、动态数据库等短板是否影响企业采用？</div>
+• 技术改进建议：
+  - silverwind希望将快照技术贡献给CPython。
+  - wg0提出需支持动态创建D1数据库的需求。
+  - cloudflare728呼吁改进Next.js支持（如图片优化）。
+• 兼容性争议：resiros和rcarmo关注库支持范围，尤其是原生扩展（如Pillow、Pandas）的性能和可用性。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=46192748" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -172,68 +254,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cnbc.com/2025/12/11/disney-openai-sora-characters-video.html" target="_blank">Disney making $1B investment in OpenAI, will allow characters on Sora AI</a>
+                    <a href="https://news.ycombinator.com/item?id=46233009" target="_blank">Show HN: GPULlama3.java Llama Compilied to PTX/OpenCL Now Integrated in Quarkus</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tiahura</span> |
-                    <span>评分: 270</span> |
-                    <span>评论数: 42</span> |
-                    <span>发布时间: 2025-12-11 14:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>迪士尼宣布将向OpenAI投资10亿美元，并达成三年许可协议。根据协议，OpenAI的Sora和ChatGPT Image用户明年起可使用迪士尼旗下200多个角色（如米老鼠、小美人鱼、钢铁侠等）创作AI内容。迪士尼CEO表示将负责任地利用AI扩展故事讲述能力，同时保护创作者权益。该合作不包括演员肖像和声音，OpenAI承诺加强内容管控。此前迪士尼曾起诉多家AI公司侵权，此次合作显示其对AI平台持开放态度。精选的Sora视频还将在Disney+上播出。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：迪士尼与OpenAI的合作对IP控制、内容质量、品牌价值和用户生成内容的影响。
-
-不同观点：
-• **迪士尼失去IP控制的担忧**  
-  - [otterley] 质疑迪士尼为何付费让别人控制其IP。  
-  - [tonyedgecombe] 认为OpenAI应支付迪士尼，而非相反，表明合作模式不合理。  
-
-• **AI生成内容的潜在负面影响**  
-  - [shevy-java] 批评AI导致内容质量下降，形成大公司垄断，并提及审查问题（如YouTube的过度审查）。  
-  - [ossner] 认为迪士尼可能利用争议内容（如种族主义视频）进行营销，但[giancarlostoro]指出这类内容已导致历史角色被移除，合作可能重蹈覆辙。  
-
-• **品牌价值与内容饱和的风险**  
-  - [dagmx] 认为过度饱和会削弱品牌价值，类比迪士尼此前因内容泛滥导致《星战》和漫威IP热度下降。  
-
-• **合作的经济与用户价值**  
-  - [andrew_lettuce] 指出迪士尼通过合作获得内容生成和股价提升的低成本收益。  
-  - [pantsforbirds] 支持合作，认为用户（如孩子）会喜欢用AI生成迪士尼角色互动内容。  
-
-• **技术限制与版权争议**  
-  - [sireat] 抱怨DALL-E因迪士尼版权过度限制公共领域内容（如格林童话插图），导致生成受阻。  
-
-补充讨论：  
-- **争议焦点**：合作是否牺牲IP控制换取短期利益，以及AI生成内容的质量与伦理风险。  
-- **其他讨论**：  
-  - [whywhywhywhy] 提到反AI群体对迪士尼“背叛”的失望。  
-  - [dawnerd] 指出迪士尼早已布局AI，合作并非新动向。  
-  - [illwrks] 推测付费账户可能成为迪士尼追责用户的手段。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46231585" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.reuters.com/world/us/rubio-stages-font-coup-times-new-roman-ousts-calibri-2025-12-09/" target="_blank">Rubio stages font coup: Times New Roman ousts Calibri</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: italophil</span> |
-                    <span>评分: 136</span> |
-                    <span>评论数: 78</span> |
-                    <span>发布时间: 2025-12-10 00:08</span>
+                    <span>作者: mikepapadim</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-11 15:59</span>
                 </div>
 
                 <div class="summary-section">
@@ -243,78 +270,31 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[美国政府字体更改的政治与文化意义]
+                    <div class="comments-summary">主要讨论点：[GPULlama3.java项目的技术实现和潜在影响]
 
 不同观点：
-• **支持Times New Roman的观点**  
-  - 认为Times New Roman更正式、专业，符合政府文件的严肃性（如Rubio称Calibri“不正式”且与信头冲突）。  
-  - 在部分国家（如后苏联地区）是官方文档的默认字体，尽管用户对其有负面记忆（如格式化繁琐）。
+• 支持技术探索的观点
+  - 认为该项目展示了Java在GPU计算领域的潜力
+  - 指出将LLM模型引入Java生态系统是创新尝试
+  - 举例说明Java在性能优化方面的可能性
 
-• **反对Times New Roman的观点**  
-  - 批评其缺乏设计感（如被比作“深空的黑色”），象征“无选择的妥协”。  
-  - 质疑回退到Times New Roman的浪费性（与原批评Calibri“浪费多样性”的矛盾）。  
+• 质疑实用性的观点
+  - 认为Java不是最适合GPU计算的编程语言
+  - 指出Python/C++在AI领域已有成熟生态
+  - 担心性能瓶颈和开发效率问题
 
-• **技术实用主义观点**  
-  - 强调字体应兼顾可读性、跨平台兼容性（如Calibri在Linux支持差）。  
-  - 建议政府开发专属开源字体，避免依赖私有字体（如解决“I”与“l”混淆问题）。  
-
-• **政治隐喻观点**  
-  - 将字体变更视为政府转向的象征（如“退出全球事务后寻找新方向”）。  
-  - 指责Rubio借字体攻击多样性政策（如称Calibri是“激进DEI的产物”）。  
-
-补充讨论：  
-- **争议焦点**：字体选择是否真与“专业性”或“政治立场”相关，还是表面争议掩盖实质问题。  
-- **文化梗**：用户提及SNL的“Papyrus”讽刺短剧，反映公众对字体设计的敏感度。  
-- **技术细节**：讨论无衬线（如Calibri）与衬线字体（如Times New Roman）在数字/印刷媒介的优劣，以及高分辨率屏幕是否改变这一平衡。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46212438" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://vcmi.eu/" target="_blank">VCMI: An open-source engine for Heroes III</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: eamag</span> |
-                    <span>评分: 177</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-12-06 16:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[VCMI作为HoMM3的开源重制项目的优缺点及玩家偏好]
-
-不同观点：
-• 支持VCMI的观点
-  - VCMI已具备完整的HoMM3体验（nasretdinov）
-  - 在M1 Mac等平台运行更稳定，无需虚拟机/wine（nasretdinov）
-  - 原生支持Android和Oculus Quest等新平台（chrysoprace, notpushkin）
-  
-• 偏好原版+HotA的观点
-  - HotA模组社区活跃度高，功能更完整（chrysoprace）
-  - 部分玩家仍选择原版+GOG+HotA的组合（hyperpl）
-  - 期待VCMI与HotA的完全兼容（bombcar, chrysoprace）
+• 中立观望的观点
+  - 承认项目的实验性质和教育意义
+  - 建议关注长期发展而非短期实用性
+  - 认为跨语言AI框架是未来趋势
 
 补充讨论：
-• 相关项目：fheroes2（HoMM2重制版）被推荐给怀旧玩家（p2detar）
-• 争议焦点：AI表现问题被指出可能是VCMI的短板（internet_points）
-• 文化现象：讨论HoMM系列在东欧以外的知名度问题（bbminner）
-• 实用场景：被推荐给非技术用户解决安装问题（ostwilkens）
-• 情感因素：多个用户表达了对该系列的情感连接（vincnetas, barfoure）</div>
+- 争议焦点：Java是否适合作为AI/GPU计算的主要开发语言
+- 有讨论提到具体技术实现细节（如JNI接口效率）
+- 部分评论提到项目对Java开发者学习AI的价值
+- 少量讨论涉及与其他Java机器学习框架（如DeepLearning4J）的比较</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46174534" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46233009" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -325,25 +305,146 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bleepingcomputer.com/news/security/malicious-vscode-marketplace-extensions-hid-trojan-in-fake-png-file/" target="_blank">Malicious VSCode Marketplace extensions hid trojan in fake PNG file</a>
+                    <a href="https://legendsoflocalization.com/articles/japanese-ellipsis-usage/" target="_blank">Encountering Japanese ellipses in English translations (2013)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tosh</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-02 21:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了日语和英语中省略号（…）使用的差异。作者通过分析《塞尔达传说：梦见岛》等游戏的日英版本，指出日语省略号形式多样（1-6个点不等），常用来表示停顿或留白；而英语翻译通常统一简化为三点省略号。文章还提到，日语省略号在娱乐作品中使用频率远高于英语，有时英译时会减少数量或替换成其他标点以符合英语习惯。最后作者认为，这种差异源于两种语言中省略号的功能差异：英语主要用于句子中断，而日语更多用于制造节奏和戏剧效果。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于省略号（ellipses）使用方式的讨论
+
+不同观点：
+• [传统使用派]
+  - 认为省略号应该严格遵守语法规则，通常表示为三个点（...），后面不需要再加其他标点
+  - 指出过度使用省略号会影响文本的专业性和可读性
+  - 举例说明正式写作中不规范的省略号使用会被视为错误
+
+• [个人风格派]
+  - 认为在非正式场合（如游戏、网络交流）可以自由使用省略号表达个人风格
+  - 提到自己成长过程中习惯用多个点或带空格的省略号（如. . .）来表达特定语气
+  - 认为这种用法能更好地传达口语中的停顿和情感
+
+• [语境适应派]
+  - 认为省略号用法应该根据具体语境调整
+  - 在正式写作中遵守规范，但在创意写作或网络交流中可以灵活运用
+  - 指出不同社群可能形成自己特有的省略号使用习惯
+
+补充讨论：
+- 争议焦点在于：是否应该为表达个人风格而牺牲语法规范性
+- 讨论中反映出代际差异，年轻一代更倾向于接受非传统的标点使用方式
+- 有评论提到某些游戏社群已经形成了特定的省略号使用文化</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46127230" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://labs.watchtowr.com/soapwn-pwning-net-framework-applications-through-http-client-proxies-and-wsdl/" target="_blank">SOAPwn: Pwning .NET Framework Applications Through HTTP Client Proxies and WSDL</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: campuscodi</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-11 20:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文主要介绍了2025年底网络安全研究人员发现的.NET框架中HTTP客户端代理漏洞（SOAPwn），该漏洞可导致远程代码执行。虽然微软将其标记为"无需修复"，但已被成功利用攻击多个企业级设备，包括Barracuda服务管理中心、Ivanti终端管理系统等。研究展示了该漏洞在Barracuda系统上的实际利用过程（CVE-2025-34392）。漏洞源于System.Web.Services.Protocols命名空间中的三类HTTP客户端代理（SoapHttpClientProtocol、DiscoveryClientProtocol和HttpSimpleClientProtocol）的URL处理缺陷，特别是HttpWebClientProtocol.GetWebRequest方法的问题。文章认为.NET框架广泛使用，实际受影响的产品可能更多。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[微软对C#和.NET框架中安全漏洞的态度及其影响]
+
+不同观点：
+• **对微软安全态度的批评**  
+  - 评论者认为微软对安全漏洞的处理态度不当，优先考虑兼容性问题而非服务器安全，这令人失望。  
+  - 指出漏洞可能导致服务器被劫持，而微软的反应表明他们不重视安全性。  
+  - 推测微软自己的网络应用可能也受此漏洞影响。
+
+• **个人经历与情感影响**  
+  - 评论者曾是一名C#和.NET开发者，但因残疾无法继续编程。  
+  - 尽管热爱C#和.NET，微软对此漏洞的处理态度使其对语言和框架失去兴趣。
+
+补充讨论：
+- 评论者提到，简单的代码扫描可能会发现更多易受攻击的端点，暗示漏洞可能广泛存在。  
+- 争议焦点：微软是否在安全与兼容性之间做出了错误权衡，以及这是否会损害开发者社区的信任。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46236601" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ankursethi.com/blog/gemini-api-key-frustration/" target="_blank">Getting a Gemini API key is an exercise in frustration</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: speckx</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-12-11 20:59</span>
+                    <span>评分: 797</span> |
+                    <span>评论数: 105</span> |
+                    <span>发布时间: 2025-12-10 20:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>安全研究人员发现，自2023年2月起，VSCode扩展市场中存在19个恶意扩展程序。这些扩展在"node_modules"文件夹中隐藏了修改后的依赖项，包含自动执行的恶意代码。攻击者利用伪装成PNG图像的文件存放两个恶意程序：一个系统工具"cmstp.exe"和一个基于Rust的木马。这些扩展主要伪装成主题插件，目前已被微软下架。建议开发者安装扩展前仔细检查依赖项，特别是那些直接打包而非从可信源获取的依赖。该事件再次凸显了软件供应链安全的重要性。</p>
+                    <p>本文作者讲述了尝试付费使用谷歌Gemini 3 Pro模型进行编程辅助的曲折经历。作者原本想简单付费使用该AI编码工具，却陷入谷歌产品命名的混乱中（Gemini有多个不同产品）。与Anthropic和OpenAI直接提供付费入口不同，谷歌需要先创建API密钥，再通过复杂的Google Cloud Console设置账单。整个过程繁琐，作者最终虽然成功创建了API密钥，但仍需完成一系列步骤才能付费使用。文章批评了谷歌产品线混乱和付费流程的不便。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：Google AI/API产品的用户体验和架构问题  
+
+不同观点：  
+• **产品架构混乱与API分裂问题**  
+  - Google的产品架构导致API分裂（如Gemini API、Vertex API、TTS API功能不统一，需独立密钥）  
+  - 历史原因：Larry Page的统一登录要求反而加剧了系统复杂性（@asim）  
+  - 对比：初创公司因无历史包袱更灵活（@asim）  
+
+• **用户体验与文档问题**  
+  - 文档晦涩且参数支持不一致，需反复试错（@Ozzie_osman）  
+  - 配额和账单系统反直觉（如配额显示0%但实际被限制，@rozap）  
+  - 对比：AWS/GCP控制台同样混乱（@niwtsol、@plaidfuji）  
+
+• **客服与支持流程缺陷**  
+  - 普通用户难以获得人工支持，依赖特殊渠道（如创业项目联系，@rozap）  
+  - 开发者反馈渠道存在但响应不透明（如GitHub问题被无故关闭，@msp26）  
+
+• **公司文化与规模问题**  
+  - Google从用户导向转向企业客户优先（@dannyobrien，DoubleClick收购后文化转变）  
+  - 内部团队协作困难导致“组织架构泄漏”（@rozap）  
+
+补充讨论：  
+• **争议焦点**  
+  - API密钥获取是否困难：部分用户认为文档明确（@obmelvin），其他人称流程令人崩溃（@levocardia）  
+  - 免费层API的优劣：虽易用性差，但无账单风险受好评（@Havoc）  
+
+• **积极改进信号**  
+  - Google员工（@logankilpatrick）确认AI Studio直接账单功能即将上线  
+  - 开发者对Gemini模型速度的肯定（@msp26）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46237076" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46223311" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -354,13 +455,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://devblogs.microsoft.com/oldnewthing/20251204-00/?p=111841" target="_blank">How can I read the standard output of an already-running process?</a>
+                    <a href="https://xania.org/202512/11-pop-goes-the-weasel-er-count" target="_blank">Pop Goes the Population Count?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 53</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-12-05 22:24</span>
+                    <span>作者: hasheddan</span> |
+                    <span>评分: 47</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-12-11 14:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了计算64位无符号整数中"1"的位数（称为"population count"）的多种方法。作者从基本的逐位检查方法开始，重点介绍了一个高效技巧：通过不断清除最低位的1并计数循环次数来统计。文章展示了编译器如何将这种循环优化为单条`popcnt`指令，并讨论了不同CPU架构下的优化差异。最后建议使用C++标准库的`std::popcount`来确保最佳性能。这是"2025年编译器优化降临历"系列的第11篇，旨在展示编译器如何智能优化代码。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[编译器优化与特定指令（如popcount）的应用及效率]
+
+不同观点：
+• [thefaux] 认为编译器优化虽然强大，但耗时且不透明，建议提供单独的分析工具来提示源代码级别的优化，以增加代码清晰度和可预测性。并以自身经验为例，说明popcount在实际应用中的高效性。
+• [burnt-resistor] 支持编译器优化，特别是自动向量化（SIMD）等高级优化技术，希望GCC和LLVM能更广泛地应用这些技术。
+• [wat10000] 提出一种并行计算的树状方法，通过多次移位和掩码操作来高效计算比特数，但不确定编译器是否能将其优化为单指令。
+
+补充讨论：
+• [dhosek] 和 [bombcar] 的评论与核心讨论关系不大，前者提到Godbolt的名字趣味性，后者提及NSA可能对popcount指令的需求。
+• [majke] 和 [taeric] 分别提到其他有趣的指令（LOP3）和算法（Gosper's hack），为讨论增添了一些技术多样性。
+• [thefaux] 的补充说明中提到他参与开发的全球监控系统，引发了对技术伦理的思考。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46231829" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.reuters.com/legal/government/terrausd-creator-do-kwon-be-sentenced-over-40-billion-crypto-collapse-2025-12-11/" target="_blank">TerraUSD creator Do Kwon sentenced to 15 years over $40B crypto collapse</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: 2OEH8eoCRo0</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-12-11 22:22</span>
                 </div>
 
                 <div class="summary-section">
@@ -370,154 +510,22 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何读取和控制命令行程序的输出
+                    <div class="comments-summary">主要讨论点：[关于对Kwon的加密货币交易禁令是否过于严厉的讨论]
 
 不同观点：
-• Raymond的观点倾向于使用"正确"的方法，而忽略了hacky的解决方案。用户指出虽然Raymond作为微软支持人员的立场是正确的（推荐标准方法如重定向stdout），但作为普通读者更希望了解各种非正统实现方式（如ReadConsoleOutput、代码注入、内核模块等）。
-• ranger_danger提供了Linux平台下的多种解决方案（strace、reptyr、dtach等工具），与Windows方案形成对比。
-• amelius和jeffrallen都提到了使用调试工具（GDB/strace）的方案，属于技术性更强的解决路径。
-• bh0k4l分享了具体的脚本实现方案，通过script命令记录会话日志并与LLM集成，展示了实际应用场景中的创造性解决方案。
+• [支持禁令的观点]
+  - Kwon同意支付8000万美元的民事罚款并接受加密货币交易禁令，这可能是基于其违规行为的严重性。
+  - 法官Paul A. Engelmayer此前曾下令解封Epstein大陪审团记录，显示其可能倾向于严厉执法。
+
+• [反对禁令的观点]
+  - 加密货币交易禁令类似于禁止使用互联网，这在现代生活中过于严厉，影响正常生活。
+  - 以Samy Kamkar被禁止使用互联网为例，说明此类禁令可能不切实际且过度。
 
 补充讨论：
-• 平台差异是重要讨论维度（Windows vs Linux解决方案）
-• 解决方案的"正统性"与创造性之间存在张力
-• 实际应用场景中出现了与AI工具（LLM）的有趣结合
-• 争议焦点在于：是否应该只推荐标准方案，还是应该包括各种非标准hack</div>
+- 争议焦点在于禁令的合理性与实际可行性，以及是否与违规行为的严重性相匹配。
+- 讨论中还提到法官的背景，暗示其执法风格可能影响了这一决定。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46168180" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://buttondown.com/grugq/archive/bad-opsec-considered-harmful/" target="_blank">Bad Opsec Considered Harmful</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: anigbrowl</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-12-11 20:08</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章批评了一个收集"糟糕操作安全(OPSEC)案例"的GitHub仓库，认为仅通过失败案例学习OPSEC是错误的。作者指出两个主要问题：1) 样本偏差，只展示被抓获的案例；2) 缺乏理论框架，初学者难以从中提取正确教训。作者以哈佛大学炸弹威胁案例为例，运用OPSEC三大原则(掩护、隐蔽、隔离)进行分析，说明该学生因技术隐蔽措施失败、缺乏合理行为解释等违反OPSEC原则而被捕。强调学习OPSEC应首先掌握基本原则，而非简单模仿或避免失败案例中的行为。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46236452" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/malucard/sm64-psx" target="_blank">Super Mario 64 for the PS1</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: LaserDiscMan</span> |
-                    <span>评分: 244</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2025-12-10 18:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>《超级马里奥64》PS1移植版项目是一个基于N64原版游戏代码的修改版本，目前仅支持PS1和PC平台。主要特性包括：适配DualShock手柄的震动功能、针对PS1优化的低精度浮点运算、简化的渲染系统、纹理压缩技术等。已知问题包括动画播放异常、音乐生成依赖手动操作、部分关卡崩溃等。该项目要求用户拥有原版游戏资源才能编译，目前仅支持美版构建。开发者提供了Linux系统的详细构建指南，包括工具链安装步骤。项目仍在积极开发中，计划改进相机控制系统和优化图形处理。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于Super Mario 64在GBA上的克隆/移植项目的讨论]
-
-不同观点：
-• [技术成就和情感共鸣]
-  - musha68k赞扬了该项目的技术成就，并回顾了N64带来的视觉震撼和游戏体验的多样性。
-  - wodenokoto虽然承认纹理变形等问题，但仍认为该项目非常了不起。
-
-• [技术细节和优化]
-  - amlib提出了关于纹理变形和几何细分的问题，质疑2倍的细分是否足够。
-  - mywittyname提到了Kaze对Mario64的优化工作，建议对此感兴趣的人观看相关视频。
-
-• [项目展示和可用性]
-  - Larrikin和BugsJustFindMe都表达了对项目运行图片或视频的期待，但目前缺乏相关展示。
-  - ranger_danger提到了其他类似的项目和平台移植情况。
-
-• [项目背景和趋势]
-  - schlauerfox好奇是什么促成了更好的反编译项目，认为这是复古游戏领域的一个普遍现象。
-
-补充讨论：
-- 争议点：纹理变形问题是否可以被接受或改进（amlib vs wodenokoto）。
-- 其他有趣的点：aussieguy1234的幽默评论“他们曾说这永远不可能完成”，以及SpaceManNabs对暂停菜单问题的好奇和对游戏演示者的技巧的赞赏。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46221925" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://qwen.ai/blog?id=qwen3-omni-flash-20251201" target="_blank">Qwen3-Omni-Flash-2025-12-01：a next-generation native multimodal large model</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pretext</span> |
-                    <span>评分: 289</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2025-12-10 16:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Qwen3-Omni模型的性能、开源性、实时对话支持及本地硬件运行情况]
-
-不同观点：
-• **支持Qwen3-Omni的性能**  
-  - [gardnr]认为该模型是7B模型的继任者，性能与非Omni版本相似，且由于开源Omni模型稀少，认为这是一个重要的进展。  
-  - [banjoe]提到该模型在基准测试中优于Gemini Flash 2.5，计划将LLM工作负载转移到本地GPU。
-
-• **对Qwen3-Omni开源性的质疑**  
-  - [andy_ppp]认为Qwen在模型是否开源上故意模糊，许多功能仅通过API提供。  
-  - [aschobel]确认模型仅通过API提供，表示失望。
-
-• **实时对话与本地运行的支持**  
-  - [sosodev]询问模型是否支持类似GPT-4o的实时对话，并提到文档中未明确说明，但后续编辑确认支持，询问本地非NVIDIA硬件运行情况。  
-  - [terhechte]询问是否可以在Macbook上通过GGUF或MLX量化运行模型，并提到缺乏流式麦克风或摄像头支持的开源项目。
-
-• **模型的实际应用与问题**  
-  - [binsquare]指出语音模型缺乏生命力，语调过于稳定，容易被识别为AI。  
-  - [sim04ful]提到实时语音输出中如何区分非叙事性输出（如思考过程）和用户可听输出的技术难题。  
-  - [dvh]举例模型在具体问题（电阻数量）上给出错误答案，显示其局限性。
-
-补充讨论：
-- [mohsen1]对Gemini Flash Live 2.5表示满意，但对Qwen Omni模型在英语场景中的表现失望。  
-- [devinprater]对模型大小（32B）表示乐观，认为可以在64GB RAM的设备上运行。  
-- [mettamage]好奇音乐分析模式是否可以用于自制合成器。  
-- [Aissen]询问模型是否为新的专有模型。  
-- [rarisma]提到基准测试中GPT4o的表现突出。  
-- [stevenhuang]提供了无法访问链接的存档版本。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46219538" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46238085" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
