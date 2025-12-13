@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-12-13 23:12 (北京时间)
+            最后更新时间: 2025-12-14 02:18 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://eavan.blog/posts/beautiful-sandpiles.html" target="_blank">Beautiful Abelian Sandpiles</a>
+                    <a href="https://quant.engineering/exchange-order-book-distributed-logs.html" target="_blank">How exchanges turn order books into distributed logs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: eavan0</span> |
-                    <span>评分: 85</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-12-09 20:16</span>
+                    <span>作者: rundef</span> |
+                    <span>评分: 86</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-12-08 13:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了阿贝尔沙堆模型（Abelian Sandpiles）的概念及其特性。阿贝尔沙堆基于一个网格系统，每个格子可以容纳一定数量的沙粒，当某格沙粒达到4个时会向相邻格子"崩塌"分配沙粒，直到所有格子都不超过3粒沙。文章重点阐述了该模型的三个核心特点：1）崩塌顺序不影响最终稳定状态（阿贝尔性质）；2）可以像数字加法一样进行沙堆的叠加运算；3）存在特殊的"恒等沙堆"，其与其他沙堆相加不改变后者。这些特性使沙堆模型与抽象代数中的群论产生关联，并能产生美丽的对称图案。</p>
+                    <p>这篇文章主要探讨了现代交易所如何处理高频率订单的排序问题。交易所面对来自全球各地、通过不同路径到达的订单，必须确保所有参与者看到的顺序一致。通过引入"序列器"(sequencer)这一核心组件，为每个事件分配单调递增的序列号，将混乱的并发事件转化为确定的全局顺序。交易所采用事件溯源(event-sourcing)架构，将所有市场事件以只追加(append-only)的方式记录在不可变的日志中，确保订单簿状态可以通过重放日志完全重建。这种设计保证了价格-时间优先原则，维护了市场的公平性和确定性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[阿贝尔沙堆模型的数学性质、实现方式及其与其他模型的关联]
+                    <div class="comments-summary">主要讨论点：[交易所的排序器（sequencer）技术及其在交易系统中的应用与挑战]
 
 不同观点：
-• 关于阿贝尔沙堆模型的数学性质：
-  - [seanhunter] 指出文章对阿贝尔群的描述有误，强调阿贝尔群是交换群，而结合性是群的基本性质。
-  - [mcphage] 批评文章对群论中单位元存在的因果关系的表述有误，指出单位元的存在是群定义的一部分。
+• [技术挑战与解决方案]
+  - 交易所通过排序器分配序列号以确保全局时间线，但可能因市场数据爆发导致订单处理延迟（alexpotato）。
+  - 水平分片（sharding）可以解决部分扩展性问题，但大多数交易所未完全采用，部分原因是成本（dmurray）。
+  - 排序器与匹配引擎分离有助于崩溃恢复，但重放消息可能耗时过长（dmurray）。
 
-• 关于模型的实现和历史：
-  - [FredrikMeyer] 提到自己用Rust实现了该模型，并指出它与严肃的数学研究相关，提供了相关论文链接。
-  - [pmcarlton] 分享了自己在1995年通过'xsand.c'学习C语言和模拟沙堆模型的经历。
+• [高频交易的争议]
+  - 高频交易（HFT）在合规情况下对流动性有益，但资源分配是否合理存在争议（jshaqaw）。
+  - 部分人认为高频交易是零和游戏，社会资源被浪费（jshaqaw）。
 
-• 关于模型与其他计算模型的比较：
-  - [ggm] 质疑阿贝尔沙堆模型与经典细胞自动机（如康威生命游戏）的区别，认为主要区别在于规则细节。
+• [序列化的关键性]
+  - 序列化在交易场所的边缘进行是关键，但过度追求物理上的绝对序列化可能收益递减（HolyLampshade）。
+  - 合理的系统“容错”可以减少对“首位”的过度竞争（HolyLampshade）。
 
-• 关于模型的视觉表现：
-  - [OgsyedIE] 观察到在中心堆沙时，随着网格增大，中间状态更接近圆形边界而非预期的菱形边界。
-  - [recursive] 指出沙似乎只向左上方溢出，这可能暗示实现中的不对称性。
+• [技术细节的讨论]
+  - 时间戳（如GPS）可能不足以解决排序问题（thijson）。
+  - 分布式日志与订单簿的关系被误述，分布式设计更多是出于弹性考虑（cgio）。
+  - 管道复制（pipelined replication）可能面临数据丢失风险（nick0garvey）。
 
 补充讨论：
-• [haritha-j] 提供了一个相关的Veritasium视频链接，尽管标题可能不够准确。
-• [skeltoac] 的评论表明文章激发了实际应用的兴趣（如浴室装修），展示了数学可视化对非专业读者的吸引力。</div>
+• 争议焦点：
+  - 高频交易是否对社会资源分配有实际贡献（jshaqaw vs. 其他观点）。
+  - 排序器技术的扩展性限制与未来挑战（hamiecod）。
+• 其他讨论点：
+  - IEX因创始理念无法追踪内部延迟的案例，展示了非技术因素的重要性（alexpotato）。
+  - 部分评论认为文章内容可能由AI生成（croemer）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46210044" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46192181" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,235 +117,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ratsplaydoom.com/" target="_blank">Rats Play DOOM</a>
+                    <a href="https://petapixel.com/2025/12/06/this-photographer-built-an-awesome-medium-format-rangefinder-and-so-can-you/" target="_blank">Photographer built a medium-format rangefinder, and so can you</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ano-ther</span> |
-                    <span>评分: 159</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2025-12-12 20:15</span>
+                    <span>作者: shinryuu</span> |
+                    <span>评分: 116</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2025-12-06 22:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文介绍了一个为老鼠设计的完整VR系统，让它们可以玩《毁灭战士》。系统包括运动追踪跑步球、全景头显、输入触发器和奖励电路。硬件和软件全部开源，含3D打印设计、电路图和代码。
-
-项目经历两个版本：v1由Viktor开发，训练老鼠在简单装置中跑过走廊；v2与工程师合作升级，采用模块化设计，配备180°AMOLED屏、强化传感器和精确奖励系统。虽然设备已完成，但未完成老鼠训练验证。
-
-核心组件：
-1. 全景头显：不阻碍胡须空间，集成气流喷嘴和奖励管
-2. 运动球：通过旋转传感器追踪位移，可电机驱动辅助训练
-3. 触发器：含编码器和电机，可编程演示射击动作
-4. 奖励系统：精确分配糖水，同步游戏事件强化行为
-
-系统采用Python控制，虽功能完备但尚未完成动物行为验证，未来可能需要针对不同老鼠调整。</p>
+                    <p>摄影师Albert Cornelissen因无法负担昂贵的中画幅旁轴相机，自行设计并开源了MRF2相机。该相机结合新旧技术，采用3D打印部件、微电子和LiDAR对焦系统，兼容多种胶片格式（6×4.5至6×9）。Cornelissen以1156美元出售成品（目前售罄），同时将全部设计文件开源共享，鼓励爱好者自行制作。他提到DIY相机社区给予了很多灵感，并希望通过开源精神推动创新。MRF2功能全面，包括测光表、水平仪等，能拍摄高质量照片。Cornelissen乐于为制作相机的爱好者提供指导。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于训练老鼠玩电子游戏（如《Doom》）的实验设计、开放源代码的争议、以及实验的伦理和实际效果。
+                    <div class="comments-summary">主要讨论点：[3D打印相机及DIY相机的可行性、优缺点、市场替代品及制造挑战]
 
 不同观点：
-• **实验设计与开放源代码**  
-  - [godelski]建议发布参数化设计文件而非STL文件，以便更灵活地适应不同动物（如老鼠或猫）的实验需求，并提议在BOM（物料清单）中加入成本估算以方便项目规划。  
-  - [quasarj]和[tempodox]对实验缺乏实际视频表示失望，认为视频能更直观展示效果。
+• **支持DIY相机创新**  
+  - [sebastianlay] 赞赏电子元件（如LiDAR和OLED屏幕）与3D打印的集成，并分享了自己的网站资源，展示低成本、易打印的胶片相机设计。  
+  - [ginko] 认为这种项目非常酷，但因时间和技能限制未能实现，对他人完成表示钦佩。  
 
-• **实验的伦理与动物福利**  
-  - [ginkoleaf]澄清实验未对老鼠造成伤害或进行手术，缓解了部分读者的伦理担忧。  
-  - [neilv]和[stephenlf]关注老鼠的待遇和实验设备的舒适性，后者特别提到使用滚球而非传统滚轮可能对老鼠更友好。
+• **DIY相机的局限性**  
+  - [ulnarkressty] 指出DIY相机需将机械结构内置于镜头中，限制了镜头选择并增加了成本（每个镜头需单独购买快门）。  
+  - [phony-account] 希望项目能规模化生产，采用金属机身和更广泛的镜头兼容性，认为目前高端相机（如Hasselblad Xpan）价格过高。  
 
-• **实验的幽默与科幻联想**  
-  - [delegate]调侃id Software是否预见到老鼠玩《Doom》的未来场景。  
-  - [apt-apt-apt-apt]以老鼠视角吐槽游戏延迟问题，幽默地指出技术缺陷。  
-  - [gpderetta]称此实验为“最赛博朋克”的发现，但遗憾缺少视频证据。
+• **市场替代品的推荐**  
+  - [derwiki] 推荐Fuji GSW690作为入门选择，强调其适合拍摄幻灯片和35mm胶片。  
+  - [kaiuhl] 推荐Pentax 6x7搭配105mm f/2.4镜头，称其为出色组合。  
+  - [bichiliad] 提到Mamiya RZ67的模块化和低成本优势，但指出其体积庞大且维修复杂。  
 
-补充讨论：
-- **实验的实际进展与未来**  
-  [shmeeed]和[chickenhun]提到实验因老鼠老龄化未能完成训练，但硬件和软件已开源供他人继续研究。  
-- **动物行为的科学价值**  
-  [godelski]提出通过游戏偏好研究动物个性的可能性，拓展了实验的科学意义。  
-- **争议焦点**  
-  主要围绕实验的透明度（缺少视频）和技术细节（文件格式、成本估算）的实用性争议，以及动物实验的伦理边界。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46248323" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/ringtailsoftware/uvm32" target="_blank">Show HN: Tiny VM sandbox in C with apps in Rust, C and Zig</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: trj</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2025-12-12 22:02</span>
-                </div>
+• **技术与制造挑战**  
+  - [jacquesm] 对项目的专业性表示赞赏，但好奇快门机制的设计，认为这是独立的技术难点。  
+  - [pastage] 强调进口电子元件和制造成本高昂，实际开销可能远超预算（约300美元）。  
 
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>UVM32 是一个轻量级、无依赖的虚拟机沙盒，专为微控制器等资源受限设备设计。主要特点包括：单文件 C99 实现、无动态内存分配、异步设计。它可作为嵌入式脚本引擎替代方案，提供代码隔离沙盒功能，支持多语言开发（C/Zig/Rust/汇编）。核心优势是极小资源占用（ARM Cortex-M0+ 上仅需 <4KB Flash/1KB RAM），强调安全性而非性能，能防止恶意代码导致主机崩溃。项目提供多个示例主机实现和应用程序，包含基础系统调用处理，但不内置标准库功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于mini-rv32ima项目的讨论，包括其特点、应用场景及与其他技术的对比]
-
-不同观点：
-• [rokoss21] 认为该项目在嵌入式固件测试方面有潜力，但建议增加对内存映射IO模拟的支持，以便更好地测试IoT/微控制器驱动。
-• [psanchez] 详细分析了项目的技术细节，指出其支持RISC-V 32位整数、乘法和原子指令扩展，但浮点运算依赖编译器模拟，并称赞其代码紧凑。
-• [idle_zealot] 将其与WASM进行比较，认为两者都试图创建通用执行环境，但基于RISC-V的实现可能更简洁。
-• [snops] 赞赏代码的简洁性和Docker支持，提出可以用于医疗设备脚本，并比较了与WASM运行时的大小差异。
-• [bdjjwjd] 提到Rust支持，但偏离主题讨论了Rust社区的争议事件。
-• [trj] 通过链接展示了项目的Zig应用示例。
-
-补充讨论：
-• 争议焦点：项目是否应该增加内存映射IO支持（[rokoss21]的建议与其他评论未直接回应）。
-• 技术对比：WASM与RISC-V实现的优劣（[idle_zealot]和[snops]提到）。
-• 其他讨论点：项目的代码简洁性、应用场景扩展（如医疗设备）和社区问题（Rust相关）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46249538" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simonwillison.net/2025/Dec/12/openai-skills/" target="_blank">OpenAI are quietly adopting skills, now available in ChatGPT and Codex CLI</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: simonw</span> |
-                    <span>评分: 167</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2025-12-12 23:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>OpenAI已悄悄在ChatGPT和Codex CLI中引入"技能"功能，这一机制类似于Anthropic的技能系统。用户可以通过简单的文件夹结构（包含Markdown文件和可选脚本）添加自定义技能，目前已支持处理电子表格、PDF等文件格式。作者测试了生成PDF报告和编写Datasette插件的技能，效果良好。文章认为这种轻量级的技能机制可能会成为AI工具的重要发展方向，建议相关机构制定统一规范。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于LLM中的"Skills"概念及其实现方式的讨论]
-
-不同观点：
-• [Skills是上下文管理工具] - lacker认为Skills是一种上下文管理工具，通过简短描述引入更多相关内容（脚本、文档等）。
-• [Skills是自动化的提示填充] - mbesto从技术角度认为Skills只是自动化地将用户和系统提示填充到上下文中的方式，可以减少对AI包装应用的需求。
-• [Skills与现有Agent概念相似] - robkop指出ChatGPT已经通过"agent"支持类似功能数月，包含指令文件夹和可执行文件。
-• [Skills带来复杂性] - mehdibl抱怨这增加了复杂性，需要管理多个Markdown文件。
-• [Skills的未来混合模式] - jumploops预测未来会是混合模式，结合MCP资源和定制Skills，可能通过MCP-like注册表标准化第三方服务接口。
-
-补充讨论：
-• 争议焦点：Skills是否真正创新（vs 现有Agent功能），以及其实现方式是否过于复杂。
-• 其他讨论点：如何将Skills思维应用到实际LLM代理应用中（taw1285的问题），以及是否可以通过手写识别改进文档摄取（bzmrgonz的观察）。
-• 相关信息：swyx分享了Anthropic关于Skills设计的演讲链接，simonw提到图片替代文本的重要性（ctoth表示感谢）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46250332" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=46252993" target="_blank">Computer Animator and Amiga fanatic Dick Van Dyke turns 100</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ggm</span> |
-                    <span>评分: 112</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2025-12-13 08:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Dick Van Dyke的多才多艺、长寿秘诀及其受欢迎程度]
-
-不同观点：
-• [普遍喜爱与敬佩]  
-  - 评论普遍表达对Dick Van Dyke的喜爱和敬佩（如[austinjp]、[gbraad]、[wuhhh]）。  
-  - 例子：他被海豚救起的轶事（[austinjp]）、他在《玛丽·波平斯》等作品中的表现（[gbraad]、[wuhhh]）。  
-
-• [多才多艺的惊喜]  
-  - 部分用户对其动画师身份表示惊讶（如[stavros]）。  
-  - 例子：他使用Lightwave软件的深度（[stavros]）。  
-
-• [长寿与健康的讨论]  
-  - 引用他关于锻炼动机变化的语录（[tzs]），并延伸讨论其长寿秘诀（[gsf_emergency_6]）。  
-
-• [科技与文化的关联]  
-  - 部分评论提到他与科技的联系（如[cafard]、[Instantix]）。  
-  - 争议点：Commodore A3000与Video Toaster的兼容性问题（[Instantix]）。  
-
-补充讨论：
-- 幽默与文化引用：如对其英式口音的调侃（[wuhhh]），以及《Family Guy》中的恶搞片段（[fortran77]）。  
-- 怀旧与猜测：如猜测他是否仍保留Amiga电脑（[sgt]）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46252993" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://gwern.net/doc/technology/2008-sower.pdf" target="_blank">Formula One Handovers and Handovers From Surgery to Intensive Care (2008) [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-12-06 19:21</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：跨行业经验借鉴的有效性及限制，特别是赛车维修队（F1 pit crew）与医疗团队之间的流程优化经验分享。
-
-不同观点：
-• **支持跨行业经验借鉴的有效性**  
-  - secfirstmd 提到将F1的快速响应策略应用于网络安全事件响应（Formula One IR），显著减少了处理时间（MMTx）并提高了效率。  
-  - alexpotato 列举了其他成功案例（如美国海军陆战队与纽约消防局的合作），证明不同行业间的经验分享可以优化流程。  
-
-• **质疑或补充限制条件**  
-  - dralley 幽默指出法拉利车队唯一高效的部分是维修队，暗示行业差异可能限制经验移植。  
-  - squigz 引用论文内容，指出F1的高技术依赖（如统一设备）在医疗领域不可行，因市场小且成本高，凸显了技术移植的局限性。  
-
-• **文化与实践障碍**  
-  - lifeisstillgood 强调团队放下自我（ego）的难度，认为大多数企业无法像医疗团队那样深度反思和改进自身流程。  
+• **对特定功能的讨论**  
+  - [galago] 指出该项目为取景器相机（scale focus），而非测距仪（rangefinder），并提到早期Leica相机的设计演变。  
 
 补充讨论：  
-- **争议焦点**：技术依赖 vs. 人力优化。F1依赖技术升级（如Red Bull的亚2秒换胎），而医疗团队受限于现实条件（squigz）。  
-- **其他案例**：psidium 提到Red Bull车队的技术优势，暗示不同团队的经验质量可能影响移植效果。  
-- **动机问题**：scrollop 调侃医生可能是F1粉丝，而dbgrman 好奇研究来源，反映实际推广中动机和机会的偶然性。</div>
+- **争议焦点**：DIY相机的实际可行性与成本效益（如[phony-account]与[sebastianlay]的观点对立）。  
+- **技术难点**：快门机制和镜头兼容性（[ulnarkressty]和[jacquesm]）。  
+- **市场需求**：对廉价、易修的中画幅相机的渴望（[bichiliad]和[phony-account]）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46175888" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46177160" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -349,35 +172,91 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.honest-broker.com/p/will-west-coast-jazz-finally-get" target="_blank">Will West Coast Jazz Get Some Respect?</a>
+                    <a href="https://hey.paris/posts/appleid/" target="_blank">Apple has locked my Apple ID, and I have no recourse. A plea for help</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: paulpauper</span> |
-                    <span>评分: 11</span> |
+                    <span>作者: parisidau</span> |
+                    <span>评分: 427</span> |
+                    <span>评论数: 49</span> |
+                    <span>发布时间: 2025-12-13 04:55</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>苹果公司因作者使用一张疑似有问题的礼品卡，永久锁定了其使用了25年的Apple ID账户，导致其无法访问iCloud、开发者账号及所有关联设备，造成重大损失。作者多次联系苹果客服未果，被建议创建新账户但担心会触发更多问题。作为资深苹果开发者，作者面临专业和个人的双重打击，目前仍无解决办法。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：科技巨头账户封锁问题及其引发的用户信任危机
+
+不同观点：
+• **对科技巨头的信任崩溃**（x3sphere, compounding_it, iamnothere, kuon, kevin061）
+  - 用户因账户无故被封（如礼品卡触发）而质疑企业逻辑
+  - 提出"不要信任任何大公司"的生存策略
+  - 强调本地备份和硬件自主的重要性（如用Linux机器同步云端数据）
+
+• **监管缺失与制度缺陷**（willaaam, elric, kuon）
+  - 批评现有法规对账户访问权保护不足
+  - 揭露政府依赖科技公司提供电子ID的矛盾
+  - 呼吁建立类似域名迁移的通用数据自主权
+
+• **企业责任与服务改进**（concinds, sangeeth96, valleyer）
+  - 指出苹果近期频繁出现账户封锁问题
+  - 批评客服非人性化响应（含emoji的敷衍答复）
+  - 建议通过高管渠道（如tcook@apple.com）申诉可能有效
+
+• **用户自身风险管理**（sho, Beijinger）
+  - 反思对云服务的过度依赖（如单份iCloud照片库）
+  - 探讨NAS备份技术方案
+  - 建议通过消费者保护机构（如ACCC）维权
+
+争议焦点：
+1. 责任归属：用户过度依赖VS企业滥用权力（compounding_it与iamnothere的辩论）
+2. 解决方案有效性：监管强制VS技术自主（willaaam与kuon的分歧）
+
+补充讨论：
+- 出现黑色幽默解决方案（manav称"入职苹果才能解封账户"）
+- 国际差异：瑞士电子ID公投案例揭示不同国家的数字化态度
+- 技术代际问题：普通用户难以实现技术专家建议的自主方案</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46252114" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nature.com/articles/d41586-025-03974-w" target="_blank">Researchers seeking better measures of cognitive fatigue</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bikenaga</span> |
+                    <span>评分: 60</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2025-12-06 21:06</span>
+                    <span>发布时间: 2025-12-10 19:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章讲述了西海岸爵士乐长期以来被忽视的困境。作者Ted Gioia和纪录片制作人Sandra Evans都致力于为这种音乐风格正名，认为以Chet Baker、Dave Brubeck等为代表的西海岸爵士音乐家值得被载入文化史册。作者回忆了自己年轻时为此撰书的经历，指出这些音乐家即使获得商业成功也常遭纽约乐评界贬低。如今Evans正在筹拍相关纪录片，作者呼吁公众支持这个为西海岸爵士乐争取认可的项目。全文表达了对这一被低估音乐流派的珍视与捍卫。</p>
+                    <p>这篇文章探讨了大脑疲劳的原因及其影响。研究表明，长时间高强度的认知活动会导致大脑疲劳，影响专注力、判断力和决策能力。科学家正通过研究代谢变化和生物标志物来探究疲劳的生理机制，如葡萄糖、乳酸等代谢物以及神经递质的变化可能与此相关。疲劳感被认为是一种保护机制，提醒大脑需要休息。长期疲劳与多种疾病相关，如长期新冠、慢性疲劳综合征等。研究者希望通过深入了解认知疲劳的根源，开发出有效的干预措施。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对Betteridge's law of headlines的引用及后续回应
+                    <div class="comments-summary">主要讨论点：长期新冠（Long Covid）是否与已知的慢性疲劳综合征（ME/CFS）或感染后综合征（post-infectious syndrome）是相同的病症。
 
 不同观点：
-• [onraglanroad] 引用了Betteridge's law of headlines，这是一种指出任何以问句形式出现的新闻标题都可以用“否”来回答的法则。这可能是对该法则的赞同或调侃。
-  
-• [alephnerd] 以“Do ya like jazz?”回应，并附上了一个YouTube链接（可能是与爵士乐相关的视频）。这可能是一种幽默的回应，试图转移话题或制造轻松氛围。
+• **TurkishPoptart**认为长期新冠并不是新出现的病症，它与医学上已知的慢性疲劳综合征（ME/CFS）或感染后综合征几乎没有区别。他/她指出，尽管有人已经注意到两者的相似性，但很少有人明确提出它们本质上是同一种病症。他/她引用了一篇Stat News的文章来支持这一观点。
 
 补充讨论：
-• 争议的焦点并不明显，但可以注意到[alephnerd]的回应似乎与[onraglanroad]的原始引用无关，更多是一种即兴的幽默互动。
-  
-• 讨论关系较为松散，[alephnerd]的回应并未直接针对Betteridge's law进行讨论，而是创造了一个新的、无关的话题。</div>
+• 争议的焦点可能在于长期新冠是否具有独特的病理机制或临床表现，使其与ME/CFS或感染后综合征区分开来。TurkishPoptart的观点倾向于简化，认为两者是相同的病症，而其他观点可能强调长期新冠的特殊性或需要更多研究来确认其与ME/CFS的关系。
+• 讨论中还提到了一些研究已经开始关注长期新冠和ME/CFS的相似性，但尚未达成广泛共识。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46176592" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46222162" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -388,142 +267,267 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://victorpoughon.github.io/bidicalc/" target="_blank">Show HN: I made a spreadsheet where formulas also update backwards</a>
+                    <a href="https://nand2mario.github.io/posts/2025/z8086/" target="_blank">Z8086: Rebuilding the 8086 from Original Microcode</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: fouronnes3</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-12-11 18:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一个名为"bidicalc"的双向计算电子表格工具。与普通电子表格只能正向计算不同，bidicalc允许用户反向修改公式结果，系统会自动调整输入变量以满足新结果。文章阐述了开发过程中的思考，包括如何处理复杂公式、用户界面设计、多解情况等问题。工具支持常见数学运算和函数，使用自定义算法解决反向计算问题，但作者提醒这仍是实验性项目，不适用于关键任务。最后，文章简要介绍了工作原理，包括使用区间算法和牛顿法等技术。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[反向计算公式的概念及其在电子表格等场景中的应用]
-
-不同观点：
-• 支持者观点：
-  - [adonovan] 认为这与神经网络的反向传播类似，通过误差反向更新输入。
-  - [zkmon] 提出可通过保持输入比例的策略（如加法按比例缩放、乘法用n次根）解决多变量调整问题。
-  - [thomastay] 认为这比Excel的“目标求解”更灵活，支持多输入调整。
-  - [injidup] 类比2D草图约束工具，说明双向公式在几何约束中的实用性。
-  - [remywang] 指出这与数据库的完整性约束+触发器机制类似。
-
-• 质疑与改进建议：
-  - [willrshansen] 提出自由度问题：当输出被修改时，多个输入如何分配变化（是否固定其中一个？）。
-  - [thomastay] 追问多变量调整的算法严谨性（如A1+B1=5时为何均等调整而非其他逻辑）。
-  - [kccqzy] 从UX角度建议区分常量与变量（常量无需标记#符号）。
-  - [throw310822] 质疑非可逆操作（如加法）反向计算的任意性。
-
-补充讨论：
-- 争议焦点：多变量反向调整的分配逻辑（均等调整 vs 比例保持 vs 其他策略）。
-- 相关技术扩展：
-  - [b-karl] 提到Excel的“目标求解”功能可解决类似问题。
-  - [nico] 探讨逆向运动学求解器的潜在应用。
-  - [PaulHuber] 和 [amirhirsch] 分别推荐TK Solver和SICP中的约束传播作为参考。
-  - [iamwil] 联想到函数逻辑编程语言（如Verse）的输入求解特性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46234734" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://0l.de/blog/2025/11/xiaomi-humidifier/" target="_blank">Freeing a Xiaomi humidifier from the cloud</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: stv0g</span> |
-                    <span>评分: 126</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-12-12 06:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文作者为搭建开源智能家居系统，选择了小米智能抗菌加湿器，并替换其固件以摆脱厂商云服务的依赖。具体步骤包括：确认设备型号（deerma.humidifier.jsq）、拆解设备找到WiFi模块（含ESP-WROOM-02芯片）、焊接串口线（连接GND、VCC、GPIO0、RX、TX），备份原厂固件后，通过esptool.py刷入基于ESPHome的自定义固件。最终实现了加湿器与Home Assistant的直接集成，避免了厂商云服务的限制。作者提供了详细的操作指南和代码链接（xiaomi_deerma_humidifier组件）。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[智能家居设备的安全性和可靠性，以及厂商设计选择]
-
-不同观点：
-• [反对使用超声波加湿器]  
-- 用户piskov指出超声波加湿器会产生PM2.5颗粒，建议使用蒸发式加湿器。
-- 提供了Smartmi蒸发式加湿器的链接作为替代方案。
-
-• [对小米公开协议的赞赏]  
-- 用户roger_对小米公开其物联网协议表示惊讶和赞赏，认为这是透明度的体现。
-
-• [关于ESPHome的可靠性建议]  
-- 用户rokoss21分享使用ESPHome的经验，建议使用PoE交换机以提高可靠性，并询问从小米云解决方案切换后的功耗变化。
-
-• [对智能家电过度联网的批评]  
-- 用户hs586抱怨智能家电普遍需要联网，尤其是机器人吸尘器，担忧隐私问题，如上传家庭平面图到云端。
-
-• [对智能设备不必要联网功能的讽刺]  
-- 用户N_Lens通过XKCD漫画链接讽刺了加湿器等设备需要联网功能的无意义性。
-
-• [对厂商设计选择的质疑]  
-- 用户aeve890对设备中使用独立的ESP32模块而非直接集成芯片表示惊讶，认为设计像是业余爱好者所为。
-
-补充讨论：
-- 用户airstrike的评论似乎是对主题的调侃，请求对其他设备（如HP打印机）进行类似分析。
-- 争议焦点主要集中在智能设备的联网必要性、厂商设计选择以及用户隐私和数据安全问题上。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46241368" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.johndcook.com/blog/2025/12/08/dandelion/" target="_blank">Obscuring P2P Nodes with Dandelion</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ColinWright</span> |
-                    <span>评分: 57</span> |
+                    <span>作者: nand2mario</span> |
+                    <span>评分: 11</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2025-12-08 16:27</span>
+                    <span>发布时间: 2025-12-13 15:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>加密货币交易隐私的最薄弱环节往往在区块链之外。虽然隐身地址和子地址等技术可以匿名化交易数据，但元数据仍是主要风险点。当前加密货币节点通过点对点网络传播交易数据，运行多个节点的实体可能通过三角定位推断交易发起者。Dandelion++协议（现用于门罗币等）通过"茎干-扩散"两阶段设计解决此问题：先让交易信息在节点间单跳传递（茎干期），再进入常规广播（扩散期），从而隐藏交易源头。该协议与Tor不同，主要保护P2P网络内部的身份隐私而非入口隐私。</p>
+                    <p>文章介绍了z8086项目，这是一个基于8086/8088架构的开源处理器核心，通过加载原始Intel微码ROM来重现历史芯片的微架构。该项目采用SystemVerilog编写，约2000行代码，在FPGA上占用2500个LUT，时钟速度可达60MHz。核心特点包括：忠实还原8086微架构行为、具有教育意义、适合FPGA应用。文章详细解析了其设计架构，包括预取队列、微码引擎、总线接口等关键模块，并指出8086微码的高效性是其能以少量晶体管实现复杂指令集的关键。项目虽尚未支持DOS启动，但已能运行小程序并控制外设。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Dandelion与Tor在身份保护方面的区别]
+                    <div class="comments-summary">主要讨论点：关于68000处理器的微码设计和架构位宽的讨论。
 
 不同观点：
-• [第一种观点：Dandelion和Tor在身份保护方面有不同侧重点]
-  - 认为Dandelion主要在P2P网络内部提供身份保护
-  - 认为Tor主要在进入P2P网络之前提供身份保护
-
-• [第二种观点：Tor同样在P2P网络内部提供身份保护]
-  - 引用洋葱路由（onion routing）作为论据，指出Tor的设计目的就是在网络内部保护身份
-  - 认为Dandelion和Tor在功能上有重叠
+• 观点一：认为68000处理器确实使用了微码设计，并且强调其32位架构特性，指出这需要更多的晶体管用于寄存器文件和数据路径。
+  - 论据：明确指出68000是32位架构，而非文章中提到的16位架构。
+  - 例子：提及晶体管资源的分配问题。
 
 补充讨论：
-• 争议焦点：两种技术是否在P2P网络内部的身份保护功能上存在重叠或差异
-• 讨论关系：第二种观点是对第一种观点的补充和质疑，提出了具体的技术细节支持</div>
+- 争议焦点：文章可能错误地将68000描述为16位架构，而实际上它是32位架构。这一错误可能影响到对68000设计复杂性和性能的评估。
+- 讨论关系：评论直接反驳了文章中的某些说法，并提供了更准确的技术细节。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46194245" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46255007" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://antonz.org/accepted/runtime-secret/" target="_blank">Go Proposal: Secret Mode</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: enz</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-12-09 21:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Go语言1.26版本新增的runtime/secret实验性包，主要功能是在处理敏感数据后自动清除相关内存痕迹，防止信息泄露。该包通过secret.Do()函数运行敏感操作，在函数执行完成后会立即清零寄存器、栈内存，并在垃圾回收时清理堆内存分配。文章说明了其适用场景（如加密库开发）、当前实现限制（仅支持部分平台、不保护全局变量等）以及使用示例（生成会话密钥并加密数据）。这个功能主要面向底层加密库开发者，普通应用程序开发者应使用已集成该功能的高级库。该特性需要通过GOEXPERIMENT=runtimesecret编译标志启用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[关于Go语言中敏感数据处理的安全性及runtime/secret包的实用性和必要性]
+
+不同观点：
+• **观点一：认为可以通过手动扰乱数据解决敏感数据残留问题**  
+  - 提出在操作结束时手动扰乱敏感数据（如会话数据）的值，使其在内存中不可读  
+  - 承认这会增加计算开销，但认为这是当前可行的临时解决方案  
+  - 例子：建议用随机数据覆盖原始值，使内存转储只能获取无意义的乱码  
+
+• **观点二：支持通过语言内置机制（如runtime/secret包）解决安全性问题**  
+  - 引用Go 1.25新增的`crypto/subtle#WithDataIndependentTiming`和相关提案（#76477），说明语言正在完善安全功能  
+  - 建议关注Go提案更新（#33502）以理解设计决策背景  
+  - 强调内置方案能更系统地保证安全性，避免依赖容易出错的开发者手动操作  
+
+• **观点三：对runtime/secret包的平台兼容性提出担忧**  
+  - 批评该提案在非支持平台上静默降级的风险，可能导致开发者误以为安全而实际存在漏洞  
+  - 隐含争议点：安全性功能是否应该以"全有或全无"的方式实现  
+
+• **观点四：质疑GC语言中寄存器/栈清零的必要性**  
+  - 认为垃圾回收语言中开发者无法直接访问寄存器，清零操作应由编译器处理  
+  - 核心争议：高级语言抽象是否完全消除了底层内存安全的威胁  
+
+补充讨论：  
+- 争议焦点集中在"手动方案 vs 语言内置机制"的有效性对比，以及安全功能是否应容忍平台差异性  
+- 技术细节争议：寄存器清零在GC语言中的实际作用（如防御侧信道攻击的场景是否被充分考量）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46210705" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bbc.com/future/article/20251205-how-the-handheld-digital-camera-was-born" target="_blank">A 'toaster with a lens': The story behind the first handheld digital camera</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: selvan</span> |
+                    <span>评分: 59</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2025-12-08 13:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>1975年，柯达工程师史蒂夫·萨松发明了第一台手持数码相机。当时23岁的他在柯达应用研究实验室工作，对传统胶片摄影的繁琐流程感到不满。受《星际迷航》启发，他尝试用电子方式捕捉和存储图像。利用当时新发明的CCD传感器（100x100像素）和其他电子元件，他组装了一台重达3.6公斤的"数码相机"，需23秒才能记录一张黑白照片。这项发明最初并未引起柯达重视，但最终彻底改变了摄影行业。尽管柯达后来推出了多款数码相机，但业界认为其向数码转型为时已晚。（199字）</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[数字摄影的发明、柯达的衰落及其原因、科技发展中的创新与守旧]
+
+不同观点：
+• **数字摄影的创新与早期科幻作品中的预测**
+  - 评论者[pavlov]提到数字摄影的发明使得早期的科幻作品显得过时，尤其是那些描绘未来仍使用胶片的情节。他希望能有新的科幻作品强调这种复古的模拟技术的美感。
+
+• **柯达衰落的真实原因**
+  - [WangComputers]认为柯达的失败源于一场专利诉讼（Honeywell vs Minolta），导致日本相机公司拒绝与美国公司共享技术，从而阻碍了柯达的数字野心。
+  - [GlibMonkeyDeath]则指出富士胶片（Fujifilm）的成功在于快速多元化，而柯达则过于依赖胶片业务。
+  - [ChrisMarshallNY]补充说，柯达的内部冲突（胶片部门压制数字部门）以及未能预见市场转变（如iPhone的崛起）是其失败的关键。
+
+• **数字摄影发明的背景与争议**
+  - [kragen]反驳了“柯达发明了杀死自己的技术”这一流行观点，指出数字相机的发明是多个公司和个人的共同努力，而非柯达独有。他列举了许多早期电子相机和数字技术的贡献者，如Bell Labs、Fairchild Semi等。
+
+• **数字摄影的技术细节**
+  - [neom]和[Sharlin]提供了关于CMOS与CCD传感器的技术链接，探讨了数字摄影的技术基础。
+
+补充讨论：
+- **争议焦点**：柯达衰落的真实原因究竟是外部因素（如专利诉讼）还是内部决策失误（如未能及时转型）。
+- **其他讨论点**：评论中还提到了数字摄影的早期原型（如Cromemco Cyclops）、胶片时代的怀旧（如[JKCalhoun]提到的胶片冲洗气味）以及科技发展中的“黑三角”现象（如[andai]提到的Black Triangle理论）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46191734" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.vectorchord.ai/how-we-made-100m-vector-indexing-in-20-minutes-possible-on-postgresql" target="_blank">Indexing 100M vectors in 20 minutes on PostgreSQL with 12GB RAM</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: gaocegege</span> |
+                    <span>评分: 55</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2025-12-08 17:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[比较不同向量数据库扩展的优劣及适用场景]
+
+不同观点：
+• [esafak] 询问了与ParadeDB和LanceDB的比较，但没有提供具体细节。
+• [nwellinghoff] 指出AWS的托管RDS不支持其他向量扩展，暗示了兼容性问题。
+• [duckbot3000] 质疑云服务的必要性，认为本地运行（如12GB内存）可能足够，强调云服务的主要价值在于远程加密备份。
+• [ayende] 提出了关键的技术问题，包括数据必须预先加载、无法增量构建、更新可能导致性能下降，以及需要重新索引的问题。
+
+补充讨论：
+• 争议焦点在于云服务的实际价值（如[duckbot3000]的质疑）以及技术限制（如[ayende]指出的增量构建和更新问题）。
+• [nwellinghoff]的评论间接支持了[duckbot3000]的观点，即云服务在兼容性方面存在局限。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46195068" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://unifoundry.com/unifont/index.html" target="_blank">GNU Unifont</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: remywang</span> |
+                    <span>评分: 237</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2025-12-12 20:57</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了GNU Unifont字体的相关信息。GNU Unifont是GNU项目的一部分，涵盖了Unicode基本多语言平面(BMP)的所有可打印字符，并逐步扩展至补充多语言平面(SMP)和ConScript Unicode Registry(CSUR)字符。该字体采用GNU GPLv2+和SIL OFL 1.1双重许可，允许商业使用。文章提供了多种格式的字体下载链接，包括OpenType、PCF、BDF等，并给出了在不同操作系统上的安装说明。此外还包含一些特殊版本字体，如用于APL编程语言的PSF格式字体。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[GNU Unifont的功能、优缺点及适用场景]
+
+不同观点：
+• **支持GNU Unifont的观点**  
+  - 实用性高：内置到Solvespace中，支持多语言（如CJK字符）且跨平台兼容（phkahler）。  
+  - 广泛覆盖：几乎包含所有Unicode码点，适合作为后备字体（nycticorax）。  
+  - 美学价值：有人将其制作成艺术品展示（edent）。  
+  - 用户自由：尊重用户，符合GNU理念（ekjhgkejhgk）。  
+
+• **批评GNU Unifont的观点**  
+  - 渲染效果差：复杂脚本（如阿拉伯语、梵文）因缺乏字形组合和连字支持而显示不佳（swiftcoder）。  
+  - 美观问题：字体模糊，不适合现代IDE或需要小字体的场景（KronisLV）。  
+  - 功能性局限：仅提供基础字形，不支持语言特定的变体（如CJK字符的不同语言形态）（kccqzy）。  
+
+• **替代方案建议**  
+  - 推荐使用更现代的字体（如NoTo系列），支持多语言且美观（TheRealPomax）。  
+  - 对特定场景（如终端）推荐其他字体（如Terminus TTF或JetBrains Mono）（KronisLV）。  
+
+补充讨论：
+- **争议焦点**：Unifont是否适合作为通用字体，尤其是在多语言和复杂脚本环境下的实用性。  
+- **技术细节**：缺乏字形组合和连字支持是其主要技术短板（ripe, swiftcoder）。  
+- **用户体验**：部分用户因字体回退机制问题被迫卸载Unifont（aidenn0）。  
+- **项目形象**：GNU网页设计陈旧，影响可信度（bborud）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46248859" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://markodenic.tech/dynamic-pong-wars/" target="_blank">Dynamic Pong Wars</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rendall</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-12-06 11:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[模拟战争模型的改进和可视化]
+
+不同观点：
+• **pohl** 的观点：
+  - 认为模型在底部会出现卡住的情况，建议下一步增加卡住检测功能。
+  - 提议绘制当前战争的分数变化图，并与其他战争的走势图叠加比较，以便分析不同战争的发展模式。
+
+• **mock-possum** 的观点：
+  - 观察到模型中的实体在中间互相卡住的情况，认为这种现象很有趣。
+  - 建议绘制分数随时间变化的折线图，并探讨其波形是否会简化为正弦波或锯齿波（反映一方领先、另一方追赶的模式）。
+  - 提出保存每一步的棋盘状态，以分析双方领先或持平时的棋盘布局，并快速回放整个过程，猜测其动态可能类似于黏菌的脉动或黑白交替的漩涡。
+
+补充讨论：
+- 争议点在于模型的动态表现是否具有规律性（如正弦波或锯齿波），以及如何更好地捕捉和可视化这些动态。
+- 两人都关注模型的可视化改进，但侧重点不同：pohl 更注重比较分析，而 mock-possum 更关注动态过程的艺术性和规律性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46172417" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
