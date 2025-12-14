@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-12-14 05:12 (北京时间)
+            最后更新时间: 2025-12-14 09:08 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,34 +61,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://martianlantern.github.io/2025/09/median-filter-over-arbitrary-datatypes/" target="_blank">Fast Median Filter over arbitrary datatypes</a>
+                    <a href="https://www.dbpro.app/blog/sqlite-json-virtual-columns-indexing" target="_blank">SQLite JSON at full index speed using generated columns</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: martianlantern</span> |
-                    <span>评分: 26</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-12-06 15:08</span>
+                    <span>作者: upmostly</span> |
+                    <span>评分: 355</span> |
+                    <span>评论数: 33</span> |
+                    <span>发布时间: 2025-12-12 13:25</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了中值滤波器的优化历程。首先介绍了基础版本(V1)，它通过对每个像素周围的窗口进行排序来获取中值。然后通过线性时间中值查找(V2)优化，实现了4.2倍的加速；再通过多线程(V3)进一步优化，获得16倍加速；最后提出了基于序数变换的中值滤波(V4)，实现了惊人的420倍加速。文章还讨论了不同数据类型对性能的影响，并提供了详细的基准测试数据，展示了各版本在计算效率上的显著提升。</p>
+                    <p>本文介绍了SQLite数据库的JSON处理功能及其强大应用。作者分享了一种高效处理JSON数据的方法：将原始JSON存储在表中，创建虚拟生成列提取特定字段并建立索引，从而在不迁移数据的情况下实现快速查询。这种方法结合了NoSQL的灵活性和关系型数据库的性能优势，允许后期灵活添加查询字段和索引。作者通过实例演示了该模式的操作步骤，并强调这是SQLite的一个隐藏优势。文章表达了作者对SQLite的喜爱，并预告将继续分享更多SQLite的高级功能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于线性时间中位数选择算法的讨论]
+                    <div class="comments-summary">主要讨论点：[SQLite中JSON数据的索引优化方法及其与其他数据库的比较]
 
 不同观点：
-• **ncruces** 提出了 median-of-ninthers 算法，并提供了相关论文链接（https://erdani.org/research/sea2017.pdf），认为这是一种实用的确定性线性时间中位数选择算法。他还分享了自己在 Go 语言中的实现（https://github.com/ncruces/sort/blob/main/quick/quick.go）作为实际应用的例子。
-  
-• **munro** 对 median-of-ninthers 算法表示赞赏（"seriously cool"），并提到自己也在类似的方向上进行了探索，特别是关于任意键数据类型的分位数（quantiles）计算，用于均匀分桶（bucketizing）。不过他指出，这种方法仍然需要对数据进行排序（"still needs ord"）。
+• **Lite³格式的支持者**  
+  - 提出直接使用序列化B-tree编码JSON文档（Lite³格式），无需解析即可快速查询  
+  - 示例：https://github.com/fastserial/lite3  
+  - 争议点：与传统JSON解析和索引方法的性能对比未明确  
+
+• **DuckDB的推崇者**  
+  - 推荐DuckDB处理分析型工作负载，认为其速度更快且易于使用  
+  - 示例：直接查询JSON文件路径（`SELECT avg(sale_price) FROM '/my-data-lake/sales/*.json'`）  
+  - 争议点：与SQLite的适用场景差异（分析型 vs. 嵌入式）  
+
+• **生成列（Generated Columns）的实践者**  
+  - 认为通过生成列索引JSON字段是常见做法  
+  - 示例：在Postgres中用生成列维护JSON中的外键约束  
+  - 补充：SQLite的表达式索引（`CREATE INDEX idx ON table(json_extract(data, '$.key'))`）存在路径语法变动风险  
+
+• **数据规范化的倡导者**  
+  - 批评过度使用JSON列，认为规范化数据更利于索引和约束  
+  - 论据：JSON列难以保证一致的索引和约束，增加查询开销  
+
+• **历史技术对比观点**  
+  - 指出类似方法在90年代XML文档数据库中已有应用  
+  - 强调SQLite的现代集成优势  
 
 补充讨论：
-• 两者的讨论显示出对高效中位数和分位数计算算法的共同兴趣，但侧重点略有不同：ncruces 更关注确定性和线性时间，而 munro 更关注数据类型的通用性和分桶应用。
-• munro 的评论暗示了算法的扩展性，即如何将其应用于更广泛的数据类型，而不仅限于数值类型。</div>
+- **性能争议**：有评论质疑文章未提供基准测试验证“全速”性能（Seattle3503）  
+- **扩展用例**：索引JSON数组需依赖FTS或单独表（AlexErrant）  
+- **工具更新意识**：建议定期查看SQLite新特性（kevinsync）  
+- **移动端体验问题**：iPhone上SQL编辑器存在交互缺陷（simonw）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46173882" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46243904" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -99,25 +120,74 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.scmp.com/economy/economic-indicators/article/3335551/chinas-exports-rebound-november-after-trade-war-thaw" target="_blank">China's trade surplus tops record US$1T, defying trade war uncertainty</a>
+                    <a href="https://pv-magazine-usa.com/2025/12/12/analysis-finds-anytime-electricity-from-solar-available-as-battery-costs-plummet/" target="_blank">Analysis finds anytime electricity from solar available as battery costs plummet</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ksec</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2025-12-13 20:55</span>
+                    <span>作者: Matrixik</span> |
+                    <span>评分: 115</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2025-12-13 17:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>中国贸易顺差在2025年前11个月创下1.076万亿美元的历史新高，超过2024年全年记录。尽管中美贸易战带来不确定性，但中国通过拓展多元化出口市场和供应链实现增长。11月出口同比增长5.9%，超出预期，但对美出口持续下滑。进口增长1.9%，显示内需疲软。分析师认为强劲出口将促进经济增长，但国内需求不足仍是待解决问题。</p>
+                    <p>能源智库Ember报告显示，电池储能技术成本大幅下降，使可调度太阳能具备与传统能源竞争的经济性。2024年全球电池储能系统核心设备成本同比下降40%，降至165美元/千瓦时。结合太阳能发电成本计算，可调度太阳能总成本为76美元/兆瓦时，比新建燃气电厂更具竞争力。美国受关税政策影响成本较高，但仍是全球第二大储能市场，2024年新增公用事业规模电池10GW。报告指出，太阳能搭配储能已成为满足全球未来能源需求的重要解决方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[电池和太阳能技术的快速发展及其对能源行业的影响]
+
+不同观点：
+• [乐观派] 电池和太阳能技术的快速发展令人惊喜，价格下降超出预期，成功克服了行业阻力和规模化挑战。
+  - 例子：电池价格下降、太阳能存储成本降低
+• [地缘视角] 认为这一成就主要归功于一个国家的工业政策，对其规模和成功表示钦佩。
+  - 例子：中国的工业政策
+• [技术变革派] 电池技术将彻底改变能源传输和发电方式，远程发电和存储将成为可能。
+  - 例子：沙漠太阳能、远程水力发电
+• [质疑派] 对太阳能和电池在温带地区冬季的实用性提出疑问，认为可能需要依赖天然气备用。
+  - 例子：冬季能源供应问题
+• [成本比较派] 关注电池与传统能源（如铅酸电池、煤炭、天然气）的成本对比。
+  - 例子：铅酸电池UPS、煤炭和天然气发电成本
+
+补充讨论：
+• [技术应用讨论] 关于太阳能发电的最佳布局（集中 vs. 分散）的讨论。
+  - 例子：是否应该在阳光充足的地区集中建设太阳能农场
+• [语言问题] 对新闻报道标题的语法提出疑问。
+  - 例子："Analysis finds anytime electricity from solar available as battery costs plummet" 的语法问题
+• [幽默调侃] 对太阳能季节性问题的调侃。
+  - 例子："Ok now shift summer sun into winter."</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46256249" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://systemdr.substack.com/p/how-circular-dependencies-kill-your" target="_blank">Circular Dependencies Kill Your Microservices</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: birdculture</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-12-13 22:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46257947" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46258802" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -128,40 +198,77 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://basic-code.bearblog.dev/c64-maze-chompbas/" target="_blank">C64 Maze Chomp.BAS</a>
+                    <a href="https://nostarch.com/designingelectronics" target="_blank">Designing Electronics That Works</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-12-07 11:01</span>
+                    <span>作者: 0x54MUR41</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-12-13 14:58</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一款基于1984年《Input Magazine》第3期刊载的简单迷宫游戏《Maze Chomp.BAS》，适用于Commodore 64。玩家需要通过WASD键控制角色吃掉迷宫中的所有点，游戏会记录最佳完成时间。文章详细解析了游戏的BASIC代码，包括变量设置、屏幕显示、按键控制和得分系统等核心功能，并提到了在非实体机上调试图形字符的困难。最后还说明了游戏重置条件和计分机制。</p>
+                    <p>《Designing Electronics That Work》是一本面向硬件开发者的实用指南，专注于电子设计中的实战经验而非理论。书中涵盖从规划、设计到制造的全流程，包括需求定义、元器件选型、原理图设计、电磁兼容性、成本控制、原型制作、测试和故障排除等关键环节。作者Hunter Scott结合十余年行业经验，旨在帮助读者提高效率、减少错误并提升产品成功率。适合从爱好者到专业工程师的各层次读者。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于C64（Commodore 64）游戏的停止、查看代码及编辑的讨论，以及对《Input》杂志的提及。
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46254970" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cnbc.com/2025/12/13/youtubes-ceo-is-latest-tech-boss-limiting-his-kids-social-media-use.html" target="_blank">YouTube's CEO limits his kids' social media use – other tech bosses do the same</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pseudolus</span> |
+                    <span>评分: 151</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2025-12-13 12:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章主要讨论了多位科技公司高管限制子女使用社交媒体和智能手机的做法。YouTube现任CEO Neal Mohan表示会在工作日严格限制孩子的屏幕时间，周末则相对宽松。多位专家警告过度使用智能手机和社交媒体对青少年的危害，心理学家Jonathan Haidt建议14岁前不给孩子智能手机，16岁前禁用社交媒体。澳大利亚成为首个立法禁止16岁以下用户使用主要社交平台的国家。包括YouTube前CEO、比尔·盖茨和马克·库班在内的多位科技大佬都采取类似限制措施，反映出科技行业高管对数字产品潜在风险的警惕。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[YouTube CEO限制子女使用YouTube的合理性及普遍家长对屏幕时间管理的态度]
 
 不同观点：
-• [FatalLogic] 提供了关于如何在C64窗口中停止游戏并查看、编辑代码的具体操作步骤：
-  - 按ESC键可以停止游戏
-  - 输入LIST命令查看代码
-  - 编辑代码后使用RUN命令重新启动游戏
+• **支持限制屏幕时间**：
+  - 认为这是负责任的育儿行为，类比制药公司CEO限制子女使用自家产品（如Pfizer CEO限制Viagra）。
+  - 强调技术工具（如Switch的家长控制功能）能有效帮助管理屏幕时间。
+  - 指出社交媒体的过度使用可能对大脑产生负面影响，类比香烟的危害。
 
-• [predictsoft] 提到了拥有《Input》杂志的所有四卷：
-  - 《Input》是一本与Commodore计算机相关的杂志，可能包含编程技巧或游戏代码
-  - 暗示其对C64或类似系统的兴趣或专业知识
+• **批评CEO行为虚伪**：
+  - 认为CEO的立场与其公司营销策略矛盾（如将YouTube宣传为适合儿童的产品）。
+  - 质疑CEO因财富优势可以轻松雇佣保姆或提供其他活动替代屏幕时间。
+
+• **技术改进需求**：
+  - 批评现有家长控制功能（如iOS、Chromecast）体验差，呼吁平台优化限制工具。
+  - 提出夜间禁用（如10 p.m.–7 a.m.）等更严格的措施。
+
+• **社会文化差异**：
+  - 指出普通家长因忙碌或疏忽可能放任子女使用电子设备，导致“iPad育儿”现象。
+  - 讨论学校政策（如手机禁令）对儿童屏幕时间的影响。
 
 补充讨论：
-- 两个评论之间的关联性不明显，可能是两个独立的观点
-- 没有直接的争议点，但潜在的联系可能是关于C64编程或复古计算的兴趣
-- 《Input》杂志的内容可能与C64编程相关，提供了更多资源或背景信息</div>
+- **争议焦点**：CEO的行为是否 hypocrisy（虚伪） vs. 合理育儿。
+- **延伸话题**：如何平衡屏幕时间的益处（教育内容）与危害（算法推送低质内容）。
+- **文化对比**：Waldorf学校（无屏幕教育）与传统家庭的实践差异。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46180844" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46253985" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -172,54 +279,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.omgubuntu.co.uk/2025/11/google-sans-flex-font-ubuntu" target="_blank">Google releases its new Google Sans Flex font as open source</a>
+                    <a href="https://infrastruktur.oebb.at/en/projects-for-austria/railway-lines/southern-line-vienna-villach/koralm-railway" target="_blank">Koralm Railway</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: CharlesW</span> |
-                    <span>评分: 209</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-12-12 18:07</span>
+                    <span>作者: fzeindl</span> |
+                    <span>评分: 310</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2025-12-12 10:50</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>谷歌发布了新一代开源字体"Google Sans Flex"，这是一款专为屏幕和操作系统设计的现代无衬线字体，由著名字体设计师David Berlow基于专有字体Google Sans重新打造。该字体支持多种可变轴（如粗细、宽度、光学尺寸等），为开发者提供了更多创意设计可能。虽然Linux桌面环境目前对可变字体支持有限，但该字体仍可作为出色的系统UI字体，特别适合高分辨率屏幕。用户可通过谷歌字体网站免费下载，并按照指引在Ubuntu等系统上安装使用。</p>
+                    <p>科拉姆铁路是奥地利南部新干线的重要组成部分，连接施泰尔马克州和克恩顿州，将两地行程从3小时缩短至45分钟。这条130公里的新铁路含50公里隧道和100多座桥梁，设有23个现代化车站，不仅提升客运效率，还能通过波罗的海-亚得里亚海走廊促进欧洲货运，减少碳排放（铁路货运碳排放仅为公路的1/15）。项目为区域经济创造就业，并设有施工网络直播。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Google新字体Google Sans Flex的可读性、开源许可及设计价值]
+                    <div class="comments-summary">主要讨论点：Koralm隧道的建设、影响和与其他工程的比较
 
 不同观点：
-• **支持字体可读性优化**  
-  - [lucb1e]强调字体需明确区分易混淆字符（如I/l/1/0/O），并提供多个通过测试的开源字体示例（Ubuntu、Nunito Sans、IBM Plex Sans）。  
-  - [Svoka]提出简单测试标准（iIlL0Oo区分），认为Google Sans Flex未达标。  
-  - [torbengee]推荐JetBrains Mono，认为其字符区分度高且适合编程。
+• **工程成就与时间对比**  
+  - 有人认为Koralm隧道建设时间长（2008-2025），与东京Toei Oedo线（10年完成40公里）相比效率较低，推测可能是地质复杂性或岩石硬度差异导致。  
+  - 反驳观点：隧道工程的地理和地质条件不同（如阿尔卑斯山与冲积平原），直接比较不公平。
 
-• **关注开源与许可价值**  
-  - [freedomben]赞赏Google推动可自由分发字体，认为开源字体解决了许可难题，提升开发体验。  
-  - [txtsd]质疑开源真实性，要求查看源代码仓库。
+• **交通便利性提升**  
+  - 用户提到隧道开通后节省了1小时行程时间，对此表示高度赞赏。  
+  - 补充讨论：Semmering基隧（2030年完工）与Koralm隧道结合，将进一步缩短维也纳至格拉茨和克拉根福的行程时间（共节省1小时15分钟）。
 
-• **设计价值争议**  
-  - [crazygringo]批评Google Sans几何风格不适合正文，质疑开源后品牌独特性丧失。  
-  - [tasuki]认为新字体缺乏创新，不如Roboto实用。  
-  - [aucisson_masque]质疑字体更换的必要性，认为用户习惯比字体设计更重要。
+• **奥地利交通政策争议**  
+  - 争议点：奥地利缺乏廉价城际巴士，低收入人群出行依赖昂贵的火车系统。  
+  - 反驳：后续用户指出奥地利实际存在巴士选项，但可能数量较少。
 
 补充讨论：
-- **技术细节**：  
-  • [xnx]提到Google Fonts新增变量控制功能。  
-  • [microflash]补充Google Sans Code等配套字体。  
-  • [tigranbs]肯定CSS变量字体（如`font-stretch`）的实用性。  
-- **幽默与延伸**：[hathawsh]调侃“圆角终端”的双关含义。  
-- **替代方案**：[hbn]提及Coldtype工具，[numbers]对比苹果SF字体。  
-- **用户习惯与科学依据**：[aucisson_masque]引用研究称字体熟悉度比设计更重要，引发对字体迭代合理性的讨论。  
-
-争议焦点：  
-1. 字体设计的核心目标（品牌独特性vs.普适可读性）  
-2. 开源字体的实际价值与执行透明度  
-3. 用户需求与设计迭代的平衡</div>
+- **工程挑战**：用户提问货运与客运列车共线的问题（如轨道磨损和坡度限制），但未得到具体解答。  
+- **国际案例对比**：法国-意大利的阿尔卑斯隧道（50公里）和科罗拉多州I-70公路拥堵问题被提及，呼吁学习欧洲的铁路经验。  
+- **文化视角**：用户注意到克恩顿州和施泰尔马克的英文名（Carinthia/Styria）保留罗马帝国痕迹，引发历史联想。  
+- **传播方式**：公告的简洁性和非政治化受到赞扬，被视为发展中国家可效仿的范例。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46246802" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46242871" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -230,45 +327,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.newindianexpress.com/states/kerala/2025/Dec/12/gut-microbial-imbalance-can-impact-memory-says-study" target="_blank">Gut microbial imbalance can impact memory, says study</a>
+                    <a href="https://www.ghibli.jp/info/013772/" target="_blank">1300 Still Images from the Animated Films of Hayao Miyazaki's Studio Ghibli (2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sundarurfriend</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2025-12-13 11:44</span>
+                    <span>作者: vinhnx</span> |
+                    <span>评分: 185</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-12-13 02:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>一项印德联合研究发现，肠道菌群失衡会引发全身炎症反应，进而影响大脑免疫细胞微胶质细胞的正常功能，导致其过度修剪健康神经突触，从而损害学习和记忆能力。该研究由印度科钦科技大学和德国布伦瑞克工业大学的科学家共同完成，表明长期使用抗生素、不健康饮食、压力和睡眠不足等因素会破坏肠道微生物平衡。研究者指出，维护肠道健康对认知功能同样重要，这一发现为探索肠道菌群与神经退行性疾病的关系提供了新方向。研究建议关注肠道健康以保护大脑功能。</p>
+                    <p>这篇文章主要宣布了日本动画《君たちはどう生きるか》（《你想活出怎样的人生》）的14张场景照片公开，从2023年8月18日开始提供。这些照片可以在常规渠道自由使用。文章还列出了该作品从2020年9月至2023年8月期间的其他宣传发布时间点。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：迷走神经（vagus nerve）的功能及其在人体中的作用  
+                    <div class="comments-summary">主要讨论点：[吉卜力工作室作品的魅力、个人观影体验以及相关资源的获取]
 
-不同观点：  
-• **迷走神经是大脑的“深层状态”**  
-  - 观点提出者：cyanydeez  
-  - 论据：迷走神经可能类似于一种“深层控制”机制，影响广泛的身体功能。  
-  - 争议点：这一比喻是否科学准确，还是仅仅是一种形象化的表述。  
+不同观点：
+• 赞美吉卜力作品的美学价值与情感深度
+  - [genezeta] 通过描述不同电影中的画面，强调吉卜力作品中“到达”这一主题的多重意义，展现了作品的深度和艺术性。
+  - [dtgriscom] 特别提到《千与千寻》中火车穿过浅水的画面，认为这些画面极具吸引力。
+  - [fishbacon] 表示自己经常回到《魔女宅急便》和《哈尔的移动城堡》，认为这些电影不仅画面精美，故事也讲得很好。
+  - [naet] 提到吉卜力电影中大量手绘帧的努力在最终作品中得到了体现，赞美其精美程度。
 
-• **迷走神经在稳态调节中的核心作用**  
-  - 观点提出者：DANmode  
-  - 论据：迷走神经几乎影响所有与体内平衡（homeostasis）相关的功能，如心率、消化和免疫反应。  
-  - 补充：这一观点更偏向科学共识，强调其生理功能。  
+• 对吉卜力作品的不解或批评
+  - [SenHeng] 虽然承认吉卜力电影的动画精美，但表示无法理解故事为何备受赞誉，认为故事缺乏明确的结论，且日语配音质量不佳。
+  - [foo42] 询问应从哪部电影开始观看，暗示对吉卜力作品缺乏了解，但愿意尝试。
 
-• **肠道神经元的存在支持迷走神经的重要性**  
-  - 观点提出者：az09mugen  
-  - 论据：肠道中存在大量神经元（“第二大脑”），迷走神经作为连接大脑与肠道的桥梁，其重要性不言而喻。  
-  - 讨论关系：这一观点为前两种观点提供了额外的科学支持。  
+• 对吉卜力资源的关注与争议
+  - [rcarmo] 和 [naet] 讨论如何获取和保存吉卜力的图片资源，前者希望有人整理成ZIP文件，后者表示已经进行了抓取。
+  - [mekpro] 和 [qmmmur] 对AI可能滥用这些资源表示担忧，前者不希望这些美丽的图片被AI盗用，后者讽刺地提到这些资源可能被用于训练生成模型。
+  - [smusamashah] 询问是否可以获取电影中的背景图，表现出对这些艺术资源的兴趣。
 
-补充讨论：  
-- **对科学依据的需求**：bentt 要求提供研究链接，表明讨论需要更具体的科学证据支持，可能对前几种观点的比喻性或概括性表述存疑。  
-- 争议焦点：迷走神经的比喻性描述（如“深层状态”）是否合理，以及其实际功能的范围是否被准确理解。</div>
+补充讨论：
+• 个人情感与电影关联
+  - [crossroadsguy] 提到《萤火虫之墓》的画面会让他情绪激动，展示了吉卜力电影对观众情感的强烈影响。
+  - [fishbacon] 还提到自己经常引用《红猪》的台词，显示电影对其日常生活的影响。
+
+• 家庭观影建议
+  - [foo42] 询问吉卜力电影是否适合10-15岁的孩子观看，引发关于吉卜力作品作为家庭娱乐的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46253888" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46251582" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -279,253 +380,149 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://invoice.secvuln.info/" target="_blank">Security issues with electronic invoices</a>
+                    <a href="https://blog.jetbrains.com/fleet/2025/12/the-future-of-fleet/" target="_blank">JetBrains cancels Fleet</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: guitcastro</span> |
+                    <span>评分: 92</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2025-12-09 13:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>JetBrains宣布将于2025年12月22日停止提供Fleet代码编辑器下载。Fleet最初作为探索新一代IDE的实验项目开发，虽然在技术和设计上取得成功，但其定位与现有IntelliJ系列IDE重叠，未能形成差异化优势。用户反馈显示Fleet无法替代现有产品，而作为AI编辑器又面临激烈竞争。团队决定转型开发专注于"代理开发"（agentic development）的新产品，将基于Fleet平台但采用新名称。现有Fleet用户可继续使用已下载版本，但后续将不再更新，部分依赖服务器端的AI功能可能逐步失效。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：JetBrains IDE的性能问题、Fleet项目的失败原因、AI功能的竞争力、用户对JetBrains未来发展的担忧。
+
+不同观点：
+• **性能问题**：
+  - 用户抱怨JetBrains IDE在多台机器上性能下降，即使是高端配置（如M3 Max + 36GB RAM）也无法解决。
+  - 部分用户认为JetBrains应专注于核心功能（如Monorepo支持、调试工具）而非追逐AI趋势。
+
+• **Fleet项目的失败**：
+  - JetBrains官方解释称，Fleet与现有IDE产品线重叠，未能提供足够价值。
+  - 用户认为Fleet未能实现承诺的“轻量级+高性能”，且缺乏扩展生态，不如VSCode或Zed。
+  - 历史类比（如Netscape、Word的重写失败）被用来支持“重写风险高”的观点。
+
+• **AI功能的争议**：
+  - 用户批评JetBrains的AI功能（如自定义模型）落后于竞品（如Cursor、Claude Code）。
+  - 部分用户建议JetBrains专注于集成第三方LLM（如GitHub Copilot）而非自研。
+  - 争议焦点：AI是否是IDE的核心竞争力，还是应该优先优化性能。
+
+• **市场竞争力**：
+  - 部分用户认为JetBrains仍是最佳“全功能IDE”，但面临VSCode和Cursor的挤压。
+  - 扩展生态的薄弱（尤其是与VSCode对比）被多次提及为关键劣势。
+  - 订阅价值的质疑：用户因性能问题和AI落后转向其他工具（如Zed、GitKraken）。
+
+补充讨论：
+- **用户忠诚度动摇**：长期用户（如10年以上）因性能问题取消订阅，转向替代方案。
+- **战略分歧**：JetBrains被批评“缺乏专注”，同时在AI、Fleet和传统IDE间分散资源。
+- **技术负债**：部分用户认为IntelliJ代码库的历史包袱是性能问题的根源，但重写（如Fleet）风险过高。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46204668" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.wired.com/story/doxers-posing-as-cops-are-tricking-big-tech-firms-into-sharing-peoples-private-data/" target="_blank">Doxers posing as cops are tricking big tech firms into sharing people's data</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: iamnothere</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2025-12-13 05:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>黑客团伙冒充美国警方，通过伪造紧急数据请求（EDR）从科技公司获取敏感个人信息。一名化名Exempt的黑客透露，其团伙成功从苹果、亚马逊等多家大公司获取数据，8月非法获利超1.8万美元。这些伪造请求利用企业应对紧急情况时不验证真伪的漏洞，通常20分钟内就能获得目标住址、电话等隐私。尽管该手法已存在多年，但企业应对仍存在明显漏洞，甚至可能有执法人员涉案。事件暴露了美国18000个执法机构邮件系统缺乏统一认证标准的安全隐患。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：社会工程攻击的易行性及现有安全验证机制的脆弱性，以及如何改进法律和技术手段来防止此类攻击。
+
+不同观点：
+• 社会工程攻击的有效性令人震惊，因为黑客能够利用公开信息轻易绕过安全验证（OsrsNeedsf2P、alexpotato）。
+• 现有法律和技术手段存在漏洞，尤其是政府机构要求企业以不安全方式提供数据（sjducb）。
+• 需要法律强制政府机构采用更安全的身份验证方式，比如法官签署的搜查令（general1465、orwin）。
+• 企业对紧急数据请求（EDRs）的处理缺乏明确标准，可能被滥用（ro_bit）。
+• 社会工程攻击的手法历史悠久，且在不同行业（如ISP）中普遍存在（OSaMaBiNLoGiN）。
+
+补充讨论：
+• 争议焦点：是否需要法官签署的搜查令来验证数据请求的合法性（general1465、orwin vs. 现状）。
+• 其他值得注意的讨论点：个人如何通过设置口头密码等方式增强账户安全性（OSaMaBiNLoGiN）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46252171" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vulpinecitrus.info/blog/guarding-git-forge-ai-scrapers/" target="_blank">Guarding My Git Forge Against AI Scrapers</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: todsacerdoti</span> |
-                    <span>评分: 71</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2025-12-12 20:28</span>
+                    <span>评分: 164</span> |
+                    <span>评论数: 34</span> |
+                    <span>发布时间: 2025-12-12 07:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文总结了欧盟电子发票标准（EN16931）实施中的安全问题，主要涉及XML格式的固有漏洞（如XXE攻击）和XSLT 2.0的安全隐患。研究发现多个电子发票处理软件存在XXE漏洞，部分已修复。作者提供了安全测试套件，并指出获取标准文件的困难。文章呼吁关注电子发票系统的安全风险。</p>
+                    <p>作者为了保护自己的Git代码托管平台（Forgejo）免受AI爬虫的侵扰，采取了一系列防御措施。他发现大量爬虫不断抓取代码库中的历史提交和文件，导致服务器响应缓慢。通过统计发现，一个Linux代码库可能产生超过3000亿个可抓取页面。作者先后实施了反向代理缓存、请求速率限制、手动重定向到垃圾页面、自动识别并毒化爬虫请求（使用Iocaine和Nam-Shub-of-Enki技术）以及查询监控等措施，有效减轻了爬虫带来的负担。文章强调了保护个人数据免受AI训练数据收集的重要性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[XML在电子发票标准中的优缺点及其安全性和复杂性，以及政府强制标准的合理性]
+                    <div class="comments-summary">主要讨论点：[如何应对AI爬虫对自托管服务的滥用及其影响]
 
 不同观点：
-• 支持XML和UBL标准：
-  - tnorgaard认为XML虽然复杂，但有强大的功能，如数字签名，而UBL是一个良好的标准，优于其他格式如IDOC、Tradacom和EDIFACT。
-  - 他提到XML-DSig的安全问题已存在多年，但主要影响不常用软件（如SAP）。
-  
-• 反对政府强制标准：
-  - VoidWhisperer批评政府强制标准并要求付费查看完整标准，认为这近乎勒索。
-  - clickety_clack认为标准应由会计机构制定，并作为可选标准，强制标准会增加合规成本和中间环节。
-  
-• 关于实施和成本的担忧：
-  - idoubtit指出法国的电子发票系统需要企业通过中间平台发送发票，增加了小企业的成本和复杂性。
-  - 他还提到法国政府最初计划开发国家平台，但后来改为依赖私有平台，进一步增加了企业的负担。
+• **技术防御措施**：
+  - Gitea的`REQUIRE_SIGNIN_VIEW=expensive`能有效减少AI流量（mappu）
+  - 使用Geoblocking限制特定国家访问（FabCH）
+  - 通过Anubis等工具大幅降低访问量（kstrauser）
+  - 要求HTTP/2.0或SSH访问以过滤爬虫（Bender）
+  - 使用OAuth2-proxy保护特定仓库（craftkiller）
+
+• **爬虫行为的低效性**：
+  - 爬虫未优化，频繁访问无关页面（hashar）
+  - 爬虫应通过git克隆本地分析而非频繁请求（Artoooooor）
+
+• **隐私与访问控制**：
+  - 建议将服务隐藏于内网或VPN后（wrxd）
+  - 完全屏蔽HTTP/S端口，仅允许Wireguard访问（overfeed）
+
+• **对AI的潜在影响**：
+  - 通过提供误导性数据（如翻译为冷门语言）可能污染AI训练集（dirkc）
+  - 生成垃圾内容以干扰爬虫（GoblinSlayer）
+
+• **爬虫背后的动机争议**：
+  - 部分爬虫可能是被劫持的家庭IP（dspillett）
+  - 认为某些服务商故意制造骚扰以推广付费反爬服务（PeterStuer）
 
 补充讨论：
-• 安全性和实施细节：
-  - moffkalast质疑XML的安全性问题，认为可以通过证书签名解决，并抱怨现有标准未被广泛遵循（如缺少VAT ID）。
-  
-• 替代方案：
-  - blipvert提问为何不使用EDIFACT作为替代方案，但未得到直接回答。
-  
-• 开发者视角：
-  - vldszn分享了他在开源发票生成器中添加电子发票支持的计划，展示了开发者对标准的实际应用尝试。
-
-争议焦点：
-• XML的安全性和复杂性是否合理？
-• 政府强制标准的必要性和成本效益是否平衡？</div>
+- **争议焦点**：爬虫是否真的需要如此低效（hashar vs. PeterStuer对动机的分析）
+- **极端方案**：静态化git仓库（qudat）与完全封闭网络（overfeed）的对比
+- **幽默回应**：iocaine项目用生成迷宫反制AI（GoblinSlayer）
+- **副作用观察**：服务器负载可被风扇噪音感知（sodimel）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46248470" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://old.reddit.com/r/mildlyinfuriating/comments/1plldqo/my_lg_tvs_new_software_update_installed_microsoft/" target="_blank">LG TV's new software update installed MS Copilot, which cannot be deleted</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bj-rn</span> |
-                    <span>评分: 143</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2025-12-13 15:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[LG电视强制更新加入Copilot功能引发的争议]
-
-不同观点：
-• **反对强制更新的用户**
-  - 认为LG新界面设计差（如搜索功能不便），仍坚持使用旧版界面
-  - 批评微软Copilot植入电视是"对用户竖中指"的行为
-  - 指出电视根本不需要AI助手（如"难道要在客厅用电视聊天？"）
-  - 隐私担忧：LivePlus功能会追踪观看记录推送广告
-
-• **智能电视替代方案支持者**
-  - 建议完全断开电视网络连接（"保持电视'愚蠢'化"）
-  - 推荐使用外接设备（Apple TV/Firestick/平板电脑替代系统）
-  - 提出root破解方案（附具体网站链接）
-  - 呼吁建立DNS过滤列表阻止固件更新
-
-• **市场机会观察者**
-  - 认为存在高端"傻瓜电视"市场空白（举例三星The Frame的溢价现象）
-  - 建议像Framework/Sonos等品牌可推出精简功能的 premium TV
-
-争议焦点：
-1. Copilot在电视端的实际用途（多数人认为完全无必要）
-2. 强制更新的合理性（被普遍视为厂商越权行为）
-3. 韩国科技品牌的整体评价（有用户表示将全面抵制LG/三星）
-
-补充讨论：
-• 技术社区注意到普通用户也开始关注"非智能电视"趋势
-• 部分用户已采取极端措施（如永久禁止LG设备联网）
-• 对微软战略的质疑：认为Satya Nadella应亲自介入这种"脱离用户需求"的决策</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46255335" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lpc.events/event/19/contributions/2159/attachments/1833/3929/BpfJailer%20LPC%202025.pdf" target="_blank">BpfJailer: eBPF Mandatory Access Control [pdf]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: voxadam</span> |
-                    <span>评分: 57</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-12-12 14:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：eBPF替代SELinux的性能和适用性讨论
-
-不同观点：
-• **支持eBPF的观点**：
-  - eBPF在性能上可能更快，特别是在需要频繁操作（如文件打开和策略更新）的场景下。
-  - SELinux在超大规模环境中可能显得较慢，因为它设计用于变化不频繁的传统服务器环境。
-  
-• **对SELinux的辩护或中立观点**：
-  - 作者从未认为SELinux本身是慢的，暗示其性能在传统环境中是足够的。
-  - 提到SELinux被替代是一个有趣的现象，可能带有对技术演变的感慨。
-
-补充讨论：
-- **争议焦点**：eBPF是否真的在性能和适用性上全面优于SELinux，尤其是在不同规模和环境下的表现。
-- **讨论关系**：voxadam的评论与主要讨论无直接关系，更多是寻求演讲视频，反映了对技术细节的进一步兴趣。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46244378" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://journal.james-zhan.com/google-de-indexed-my-entire-bear-blog-and-i-dont-know-why/" target="_blank">Google de-indexed Bear Blog and I don't know why</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nafnlj</span> |
-                    <span>评分: 415</span> |
-                    <span>评论数: 48</span> |
-                    <span>发布时间: 2025-12-12 01:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>作者在Bear Blog上建立的个人博客（blog.james-zhan.com）被Google无故取消索引，尽管其他搜索引擎正常收录。问题始于作者误操作验证了RSS订阅链接后，所有文章陆续被标记为"已抓取但未索引"。经过排查域名设置、内容质量和内部链接等因素仍无解，最终作者只能将博客迁移至新域名journal.james-zhan.com。目前仍不清楚具体原因，作者发布此文希望能获得解答。整个过程中Bear Blog创始人Herman提供了帮助。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google搜索算法对网站流量的影响及网站主面临的不透明性和不可控性。
-
-不同观点：
-• **Google作为“守门人”的责任问题**  
-  - PrairieFire认为Google作为市场主导的搜索引擎，已成为公共基础设施（Utility），应当提供透明的申诉和支持机制，否则应受到监管干预。  
-  - 争议焦点：是否需要通过法规强制Google承担更多责任。
-
-• **AI摘要功能对点击率的负面影响**  
-  - firefoxd指出，Google的AI生成摘要使用户无需点击原文即可获取信息，导致其博客点击率下降。  
-  - 补充讨论：其他用户（如FuturisticLover、eikowagenknecht）也提到Google算法对内容索引的随意性，如误判重复内容或突然流量暴跌。
-
-• **技术调整导致的意外惩罚**  
-  - donatj案例：按SEO建议修改URL结构后，Google索引量骤降且长期未恢复，凸显算法的不稳定性。  
-  - graeme推测反垃圾规则可能误伤（如RSS验证失败），但缺乏文档导致无法排查。
-
-• **新站点/小众内容的生存困境**  
-  - Aldipower批评Google偏向成熟大站，新站点难以突破“冷启动”问题。  
-  - eikowagenknecht的小众技术博客流量骤降，尽管内容有价值，但Google流量被其他引擎（Bing、DDG）取代。
-
-• **平台间的差异与矛盾**  
-  - 多名用户（hyruo、huksley）提到Bing等其他引擎也存在类似问题，但Google的问题更突出。  
-  - FuturisticLover指出仅Google存在重复内容误判，而Bing表现正常。
-
-补充讨论：
-- 部分用户（如quietfox、p0w3n3d）以讽刺口吻调侃Google的不可预测性，反映普遍不满情绪。  
-- nottorp的评论“Google可能自己也不知道原因”暗示算法黑箱问题已引发信任危机。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46239752" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://sgt.hootr.club/blog/docker-protips/" target="_blank">Building small Docker images faster</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: steinuil</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2025-12-12 10:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文作者介绍了在Python为主的公司中首次使用Go语言构建服务的经历。他选择Go是因为其简单易学、运行速度快，且适合构建远程执行服务。虽然作者更倾向于使用Nix构建OCI镜像，但由于团队习惯，最终采用了Docker和Docker Compose。文章重点展示了如何通过优化Dockerfile来构建小型高效的Go应用镜像，包括使用Alpine基础镜像、禁用CGO、配置缓存等技巧，并以goose数据库迁移工具为例详细说明了具体实现方法。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[容器构建和优化的不同方法与工具]
-
-不同观点：
-• [忽视多阶段构建的问题]  
-- grim_io 指出许多开发者不了解多阶段构建，导致生成的容器体积过大（多GB级别）。  
-
-• [特定语言的优化工具]  
-- rapidlua 推荐使用 ko-build 针对 Go 语言的优化方案，利用主机交叉编译和缓存，直接生成 Docker 镜像，避免容器化构建的额外开销。  
-
-• [反对过度容器化构建]  
-- zerotolerance 认为容器化构建步骤（甚至全程容器化）是多余的，Docker 更适合作为打包工具而非构建工具。他批评将其作为构建脚本解决方案的做法不合理。  
-
-• [无 Docker 的轻量化方案]  
-- paulddraper 提出 Bazel 的 rules_oci 方案，无需 Docker，仅用 Python 脚本生成镜像文件，支持从零构建或使用极简的 Distroless 镜像。  
-
-• [更极致的优化与安全性]  
-- lrvick 推荐 StageX 工具，强调其能生成更小、确定性且可复现的镜像，并通过多方签名保障供应链安全。  
-
-补充讨论：  
-- 争议焦点在于容器化构建的必要性：zerotolerance 认为其过度，而其他观点更关注如何优化构建流程（如多阶段、工具链替代）。  
-- 工具选择差异明显：从语言专用（ko-build）到通用方案（Bazel、StageX），反映了不同场景下的需求分层。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46242700" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46241849" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
