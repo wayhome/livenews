@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-12-21 02:17 (北京时间)
+            最后更新时间: 2025-12-21 05:12 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,51 +61,412 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://servury.com/blog/privacy-is-marketing-anonymity-is-architecture/" target="_blank">Privacy doesn't mean anything anymore, anonymity does</a>
+                    <a href="https://github.com/CrystallineCore/Biscuit" target="_blank">Biscuit is a specialized PostgreSQL index for fast pattern matching LIKE queries</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ybceo</span> |
-                    <span>评分: 122</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2025-12-20 06:21</span>
+                    <span>作者: eatonphil</span> |
+                    <span>评分: 32</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2025-12-16 15:39</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>Biscuit是一个专为PostgreSQL设计的高性能索引访问方法，专注于优化LIKE和ILIKE查询的模式匹配。它通过独特的位图索引技术（包括正向和反向字符位置位图），显著提升了通配符查询的性能，并支持多列搜索。相比传统的trigram索引，Biscuit消除了重复检查的开销，能自动转换多种数据类型（文本、数字、日期、布尔值等）为可搜索格式。最新2.1.4版本改进了构建系统，新增了配置检查功能和诊断视图，便于部署和调试。安装支持源码编译和PGXN两种方式，适用于各类文本搜索场景。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：网络隐私与匿名服务的可行性与局限性  
+                    <div class="comments-summary">主要讨论点：[Biscuit索引在PostgreSQL中的性能、适用场景及与其他索引类型的比较]
 
-不同观点：  
-• **Servury的隐私政策存在漏洞**  
-  - 与Mullvad相比，Servury记录IP地址、时间戳和用户代理字符串，隐私保护较弱。  
-  - 争议焦点：是否必要存储这些数据，尤其是当Mullvad已证明无需日志也能运营VPN服务。  
+不同观点：
+• **支持Biscuit索引的观点**：
+  - Biscuit通过预计算位图结构（如前后字符位置、大小写不敏感变体、长度桶）优化了LIKE查询，避免了堆扫描或位图堆重新检查，显著提升了查询速度（15倍于B树，5.6倍于Trigram）。
+  - 适用于频繁执行LIKE '%foo%bar%'查询的场景，尤其是在不需要引入外部搜索引擎的“穷人版搜索”场景中。
 
-• **Mullvad浏览器的隐私优势**  
-  - 基于Tor浏览器但无需Tor网络，提供指纹抵抗功能。  
-  - 论据：标准化浏览器配置可减少唯一性指纹，而自定义浏览器反而易被追踪。  
+• **对Biscuit索引的保留意见**：
+  - 写放大和索引膨胀问题尚未充分验证，文档中提到写入性能和并发性尚未深入测试。
+  - 索引大小是Trigram的3.2倍，尽管查询速度更快，但存储开销可能成为权衡点。
 
-• **匿名性的根本矛盾**  
-  - 观点1（如`jacquesm`）：完全匿名不可能，因行为和数据泄露足够识别个人。  
-  - 观点2（如`AnthonyMouse`）：应通过技术（如VPN、一次性邮箱）减少数据收集，而非依赖服务商承诺。  
-  - 争议焦点：技术手段能否真正实现匿名，还是仅转移信任（如ISP或VPN提供商）。  
+• **与其他索引类型的比较**：
+  - **Trigram索引**：更适合模糊匹配和一般文本搜索，但在特定关键词搜索中可能比全文搜索（tsvector）更优，尤其是当全文搜索的词干提取会干扰搜索结果时。
+  - **全文搜索（tsvector）**：适用于自然语言搜索，但在非自然语言或特定关键词搜索中可能不如Trigram或Biscuit。
 
-• **商业模型与隐私的冲突**  
-  - `al_borland`认为企业存储非必要数据是责任风险，而`mnls`指出服务管理必须依赖某些用户标识（如邮箱/手机号）。  
-  - 例子：注册表单分阶段索要更多信息，导致用户无法提前知悉数据需求。  
+补充讨论：
+• **技术细节建议**：kwillets建议将字符串结束符也作为字符索引，以简化后缀搜索的实现，但可能增加通配符查询的复杂性。
+• **性能数据需求**：多位评论者呼吁提供更多关于索引大小和速度的详细比较数据，尤其是对大表的实际影响。
+• **外部技术关联**：Daniel Lemire提到使用了Roaring Bitmaps技术，这可能进一步优化Biscuit的性能。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46289884" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ycombinator.com/companies/depot/jobs/jhGxVjO-enterprise-support-engineer" target="_blank">Depot (YC W23) Is Hiring an Enterprise Support Engineer (Remote/US)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jacobwg</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-12-20 18:06</span>
+                </div>
 
-• **隐私与指纹识别的悖论**  
-  - `theturtletalks`提出：过度隐私措施（如独特配置）反而增加可识别性，需平衡隐匿与“融入大众”。  
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Depot正在招聘一名企业支持工程师（远程，需在美国太平洋时间工作），年薪11-14万美元。该职位负责处理技术支持和优化客户CI/CD流程，要求3年以上DevOps或技术支持经验，熟悉GitHub Actions、Docker等技术。Depot是一个构建加速平台，帮助客户大幅缩短软件构建时间。公司成立于2022年，团队规模8人，提供远程工作、股权、无限假期等福利。应聘者需具备较强的故障排除能力和客户沟通技巧，并能在紧急情况下快速响应。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46338156" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lists.nanog.org/archives/list/nanog@lists.nanog.org/message/ACADD3NKOG2QRWZ56OSNNG7UIEKKTZXL/" target="_blank">NTP at NIST Boulder Has Lost Power</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: lpage</span> |
+                    <span>评分: 338</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-12-20 07:39</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>美国国家标准与技术研究院（NIST）位于科罗拉多的博尔德校区的原子钟时间系统因持续断电而失效。受影响的包括多个网络时间服务器，这些服务器因备用发电机仍在运行但可能传播错误时间而将被关闭。停电由大风导致电力线路损坏和预防性断电引起，始于12月17日，目前仍未恢复。关键备用发电机故障影响了时间信号传输链，工作人员正努力获取替代电源以维持氢微波激射器时钟运行。校园目前仅限紧急人员进入，修复时间尚无法预估。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[NIST时间服务器故障及其影响，以及相关基础设施的应对措施]
+
+不同观点：
+• **基础设施故障的影响**  
+  - [arn3n] 提到强风导致预防性断电，NIST备用发电机故障，强调预防措施的重要性。  
+  - [Animats] 提供NIST校园关闭的官方通知，显示事件已升级为正式闭校。  
+  - [cdfuller] 询问这是否是常见小问题或类似Y2K的重大事件，反映对潜在影响的担忧。
+
+• **NTP服务的替代方案**  
+  - [digdigdag] 提到本地GPS+PPS NTP服务器的价值，提供故障时的替代方案。  
+  - [DamonHD] 指出仍有NIST服务器可用，显示服务并未完全中断。  
+  - [tguvot] 讨论NIST密钥申请流程的改进，反映服务恢复的努力。
+
+• **基础设施改进建议**  
+  - [themafia] 提出低功耗备份网络的必要性，以应对类似事件。  
+  - [samch] 询问地下电缆的最佳实践，探讨长期解决方案。  
+  - [gilrain] 批评基础设施未适应气候变化，暗示政策与现实的脱节。
 
 补充讨论：  
-- **支付匿名性**：`AnthonyMouse`强调需匿名支付方式，否则隐私链条仍存在缺口。  
-- **技术替代方案**：`hiAndrewQuinn`提到Servury的预付费VM模型可能是隐私友好选择，但磁盘持久性可能泄露信息（如`DerSaidin`指出）。  
-- **现实讽刺**：隐私文章被Cloudflare验证墙阻挡（`duskdozer`），凸显中心化服务与隐私目标的矛盾。</div>
+- [sgnelson] 提及DOGE预算削减是否影响NIST，引发对资金问题的争议。  
+- [amelius] 提出用全球手表时间替代NTP的假设性问题，带有调侃性质。  
+- [crazydoggers] 和 [8organicbits] 提供NIST服务器状态和邮件列表链接，辅助信息获取。  
+
+争议焦点：  
+- 基础设施故障是短期技术问题还是长期政策失误（如[sgnelson]和[gilrain]的对立观点）。  
+- NTP服务的可靠性与替代方案的实用性（如[digdigdag]与[DamonHD]的互补观点）。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334025" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46334299" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nasa.gov/stem-content/x-59-3d-printing/" target="_blank">X-59 3D Printing</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Jsebast24</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-16 17:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>NASA提供了X-59实验性飞机的3D打印文件下载。X-59长约100英尺，设计速度为1.4马赫（925英里/小时），属于Quesst任务的一部分。该任务旨在开发能降低音爆的技术，并通过飞行测试收集人类对超音速飞行声音反应的数据。文件包括多部件模板、带/不带底座的模型以及贴纸。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[.stl文件在Mac OS Finder中的可查看性及实用性]
+
+不同观点：
+• [支持观点]
+  - Mac OS Finder内置的Quick Look功能可以方便地预览.stl文件，无需额外软件或3D打印机。
+  - 操作简单，只需下载文件后按空格键即可查看3D渲染，并可旋转查看细节。
+  
+• [质疑观点]
+  - Quick Look功能可能无法显示复杂的.stl文件细节，渲染质量可能不如专业3D查看软件。
+  - 对于需要精确测量的用户，Finder的预览功能可能不足以满足需求。
+
+补充讨论：
+- 有用户可能不了解这一功能，讨论可以增加关于如何最大化利用Finder预览.stl文件的技巧。
+- 争议焦点在于Finder的预览功能是否足够专业，适合哪些类型的用户需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46291412" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/ertugrulcetin/immersa" target="_blank">Immersa: Open-source Web-based 3D Presentation Tool</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: simonpure</span> |
+                    <span>评分: 109</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2025-12-20 13:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Immersa 是一个基于网页的 3D 演示工具，能够创建具有动态过渡效果的 3D 演示文稿。主要特点包括：导入 3D 模型（.glb 格式）、在 3D 空间添加图片和文字、自动生成平滑过渡动画。通过复制幻灯片并调整元素位置，系统会自动计算过渡动画。该项目采用 ClojureScript 开发，使用 Babylon.js 进行 3D 渲染，支持本地存储和撤销/重做功能。用户可以通过简洁的界面编辑 3D 场景，支持键盘快捷键操作，并能导出演示文件。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Immersa作为新型演示工具的优缺点及潜在应用场景]
+
+不同观点：
+• **支持者观点**  
+  - 认为Immersa的创新交互方式（如每步过渡独立幻灯片）适合动画密集型演示（pedalpete引发讨论）  
+  - 赞赏其技术实现简洁性（仅4.4k代码量），对比传统工具更高效（CraigJPerry）  
+  - 类比Apple Keynote的"Magic Move"功能，认可其3D过渡效果（james-bcn）  
+  - 科幻/电影风格演示的理想工具（exe34）
+
+• **质疑者观点**  
+  - 对大量3D动画的实用性存疑，建议谨慎使用（albert_e）  
+  - 指出现有工具（如PowerPoint）已具备类似3D变形功能（albert_e）  
+  - 批评README内容机械重复，疑似LLM生成（roywiggins）
+
+• **技术兴趣点**  
+  - 关注Shader集成问题（m00dy）  
+  - 对比Nvidia GTC演示效果（somethingsome）  
+  - 讨论Re-frame框架的简洁性（CraigJPerry）
+
+补充讨论：
+- 争议焦点：  
+  1. 是否需要为每个过渡创建新幻灯片（vs传统时间轴动画）  
+  2. 3D效果在实际商业场景中的必要性  
+- 其他注意点：  
+  - 网站访问问题（arendtio）  
+  - 演示视频配乐引发吐槽（nkmnz）  
+  - 存在基础功能赞赏（cahaya/ipeev）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46336097" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2512.10047" target="_blank">Detailed balance in large language model-driven agents</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Anon84</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2025-12-16 12:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文提出了一个基于最小作用量原理的方法，用于研究大型语言模型（LLM）驱动代理的宏观动力学。作者通过实验测量LLM生成状态间的转移概率，发现LLM生成的转换中存在一种平衡状态，表明LLM生成可能不是通过学习规则集和策略实现，而是通过隐式学习潜在函数类来完成的。这一发现揭示了不依赖特定模型细节的LLM生成动力学宏观物理定律，是建立复杂AI系统宏观动力学理论的初步尝试，旨在将AI代理研究从工程实践提升为可预测和量化的科学。论文包含20页内容，配有12张图表。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Transformer模型的自注意力机制是否可以被解释为一种梯度下降，以及这种解释如何影响我们对LLM运行时行为的理解]
+
+不同观点：
+• **gwern**的观点认为，自注意力机制可以被视为一种梯度下降，LLM在训练时已经预解决了大量任务类别，运行时只是在已有解决方案中进行选择和微调。这种解释可以说明为什么LLM在某些情况下（尤其是代理场景中）会表现不佳，因为它们无法真正解决超出预学习任务范围的新问题。
+  - 论据：LLM在运行时只能找到与当前任务最接近的预学习任务，而无法真正解决新任务。
+  - 例子：LLM在代理场景中的失败行为。
+
+• **Mathnerd314**的观点则认为，尽管LLM可能编码了某种潜在函数，但实际的提示和模型结构并未真正最小化这种潜在函数。当前的采样算法（如束搜索）还有很大改进空间，未来可能需要更智能的优化方法。
+  - 论据：LLM在接近目标时会突然跳转到完全不同的配置，这表明采样算法存在问题。
+  - 例子：提示优化仍将模型视为黑箱，而非数学结构。
+
+补充讨论：
+- **erichocean**的评论表明，某些实际应用（如代理工具的设计）可能与理论观点不谋而合，但未深入讨论具体的技术细节。
+- 争议焦点：LLM的运行时行为是否完全受限于预学习的任务类别，还是可以通过更智能的优化方法突破这些限制。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46287626" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://matteocapucci.wordpress.com/2022/12/21/mathematicians-dont-care-about-foundations/" target="_blank">Mathematicians don't care about foundations</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: scrivanodev</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-20 18:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章指出大多数数学家并不关心数学基础理论（如ZFC公理系统），而是更关注数学直觉和实际应用。作者认为数学本质上是非正式的，依赖于数学家之间的共识和共享理解，形式化框架只是表达这些直觉的工具。虽然基础理论很重要，但数学家通常只需了解基本规则即可工作。文章还提到，数学基础的选择是社会化构建的，数学家对基础理论持开放态度，可以接受更丰富的理论基础（如类型理论）。作者认为数学的真正"柏拉图领域"是社会共识形成的共享直觉世界，而非严格的形式化系统。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[数学基础选择对数学实践的影响]
+
+不同观点：
+• **数学是纯粹的形式游戏**：认为数学家只关心形式系统的内部一致性，基础选择只是为了提供一个无矛盾的框架。数学定理的意义不重要，重要的是规则不被破坏（参考评论中的"playing a game"比喻）。
+• **数学基础具有实质影响**：强调基础选择会直接影响数学内容（如所有实函数连续或Banach-Tarski悖论失效），认为数学家必须关注基础选择，否则等同于忽视数学的实质性内容（使用具体定理作为论据）。
+
+争议焦点：
+双方对"数学是否仅需保持形式一致性"存在根本分歧。支持实质影响的一方通过构造性数学与经典数学的具体差异（连续函数、Banach-Tarski悖论）反驳"游戏论"。
+
+补充讨论：
+• 隐含的哲学立场差异：形式主义vs直觉主义/构造主义
+• 未明确讨论但相关的点：不同数学分支对基础选择的敏感度差异</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46338239" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://developers.openai.com/codex/skills/" target="_blank">Skills Officially Comes to Codex</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rochansinha</span> |
+                    <span>评分: 175</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2025-12-20 08:09</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Codex中的Agent Skills功能，主要涵盖以下内容：
+
+1. **Agent Skills定义**：通过SKILL.md文件和相关资源，扩展Codex执行特定任务的能力。
+
+2. **技能调用方式**：
+   - 显式调用：通过命令或符号触发特定技能
+   - 隐式调用：Codex根据任务自动匹配技能
+
+3. **技能存储位置**：分6个层级（SYSTEM→ADMIN→USER→REPO_ROOT→REPO→CWD），支持技能覆盖机制。
+
+4. **技能创建**：
+   - 使用内置$skill-creator创建
+   - 或手动创建SKILL.md文件
+
+5. **技能安装**：可从GitHub仓库安装预置技能。
+
+6. **示例技能**：如$plan规划功能、连接Linear/Notion等工具的集成技能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[Skills的概念、优势、实现方式及其潜在问题]
+
+不同观点：
+• **Skills的优势与标准化**
+  - cube2222认为Skills比MCP更灵活、易于编写（如Markdown文件），并能利用现有工具（如GitHub CLI）。
+  - 支持代码执行环境（如Python/JS脚本），且不依赖特定代理或系统提示。
+  - astra90认为Skills可能像开源库一样，成为标准化解决方案，提升代码质量和安全性。
+
+• **Skills的实现与框架**
+  - zahlman询问Skills在LLM代理框架中的具体形式，强调其与工具调用的关系。
+  - ericflo指出Skills的核心是代码与指令的捆绑，而非仅是Markdown文件。
+  - freakynit分享类似实践，通过文件夹（README.md + 脚本）实现代码复用。
+
+• **Skills的潜在问题**
+  - btown强调Skills仅依赖前端描述（如YAML front-matter），可能导致逻辑未被发现或滥用（如提示注入）。
+  - mikaelaast质疑Markdown的自由格式可能导致不可验证性，影响代理的评估。
+  - well_ackshually调侃Skills可能重演互联网广告问题。
+
+• **Skills的生态与商业化**
+  - orliesaurus建议建立Skills市场或目录，促进技术传播。
+  - mellosouls探讨商业化路径（如API密钥或佣金），但缺乏官方指导。
+  - pupppet提问Skills与工具/函数调用的区别。
+
+补充讨论：
+- 争议焦点：Skills的灵活性与可验证性之间的平衡（自由格式 vs 结构化）。
+- 其他讨论：Skills的长期影响（如代码质量提升 vs 潜在滥用）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46334424" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://shkspr.mobi/blog/2025/12/why-do-people-leave-comments-on-openbenches/" target="_blank">Why do people leave comments on OpenBenches?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sedboyz</span> |
+                    <span>评分: 45</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-12-20 16:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文介绍了作者运营的OpenBenches项目，一个众包收集全球纪念长椅照片的网站。最初以为评论功能会用于更正信息，但发现用户主要用它表达情感、分享回忆或感谢他人。这些评论展现了人们对逝者的怀念和对人性的温暖连接，成为网站意外的亮点。作者通过自主托管评论系统保障数据安全，并强调了这个简单项目如何意外地成为人们情感交流的空间。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于记录和保存纪念长椅的讨论  
+
+不同观点：  
+• [sjsmith89]：观察到所在地区的纪念长椅数量虽多，但部分状态不佳，表示会尽力记录并鼓励他人参与该项目。  
+• [phainopepla2]：赞赏该项目，认为其具有复古网络的风格，并受到激励计划前往当地公园添加纪念长椅的信息。  
+
+补充讨论：  
+• 讨论焦点在于纪念长椅的现状及其记录的积极性。  
+• 两者都表现出对项目的支持，但[sjsmith89]更关注实际问题和行动，而[phainopepla2]则更注重项目的风格和个人的参与感。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46337134" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -156,407 +517,6 @@
 • 布局技术的未来：[jbritton] 提出布局应由约束求解器完成，简化布局指定。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=46331586" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/Sevii/agent-marketplace/blob/main/plugins/elevator-music/README.md" target="_blank">Show HN: Claude Code Plugin to play music when waiting on user input</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Sevii</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2025-12-20 16:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了GitHub上的一个名为"agent-marketplace"的开源项目，该项目由用户Sevii创建。主要内容包括：1) 项目是公开的；2) 当前有0次fork和1个star；3) 用户需要登录才能更改通知设置。文章简明地概括了该项目的基本信息和当前状态。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何在等待Claude代码时进行提醒或娱乐
-
-不同观点：
-• **使用音频提醒**（sailfast）
-  - 建议构建《Happy Gilmore》电影中的经典台词音频作为提醒
-  - 例子："Welllll?!!! We're waiting!!"的meme音频
-
-• **使用系统通知提醒**（vunderba）
-  - 推荐使用各操作系统原生的通知系统
-  - 提供具体实现方案：
-    - Mac: osascript显示通知
-    - Windows: PowerShell方案
-    - Linux: notify-send命令
-  - 附上了Linux方案的文档链接
-
-补充讨论：
-- 两种方案代表了不同的提醒风格：娱乐性（音频）vs功能性（系统通知）
-- vunderba的回复实际是对sailfast建议的扩展/替代方案
-- 争议点在于提醒方式的选择偏好，而非技术可行性</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46337118" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://antirez.com/news/157" target="_blank">Reflections on AI at the End of 2025</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: danielfalbo</span> |
-                    <span>评分: 78</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2025-12-20 09:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[AI辅助编程的接受度、LLM的优缺点、AI对社会的影响、AI的潜在威胁]
-
-不同观点：
-• **AI辅助编程的接受度提高**  
-  - 支持者认为LLM的错误率降低，实用性提升，程序员对AI的接受度显著提高（abricq, bachmeier）。  
-  - 反对者（bachmeier）认为“抵抗”和“怀疑”等词带有贬义，技术本身进步才是关键，而非程序员的态度问题。  
-
-• **LLM的优缺点**  
-  - 实用性：LLM能显著提升生产力（2-4倍），但代码质量不稳定，缺乏对优秀架构的理解（dhpe, abricq）。  
-  - 优化问题：LLM可能陷入局部最优解（如代码速度优化导致可读性下降），引发Goodhart定律的担忧（danielfalbo, piker）。  
-
-• **AI对社会的影响**  
-  - 乐观派认为AI会提升全球效率，通过集中解决高频问题逐步优化（Aiisnotabubble）。  
-  - 悲观派担忧AI导致程序员过剩，企业可能裁员而非减少工时（abricq）。  
-
-• **AI的潜在威胁**  
-  - 部分人认为AI的终极挑战是避免人类灭绝，需严肃对待（ctoth）。  
-  - 另一派批评这种观点是恐吓手段，缺乏具体论证（fleebee, Fraterkes）。  
-
-补充讨论：  
-- **技术争议**：LLM是否真正理解语义（a_bonobo vs. bachmeier），以及链式思维（chain of thought）对性能的影响（register）。  
-- **社会准备度**：社会是否准备好应对AI带来的生产力变革（abricq）。  
-- **时间线争议**：2027年预测的准确性受到质疑（Fraterkes）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334819" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://brooker.co.za/blog/2025/12/15/database-for-ssd.html" target="_blank">What Does a Database for SSDs Look Like?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: charleshn</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2025-12-20 10:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文讨论了针对SSD优化的关系型数据库设计。作者Marc Brooker是AWS工程师，提出三个核心观点：1）根据"五分钟法则"更新版，内存缓存应存储30秒内可能访问的数据页；2）SSD的最佳I/O大小约为32KB，过小会损失吞吐量，过大会降低IOPS；3）虽然本地SSD读取性能优异，但写入仍需考虑分布式系统的持久性和复制机制。文章指出传统数据库为机械硬盘设计的特性（如预写日志、大页尺寸）需要重新思考，以适应现代SSD的高吞吐（比HDD快1000倍）和低延迟特性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据库架构是否应针对SSD/NVMe时代重新设计，以及分布式存储与本地存储的权衡。
-
-不同观点：
-• **依赖云/分布式存储的观点**  
-  - 认为单机磁盘提交已过时，分布式存储（如多系统复制）更可靠（cornholio引用）。  
-  - 适用于金融等高可用场景，但可能增加成本和厂商锁定风险（cornholio）。  
-  - 反对者认为分布式可能因集群崩溃导致更大数据丢失（PunchyHamster）。
-
-• **本地存储优化的观点**  
-  - 多数应用仍适合本地提交+快速恢复（cornholio）。  
-  - SSD顺序与随机访问性能差异仍显著，传统缓冲设计仍有价值（mrkeen）。  
-  - 小事务写入（如4K页）仍需预写日志（WAL）批量处理（londons_explore）。
-
-• **SSD特性争议**  
-  - SSD性能受FTL（闪存转换层）影响，难以通用化（ritcgab）。  
-  - 企业级Optane在小查询性能上优于NVMe（Havoc）。  
-
-• **现有解决方案**  
-  - 已有针对SSD优化的数据库（如MyRocks、Aerospike）（zokier、ghqqwwee）。  
-  - 轻量级单文件数据库（如DuckDB）或内存模型（如dbzero）可能更适合现代需求（ljosifov、dbzero）。  
-
-补充讨论：  
-- **适用场景分歧**：全球性企业需24/7高可用，但大多数公司可能无需过度优化（pmontra）。  
-- **历史背景**：早期磁盘设计影响数据库架构，但部分问题已不相关（wpietri）。  
-- **实践争议**：部分人认为行业盲目放弃已验证的最佳实践（PunchyHamster）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334990" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mistral.ai/news/mistral-ocr-3" target="_blank">Mistral OCR 3</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pember</span> |
-                    <span>评分: 562</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-12-18 15:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章主要介绍了Mistral OCR 3光学字符识别系统的突破性进展。该系统在表单处理、扫描文档、复杂表格和手写识别方面比前代产品提升了74%的准确率，性能优于企业级文档处理方案和其他AI OCR解决方案。Mistral OCR 3支持从多种文档中提取文本和图像，并能输出带有HTML表格重建功能的Markdown格式，理解文档内容和结构。该系统已集成到Mistral AI Studio的Document AI Playground中，提供拖放式界面，可将PDF/图片转换为文本或结构化JSON。文章还提供了1966-2012年美国博士学位的详细统计数据作为示例，展示了该系统处理复杂表格的能力。价格方面，每处理1000页仅需2美元，批量API可享5折优惠。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">### 主要讨论点：Mistral OCR 3的性能、适用场景及与其他OCR工具的比较  
-
-### 不同观点：  
-• **对Mistral OCR 3的负面评价**  
-  - 用户[vintermann]测试后发现其对丹麦语文档识别效果差，甚至无法识别现代手写生日贺卡中的简单内容，认为其缺乏上下文理解能力。  
-  - [tecoholic]指出79%的准确率无法满足科学期刊等高要求场景，例如混淆“2.9+0.5”和“29+0.5”等错误频发，需人工复核。  
-  - [temp0826]尝试用于秘鲁土著语言Shipibo的词典转换，但表现糟糕，无法处理多列布局和混合语言内容。  
-
-• **与其他OCR工具的对比争议**  
-  - [hereme888]和[Tiberium]引用第三方评测，认为Mistral OCR 3性能不如开源工具（如PaddleOCR、MonkeyOCR等），质疑其基准测试未涵盖先进方案。  
-  - [pzo]指出近期开源OCR工具（如paddleOCR-VL、olmOCR-2）在边缘设备上表现优异，但缺乏统一的评测平台。  
-  - [film42]认为谷歌OCR仍领先Mistral，但未提供具体数据支持。  
-
-• **特定场景的有限肯定**  
-  - [jesuslop]测试发现其对LaTeX数学表达式识别效果“相当不错”，尝试替代MathPix。  
-  - [i_am_not_groot]调侃式肯定其可能适用于难以辨认的手写体（如医生处方）。  
-
-### 补充讨论：  
-- **争议焦点**：Mistral OCR 3是否真正达到“企业级”标准（如高准确率、多语言支持），以及其与开源/商业竞品的实际差距。  
-- **未满足需求**：[speff]提出需要“原位OCR翻译”工具，现有方案（包括Mistral）无法解决非标准文本布局问题。  
-- **商业与开源之争**：[amelius]呼吁开发开源工具兼容多OCR服务API，认为现有FOSS OCR已能满足多数需求。  
-- **商业策略批评**：[7thpower]抱怨Mistral的客户服务不透明，阻碍实际采用。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46313390" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.charlesproxy.com/" target="_blank">Charles Proxy</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: handfuloflight</span> |
-                    <span>评分: 174</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2025-12-20 06:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Charles是一款支持Windows、Mac OS和Linux的HTTP代理/监控工具，可查看HTTP和HTTPS流量，包括请求、响应和头部信息。官网提供软件介绍、文档、下载及购买支持，并定期发布更新公告，包含功能改进、性能优化和漏洞修复等内容，如2025年发布的5.0.3版本修复了macOS性能问题。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[不同HTTP(S)流量调试工具的优缺点及适用场景]
-
-不同观点：
-• **Charles Proxy支持者**：
-  - 长期使用且稳定（hboon、infomaniac、followben）
-  - 特别适合移动端SSL代理（aua）
-  - 原始HTTP(S)流量观察的轻量级工具（runtimepanic）
-
-• **Proxyman推荐者**：
-  - 比Charles更易用（hboon、DrBenCarson）
-  
-• **安全工具倾向者**：
-  - Burp Suite更适合安全测试工作流（runtimepanic、poemxo）
-  - Caido作为新兴安全工具趋势（doomerhunter）
-
-• **其他替代方案**：
-  - mitmproxy是免费但功能较弱的选择（cientifico）
-  - Fiddler曾被视为更强大但受限于Windows平台（logicuce）
-  - Wireshark功能全面但学习曲线陡峭（cientifico）
-
-补充讨论：
-- **争议焦点**：工具的专业性vs易用性（如Burp的"pentest模式"与Charles的"零摩擦调试"对比）
-- **特殊用例**：Charles被用于游戏API篡改（swaraj），mock服务器作为替代方案（dhuan_）
-- **历史意义**：多用户提及2008-2013年间Charles在移动开发中的关键作用（Aldipower、followben）
-- **工具年龄**：部分用户对20年老软件仍在活跃表示惊讶（infomaniac、obventio56）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46333983" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://garagehq.deuxfleurs.fr/" target="_blank">Garage – An S3 object store so reliable you can run it outside datacenters</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 323</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2025-12-19 15:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Garage，一个高可靠的S3兼容对象存储系统，专为在数据中心外运行设计。其主要特点包括：数据三重冗余存储、轻量级单二进制部署、支持异构硬件（包括老旧设备）、低系统需求（1GB内存、16GB存储）。Garage基于分布式系统研究（如Dynamo、CRDTs），兼容S3 API，适合网站托管、媒体存储和备份等场景。项目多次获得欧盟NGI等公共资金支持。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Garage与MinIO及其他替代方案的比较、Garage的可靠性、适用场景和功能缺失]
-
-不同观点：
-• **性能与易用性对比**
-  - Garage部署比MinIO简单，但性能在高负载下不如MinIO（如5Gbps vs MinIO的20-25Gbps）。
-  - MinIO因发展方向问题需要替代方案，RustFS和Ceph/Rook也被考虑。
-
-• **可靠性争议**
-  - 默认LMDB引擎在非正常关机（如断电）时易损坏，需依赖BTRFS/ZFS等文件系统或定期快照（fabian2k、JonChesterfield强调此问题）。
-  - 用户报告实际使用中遭遇崩溃需手动恢复（supernes），但其他用户认为其适合本地开发或特定场景（ai-christianson、faizshah）。
-
-• **功能缺失**
-  - 不支持对象标签（topspin认为这是云API的“基本要求”）。
-  - 无纠删码（Powdering7082指出影响资源效率和容错能力）。
-
-• **适用场景分歧**
-  - 适合本地开发或轻量级S3兼容需求（fabian2k、awoimbee），但配置复杂度高于SeaweedFS等。
-  - 超融合架构中可优化本地存储访问（ai-christianson）。
-  - 与Syncthing相比，优势仅在于S3 API兼容性（allanrbo）。
-
-补充讨论：
-- 社区对MinIO事件后Garage的采用兴趣增加（SomaticPirate）。
-- 非技术因素（如网站设计美观度）也被提及（thhck、wyattjoh）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46326984" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.arduino.cc/product-uno-q/" target="_blank">Arduino UNO Q bridges high-performance computing with real-time control</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: doener</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-12-16 18:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Arduino UNO Q开发板，这是一款结合高性能计算和实时控制功能的创新产品。它采用混合设计，搭载了Linux Debian兼容的Qualcomm Dragonwing™ QRB2210微处理器和STM32U585微控制器，支持AI视觉和声音解决方案。开发板具有4GB RAM、16GB存储、双频Wi-Fi 5和蓝牙5.1，兼容传统UNO扩展板，并配备Qwiic连接器便于扩展。配套的Arduino App Lab开发环境支持多种编程方式，既可作为单板计算机独立运行，也可通过USB-C连接PC使用。产品保持开源特性，支持主流操作系统和传统Arduino IDE，适用于机器人和物联网等领域的创新开发。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Qualcomm新产品的软件生态、硬件架构及用户接受度]
-
-不同观点：
-• **软件生态优先论**  
-  - 认为产品成功关键在于软件体验（如Arduino的易用性），批评Qualcomm可能不理解这一点  
-  - 举例：ESP系列的成功得益于与Arduino生态的无缝集成  
-  - 争议点：传统嵌入式工程师对抽象化工具（如Arduino）的轻视与其实用性之间的矛盾  
-
-• **硬件架构质疑**  
-  - 指出产品实际为分立芯片设计（非单颗混合架构SoC），可能增加复杂性  
-  - 担忧：Arduino用户群体更倾向“开箱即用”体验，当前设计可能不够友好  
-
-• **品牌信任危机**  
-  - 因Qualcomm的许可证变更争议（“drama”），部分用户对投入时间持观望态度  
-  - 案例：开源社区成员因许可证问题拒绝采用Arduino平台  
-
-• **竞争对手对比**  
-  - 提问与BeagleY-Ai的性能对比，隐含对差异化价值的质疑  
-
-补充讨论：  
-- 短期态度：部分用户选择观望（“几年后再看”），反映对长期生态发展的不确定性  
-- 反讽声音：直接质疑Qualcomm动机（“Nice try”），体现社区对商业公司的不信任</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46291870" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.ianvisits.co.uk/articles/a-train-sized-tunnel-is-now-carrying-electricity-under-south-london-86221/" target="_blank">A train-sized tunnel is now carrying electricity under South London</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zeristor</span> |
-                    <span>评分: 85</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2025-12-20 08:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>伦敦南部建成一条地铁规模的电力隧道，全长32.5公里，深度达50米，耗资10亿英镑。该项目于2019年启动，分三段连接多个变电站，替代了上世纪60年代的老旧电缆。首条电路已投入使用，第二条预计明年启用。该工程是继2018年完成的北伦敦电力隧道项目后的第二期工程，旨在提升伦敦电网容量。相比铁路项目，这种纯隧道工程更易按时按预算完成。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[伦敦电力隧道项目的技术细节、地理位置争议、资金分配问题]
-
-不同观点：
-• **技术细节讨论**  
-  - [luma] 对电缆的锯齿形排列方式提出疑问，认为这种设计可能增加了不必要的导体长度。  
-  - [nopurpose] 对比了高压架空线路的绝缘子设计和隧道内电缆的保护方式，好奇为何后者仅需简单防护。  
-  - [zeristor] 提到超导电缆的潜力，但认为在隧道中设置低温系统可能因空间限制和安全风险（如液氮泄漏导致窒息）而不实际。
-
-• **地理位置争议**  
-  - [zimpenfish] 对“New Cross substation位于Southwark”的说法提出质疑，通过地图和资料指出其实际位于Lewisham或Greenwich附近，并表达了对多篇错误信息的困惑。
-
-• **资金分配问题**  
-  - [nephihaha] 批评伦敦电力隧道项目（耗资10亿英镑）反映了伦敦持续获得其他地区补贴的现象，尽管存在“地方分权”和“均衡发展”政策。
-
-补充讨论：
-- [metalman] 指出将基础设施埋入地下的必要性，因为地面电力走廊的建设和土地获取成本高昂且可能引发开发商的争议。  
-- [sowbug] 以幽默方式提到对未来电气规范修订的期待，暗示项目可能影响行业标准。  
-- **争议焦点**：地理位置描述是否准确（zimpenfish的质疑）和资金分配是否公平（nephihaha的批评）是主要争议点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334483" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
