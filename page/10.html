@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2025-12-21 23:13 (北京时间)
+            最后更新时间: 2025-12-22 02:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,61 +61,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://brooker.co.za/blog/2025/12/15/database-for-ssd.html" target="_blank">What Does a Database for SSDs Look Like?</a>
+                    <a href="https://github.com/hellobertrand/zxc" target="_blank">Show HN: ZXC – Asymmetric, +40% decode vs. LZ4 on ARM (C, BSD-3, Fuzzed)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: charleshn</span> |
-                    <span>评分: 137</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2025-12-20 10:13</span>
+                    <span>作者: pollop_</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2025-12-17 13:18</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章探讨了为现代SSD优化的关系型数据库设计。作者Marc Brooker（AWS工程师）指出传统数据库（如PostgreSQL）是为机械硬盘设计的，而现代SSD在吞吐量和延迟上有1000倍的提升。他提出三个设计思路：
-
-1. 缓存策略：基于"五分钟法则"，建议将热数据缓存时间调整为30秒左右
-2. I/O大小：建议32KB作为SSD吞吐量和IOPS的最佳平衡点
-3. 持久性与复制：本地SSD读取性能优异，但写入需要考虑数据持久性
-
-文章还提到现代云计算环境带来了更多变化，如多数据中心部署、高核心数服务器等，这些因素都应该纳入新数据库设计考量。</p>
+                    <p>ZXC是一个针对内容分发和嵌入式系统优化的高性能非对称无损压缩库，采用"一次写入、多次读取"的设计理念。与LZ4等对称编解码器不同，ZXC牺牲压缩速度换取更高的解压吞吐量，在Apple Silicon上比LZ4快40%，在云端ARM处理器上快22%。该库已并入lzbench基准测试主分支，通过前端复杂编码优化现代CPU(特别是ARMv8)的指令流水线和分支预测性能。基准测试显示，ZXC在Apple M2上的解压速度达6,365MB/s，比LZ4快1.39倍，压缩率略优1.6%；在Google Axion ARM服务器上解压速度快22%。项目提供技术白皮书详细说明其非对称效率设计原理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据库设计是否应针对SSD优化，以及现代数据库架构的优缺点
+                    <div class="comments-summary">主要讨论点：[ZXC与LZ4压缩算法的性能比较]
 
 不同观点：
-• **依赖云服务与分布式存储**  
-  - [cornholio]认为云服务虽能提供高可用性，但会带来高昂成本和厂商锁定问题，多数应用并不需要分布式一致性。  
-  - [PunchyHamster]反驳分布式存储可能因集群故障导致更严重的数据丢失，传统单机持久化（如WAL）仍是可靠实践。  
-  - [exabrial]指出类似需求已有解决方案（如MySQL内存表），但质疑其适用于关键业务。
+• [ZXC通过牺牲压缩速度（构建时间）来最大化解压吞吐量（运行时间）]
+  - 支持论据：ZXC在解压速度上比LZ4更快。
+  - 例子：lzbench测试结果显示了ZXC在解压性能上的优势。
 
-• **SSD对数据库设计的影响**  
-  - [mrkeen]认为SSD仍存在顺序与随机访问的性能差距，传统缓冲设计仍有价值。  
-  - [firesteelrain]强调SSD缩小了随机/顺序差距，但数据库引擎未充分优化延迟方差和写入放大。  
-  - [grogers]提到SSD写入耐久性问题，LSM树因低写入放大更适用。  
-
-• **历史与现状的对比**  
-  - [wpietri]回顾磁盘时代数据库解决的物理存储问题，暗示部分设计可能过时。  
-  - [zokier]批评作者忽视现有SSD优化方案（如MyRocks+ZenFS）。  
-  - [didgetmaster]指出行存/列存的取舍在SSD时代需重新评估。
+• [LZ4也是一种非对称编解码器]
+  - 支持论据：LZ4在压缩和解压性能上也有明显的非对称性。
+  - 例子：页面下方的基准测试显示了LZ4的压缩速度和解压速度的差异。
 
 补充讨论：
-- **实际应用场景差异**：  
-  • [pmontra]认为全球化/24/7需求仅适用少数公司，但本地业务仍需高可用。  
-  • [ljosifov]赞赏DuckDB的单文件列式设计，适合轻量级场景。  
-- **技术细节争议**：  
-  • [londons_explore]指出SSD的4K块写入仍需WAL批量优化。  
-  • [Havoc]提议Optane在小查询性能上的优势未被充分利用。  
-  • [hyperman1]探讨Postgres页面大小调整对SSD的潜在收益。  
-
-争议焦点：  
-1. 分布式存储是否普遍优于单机持久化？  
-2. SSD特性是否彻底颠覆传统数据库设计原则？  
-3. 云服务带来的便利性与厂商锁定的代价如何权衡？</div>
+• 争议焦点：ZXC是否真的在解压性能上优于LZ4，以及这是否是ZXC的独特优势。
+• 讨论关系：aidenn0回应了sounds的观点，认为LZ4同样具有非对称性，质疑ZXC的独特卖点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334990" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46301631" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -126,13 +103,285 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://map.contrails.org/" target="_blank">Contrails Map</a>
+                    <a href="https://pomb.us/build-your-own-react/" target="_blank">Build Your Own React</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: schaum</span> |
-                    <span>评分: 115</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2025-12-20 07:38</span>
+                    <span>作者: howToTestFE</span> |
+                    <span>评分: 165</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2025-12-20 00:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了如何从零开始逐步构建一个简化版的React框架（基于16.8版本）。作者通过8个步骤：1)创建元素函数；2)渲染函数；3)并发模式；4)Fiber架构；5)渲染和提交阶段；6)协调算法；7)函数组件；8)Hooks。文章首先解释React核心概念，如JSX如何转换为createElement调用，以及DOM更新原理。通过将React代码转换为原生JS实现，展示了React底层工作原理。最终目标是构建一个支持Hooks、不包含类组件的简化React实现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对一篇关于React内部工作原理的交互式演示文章的评价和React技术本身的讨论。
+
+不同观点：
+• 正面评价：
+  - [agarren]、[franciscop]、[kitd]、[javcasas]、[a456463] 认为文章非常棒，交互式演示帮助理解React内部工作原理，甚至有读者基于此实现了自己的渲染器或类似React的库。
+  - [franciscop] 特别提到文章帮助他构建了一个后端渲染器，并取得了成功。
+  - [kitd] 认为商业产品的文档应该更多采用这种形式。
+
+• 负面评价：
+  - [Etheryte] 指出演示的动画在快速滚动时无法跟上，导致体验不佳。
+  - [braebo] 强烈批评React技术本身，认为其渲染模型引入了过多的间接性和抽象，导致代码难以维护，并表达了对React广泛使用的不满。
+
+• 中立或无关观点：
+  - [TZubiri] 提出了一个无关技术的问题，询问为什么使用.us域名。
+
+补充讨论：
+- 争议焦点主要集中在React技术本身的优劣上，[braebo]的批评引发了关于React是否是一个好的技术的讨论，但其他评论者并未直接回应这一观点。
+- [Etheryte]的技术性批评（动画问题）与其他评论者的正面评价形成对比，但未引发进一步讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46332526" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vorth.github.io/vzome-sharing/2024/02/18/baer-dome-from-H4-1001-09-13-04.html" target="_blank">Perfecting Steve Baer's Triple Dome</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: robinhouston</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-17 17:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>20世纪60年代中期，Steve Baer在科罗拉多州的Drop City艺术家社区研究穹顶建筑时，对巴克敏斯特·富勒的网格球顶结构不满，转而探索平行边多面体（zonohedra）几何。他建造了由三个截角菱形十二面体组成的标志性"三重穹顶"，但发现连接处存在116.56505°的几何缺陷。为解决这个问题，文章探讨了四维空间投影方案：通过将结构投射到三维空间，寻找既保持对称性又便于建造的设计方案，最终在标准零件使用和建筑可行性之间找到平衡。全文通过交互式3D模型展示了多种设计方案及其几何特性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对Steve的贡献和影响的评价
+
+不同观点：
+• 正面评价Steve的贡献和影响力
+  - 评论者认为Steve的工作非常出色（"super cool visualization format", "tremendous work"）
+  - 强调Steve在建筑领域的革命性贡献（"taught Drop City how to build domes"）
+  - 将其影响比作音乐界的革命性人物（"the architectural equivalent of teaching Johnny Ramone how to play a power chord"）
+  - 表达个人敬意（"RIP to one of the absolute giants"）
+
+补充讨论：
+- 评论包含个人经历（"I got to interview Steve"），增强了评价的可信度
+- 使用了强烈的赞誉语言（"genius", "absolute giants"）表明评论者对Steve的高度推崇
+- 通过Drop City圆顶建筑的例子具体说明Steve的影响
+- 没有出现反对或不同观点，整体是单一的高度赞扬立场</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46302928" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://mullvad.net/en/blog/announcing-gotatun-the-future-of-wireguard-at-mullvad-vpn" target="_blank">GotaTun – Mullvad's WireGuard Implementation in Rust</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: km</span> |
+                    <span>评分: 606</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2025-12-19 11:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Mullvad VPN推出基于Rust语言开发的WireGuard新实现GotaTun，这是从Cloudflare的BoringTun项目分支而来。GotaTun整合了隐私增强功能DAITA和多跳技术，针对Android平台优化，采用零拷贝内存策略提升性能。取代原有易崩溃的wireguard-go后，Android用户崩溃率从0.4%降至0.01%，同时提高了速度和电池效率。Mullvad计划2026年完成全平台部署，包括桌面和iOS，并计划进行安全审计和进一步性能优化。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[GotaTun对WireGuard性能的提升及其相关问题]
+
+不同观点：
+• [性能提升显著]
+  - Hakkin提到在Pixel 8上使用GotaTun后，WireGuard的吞吐量从不足100mbps提升至500mbps+
+  - 但同时也指出存在一个bug，可能导致手机无法进入深度睡眠状态，导致电池快速耗尽
+
+• [实现语言的选择]
+  - turblety使用Go编写WrapGuard，但质疑Rust是否更适合网络/固件类软件
+  - mintflow提到在MintFlow应用中避免使用Go实现的代理代码，转而使用Rust和C
+
+• [安全性与多样性的权衡]
+  - ur-whale提出多个实现同一协议的软件是否有利于安全性的问题
+    - 多样性可能带来好处
+    - 但同时也增加了攻击面
+
+补充讨论：
+• [上游贡献与开源协作]
+  - nevi-me询问是否可以将GotaTun的改动贡献给BoringTun上游项目
+
+• [应用支持与可用性]
+  - codethief希望Tailscale Android应用也能采用GotaTun
+  - alias_neo询问是否有方法让自托管WireGuard用户也能使用GotaTun实现
+
+• [技术细节探讨]
+  - vsgherzi对Go语言中内存分页和栈溢出防护提出了技术性质疑
+  - apitman希望看到更多关于wireguard-go崩溃原因的详细分析
+
+争议焦点：
+1. 不同编程语言(Rust vs Go vs C)在网络协议实现中的适用性
+2. 多个协议实现是否真的有利于安全性
+3. GotaTun的bug对用户体验的影响与性能提升的权衡</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46324543" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://huggingface.co/papers/2512.15603" target="_blank">Qwen-Image-Layered: transparency and layer aware open diffusion model</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dvrp</span> |
+                    <span>评分: 127</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-12-19 03:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文提出了Qwen-Image-Layered模型，通过扩散模型将RGB图像分解为多个语义分离的RGBA图层，实现图像的分层独立编辑。该模型包含三个关键组件：RGBA-VAE统一RGB和RGBA图像的潜在表示、VLD-MMDiT架构支持可变层数分解、多阶段训练策略将预训练模型转换为多层分解器。为解决高质量多层训练数据稀缺问题，作者构建了从PSD文件提取多层图像的流程。实验表明，该方法在分解质量和一致性编辑方面显著优于现有方法。代码和模型已在GitHub开源。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Qwen-Image-Layered模型的特点、应用场景及技术细节
+
+不同观点：
+• **支持与赞赏**  
+  - [dvrp] 强调该模型的开源性和Apache 2.0许可，以及其独特的RGBA理解和分层能力，认为这是创意专业人士（如Photoshop用户）的重要工具。  
+  - [Alifatisk] 赞赏Qwen团队在该领域的持续创新和产出。
+
+• **实用性探讨**  
+  - [joshstrange] 提出图像生成的编辑难题，认为分层功能可以解决生成后难以修改的问题，尤其是文本或其他叠加元素的调整。  
+  - [SV_BubbleTime] 对模型的具体工作方式提出疑问，如分层数量是否可自定义、VRAM需求是否随层数增加，以及生成步骤是否分阶段。
+
+• **技术疑问与需求**  
+  - [firenode] 和 [ThrowawayTestr] 关注实际工作流问题，询问是否有现成的工具（如Civitai或ComfyUI）支持该模型。  
+  - [BimJeam] 对模型表现持保留态度，认为需要进一步测试验证。
+
+补充讨论：
+- **争议焦点**：模型的实际应用门槛（如VRAM需求）和工作流支持是否完善。  
+- **技术细节**：[dvrp]补充了论文和模型资源的链接，但博客链接暂时失效，提示后续可能更新。  
+- **潜在价值**：分层生成可能填补现有图像生成模型在后期编辑灵活性上的不足，但需验证其易用性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46321972" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://abseil.io/fast/hints.html" target="_blank">Performance Hints (2023)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: danlark1</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2025-12-19 17:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章由Jeff Dean和Sanjay Ghemawat撰写，总结了他们在性能调优方面的经验与原则。文章强调不应忽视性能优化，引用Knuth的观点指出12%的性能提升在工程中也很重要。作者建议在编写代码时应平衡性能和可读性，并针对不同场景（如测试代码、应用代码或库代码）采取不同优化策略。文章提供了具体的性能优化技巧，主要基于C++示例，但原则适用于其他语言，适用于单机环境而非分布式系统或机器学习硬件优化。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[2023年性能提示文档的实用性和时效性，以及对性能优化的不同看法和实践建议]
+
+不同观点：
+• [svat]认为文档标题中的"(2023)"具有误导性，因为虽然文档创建于2023年，但内容实际上包含了许多更新的信息。
+• [justicehunter]和[jesse__]对文档的实用性表示赞赏，认为它整合了重要的性能优化信息，并采用了实用的方法。
+• [squirrellous]希望Google开源其gtl库，认为现有工具在质量和集成度上不如Google的内部工具。
+• [canyp]幽默地提到博客只更新到2023年，猜测可能是因为AI或Rust的兴起，并表示自己宁愿被巨型甲壳类动物吃掉也不愿意从事AI工作。
+• [barfoure]提出通过实际操作微控制器来深入理解性能优化，认为这样可以更直观地理解延迟和数据处理的优化。
+
+补充讨论：[其他值得注意的讨论点]
+• 讨论中还涉及到了对性能优化教育的不同看法，有人强调理论学习的重要性，而有人则更倾向于实践操作。
+• 争议的焦点在于文档的时效性和标题的准确性，以及性能优化知识获取的最佳途径。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46328274" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thenation.com/article/culture/luigi-pirandello-one-none-grand-review/" target="_blank">Luigi Pirandello's Broken Men</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Caiero</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-16 23:57</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文探讨了意大利诺贝尔文学奖得主路易吉·皮兰德娄从备受推崇到被遗忘的转变。皮兰德娄曾被视为20世纪最具现代性的剧作家，其作品以独特风格展现了个人在混乱世界中的挣扎。然而，他支持法西斯主义的政治立场导致其声誉受损，尤其在北美地区影响力骤减。文章通过分析其1925年小说《一个，无与十万个》指出，皮兰德娄作品既体现了对暴力的迷恋，也深刻记录了社会心理的断裂。尽管其法西斯倾向令人诟病，但他对现代社会病态的剖析仍具当代价值。作者最后指出，皮兰德娄家族崇尚武力的传统深刻影响了他的价值观，这种对"强人英雄主义"的执念贯穿其创作生涯。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：[路易吉·皮兰德娄（Pirandello）的文学地位及其与法西斯主义的关系]
+
+不同观点：
+• 观点一：皮兰德娄作为意大利顶尖作家，其作品在当代却鲜少被提及，原因在于他公开支持墨索里尼的法西斯政权。论据包括他在1924年一名社会主义领袖被刺杀后写给墨索里尼的公开信，信中表达了对墨索里尼的忠诚。
+• 观点二：对文学评论文章的写作方式提出批评，认为其未能具体说明皮兰德娄作品与20世纪法西斯主义思想的相关性。评论者认为，虽然文章提到皮兰德娄的思想具有时代性，但缺乏具体的分析和例证。
+
+补充讨论：
+• 争议焦点：皮兰德娄的政治立场是否影响了其文学作品的传播和接受度。
+• 讨论关系：评论者通过皮兰德娄的政治行为解释其文学地位的不显赫，同时批评相关文学评论未能深入探讨其作品与法西斯主义的关联。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=46296445" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://openai.com/index/frontierscience/" target="_blank">FrontierScience Benchmark by OpenAI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mustaphah</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2025-12-20 22:17</span>
                 </div>
 
                 <div class="summary-section">
@@ -142,30 +391,9 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[平流层气溶胶注入（SAI）技术的可行性与影响、飞机尾迹对环境的影响、地球工程的相关专利及其潜在风险]
-
-不同观点：
-• 支持SAI技术的观点：
-  - BBC报道英国政府资助的ARIA机构正在研究太阳辐射修正（SRM）项目，包括北极增冰和云层增反（nephihaha）
-  - 学术论文指出现有飞机可实现低空高纬度SAI（nephihaha）
-  - 项目团队开发了Python库供第三方建模（p-a_58213）
-
-• 质疑飞机尾迹影响的讨论：
-  - 工程师质疑飞机煤烟测量方法，认为尾迹是高空低温自然现象（reactordev）
-  - 争议焦点：尾迹导致净升温的机制（extropy提出核爆冷却效应的对比疑问）
-
-• 地球工程伦理风险警示：
-  - 列出多项涉及天气武器级改造的专利，认为语言表述"非人类友好"（pupdogg）
-  - 美学角度反对人为云层破坏天空景观（janpmz）
-
-补充讨论：
-- 可视化工具存在性能优化需求（andai）
-- 水蒸气温室效应数据补充（zeristor）
-- 项目团队正在招聘工程师（mlshapiro）
-- 资金背景披露（pfdietz）
-- 与"化学尾迹"阴谋论的切割（Sieyk）</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46334296" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46340154" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -176,119 +404,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://alexschapiro.com/security/vulnerability/2025/11/20/avelo-airline-reservation-api-vulnerability" target="_blank">Reverse Engineering US Airline's PNR System and Accessing All Reservations</a>
+                    <a href="https://shash42.substack.com/p/how-to-game-the-metr-plot" target="_blank">How to Game the METR Plot</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bearsyankees</span> |
-                    <span>评分: 124</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2025-12-19 18:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章主要讲述了作者发现Avelo航空公司预订系统存在严重漏洞的过程：2025年10月15日，作者发现系统仅需6位确认码即可获取完整预订信息（含敏感个人信息），无需验证姓氏且无请求速率限制。攻击者理论上可在6小时内通过暴力破解获取所有乘客数据。作者在10月16日联系Avelo安全团队后，对方迅速响应并在11月13日修复漏洞。整个过程体现了负责任的漏洞披露流程，作者称赞Avelo团队专业高效的处理方式。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Avelo航空公司的安全漏洞及其处理方式]
-
-不同观点：
-• **Avelo处理安全漏洞的态度**
-  - 部分用户认为Avelo团队响应迅速、专业，并迅速修复了问题（mtlynch、commandlinefan）。
-  - 另一部分用户（如RealSoyboyRoy）认为Avelo花了四周时间修复一个严重的安全漏洞，反应过慢，且缺乏问责。
-
-• **安全漏洞的技术细节**
-  - 有用户（didgetmaster）指出，即使需要姓氏，攻击者仍可能通过常见姓氏暴力破解大量预订信息。
-  - commandlinefan批评Avelo将完整的PNR数据集返回到前端，认为这是根本性设计问题。
-  - miki123211询问Avelo使用的GDS系统，并讨论确认码是否足以唯一标识预订。
-
-• **法律与责任问题**
-  - mtlynch提出应有法律对PII泄露进行罚款，并奖励举报者，以增强企业责任感。
-  - RealSoyboyRoy类比食品安全问题，批评社会对数据泄露的容忍度过高。
-
-• **技术架构的合理性**
-  - jbergler对Avelo每秒处理10万请求的说法表示怀疑，认为航空公司的技术架构不太可能支持如此高的负载。
-
-补充讨论：
-- **争议焦点**：Avelo修复漏洞的速度是否合理，以及是否需要更严格的法律来规范数据安全。
-- **其他讨论**：部分用户（如klysm）对文章的写作风格表示不满，认为过于煽情。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46328992" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/lovell/sharp" target="_blank">Sharp: High performance Node.js image processing/optimization</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nateb2022</span> |
-                    <span>评分: 43</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2025-12-16 17:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Sharp 是一个高性能的 Node.js 图像处理模块，主要功能包括快速调整 JPEG、PNG、WebP、AVIF 和 TIFF 等格式的图片大小。它基于 libvips 库，处理速度比 ImageMagick 和 GraphicsMagick 快 4-5 倍，支持旋转、裁剪、合成和伽马校正等操作，并能正确处理色彩空间、ICC 配置文件和透明通道。Sharp 适用于 Node.js、Deno 和 Bun 等 JavaScript 运行时，无需额外安装依赖。该项目采用 Apache 2.0 许可证，已在 GitHub 上获得大量关注。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[对libvips和sharp库的评价及其应用场景]
-
-不同观点：
-• 正面评价：
-  - [8n4vidtmkvmk] 认为libvips是一个好的库，尽管API有些古怪，比如在读取图像尺寸或处理图像元数据方向时可能需要转换缓冲区，但整体上有效。
-  - [ahurmazda] 提到libvips的golang包装器简单且速度快，工作中非常喜欢使用。
-  - [Daiz] 长期使用并偶尔贡献给sharp，认为它是一个在需要处理图像时的强大工具。
-  - [bhouston] 称赞sharp是一个惊人的库，多年来用于多个项目，包括自动图像调整大小、格式转换和优化。
-  - [pupppet] 在CloudFront行为中长时间使用sharp来自动调整图像大小，表示感谢。
-  - [ejoebstl] 表示sharp非常棒，在大规模项目中从未让人失望。
-
-• 补充讨论：
-  - [jcupitt] 提到libvips 8.18.0的新功能，包括对UltraHDR、相机RAW图像和Oklab色彩空间的支持，并预告这些功能将在未来六个月内加入sharp。
-
-争议的焦点：
-- 尽管大多数评论者高度评价sharp和libvips，[8n4vidtmkvmk]指出了API的一些问题，如处理图像元数据时可能需要额外的步骤（如转换缓冲区）。这显示了虽然库功能强大，但在某些具体用例中可能存在不便。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46291477" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://secureblue.dev/" target="_blank">Secureblue: A security-focused desktop and server Linux operating system</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pmaddams</span> |
+                    <span>作者: EvgeniyZh</span> |
                     <span>评分: 3</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2025-12-20 20:16</span>
+                    <span>发布时间: 2025-12-21 14:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>secureblue是一个专注于安全的开源Linux桌面和服务器操作系统，基于Fedora Atomic Desktop的OCI容器镜像构建。它利用Fedora默认启用的SELinux等安全工具，旨在通过增强防护来提升系统安全性，同时尽可能保持易用性。secureblue适合以使用Linux为主、安全为辅的用户，而非追求最高安全级别的用户。项目提供GitHub和Discord社区支持。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46339217" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46345190" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -299,264 +433,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.jeffgeerling.com/blog/2025/15-tb-vram-on-mac-studio-rdma-over-thunderbolt-5" target="_blank">1.5 TB of VRAM on Mac Studio – RDMA over Thunderbolt 5</a>
+                    <a href="https://www.nbcnews.com/id/wbna46714752" target="_blank">Homeless people used as mobile Wi-Fi hotspots (2012)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 606</span> |
-                    <span>评论数: 39</span> |
-                    <span>发布时间: 2025-12-18 22:23</span>
+                    <span>作者: KomoD</span> |
+                    <span>评分: 16</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2025-12-21 09:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章主要介绍了作者测试苹果Mac Studio集群通过Thunderbolt 5实现RDMA（远程直接内存访问）技术的情况。这项技术使多台Mac的内存可以统一使用，显著提升AI大模型等应用的性能。测试的4台Mac Studio组成1.5TB统一内存集群，成本近4万美元，但作者表示这是苹果提供的测试设备。
-
-文章对比了Mac Studio与其他厂商的AI系统，指出Mac Studio在性能、功耗和噪音方面具有优势，但也提到其在网络连接和集群管理方面的不足。作者进行了基准测试，显示M3 Ultra芯片在多核性能上超过竞争对手，特别是在AI相关任务中表现突出。最后，文章探讨了Mac Studio集群的实用性和成本效益问题。</p>
+                    <p>2012年SXSW科技大会上，营销机构BBH Labs因"流浪者热点"项目引发争议。该机构雇佣13名流浪者携带移动Wi-Fi设备为参会者提供网络服务，每人每日获得20美元加小费。支持者认为这是就业机会和发声渠道，批评者则谴责其剥削弱势群体、凸显数字鸿沟。项目负责人辩称灵感来自流浪者报纸，旨在促进社会互动。尽管参与者表示满意，舆论仍质疑科技精英与底层民众的割裂。这场"慈善实验"最终因伦理争议演变成公关危机。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[M5 Max/Ultra设备的性能期望、RDMA和Thunderbolt的性能对比、集群配置的可行性以及苹果的产品策略]
+                    <div class="comments-summary">主要讨论点：关于让无家可归者参与商业活动的争议
 
 不同观点：
-• **硬件性能期望**  
-  - behnamoh期望M5 Max/Ultra设备支持更高带宽的QSFP链接（200Gb/s或400Gb/s）、神经加速器以降低延迟、1TB统一内存和1TB/s带宽，甚至支持超频。  
-  - pjmlp批评苹果未推出带PCIe插槽的Mac Pro，认为Thunderbolt功能是“噱头”。
-
-• **RDMA与Thunderbolt的性能对比**  
-  - xmddmx指出Thunderbolt 5相比2.5G以太网仅带来10%的性能提升，质疑10G以太网的潜在表现，并提到Thunderbolt的拓扑限制（最多4台设备）。  
-  - clan提出是否可以使用RoCE（RDMA over Converged Ethernet）替代Thunderbolt，并讨论高带宽适配器的可行性。
-
-• **集群配置与实用性**  
-  - rahimnathwani对从单节点到多节点的性能提升（仅32%）表示疑惑，认为内存限制可能未完全解决。  
-  - CaliforniaKarl将多节点全连接配置比作SGI的NUMALink，强调其在高性能计算中的优势。  
-  - supermatt批评评测未涵盖批处理和多实例推理的性能，认为这对目标用户更重要。
-
-• **苹果的产品策略**  
-  - chis质疑苹果为何优先开发RDMA等服务器功能，而忽略远程管理等基础需求，推测苹果可能有未公开的M系列服务器产品。  
-  - poemxo提到文章中提到的Exo消失和SMB Direct的细节，认为这些是值得深入探讨的话题。
+• 认为这是人为制造的争议 - 评论者指出无家可归者获得了临时工作和收入，这与让他们在街上展示商店/公司标志或在会议上携带热点设备没有本质区别
+• 暗示这种安排实际上是双赢的 - 企业获得了宣传，无家可归者获得了工作和收入
 
 补充讨论：
-- **技术实现与开源支持**：Tepix询问Linux是否支持Thunderbolt的RDMA，提到Strix Halo设备的潜在用途。  
-- **用户体验**：mikestaas抱怨Mac开发中必须通过UI点击按钮的不便。  
-- **访问问题**：XCSme提到访问帖子时出现重定向错误。  
-- **其他评测**：bluedino询问之前关于Thunderbolt集群的讨论，并分享相关视频链接。  
-
-争议焦点：
-- Thunderbolt是否优于以太网在集群中的性能表现（xmddmx vs. 其他人）。  
-- 苹果是否应推出更多专业级硬件（如PCIe插槽的Mac Pro）（pjmlp vs. 苹果当前策略）。</div>
+• 争议焦点在于：这是否是利用弱势群体的问题
+• 提出的类比很有力 - 将两种看似不同的商业雇佣方式进行比较，说明它们本质上相似</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46319657" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.evilsocket.net/2025/12/18/TP-Link-Tapo-C200-Hardcoded-Keys-Buffer-Overflows-and-Privacy-in-the-Era-of-AI-Assisted-Reverse-Engineering/" target="_blank">TP-Link Tapo C200: Hardcoded Keys, Buffer Overflows and Privacy</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sibellavia</span> |
-                    <span>评分: 333</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2025-12-19 18:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了作者如何利用廉价IP摄像头进行逆向工程实验的经历。作者选择了TP-Link Tapo C200摄像头作为研究对象，详细描述了从获取固件、解密固件到寻找漏洞的完整过程。文章特别强调了AI工具（如Grok、GhidraMCP等）在整个逆向工程中的辅助作用，帮助作者高效完成了固件分析。最终，作者在这款摄像头的固件中发现了一些安全漏洞，影响了约25,000台直接暴露在互联网上的设备。文章既分享了技术细节，也展示了AI如何简化安全研究和逆向工程流程。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[TP-Link摄像头安全漏洞及其应对措施]
-
-不同观点：
-• [rao-v]：认为文章过度批评，将真正的安全问题与普遍问题混为一谈，并担心文章可能导致管理层过度封锁固件而非改进安全实践。
-• [magmostafa]：强调网络分割对IoT设备的重要性，建议使用VLAN隔离设备并严格限制网络访问。
-• [JaggedJax]：推测其他TP-Link摄像头模型可能也有类似问题，并指出固件更新不及时。
-• [aaronax]：质疑TP-Link是否有意忽视安全问题，认为低价Wi-Fi摄像头普遍存在类似漏洞。
-• [nine_k]：倾向于不购买没有开源固件的网络设备，手机除外。
-• [shreddit]：对作者使用特定AI工具（Grok）表示不满，引发对AI工具选择的争议。
-
-补充讨论：
-• 争议焦点：TP-Link的安全问题是普遍现象还是可避免的疏忽。
-• 其他建议：使用二手企业网络设备、开源路由器、隔离VLAN、禁用UPnP等。
-• 技术细节：固件存储在开放的S3桶中，硬编码密钥问题跨产品线存在。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46329038" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://cursor.com/blog/graphite" target="_blank">Graphite is joining Cursor</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: fosterfriends</span> |
-                    <span>评分: 263</span> |
-                    <span>评论数: 41</span> |
-                    <span>发布时间: 2025-12-19 15:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Graphite是一家专注于提升代码审查效率的开发平台，近期宣布将被Cursor收购。Graphite致力于优化开发工作流，缩短代码编写与协作审查之间的鸿沟。收购后，Graphite将保持独立运营，未来计划与Cursor产品深度整合，包括加强本地开发与代码审查的联动、打造更智能的代码审查系统等，但具体细节暂未公开。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[Graphite被Cursor收购的影响及行业前景]
-
-不同观点：
-• **支持收购**  
-  - Greg（Graphite联合创始人）认为合并能加速团队发展，保留原有愿景，同时获得更多资源和专业支持  
-  - 举例：Cursor提供更多开发协作工具的资源与专业知识，使产品路线更雄心勃勃  
-
-• **对Cursor前景的质疑**  
-  - [bangaladore]认为Cursor缺乏技术护城河，模型成本竞争压力大  
-  - [AlexB138]质疑Cursor的IDE价值下降，收购Graphite仅为业务补充  
-
-• **产品替代担忧**  
-  - [timvdalen]担心收购后Graphite原有工作流可能被破坏  
-  - [scottydelta]举例Cursor此前收购Supermaven后将其关闭，引发信任危机  
-
-• **AI工具替代性讨论**  
-  - [gravypod]质疑AI公司若真能提升开发效率为何还需收购  
-  - [outofdistro]对比Qodo等工具，呼吁建立AI代码审查工具的基准测试  
-
-补充讨论：  
-- **命名冲突**：[AbraKdabra]指出Graphite与已有监控工具重名问题  
-- **用户反馈**：[ravirajx7]提出AI代码审查的实际挑战（如依赖diff的局限性）  
-- **行业趋势**：[matt3210]将此事视为AI项目被“金字塔上层”吸收的案例  
-- **替代方案**：[rileymichael]推荐Git Spice和Jujutsu作为Graphite替代品  
-
-争议焦点：  
-1. Cursor是否具备长期竞争力（技术护城河vs资源整合优势）  
-2. 收购对Graphite产品独立性的影响（功能延续vs被逐步取代）  
-3. AI代码审查工具的实用边界（辅助增强vs过度依赖）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46327206" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://karpathy.bearblog.dev/year-in-review-2025/" target="_blank">LLM Year in Review</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: swyx</span> |
-                    <span>评分: 365</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2025-12-19 20:49</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>2025年大语言模型（LLM）发展的三大关键变化：  
-1. **强化学习从可验证奖励（RLVR）**：取代传统RLHF，通过数学/编程等可验证任务训练，使模型自发形成类似“推理”的能力，显著提升性能。  
-2. **“幽灵”智能与“锯齿”能力**：LLM的智能不同于生物智能，呈现高度不均衡的特点——在特定领域表现卓越，但可能在其他简单任务中表现糟糕，导致基准测试可信度下降。  
-3. **Cursor类应用崛起**：以Cursor为代表的LLM应用通过上下文工程和多模型调用编排，开辟了垂直领域的新应用层，推动“X领域的Cursor”概念流行。  
-
-2025年的进步主要来自RLVR的优化和新型应用模式的探索，而非单纯扩大模型规模。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[LLMs在编程、UI生成、智能体进化等方面的应用与挑战]
-
-不同观点：
-• **Claude Code的实用性**  
-  - 用户socketcluster认为Claude Code是年度最具创新性的工具，因其生成的代码风格与自身高度一致，且效率极高（90%-95%可预测性）。  
-  - 争议点：thoughtpeddler指出其并非完全本地运行（仅TUI本地化，推理仍在云端），并质疑未来发展方向。
-
-• **LLM生成UI的潜在问题**  
-  - jkubicek担忧LLM为每个用户/设备生成定制化UI会导致交互混乱（如不可预测的快捷键行为）。  
-  - TheAceOfHearts则认为UI生成是未充分探索的关键领域，需解决可靠性和连续学习问题。  
-  - lysecret反驳称“文本作为UI不会消失”，质疑主流观点。
-
-• **智能体进化与“幽灵”隐喻**  
-  - starchild3001赞同Karpathy的“召唤幽灵”模型，认为当前LLM是特定任务过优化的产物，并提出“临时编码”（vibe coding）现象。  
-  - victorbuilds补充数据污染问题（LLM生成内容反哺训练数据）。  
-  - delichon从认识论角度讨论“锯齿状智能”，主张多类型智能互补可能实现全面智能。
-
-• **模型性能与行业问题**  
-  - mips_avatar关注快速轻量模型（如Gemini 3 Flash）被忽视的价值。  
-  - cheesecompiler质疑LLM智能的不稳定性（时而极聪明时而极笨），并指出非专业人士受益更多但幻觉问题严重。  
-  - andai批评GPT-5增量更新策略，认为o3/o4-mini本应命名为GPT-5以突显突破性。
-
-补充讨论：
-- 争议焦点包括：本地化与云推理的界限（Claude Code）、UI生成的可行性、开源/硬件约束（thoughtpeddler）、基准测试可信度（starchild3001）。  
-- 遗留代码处理（sireat）和“纳米香蕉”（mvkel）等具体技术细节引发工具选择疑问。  
-- Karpathy的修辞风格（augment_me）和行业权力集中（thoughtpeddler）成为次要讨论点。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46330726" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://pckf.com/viewtopic.php?t=18248" target="_blank">Reconstructed Commander Keen 1-3 Source Code</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: deevus</span> |
-                    <span>评分: 173</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2025-12-19 03:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章宣布了《指挥官基恩1-3》游戏源代码的公开重建版本，支持从1990年11月的测试版到1.34版的所有已知版本。作者提到需要使用Turbo C++ 1.00和Turbo Assembler 2.0或更高版本来编译大部分版本，而某些特殊版本需要Borland C++ 2.0。作者还分享了重建过程中遇到的编译器版本和变量顺序问题，并通过实验找到解决方案。此外，文章指出部分代码可能来源于Softdisk公司的《Dangerous Dave》游戏，暗示id Software可能未经授权使用了这些代码。最后，作者鼓励大家探索修改代码。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：[关于一个phpBB论坛的讨论，涉及代码发布合法性、游戏历史和技术细节]
-
-不同观点：
-• [对论坛存在的赞赏]  
-  - 用户taco_emoji表达了对phpBB论坛仍然存在的喜爱，认为它避开了主流社交媒体的糟糕环境。
-
-• [关于代码发布合法性的质疑]  
-  - 用户albertzeyer对K1n9_Duk3是否有权将代码以GPL协议发布提出疑问，并询问“reconstructed”是否意味着反编译，以及这是否符合GPL许可。
-
-• [游戏开发历史的讨论]  
-  - 用户kqr对id Software如何高效复用代码（尤其是从Softdisk的代码）感到好奇，并提到John Carmack和John Romero的技术能力是其成功的关键。  
-  - 用户guidedlight称赞Carmack的天才，认为这些游戏展示了PC的游戏潜力。
-
-• [技术细节与工具开发的兴趣]  
-  - 用户geon讨论了变量名排序的技术细节，并询问是否可以从二进制文件中恢复哈希值以暴力破解原始名称。
-
-• [对游戏项目的关注]  
-  - 用户newsre4der询问该讨论是否能帮助Commander-Genius项目的进展。  
-  - 用户oaiey幽默地表示保持Commander Keen的活力应该是人类的优先项目。
-
-补充讨论：
-- 争议焦点：代码发布的合法性（GPL许可与反编译问题）以及id Software代码复用的道德和法律问题。
-- 用户GaryBluto提到网站间歇性不可用，这是一个与技术无关但影响讨论的实际问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=46321982" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=46343419" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
