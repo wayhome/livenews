@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-16 15:45 (北京时间)
+            最后更新时间: 2026-05-16 18:11 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,115 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://tmctmt.com/posts/mullvad-exit-ips-as-a-fingerprinting-vector/" target="_blank">Mullvad exit IPs are surprisingly identifying</a>
+                    <a href="https://nobodywho.ooo/posts/whats-in-a-gguf/" target="_blank">What's in a GGUF, besides the weights – and what's still missing?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: RGBCube</span> |
-                    <span>评分: 372</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2026-05-15 02:35</span>
+                    <span>作者: bashbjorn</span> |
+                    <span>评分: 183</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-05-14 17:21</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章指出 Mullvad VPN 会按 WireGuard 公钥确定性分配服务器出口 IP，而非每次随机。作者测试 9 台服务器、3650 个公钥后发现，理论上组合巨大，实际仅出现 284 种。原因可能是 Mullvad 用公钥作种子调用 RNG，并以各服务器 IP 池大小为上限，导致不同服务器分配到相近百分位的 IP。这样多个出口 IP 组合可能成为识别用户的指纹风险。</p>
+                    <p>文章介绍 GGUF 除模型权重外还包含的关键信息：聊天模板（Jinja2，用于格式化对话、工具调用等）、特殊 token（如 BOS/EOS、工具调用标记、轮次标记）以及推荐采样配置。GGUF 将这些分散配置整合进单文件，提升了本地 LLM 使用与分发的便利性，但仍需推理端支持相应模板解释和配置读取。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Mullvad 被曝不同服务器出口 IP 分配存在可关联性，可能形成用户级指纹；讨论集中在其严重性、VPN匿名预期、修复与披露流程。
+                    <div class="comments-summary">主要讨论点：围绕 GGUF“单文件、易分发”的设计优势，以及其在模型结构、模板、视觉/投影模型支持上的不足展开。
 
 不同观点：
-• Mullvad回应：部分行为是有意设计、部分不是；成因与原文描述不完全一致，已在部分基础设施测试补丁，并会重新评估“隐私 vs 用户体验”的取舍；同时呼吁研究者发布前先通知厂商。
-• 风险严重派：认为这种跨服务器稳定映射像“情报机构会设计的VPN”，可帮助论坛管理员识别封禁用户小号；元数据仍会泄露身份。
-• 质疑论证派：有人指出“>99%同一人”的说法统计上不严谨；重叠区间只能排除大多数用户，不能直接得出个体识别准确率。
-• VPN定位派：认为VPN本就不等同Tor，不应期待对访问网站匿名；需要强匿名应使用Tor，且Tor也可能被出口节点攻击。
-• 工程折中派：单服务器内稳定IP有用户体验价值，例如固定服务可用性；但跨服务器相关性应修复，如用 user key + server id 随机化。
-• 信任Mullvad派：有评论称Mullvad过往在地理定位数据上较诚实，相信会修复。
-• 站点治理派：有人认为网站运营者可利用此属性执行封禁；也有人提到持续维护VPN IP封锁列表，服务方与用户之间是“猫鼠游戏”。
+• 支持 GGUF 价值：有人认为 GGML/GGUF 对开源 AI 生态非常关键，llama.cpp、whisper.cpp、stable-diffusion.cpp 等跨平台体验好；相比 HuggingFace safetensors+多个 JSON 文件，GGUF 更紧凑、支持完善。  
+• 单文件理念受质疑：Philpax 和 badsectoracula 都认为投影/视觉模型被拆成额外文件违背 GGUF 初衷；实际使用中会误以为下载一个 GGUF 即可运行。  
+• safetensors 派观点：有人指出图像生成领域模型本来常是单文件，safetensors 也能嵌入元数据；多文件并非大痛点，尤其大型文本编码器没必要重复打包进每个 checkpoint。  
+• 架构表达不足：theapadayo 和 monocasa 认为 GGUF 最大缺口是不能存储/描述完整计算图，只保存架构字符串和参数元数据，导致新模型架构仍需消费者手写支持；建议引入 DSL 或从 PyTorch 模块转换到 GGML ops。  
+• 模板与可读性争议：有人吐槽聊天格式比 XML 更难读；另有人抱怨 libllama 的 chat template API 硬编码格式，希望暴露真正的 Jinja2 解析能力，尤其支持 tool calling。  
+• 未来功能期待：tool calling 格式被认为是从 LLM 走向 agent 的重要里程碑。  
 
-补充讨论：有人追问作者是否提前联系Mullvad；还有人疑惑第三方客户端为何不能像官方客户端一样轮换WireGuard key。</div>
+补充讨论：还有人提到 GGUF 命名历史和项目贡献争议；一条评论质疑文章发布日期“2026 年 5 月 18 日”。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48143880" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48138332" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://antirez.com/news/165" target="_blank">A few words on DS4</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: caust1c</span> |
+                    <span>评分: 424</span> |
+                    <span>评论数: 29</span> |
+                    <span>发布时间: 2026-05-14 22:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：DwarfStar4/DS4 作为面向 DeepSeek V4 Flash 的本地推理运行时，围绕硬件门槛、模型能力、是否应独立于 llama.cpp、以及本地大模型未来展开讨论。
+
+不同观点：
+• 本地模型能力已接近顶级闭源模型：有人认为 DeepSeek V4 Pro/Flash 在编程、工具调用上已接近 Claude，慢但不明显更笨；Q4 量化在 Mac Studio、128GB M5 上体验良好，甚至让人忘记它是本地模型。  
+• 硬件门槛仍高但前景可期：目前大致需要 96GB/128GB 级别内存或显存，普通用户难以使用；也有人类比早期家用电脑，认为本地 AI 会逐渐普及，并期待未来 16GB RAM 也能运行类似能力模型。  
+• 质疑独立推理引擎的必要性：多位评论者认为 DS4 基于 llama.cpp/GGML，却为单一模型另起项目，可能分散开发资源；相关优化如特殊 attention、KV cache、2bit 量化或许应并入通用引擎。  
+• 支持窄而深的优化方向：也有人看重 DS4 针对 Metal、CUDA、DeepSeek V4 Flash 的专门优化，认为特殊 2bit 量化、MTP、低资源强模型对本地和云端批处理业务都有价值。  
+• 商业模式争议：有人认为当“足够聪明”的模型可用更长时间补足能力差距后，Anthropic 等依赖最强模型溢价的模式可能受冲击。  
+
+补充讨论：有人分享离线飞机上用本地 agent 的体验、功耗约60W；也提到 GPT 5.5 在底层性能优化代码中比 Opus 更有帮助。争议焦点主要是：专用引擎带来的性能收益是否值得生态碎片化。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48142108" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nytimes.com/2026/05/15/us/kars4kids-advertising-banned-california.html" target="_blank">Judge Bars Kars4Kids from Broadcasting 'Misleading' Ads in California</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: xnx</span> |
+                    <span>评分: 96</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-05-15 19:27</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕 Kars4Kids 汽车捐赠广告是否误导、宗教关联披露、资金用途及其广告文化影响展开。
+
+不同观点：
+• 认为 Kars4Kids 长期存在误导：其广告强调“帮助孩子”和便捷捐车，却未清楚说明大部分收益流向新泽西的犹太组织，且项目包括资助孩子赴以色列等，与公众理解的“本地儿童慈善”有差距。有人分享亲身经历：捐出约5000美元汽车后才发现资金用途，感觉被骗。
+
+• 认为宗教背景本身不应成为问题：有评论指出，美国许多慈善组织都有宗教关联，关键不在“犹太组织”，而在广告是否充分披露资金用途，以及实际项目如成人婚介等是否偏离宣传。
+
+• 对捐车模式本身持怀疑态度：有人认为捐车未必划算，可能不如直接卖给报废/回收商，再把现金捐给自己认可的慈善机构；Kars4Kids的卖点更像是“方便拖车”和“最大化税务抵扣”，而非公益成效。
+
+• 对慈善行业整体不信任：有评论极端地称“所有慈善都是骗局”，也有人类比其他灾后募捐，批评资金最终流向未真正帮助受害者的 NGO。
+
+• 广告歌曲成为共同吐槽点：多名用户提到洗脑广告歌“1-877-Kars4Kids”，希望以后不用再听；也有人提到该组织因《善地》中的讽刺桥段而被大众记住。
+
+补充讨论：部分评论只补充新闻链接或指出重复提交；争议焦点主要是“宗教 affiliation 是否相关”与“广告是否构成误导”。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48152777" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -105,29 +184,29 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: allenleee</span> |
-                    <span>评分: 594</span> |
-                    <span>评论数: 33</span> |
+                    <span>评分: 681</span> |
+                    <span>评论数: 37</span> |
                     <span>发布时间: 2026-05-14 15:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>文章介绍作者将RTX 5090桌面GPU通过Thunderbolt eGPU接到M4 MacBook Air。因macOS缺乏驱动，改用macOS宿主上的ARM Linux虚拟机做PCI直通，解决BAR映射、DMA等问题，并测试游戏与AI推理性能。结论是可行但受带宽、驱动和兼容性限制。</p>
+                    <p>文章讲述作者将RTX 5090等桌面GPU通过Thunderbolt接入M4 MacBook Air，并用macOS宿主机运行ARM Linux虚拟机、PCI直通解决驱动缺失问题。文中详述BAR映射、DMA、Apple Silicon限制、性能优化与游戏/AI基准测试，证明方案可行但复杂且受带宽等限制。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕在 Apple Silicon Mac 上通过 eGPU/RTX 5090 实现 GPU 直通、游戏运行与本地 AI 推理加速的技术意义和可行性。
+                    <div class="comments-summary">主要讨论点：围绕在 Apple Silicon Mac 上通过外接 NVIDIA GPU/eGPU 实现 GPU 直通，讨论其技术突破、AI 推理价值、游戏兼容性及苹果官方支持缺失。
 
 不同观点：
-• 技术突破派：多人认为这是“疯狂科学”“真正的黑客精神”，尤其赞赏 DMA、QEMU、驱动等底层实现，突破了“Apple Silicon 不支持 eGPU”的普遍认知。  
-• AI 实用价值派：认为最重要的不是游戏，而是本地 LLM 推理，尤其是 prefill/TTFT 大幅改善；长上下文下 Mac 自带 GPU 解析慢，而 eGPU 可让本地推理更实用。  
-• 苹果支持不足派：有人长期希望 Apple 支持 VM GPU 直通或开放更好的 PCIe/eGPU能力，批评当前限制如 1.5GB window；也指出官方仅支持 Intel Mac + AMD eGPU。  
-• 游戏角度：游戏演示有趣，但并非理想 Mac 游戏方案；也有人指出部分问题可能通过 Vulkan/MoltenVK 支持解决，未必需要如此复杂的 RTX 5090 外接方案。  
-• 实操兴趣派：有用户考虑将闲置 5090 接入 M4 Mini 做本地推理，但担心供电、固定结构，以及模型并发参数如 max-num-seqs 与 max-model-len 的取舍。  
-• AI 辅助质疑派：有人调侃项目中先问 AI 的做法，认为 AI 常会编造或否认新硬件信息。
+• 技术突破派：多人认为这是“疯狂科学/真正的黑客精神”，尤其是 DMA、QEMU、PCIe 等部分技术深度高；原本以为 Apple Silicon 不支持 eGPU，结果项目证明了非官方路径可行。  
+• AI 实用派：认为最大价值不在游戏，而在本地 LLM 推理。Mac 虽有大内存优势，但 prompt prefill/TTFT 很慢；接入 RTX 后长上下文预处理可从十几秒降到毫秒级，显著提升本地模型可用性。  
+• 苹果支持期待派：希望 Apple 官方支持 GPU 直通、更大 PCIe 映射窗口和足够带宽；有人表示若能原生支持 NVIDIA GPU 做推理/训练，会立刻升级 MBP。  
+• 游戏兼容讨论：有人指出 macOS OpenGL 支持差导致部分游戏不可玩，但可能通过 Vulkan/MoltenVK 扩展解决；也有人讨论 Windows 游戏多为 x86，因此需要模拟，想知道 ARM VM 表现如何。  
+• 实践部署派：有人设想用 Mac Mini + RTX 5090 做本地推理工具，但也提到供电、固定结构，以及多请求场景下 `max-num-seqs` 与 `max-model-len` 的权衡。  
+• 谨慎/批评观点：有人提醒不要过度依赖 AI 辅助，因其可能编造硬件信息；也有人强调这并非理想 Mac 游戏方案。
 
-补充讨论：争议焦点主要在于该方案的实际应用价值：作为游戏方案偏炫技，但作为 CUDA/本地 AI 加速方案被普遍认为更有现实意义。</div>
+补充讨论：争议焦点主要在于苹果是否应开放/支持此类外接 GPU 能力，以及该方案更适合 AI 推理还是游戏。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48137145" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -140,34 +219,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://spectre-docs.pages.dev" target="_blank">Spectre Programming Language</a>
+                    <a href="https://tmctmt.com/posts/mullvad-exit-ips-as-a-fingerprinting-vector/" target="_blank">Mullvad exit IPs are surprisingly identifying</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: asdkop</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-05-15 23:14</span>
+                    <span>作者: RGBCube</span> |
+                    <span>评分: 577</span> |
+                    <span>评论数: 29</span> |
+                    <span>发布时间: 2026-05-15 02:35</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Spectre 是面向低层系统编程的安全、契约式语言，支持类型不变量、函数前后置条件和默认不可变。其目标是在保留手动内存控制与开发便利的同时提升正确性；契约可编译期检查，必要时运行期检查。它编译到 QBE IR，并支持实验性 LLVM/C99 后端及 C 到 Spectre 转译。</p>
+                    <p>文章指出 Mullvad VPN 的出口 IP 由 WireGuard 公钥通过种子随机算法确定，并非每次随机。作者测试发现多服务器出口 IP 组合高度相关，仅有 284 种，因各服务器按相同比例选取 IP。这可能成为跨站追踪和用户指纹识别向量，尤其公钥长期不轮换时风险更高。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕该语言/工具的安全性定位、实际价值以及“trust”机制的必要性展开讨论。
+                    <div class="comments-summary">主要讨论点：Mullvad 被指出存在可通过 WireGuard key/出口 IP 分配规律，在不同服务器间关联同一用户的隐私风险；讨论围绕其严重性、VPN应承担的匿名性、技术修复与披露流程展开。
 
 不同观点：
-• 安全性存疑：Panzerschrek 关心它是否真正做到“安全代码无未定义行为（UB）”，还是只增加了一些安全特性，但仍存在漏洞，可能导致严重 bug。争议焦点在于其安全承诺是否足够严格、可验证。
+• Mullvad 官方回应：部分行为是有意设计，部分不是；成因并非文章所述那么简单，已在部分基础设施测试补丁。官方也会重新评估“稳定出口 IP”等设计在隐私与用户体验之间的取舍，并呼吁研究者发布前先通知厂商。
 
-• 价值定位不清：slowcache 认为它的生态位不明确。其主要吸引点似乎是能在函数内提供 invariants（不变量），但这并非新概念，只是变成了专门关键字；除此之外，看起来像是功能不完整的 Rust。
+• 认为问题严重：有人称这种可关联不同出口 IP 的设计“像情报机构会设计的 VPN”，认为元数据仍会泄露用户行为；也有人认为跨服务器 IP 关联必须修复。
 
-• 反对显式 trust 机制：yesbut 针对“IO 等底层含 unsafe 的操作必须显式 trust”提出反对，认为只需文档标注哪些操作是 impure（不纯）即可，不应强迫程序员额外输入关键字。
+• 质疑文章结论强度：有评论指出“>99% 确定是同一人”的说法不严谨。重叠区间只能排除大多数用户，说明两次连接可能属于约 0.65% 的用户集合，不能直接等同于 99% 准确识别个人。
 
-补充讨论：评论之间共同关注的是“形式化安全/纯度控制”是否带来足够收益。分歧在于：严格标注和不变量机制是否能显著提升安全性，还是只是增加语法负担、削弱实用性。</div>
+• VPN 不等于 Tor：多名评论认为 VPN 的目的主要是防 ISP、同事、邻居等窥探，提供一般隐私，而非对网站或政府实现强匿名；若威胁模型是强匿名，应使用 Tor，但也有人提醒 Tor 也可能被出口节点关联攻击。
+
+• 为 Mullvad 辩护：长期用户表示仍会继续使用，认为 VPN 本来不是保护犯罪者的“100%匿名”工具；也有人提到 Mullvad 可现金匿名购买，且无日志承诺经审计和执法突击验证。
+
+• 技术取舍与修复建议：稳定同一服务器出口 IP 可能有用户体验价值，比如某服务器能访问某服务时，下次仍可用；但跨服务器相关性应修复，例如用 user_pub_key + server_id 生成随机种子。
+
+• 站点运营视角：有人认为这种可关联性反而有助于论坛等网站识别封禁规避者；也有人提到封锁 VPN IP、定位真实机房位置是持续的猫鼠游戏。
+
+补充讨论：有人关注作者是否提前联系 Mullvad；第三方客户端为何不轮换 key 也被提出疑问；IPinfo 从业者称 Mullvad 在地理位置数据上相对诚实，倾向相信其会修复。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48155159" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48143880" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -178,54 +265,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://z3prover.github.io/papers/programmingz3.html" target="_blank">Programming Z3</a>
+                    <a href="https://journals.asm.org/doi/10.1128/aem.02065-25" target="_blank">NASA-cleanroom microbial isolates survival in simulated space/Martian conditions</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: RohanAdwankar</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-15 23:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文是Z3 SMT求解器编程教程，介绍如何通过Python脚本和API使用Z3，涵盖其逻辑接口、支持理论、求解器、策略、优化等功能，并简述底层决策算法及在软件分析、验证、符号执行中的应用。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48155123" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arstechnica.com/health/2026/05/ebola-outbreak-confirmed-in-congo-and-uganda-246-suspected-cases-65-deaths/" target="_blank">Ebola outbreak with uncommon strain erupts in Congo and Uganda; 65 deaths</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tatersolid</span> |
+                    <span>作者: bookofjoe</span> |
                     <span>评分: 6</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-16 04:43</span>
+                    <span>发布时间: 2026-05-15 23:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>非洲疾控确认刚果（金）东北部伊图里省暴发埃博拉，已报告246例疑似、65死，乌干达首都出现输入病例。此次可能并非扎伊尔株，或为本迪布焦株，现有疫苗和疗法适配性成疑。人口流动、冲突和追踪不足增加防控难度，WHO和美CDC正提供支援。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48156908" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48155266" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -236,31 +294,117 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/madmonk13/modal-16" target="_blank">Show HN: Browser based sythesizer, drum machine and squencer</a>
+                    <a href="https://en.infomaxai.com/news/articleView.html?idxno=116421" target="_blank">Infineon Unveils Auto Industry's First RISC-V MCU: Linux Era for Semiconductors</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: madmonk</span> |
-                    <span>评分: 4</span> |
+                    <span>作者: fork-bomber</span> |
+                    <span>评分: 15</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2026-05-15 20:07</span>
+                    <span>发布时间: 2026-05-15 17:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>modal-16 是一款基于浏览器的 16 步生成式复音音乐音序器，用 JavaScript 和 Tone.js 构建。它可实时生成旋律、和弦、贝斯和鼓点，支持编辑、快照、编排、录音、脚本回放及现场表演，无需安装。</p>
+                    <p>英飞凌发布首个基于RISC-V的汽车MCU系列，推动SDV开放标准，提升车企设计自主性并降低供应商依赖。该架构将与TriCore并行至2040年，目标2027年上车；同时通过Quintauris推进标准化，并强调与ARM共存。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对项目/内容的正面反馈，以及对 GitHub 仓库说明中的文字错误提醒。
+                    <div class="comments-summary">主要讨论点：用户对英飞凌（Infineon）的某项成果或表现表示意外和赞赏。
 
 不同观点：
-• 正面评价：评论者认为该项目/内容“很棒”，表达了认可和鼓励。
-• 细节反馈：评论者指出 GitHub 仓库的 about/简介部分可能存在重复内容或拼写错误（“double up/typo”），建议作者检查修正。
+• 正面评价：评论者认为该成果“非常令人印象深刻”，超出了预期。
+• 意外态度：评论者表示此前并不期待英飞凌能有这样的表现，暗示其对英飞凌原有印象可能较为保守或不认为其擅长相关领域。
 
-补充讨论：该评论整体语气友好，属于支持性反馈中附带的小问题提醒，没有明显争议。</div>
+补充讨论：目前只有一条评论，未形成明显争议或多方讨论，核心是对英飞凌表现的惊喜与认可。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48153194" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48151102" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/sleuth-io/sx" target="_blank">Show HN: Sx – an open-source package manager for AI skills, MCPs, and commands</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: detkin</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-05-15 17:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了开源工具 sx：它用于把团队积累的 AI 技能、MCP 配置、命令等集中管理并共享，支持按组织、团队、仓库、路径、用户或机器人分发，兼容多种 AI 客户端，并提供云中继、统计审计和快速安装功能。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：围绕新工具“sx”作为 AI 资产/技能包管理器的定位、必要性、版本管理方式及适用范围展开讨论。
+
+不同观点：
+• 支持与认可：有人认为该工具用较清晰的方式解决了 AI 工作流碎片化问题，期待查看代码；也有人表示自己在做类似项目，因此认可其方向和需求。
+
+• 质疑“为何不放进 Git/随发布周期走”：有评论认为技能应与生产发布版本、commit SHA 绑定，便于追踪哪个版本导致 bug 或风险，因此不理解为何要解耦成独立工具。
+
+• 质疑“又一个包管理器”：有人讽刺“再来一个包管理器就能解决问题”，承认可能有需求和细分场景，但认为应优先扩展现有包管理器，而不是新造体系。
+
+• 维护者回应定位：维护者解释 sx 将 skills、MCP 配置、slash commands、agents、hooks、rule files 等作为可版本化包管理；支持本地文件夹、Git repo 或托管后端作为 vault，并通过 lockfile 保证可复现安装。
+
+• 维护者强调差异化：sx 支持 org/team/repo/path/individual 等作用域，并能把同一资产转换成不同 AI 客户端格式；相比 Claude Code 插件或厂商市场，可避免单一客户端锁定和跨团队重复维护。
+
+补充讨论：还有用户询问工具名称如何发音，另有玩笑式回答“seven”。争议焦点主要是：AI 技能资产应随代码仓库和发布周期绑定，还是应作为跨客户端、跨团队的独立版本化包来管理。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48151058" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://reclaimthenet.org/london-police-deploy-facial-recognition-at-protest-for-first-time" target="_blank">London Police Deploy Facial Recognition at Protest for First Time</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Cider9986</span> |
+                    <span>评分: 132</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-05-15 20:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章批评谷歌正以产品更新形式推行对“真人/可信用户”的验证机制，把开放网络分成被批准与未被批准的人。作者认为，这相当于绕过此前遭反对的网络门禁方案，可能削弱匿名性、开放性与用户自主权。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英国警方首次授权在抗议活动中使用实时人脸识别，引发对公共安全、抗议权与监控国家扩张的争论。
+
+不同观点：
+• 反对/警惕监控扩张：多人认为即使不支持Tommy Robinson或其政治立场，也不应接受在抗议中使用人脸识别；担心今天用于极右翼集会，明天会用于亲巴、环保或其他正当抗议，形成寒蝉效应。
+
+• 公共安全正当化观点：有评论指出Tommy Robinson有多项犯罪记录，警方预期集会可能演变为暴力骚乱，因此使用CCTV、人脸识别收集证据、事后起诉暴徒有其合理性。
+
+• 对“英国监控传统”的批评：有人回忆Oyster卡、遍布CCTV等长期隐私担忧，质疑如此大规模监控实际收益很低，例如CCTV未能帮助找回卡梅伦被偷的自行车，反问监控究竟服务于谁。
+
+• 技术门槛降低带来的担忧：评论提到如今人脸识别、OCR、图像识别所需硬件很少，树莓派都能处理大量照片，意味着大规模身份识别会越来越便宜、普遍。
+
+• 对抗议权受限的担忧：有人认为过去几十年大型抗议本已成效有限，政府仍不断增加障碍，似乎是在为未来更大规模社会动荡做准备。
+
+• 怀疑官方说法：有人质疑“无人机扫描嫌疑人面孔”中的“嫌疑人”指什么——在犯罪尚未发生前，参加抗议者为何被预设为嫌疑对象；也有人讽刺这可能只是“第一次承认使用”。
+
+补充讨论：争议焦点在于，潜在骚乱风险是否足以证明对抗议人群进行实时身份识别；以及此类技术一旦开先例，是否会不可避免地被扩展到其他政治立场和社会运动。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48153400" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -298,113 +442,6 @@
 补充讨论：争议焦点主要是“是否真有足够技术细节支撑结论”以及“这类漏洞到底算小赏金还是高价值重大漏洞”。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48139219" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bbc.com/news/articles/c2l2j1lxdk5o" target="_blank">UK government replaces Palantir software with internally-built refugee system</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cdrnsf</span> |
-                    <span>评分: 349</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2026-05-14 22:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>英国住房部门称，已用内部专家自建系统取代Palantir为“乌克兰之家”难民安置计划提供的Foundry系统，每年节省数百万英镑，并提升灵活性、数据与代码控制。Palantir曾快速搭建系统并支持15.7万难民安置，但其低价切入后获高额合同引发采购、公私依赖及数据使用争议。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：英国政府/公共部门是否应使用 Palantir，尤其是在难民安置、NHS 数据与公共服务系统中的成本、能力、伦理和数据主权问题。
-
-不同观点：
-• 反对 Palantir：多名评论认为其“邪恶”、不可信，涉及情报背景、垄断倾向、游说和“旋转门”利益输送；担心政府和 NHS 将敏感数据交给美国公司，形成供应商锁定。  
-• 成本与能力质疑：有人指出 Palantir 很贵，本质是咨询+定制交付；短期应急可能有用，但长期应由政府培养内部技术团队、改造数据系统，自建平台更便宜可控。  
-• 支持/理解阶段性使用：也有人认为，乌克兰难民项目初期需要“几天内上线”，免费试用和后续小额合同在数十亿项目总成本中不算大；之后转向自研、降低长期成本是合理路径。  
-• 政府自研能力观点：评论称签证、住宿匹配、数据整合是 GDS/DDAT 常做的标准工作，开源、按现有标准建设即可；尤其难民住宿匹配更像普通 CRUD/Web 应用，不应交给 Palantir。  
-• NHS 争议更大：有人提到 NHS 合同约 3 亿英镑，公众和 GP 不支持；另有人曾参与“数据不出公司、只输出研究结果”的英国本土方案，却输给 Palantir，认为不合理。  
-• 更广泛风险：有评论担心 Palantir 已进入驱逐、警务、军事目标、医疗数据等 operational decision，AI 建议可能让“人在环中”变成橡皮图章，责任链断裂。
-
-补充讨论：有人指出实际乌克兰家庭匹配多通过 Facebook 群完成；另有少数评论认为 NHS/福利领域引入 Palantir可能是政府想绕开同情病假者的公务员体系，强制削减长期病假福利，这也是争议焦点之一。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48142251" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://worksinprogress.co/issue/why-spain-has-the-worlds-greatest-cities/" target="_blank">Why Spain has the greatest cities</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: devitoria</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-15 15:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>西班牙城市在欧洲独树一帜：居民多住公寓，城市高密度、混合功能、少蔓延，带来低交通排放、便利生活和较高健康水平。其形成源于工业化和汽车普及较晚、贫困限制郊区化，同时市政规划较强，塑造了巴塞罗那扩展区等密集有序街区。文章认为，西班牙证明富裕并不必然导致郊区化，其经验可启发亚洲和拉美城市发展。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48150156" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://benstoneonline.com/posts/porting-3d-movie-maker-to-linux/" target="_blank">Porting 3D Movie Maker to Linux</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 141</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2026-05-11 17:17</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>作者介绍其分支项目3DMMEx：在微软开源3D Movie Maker源码后，他基于3DMMForever继续现代化与移植，历时18个月使其首次原生运行于Linux。文章回顾源码背景，并概述移植旧C++、Win32依赖、汇编、64位假设、缺测试等挑战。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕 Microsoft 3D Movie Maker 被移植到 Linux 的怀旧反响、技术延伸可能和相关资料分享。
-
-不同观点：
-• 怀旧与感谢：多位用户表示看到截图才想起当年花了很多时间使用它；有人高中时用它做学校项目和搞笑短片，称这是“宝藏”，感谢移植者。  
-• 技术延伸期待：有人认为下一步应是 WASM，这样可方便向全世界展示自己童年作品；也有人提到想用 Claude 尝试相关工作。  
-• 资料与贡献补充：评论者分享了参与移植开发者的博客系列和媒体报道，并强调这是多人合作，作者之间互相认可贡献，过程值得一读。  
-• 作品案例分享：有人推荐 3DMM 制作的经典视频《Grandpa Found the Car Keys》，认为其在工具限制下展现了很强的风格和技巧。  
-• 软件生态与后续疑问：有人询问 3DMMForever 项目为何停滞，是技术原因还是缺乏兴趣；也有人回忆源码曾发布，并被改造以运行在现代 Windows 上。  
-• 更广泛的移植感慨：有人赞叹移植工作涉及大量库的替换和适配，并联想到当下软件未来的可移植性问题。
-
-补充讨论：还有人半开玩笑地说“终于可以抛弃 Windows”，并提议下一个复活对象是 Comic Chat；也有新用户表示此前没听说过该软件，但很想在 Linux 上尝试。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48097786" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
