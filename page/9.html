@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-23 09:47 (北京时间)
+            最后更新时间: 2026-05-23 13:57 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,34 +61,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arstechnica.com/ai/2026/05/ai-users-re-create-dead-pilots-voices-from-crash-investigation-docs/" target="_blank">NTSB pulls docket after AI recreates dead pilots' voices</a>
+                    <a href="https://www.loopwerk.io/articles/2026/uv-ux-mess/" target="_blank">Uv is fantastic, but its package management UX is a mess</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Lihh27</span> |
-                    <span>评分: 28</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-05-22 20:52</span>
+                    <span>作者: nchagnet</span> |
+                    <span>评分: 229</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2026-05-21 20:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>美国国家运输安全委员会(NTSB)暂停了公众访问其民用交通事故数据库，因为网民利用AI工具和软件从公开的声谱图重建了致命货机坠毁事故中飞行员的驾驶舱录音。2025年UPS 2976航班在肯塔基州坠毁后，NTSB在调查听证会上公开了声谱图，随后有人使用Griffin-Lim算法和AI模型在短时间内重建了音频。这违反了1990年联邦法律——该法律禁止公开驾驶舱录音以保护机组人员隐私。NTSB正在审查公开材料，以防止类似情况再次发生。</p>
+                    <p>这篇文章批评了 uv 的包管理用户体验问题：
+
+1. **查看过期包很麻烦**：需要用 `uv tree --outdated --depth 1` 这样冗长的命令，且输出混乱，不像 pnpm 的 `pnpm outdated` 那样简洁。
+
+2. **默认版本约束不安全**：`uv add` 默认使用 `>=2.13.4` 这样没有上限的约束，而 pnpm/Poetry 默认用 `^1.23.4` 限制主版本，更新时更安全。
+
+3. **升级命令设计糟糕**：升级所有包要用 `uv lock --upgrade`，升级特定包需要重复 `--upgrade-package` 参数，远不如 pnpm/Poetry 直观。
+
+作者认为虽然 uv 速度快、功能强大，但包管理的日常维护体验比前辈工具退步了，希望改进命令设计并将 `--bounds major` 设为默认行为。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：NTSB关闭档案系统以防止用户从频谱图重建飞行员语音录音的事件
+                    <div class="comments-summary">主要讨论点：Python包管理工具uv的用户体验和依赖版本管理策略
 
 不同观点：
-• **反对限制派**：认为这是公共信息，不应限制发布，即使来自1990年代。担心这种膝跳反应式的特殊规则会开创负面先例，未来可能扩展到禁止发布行车记录仪或警察执法记录仪视频
-• **技术澄清派**：强调从频谱图还原音频是50年前就存在的基础技术（傅里叶变换），并非AI创新。频谱图本质就是音频的频域表示，逆变换很简单。AI只是降低了数据准备和编码工作量，甚至训练有素的人眼就能读懂频谱图
-• **讽刺批评派**：嘲讽政府反应过度（"明年国会将禁止傅里叶变换"），以及对语音认证安全性的担忧（"金融机构使用语音认证，绝对不会出问题"）
 
-补充讨论：
-• 有人质疑Ars标题不准确，指出NTSB关闭的是整个档案系统而非单个文件
-• 核心争议在于：政府是否应该为防止技术滥用而限制公共信息访问，以及这种限制的合理性和有效性</div>
+• **支持uv当前设计**：uv开发者和多数用户认为不设置依赖上限是正确的默认行为。Python需要单一解析树（不像npm可以有多个版本共存），盲目信任语义化版本控制会导致解析冲突。应通过CI和自动化工具（如Renovate、Dependabot）管理更新，而非手动追踪过时依赖。
+
+• **认为标题夸大**：部分用户认为文章将"需要额外参数"的小问题夸大为"一团糟"，实际只是QOL改进建议。uv已经比传统pip好很多，这些都是次要的UX问题。
+
+• **希望改进用户体验**：有用户反馈查看过时依赖、自动更新等功能不够直观。例如需要用`uv tree --outdated --depth 1`而非更简洁的顶级命令；`uv lock --upgrade`的命名容易混淆（升级lockfile而非requirements）。
+
+• **科学计算场景的特殊挑战**：PyTorch等ML库因CUDA版本众多、wheel文件过大无法上传PyPI，导致uv等现代工具难以完美解决。Conda和Spack各有局限，从研究到生产的工作流仍不够顺畅。
+
+补充讨论：多位开发者强调Python与JavaScript生态的文化差异——Python用户较少主动追踪依赖更新，更关注稳定性而非最新版本。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48241501" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48228788" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -99,33 +110,104 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://fatgid.io/" target="_blank">FatGid: FreeBSD 14.x kernel local privilege escalation</a>
+                    <a href="https://www.cbsnews.com/news/cbs-news-radio-last-day/" target="_blank">CBS Radio signs off after nearly 100 years of broadcasting</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: WhyNotHugo</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-05-21 12:15</span>
+                    <span>作者: gscott</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-05-22 17:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一份关于 FreeBSD 14.x 内核本地提权漏洞（CVE-2026-45250）的技术报告。漏洞存在于 `setcred(2)` 系统调用中，由于 `sizeof` 类型错误导致内核栈缓冲区溢出。任何非特权本地用户都可在权限检查前触发该漏洞，实现从内核崩溃到完全提权的攻击。研究者开发了针对启用 SMAP/SMEP 保护的 amd64 GENERIC 内核的工作利用链（仅需加载 zfs.ko）。该漏洞在 2025 年 11 月已在主分支静默修复，但未回溯到稳定版本，FreeBSD 14.4-RELEASE 仍受影响。</p>
+                    <p>CBS新闻广播电台将于周五停播，结束近百年的历史。该电台于1927年9月开播，曾是爱德华·默罗、丹·拉瑟等传奇播音员的舞台。它报道了珍珠港事件、诺曼底登陆、9/11恐袭等重大历史事件，其旗舰节目《世界新闻综述》是美国运行时间最长的新闻节目。公司称因"严峻的经济现实"而关闭。业内人士认为这是美国失去的一个重要新闻机构，它在近百年里对国家凝聚力发挥了重要作用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某个BSD系统安全漏洞的披露方式和影响范围
+                    <div class="comments-summary">主要讨论点：AM广播电台在美国社会中的作用及其在电动汽车时代面临的挑战
 
 不同观点：
-• **质疑披露形式**：认为一个本地提权漏洞(LPE)不值得专门建立网站和命名，过度营销化
-• **关注实际影响**：指出FreeBSD被广泛应用于TrueNAS和网络设备中,漏洞影响范围比想象中更大
-• **对OpenBSD安全性好奇**：想测试LLM能否在以严谨开发著称的OpenBSD中发现问题,并非质疑其质量
-• **补丁状态存疑**：质疑网站信息准确性,称官方已在昨天发布14.4版本的修复通知
+• **批评取消AM广播的决定**：认为之前HN社区和电动汽车制造商取消车载AM广播的做法是错误的，现在的结果（可能指AM电台关闭或衰落）是必然的负面后果
 
-补充讨论：评论反映了安全社区对漏洞披露方式的不同态度——既有对过度包装的反感,也有对实际影响的务实关注,同时存在对信息准确性和时效性的质疑。</div>
+• **怀旧与历史价值**：有人分享CBS新闻综述播客仍可访问，暗示AM广播的历史内容值得保留和回顾
+
+• **强调社会凝聚功能**：认为AM广播多年来在维系国家团结方面发挥了重要作用，提供了"共享的新闻来源"和"可管理的偏见"（不激进、相对客观地报道事件），这种"共同的、共享的现实"对社会统一是有益的
+
+补充讨论：评论暗示了技术进步（电动汽车）与传统媒体保护之间的矛盾，以及失去共同信息源可能对社会凝聚力产生的影响。讨论反映出对媒体碎片化时代的担忧。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48221415" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48238817" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jvns.ca/blog/2023/12/04/mounting-git-commits-as-folders-with-nfs/" target="_blank">Mounting git commits as folders with NFS (2023)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: pvtmert</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-05-19 07:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了作者开发的 git-commit-folders 项目，它将 Git 仓库挂载为文件系统，每个提交都显示为一个文件夹。作者希望通过这种方式帮助人们直观理解 Git 的工作原理——提交本质上就像包含目录列表的文件夹。
+
+项目支持 FUSE 和 NFS 两种挂载方式（避免了 Mac 上 FUSE 需要内核扩展的麻烦）。在这个文件系统中，分支和标签都是指向提交文件夹的符号链接，反映了 Git 的底层实现。
+
+实际用途包括：搜索已删除的函数、快速查看其他分支的文件、跨分支搜索代码等。虽然这些操作用 Git 命令也能完成，但文件系统导航对作者来说更直观易用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：将Git仓库通过FUSE挂载为文件系统的技术实现与实用性
+
+不同观点：
+• **技术实现路径**：有人建议在Mac上用VM运行FUSE再通过NFS导出以规避内核扩展问题，但会带来性能损耗；有人推荐使用FSKit作为Mac原生方案替代WebDAV/NFS
+• **心智模型争议**：有人认为将commits作为文件夹不合适，因为在commit中删除/添加文件会创建新commit，这与文件系统操作逻辑冲突；有人建议用Jujutsu的changes替代，因其在rebase时更稳定
+• **实用性评价**：部分人认为这是"cursed but useful"的有趣实现，会立即使用；也有人质疑实用性，认为传统git命令（如git show、git log -S）更高效，只是语法难记
+• **技术细节优化**：有人指出tree/blob ID本身已是哈希值，无需再次哈希来生成inode，直接取前8字节即可
+
+补充讨论：评论中提到Fossil和ClearCase等版本控制系统已有类似功能；有人认为随着LLM和AI编程的发展，这种跨commit文件比较方式值得重新审视；作者因此项目还为Git贡献了文档改进。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48190373" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2604.13327" target="_blank">Event Tensor: A Unified Abstraction for Compiling Dynamic Megakernel</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: matt_d</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-05-22 22:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文提出了Event Tensor，一种用于编译动态megakernel的统一抽象。针对现代GPU工作负载（特别是大语言模型推理）中的kernel启动开销和同步问题，Event Tensor通过将多个算子融合到单个持久化kernel中来消除启动间隙，并支持动态形状和数据依赖计算。基于此抽象构建的Event Tensor Compiler (ETC)能够生成高性能持久化kernel，在LLM服务延迟方面达到业界领先水平，同时显著降低系统预热开销。论文已被MLSys 2026会议接收。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48242243" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -181,41 +263,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://prismreports.org/2026/05/20/seattle-shield-private-companies-surveillance/" target="_blank">Seattle Shield, an intelligence-sharing network operated by the Seattle police</a>
+                    <a href="https://www.usepablo.dev/" target="_blank">Show HN: Pablo – a Chrome extension that copies UI from any website</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: root-parent</span> |
-                    <span>评分: 474</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2026-05-21 17:55</span>
+                    <span>作者: rayansaleh</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-05-22 15:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>西雅图警方运营着一个名为"Seattle Shield"的情报共享网络,成员包括Facebook、亚马逊、房地产公司和ICE等。该网络自2009年起运作,以反恐为名收集和分享"可疑活动"信息。
+                    <p>Pablo 是一个开源工具，可以从任何网站复制组件的 HTML 和 CSS 代码。使用方法极其简单：将鼠标悬停在网页元素上，点击高亮的组件，代码就会自动复制到剪贴板，包括字体、动画等所有样式。无需任何设置即可使用。
 
-根据获得的公开记录,2025年的报告几乎全部关于抗议活动。该系统将私营企业、军事情报人员、联邦和地方执法机构连接起来,形成庞大的监控网络。隐私活动人士担心,在特朗普2025年的国家安全备忘录将抗议言论视为潜在恐怖威胁后,参与抗议的人可能被列入恐怖分子监视名单。该项目缺乏透明度和问责机制,引发严重的公民权利担忧。</p>
+文章展示了 Pablo 从 Stripe、Webflow、.txt 等知名网站复制的实际案例，包括 CSS 动画、渐变网格、交互效果、滚动动画等复杂组件，都能完整还原。这个工具免费且开源，可通过 GitHub 安装使用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：西雅图警方运营的私人情报共享网络"Seattle Shield"，亚马逊、Facebook、FBI等机构可访问该网络
+                    <div class="comments-summary">主要讨论点：对某个LLM生成网站/UI工具的反馈评价
 
 不同观点：
+• **负面批评**（apeters）：认为所有LLM创建的网站质量很差，存在margin和padding混乱问题，特别是移动端体验糟糕，整体感觉像是多个部分拼凑而成，缺乏组织性
+• **积极肯定**（smokedetector1, jaysyrk）：认为产品很酷/很棒，但对某些细节差异表示好奇，询问UI功能是否包含资源文件生成
+• **法律质疑**（jaen）：直接质疑该服务可能涉及版权侵权问题
+• **简短认可**（antoniojtorres）：表达了启发性的正面感受
 
-• **质疑派**：认为文章标题耸人听闻，亚马逊和Facebook仅被提及一次；缺乏该项目被滥用的实质证据；需要更多调查前FBI特工Terry Albury的可信度才能判断（baddash, sailfast, shermantanktop）
-
-• **警惕派**：担心该网络可能被用于监控抗议者并将其标记为"极左国内恐怖分子"；缺乏监督机制令人担忧；这是企业与执法部门联合监控的体现（baddash部分观点, jedahan, gmerc）
-
-• **反对大型科技公司派**：认为大型企业联盟与强大政府一样危险，应拆分这些公司，夺回民众权力（booleandilemma）
-
-• **实用主义派**：将其类比为企业版的邻里守望；在枪支权利受限的情况下，监控是预防犯罪的必要手段（sailfast, jazz9k）
-
-• **行动建议派**：建议开发工具提交虚假可疑查询，污染情报收集系统的数据（dakolli）
-
-补充讨论：多位评论者对参与组织的随机性感到意外（包括山达基教会）；有人分享了因拍照被警察骚扰的经历；部分人认为执法部门可能有更严重的问题未被曝光。</div>
+补充讨论：
+评论呈现两极分化态势。技术实现层面的批评聚焦于代码质量和用户体验问题，而法律层面的质疑指向了AI生成内容的版权合规性。正面评价者更关注功能范围和实现细节，但未深入讨论负面观点提出的具体问题。整体缺乏观点之间的直接交锋和深度讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48226588" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48237415" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -226,25 +303,77 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://en.wikipedia.org/wiki/Capital_and_the_Debt_Trap" target="_blank">Capital and the Debt Trap</a>
+                    <a href="https://fatgid.io/" target="_blank">FatGid: FreeBSD 14.x kernel local privilege escalation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: teleforce</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-22 23:27</span>
+                    <span>作者: WhyNotHugo</span> |
+                    <span>评分: 98</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-05-21 12:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>《资本与债务陷阱》是Claudia Sanchez Bajo和Bruno Roelants于2011年出版的研究专著。书中分析了2008年金融危机的成因，包括消费、流动性和债务陷阱，以及现代企业所有权与控制权分离导致的管理层短视行为。作者通过四个国家的合作社案例研究，论证了合作社因共享所有权和参与式管理，平均存活率和可持续性优于传统营利企业。合作社的治理结构能减少不当激励，更好地服务客户和社区长期利益。</p>
+                    <p>这是一份关于 FreeBSD 14.x 内核本地提权漏洞（CVE-2026-45250）的技术报告。漏洞存在于 `setcred(2)` 系统调用中，由于 `sizeof` 类型错误导致内核栈缓冲区溢出。任何非特权本地用户都可在权限检查前触发该漏洞，实现从内核崩溃到完全提权的攻击。研究者开发了针对启用 SMAP/SMEP 保护的 amd64 GENERIC 内核的工作利用链（仅需加载 zfs.ko）。该漏洞在 2025 年 11 月已在主分支静默修复，但未回溯到稳定版本，FreeBSD 14.4-RELEASE 仍受影响。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：关于某个BSD系统安全漏洞的披露方式和影响范围
+
+不同观点：
+• **质疑披露形式**：认为一个本地提权漏洞(LPE)不值得专门建立网站和命名，过度营销化
+• **关注实际影响**：指出FreeBSD被广泛应用于TrueNAS和网络设备中,漏洞影响范围比想象中更大
+• **对OpenBSD安全性好奇**：想测试LLM能否在以严谨开发著称的OpenBSD中发现问题,并非质疑其质量
+• **补丁状态存疑**：质疑网站信息准确性,称官方已在昨天发布14.4版本的修复通知
+
+补充讨论：评论反映了安全社区对漏洞披露方式的不同态度——既有对过度包装的反感,也有对实际影响的务实关注,同时存在对信息准确性和时效性的质疑。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48242861" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48221415" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.simbastack.com/indexed-a-year-of-video-locally/" target="_blank">Indexing a year of video locally on a 2021 MacBook with Gemma4-31B (50GB swap)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: asenna</span> |
+                    <span>评分: 354</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-05-21 14:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者在肯尼亚马赛马拉经营旅馆，积累了大量未整理的视频素材。最初尝试用SaaS工具（Eddie AI、Higgsfield等）解决编辑问题，但发现成本高且不适用。
+
+核心洞察：AI视频编辑器解决的是"第二个问题"，真正的瓶颈是**未标注的素材库**——文件名混乱，无法用自然语言查询"日落时山上的大象"。
+
+解决方案：构建本地优先的视频索引系统。为每个视频生成`.description.md`侧车文件，通过一次视觉模型调用提取所有元数据（评分、光线、关键词、人物、位置、转录等）。成本从月付$140降至$22，用DaVinci Resolve + Claude Code + MCP驱动编辑流程。
+
+关键：**先建索引让素材库可查询，编辑器才能发挥作用**。这是作者在SimbaStack为客户做的AI原生架构，应用到自己的问题上。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：使用本地AI模型（特别是Gemma 4）对个人视频和照片进行索引和分析的技术实践
+
+不同观点：
+• **硬件资源派**：部分用户质疑内存占用过高（28.4GB vs 理论19GB），认为频繁swap会损害SSD寿命，建议关闭不必要的Electron应用和虚拟机以减少内存压力
+• **云端vs本地派**：有用户使用Claude API配合Whisper和ffmpeg构建类似功能，认为本地模型处理速度慢且成本高（Sonnet 4.6分析1小时视频约$1），但也有用户担心上传家庭私密视频到云端的隐私问题
+• **硬件升级派**：有用户在老旧设备（2015 ThinkPad）上成功运行，通过升级内存解决问题，证明即使风扇全速运转也能完成任务
+• **应用前景派**：认为本地模型能解决B2C AI应用中个性化上下文构建的难题，是重要突破；也有人建议将此功能集成到immich等现有工具中
+
+补充讨论：
+技术细节方面，有用户询问搜索索引实现和人脸识别（faces+cluster_id）是否来自DaVinci Resolve；作者计划扩展到静态图片索引和视频编辑工作流优化。部分用户关注16GB M1设备能否运行小模型，以及GPU租赁方案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48222733" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -296,164 +425,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.phoronix.com/news/Linux-7.1-Sound-Many-Fixes" target="_blank">Linux Sound Subsystem Also Seeing Many Fixes Driven by AI/LLMs</a>
+                    <a href="https://prismreports.org/2026/05/20/seattle-shield-private-companies-surveillance/" target="_blank">Seattle Shield, an intelligence-sharing network operated by the Seattle police</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dboon</span> |
-                    <span>评分: 25</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-05-22 19:34</span>
+                    <span>作者: root-parent</span> |
+                    <span>评分: 474</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2026-05-21 17:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Linux声音子系统近期出现大量由AI/LLM辅助生成的修复补丁，情况类似于网络子系统。SUSE的声音子系统维护者Takashi Iwai表示持续收到许多小修复，主要变化涉及HD-audio待处理IRQ处理。邮件列表中可见大量标注"assisted-by"的补丁，来自Claude Code和GPT-5.5等AI工具。本次更新包括核心声音修复、Realtek针对HP和华硕笔记本的quirks、音频LED修复、Intel Panther Lake/Nova Lake/Arrow Lake平台表更新等众多小修复。</p>
+                    <p>西雅图警方运营着一个名为"Seattle Shield"的情报共享网络,成员包括Facebook、亚马逊、房地产公司和ICE等。该网络自2009年起运作,以反恐为名收集和分享"可疑活动"信息。
+
+根据获得的公开记录,2025年的报告几乎全部关于抗议活动。该系统将私营企业、军事情报人员、联邦和地方执法机构连接起来,形成庞大的监控网络。隐私活动人士担心,在特朗普2025年的国家安全备忘录将抗议言论视为潜在恐怖威胁后,参与抗议的人可能被列入恐怖分子监视名单。该项目缺乏透明度和问责机制,引发严重的公民权利担忧。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：两条评论讨论了完全不同的技术话题，没有直接关联。
-
-不同观点：
-• **AI/LLM的优势**（rc_mob）：认为AI/LLM最大的价值在于通过模式识别能力修复许多小型bug，这种能力能够解决很多问题
-
-• **虚拟机音频处理问题**（m463）：指出即使在高性能机器上，虚拟机的音频处理表现也很差。唯一获得良好音频效果的方法是通过USB控制器直通并连接外置DAC
-
-补充讨论：这两条评论似乎来自不同的讨论线程，彼此之间没有回应关系。第一条关注软件开发中的AI应用，第二条关注虚拟化技术中的硬件兼容性问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48240454" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.guitarworld.com/gear/electric-guitars/fender-cease-and-desist-lsl-instruments" target="_blank">Fender escalates legal campaign against S-style guitars</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rectang</span> |
-                    <span>评分: 124</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-05-19 05:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Fender正在通过法律手段保护Stratocaster琴体设计。继在德国法院获得里程碑式判决后，Fender已向多家美国吉他制造商发送停止函，要求停止生产S型电吉他。小型家族企业LsL Instruments是首家公开确认收到此函的公司，已设立众筹页面筹集法律费用。Fender的律师函要求立即停止制造和销售侵权产品，甚至要求召回并销毁在欧盟销售的吉他。此举可能重塑吉他行业格局，影响众多依赖S型吉他设计的制造商和音乐人。LsL称Leo Fender从未为琴体设计申请版权，仅保留了琴头形状。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Fender起诉仿制其经典吉他外形的制造商，引发行业争议
-
-不同观点：
-• **批评Fender的法律行动**：多数评论认为此举具破坏性。Fender利用对中国制造商的胜诉（因被告缺席）作为跳板起诉美国小型制造商；这些精品制造商（如Suhr、LsL）实际上做出比Fender更好的吉他，反而维护了这些经典外形的声誉。起诉行为可能损害品牌形象，因为吉他市场完全由情感驱动
-
-• **质疑法律依据**：75年前的设计已被广泛复制数十年，Fender曾在2007年商标申请中失败（法院裁定Stratocaster外形"过于常见，已成为字典中通用电吉他的代表"）。评论质疑版权有效性、是否遵循了当时的版权登记程序、以及放任仿制50多年后是否还能执法
-
-• **怀疑商业动机**：2020年Fender被夏威夷汽车经销商Servco Pacific收购，有私募股权背景。有人推测这是"价值榨取阶段"或为出售做准备，通过诉讼确保对更大IP（不仅是名称，还有外形）的所有权
-
-补充讨论：Gibson也有类似诉讼历史（PRS案）；Thomann旗下Harley Benton品牌可能成为下一个目标，但Thomann规模更大且有应诉能力，可能让Fender的策略适得其反</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48189539" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=48225596" target="_blank">Show HN: Agent.email – sign up via curl, claim with a human OTP</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: adisingh13</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2026-05-21 16:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AgentMail（一个为AI代理提供邮箱服务的YC项目）引发的争议，核心围绕AI代理是否应该成为互联网的"一等公民"以及该服务的实用性和安全风险。
+                    <div class="comments-summary">主要讨论点：西雅图警方运营的私人情报共享网络"Seattle Shield"，亚马逊、Facebook、FBI等机构可访问该网络
 
 不同观点：
 
-• **反对派 - 垃圾邮件担忧**：多位评论者（Aurornis, fny, saddist0, maltalex）强烈警告该服务会成为AI垃圾邮件的温床，导致域名被列入黑名单。用户讨厌AI垃圾邮件，会点击举报按钮。
+• **质疑派**：认为文章标题耸人听闻，亚马逊和Facebook仅被提及一次；缺乏该项目被滥用的实质证据；需要更多调查前FBI特工Terry Albury的可信度才能判断（baddash, sailfast, shermantanktop）
 
-• **反对派 - 伦理质疑**：dgellow和ClaridocsCTO认为让AI代理冒充人类是错误方向，会导致"去人性化的互联网"，代理应该是辅助工具而非主体。
+• **警惕派**：担心该网络可能被用于监控抗议者并将其标记为"极左国内恐怖分子"；缺乏监督机制令人担忧；这是企业与执法部门联合监控的体现（baddash部分观点, jedahan, gmerc）
 
-• **质疑实用性**：morpheuskafka和nijave指出现有方案（自建邮件服务器、Gmail、IMAP/SMTP、MCP）已足够，付费订阅该服务缺乏必要性。EMAIL36245也提出类似疑问。
+• **反对大型科技公司派**：认为大型企业联盟与强大政府一样危险，应拆分这些公司，夺回民众权力（booleandilemma）
 
-• **纠正技术假设**：sandeepkd反驳创始人"互联网专为人类设计"的说法，指出互联网本身并非排斥机器，API就是为机器交互而生。
+• **实用主义派**：将其类比为企业版的邻里守望；在枪支权利受限的情况下，监控是预防犯罪的必要手段（sailfast, jazz9k）
 
-• **支持派**：fny和FailMore认为该服务简化了测试和自动化流程，对个人脚本和产品集成有价值，但也承认自助注册会招致滥用。
+• **行动建议派**：建议开发工具提交虚假可疑查询，污染情报收集系统的数据（dakolli）
 
-补充讨论：mike-cardwell分享了收到的疑似AI生成的营销邮件案例，质疑该服务已被用于定向垃圾营销；bookernath提到WorkOS的auth.md提供了更安全的替代方案。</div>
+补充讨论：多位评论者对参与组织的随机性感到意外（包括山达基教会）；有人分享了因拍照被警察骚扰的经历；部分人认为执法部门可能有更严重的问题未被曝光。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48225596" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.changs.co.uk/python-315-features-that-didnt-make-the-headlines.html" target="_blank">Python 3.15: features that didn't make the headlines</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 386</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-05-21 11:10</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Python 3.15即将发布，带来多项实用新特性：
-
-1. **Asyncio TaskGroup取消功能**：新增`TaskGroup.cancel()`方法，可优雅地取消任务组，无需抛出异常，使用更简洁。
-
-2. **上下文管理器装饰器改进**：`ContextDecorator`现在支持异步函数、生成器和异步生成器，覆盖完整生命周期，使上下文管理器成为创建装饰器的更好方式。
-
-3. **线程安全迭代器**：新增`threading.serialize_iterator`包装器和`threading.synchronized_iterator`装饰器，使迭代器在多线程环境下安全使用，避免值跳过或状态损坏。还提供`threading.concurrent_tee`用于跨多个迭代器复制值。
-
-这些小特性虽不如大型PEP引人注目，但同样值得关注，能显著改善开发体验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Python 3.15 新特性的评价以及 Python 语言的发展方向
-
-不同观点：
-
-• **积极支持派**：认为新特性很实用，特别是 frozendict、Iterator 同步原语、ContextDecorator 改进等小功能往往最有用，标准库的增强值得在项目中测试
-
-• **技术质疑派**：指出 ContextDecorator 的行为变更虽然修复了问题，但没有 opt-in 机制可能导致现有代码意外崩溃；有人对 lazy imports 的实现细节存疑；发现文档中 Counter 示例有错误
-
-• **语言设计批评派**：认为 Python 正在失去其"禅意"和简洁性，lazy loading 等特性是"最后一根稻草"；质疑为什么每种语言都要添加所有特性，Python 已失去魅力
-
-• **迁移实践派**：在 AI 代码生成时代，已将 10 万+行 Python 代码迁移到 Go 等更快的语言；Wes McKinney 等知名开发者也在转向其他语言
-
-• **AI 影响观点**：认为在 LLM 时代几乎不再直接写代码，对语言设计失去兴趣，担心编程语言研发可能因此停滞
-
-补充讨论：有人分享了 Python 内部管理和 free-threading 的访谈链接；提醒 3.15 尚未发布（4 个月后）；部分开发者表达对 Python 的怀念但已不再使用</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48220696" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48226588" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
