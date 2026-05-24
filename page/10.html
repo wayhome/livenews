@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-24 20:53 (北京时间)
+            最后更新时间: 2026-05-24 23:53 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,34 +61,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://schalkneethling.com/posts/the-security-of-ephemeral-pages/" target="_blank">The Security of Ephemeral Pages</a>
+                    <a href="https://microsandbox.dev/blog/oci-filesystem-47x-faster" target="_blank">We made our filesystem 47× faster by deleting it</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-05-20 15:54</span>
+                    <span>作者: appcypher</span> |
+                    <span>评分: 50</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2026-05-19 18:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章描述了作者为一个接受和提供任意HTML的Web应用进行安全审查的过程。主要发现了一个严重漏洞：上传的HTML可直接在应用源执行，存在XSS风险。作者通过添加严格的Content-Security-Policy、沙箱iframe、以及多层HTTP安全头来缓解。还发现了中等级别的漏洞：缺少上传和举报的速率限制，可能导致存储滥用和垃圾信息。解决方案包括实现基于密钥的速率限制机制，使用1Password和Varlock管理敏感配置。整体采用纵深防御策略，从HTTP头、CSP策略到iframe沙箱多层保护用户生成内容。</p>
+                    <p>这篇文章讲述了 microsandbox 团队如何将文件系统性能提升 47 倍的过程。
+
+**问题**：用户反馈沙箱内列出 Python 标准库文件需要 5.3 秒，而 Docker 只需毫秒级。原因是每次文件操作都要通过 FUSE 在 VM 和宿主机之间往返，开销巨大。
+
+**解决方案**：放弃用户态文件系统，改用 Linux 磁盘镜像让 VM 直接挂载。采用 EROFS（只读文件系统）构建镜像，用 Rust 自行实现镜像写入器，避免依赖平台特定工具。文件操作现在完全在 VM 内核中完成，无需跨越 VM 边界。
+
+**结果**：几何平均速度提升 47 倍，最差情况提升超 1000 倍，代码减少 5300 行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：对某个安全实现方案的批评，涉及CSP配置、速率限制和时序攻击防护
+                    <div class="comments-summary">主要讨论点：关于 OCI 文件系统性能优化的技术讨论，围绕 FUSE、用户态文件系统和实现方案的选择展开
 
 不同观点：
-• **CSP配置问题**：允许cdn.jsdelivr.net和unpkg.com的CSP策略形同虚设，因为这些CDN可以提供npm上的任意包，而任何人都能发布到npm。某些Angular风格库中的cdnjs脚本甚至能在看似无害的HTML属性中执行任意代码
+• **FUSE 性能批评派**：认为 FUSE 虽然是好想法但性能很慢，通过 FUSE 在 VM 中进行文件操作必然导致性能问题，如果能避免使用 FUSE 就应该避免（moralestapia, nasretdinov）
+• **用户态文件系统质疑派**：认为用户态文件系统天然就慢，尤其处理小文件时，这篇文章反而降低了对 microsandbox 项目的信心（andix）
+• **技术方案改进派**：指出 tar 处理是 OCI 层操作的性能瓶颈，提出将层拆分为元数据+块的更高效格式方案（a_t48）
+• **实现方式批评派**：认为自己重新实现文件系统（NIH - Not Invented Here）反而让性能变慢了 47 倍（PunchyHamster）
 
-• **速率限制设计缺陷**：使用可被攻击者自由设置的User-Agent请求头作为限流密钥是不合理的，且将其存储在Netlify Blobs（一个为频繁读取和偶尔写入优化的数据存储）中也不恰当
-
-• **时序攻击防护不足**：开发者声称"接受了不使用常量时间比较的风险"，但评论者质疑这个"计算风险"的依据是什么。如果Netlify Functions支持Node.js API，只需使用`crypto.timingSafeEqual`即可轻松解决
-
-补充讨论：评论整体呈批评态度，指出这些安全措施流于形式（"security theatre"），存在明显的技术漏洞且有简单的修复方案却未采用</div>
+补充讨论：
+• 标题争议：有人指出标题违反 HN 规范，属于 linkbait，应使用原标题而非编辑化标题（gnabgib）
+• 实用性询问：有用户询问该软件的实际使用场景和集成方式（cassianoleal）
+• 可读性问题：网站配色导致阅读困难（jmclnx）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48209803" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48196831" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -99,34 +107,325 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://veroniiiica.com/using-kagi-search-with-low-vision/" target="_blank">Using Kagi Search with Low Vision</a>
+                    <a href="https://www.1940airterminal.org/news/liquidation-of-simulators" target="_blank">1940 Air Terminal Museum Begins Liquidation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 259</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-05-21 19:32</span>
+                    <span>作者: weaponeer</span> |
+                    <span>评分: 126</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-05-22 17:05</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者因视觉疲劳在使用搜索引擎时遇到困难，页面充斥着AI摘要、广告和低质量内容。切换到付费搜索引擎Kagi后体验大幅改善。Kagi无广告、无追踪，提供简洁的搜索结果页面和丰富的自定义功能，包括Lenses（结果过滤器）、域名排序控制、Bangs（网站快捷搜索）等。定价从每月5美元起，提供免费试用，未使用月份可退款。作者认为Kagi的无干扰界面和可访问性功能显著减轻了低视力用户的浏览负担。</p>
+                    <p>休斯顿1940航空博物馆正在清算3台全尺寸飞行模拟器：西南航空737-200、比奇空中国王200和霍克700。每台售价2万美元，包含相关设备柜和文档。模拟器自2010年捐赠后从未通电，功能状态未知，不提供任何保证。买家需自行安排物流和超大型叉车（至少22700磅载重）进行搬运，并负责拆除和恢复临时墙体。由于737阻挡其他两台，必须先移除737才能取出其他模拟器。博物馆必须在6月底前腾空建筑，需尽快完成交易。有意者请通过邮件联系，可安排现场或视频查看。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Kagi搜索引擎的用户体验评价，以及与Google搜索的对比
+                    <div class="comments-summary">主要讨论点：休斯顿1940航空航站楼博物馆关闭，设备以2万美元出售
 
 不同观点：
-• **Kagi的强烈支持者**：多位用户表示已使用Kagi数年，认为其搜索结果质量高、无广告、不保留搜索记录，体验类似"早期的Google"。特别赞赏vim快捷键导航、AI功能需主动触发（添加"?"）等设计
-• **Google搜索的批评**：用户普遍认为Google搜索已充斥广告和噪音，AI结果质量极差，产品设计无人负责，仅靠惯性存活
-• **无障碍设计的意外发现**：有用户注意到作者网站采用大字体、高对比度设计，适合低视力人群。一位法定盲人用户反馈字体过大反而不便，但整体欣赏这种个性化设计
-• **功能局限性**：有用户指出Kagi缺少Google Maps的位置推荐、影视观看建议等基于地理位置的个性化功能，虽能过滤低质内容但增加了工作量
+• 惋惜派：多位评论者对博物馆关闭感到遗憾，认为休斯顿有航空公司和石油公司的财力支持，应该有足够资金维持运营
+• 实用派：认为2万美元对航空爱好者来说价格合理，希望有人能购买并重建这些设备
+• 集体行动派：建议大家集体压价，让卖方降低到2万美元以下
+• 技术修复派：希望看到像CuriousMarc、TubeTime等YouTube技术大神能联手购买并修复这些设备，特别是737模拟器看起来组件还比较完整
 
 补充讨论：
-部分用户发现可通过浏览器快捷方式无需登录使用Kagi，对其限流机制表示好奇。另有用户回忆起Kagi.com曾是共享软件支付平台的历史。整体氛围是对付费、无广告、注重隐私的搜索服务的认可。</div>
+• 有评论者指出博物馆违约租约，必须在6月底前搬离航站楼和1928机库
+• 多人称赞建筑本身是精美的装饰艺术风格建筑
+• 有人提到设备中包含德州仪器小型机（可能是980型号）和8英寸软盘驱动器
+• 曾有访客回忆这是一个可以让孩子在西科斯基S-34等飞行器内部探索的互动式博物馆
+• 有人希望孤星飞行博物馆能接管</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48227860" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48238568" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://huggingface.co/bytedance-research/Lance" target="_blank">Lance – native supports image and video understanding, generation, and editing</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: modinfo</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-05-24 12:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Lance是字节跳动推出的轻量级统一多模态模型，仅需3B活跃参数即可在单一框架内实现图像和视频的理解、生成与编辑。该模型完全从零训练，仅使用128块A100 GPU预算，采用分阶段多任务训练方案。Lance支持文生图、文生视频、图像编辑、视频编辑、图像理解和视频理解等多种任务，在多个基准测试中表现出色。其核心优势在于参数规模小、效率高，且能在多种视觉任务间保持一致性，特别擅长多轮编辑和智能视频生成。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48256593" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/yt-dlp/yt-dlp/issues/16766" target="_blank">Bun support is now limited and deprecated</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tamnd</span> |
+                    <span>评分: 558</span> |
+                    <span>评论数: 60</span> |
+                    <span>发布时间: 2026-05-22 17:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>yt-dlp 项目宣布限制并弃用对 Bun 运行时的支持。主要原因：
+
+1. **版本限制**：仅支持 Bun 1.2.11 至 1.3.14 版本。低于 1.2.11 存在安全隐患（忽略 ejs 锁文件），高于 1.3.14 的版本使用 Rust 重写且采用 AI 辅助开发，可靠性存疑。
+
+2. **弃用声明**：虽然暂时保留支持，但保留随时完全移除 Bun 支持的权利，若维护成本过高将停止支持。
+
+3. **背景**：Bun 最近用 Claude AI 重写为 Rust 版本，开发方式转向"vibe-coded"（凭感觉编码），团队认为这带来未来维护风险。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：yt-dlp 拒绝接受 Bun 的 Rust 重写版本（通过 AI 辅助完成），引发关于 AI 辅助编程（"vibe coding"）的争议
+
+不同观点：
+• **支持拒绝方**：100万行代码无法充分审查，维护者需要理解代码库；大量 unsafe 代码存在兼容性和安全隐患；测试套件不足以替代代码审查
+• **质疑拒绝方**：这是基于情绪而非工程数据的政治决定；应该根据实际表现（bug、安全漏洞）而非开发方式来评判；类比"因为不喜欢开发者用的编辑器就拒绝软件"
+• **中立/观望派**：LLM 擅长语言转换，但逐文件转换导致过多 unsafe；应等 Rust 版本发布后根据实际质量决定是否恢复支持；Bun 的做法可能是为了营销炒作
+
+补充讨论：
+• 术语混乱："vibe coding"被泛化为 LLM 使用的贬义词，但实际上很多开发者用 LLM 提升效率
+• Bun 被 Anthropic 收购后的发展方向引发担忧
+• 有人认为 Bun 因此"注定失败"，也有人认为如果 Rust 版本表现良好应该重新接纳
+
+争议焦点：是否应该因为使用 AI 辅助开发就拒绝一个项目，还是应该以最终代码质量为准</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48238789" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://valhovey.github.io/gaia-mary/" target="_blank">Project Hail Mary – Stellar Navigation Chart</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: speleo</span> |
+                    <span>评分: 1170</span> |
+                    <span>评论数: 63</span> |
+                    <span>发布时间: 2026-05-21 16:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于《Project Hail Mary》星图可视化项目的技术实现、数据来源和相关推荐
+
+不同观点：
+• **技术赞赏派**：作者speleo介绍使用ESA的GAIA DR3数据集渲染18亿+恒星；dwheeler分享了自己的开源星图项目；多位用户称赞可视化效果出色
+
+• **科学准确性关注派**：ggreer指出星球、恒星及轨道的比例严重失真，用具体数据说明太空的空旷程度（如果地球距太阳1英寸，半人马座α星将在4英里外）
+
+• **相关内容推荐派**：多人推荐相关资源，包括时间膨胀可视化视频、Bobiverse等科幻书籍、Elite Dangerous游戏中的1:1银河系模拟、自出版写作指南等
+
+• **技术问题反馈派**：mcswell报告Vivaldi浏览器兼容性问题（卡在初始化阶段），Firefox正常运行
+
+补充讨论：
+有用户对引力井图示的"向下"方向表示困惑，认为应该是向内的球形效果；另有用户询问DIY家用星空投影仪的实现方案，希望找到能自动校正畸变、亮度适中且价格合理的解决方案。整体氛围积极，用户们分享了大量相关资源和个人项目。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48225297" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://security.apple.com/blog/formal-verification-corecrypto/" target="_blank">A blueprint for formal verification of Apple corecrypto</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hasheddan</span> |
+                    <span>评分: 116</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-05-22 18:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>苹果安全团队发布了corecrypto库的量子安全加密算法实现及其形式化验证方法。为应对未来量子计算机威胁，他们在iMessage等应用中部署了ML-KEM和ML-DSA算法，并开发了严格的数学证明来确保实现的正确性。corecrypto为25亿台设备提供加密服务，因此苹果对新算法采用极其谨慎的评估标准，包括安全性、性能和正确性。他们公开了算法实现、数学证明以及形式化验证工具，供专家独立评估，以推动关键软件保障技术的发展。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：形式化验证工具在密码学实现中的应用，以及高保障软件开发的挑战
+
+不同观点：
+• **工具易用性观点**：SAW/Cryptol等形式化验证工具相比其他方法更易用，但C++在高保障领域仍然流行，其安全性和工具支持却不如C语言
+
+• **形式化验证价值观点**：ML-DSA早期的missing-step bug是SAW的完美应用场景——这类罕见输入导致的bug在代码审查中容易被忽略（缺失的代码行看起来像是正确的下一行），常规测试也难以捕获
+
+• **后量子密码进展观点**：Apple在2024年就已部署后量子密码（ML-KEM和ML-DSA），值得肯定。同时赞赏"crypto"一词回归密码学本义，而非加密货币
+
+• **安全优先级批评观点**：虽然验证密码学很重要，但Apple对解析器安全重视不足，选择提供锁定模式而非从根本上修复问题
+
+补充讨论：讨论涉及高保障软件开发的多个层面——从底层语言选择、形式化验证工具应用，到具体密码学实现bug案例，再到厂商安全策略的取舍。争议焦点在于Apple的安全策略是否足够全面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48239862" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nand2mario.github.io/posts/2026/z386/" target="_blank">z386: An Open-Source 80386 Built Around Original Microcode</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wicket</span> |
+                    <span>评分: 125</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-05-23 14:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了z386项目——一个基于Intel原始微码在FPGA上重建的386级CPU。z386能运行DOS 6/7和保护模式程序如Doom游戏，性能相当于70MHz的386或低端486。项目使用8K行代码，保留了386的核心架构特征（如32项TLB、微码ROM），同时采用FPGA友好的优化（DSP乘法器、16KB四路组相联缓存）。文章详细说明了CPU的八大功能单元：预取、解码、微码序列器、ALU/移位器、分段、保护、分页和总线接口，展示了如何从z8086项目演进到更复杂的z386实现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于386处理器FPGA实现项目的技术评价和应用场景
+
+不同观点：
+• **技术局限性观点**（spankibalt）：认为缺少FPU浮点运算单元的FPGA实现限制了生产力和研究用途，只适合游戏等基础应用，类比Ao486也只实现了486SX
+• **应用可行性观点**（cbdevival）：指出可以运行Linux 3.7内核，提到Gray386linux项目仍在维护，展示了实际应用潜力
+• **技术效率观点**（UncleOxidant）：对仅需18K LUTs感到惊讶，认为这在现代FPGA中是相当小的规模，暗示实现效率很高
+• **安全研究角度**（mmastrac）：关注微码反汇编是否发现了无需开盖就能读取微码的后门
+• **怀旧与实用性讨论**（KellyCriterion）：询问是否还有386在实际生产环境运行，分享了90年代末见过用软盘传输数据的工业设备案例
+
+补充讨论：多条评论提到了相关的"80386微码反汇编"讨论帖，显示社区对386底层技术的持续关注。整体氛围在技术评估、实用性探讨和怀旧情怀之间。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48248014" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://slumber.lucaspickering.me" target="_blank">Slumber a TUI HTTP Client</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jicea</span> |
+                    <span>评分: 183</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-05-22 04:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Slumber是一个基于终端的HTTP客户端，用于与REST和其他HTTP服务交互。它提供两种使用模式：终端用户界面(TUI)和命令行界面(CLI)。TUI模式支持交互式发送请求和查看响应，CLI模式适合快速请求和脚本编写。Slumber的设计目标是易用、可配置和可共享，配置通过YAML格式的"请求集合"文件定义，两种模式共享相同的配置结构。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于 Slumber（一个终端 HTTP 客户端工具）的评价和替代方案
+
+不同观点：
+• **积极评价派**：认为工具看起来精致、易用，适合快速上手，赞赏其 Neovim 集成支持，愿意在日常工作中尝试
+• **替代方案推荐派**：提出多个类似工具作为替代，包括 Emacs 的 verb、Resterm（使用 .rest/.http 文件）、posting（另一个 TUI 客户端）
+• **技术细节质疑派**：对 YAML 配置格式表示困惑，认为 YAML 比 JSON 更复杂、可读性差且有安全隐患；质疑文档中"与其他 HTTP 客户端交互"的表述可能是笔误
+• **功能需求派**：希望支持导入/导出 Postman 集合和环境变量、支持 OpenAPI 规范自动生成查询、显示生成的 curl 命令
+• **实用性问题派**：指出 Mac 上删除键不可用的问题、JSON 响应显示区域太小（10-20 行不够用）
+• **开发者反思派**：认为此类小工具现在创建太容易（不到一小时），导致分享价值降低，人们可以轻松定制自己的版本
+
+补充讨论：关于 TUI 术语的学术讨论——应该是"Text User Interface"而非"Terminal User Interface"，还有人提出 CHUI（Character User Interface）作为对比概念。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48231938" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://prateekchandrajha.github.io/vc-rademacher.html" target="_blank">When does learning from data work (math starting from basic probability)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: alok-g</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-05-23 23:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨**统计学习何时有效**的核心问题。主要内容包括：
+
+**核心定理**：假设类可学习当且仅当其VC维有限（统计学习基本定理）。
+
+**理论框架**：
+- 定义二元分类的学习问题：实例空间、标签、未知分布、假设类和训练样本
+- 真实风险（总体误差）vs 经验风险（训练误差）
+- 经验风险最小化(ERM)策略及其过拟合风险
+
+**两个关键问题**：
+1. 何时学习可行？（PAC可学习性）
+2. ERM何时有效？（一致收敛性）
+
+**证明工具**：从零构建Markov不等式、Hoeffding引理、集中不等式、VC维、Sauer-Shelah引理、对称化技术，以及信息论方法（KL散度、Pinsker不等式、Le Cam方法）证明定理的充分性和必要性。
+
+文章为两部分系列的第一部分，第二部分将介绍Rademacher复杂度。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对某篇关于机器学习数学/概率的文章的质量评价
+
+不同观点：
+• **质量批评派**（seanhunter）：认为文章写作质量差，有"只写不读"的感觉，目标受众不明确。作为替代，推荐Kevin Murphy的《概率机器学习：导论》作为学习概率和机器学习数学的更好资源
+
+• **实用主义派**（fuzzfactor）：质疑理论学习的必要性，提出"能用就行"的观点——真正的答案可能就是"当你让它工作起来的时候"
+
+• **AI生成内容怀疑派**（Grimblewald）：直接指出文章可能是AI生成的低质量内容（AI slop），缺乏人工审核
+
+补充讨论：三条评论都对原文持负面态度，但角度不同：一个从学习资源质量角度批评并提供替代方案，一个质疑学习理论本身的价值，一个怀疑内容的真实性和原创性。整体反映出对低质量技术内容的不满。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48252859" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -173,289 +472,6 @@
 有人好奇为何AI突破总是Erdős问题；有人要求看具体的点布局示例；有人在Mythos事件后对AI发现持谨慎态度；也有哲学讨论认为数学本就是"重组现有材料"，不应因此贬低AI成就。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48212493" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://deno.com/blog/v2.8" target="_blank">Deno 2.8</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: roflcopter69</span> |
-                    <span>评分: 410</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-05-22 11:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Deno 2.8 发布，这是迄今最大的次要版本更新，新增多个子命令：
-
-**deno audit fix** - 自动升级有漏洞的npm包到最近的补丁版本
-
-**deno bump-version** - 更新deno.json或package.json中的版本号，支持patch/minor/major增量，在工作区中可同步更新所有成员包
-
-**deno ci** - 专为CI环境设计的安装命令，强制使用lockfile并在不匹配时报错
-
-**deno pack** - 将Deno/JSR项目构建为可发布到npm的tarball，自动转译TypeScript、生成类型声明文件、重写模块标识符，使代码能在Node.js生态系统中运行
-
-升级命令：`deno upgrade`</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Deno、Bun、Node.js 三种 JavaScript 运行时的对比与选择
-
-不同观点：
-
-• **Deno 优势派**：认为 Deno 的权限模型、原生 TypeScript 支持、Unix 哲学理念是核心优势，困惑为何开发者选择 Bun 而非 Deno。强调其安全性（默认禁用安装脚本）和简洁性，适合小型服务。
-
-• **Node.js 稳定派**：认为 Node.js 是稳定解决方案且会长期存在，现已支持 TypeScript 和单文件可执行打包，无需迁移。
-
-• **Bun 实用派**：Bun 虽混乱但速度快，标准库包含所有功能，且被 Anthropic 收购，发展势头强劲。
-
-• **Deno 方向担忧派**：批评 Deno 为商业原因不断向 Node 兼容性妥协（Node 兼容性从 40% 升至 75%，默认包含 lib.node 类型），偏离初衷。认为若继续此趋势，使用 Deno 的理由将越来越少。
-
-• **AI 时代技术选择派**：认为在 AI Agent 时代，应优先使用 Rust 和 TypeScript，因其类型安全、内存安全和大量代码语料库便于 AI 理解。
-
-补充讨论：有人提到 Deno 团队谦逊但可能面临资金压力（拒绝捐赠），建议提供订阅服务。也有人质疑为何浏览器仍不原生支持 TypeScript。整体而言，社区对 Deno 的技术认可度高，但对其商业化方向和实际采用率存在疑虑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48234380" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.cloudflare.com/the-day-my-ping-took-countermeasures/" target="_blank">The day my ping took countermeasures</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: moonleay</span> |
-                    <span>评分: 18</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-05-24 02:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者在假期后启动电脑时，运行ping命令遇到"taking countermeasures"（采取对策）警告的调查过程。原因是ping在系统NTP同步时间前启动，时钟被回拨导致RTT测量值为负。作者深入研究了ping的源码（可追溯到1983年），发现它有两种时间测量模式：旧模式使用墙上时钟（gettimeofday），新模式使用更精确的网络时间戳（SO_TIMESTAMP）。当检测到负RTT时，ping会将其重置为0ms。文章还探讨了如何追踪gettimeofday调用，因为现代Linux使用vdso机制使某些系统调用在用户空间执行，常规strace无法捕获，作者尝试了多种技术方案来绕过这一限制。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Unix网络工具ping的历史和文化联想
-
-不同观点：
-• powerbroker提到了一个幽默的文学联想，引用了1933年的儿童读物《The Story About Ping》，巧妙地将其与Unix的ping命令联系起来，指出这本书比操作系统和网络基础设施早了几十年，形成有趣的时间悖论式玩笑
-
-• defrost提供了技术历史信息，指出ping命令由Mike Muuss于1983年在美国陆军弹道研究实验室编写，并分享了个人的时代记忆
-
-• hntiz则联想到了《猎杀红色十月》电影，认为标题让他想起了该电影中的声呐ping场景
-
-补充讨论：这些评论展现了技术社区的文化特点——将严肃的技术工具与流行文化、文学作品联系起来。没有明显的争议，更多是不同角度的补充：一个是文学幽默，一个是技术历史，一个是电影联想。整体氛围轻松友好，体现了技术人员的人文情怀。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48253602" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://krebsonsecurity.com/2026/05/lawmakers-demand-answers-as-cisa-tries-to-contain-data-leak/" target="_blank">CISA tries to contain data leak</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 254</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-05-22 16:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国网络安全与基础设施安全局(CISA)的一名承包商在公共GitHub账户上泄露了AWS GovCloud密钥等大量机密信息。该代码库创建于2025年11月,承包商故意禁用了GitHub的敏感凭证保护功能。事件曝光后,国会两院议员要求CISA作出解释。泄露发生在CISA内部动荡期间,该机构已流失三分之一员工和几乎所有高层领导。一周后CISA仍在努力撤销泄露的凭证,部分关键系统的访问密钥尚未更换,这为中国、俄罗斯、伊朗等对手提供了入侵联邦网络的路线图。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：CISA（美国网络安全和基础设施安全局）承包商在GitHub上泄露AWS GovCloud密钥事件
-
-不同观点：
-• **技术失误论**：认为这是基本的安全常识错误，将凭证放入git是"git 101"级别的低级失误，聪明人也会犯类似错误（如误删生产数据库）
-• **管理问题论**：指出这是人为问题而非技术问题，承包商私自使用GitHub在工作机和家用机之间同步内容，技术控制难以防范；更深层问题是为何承包商能获取并在30天后仍有效使用2025年中期的密码
-• **政治削弱论**：认为这是故意削弱国家防御的结果——2025年Trump解雇局长Chris Krebs并撤销其安全许可，随后大规模裁员导致CISA失去三分之一员工和几乎所有高级领导，2026年仍无局长且运转困难
-• **系统性腐败论**：质疑立法者自身问责，认为他们对大规模腐败视而不见，却对密钥泄露小题大做
-• **私有化阴谋论**：类比公共交通的"劣化循环"——削减资金→服务下降→负面情绪→最终通过安全承包商实现私有化
-
-补充讨论：有评论指出承包商手动禁用了GitHub的密钥扫描保护功能，使问题更严重；也有人质疑如果专家机构都无法保证安全，普通人如何自保；CISA声称无敏感数据泄露的说法遭到讽刺。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48238429" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.superjumpmagazine.com/the-forgotten-art-of-the-lan-party/" target="_blank">The Forgotten Art of the LAN Party (2023)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: susam</span> |
-                    <span>评分: 10</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-23 19:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章回顾了LAN局域网聚会的兴衰历程。作者从2001年的亲身经历出发，描述了LAN聚会的独特魅力：朋友们将电脑搬到一起，通过局域网连接玩游戏，享受低延迟和面对面的社交体验。
-
-文章分析了LAN聚会衰落的原因：高速互联网的普及削弱了其低延迟优势；网吧提供了更便捷的替代方案；2010年代游戏厂商取消了spawn安装等LAN友好功能，采用在线DRM；最终Discord等在线语音平台进一步降低了LAN聚会的必要性。尽管LAN聚会至今仍存在，但已不复往日辉煌。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48250300" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bbc.com/news/articles/c3w2l249j8go" target="_blank">Toxic chemical leak at a manufacturing facility in Orange County</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: borski</span> |
-                    <span>评分: 154</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-05-23 22:09</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>加州橙县一家航空制造厂发生化学品泄漏事故，州长纽森宣布进入紧急状态。一个装有约7000加仑甲基丙烯酸甲酯（易燃易爆化学品）的储罐温度持续上升，面临爆炸或泄漏风险。数千居民被疏散，当地学校关闭，主要道路封锁。消防部门用水喷淋降温，但储罐内部温度已达32°C并以每小时1华氏度的速度上升。官员警告储罐可能发生热失控爆炸，正制定应急预案防止化学品扩散。迪士尼乐园距事发地5英里，不在疏散区内正常营业。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：加州Garden Grove化工厂甲基丙烯酸甲酯(MMA)泄漏事故的应对与监管问题
-
-不同观点：
-
-• **监管失职批评**：EPA在2月提出大幅放松化工设施监管（取消第三方审计、危害报告和公开透明要求），事故发生前11天刚结束公众意见征询期，时机引发质疑
-
-• **技术处置建议**：有人建议钻孔引流、用冷水喷洒降温、使用机器人操作、甚至用大炮击穿过热罐体（怀俄明炼油厂历史做法）；也有人质疑为何不主动控制泄漏并收集
-
-• **毒性争议焦点**：一方认为"有毒化学品泄漏"说法夸大，指出MMA的LD50（7-10g/kg）毒性低于食盐（3g/kg），更多是火灾爆炸风险；另一方强调4万居民处于爆炸半径内的严重性
-
-• **城市规划质疑**：批评分区法失效，允许4万人居住在有毒化工厂爆炸范围内
-
-• **事故原因分析**：MMA遇阳光会硬化，户外储罐的阀门管道可能因操作人员手套沾染MMA后固化而堵塞
-
-补充讨论：多人推荐美国化学安全委员会YouTube频道学习事故根源分析方法；有评论指出媒体用词不准确（称"泄漏"但实际是预防性围堵措施）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48252060" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://singularityhub.com/2026/05/22/data-centers-now-consume-6-of-electricity-in-the-us-and-the-backlash-has-begun/" target="_blank">Data Centers Now Consume 6% of US Electricity–and the Backlash Has Begun</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cdrnsf</span> |
-                    <span>评分: 55</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-05-23 19:42</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国数据中心电力消耗已达全国总量的6%，两年内增长36%，主要由AI热潮驱动。报告警告当数据中心用电超过5%时会引发强烈反对，美国、英国(5.8%)和德国(9.5%)均已越过这一阈值。各州已提出数百项监管法案，部分地区因电力短缺暂停新项目审批至2032年。水资源消耗、"僵尸"工作负载(占3吉瓦)和低效小型数据中心也加剧了问题。2026年全球数据中心支出预计达1万亿美元，其中美国占7000亿。电网承载能力和社区抵制可能成为AI发展的关键制约因素。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据中心能源消耗对电网的影响及其合理性
-
-不同观点：
-• **中国基建优势论**：认为中国在数据中心和电网基础设施建设速度上将远超美国（可能达到10倍）
-
-• **历史怀疑论**：引用互联网泡沫时期煤炭公司伪造研究夸大数据中心能耗的案例，暗示当前能源危机论可能被夸大
-
-• **技术优化派**：指出13%云计算资源被"僵尸工作负载"浪费，主张通过共享架构替代容器化来大幅降低资源消耗，认为市场会迫使成本反映真实消耗
-
-• **需求饱和论**：认为token需求最终会饱和，因为机器背后总有付费的人类，无限扩张不可持续
-
-• **民生优先派**：强烈反对数据中心与民用电力竞争，认为AI非必需品不应享受公用事业待遇，应自建能源基础设施。批评这类似比特币挖矿时期"绿色能源会因此发展"的虚假承诺
-
-• **制造业对比论**：讽刺反对数据中心者的矛盾——支持制造业回流美国却不能容忍负面影响更小的数据中心
-
-补充讨论：争议焦点在于数据中心是否应优先获得电力资源，以及AI发展是否应为能源基础设施买单</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48250712" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.yale.edu/2026/05/21/wildlife-watching-us-too-and-changing-their-behavior-response" target="_blank">Wildlife is watching us, too – and changing their behavior in response</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: hhs</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-05-23 22:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>耶鲁大学领导的一项大规模研究发现，野生动物不仅对栖息地改变做出反应，也会因人类的直接存在而改变行为。研究团队使用GPS追踪了美国37个物种（22种鸟类、15种哺乳动物）超过4500只动物，收集了1180万个位置数据点。结合手机数据和卫星测量，研究发现超过65%的物种会根据人类存在改变行为模式。不同物种反应各异：灰狼扩大活动范围以避开人类，渡鸦则扩大觅食区域利用人类食物源，而郊狼倾向于限制活动。研究强调，保护野生动物不仅要关注栖息地丧失，还需考虑人类活动的时间和地点。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：人类对全球生态系统和野生动物的影响
-
-不同观点：
-• 人类是入侵物种观点：认为人类对生态系统产生负面影响，野生动物最好的应对方式是远离人类。强调人类活动对自然环境的破坏性，将人类本身定位为生态系统的外来入侵者。
-
-• 常识性认知：提出不需要科学研究就能理解人类正在影响全球生态系统这一事实，暗示这是显而易见的问题。
-
-补充讨论：该评论表达了对人类中心主义的批判立场，认为人类活动对野生动物和生态系统造成了系统性的负面影响。评论者采用了较为激进的表述方式，将人类整体视为生态问题的根源。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48252344" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
