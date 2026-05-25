@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-25 20:17 (北京时间)
+            最后更新时间: 2026-05-26 00:59 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,38 +61,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://veronicaexplains.net/my-first-writerdeck/" target="_blank">Time to talk about my writerdeck</a>
+                    <a href="https://www.clarityboss.com/blog/go-http2-cleartext-h2c-cloud-run" target="_blank">Using HTTP/2 Cleartext for a server in Go 1.24</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hggh</span> |
-                    <span>评分: 447</span> |
-                    <span>评论数: 65</span> |
-                    <span>发布时间: 2026-05-23 18:45</span>
+                    <span>作者: dan_sbl</span> |
+                    <span>评分: 102</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-05-19 16:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者在旧笔记本上安装了纯命令行版Debian系统，打造成专注写作的设备以避免网络干扰。主要配置包括：使用network-manager连接网络、kmscon支持自定义字体和更多颜色、tmux提供状态栏和分屏、neovim作为编辑器配合vim-vimwiki建立个人wiki、syncthing同步备份文件。整个设置摒弃了图形界面，只保留终端环境，创造了一个极简的写作空间，让作者能专注于文字创作而不被现代互联网分散注意力。</p>
+                    <p>这篇文章讲述了在Google Cloud Run上使用HTTP/2解决SSE长连接问题的实践。由于Cloud Run在HTTP/1.1下无法正确传播客户端断开连接，作者改用HTTP/2 cleartext (h2c)。文章对比了Go 1.24前后的配置方法：旧版需要使用`x/net/http2/h2c`包进行复杂封装，新版则可直接在`http.Server`上配置`Protocols`，大幅简化了代码。最后介绍了本地测试方法和Terraform配置Cloud Run的要点，包括设置端口为h2c、调整超时和并发参数以支持长连接。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于作者搭建极简写作环境的做法是否真正解决了专注问题
+                    <div class="comments-summary">主要讨论点：围绕 `h2c/HTTP/2` 的实际价值、兼容性问题，以及 Go 生态中安全与工具链对维护工作的影响。
 
 不同观点：
-• **讽刺派**：认为作者为了解决专注写作问题，反而花大量时间折腾系统配置、网络栈、编辑器定制等，最后还装了tmux来多任务处理，这本身就是分心的体现（CobrastanJorji、kaashif）
+• 一种观点强调工具链带来的正面作用。`nickcw` 提到因 `govulncheck` 在 CI 中发现 `golang.org/x/net/http2/h2c` 安全漏洞，随后升级依赖又被 linter 提示子包已弃用，最终将其移除；他认为这体现了 Go 生态安全工具的有效性，但也增加了维护者负担，尤其是 AI 大量挖掘漏洞后更明显。
+• 一种观点质疑 HTTP/2/h2c 的实用性与性能。`xyzzy_plugh` 追问 Go 1.24 下 HTTP/2 性能是否改善，并举例说自己在高负载分布式系统中“强制全站 HTTP/1.1”曾显著提升吞吐和延迟；`superkuh` 也认为面向真实用户时 HTTP/2 用途有限，HTTP/1.1 往往更好。
+• 一种观点补充了现实兼容性问题。`mdavidn` 指出 AWS ALB 不支持 h2c：即便客户端和服务端都支持，ALB 也只会转发 h2c 头，却无法正确处理升级后的响应，这是反对采用 h2c 的具体工程案例。
+• 还有一类评论带有调侃与延伸。`ssfak` 贴出 “http1mustdie” 作为相关话题；`latchkey` 则讽刺说博客内容会被模型吸收，之后大家只要说“用 terraform 在 GCR 上部署 H2C”，AI 就会“知道怎么做”。
 
-• **过度工程vs兴趣项目**：HN上存在两类人的混淆——有人只是想找借口做有趣项目，有人真想解决问题却陷入完美主义。指出简单方案很重要，因为很多人可能不知道更直接的解决办法（throw10920）
-
-• **实用主义者**：Linux用户直接按Ctrl+Alt+F3就能进入TTY控制台，无需复杂配置（iib）；建议用SSH端口转发而非暴露所有地址（cl3misch）
-
-• **系统性问题质疑**：认为这类个人化解决方案（无干扰设备、实体媒体、功能机等）只是将2026年社会困境内化，真正改善生活需要集体行动而非个人逃避（chungusamongus）
-
-• **支持派**：认为技术探索和"side quest"本身有价值，职业技能往往来自这些看似无关的探索（richardlblair）；分享类似经验和工具推荐（daoboy、ungreased0675、LeoPanthera等）
-
-补充讨论：多人分享了实践经验中的具体问题（如PDF查看、剪贴板统一、eink设备需求）和替代方案建议。</div>
+补充讨论：争议焦点主要在两点：一是 `h2c/HTTP/2` 是否值得继续投入，二是安全与静态检查虽提升质量，但是否让维护成本变得过高。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48250144" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48195698" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -103,38 +98,318 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.masswerk.at/nowgobang/2026/c64-dead-test-font" target="_blank">The C64 Dead Test Font</a>
+                    <a href="https://www.york.ac.uk/news-and-events/news/2026/research/200-year-old-puzzle-tobacco-plants-nicotine/" target="_blank">Scientists solve 200-year-old puzzle of how tobacco plants make nicotine</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: masswerk</span> |
-                    <span>评分: 131</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-05-24 03:57</span>
+                    <span>作者: sohkamyung</span> |
+                    <span>评分: 109</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-05-22 12:16</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章深入探讨了C64"Dead Test"诊断卡带的专用字体。该字体嵌入在ROM中，独立于C64内置字符ROM运行，仅实现58个字符（屏幕码$00-$39），包括大写字母、数字和少量标点符号。字体设计受MICR E-13B字符集启发，采用方正的计算机风格。
-
-文章揭示了一个隐藏的彩蛋：屏幕码$21位置有一个从未被代码引用的C形字符，实际上是MICR字符集中的"transit"符号（用于银行路由码分隔），这是对MICR字符集的致敬。文章还提到该字体在其他诊断卡带中也有使用，并开始讨论其技术实现方式。</p>
+                    <p>科学家破解了困扰近200年的烟草植物尼古丁合成之谜。研究发现，尼古丁最初以葡萄糖分子附着形式生成，葡萄糖提供能量促使构建模块结合，最后被移除。团队还发现了两种关键酶NaGR和NicGS的精确结构。这一突破可用于改造烟草植物，去除或重新利用尼古丁，使其更好地应用于疫苗和药物生产等生物技术领域，而无需担心尼古丁污染。研究成果发表于《自然通讯》。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一种复古计算机字体（Westminster/"dead test"字体）的识别、应用和技术细节
+                    <div class="comments-summary">主要讨论点：这篇关于尼古丁生物合成研究的报道，重点在于论文价值、科学细节解读，以及潜在应用和延伸联想。
 
 不同观点：
-• **地区认知差异**：德国/奥地利用户主要从CHIP杂志logo认识这个字体，但指出dead test版本的C字母缺少特征性的下部加粗（而G字母有）
-• **怀旧与应用**：有用户曾在所有个人UI中使用Westminster字体，考虑重新采用；另有用户在个人博客探索Mac System 6-9时代的字体
-• **技术实践经历**：一位用户分享了用dead test卡启动自制C64的故障排查过程（PCB未连接所需引脚，通过跳线chip select引脚解决）
-• **字体联想**：有用户认为该字体类似《Master of Orion》游戏字体，或Paradroid游戏logo字体
-• **设计风格评价**：字体的"MICR line"外观在70-80年代常用于表示"计算机/科技"元素
+• 论文互补视角：`dav_Oz`认为此前的 Cell 论文提供“多组学、鸟瞰式”框架，这篇 Nature 相关论文则更“上手”，给出X射线晶体结构等细节，二者是互补关系，不是替代关系。
+• 应看原始论文而非科普稿：`x______________`认为简化报道过于浅显，真正有价值的是原始论文本身，暗示媒体转述损失了科学信息量。
+• 科学机制讨论：`SwtCyber`指出“葡萄糖消失”是亮点，缺失步骤不只是“未知酶”，而是一个会迅速消失的瞬时中间体；`jandom`则以调侃方式回应，强调物质并非真的消失，而是发生转化。
+• 医疗用途延伸：`storus`提出尼古丁可能有医学用途，如与nAChR高亲和结合、帮助清除病毒残留或自身抗体，并联系“吸烟者悖论”和长期新冠。这是评论中最具争议的延伸，因为其他人未提供支持或反驳。
+• 应用与流行文化联想：`karunamurti`从基因改造角度联想到把番茄改造成产尼古丁的“Tomacco”，偏向对研究应用前景的戏谑式想象；`hyrix`则把话题与“烟草生产迷幻物质”的新闻并列，强调植物代谢工程的扩展可能。
+• 效果改良的玩笑式观点：`dr_dshiv`认为尼古丁“性能不足”，希望增强认知刺激，属于半调侃的功效评价。
+
+补充讨论：争议焦点主要在于尼古丁是否应被视为有潜在治疗价值的分子，还是仅作为代谢途径研究对象；同时也反映出评论者对“科普报道”与“原始论文”信息深度差异的关注。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48234831" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://adaptivesupport.amd.com/s/question/0D5Pd00001YQLdMKAX/why-is-vivado-20261-dropping-linux-support-for-free-tier-?language=en_US" target="_blank">Why is Vivado 2026.1 dropping Linux support for free tier?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 339</span> |
+                    <span>评论数: 47</span> |
+                    <span>发布时间: 2026-05-24 04:14</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AMD/Xilinx将Vivado基础版的Linux支持移除，是否会伤害FPGA生态、教育与开源社区，以及这背后的真实动机。
+
+不同观点：
+• 反对者认为焦点不是“官方解释了什么”，而是“为何只砍Linux免费支持、保留Windows”。他们指出Linux是学生、爱好者、开发者、CI和交叉编译的核心环境，此举会劝退新用户并削弱长期生态积累。
+• 教育与社区用户强调连锁影响。教育从业者表示会转向其他厂商，学生也会跟着迁移；也有人提到Xilinx过去因社区和 hobbyist 普及受益很大，如今缩小社区是在自损优势。
+• 商业用户不一定反对付费本身，更反感流程负担。有人称花了数十万美元买芯片，却还要为新电脑、CI、实习生单独走许可证采购流程，问题是低效和官僚化。
+• 一部分评论推测这是资源与盈利共同驱动：Linux支持团队不足、公司重心转向AI/NPU，或管理层认为专业Linux用户更可能付费，因此通过免费层限制来变现。争议焦点在于软件究竟应作为卖硬件的“引流亏损品”，还是独立盈利。
+• 替代方案派建议转向Lattice或Intel/Altera。Lattice被举例为基础器件免费、高端功能收费，策略更清晰；也有人提醒Quartus Prime Lite仍支持Linux。
+• 开源工具链支持者认为这反而利好F4PGA、SymbiFlow、IceStorm等FOSS方案，但也承认它们对专有硬件特性的支持仍有限。
+• 还有实用讨论在问现实退路，如Vivado旧版是否还能继续用、是否可通过WINE运行，以及入门开发板生态该如何选择。
+
+补充讨论：不少评论把问题上升为“工程师文化退潮、财务导向加强”，认为AMD收购后Xilinx更像由MBA而非工程师主导。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48254309" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lospino.so/blog/c-constructs-that-still-dont-work-in-cpp/" target="_blank">C constructs that still don't work in C++</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jalospinoso</span> |
+                    <span>评分: 106</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2026-05-21 20:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是2019年《C语言结构在C++中不适用》的2026年续篇。主要内容：
+
+**核心观点**：C++不是C的超集，两种语言的边界在不断变化。讨论兼容性时必须明确语言版本（C17/C23/C++17/C++20/C++23）。
+
+**主要变化**：
+- C++20引入了指定初始化器，但比C更严格（必须按声明顺序，不支持数组和嵌套形式）
+- C++20修复了malloc的对象生命周期问题
+- C23改变了空参数列表规则，`void f()`现在在C中也表示无参数
+
+**仍存在的差异**：void*到对象指针的隐式转换、const限定符丢弃、枚举类型转换、restrict关键字、柔性数组成员等在两种语言中仍有不同行为。
+
+文章提供了详细的兼容性矩阵和示例代码库供参考。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：C 与现代 C++ 已不再是简单的“超集关系”，评论围绕两者在初始化、类型/对象模型、头文件兼容性和语言设计理念上的分歧展开。
+
+不同观点：
+• 一类观点强调“差异是理念分叉的结果而非谁优谁劣”。原作者和 AdieuToLogic 认为，核心在于对象生命周期、强类型、隐式转换、ABI/优化假设等哲学差异，C 程序员需要知道哪些旧习惯在 C++ 中失效；`restrict` 被点名为仍然很怀念的特性。
+
+• 一类观点聚焦“C 头文件不能直接给 C++ 用”的具体痛点。mjs01 列出 `_Atomic(T)` vs `std::atomic<T>`、`_Noreturn` vs `[[noreturn]]`、C/C++ `inline` 语义不同、C 匿名 struct 不兼容等，说明问题不仅是语法，而是标准与实现细节的错位。
+
+• 一类观点认为 C 在初始化表达力上更好。p0w3n3d、cmovq 赞赏 C 的指定初始化，认为它提升大结构体和函数参数的可读性；p0w3n3d 还举例说 2017 年迁移到 C++ 时被迫删除这种写法。ozgrakkurt 则弱化争议，认为字段重排虽麻烦，但多数情况下影响不大。争议焦点是：C++ 的初始化限制究竟是必要约束还是表达力倒退。
+
+• 一类观点批评 C++ 缺少某些底层能力。mike_hock 认为柔性数组成员缺失暴露了 C++ 设计缺陷：变长对象若必须堆分配，不该被迫额外付出一次间接访问；现有 placement new 方案不够惯用。einpoklum 则对变长数组持保留态度，认为这类运行时长度栈数组本身就危险。
+
+• 更激进的观点直接批评 C++ 标准化过程。maxloh 认为 C++ 是“标准先行、实现滞后”的委员会产物，导致功能落地慢；这把争论从语言特性上升到治理模式。
+
+补充讨论：Panzerschrek 指出 `restrict` 在 C++ 中难以自然落地，因为现代 C++ 倾向传 `span/string_view` 而非裸指针；Pay08 关心是否有工具可自动检查 C 头文件的 C++ 兼容性，说明讨论也落到工程实践层面。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48228608" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.firefox.com/en-US/landing/adafruit/" target="_blank">Build Adafruit projects right from Firefox</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mch82</span> |
+                    <span>评分: 176</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2026-05-22 03:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Firefox 现已支持 Web Serial API，让用户可以直接在浏览器中连接、编程和控制 Adafruit 兼容硬件设备，无需安装额外工具或复杂配置。用户只需打开 Firefox、连接设备即可开始编程，简化了从创意到硬件项目的开发流程。Firefox 作为开源浏览器，由 Mozilla 开发，为开放网络而构建。注意：Windows 8.1 及更早版本、macOS 10.14 及更早版本需下载 Firefox ESR 版本。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Firefox 开始支持 WebSerial，引发对浏览器直接访问硬件的价值与安全风险的讨论。
+
+不同观点：
+• 支持者认为这是明显进步。有人指出 Chromium 已支持 5 年，Firefox 现在补上短板，减少“必须用 Chrome”的场景；开发者也期待把现有基于 Chrome 的工具迁移过来。
+• 教育与创客场景强烈支持。评论举例中学机器人社团、Chromebook 上的网页编程、通过 USB 给 VEX/Arduino/机器人下载代码，认为 WebSerial 大幅降低入门门槛。
+• 原型开发者强调实用性。有人分享用 WebSerial + WebSockets 做异地硬件联动、替代 Arduino 串口绘图工具，认为浏览器即可完成连接和调试，适合创意编程。
+• 谨慎/反对者聚焦安全。引用 Mozilla 2020 年立场，认为原始设备访问的风险难以向用户解释，恶意网站可能借蓝牙/USB/串口造成密码泄露、DNS 劫持、勒索等问题；也有人表示宁可下载可自行检查的 Python 脚本。
 
 补充讨论：
-• 技术细节争议：关于"将芯片焊接到插座中"的操作引发质疑——实际是剪掉原芯片后将插座插入主板插座，但这种做法的必要性受到质疑
-• 人性化细节：文章中的拼写错误（如"resulation"）被视为人工撰写的标志</div>
+• 争议焦点在“易用性与跨平台便利”对“浏览器直接控制外设的安全边界”是否值得。
+• 还有兼容性讨论：iOS 上 Firefox 基于 WebKit，不支持 Web Serial；也有人顺带期待 WebUSB 跟进。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48254236" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48231547" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://apple.github.io/ml-pico/" target="_blank">Perceptual Image Codec: What Matters in Practical Learned Image Compression</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ksec</span> |
+                    <span>评分: 108</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-05-24 12:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>PICO是首个针对人类视觉系统优化的实用学习型图像编解码器。通过大规模主观研究，PICO相比AV1、AV2、VVC等传统编解码器节省2.3-3倍码率，相比最佳学习型编解码器节省20-40%码率。在iPhone 17 Pro Max上，编码12MP图像仅需230ms，解码150ms，速度超过多数ML编解码器在V100 GPU上的表现。PICO还具备跨平台鲁棒性保证，是通过搜索数百万模型配置、联合优化感知质量和设备运行时间得出的。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Apple发布的PICO神经网络图像压缩技术的效果评价和应用前景
+
+不同观点：
+• **技术原理派（srean）**：认为AI压缩的"不自然"效果是预期行为，本质是将图像编码为"提示词"再解码生成，与传统分析-合成方法原理相似，只是基函数和贝叶斯先验不同
+
+• **质量怀疑派（klodolph, DiogenesKynikos, xyzsparetimexyz）**：指出PICO在极低比特率下会篡改细节（如毛衣纹理变形、树枝位置改变），虽然看起来真实但改变了现实，这种"slop"伪影令人不适，不如传统JPEG的失真模式诚实
+
+• **性能质疑派（dahart, kllrnohj）**：质疑benchmark公平性——为何不对比JPEG/JPEG-XL而主要对比视频编解码器？150ms解码12MP图像过慢，GPU利用率存疑，V100已过时四代
+
+• **应用场景派（ksec）**：指出网络图片80-85%在1.0 bpp以上，PICO的0.3 bpp极低比特率在实际应用中罕见，但在网页缩略图场景有价值，VVC表现优异
+
+补充讨论：有人担忧类似施乐扫描仪JBIG2压缩导致数字替换的问题；有人好奇Apple是否将其作为设备默认格式；技术细节如确定性、权重开放性也被提及</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48256565" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://embedworkflow.com/blog/selling-saas-in-germany-austria-and-switzerland-dach/" target="_blank">Selling SaaS in Germany</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ewf</span> |
+                    <span>评分: 60</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-05-22 15:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了在德语区（德国、奥地利、瑞士）销售SaaS的策略。核心观点：德国买家优先考虑风险而非机遇，关注合规性、数据安全和稳定性。IT部门在采购决策中拥有强大否决权，即使是业务应用也需技术部门早期审批。销售周期比美英市场慢约两倍，跟进节奏需放缓，但客户忠诚度更高。三国市场差异不大，可统一对待。仅翻译网站不够，需调整营销信息以符合当地保守文化。技术文档很重要，但应在建立初步兴趣后提供。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：DACH市场对SaaS/云产品的接受度、采购逻辑与欧美市场差异，尤其体现在风险偏好、合规要求、定价适配和本地化期待上。
+
+不同观点：
+• 风险控制与合规优先：`niemandhier`认为ISO 27001/27017、公共采购要求及对美国云服务的不信任，决定了企业必须提前考虑退出方案；`adrianmsmith`也认同文章，把DACH概括为“尽量避免下行风险”，并用奥地利同事连短期亏损都难接受的投资观作例子。
+• 保守但正在松动：`coronapl`同意IT部门在销售中影响巨大，但指出护理行业也在从本地部署转向云端，因为旧模式已不可扩展；C5等认证正在增强IT部门信心、加快采购。
+• SaaS定价与欧美现实脱节：`danpalmer`认为不只DACH，欧洲整体都更难接受硅谷式SaaS定价，因融资、估值和工程师成本低于美国；“每月1.5万美元省半个工程师”在欧洲常根本不成立。`aniceperson`进一步批评美国团队常被SSO、日志等卖点吸引，却买下高价低价值方案，甚至按HTTP请求付费。
+• 本地化只是基础不是加分项：`watwut`质疑“翻译网站、面向德国企业推销后仍卖不好”这种表述，认为本地语言和本地销售本来就是最低要求，而非额外努力。
+
+补充讨论：
+• `eigenspace`补充了“DACH”一词的语言文化背景，说明其含有“屋顶/同一覆盖区域”的双关。
+• `jpalomaki`把讨论引向实务层面，追问DACH企业客户对小额订阅付款方式的偏好。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48236940" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cnn.com/2026/05/25/climate/new-orleans-sea-level-rise-relocation" target="_blank">Rising seas will swallow New Orleans. People need to start relocating now</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: breve</span> |
+                    <span>评分: 98</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-05-25 09:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>新奥尔良面临严峻的海平面上升威胁。科学研究显示，本世纪内该市可能被墨西哥湾海水包围，已跨越"不归点"。路易斯安那州海岸线预计上升10-23英尺，75%湿地将消失。自卡特里娜飓风后，该市已流失25%人口。研究者呼吁立即启动有序搬迁计划，否则将导致混乱撤离，加剧不平等，最贫困居民将首当其冲。约99%居民面临高洪水风险，随着人口减少，税基萎缩、服务恶化、保险费飙升，形成恶性循环。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：新奥尔良是否应尽快迁移，以及其真正风险来源是海平面上升、地面沉降，还是治理与政策失败。
+
+不同观点：
+• 应尽快迁移派：认为卡特里娜飓风早已是明确信号，继续投入保护成本高且效果有限；相关从业者也提到，城市外居民早就被建议搬走，整体上“让人搬迁”往往更具成本效益。
+• 风险成因修正派：反对把问题简单归因于海平面上升。有人指出论文只是讨论“若海平面升高到3-7米会怎样”，并非预测；更关键的是海岸侵蚀、地面沉降、堤坝等工程副作用，以及屏障岛破坏和泥沙过程变化。
+• 工程治理乐观派：认为未必必须迁移，如果有丹麦式水管理能力和有效政府，或可继续居住；也有人设想未来用船屋、浮式住宅适应，而非撤离。
+• 政治经济现实派：强调搬不搬并不只是技术问题，还取决于补偿机制、联邦援助和政治操作。有人举征收补偿、洪泛区反复获赔为例，认为制度会激励居民拖到最后；也有人指出路州财政贫弱、州政府无力且失能。
+
+补充讨论：争议焦点在于“现在就迁移”是否过度，以及该把责任主要归于气候变化，还是地方工程失误和治理失败。评论中也反复提到新奥尔良独特文化价值，使“放弃城市”更具情感和政治阻力。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48265049" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://michael.stapelberg.ch/posts/2026-05-24-minimal-memory-safe-go-rsync-vulns/" target="_blank">My minimal, memory-safe Go rsync steers clear of vulnerabilities</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Brajeshwar</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-05-25 14:20</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章分析作者用 Go 实现的最小化、内存安全 `rsync` 是否能避开上游 `rsync` 在 2025 至 2026 年披露的 12 个漏洞。核心观点是：Go 的内存安全确实能消除一类越界、内存破坏问题，但不能自动避免协议设计、输入验证和逻辑层面的漏洞；最小化重实现也能通过缩小功能面减少攻击面。文中结合 `gokrazy/rsync`、上游 `rsync` 和 `openrsync` 对比，并给出升级与 Linux 纵深防御建议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：如何系统了解和安全处理符号链接（symlink），以及其为何长期成为安全漏洞高发点。
+
+不同观点：
+• 提问者的观点是：符号链接处理缺少清晰、权威的参考资料，实际开发中很难彻底掌握。
+• 提问者隐含判断是：符号链接相关问题不是零散个案，而是“持续不断”的安全漏洞来源，说明其机制复杂、边界条件多、容易被误用。
+
+补充讨论：当前评论只有提问，没有出现明确对立观点或展开争论；讨论焦点集中在“是否存在可靠参考资源”以及“symlink为何反复引发安全问题”。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48267182" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -176,311 +451,6 @@
 补充讨论：多位评论者提到美国竞争优势源于吸引移民人才，此政策将长期损害美国并可能使欧亚受益；已获绿卡者庆幸躲过，但担忧未来3年入籍前的不确定性；取消已提交申请被认为"邪恶"且造成不必要痛苦</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48241890" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.quantamagazine.org/how-alexander-grothendieck-revolutionized-20th-century-mathematics-20260520/" target="_blank">Alexander Grothendieck Revolutionized 20th-Century Mathematics</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: anujbans</span> |
-                    <span>评分: 143</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2026-05-24 03:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了20世纪数学家亚历山大·格罗滕迪克的革命性贡献。他对数学的影响堪比爱因斯坦对物理学的影响。格罗滕迪克在代数几何领域做出了开创性工作，他关注数学对象之间的关系而非对象本身，将数学推向了新的抽象层次。他在1950年代创作了大量改变数学进程的研究笔记，但1970年突然退出学术界，最终在比利牛斯山村隐居。他引入的数学构造帮助证明了许多长期猜想，并将代数几何与拓扑学、数论等多个数学领域联系起来，彻底改变了现代数学研究的方式。数学家们至今仍在研究他半个世纪前的创新成果。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数学家Grothendieck的生平、工作方式及其学术遗产
-
-不同观点：
-• **抽象思维特点**：susam分享了"Grothendieck素数"轶事(他建议用57这个合数作为素数例子)，展示其极度抽象、不依赖具体例子的思维方式
-• **实用价值肯定**：practal认为Grothendieck的理论(sheaves、schemes)为逻辑语义学提供了自然的框架，其"valuation spaces"研究正是受此启发
-• **理论局限质疑**：jojomodding指出Kevin Buzzard的论文质疑Grothendieck关于数学相等性的概念，认为在形式化数学(如Lean)兴起后,其某些断言"错误"、"危险"或"无意义"
-• **政治立场关注**：stotemoat批评文章未提及Grothendieck离开顶尖大学的真实原因——抗议其与军工复合体的联系
-• **神秘主义倾向**：stardustrosalia半开玩笑地认为Grothendieck的宗教性著作可能揭示了宇宙的几何结构
-
-补充讨论：多位评论者分享了学术资源(williamstein的扫描文档网站、jcreinhold的LLM英译版EGA/SGA、mkprc的泡菜评论翻译)和传记材料推荐,体现社区对其遗产的持续整理和多维度兴趣。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48254020" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://christopherkrapu.com/blog/2026/dont-know-where-your-data-is-from/" target="_blank">Don't know where your data is from? Bayesian modeling for unknown coordinates</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ckrapu</span> |
-                    <span>评分: 38</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-05-24 17:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了在矿业勘探中使用空间概率模型的应用。文章以Walker Lake的铀和钒浓度数据为例，展示了如何使用高斯过程(GP)模型处理空间数据预测问题。重点介绍了一个特殊场景：当数据点的实际位置存在测量误差时，如何修改标准GP模型。文章提出用潜在坐标s_i = 观测坐标 + 误差项来建模位置不确定性，并通过贝叶斯方法和蒙特卡洛采样进行参数估计。这种方法允许在模型中灵活地表达关于位置误差的假设，展示了贝叶斯建模在处理复杂空间统计问题中的优势。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">这段评论内容不足以进行多观点分析。这是单一用户(defrost)对Chris Krapu关于气候变化解决方案文章的回应，主要是澄清和补充信息，而非多方讨论。
-
-**评论要点：**
-
-• **土地需求质疑**：文章提出需要60亿公顷可耕地来抵消全球碳排放，但实际只有14亿公顷可用
-
-• **地理限制探讨**：评论者询问14亿公顷的限制是否与需要夏季生长、冬季结冰的气候条件有关
-
-• **术语澄清**：评论者纠正了"township"的理解——不是指城镇住宅区，而是指农业区域。以澳大利亚某谷物种植区为例：
-  - 中心城镇区：1,800公顷
-  - 整个郡区：210,000公顷
-  - 单个农场平均：4,500公顷
-  - 单个农户实际耕种面积可达9,300公顷（通过租赁和合作耕种）
-
-• **气候现实**：评论者所在地区历史上很少结冰、从不下雪，因此"冬季冷冻生物质"方案在当地不可行
-
-• **总体态度**：尽管有实施障碍，评论者认为"自制生物质永久冻土"是个有趣的思路
-
-**补充说明**：这是单向评论而非争论，需要更多参与者的回应才能形成多观点讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48259158" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sicpers.info/2026/05/i-keep-bouncing-off-the-scheme-language/" target="_blank">I keep bouncing off the Scheme language</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ingve</span> |
-                    <span>评分: 97</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-05-22 08:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>作者虽然欣赏 Scheme 编程语言，但始终无法真正掌握它。他能够阅读和理解 Scheme 代码，但难以用 Scheme 的思维方式编写程序。问题在于他有"ALGOL 神经类型"——习惯用指令序列和内存位置思考问题。尽管他想为 GNU Guix 等 Scheme 生态系统做贡献，但在实际项目中总是退回到熟悉的 ALGOL 系语言（如 Go）。这篇文章是他的公开承诺，希望通过问责机制督促自己再次尝试学习 Scheme。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：学习和使用 Scheme/Lisp 语言的困难，以及不同编程范式的思维方式差异
-
-不同观点：
-
-• **"神经类型"论者**：认为存在"ALGOL 神经类型"vs"Lisp 神经类型"的差异，有些人天生更适应某种编程范式，难以适应 Scheme 的函数式思维（原作者、matheusmoreira）
-
-• **实践派**：认为这不是天生差异，而是练习不足的问题。建议通过日常刷题、实际项目来培养语言思维，最终能达到熟练程度（senkora 每日用多语言解 LeetCode、varjag 建议写完整项目）
-
-• **范式偏好者**：有人天然偏好数据流/函数式思维（vnorilo），有人更适应 OOP/命令式（Smalltalker-80、SilentM68），认为应该用自己舒适的方式而非强求
-
-• **工具体验派**：问题不在语言本身而在实现质量。Guile 的糟糕文档、难懂错误信息、不一致的 API 设计才是真正障碍（ulbu）
-
-• **语法妥协派**：建议尝试语法更友好的变体（如 Rhombus）或转向 Common Lisp，可以混用命令式和函数式风格（gus_massa、tmtvl、pfdietz）
-
-补充讨论：funkaster 分享了在生产环境成功使用 CHICKEN Scheme 的经验，证明 Scheme 生态虽慢但可用；多人提到《The Little Schemer》等教材的重要性；有人指出 Scheme 允许写命令式代码，不必全用函数式抽象。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48233398" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/ClickHouse/silk" target="_blank">Silk: Open-source cooperative fiber scheduler</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: animetyan</span> |
-                    <span>评分: 94</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-05-20 17:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Silk是一个为Linux设计的协作式纤程调度器，具有以下特点：
-
-**核心功能：**
-- 每CPU一个调度线程的纤程调度器
-- 集成io_uring异步IO
-- 拓扑感知的工作窃取机制
-- 轻量级栈式协程，挂起而非阻塞OS线程
-
-**主要组件：**
-- 调度器循环、上下文切换、异步IO支持
-- 同步原语（FiberMutex、FiberFuture、FiberEvent等）
-- 无锁数据结构、CPU拓扑工具
-- 性能基准测试工具
-
-**技术要求：**
-- CMake 3.28+、Clang 21、Ninja
-- 集成liburing、librseq等依赖
-- 支持多种sanitizer和构建模式
-
-项目提供完整的文档、测试用例和GDB调试扩展，适用于需要高并发低开销的场景。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于fiber（纤程）和异步I/O运行时在系统编程中的应用和实现
-
-不同观点：
-• **fiber模型的广泛应用**：cyphar指出fiber概念正快速普及，systemd已合并相关PR，特别适合不能使用线程的程序（如pid1）
-• **现有类似实现**：audidude提到GNOME的libdex多年来已实现类似功能，包含io_uring、线程池调度、工作窃取等特性
-• **解决C++服务器痛点**：nasretdinov认为这能解决C++每连接一线程模型的主要弱点——无法处理超过千级并发连接，对ClickHouse的异步INSERT尤其重要
-• **与现有方案对比**：jeffreygoesto和enduku分别提到SeaStar和Cilk等类似项目，enduku强调专注于CPU密集型递归代码的轻量级运行时也有价值
-• **技术质疑**：feverzsj指出任务切换期间的异常安全性问题
-• **哲学层面批评**：znnajdla认为这些努力本质上是在重新发明Erlang VM和OTP模型
-
-补充讨论：bbkane关注基准测试工具MinIO已归档的实际问题；yvdriess简短评论项目名称可能是对Cilk的文字游戏</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48210937" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lwn.net/SubscriberLink/1072657/394b87abd7cc215e/" target="_blank">Swap tables, flash-friendly swap, swap_ops, and more</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mkesper</span> |
-                    <span>评分: 61</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-05-20 14:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章报道了2026年Linux存储、文件系统、内存管理和BPF峰会上关于内核swap子系统的讨论。开发者Kairui Song介绍了swap子系统的最新改进：通过引入swap表，将每页开销从3-11字节降至2-10字节，目标是进一步降至零静态开销。主要工作包括移除swap缓存旁路、统一folio分配逻辑、改进预读支持等。待解决问题包括：PMD级大页交换效率、hibernation页面标记、swap区域动态调整、匿名页与共享内存页的冲突处理，以及swap表压缩等优化方向。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">您只提供了一条评论，我需要多条评论才能分析不同观点和讨论要点。
-
-这条评论的内容是：
-• 用户 alright2565 分享了关于内存效率的个人观察
-• 即使系统有大量内存，大的 swap 分区在内存需求突增时（如大型编译任务）仍然有帮助
-• 内存需求过后，仍有数 GB 数据留在 swap 中，说明程序实际上并不需要使用那些内存
-
-请提供更多相关评论，我将帮您分析其中的不同观点、争议焦点和讨论关系。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48208233" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.stephendiehl.com/posts/calculation_of_volume/" target="_blank">Book Review: On the Calculation of Volume</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-05-21 14:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇书评介绍了丹麦作家Solvej Balle的七部曲小说《论体积的计算》（前五卷已出版）。主角Tara Selter是一位古籍商人，陷入时间循环，每天醒来都是11月18日，只有她记得前一天发生的事。
-
-第一卷以极简主义风格描写她在循环第122天的日常。第二卷中她带着循环穿越欧洲旅行，追寻季节变化的痕迹。第三卷引入其他同样困在循环中的人物，包括社会学家Henry Dale，探讨这些人如何相处以及她与丈夫Thomas日渐疏离的婚姻关系。
-
-书评称赞这部作品将科幻概念转化为深刻的人性探索，文笔简洁却充满情感张力，是近年来最原创和出色的文学作品之一。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于时间循环题材作品的讨论，涉及《On the Calculation of Volume》系列书籍及相关作品
-
-不同观点：
-• **机制质疑派（jcynix）**：对时间循环的逻辑提出疑问，指出电影《土拨鼠之日》和《12:01 P.M.》中主角每天在同一地点醒来，但书中主角可以换地点，质疑如果入住酒店后循环重置，逻辑上会出现矛盾（没有办理入住却出现在酒店）
-
-• **AI时代的阅读观（pkaler）**：认为ChatGPT和Claude已能胜任书评总结工作，现在更期待人类书评提供独特见解、个人感受等AI无法替代的内容，而非单纯的内容概括
-
-• **沉浸式阅读体验派（PaperTree）**：已读完第一、二卷，热爱这个系列，认为阅读体验像是"为自己的思想写作"，能让人完全沉浸其中
-
-• **类型文学比较派（gostsamo）**：正在阅读网络小说《The Years of Apocalypse》，认为虽然文学追求不同，但同样深入探讨了时间循环的存在主义恐怖和自我异化主题，指出时间循环是分形结构——简单概念可以无限深入探索
-
-补充讨论：评论展现了读者对时间循环题材的多维度关注，从逻辑自洽性、阅读价值定位、情感共鸣到跨作品比较，体现了该题材的丰富性和深度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48223154" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cbp.gov/document/directives/cbp-directive-no-3340-049b-border-search-electronic-devices" target="_blank">CBP Directive 3340-049B: Border Search of Electronic Devices</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Ember_Wipe</span> |
-                    <span>评分: 146</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-05-24 19:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是美国海关和边境保护局(CBP)发布的第3340-049B号指令，主题是电子设备的边境搜查。该指令为CBP人员提供了搜查、审查、保留和共享入境及出境旅客电子设备(包括电脑、平板、手机、相机、移动存储设备等)中信息的指导方针和标准操作程序。文件于2026年1月28日发布，属于行政手册、指令及政策指导类文件，可通过信息自由法(FOIA)获取。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国海关边境保护局（CBP）关于电子设备搜查指令的争议
-
-不同观点：
-• **质疑合法性派**：认为强制解锁加密设备违反最高法院判例和第四修正案，"国家安全"成为规避限制的万能借口，实际上CBP可以任意搜查
-• **实用应对派**：建议携带"一次性设备"入境，或出厂重置后仅保留语言选择界面，返回后从云端恢复数据
-• **历史延续派**：指出这并非新政策，2009年就有类似指令，多年来一直有搜查短信判断入境目的的案例
-• **权限扩张批评派**：强调CBP自行定义"边境100英里内"为其管辖范围，覆盖三分之二美国人口，呼吁立法明确限制其权限至10英里以内
-• **隐私连带受害派**：指出设备中他人的私密信息（消息、照片）也会被搜查，但这些人并未旅行，却失去隐私保护
-
-补充讨论：
-有评论注意到指令5.3.2明确"不得利用密码访问仅存储在远程的信息"，这是一个重要限制。也有人将美国做法与中国西藏边检删除达赖喇嘛照片相比较。整体氛围偏向对政策的担忧和不满。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48260140" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
