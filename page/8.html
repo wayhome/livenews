@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-28 14:42 (北京时间)
+            最后更新时间: 2026-05-28 20:19 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,122 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.unicode.org/versions/Unicode18.0.0/" target="_blank">Unicode 18.0.0 Beta</a>
+                    <a href="https://neugierig.org/software/blog/2026/05/theseus-wasm.html" target="_blank">Theseus: Translating Win32 to WASM</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 32</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-05-27 07:28</span>
+                    <span>作者: ingve</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-05-25 07:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Unicode 18.0.0版本（2026年9月发布）新增13,047个字符，总计172,848个字符。新增4种文字系统：契索伊文、原始楔形文字（数字）、女真文和篆书。该版本包含核心规范、字符图表、Unicode标准附件和字符数据库。同步更新了5个技术标准（UTS #10排序算法、UTS #39安全机制、UTS #46域名处理、UTS #51表情符号、UTS #58链接检测）。新增两个数据文件：JurchenSources.txt和SealSources.txt。此版本取代所有先前版本，部分变更可能需要实现方进行修改。</p>
+                    <p>文章介绍 Theseus 已可将 Win32/.exe 翻译为 WebAssembly，在网页中运行。核心改动包括：复用原有 x86 翻译输出、抽象 Host API 以适配 SDL 和 Web。最大难点是“是否允许阻塞”：原先异步方案利于浏览器运行，但调试复杂、性能较差；新版改用同步阻塞和真实线程。为解决 Web 主线程不能阻塞的问题，作者让模拟器在线程 worker 中运行，并用共享内存与 Atomics 实现阻塞式调用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Unicode标准中的emoji提案和新增内容
+                    <div class="comments-summary">主要讨论点：围绕该项目将 Win32/x86 程序搬到浏览器/WASM 的可行性、实现路线、线程与渲染限制，以及其实用价值展开讨论。
 
 不同观点：
-• 支持扩展emoji：orangepanda关注新emoji的实用性，列举了破裂脸、左右拇指、帝王蝶、泡菜、灯塔等新增符号，认为这些是大家真正关心的内容
+• 技术上可进一步简化实现：kettlecorn认为若主二进制由Rust实现，可利用Rust分配器在启用原子支持后“忙等”而非等待主线程，从而有机会让主线程二进制被多个线程共享，不必采用博文中较复杂的方案；这是对原文“malloc可能阻塞”的直接回应。  
+• 浏览器/WASM生态正在改善：hardwaresofton提到WASM Component Model及其线程支持正在推进，LLVM也已有相关进展；modeless则建议使用OffscreenCanvas，把图形渲染放到后台worker，减少对浏览器主线程依赖。Aurornis与valorzard补充说，浏览器线程和WASM调试目前仍是明显痛点，多线程Rust WASM体验“不稳定”。  
+• 该方向很有潜力，甚至可扩展到更多程序：astlouis44认为若补上WebGPU，或可用于把原生Windows游戏转到WASM；univrsaltrans更乐观，认为未来可能出现“通用二进制翻译器”。theanonymousone也表达了强烈兴趣并询问如何贡献。  
+• 也有人强调这是学习型项目，离实用尚远：gigel82明确认为项目“有趣但不可实际使用”，并拿Boxedwine作对比，称其也主要只能跑较老的软件。lukax举Retrotick为另一条路线，说明模拟x86+JS实现Windows API已能跑部分旧程序，但API覆盖仍不足。  
+• 对项目本身的肯定多集中在“轻量”和“有趣”：mickael-kerjean称赞示例仅约1MB，相比一些体积巨大的WASM项目（如压缩后50MB的LibreOffice）很清爽；也有人单纯觉得扫雷在浏览器中运行很酷。  
+• 还有命名与认知层面的讨论：Findecanor最初误以为是Theseus OS；arka2147483647则吐槽项目名不如“win2wasm”直观，反映品牌化命名不易记忆。
 
-• 质疑emoji泛滥：sourcegrift认为emoji是"彻底的灾难"，只接受表情符号和手势，其他都是无意义的扩展
+补充讨论：争议焦点主要在“技术前景是否足以支撑实际可用性”——一方认为线程、组件模型、渲染能力正在快速补齐，另一方则指出当前多线程、调试、API兼容和现代软件支持仍是现实障碍。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48264328" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://tsz.dev/" target="_blank">tsz: high performance TypeScript checker, emitter, and language service in Rust</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bpierre</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-05-27 19:35</span>
+                </div>
 
-• 技术可行性担忧：poulpy123提出四个关键问题——是否有字体能覆盖所有Unicode字符、无限扩展是否有意义、还剩多少空间给新字母和表情、如何处理新发现的古文字符号
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>tsz 是一个用 Rust 编写的 TypeScript 检查器、代码生成器和语言服务，目标是在持续提升与 tsc 兼容性的同时显著加快 TypeScript 体验。基准测试中，tsz 在 49 个微基准总耗时约 3 秒，较 tsgo 的 7 秒快约 2.21 倍。但它目前仍未完全替代 tsc，兼容性页面持续跟踪其在类型检查、JS/声明生成和编辑器行为上的进展。</p>
+                </div>
 
-• 遗憾特定提案被拒：computer23对"锡箔帽"emoji提案两次被拒表示失望
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于某个TypeScript工具项目的开发方式和技术对比
+
+不同观点：
+• **开发模式质疑**：presentation对项目的开发方式表示担忧，指出提交历史显示是一个维护者和Claude AI全天候产出数百个提交。质疑点包括token成本和相比官方tsgo原生推送的最终效果
+• **技术对比询问**：vivzkestrel提出与tsx工具的对比问题，想了解两者的差异和优劣
+• **积极评价**：rwalls给出正面反馈，认为这个工具很酷，将其类比为"tsc的bun版本"
 
 补充讨论：
-brikym用调侃方式暗示AI可能比Unicode标准更灵活地处理emoji需求；izissise关注道本语(toki pona)未被收录的问题，反映了小众语言在Unicode标准中的代表性问题。核心争议在于Unicode是否应该无限扩展emoji，以及技术实现的边界在哪里。</div>
+评论反映出社区对AI辅助开发项目的不同态度：既有对开发可持续性和质量的担忧，也有对技术实现本身的兴趣和认可。核心争议在于AI密集参与的开发模式是否可行，以及该工具在TypeScript生态中的定位。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48290881" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48299384" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.thefp.com/p/tyler-cowen-seven-ways-to-avoid-losing" target="_blank">Seven Ways to Avoid Losing Your Job to AI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: yarapavan</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-05-28 07:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>经济学家Tyler Cowen提出避免被AI取代的职场建议：
+
+1. **选择"混乱型工作"**：寻找难以描述、涉及多种任务的工作，工作内容随情况变化，需要即兴发挥而非重复固定任务。这类工作不易被AI替代，反而能借助AI提升效率。
+
+2. **警惕远程办公**：虽然文章未展开说明，但暗示远程工作可能增加被AI替代的风险。
+
+文章指出，尽管AI是否正在减少就业仍有争议，但摩根大通CEO已表示将雇用更多AI、减少银行家，因此提前规划职业发展很有必要。选择合适的工作类型可以提高在劳动力市场的竞争力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：AI对就业市场的影响及应对策略
+
+不同观点：
+• **社会角色转变论**（RetroTechie）：人类不会被完全自动化取代，因为人们偏好与人类互动。社会需要重新定义"工作"与"生存必需品"的关系，通过UBI等方式让机器人服务人类。
+
+• **选择不可替代职业**（keiferski）：建议选择无法被AI替代的实体职业，如船长或厨师长。这些工作虽然收入较低但在未来50年内不会被Claude等AI取代。
+
+• **拥抱AI工具**（igor_mart）：引用Andrej Karpathy观点认为"一切最终都可自动化"，因此选择精通AI工具作为应对策略。
+
+• **创业自主**（markus_zhang）：建议创建自己的企业，作为老板难以被裁员。
+
+• **成为不可或缺者**（downbad_）：让自己变得不可替代。
+
+• **质疑AI价值**（fzeroracer）：批评文章内容空洞，指出AI发展六年来并未在创意领域展现实际价值，反而造成各行业的盲目跟风。
+
+补充讨论：有人质疑远程办公建议的因果关系（cesarrg），认为相关研究只是相关性而非因果性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48305968" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -192,45 +277,112 @@ brikym用调侃方式暗示AI可能比Unicode标准更灵活地处理emoji需求
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nolanlawson.com/2026/05/25/using-ai-to-write-better-code-more-slowly/" target="_blank">Using AI to write better code more slowly</a>
+                    <a href="http://blog.tynemouthsoftware.co.uk/2019/10/how-the-zx80-works.html" target="_blank">How the ZX80 Works (2019)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: signa11</span> |
-                    <span>评分: 1161</span> |
-                    <span>评论数: 113</span> |
-                    <span>发布时间: 2026-05-25 23:16</span>
+                    <span>作者: mariuz</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-05-27 15:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主张用AI更**慢**地写出**高质量**代码，而非快速产出低质量代码。作者介绍了一种方法：让多个AI模型（Claude子代理、Codex、Cursor Bugbot）同时审查PR，找出并按严重程度分类bug，然后排除误报形成最终报告。
-
-作者的工作流程是：优先修复严重bug，跳过投入产出比低的问题，必要时放弃整个PR。这种方式虽然不提高速度，甚至会发现代码库中的既有问题，但能显著提升代码质量和对代码库的理解。
-
-文章呼吁开发者放慢节奏，用AI深入理解代码而非盲目提交大型PR，追求细致、方法论驱动、注重质量的编程方式。</p>
+                    <p>文章介绍ZX80以极少芯片实现低价家用电脑的原理：无专用视频芯片，主要靠Z80在执行大量NOP时生成电视画面，运行用户程序反而是次要任务。文中还说明其CPU时钟、复位与扩展总线设计，以及ROM/RAM的简化地址译码、镜像映射和外接内存替换机制，并结合Minstrel ZX80克隆机说明现代兼容实现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI辅助编程的工作流程与质量权衡
+                    <div class="comments-summary">主要讨论点：ZX80/ZX81早期家用计算机的历史意义和技术特点
 
 不同观点：
+• **历史价值派**（gxd, anonymousiam）：强调ZX80/81在当时的革命性意义——大多数人完全没有计算机，从零到拥有每秒执行数千次运算的机器是巨大飞跃。有用户甚至将其扩展使用多年，占据整个房间
+• **技术分析派**（RetroTechie）：深入探讨其工程设计——双数据总线架构、信号时序、支持450ns慢速存储器等设计都是为了降低成本（使用廉价元件），实现£99的售价目标
+• **DIY文化派**（pjmlp, PaulHoule）：回忆1980年代电子商店可购买组件自行组装的时代，提及Don Lancaster的《Cheap Video Cookbook》等自制视频系统资源
+• **讽刺质疑派**（ofrzeta）：以反讽口吻质疑"回到过去"的怀旧情绪，暗示1KB内存（或16KB扩展）在今天毫无实用价值
 
-• **迭代提升质量派**：通过多轮AI审查（Claude、Codex交替使用）、处理边界案例、补充测试，最终产出高质量代码。虽然耗时更长，但v1版本达到v3质量水平（bottlepalm、justinlivi、RevEng）
+补充讨论：评论普遍认可Sir Clive Sinclair通过极致成本控制实现的"可负担的真正可编程计算机"这一商业策略，尽管键盘糟糕、技术很快过时，但在计算机普及史上具有里程碑意义。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48295438" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://z3ugma.github.io/2026/05/25/a-comma-and-a-question-mark/" target="_blank">A Comma and a Question Mark, Redux: Quick Terminal Helpers Using Pi</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: z3ugma</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-05-25 19:14</span>
+                </div>
 
-• **架构决策缺失派**：AI急于达成目标，忽略微架构决策和项目整体设计。缺少逐步构建规格的过程，导致对边界案例和架构契合度信心不足。更倾向将AI用作聊天、搜索和思考工具（TACIXAT、bonoboTP）
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者受他人启发，把终端接入 AI：输入“, + 自然语言描述”即可生成对应 shell 命令，并复制到剪贴板，用户确认后再执行；输入“q + 问题”可在终端直接获得简洁答案。其实现基于已配置好的 pi CLI 与 OpenRouter，而非本地模型，核心是两个简单脚本与精简提示词。</p>
+                </div>
 
-• **学习辅助派**：初级开发者通过与AI讨论不同实现方案，探索替代方案，帮助完善初始想法（hrideshmg）
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：使用AI辅助生成和管理命令行指令的不同工具和方法
 
-• **精准使用派**：将AI视为初级开发者，针对性提问（测试覆盖、性能优化、安全审计），手动实施部分建议以保持对代码库的掌控感（jillesvangurp、FacelessJim）
+不同观点：
+• **深度探索派**（remilouf）：受启发后深入研究，开发了自己的项目sigil，将想法扩展成完整的解决方案
+• **集成工具派**（sync）：推荐使用atuin的`?`快捷键，强调其Agent功能可以自动调用git命令并生成提交信息，注重权限确认的安全性
+• **无缝交互派**（chrisshroba）：通过`print -z`命令将AI生成的指令直接写入命令行输入区，省去复制粘贴步骤，用户可直接回车或修改
+• **工具推荐派**（foobarqux）：认为llm-cmd-comp是此类工具中的最佳选择
+• **简短认同派**（guluarte、christoff12）：分别提及shelloracle工具和表示赞同
 
 补充讨论：
-- 心理层面困境：AI的便利性导致投入度下降，成就感减弱
-- 快速试错价值：能迅速尝试多个方案并快速放弃不满意的版本
-- 技能传承担忧：当前是经验丰富的人类与AI协作的黄金时代，未来可能消失
-- 内容质量问题：缺少实际代码示例的观点文章过多</div>
+评论者们关注的核心差异在于**交互方式**：有人偏好独立开发定制方案，有人推崇成熟的集成工具，还有人强调减少操作步骤的用户体验优化。gcr询问批量网页抓取的具体实现细节，显示出对技术实现的兴趣。整体氛围积极，多为经验分享而非争议性讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48272984" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48270514" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.unicode.org/versions/Unicode18.0.0/" target="_blank">Unicode 18.0.0 Beta</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: birdculture</span> |
+                    <span>评分: 55</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-05-27 07:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Unicode 18.0.0版本（2026年9月发布）新增13,047个字符，总计172,848个字符。新增4种文字系统：契索伊文、原始楔形文字（数字）、女真文和篆书。同步更新了5个技术标准（排序算法、安全机制、国际化域名处理、表情符号、链接检测）。该版本包含核心规范、字符图表、标准附件和字符数据库，提供HTML和PDF格式。新增两个数据文件：JurchenSources.txt和SealSources.txt。部分变更可能需要实现方修改代码以保持兼容。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Unicode 15.2 更新及 emoji 标准化问题
+
+不同观点：
+• **支持扩展派**：orangepanda 关注新增的实用 emoji（裂脸、蝴蝶、灯塔等），认为这些是用户真正关心的内容
+• **质疑派**：poulpy123 对 Unicode 扩展提出系统性质疑——是否有字体能覆盖所有字符？无限扩展是否有意义？剩余空间如何分配？古文字新发现如何处理？
+• **批评派**：sourcegrift 认为 emoji 是"彻底的灾难"，只接受表情符号和手势，其他都是无意义的
+• **遗憾派**：computer23 指出"锡箔帽"emoji 提案被拒，暗示某些有文化意义的符号未被采纳
+
+补充讨论：
+• izissise 提到道本语（toki pona）未被收录，反映小众语言的 Unicode 支持诉求
+• brikym 和 creepe388 的简短回复可能是玩笑或测试性质
+• 核心争议：Unicode 应该追求全面性还是实用性？emoji 的边界在哪里？</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48290881" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -307,150 +459,6 @@ brikym用调侃方式暗示AI可能比Unicode标准更灵活地处理emoji需求
 补充讨论：评论中还涉及机构层面的担忧：CSB虽被认为专业、少政治偏见，但其预算受行政与国会拉扯，未来是否还能持续做这类调查也成为隐含议题。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48284712" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.bloomberglaw.com/esg/corporations-have-the-right-to-vote-in-delaware-town-judge-says" target="_blank">Corporations can vote in some Delaware elections, judge says</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: marcher</span> |
-                    <span>评分: 115</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2026-05-27 15:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>特拉华州法官裁定，在特定情况下，公司、信托、合伙和有限责任公司等“人工实体”可在地方选举中投票，并驳回美国公民自由联盟对芬威克岛镇相关章程的挑战。法院认为州法承认这些实体为“人”，且原告未证明其构成歧视或稀释自然人选票。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：特拉华某些城镇允许“法人/公司”在地方选举中投票，评论围绕其合理性、被操纵风险，以及这是否只是业主投票权的法律延伸展开。
-
-不同观点：
-• 反对者认为公司投票把“公司人格”推得过远。论据是投票权应属于自然人，若允许法人投票，可能滑向“企业控制政治”，甚至被联想到《公民联合》、AI公司代理人、公司城镇乃至“买下一个州”来影响州长、参议员和国会议席。
-• 质疑操纵风险者聚焦漏洞：担心可通过大量设立LLC、壳公司或信托来刷票、操纵选举，这是讨论中的核心争议点之一。
-• 辩护者认为外界误读了规则：这里不是“随便注册公司就能投票”，而是“拥有当地房产的非居民业主本就有投票权”；若房产转入法人名下，该权利并不消失。公司只是持有资产的法律载体，本质上仍对应背后的人。
-• 还有人补充背景：这只涉及“特定小镇修订章程后允许法人投票”的地方性安排，并非普遍适用于所有选举。
-
-补充讨论：
-• 有人指出“公司控制小镇”并非纯科幻，现实中有公司城镇先例，如加州Lost Hills。
-• 评论中也夹杂对HN帖子排名变化的疑问、对Fenwick Island本地政治生态的调侃，以及以“联合国给公司代表席位吗”等讽刺回应。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48295460" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.dw.com/en/ebola-central-africa-us-aid-cuts-uganda-drc-who-vaccines/a-77233437" target="_blank">Musk's cut to USAID have made the Ebola outbreak worse</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: camillomiller</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-28 06:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>刚果民主共和国和乌干达爆发罕见的本迪布焦型埃博拉疫情，已造成至少139人死亡、600例疑似病例，是该毒株迄今最致命的一次。该毒株致死率约三分之一，目前无疫苗或特效药。世卫组织总干事警告疫情规模和传播速度令人担忧。专家认为实际感染人数可能远超报告数字。美国大幅削减国际卫生援助，包括裁撤USAID项目和退出世卫组织，被指削弱了当地医疗基础设施和疫情应对能力，可能导致疫情未能及时发现和控制。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48305377" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bloomberg.com/news/articles/2026-05-27/google-engineer-charged-with-insider-trading-on-polymarket" target="_blank">Google Engineer Charged with Insider Trading on Polymarket</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: forthwall</span> |
-                    <span>评分: 24</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-05-27 22:47</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：加密货币匿名性与执法追踪能力的关系，以及“洗钱”指控在相关案件中的作用。
-
-不同观点：
-• 评论者认为，此案再次说明被告是在“事后掩饰交易”，而不是事前就做到充分匿名化；若事前用加密工具隐藏资金流向，执法机关往往难以证明具体交易人与交易行为。
-• 评论者主张：对合法来源资金进行混淆本身不构成犯罪；“洗钱”更多是附加性罪名，常被联邦检方用来加重刑罚，而非核心违法行为。
-• 评论者认为，若政府真要逐案追查预测市场交易者，需在每次市场结算后立刻大规模调取预言机/访问记录，既浪费公共资源，也未必能证明事先已匿名化资金的持有人参与了交易。
-• 评论者给出操作性例子支持上述判断，如持有门罗币、通过Tor、使用全新地址、跨链兑换等，认为这类做法能显著提高追踪难度。
-
-补充讨论：
-• 争议焦点在于：加密匿名技术究竟是在保护隐私，还是在事实上削弱执法与追责能力。
-• 评论整体对国家在加密领域的执法效果持怀疑态度，认为很多案件本质上是“当事人不懂如何匿名”带来的可追诉性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48301808" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tsduck.io/" target="_blank">TSDuck: Open-source toolkit for MPEG-TS analysis and manipulation</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: phantomathkg</span> |
-                    <span>评分: 72</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-05-27 02:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>TSDuck是一个免费开源的MPEG传输流处理框架，专为数字电视和视频流系统设计。它提供传输流采集、分析、转换、信令操作等功能，支持DVB、ATSC、ISDB等标准。采用C++开发的模块化架构，通过命令行工具和插件组合实现各种功能。支持Windows、Linux、macOS等平台，可与DVB调谐器、Dektec、HiDes等专业设备配合使用。作为数字电视工程师的通用工具箱，TSDuck以BSD许可证发布，易于扩展和集成到开发项目中。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕MPEG-TS/DVB相关分析工具、行业经验与标准体系的感慨，讨论现有/过往工具、标准内容以及技术门槛。
-
-不同观点：
-• 一类评论聚焦“可用工具推荐与替代”。xyru认为TSReader更易用，并补充其原开发者已去世、项目已开源，暗示它是这类需求的现实选择。dylan604则回忆早年业内常用Manzanita的MP2TSME，但该工具已不可得，并感叹这类经典软件若能转为开源会是理想归宿。两者形成“现有替代”与“怀念已消失专业工具”的对照。
-• 一类评论关注“标准本身的怪异与人治色彩”。taffronaut提到DVB SI内容描述符把“严肃/古典音乐”“流行文化/传统艺术”等主观分类写进正式标准，认为这种带有主观判断的分类出现在严肃规范中很奇特。争议焦点在于：技术标准应否承载这类模糊、文化色彩浓厚的分类。
-• 一类评论强调“技术探索价值”。myself248想用这类工具研究FTA卫星流中是否存在无法对应已知节目的数据，认为该工具非常适合做信号/数据挖掘。
-• 还有评论表达“对MPEG-TS体系复杂性的敬畏”。raverbashing称MPEG-TS及其“表亲”MPEG-PS是很深的兔子洞，ranger_danger则虽无实际用途，仍赞叹工具功能强大，并指出实现它需要深度行业背景，甚至获取昂贵标准文档本身就是门槛。
-
-补充讨论：整体语气偏怀旧与敬佩，评论之间没有直接冲突，但围绕“老牌闭源专业工具消失后，开源工具能否承接其角色”形成隐含讨论。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48288709" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
