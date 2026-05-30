@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-05-30 06:24 (北京时间)
+            最后更新时间: 2026-05-30 09:49 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,12 +61,62 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.inkandswitch.com/tangents/bijou64/" target="_blank">Bijou64: A variable-length integer encoding</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: justinweiss</span> |
+                    <span>评分: 173</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-05-29 15:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一种名为bijou64的可变长度整数编码方案。作者在开发Subduction CRDT同步协议时，为解决签名验证中的规范性问题而设计了它。
+
+传统的变长整数编码（如LEB128）存在一个问题：同一个数字可以有多种表示方式（如0可以编码为0x00、0x80 0x00等），这在需要签名验证的场景中会导致安全问题。
+
+bijou64通过两个设计巧思实现了"构造性规范化"：
+1. 首字节双重用途：0-247直接表示数值，248-255作为标签指示后续字节数
+2. 每个数字只有唯一的编码方式，无需额外的规范性检查
+
+意外收获是：bijou64的运行速度比LEB128快数倍，因为其设计减少了不必要的工作量。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：变长整数编码方案的优劣比较，特别是 Bijou64 与 LEB128 等方案的权衡
+
+不同观点：
+
+• **性能优先派（kstenerud）**：认为 SIMD 指令下 LEB128 或哨兵值方案因并行化优势表现更好，即使文本解析也能超越 Bijou64 这类方案
+
+• **规范编码支持派（i2talics, michaelmure）**：强调非规范编码在某些场景（如 DWARF/WASM 链接）有实际用途，LEB128 允许用最宽编码避免重定位；同时指出单一编码方式便于模糊测试
+
+• **实用主义派（boricj, stebalien）**：认为应根据场景选择，若性能重要且整数有界则用定长编码；LEB128 在 2^14 内保持 2 字节效率更高，适合标签/长度场景
+
+• **安全关注派（aDyslecticCrow, nine_k）**：警告需防范恶意输入（如声称 255 字节但无后续数据），质疑为何安全相关项目测试中缺少对抗性输入
+
+补充讨论：
+多人提及类似方案（UTF-8 过长编码、SQLite varint、ISO 7816-4 BER-TLV），显示这是编码设计中的常见问题。wahern 分享了 Yubikey 4 因过长编码导致的实际漏洞案例，印证了规范化的重要性。willtemperley 困惑为何编码器会生成 LEB128 允许的填充字节。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48323992" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.liquid.ai/blog/lfm2-5-8b-a1b" target="_blank">Liquid AI reveals 8B-A1B MoE trained on 38T</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: simjnd</span> |
-                    <span>评分: 121</span> |
-                    <span>评论数: 14</span> |
+                    <span>评分: 149</span> |
+                    <span>评论数: 16</span> |
                     <span>发布时间: 2026-05-29 16:19</span>
                 </div>
 
@@ -77,20 +127,18 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Liquid AI 发布的 8B 参数模型的性能表现和训练策略
+                    <div class="comments-summary">主要讨论点：Liquid AI 发布的新 8B MoE 模型的性能表现和实用价值
 
 不同观点：
-• **过度训练质疑**：有人认为 38T tokens 对 8B 模型来说训练量过大，是 Chinchilla 最优比例的 1800 倍，远超 Mistral 的 2 倍
-• **性能赞赏派**：多位用户实测后高度评价，认为小模型表现惊人，特别是 Qwen3.5:4B 和 Liquid 的 RL 微调结合后效果出色，速度快且可本地部署
-• **实用性关注**：用户看重其在低配硬件上的实时性能，特别适合视觉-语言-动作模型(VLA)；也有人强调可 CPU 运行和离线使用的优势
-• **功能缺失批评**：指出缺少视觉支持、首日未支持 Ollama 平台
+• **性能不及预期派**：onlyrealcuzzo 测试发现该模型在 bug 修复基准上仅修复 12% 的问题，远低于两年前的 Qwen2.5-Coder-3B（50%），认为作为 8B 参数的 MoE 模型表现不够竞争力
 
-补充讨论：
-- 有用户发现模型回答错误（声称由 Google 制作）
-- 速度基准测试显示在 Strix Halo 和 M5 Max 上表现优异，GPU 性能翻倍
-- 有人质疑"比所有对比模型都好太多"是否有隐藏代价
-- 出现讽刺性评论"顺势疗法 AI"（可能暗指过度稀释）
-- Demo 链接和 GitHub 代码库的可用性被提及</div>
+• **性能超预期派**：elorant 认为模型在长文本摘要任务上表现"极其出色"；chabes 强调小模型进步显著，结合 RL 和微调可在最小硬件上实现快速、私密的专用工具；jauntywundrkind 称赞其速度表现优异
+
+• **训练策略质疑**：Ifkaluva 认为 38T tokens 对 8B 模型来说过度训练；irthomasthomas 指出训练量是 Chinchilla 标准的 1800 倍，远超 Mistral 的 2 倍
+
+• **实用价值派**：frankdlc222 认为虽然当前准确率不高，但随着量化和 MoE 技术改进，本地模型能处理 80% 需求时，付费订阅将失去意义
+
+补充讨论：有用户发现模型错误声称由 Google 制作；缺少 Ollama 首日支持和视觉功能引发疑问；CPU 运行可行性获得关注；演示链接和速度基准测试受到正面评价</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48325306" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -103,33 +151,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://rothko.joonas.wtf/" target="_blank">Rothko for your current weather conditions</a>
+                    <a href="https://pierre.computer/writing/on-rendering-diffs" target="_blank">On Rendering Diffs</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jxmorris12</span> |
-                    <span>评分: 93</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-05-29 18:31</span>
+                    <span>作者: amadeus</span> |
+                    <span>评分: 141</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2026-05-29 19:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一个关于马克·罗斯科（Mark Rothko）艺术作品的互动网站。罗斯科是美国抽象表现主义画家（1903-1970），1940年代后期停止描绘具象事物，转而专注于光线、色彩和情感表达。他的标志性风格是在画布上排列两到三个柔和边缘的矩形色块，通过反复处理表面使色彩仿佛蕴含自身的"气候"。他要求画廊低挂作品、调暗灯光，让观众静坐感受，认为绘画应该"产生作用"而非仅供观看，旨在唤起喜悦、狂喜、厄运或悲剧等情感体验。网站提供基于位置和天气的罗斯科作品推荐功能。</p>
+                    <p>这篇文章介绍了Pierre Computer Company开发的代码差异渲染组件CodeView。文章指出，当代码审查涉及大量文件时，传统工具会出现性能问题。为解决这一痛点，他们6个月前发布了Diffs组件，并在此基础上开发了CodeView——一个基于虚拟化技术的高性能代码审查组件。
+
+CodeView的设计目标是"能够渲染任何规模的差异"，通过优化渲染、处理和内存三个维度，解决了DOM复杂度、重复处理开销和内存占用等问题。团队还推出了DiffsHub.com演示平台，可以近乎即时地虚拟化显示GitHub上任何规模的公开PR差异。该组件已发布在npm上供开发者使用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个根据天气显示Rothko画作的创意项目
+                    <div class="comments-summary">主要讨论点：关于代码差异（diff）渲染优化技术的评价和改进建议
 
 不同观点：
-• 积极赞赏派：多数评论者高度认可这个创意，认为它将天气预报与艺术美学结合，比传统天气界面更优雅。有人建议可作为家庭装饰显示器
-• 技术问题反馈：有用户指出项目误将非画作内容（如Rothko教堂照片）纳入了数据集
-• 地域适配问题：亚利桑那州用户反映因当地天气单一，每次看到的都是相同图像，希望算法能更精细地适配不同地理位置的天气变化
+• **虚拟化技术的必要性存在争议**：部分人认为inverse sticky等虚拟化技术在快速滚动时会破坏体验，现代计算机性能足够强大，不需要这些复杂技巧；另一方认为这是处理大型diff的必要优化手段
+
+• **渲染性能标准的分歧**：有人认为移动端必须达到60-120Hz的流畅滚动才能提供良好体验，而作者似乎认为帧率不需要完全平滑
+
+• **浏览器vs原生应用**：有评论质疑为何要在浏览器中实现，认为用原生代码开发终端应用会简单得多
+
+• **diff逻辑vs渲染优化**：部分开发者更关注diff生成逻辑的改进（如智能识别空格变化、import排序变化），而非渲染性能优化
 
 补充讨论：
-项目激发了用户的创作灵感。有评论者表示喜欢Rothko的抽象艺术风格，并计划制作类似的明暗对照法（chiaroscuro）版本。另有人建议可以开发Josef Albers"向正方形致敬"系列的版本，显示出这类"艺术化数据可视化"项目的延展潜力。整体氛围友好，用户将其视为个人软件艺术项目的优秀范例。</div>
+多数评论对技术实现表示赞赏，认为文章清晰易懂。有人建议将其做成浏览器扩展以支持私有仓库，也有人希望GitHub/GitLab能投入同等精力改进平台。色盲友好设计（红绿配色问题）被提及但未深入讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48327367" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48327809" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -140,34 +194,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.zot.sh" target="_blank">Show HN: Zot – Yet another coding agent harness</a>
+                    <a href="https://daringfireball.net/2026/05/what_is_a_dickover" target="_blank">What Is a Dickover?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: patriceckhart</span> |
-                    <span>评分: 43</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-05-29 05:48</span>
+                    <span>作者: tambourine_man</span> |
+                    <span>评分: 83</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-05-29 23:54</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>zot 是一个轻量级的终端编码代理工具，用 Go 编写，单一二进制文件，无需运行时或 Docker。支持 Anthropic、OpenAI、DeepSeek、Google Gemini 等多个 AI 提供商，可通过 API 密钥或订阅登录。提供四种运行模式：交互式 TUI、命令行输出、JSON 流式输出和 RPC 模式。内置四个核心工具：读写文件、编辑文件和执行 shell 命令。支持通过 JSON-RPC 协议用任何语言编写扩展，可注册自定义命令和工具。设计简洁，专注于代码编辑和命令执行的核心功能。</p>
+                    <p>这篇文章定义并批评了"dickover"这一网页设计模式：指网站或应用故意用弹窗、遮罩层阻挡内容，强迫用户进行不必要的交互（如接受cookie、订阅newsletter、安装app等）。作者认为这种设计无处不在且极其恶劣，用户访问网页就应该直接看到内容，而不是被各种弹窗打断阅读体验。文章还提到了相关但程度较轻的"dickbar"（非模态的部分遮挡条），并用大量实例说明这些设计模式如何破坏用户体验。作者对这种将付费订阅者也当作骚扰对象的做法尤为不满。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于编码代理工具 Zot 的发布及与其他代理工具的对比
+                    <div class="comments-summary">主要讨论点：网站弹窗（被称为"dickover"）的用户体验问题及应对方法
 
 不同观点：
-• **Zot 的积极评价**：airbreather 给予极高评价，强调其速度快（3-5倍生产力提升）、易用性强（几秒启动）、功能实用（Gmail集成、网页浏览、自动编写插件），认为是目前最好的代理工具
-• **对代理工具生成代码的质疑**：LoganDark 对由 AI 代理生成的工具表示疲劳，批评 opencode 频繁使代码缓存失效、代码质量差（"无纪律的命令式垃圾"），认为这类工具存在根本性设计缺陷
-• **语言偏好差异**：cedws 和 karakanb 偏好 Go 语言实现，不愿使用 TypeScript 工具；karakanb 将 Zot 比作 Go 版的 Pi
-• **功能需求分歧**：LoganDark 批评 DeepSeek Reasonix 缺少差异显示、MCP 服务器支持不完整、TUI 界面丑陋；同时不满 Claude Code 移除了高级用户功能和思考输出
 
-补充讨论：
-有用户询问代理工具的基准测试排行榜和使用体验分享；部分评论涉及缓存优化重要性；还有人误以为 Claude 模型只能通过 Claude Code 使用。整体讨论反映出编码代理工具市场的活跃度和用户对工具质量、性能的高要求。</div>
+• **反对派（多数）**：强烈批评网站弹窗体验。认为现代网站充斥着cookie同意、newsletter订阅、app安装等多层弹窗，严重影响用户体验。开发者和管理者因自己早已完成设置而无法感知新用户的糟糕体验（michaelt的97%理论）
+
+• **技术应对派**：分享实用解决方案，包括使用广告拦截器（uBlock Origin）、浏览器扩展（Stylus）、ESC快捷键、浏览器检查元素工具删除弹窗等方法来规避这些干扰
+
+• **市场逻辑派（avaer）**：为弹窗辩护，认为这是市场机制的体现。用户若不愿付费或忍受广告，就不应期待免费使用内容。弹窗存在是因为有人从中获利，用户不应感到"有权"免费且无干扰地使用服务
+
+• **命名争议派（rvz）**：质疑"dickover"这个术语不专业，在女性同事或非技术人员面前使用不当，认为应继续使用"popup"这个传统称呼
+
+补充讨论：部分评论者赞赏这个新词汇的创造力和表达力，认为需要用明确的词汇来定义和批评我们讨厌的事物。也有人指出HN社区本身在投票支持含有这些弹窗的网站链接，存在矛盾。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48319524" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48330882" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -178,72 +235,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://rockstarintel.com/gta-6-developers-announce-rockstar-games-union/" target="_blank">GTA 6 Developers Unionize</a>
+                    <a href="https://www.latimes.com/california/story/2026-05-27/uc-math-professors-demand-return-of-sat-for-stem-admissions" target="_blank">Citing 'severe' math deficits, UC faculty demand a return to SAT tests for STEM</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: AndrewKemendo</span> |
-                    <span>评分: 422</span> |
-                    <span>评论数: 26</span> |
-                    <span>发布时间: 2026-05-29 15:32</span>
+                    <span>作者: brandonb</span> |
+                    <span>评分: 406</span> |
+                    <span>评论数: 52</span> |
+                    <span>发布时间: 2026-05-28 14:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Rockstar Games员工正式成立了"Rockstar游戏工人工会"（隶属于英国独立工人工会IWGB），以对抗公司去年以"严重不当行为"为由解雇30多名员工的行为。工会认为这是反工会行动，双方将对簿公堂，开庭日期已定但尚未公布。该工会成员来自Rockstar在爱丁堡、伦敦、利兹、林肯和邓迪的多个办公室，他们的诉求包括：薪酬透明化、灵活工作制度以及终止加班文化。工会已开设社交媒体账号并接受法律诉讼捐款。</p>
+                    <p>超过600名加州大学教师呼吁恢复STEM专业申请者的SAT/ACT标准化考试要求。他们指出，自2020年取消考试要求六年来，新生数学准备不足问题严重，教授们常需从中学数学开始补课。加州大学伯克利分校数据显示，20%以上的微积分新生存在基础缺陷。教师认为标准化考试能更可靠地评估学生准备度。批评者则认为SAT考试不公平，偏向富裕家庭学生。哈佛、斯坦福等名校已恢复考试要求，加州大学学术评议会正在讨论可能的招生政策调整。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Rockstar游戏开发者成立工会的利弊及影响
+                    <div class="comments-summary">主要讨论点：加州大学取消SAT后学生数学能力严重下降，30%的学生需要重新学习中学数学，引发关于教育公平与标准化测试的激烈争论。
 
 不同观点：
-• **支持工会方**：认为工会能改善工作条件（结束加班文化、薪酬透明、灵活工作），提升产品质量，减少人员流失。强调游戏开发者长期承受恶劣待遇，集体谈判是对抗资方的必要手段。有雇主身份者也支持工人团结。
 
-• **质疑工会方**：担心工会按资历晋升的机制会抑制优秀开发者，无法根据能力获得更高薪酬或职位。认为游戏行业特殊性导致公众和玩家不会同情（项目延期时抱怨加班），预测游戏社区可能支持公司清除工会成员。
+• **支持标准化测试派**：认为取消SAT实际上扩大了不平等。富裕家庭通过私立学校和课外数学班（如俄罗斯数学学校）获得更大优势，而贫困学生失去了通过考试晋升的机会。MIT重新恢复SAT要求证明了标准化测试的必要性。
 
-• **调侃观察方**：大量评论用"GTA6发布前我们先有了工会/AGI/火星生命"等梗调侃GTA6开发周期过长，以及工会成立的时机巧合（Rockstar难以在此时解雇所有人）。
+• **质疑当前教育政策派**：批评加州从"平等机会"转向"结果平等"，甚至试图禁止高中微积分课程，否认学生天赋差异。认为这种"equity"政策实际伤害了有天赋的低收入学生，因为取消了天赋筛选、高级课程和SAT等晋升渠道。
 
-补充讨论：
-有人质疑游戏开发薪酬远低于大型科技公司，尽管工程难度相似。也有声音呼吁整个科技行业（Google、Meta等）都应成立工会。整体氛围在支持与怀疑之间分化明显。</div>
+• **教师实践困境派**：高中教师反映被迫使用iPad等数字设备教学，传统黑板和纸笔反而被视为落后。大学教师则拒绝在课堂重教基础数学，认为应由学生自行补习，否则对其他学生不公平。
+
+• **系统性问题派**：指出社区大学取消分班考试和补习课程（因"让人感觉不好"），导致三分之一学生不及格。K-12"人人通过"的压力向上传导，造成恶性循环。
+
+补充讨论：有评论对比东亚经验，指出任何考试改革过渡期都对富人有利；也有人质疑大学扩招是否合理，认为并非所有人都适合上大学，就像不是所有人都适合职业运动一样。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48324499" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://tvexplorer.live" target="_blank">Show HN: TV Explorer. Adding advanced UI to free online TV</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dtagames</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-05-29 16:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个名为TV Explorer的IPTV在线观看应用的用户反馈
-
-不同观点：
-• **积极评价派**：多数用户认为这是目前最好的IPTV迭代版本，特别赞赏其能发现全球频道、跨国新闻对比、语言学习功能，以及"像90年代换台"的怀旧体验感
-• **功能改进建议**：部分用户希望增加筛选功能（过滤区域频道显示国家级频道）、添加"手气不错"随机发现按钮、改善浏览界面（播放器占屏过大导致频道列表难以浏览）
-• **技术问题反馈**：有用户遇到字幕功能故障（Firefox无法点击、Chrome按钮易消失）和视频缓冲循环问题（时间轴反复跳回）
-
-补充讨论：
-开发者详细说明了技术挑战的解决方案，包括从GitHub实时更新频道数据、优雅处理地理封锁、跨设备用户认证、深度链接分享，以及将手机作为客厅电视遥控器的创新功能。核心应用场景聚焦于跨国新闻对比和语言学习。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48325624" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48309233" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -299,25 +321,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.prusa3d.com/our-new-open-source-colormix-model-in-prusaslicer-and-easyprint_136079/" target="_blank">Print with dozens of colors: Our new open-source ColorMix for PrusaSlicer</a>
+                    <a href="https://lukasz.bromirski.net/post/bgp-w-labie-3/" target="_blank">Free full BGP feed. IPv4 and IPv6</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rented_mule</span> |
-                    <span>评分: 12</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-05-26 18:05</span>
+                    <span>作者: pm2222</span> |
+                    <span>评分: 22</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-05-29 22:21</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Prusa Research推出开源ColorMix色彩混合模型，让多材料3D打印机突破物理装载颜色限制。该技术借鉴2D打印的CMYK原理，通过交替打印青、品红、黄、黑、白五色薄层实现数十种色调。ColorMix基于社区项目发展而来，采用MIT许可证开源，已集成到PrusaSlicer和EasyPrint切片软件中。相比现有方案，它提供更准确的色彩预览和更简便的工作流程。Prusa还推出专用的Prusament CMYKW耗材套装，在五喷头XL打印机上可实现约40种色彩组合，让3D打印色彩效果更接近绘画。</p>
+                    <p>本文介绍了如何获取完整的欧洲BGP路由表（IPv4和IPv6）。作者提供免费BGP feed服务，用户需配置：使用ASN 65001连接到作者的ASN 57355，通过eBGP multihop建立会话。IPv4地址为85.232.240.179，IPv6地址为2001:1A68:2C:2::179。文章提供了Cisco IOS/IOS-XE和IOS XR的详细配置示例，强调用户不要向上游发送任何路由前缀，并声明服务可能随时终止，使用风险自负。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：关于BGP数据查询工具和网络数据开放性的讨论
+
+不同观点：
+• **工具推广方**（afshari）：分享了自己开发的BGP数据查询工具god.ad，支持PWA应用形式，可以查看AS（自治系统）信息等网络数据
+
+• **数据归档需求方**（Bender）：希望有压缩的静态文件包含所有路由信息供定期下载分析，同时对anycast根DNS服务器的完整数据转储感兴趣（区别于仅root.zone文件）
+
+• **时效性质疑方**（tiernano）：指出相关内容似乎来自6年前，暗示数据可能过时
+
+• **安全担忧方**（johnea）：提出安全疑问，担心这种开放的BGP数据访问是否会成为BGP投毒攻击的入口
+
+补充讨论：
+讨论涉及网络基础设施数据的透明度与安全性之间的平衡。一方面有人希望更便捷地获取和分析网络路由数据，另一方面也有人担心过度开放可能带来安全风险。时效性问题也被提及，表明对实时性或数据更新频率的关注。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48283410" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48330088" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -328,37 +362,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://research.roundtable.ai/captchas-detect-ai/" target="_blank">CAPTCHAs can still detect AI agents</a>
+                    <a href="https://www.invenglobal.com/articles/22330/stop-killing-games-movement-gains-momentum-california-assembly-passes-game-protection-bill" target="_blank">The California state assembly has passed the 'Protect Our Games Act'</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: timshell</span> |
-                    <span>评分: 55</span> |
+                    <span>作者: TechTechTech</span> |
+                    <span>评分: 182</span> |
                     <span>评论数: 18</span> |
-                    <span>发布时间: 2026-05-29 15:57</span>
+                    <span>发布时间: 2026-05-29 19:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一项关于CAPTCHA验证码的研究。虽然AI现在能够识别验证码图像（如交通灯、消防栓），但研究发现AI和人类完成验证码的**过程**存在显著差异。研究团队开发了CogCAPTCHA30测试系统，包含30项认知任务，发现AI虽然能达到与人类相似的任务表现（输出），但在点击模式、方向变化等过程特征上明显不同。研究提出"过程图灵测试"概念，并发现前沿大模型（GPT、Claude、Gemini）反而不如小型模型（Qwen、Centaur）更接近人类行为模式。这表明AI能力提升不等于更像人类，基于过程差异仍可有效区分人类和AI代理。</p>
+                    <p>加州议会通过了《保护我们的游戏法案》(AB 1921)，这是"停止杀死游戏"运动的重大进展。该法案要求数字游戏发行商在终止服务后仍需保持游戏可访问性。法案规定：2027年1月1日后发售的数字游戏，停服前需提前60天通知，并须提供替代版本、补丁或退款。该运动源于2024年育碧关闭《飙酷车神》服务器事件。法案尚需加州参议院和州长批准才能生效，但在游戏公司云集的加州通过具有重要象征意义，预计将影响整个美国游戏行业的服务政策。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI能否通过验证码（CAPTCHA）以及验证码的有效性和未来
+                    <div class="comments-summary">主要讨论点：加州通过法案要求游戏开发商在停止在线服务后保持游戏可玩性
 
 不同观点：
 
-• **验证码仍然有效派**：认为验证码只需增加机器人的时间成本即可（xracy）；人类可以创造无限种验证码形式，而LLM无法学习所有类型，因此验证码永远能赢（yrds96）
+• **支持派**：认为这是消费者保护的胜利，要求开发商提前规划服务器架构并不困难，服务器本质上就是配置更高的家用电脑，去掉负载均衡和匹配系统后即可让玩家自建服务器。这是关于诚实标注而非所有权争议——如果游戏依赖发行商控制的在线服务，消费者有权在购买前知情
 
-• **验证码已失效派**：CloudFlare的Turnstile已无法阻挡垃圾信息（technotarek）；Claude Opus 4.7配合Chrome MCP已能95%成功通过验证码（cute_boi）；反检测浏览器和CAPTCHA绕过工具已经很成熟（Cider9986）
+• **反对派**：认为这是对非问题的糟糕解决方案，软件应该可以有限定生命周期。担心会像好莱坞一样导致游戏产业外流，或推动更多订阅制游戏
 
-• **检测方法的局限性**：JavaScript检测代码可见且易被逆向工程破解（kjok）；收集足够信息可以识别人类，但会损害匿名性，未能真正解决问题（edelbitter）
+• **技术担忧派**：指出释放服务器代码对许多公司不可行，因为使用了不属于自己的专有中间件。可能的规避方式包括：保留一台服务器永久在线（技术上服务仍存在）、通过空壳公司发行游戏后关闭公司、将所有游戏改为免费游戏然后收费解锁
 
-• **替代方案探索**：通过版权内容提问检测AI，如询问米老鼠、天安门等敏感话题（IgorPartola）；设计需要常识的问题，如"洗车店50英尺外该走路还是开车"（hendler）
+• **法案局限性讨论**：注意到法案排除了订阅服务、免费游戏和离线游戏，可能激励开发商向这些类型转型。有人希望订阅游戏也能被保护，但认为这已是能达到的最好结果
 
-补充讨论：验证码对残障用户极不友好，音频验证码体验糟糕（wonkyfruit）；这是一场持续的猫鼠游戏，简单的AI代理容易被捕获，但专门优化的系统可能突破（docheinestages）；讽刺的是现在人类可能需要"以正确方式失败"来证明自己是人（PeterStuer）</div>
+补充讨论：有人提出应扩展到数字商品的首次销售权和继承权问题，担心千禧一代及之后世代将无法继承数字书籍、音乐和游戏</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48324910" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48328365" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -369,34 +403,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://dles.gg/blog/dles-gg-manifesto" target="_blank">Why I collect DLES</a>
+                    <a href="https://rockstarintel.com/gta-6-developers-announce-rockstar-games-union/" target="_blank">GTA 6 Developers Unionize</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: trizoza</span> |
-                    <span>评分: 15</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-05-29 20:40</span>
+                    <span>作者: AndrewKemendo</span> |
+                    <span>评分: 422</span> |
+                    <span>评论数: 26</span> |
+                    <span>发布时间: 2026-05-29 15:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了 dles.gg 网站的创建故事和目标。作者 Peter 三年前开发了日常游戏 Rotaboxes，后来发现了许多类似的每日逻辑游戏（DLEs），开始每天玩5-10款并建立自己的游戏清单。一年前他创建了 dles.gg，旨在成为玩家发现新游戏和开发者发布游戏的最佳平台。网站现在每月服务数千玩家，每周新增3-4款游戏。所有游戏都经过人工测试，必须是免费的、基于浏览器的每日游戏。用户可以通过提交游戏、评分、添加到日常清单等方式支持网站。</p>
+                    <p>Rockstar Games员工正式成立了"Rockstar游戏工人工会"（隶属于英国独立工人工会IWGB），以对抗公司去年以"严重不当行为"为由解雇30多名员工的行为。工会认为这是反工会行动，双方将对簿公堂，开庭日期已定但尚未公布。该工会成员来自Rockstar在爱丁堡、伦敦、利兹、林肯和邓迪的多个办公室，他们的诉求包括：薪酬透明化、灵活工作制度以及终止加班文化。工会已开设社交媒体账号并接受法律诉讼捐款。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于每日游戏（如Wordle类游戏）的不同态度和看法
+                    <div class="comments-summary">主要讨论点：Rockstar游戏开发者成立工会的利弊及影响
 
 不同观点：
-• **批评每日游戏机制**（Timwi）：认为每日游戏的留存策略（如连续打卡）具有操纵性，强制玩家形成固定模式。主张应该让玩家自由选择游戏时间和频率，而不是因错过一次就产生负罪感。虽然承认比算法推荐流好，但本质上仍是一种心理绑架。
+• **支持工会方**：认为工会能改善工作条件（结束加班文化、薪酬透明、灵活工作），提升产品质量，减少人员流失。强调游戏开发者长期承受恶劣待遇，集体谈判是对抗资方的必要手段。有雇主身份者也支持工人团结。
 
-• **欣赏游戏设计细节**（andersmurphy）：对"建立仪式感"这一功能表示认可，认为这个设计很有趣。持积极态度，关注游戏的创意元素。
+• **质疑工会方**：担心工会按资历晋升的机制会抑制优秀开发者，无法根据能力获得更高薪酬或职位。认为游戏行业特殊性导致公众和玩家不会同情（项目延期时抱怨加班），预测游戏社区可能支持公司清除工会成员。
 
-• **分享个人推荐**（thunderfork）：补充推荐了一个NSFW的Java相关每日游戏，纯粹作为资源分享，未表明立场。
+• **调侃观察方**：大量评论用"GTA6发布前我们先有了工会/AGI/火星生命"等梗调侃GTA6开发周期过长，以及工会成立的时机巧合（Rockstar难以在此时解雇所有人）。
 
-补充讨论：核心争议在于游戏设计的自由度与用户留存之间的平衡——是否应该用每日限制和连续打卡来维持用户粘性，还是应该尊重玩家的自主选择权。</div>
+补充讨论：
+有人质疑游戏开发薪酬远低于大型科技公司，尽管工程难度相似。也有声音呼吁整个科技行业（Google、Meta等）都应成立工会。整体氛围在支持与怀疑之间分化明显。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48328932" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48324499" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -411,8 +446,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: freediver</span> |
-                    <span>评分: 88</span> |
-                    <span>评论数: 18</span> |
+                    <span>评分: 106</span> |
+                    <span>评论数: 19</span> |
                     <span>发布时间: 2026-05-29 00:09</span>
                 </div>
 
@@ -423,16 +458,18 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Tencent Hy3模型在OpenRouter平台上使用量激增的现象及其背后原因
+                    <div class="comments-summary">主要讨论点：关于Hy3模型在OpenRouter平台上使用量激增的现象分析
 
 不同观点：
-• **质疑模型神秘性**：多位用户（cicko, lithiumii, gmerc）指出Hy3并不神秘，它来自腾讯，在Hugging Face上有公开信息，原本是400B+参数后优化至295B
-• **对排行榜数据的怀疑**：simonw和Aurornis认为OpenRouter排行榜存在局限性——只统计通过OpenRouter的token使用量，无法反映独立用户数，可能被单个大用户影响；Anthropic用户多数不使用OpenRouter
-• **价格驱动论**：andai和0xbadcafebee认为Hy3流行主要因为便宜，用户倾向追逐新模型和低价格，而非真正的质量优势
-• **免费试用效应**：segmondy和vessenes提出高使用量可能源于免费试用期，甚至可能是广告实验
-• **性能质疑**：thot_experiment基于实际使用经验批评Hy3表现差，容易陷入思维循环和执行错误操作，zone411的基准测试显示其排名中等偏下
+• **模型身份争议**：有人认为Hy3是"神秘模型"，但多位用户指出它就是腾讯的Hy3模型，并非神秘，在Hugging Face上有公开信息
+• **排行榜可信度质疑**：OpenRouter排行榜只显示token总量，无法区分是单个大用户还是社区趋势；且只统计通过OpenRouter的流量，大多数Anthropic用户不使用该平台，数据有偏差
+• **性能评价分歧**：benchmark测试显示Hy3表现中等（在不同测试中排名10-60位）；有用户称它是"最差的前沿模型之一"，会陷入思维循环；但也有人认为它是"最便宜的decent模型"
+• **使用量原因分析**：可能因为免费试用导致高token使用；价格优势（比Claude便宜50%以上）；也可能是广告/回收实验
 
-补充讨论：alecco提醒直接使用DeepSeek API而非OpenRouter可获得更好的缓存效果（2-3倍）；simonw分享了Hy3能生成带交互按钮的HTML示例</div>
+补充讨论：
+• DeepSeek相关提醒：使用DeepSeek V4应直接调用官方API而非OpenRouter，可获得2-3倍缓存token；DeepSeek编码平台是独立项目，非官方
+• 模型参数：原为400B+参数，后优化至295B
+• 用户行为：人们倾向追逐最新、最便宜的模型，而非理性评估质量</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48317294" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
