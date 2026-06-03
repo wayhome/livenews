@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-04 02:43 (北京时间)
+            最后更新时间: 2026-06-04 06:58 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,40 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/shiihaa-app/shiihaa-breath-detection" target="_blank">Show HN: Live breath detection and biofeedback from a phone microphone</a>
+                    <a href="https://ariadne.space/2023/04/12/writing-portable-arm-assembly.html" target="_blank">Writing Portable ARM64 Assembly (2023)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: felixzeller</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-06-02 16:02</span>
+                    <span>作者: luu</span> |
+                    <span>评分: 58</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-05-31 17:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一个使用手机麦克风进行实时呼吸检测和生物反馈的开源项目。它通过信号处理、呼吸状态机和数据质量层三层架构，从嘈杂的环境音中识别呼吸相位（吸气、呼气、暂停）。所有音频分析在设备本地完成，不上传原始音频，不进行语音识别。该系统专注于自我觉察而非娱乐化，通过实时反馈帮助用户感知自己的呼吸模式。项目承认这是健康工具而非医疗设备，目前正在进行临床验证研究以评估实际准确性。</p>
+                    <p>本文介绍如何编写可移植的 ARM64 汇编代码。主要问题是开发者为 Apple ARM 设备编写汇编时忽略了其他平台。关键差异包括：
+
+1. **ABI 差异**：Darwin 使用 Mach-O 格式，所有符号需加下划线前缀；Linux 等使用 ELF 格式，支持符号类型定义
+2. **平台差异**：Darwin ABI 保留 x18 寄存器
+3. **语法差异**：避免使用 Apple 特有的 NEON 简化语法（如 `eor.16b`），应使用 ARM 官方语法（如 `eor v2.16b, v2.16b, v0.16b`）
+
+解决方案是使用宏来抽象平台差异，处理符号命名和类型定义，从而实现跨平台兼容。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个呼吸监测应用的发布和反馈
+                    <div class="comments-summary">主要讨论点：ARM/AArch64 汇编在不同平台上的可移植性，以及 Darwin、Linux、Android、Windows 等 ABI/目标文件格式差异会带来哪些实际问题。
 
 不同观点：
-• **隐私担忧**：有人质疑该技术在呼叫中心场景下用于监控员工或客户情绪状态、以及指纹识别客户的潜在应用，暗示对隐私侵犯的担忧
-• **技术可行性探讨**：有开发者分享20年前使用胸带物理设备监测呼吸的经验，认为音频标准化很困难；另一位尝试过类似冥想应用的开发者指出单靠麦克风不够，最终使用了有线耳机麦克风
-• **积极支持**：部分用户对项目表示兴趣和鼓励，欣赏其"注重信号而非评分"的设计理念
+• 一种观点认为，跨平台并非完全不可行，但必须了解 ABI 细节差异。例子是 Darwin/Android 会保留 `x18`，而 GNU/Linux/Alpine 通常不保留；还要注意 Mach-O 与 ELF 的区别，以及避免 Apple 特有语法。  
+• 另一种观点强调 Apple 平台适配成本高。有人提到自己代码里有很多 `#ifdef __APPLE__`，在缺少 Apple Silicon 真机时，只靠 GitHub Actions 和源码资料，修复汇编/编译器问题更困难。  
+• 有人补充，讨论不能只盯着 macOS 和 ELF/Linux，还应考虑 Windows on ARM、PE 格式、对齐规则、shadow stack 等，否则“可移植”讨论不完整。  
+• 也有质疑具体代码可移植性的观点：如果代码把 `clang` 默认等同于 macOS，这种假设本身就不通用。  
+• 更悲观的观点认为“汇编本来就不便携”，并举 6502 在 Apple、Gameboy、C64 之间不能直接通用作类比，强调平台差异是常态。
 
-补充讨论：
-• **地区可用性问题**：多位用户（德国iOS、荷兰Android）反映应用在其地区不可用，建议开发者检查发布范围
-• **产品改进建议**：有用户要求审查登录要求
-• **无关话题**：一条关于GitHub默认字体变化的离题评论
-
-核心争议：技术应用的伦理边界——呼吸监测技术是用于个人健康管理还是可能被滥用于员工监控。</div>
+补充讨论：争议焦点在于“汇编是否能称得上可移植”。一方认为可通过处理 ABI/格式差异实现有限移植；另一方认为这些差异过多，尤其加上 Apple 和 Windows 特例后，可移植性本就很弱。另有一条 `ORPort...` 评论与主线讨论关联较弱。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48372036" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48347977" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,322 +105,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://c9x.me/compile/release/qbe-1.3.html" target="_blank">QBE – Compiler Backend – 1.3</a>
+                    <a href="https://old.reddit.com/r/ResumeTips/comments/1rby70o/after_tailoring_my_resume_i_landed_3_job_offers/" target="_blank">After Tailoring My Resume, I Landed 3 Job Offers in 3 Weeks</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 103</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-02 17:37</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了 QBE 1.3 编译器后端的主要更新：
-
-**性能提升**：通过实现多项优化（GVN/GCM、循环优化、CFG简化等），在 coremark 基准测试中达到商业编译器 63% 的性能，Hare 测试套件提升 33%。
-
-**智能匹配**：引入新的 OCaml 工具 mgen，用元编程方式将 IL 模式编译成 C 代码，简化指令选择逻辑。
-
-**功能扩展**：新增 Windows ABI 支持（通过 `-t amd64_win`）和位置无关代码生成能力，支持动态链接库和共享对象的编译。
-
-整体新增约 7000 行代码，是 1.0 以来最重大的版本更新。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：QBE编译器后端的实用性和可用性评估
-
-不同观点：
-• **赞赏但难以理解派**（torginus）：欣赏QBE作为小型编译器的简洁API和代码库，但认为源代码极难理解，体现了古老C语言编程的"黑魔法"风格。提到QBE和MIR两个项目，QBE文档更友好但不做内联优化，MIR代码更快但文档较少
-
-• **代码风格批评派**（supergarfield）：认为QBE的代码风格像1970年代Unix代码，特别是多变量单行声明（如`int t, x, r, rf, rt, nr;`）降低了可读性，使300行函数难以理解，阻碍了用户采用
-
-• **平台支持限制派**（klardotsh）：Windows支持是重大进展。之前QBE缺乏Windows/MacOS支持是项目采用的主要障碍，因为这些系统占据桌面市场主导地位。同样的问题也影响使用QBE的Hare语言（仅支持Linux和BSD）
-
-• **功能缺失派**（luikore）：认为QBE接近理想，但缺少源码级调试信息是唯一的阻碍因素
-
-补充讨论：
-有用户询问Hare语言是否会因此支持Windows（opem）；另有用户询问QBE的定位是生产使用还是研究/教育项目（r2ob）。dang提供了大量相关历史讨论链接，显示QBE从2016年至今持续受到关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48373442" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.zgp.org/the-advertising-cartel-coming-to-your-web-browser/" target="_blank">The advertising cartel coming to your web browser</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 216</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-06-02 19:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Meta、Google和Apple正在联合推出名为"Attribution Level 1"的浏览器内置广告测量系统，用于关联广告展示与购买转化。该提案缺乏用户同意机制，要求其他公司遵守隐私法规，但自身的追踪功能却需用户主动关闭。
-
-这带来两大问题：一是给搜索、社交和应用商店广告带来不公平优势，削弱其他合法网站的广告收入；二是激励更危险的追踪行为，因为模糊的归因数据让企业更容易通过侵入性数据收集（如智能电视麦克风）来识别潜在买家并投放广告。
-
-尽管声称保护隐私，该系统实际上强化了大科技公司的垄断地位，将广告支出从有益社会的媒体转向负面外部性更大的平台，同时为更多追踪创造动机。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：浏览器内置广告归因功能（Attribution Level 1）提案的争议
-
-不同观点：
-
-• **支持方立场**（skybrian, sandcat_）：认为浏览器统一设置比每个网站弹出同意窗口更好，避免打断浏览体验；大科技公司（Meta、Google、Apple、Mozilla）达成一致是好迹象，比广告公司联合更值得信任
-
-• **反对方立场**（gruez, theamk）：质疑文章批评逻辑混乱，作者实际是反对所有归因系统而非针对新提案；认为这是伪装关心隐私的广告商为自身利益发声，因为新系统损害了小型广告网络的利益
-
-• **激进反对**（Hizonner, shevy-java）：主张应彻底消除浏览器中的私营公司控制和所有广告系统，认为这是"可接受广告"的翻版
-
-• **技术质疑**（AndrewKemendo）：指出这本质上是"重新发明HTTP cookies，但只服务于广告商"
-
-• **移动端扩展讨论**（ddxv）：认为移动广告归因追踪更严重，设备级本地追踪会是重大隐私改进，但Google和Apple作为广告公司缺乏动力推动
-
-补充讨论：有评论（semiquaver）指出作者将"环境影响"作为主要论据之一显得不诚实；有人（cm2012）从经济角度分析，认为人均$1200广告支出占消费的3.5%并不过分</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48375175" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mullvad.net/en/blog/age-verification-for-social-media-the-beginning-of-the-end-for-a-free-internet" target="_blank">Age verification for social media, the beginning of the end for a free internet?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: StrLght</span> |
-                    <span>评分: 511</span> |
-                    <span>评论数: 60</span> |
-                    <span>发布时间: 2026-06-01 23:22</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>全球多国正推行社交媒体年龄验证政策,名义上为保护儿童,实则为政府控制互联网奠定基础。澳大利亚、印尼、巴西等国已实施16岁以下限制,欧盟及美国多州也在跟进。现行年龄验证本质上是身份验证,要求用户向平台或第三方提供身份信息,这将终结匿名浏览和匿名发言,威胁言论自由。批评者认为,大型科技公司已知晓用户年龄,政府本可直接要求平台保护儿童,但选择了侵犯所有人隐私的方案,真实目的是实施控制而非保护儿童。身份验证还会产生寒蝉效应,迫使人们自我审查,在威权国家甚至危及活动人士生命安全。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于青少年社交媒体使用限制和年龄验证的政策争议
-
-不同观点：
-
-• **支持家长控制工具派**：认为应通过改进操作系统级别的家长控制功能实现年龄限制，而非强制身份验证。加州法案要求OS在设置时收集年龄信息并分类即可，无需上传敏感数据。父母可通过内容分级系统和权限管理控制孩子访问。
-
-• **隐私担忧派**：认为年龄验证是终结自由互联网的借口，会建立身份追踪体系。批评现代网络已沦为广告网络和监控系统，呼吁回归去中心化的P2P互联网根源。建议青少年使用Hyphanet、Matrix等半去中心化平台。
-
-• **技术生态批评派**：指出当前互联网已严重退化——搜索引擎失效、论坛被审查排序、邮件仅在大型实体间流通。提出可能需要建立自由互联网的替代根服务器。同时担心未来连托管个人网页都需验证身份。
-
-• **务实监管派**：认为这是选民强烈需求驱动的政策回应，不是阴谋。承认"滑坡效应"值得讨论,但多数人支持适度年龄限制,核心问题是保护儿童而非限制成年人。
-
-补充讨论：家长反映平台设计不利于监护——YouTube和WhatsApp等服务缺乏白名单功能,孩子13岁后几乎所有限制选项都消失。有评论讽刺2027年发帖需通过层层关卡:认证浏览器、平台账号、审核等。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48363882" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://fergusfinn.com/blog/deepseek-v4-flash-mi300x/" target="_blank">Bringing Up DeepSeek-V4-Flash on AMD MI300X</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kkm</span> |
-                    <span>评分: 111</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-02 17:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了Doubleword公司在AMD MI300X上部署DeepSeek-V4-Flash模型的技术挑战。MI300X虽然硬件规格优秀（192GB显存，价格仅为H100一半），但软件支持不足。主要问题包括：1）MI300X使用非标准的FP8数据格式（fnuz方言），与主流OCP标准不兼容；2）AMD的AITER内核库对MI300X支持不完整，导致注意力机制等关键操作缺少优化路径，性能大幅下降。文章详细记录了解决这些兼容性问题的过程，展示了AMD芯片在AI推理领域面临的软件生态挑战。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AMD GPU用于AI推理的可行性，以及DeepSeek V4模型的兼容性和成本问题
-
-不同观点：
-• **AMD硬件可行但软件复杂**：maCDzP和mezark表示AMD MI250X/MI300X可以运行大模型（如Gemma 4 31B），doubleword公司对AMD用于低交互推理持乐观态度，但强调软件适配工作量大，需要专门的vllm补丁支持
-
-• **价格和成本担忧**：edg5000指出doubleword公司的推理服务价格偏高（提供DeepSeek V4 Pro等模型），批评其未区分缓存输入和非缓存输入的定价，担心月度成本会快速攀升到数千美元，期待更多硬件供应商竞争和中国内存制造商参与来降低价格
-
-• **DeepSeek V4兼容性问题**：alfiedotwtf批评DeepSeek V4发布时不兼容常规推理引擎，需要derez的新项目专门支持，质疑何时才能在llama.cpp等主流工具中真正可用
-
-补充讨论：benlm询问8xMI300X是否支持DeepSeek V4 Pro；latchkey（Hot Aisle CEO）表示感谢客户支持，显示这是商业合作讨论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48373675" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dan-webnotes.com/posts/2026-06-02-css-native-parallax-effect/" target="_blank">CSS-Native Parallax Effect</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dandep</span> |
-                    <span>评分: 142</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-02 10:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了使用CSS原生实现视差滚动效果的新方法。通过CSS滚动驱动动画时间线（Scroll-driven animation timelines），无需JavaScript即可实现视差效果。核心是利用`view-timeline-name`创建视图进度时间线，追踪元素在视口中的滚动位置。子元素通过`animation-timeline`绑定该时间线，在滚动时以不同速率移动，产生深度感。为避免留白，子元素需按偏移量放大并用`overflow: hidden`裁剪。整个效果可通过单个工具类和CSS变量`--parallax-offset`实现，性能更好且代码简洁。文章还建议通过`prefers-reduced-motion`尊重用户的动效偏好设置。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：CSS Scroll-driven Animations API 实现视差效果的优劣及与传统方法的对比
-
-不同观点：
-• **支持新API者**：认为Scroll Timeline API简洁高效，通过单一变量控制scale和translate自动同步，代码更优雅
-• **传统CSS方案支持者**：指出使用CSS perspective + translateZ的3D transform方法已存在十年，同样支持GPU加速且浏览器兼容性好，代码更简单
-• **功能需求派**：希望API支持阻尼效果（damping），让视差对象能"追赶"滚动进度，而非直接绑定；认为GSAP的JS方案在这方面更强
-• **无障碍倡导者**：强调应尊重用户的`prefers-reduced-motion`设置，建议默认禁用动画，仅在用户明确允许时启用；质疑动画的开发成本价值
-• **体验批评者**：认为视差效果令人迷失方向，持否定态度
-
-补充讨论：
-多位评论者一致批评文章缺少实际演示效果，认为讲解视差效果的文章本身就应该展示该效果。Firefox浏览器支持进度成为槽点：虽然最早实现该功能（需开flag），但现在反而是唯一未在稳定版支持的主流浏览器。部分开发者分享了自己的实践案例（如SVG路径动画），展示纯CSS方案的流畅性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48368291" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://evonomics.com/less-work-job-creation-peter-gray/" target="_blank">Economists Are Obsessed with "Job Creation." How about Less Work? (2017)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: downbad_</span> |
-                    <span>评分: 44</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-03 10:48</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨了工作与自动化的关系。凯恩斯曾预测到2000年工作周将缩短至15小时，但尽管自动化持续发展，工作时间并未减少。许多新工作毫无意义甚至有害，人们花大量时间从事对社会无益的工作。真正的问题在于经济分配机制——我们只会通过工资分配资源，而非重新思考财富分配方式。作者主张摒弃工作伦理，提倡游戏精神，因为人类天生适合玩耍而非工作。从人类历史看，工作是农业时代的新发明，并非人性本质。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于减少工作时间的可行性及其经济、社会影响
-
-不同观点：
-• **支持减少工作时间**：CachedaCodes和wookmaster引用实证数据，指出四天工作制试点（冰岛、英国、微软日本）显示生产力维持或提升，认为减少工作时间是可行的，批评CEO们对生产力的错误执念
-• **质疑历史比较的有效性**：drillsteps5反驳狩猎采集社会的理想化描述，指出现代稳定工作相比前工业时代的生存压力是"甜蜜交易"，认为文章对20小时工作周的引用忽略了古代人类寿命短、生存条件恶劣的现实
-• **担心竞争劣势**：lizknope和pfdietz从地缘政治角度警告，减少工作会削弱经济和军事实力，在国际竞争中处于不利地位；dismalaf指出个人或国家层面都存在"被他人卷"的风险
-• **市场机制障碍**：jschveibinz强调供需关系、投资回报率、个体差异等经济因素使减少工作不切实际；myrmidon从雇主角度分析，增加人力配置带来沟通成本和协调难题；naveen99直言这就是通货膨胀
-• **监管必要性**：dismalaf认为减少工作时间必须通过政府强制规定才能实现，但承认执行困难；t0mpr1c3简短指出欧洲已有成功案例
-
-补充讨论：争议焦点集中在理想与现实的矛盾——数据支持减少工作可行，但竞争压力、市场逻辑、国际博弈使其难以实施。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48382292" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://phive.app" target="_blank">Show HN: Phive, a Gomoku-like game to play with friends or solo</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 0xCA1EB</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-05-30 21:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这看起来是一个游戏界面的截图或文本内容，而不是一篇文章。内容显示：
-
-网络连接中断，正在尝试重新连接。界面提供了几个选项：输入游戏ID加入游戏、开始新游戏、与AI对战，以及主页、新手教程、关于和捐赠等导航链接。这是一个在线多人游戏的登录/主菜单界面。
-
-请问您是想让我帮助处理这个游戏相关的开发任务，还是有其他问题需要协助？</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 一款AI对战游戏的用户体验反馈和改进建议
-
-**不同观点：**
-
-• **视觉反馈改进派**（iainmerrick）：建议添加动画效果使游戏过程更清晰，但也理解跨平台实现的技术难度；提出用图形显示剩余棋子数量而非纯文字，方便新手直观判断库存
-
-• **交互优化派**（gus_masa）：认为红色"新游戏"按钮过于显眼易误触，建议弱化；指出AI明显走法时反应过快，建议添加0.2秒延迟让玩家理解回合切换，同时增强AI"思考感"
-
-• **游戏深度扩展派**（mainecoder）：高度认可游戏简洁性和潜力；建议参考《Opus Magnum》，加入背景音乐、故事线；提出非零起始的谜题模式（从中局开始）增加挑战性；强调需咨询游戏设计专家和解谜玩家
-
-**补充讨论：** 三位评论者均在新手难度获胜，整体反馈积极。改进方向集中在UI/UX优化（视觉、交互、节奏）和内容深度拓展（关卡设计、叙事元素）两个维度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48340891" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://simpleflying.com/project-sunrise-qantas-a350-1000ulr-maiden-flight/" target="_blank">Project Sunrise Nears Reality as Qantas' Airbus A350-1000ULR Makes Maiden Flight</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 20</span> |
+                    <span>作者: nixass</span> |
+                    <span>评分: 11</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-03 12:45</span>
+                    <span>发布时间: 2026-06-03 20:31</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>澳洲航空的"日出计划"本周达成重大里程碑：空中客车为其特别研发的A350-1000ULR完成首飞。该项目旨在实现悉尼至伦敦、纽约的直飞航线，航程超过17,000公里，飞行时长可达22小时，将成为史上最长商业客运航线。
-
-飞机配备额外燃油箱（增加约20,000升燃油）、结构加固和专为超长航程优化的客舱。该项目自2017年启动以来多次延期，受COVID-19疫情和燃油系统重新设计影响，首架飞机交付已推迟至2027年4月，预计2027年下半年投入商业运营。澳航共订购12架此型号飞机。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48383258" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48389572" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -428,37 +134,312 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ianthehenry.com/posts/why-janet/" target="_blank">Why Janet? (2023)</a>
+                    <a href="https://www.politico.com/news/2026/06/02/trump-signs-downsized-ai-order-00946389" target="_blank">Trump signs downsized AI order after weeks of reversals</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: yacin</span> |
-                    <span>评分: 466</span> |
-                    <span>评论数: 42</span> |
-                    <span>发布时间: 2026-06-02 09:34</span>
+                    <span>作者: _alternator_</span> |
+                    <span>评分: 228</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2026-06-02 16:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了 Janet 编程语言的优势。Janet 是一种 Lisp 方言，核心简洁（仅8条基础指令），易于学习。它能编译成独立的原生可执行文件（不到1MB），无需额外依赖即可分发。Janet 擅长文本解析，使用 PEG（解析表达式文法）替代正则表达式，更强大且可解析多行文本、HTML、JSON 等。它拥有出色的子进程 DSL，适合编写命令行工具和脚本。Janet 易于嵌入其他程序，提供可变和不可变集合类型，并支持强大的宏系统。作者认为 Janet 是值得尝试的实用编程语言。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Janet 编程语言的特点、优缺点及与其他语言的比较
+                    <div class="comments-summary">主要讨论点：这项关于AI与网络安全的行政命令到底是否有实质内容，以及“自愿提前审查”会带来安全收益还是监管寻租。
+
+不同观点：
+• “内容空泛、象征性大于实效”：多位评论者认为第1、5节几乎没内容，第2节只是“加强网络安全+或许用AI”，第4节强调打击网络犯罪也像重复常识；真正较具体的只有建立模型网络安全基准测试，第3节被视为少数有建设性的部分。
+• “担心它为前置审查和行业封锁开门”：有人把“30天自愿审查”解读为未来强制审批的第一步，认为可能被大公司用来卡OSS、中国模型或新进入者，呼应此前大厂推动更高门槛监管的倾向。
+• “质疑审查机制本身不可操作”：评论集中追问，政府30天内究竟如何评估新模型对金融、国安、关键系统的威胁；如果有评测，为何不公开标准？争议焦点是审查是否真能提升安全，还是只是制造不透明权力。
+• “认为修订后比原案温和，但仍意义有限”：有人指出90天延迟发布“太离谱”，改成30天至少没那么严；也有人引用条文称其明确否认强制许可，因此法律效果和实际约束力都有限。
+
+补充讨论：还有人怀疑该命令服务于政府或大厂利益，如便于利用内幕信息、提前获取零日漏洞，或与AI公司估值、IPO、政治献金有关；也有人担心模型输出会更受政府意识形态影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48372628" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.0xsid.com/blog/meta-account-takeover-fiasco" target="_blank">The newest Instagram “exploit” is the goofiest I've seen</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ssiddharth</span> |
+                    <span>评分: 2169</span> |
+                    <span>评论数: 119</span> |
+                    <span>发布时间: 2026-06-01 16:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章称，Instagram曾出现严重账号接管漏洞：攻击者只需知道用户名，并伪装成同城登录，就可诱导Meta客服AI把验证码发到其控制的邮箱，随后直接重置密码并接管账号。该流程可绕过2FA，原用户几乎收不到提醒，也难以申诉。漏洞疑似已被Meta修复，但曾被黑产大规模利用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Meta/Instagram账户被盗事件暴露出AI客服、人工支持与账号恢复机制中的严重安全缺陷，争议集中在“问题根源是AI本身，还是后台权限与流程设计失控”。
+
+不同观点：
+• 认为核心问题是支持/客服链路权限过大。多位评论指出，2FA和复杂密码并未真正构成防线，因为客服或AI可把验证邮件发到任意邮箱、移除2FA，等于绕过正式安全机制。
+• 认为问题不在AI，而在工具授权设计。有人明确说评估AI安全应看它能调用什么工具；若代理可直接读写用户账户、改验证地址，那攻击者等于拿到全部后台能力。
+• 认为Meta长期存在恢复与支持失能。有人分享自己明明仍有原邮箱和手机号，却因“需旧设备登录”无法删号；也有人提到账户被盗后恢复极慢、甚至攻击者还能借账号烧广告费。
+• 认为这并非新问题，AI只是放大器。评论举例LinkedIn旧年“零认证重置”漏洞、以及外包/人工支持被收买后手改用户名，说明人工支持同样能成为后门。
+• 认为应追究法律责任而不只是嘲笑“尴尬”。有人主张平台安全失职应有类似工程事故的责任约束。
+
+补充讨论：不少评论给出亲历案例，如IG账号夜间被盗、2FA无效、用户名被恢复或被转走；还有人提到漏洞似乎仍未修复，攻击方式可能与伪造地区位置有关。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48359102" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://wiki.wordsoftype.com/" target="_blank">Words of Type</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tobr</span> |
+                    <span>评分: 116</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2026-05-31 18:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章是一本字体设计词典的节选，介绍了字体排印学的基础术语：
+
+**字母表（Alphabet）**：用字母集合表示语言的书写系统，拉丁字母使用最广泛。
+
+**替代字形（Alternate）**：字符的变体形式，包括上下文变体、位置变体、风格变体和本地化变体，通过OpenType功能实现。
+
+**&符号（Ampersand）**：代替"and"的字符，源于拉丁文"et"的连字，多用于标题和品牌名称。
+
+**解剖学（Anatomy）**：借用建筑和人体术语描述字母各部分的命名体系。
+
+**锚点（Anchor）**：连接基础字母与变音符号的定位点，用于组合字符设计。
+
+**倾斜角度（Angle）**：斜体字母向右倾斜的角度。
+
+**孔径（Aperture）**：开放字母内部空间与外部空间的分界线。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对该网站的设计风格、信息价值与内容可信度的评价，尤其围绕“视觉吸引力强但是否存在AI生成或内容凑数问题”展开。
+
+不同观点：
+• 赞赏设计与体验：多位评论者认为网站风格带有童书或技术制图般的轻微 whimsical 气质，细节丰富、很有吸引力，让人愿意停留较久阅读。
+• 认可信息价值与展示方式：有人认为这是少见的“有用型广告”，以“pull而非push”的方式展示可购买字体；也有人提到内容对学生尤其有帮助，并赞赏部分条目附有参考来源。
+• 肯定内容有趣但带保留：有评论认为整体“像是凭感觉做出来的”，但信息密度高、仍然值得看。
+• 质疑内容相关性与真实性：批评者指出部分内容与“字体”关系很弱，如装订、EULA，怀疑作者用LLM补充 filler；更进一步有人直接认为这是“vibecoded”，担心描述可能存在幻觉。
+
+补充讨论：争议焦点主要在于“高质量设计是否掩盖了内容可靠性问题”。支持者更看重呈现和可读性，质疑者则聚焦条目选择是否跑题、文本是否可信。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48348286" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://seths.blog/2026/06/stop-ruining-it/" target="_blank">Stop Ruining It</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: herbertl</span> |
+                    <span>评分: 304</span> |
+                    <span>评论数: 28</span> |
+                    <span>发布时间: 2026-06-02 09:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了"不破坏"的理念。作者引用音响制造商Paul McGowan的观点：音乐性不是添加到放大器的功能，而是不破坏它后剩下的东西。文章将此理念扩展到多个领域：客户满意度不是项目添加的特性，而是不破坏后的结果；好奇心不是教育的产物，而是教育系统未破坏时保留的天性；工作满足感不是老板创造的，而是老板未破坏时存在的状态；品牌信任不是广告建立的，而是营销者未破坏时自然形成的。核心观点是：许多美好品质本就存在，关键是避免破坏它们。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：产品和服务质量的"不作为智慧" — 避免过度干预和改进反而能保持原有价值
 
 不同观点：
 
-• **支持者观点**：Janet 启动速度快（1.4ms）、可移植性强、能创建二进制文件，已替代 sh/Python/awk 用于系统脚本；沙箱功能安全；sh-dsl 模块让 shell 命令书写优雅；适合嵌入式应用
+• **支持"少即是多"理念**：多位评论者认同不要破坏已有良好状态的观点。fifticon以Windows 11文件管理器为例，批评不必要的"改进"（如强制标签页、地址栏设计混乱）反而降低了可用性。tacostakohashi在代码层面呼应，主张通过减少复杂性（而非增加缓存、重试等层级）来提升性能。jp57用育儿比喻："不要试图让快乐的婴儿更快乐"
 
-• **批评者观点**：缺乏包管理版本控制、库生态不足（如高级 HTTP 路由）；文档"Janet for Mortals"对新手不够友好；语法使用方括号（向量）在 lambda 和控制流中令人不适，难以接受
+• **系统性问题视角**：pradn指出破坏并非故意，而是源于错位的激励机制、信息不对称和责任分散等系统性问题。mft_从组织角度分析，认为问题不是"如何赋能"而是"如何防止剥夺权力"，将责任指向功能失调的领导层
 
-• **技术对比讨论**：与 Fennel（编译到 Lua）、Clojure、Guile、Tcl 的比较；有人提出 Python -> Hy -> Janet 的迁移路径可能性；Janet 比 Clojure 晚 12 年发布（2019 vs 2007）
+• **信任消耗不可逆**：munificent和FinnLobsien强调信任易失难建。后者详细描述了AI内容生成导致的信任透支循环：创作者用AI生成内容短期获益，但一旦被发现，品牌信誉彻底崩塌，需要从头重建
 
-• **实用案例**：曾移植到 Playdate 游戏机；Bauble Studio 和 Toodle Studio 等艺术工具使用 Janet 开发
+• **质疑案例有效性**：justinsaccount和kazinator对文中引用的音响公司案例表示怀疑，认为该公司本身就在销售"发烧友伪科学产品"，不适合作为正面例证
 
-补充讨论：社区关注 LSP/SLIME 支持现状；有人欣赏这种"前 AI 时代"的技术讨论氛围；文档资源推荐（janetdocs.org、janet.guide）；语言设计的抽象性让普通人难以理解</div>
+补充讨论：Hugsbox质疑现代广告的实际效果；profsummergig提出"行动偏见"理论解释为何人们倾向过度干预；smcg指出基层员工往往无权改变这些决策</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48367907" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48368059" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://alphapixeldev.com/recovering-eric-grahams-1987-amiga-juggler-raytracer-source-code/" target="_blank">Recovering Eric Graham's 1987 Amiga Juggler raytracer source code</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mariuz</span> |
+                    <span>评分: 33</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-03 05:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者恢复1987年Eric Graham的Juggler光线追踪器源代码的过程。Juggler动画曾震撼业界，甚至Commodore公司都不敢相信它是在Amiga上制作的。作者发现源代码存储在一个Amiga ADF磁盘镜像文件中，大多数归档工具无法解析。为了让现代系统能访问这些文件，作者使用AI工具将原有的C语言ADF提取工具移植成Python版本，成功提取了源代码，并通过多个测试镜像验证了提取器的正确性，最终实现了代码的永久归档保存。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一篇关于从Amiga磁盘镜像中恢复文件的博客文章引发的争议
+
+不同观点：
+• **对AI使用的质疑**（LocalH, q3k）：批评作者用AI处理本可以用现有工具轻松完成的任务。LocalH指出ADF文件格式早已有成熟的原生Amiga工具和跨平台工具支持，认为标题应改为"用生成式AI Python从Amiga磁盘镜像提取文件"。q3k直接表示看到AI部分就停止阅读。
+
+• **对文章营销性质的不满**（maupin）：指出文章结尾有隐藏广告内容。
+
+• **技术怀旧/记忆分享**（muyuu）：认为这个源代码可能曾在杂志上发表过，表示自己可能拥有过这份资料。
+
+补充讨论：核心争议在于**技术方案的适当性** —— 评论者普遍认为使用AI解决这个问题是"杀鸡用牛刀"，因为已有专门工具可以更高效地完成相同任务。这反映出技术社区对过度使用AI的警惕态度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48380395" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.neowin.net/news/tuta-has-joined-euro-office-and-will-now-contribute-to-its-codebase/" target="_blank">Tuta has joined Euro-Office and will now contribute to its codebase</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bundie</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-03 17:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Euro-Office将于6月9日发布首个稳定版，目标是为欧洲机构提供基于全开源基础设施的实时协作文档平台，减少对美国科技公司的依赖。该项目源自ONLYOFFICE分支，由Nextcloud、IONOS、XWiki等欧洲公司共同开发。临近发布前，主打隐私的Tuta宣布加入联盟，称其看重项目的主权性、易用性和数据保护能力。文章也提到，Tuta和Euro-Office此前都曾因监控功能和开源授权纠纷引发争议。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48387413" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/yaodub/cast" target="_blank">Show HN: Tired of duct-taping access control into agent prompts. Here's the fix</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zwigglers</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-03 13:04</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Cast是一个开源的多用户、多智能体系统框架，可自托管在Mac Mini上运行。它解决了传统AI框架的单用户单智能体局限，提供身份管理、访问控制和智能体协作能力。访问规则通过配置文件而非提示词控制，防止模型泄露或绕过权限。支持从Claude Code直接构建智能体，用户通过自然语言描述需求即可生成代理配置。智能体以文件夹形式存储，支持Slack、Telegram和Web等多种接口。项目采用MIT开源协议，目前处于开发者预览阶段。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一个名为Cast的多用户、多代理AI系统框架的发布，旨在解决团队共享AI基础设施时的访问控制问题
+
+不同观点：
+• 支持者观点：认为多用户、多代理、虚拟环境的单机方案是AI系统的发展方向（raphaelschaad），管理多个Claude实例确实困难，这类工具有实际需求（gmmeyer）
+• 质疑者观点：对项目的真实性表示怀疑，指出GitHub显示"6分钟前初始提交"但帖子发布于1小时前，时间线不符（binarymax）
+• 替代方案观点：认为不需要复杂框架，通过简单的keychain工具扩展环境变量就能解决凭证管理问题（rcarmo）
+
+技术要点：
+• Cast将访问控制放在路由层而非提示词中，每个代理运行在独立容器中，具有真实的文件系统边界
+• 支持Slack、Telegram等平台的身份验证，凭证不直接挂载
+• MIT许可，自托管，可在Mac Mini上运行
+• 目标用户是遇到多用户Claude Code限制的团队
+
+补充讨论：项目刚发布处于开发者alpha阶段，存在关于发布时间线的争议，但核心需求（多用户AI系统管理）得到认可。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48383471" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.lrb.co.uk/the-paper/v48/n09/john-lanchester/squillions" target="_blank">Squillions: How money laundering won</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rwmj</span> |
+                    <span>评分: 194</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2026-05-31 10:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了现金使用的悖论现象：虽然日常交易中现金使用率大幅下降（英国从2009年的58%降至今天的9%），但流通中的现金总量却在急剧增加。美国、英国、欧盟和瑞士等地的高面额纸币数量持续攀升，但这些现金的去向和用途成谜。作者Oliver Bullough在《Everybody Loves Our Dollars》中指出，数以千亿计的现金可能被用于洗钱等犯罪活动。中央银行对此问题态度暧昧，因为货币流通能带来巨额"铸币税"收益。文章揭示了一个惊人事实：大规模的非法金融活动正在政府眼皮底下进行，却未得到充分重视和理解。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：反洗钱法律的有效性及其对普通民众隐私和现金使用的影响
+
+不同观点：
+• **支持现金和隐私权派**：认为反洗钱法导致对普通人的大规模监控，现金使用是个人主权的体现。批评银行手续费让跨国公司介入私人交易，反对以打击犯罪为由削弱端到端加密和现金使用（reconnecting, bradley13）
+
+• **质疑反洗钱法效果派**：认为洗钱本身不应是犯罪，应该打击非法活动源头而非资金转移。指出英国已取消大额纸币但洗钱仍失控，说明这些措施对真正罪犯无效。提到George Cottrell案例显示执法过度（bradley13, mike_hearn）
+
+• **揭示实际效果派**：认为反洗钱法实际作用是迫使守法公民进行线上交易以最大化税收征管，而非真正打击犯罪。真正的犯罪分子有成熟的隐藏手段，监控只影响普通人（arttaboi, nntlol）
+
+• **技术和事实澄清派**：指出大额纸币在瑞士等国家日常使用正常，80%的百元美钞流通可能是储蓄而非犯罪。质疑文章未提及加密货币在洗钱中的角色，并对"脏钱"概念提出疑问（mike_hearn, applicative, tasuki, harrouet）
+
+补充讨论：意大利1000欧元现金提取触发警察调查的严格法规，以及"系统的目的就是其实际作用"的观点——即反洗钱法实际是维持普通人诚实，而有钱人可轻易绕过。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48344535" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
