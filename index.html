@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-06 21:01 (北京时间)
+            最后更新时间: 2026-06-07 00:01 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,42 +61,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.includesecurity.com/2026/06/the-smart-tv-in-your-livingroom-is-a-node-in-the-aiscraping-economy/" target="_blank">The Smart TV in Your LivingRoom Is a Node in the AIScraping Economy</a>
+                    <a href="https://lwn.net/SubscriberLink/1076018/16f01bbbb8e0d1f0/" target="_blank">Moving beyond fork() + exec()</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: nikcub</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2026-06-06 09:17</span>
+                    <span>作者: jwilk</span> |
+                    <span>评分: 63</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-06 14:34</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Bright Data 是全球最大的住宅代理网络公司，拥有4亿+家庭IP地址。它通过在消费类应用中嵌入SDK，将用户的手机和智能电视变成代理节点，为AI公司提供网络爬虫服务来获取训练数据。
-
-智能电视是理想的代理节点：全天候通电联网、带宽无限、用户关注度低、监管缺失。SDK默认每月可使用200GB WiFi流量。
-
-已确认的合作伙伴包括PlayWorks Digital（覆盖2.5亿电视家庭）、CloudTV（集成于125+电视品牌）等。虽然合作方会在隐私政策中披露，但通过电视遥控器阅读法律文件的体验极差，用户实际上很难理解自己的设备正在为付费客户提供爬虫代理服务。
-
-这种"合法"的住宅代理网络正在助力AI模型绕过云端IP封锁，大规模抓取互联网数据。</p>
+                    <p>这篇文章讨论了Linux内核中进程创建的优化提案。传统的`fork()`和`exec()`模式存在效率问题：`fork()`复制整个进程状态成本高昂，而紧随其后的`exec()`又会丢弃这些复制的内存。Li Chen提出了"spawn templates"方案，通过预先缓存可执行文件信息来加速重复运行同一程序的场景，基准测试显示约2%的性能提升。但评审者Mateusz Guzik指出，真正的优化应该跳过`fork()`步骤，直接创建全新进程，而不是优化现有模式。该提案虽不会被采纳，但为未来的进程创建原语指明了方向。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：某SDK通过WebSocket连接将用户设备（特别是智能电视和iOS设备）变成代理节点，绕过VPN进行数据抓取
+                    <div class="comments-summary">主要讨论点：Unix系统中fork()系统调用的设计是否过时，以及是否应该被替代或优化
 
 不同观点：
-• **技术讽刺观点**：抓取方和被抓取网站可能都托管在AWS上，却在玩猫鼠游戏假装不在同一平台
-• **拒绝联网设备立场**：坚决不给智能设备连WiFi，电视仅作为HDMI显示器使用，拒绝任何需要联网才能工作的设备
-• **API合理性质疑**：强烈质疑iOS应用绕过用户配置VPN的合法性，认为不应允许应用指定网络接口（en0/pdp_ip0）来规避VPN
-• **法律风险担忧**：类比Tor出口节点问题，担心设备被用作非法内容（如儿童色情）代理后，设备所有者可能面临警方调查
-• **防火墙对策**：认为可通过防火墙阻止设备外网访问，同时允许HomeAssistant等本地控制
-• **反制攻击思路**：提出主动连接C&C服务器，返回垃圾数据来破坏抓取系统的对抗性想法
-• **相对道德评价**：认为Cloudflare比Bright Data更不道德
 
-补充讨论：有用户寻求在iOS设备和家庭网络中检测并移除此类SDK的技术指导</div>
+• **fork()设计优雅派**：uecker认为fork() + exec()模型的优雅之处在于，fork后可以使用常规API进行各种配置，任何试图用单一调用替代的方案都会因为需要将所有配置选项作为参数而变得复杂且难以扩展
+
+• **fork()已过时派**：rom1v引用微软研究论文指出，fork()是1970年代的聪明hack，现在已成为负担，应当废弃并作为历史产物教学；sanderjd认为"克隆当前进程"的需求远少于"创建全新进程"，缺乏直接表达后者的方式很荒谬
+
+• **实现层面质疑**：mrkeen指出文章遗漏了copy-on-write这一关键优化（fork并不真正复制所有内存）；hparadiz质疑共享库的内存优化问题
+
+• **替代方案探讨**：debatem1建议采用类似sched_ext_ops的方法，构建fork-exec流程图并用eBPF钩子实现灵活定制；lokar认为应将git核心做成可链接库而非运行二进制文件
+
+补充讨论：ComputerGuru认为Raymond Chen的补丁针对的是极端小众场景不值得支持，但同意需要原生实现；burnt-resistor讽刺每隔几年就有人声称找到"解决方案"</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48422993" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48425528" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -107,34 +102,79 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://codeberg.org/ziglang/zig/commit/621844bde551ee1a9b8142d7d146d1fa804247a2" target="_blank">Zig Zen Update</a>
+                    <a href="https://arxiv.org/abs/2606.05818" target="_blank">Benchmarks in Leipzig</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: root-parent</span> |
+                    <span>评分: 58</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-06-06 14:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文介绍了"莱比锡基准测试"项目：2026年4月至5月间，49位数学家（主要在莱比锡马普数学研究所的3天研讨会期间）创建了包含100道研究级数学问题的数据集，所有问题都有已知答案。研究团队分三个阶段用大型语言模型（LLM）测试这些问题：第一阶段使用5个先进LLM各尝试一次，41题未解；第二阶段用3个模型各运行20次，剩余16题未解；第三阶段用2个深度思考模型各运行3次，最终仅2题未解。结果表明LLM的数学推理能力正变得令人印象深刻。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：大型语言模型在研究级数学问题上的表现评估
+
+不同观点：
+• **准确率重要性（spuz）**：不仅要看答对多少，更要看答错多少。以Opus为例，虽然解决了40%的问题，但失败率高达78%，实际应用可信度低。建议未来基准测试应评估一次性答对的能力。
+
+• **问题难度说明（christianstump，研究负责人）**：这些问题远超普通考试难度，相当于该数学领域PhD学生需要数天至数周才能解决的问题，更接近给二年级博士生的研究问题。
+
+• **数据泄露质疑（zerobees）**：这些问题的答案可能已存在于公开数据中（训练材料），因此测试的不是前沿挑战解决能力，而是"数学家能否出LLM无法作弊的考题"。论文结论认为基于公开研究的练习式基准已达极限。
+
+• **数据集保护建议（puttycat）**：希望他们对数据集加密保护，防止污染未来训练数据。
+
+补充讨论：实际基准结果远低于"仅2题未解"的宣传（qsort指出这意味着"任何模型任何配置都未解决"）。OpenAI模型在数学领域表现明显更优，可能源于后训练差异。有人担忧意识问题（Towaway69）。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48425247" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://twitter.com/lemire/status/2062880075117113739" target="_blank">Nvidia is proposing a beast of a CPU system for Windows PCs</a>
                 </h3>
                 <div class="story-meta">
                     <span>作者: tosh</span> |
-                    <span>评分: 99</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-06 08:38</span>
+                    <span>评分: 51</span> |
+                    <span>评论数: 28</span> |
+                    <span>发布时间: 2026-06-06 12:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这段文本看起来是 Git 文档的片段混杂在一起，内容支离破碎且缺乏连贯性。文本提到了一些 Git 命令和配置选项，如 git fsck、git read-tree、upload-pack、diff 配置等，还包含了关于仓库克隆、对象过滤、维护操作的零散信息。文本开头有一段针对 AI 爬虫的警告信息。整体来看，这不是一篇完整的文章，而是从 Git 手册或文档中随机抽取的文本碎片，可能被用作反爬虫措施或数据混淆。</p>
+                    <p>看起来你遇到了一个错误提示，而不是需要总结的文章内容。这个错误信息来自 x.com（Twitter），提示可能是隐私相关的浏览器扩展导致了问题。
+
+如果你想让我总结某篇文章，请提供文章的内容或链接，我会帮你用中文简明扼要地总结。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Zig编程语言的设计理念更新和社区发展
+                    <div class="comments-summary">主要讨论点：Nvidia RTX Spark（DGX Spark的消费者版本）作为AI本地化和游戏设备的价值评估
 
 不同观点：
-• **资源分配处理**（Panzerschrek）：手动检查每次内存分配是糟糕的设计，其他语言通过运行时终止进程的方式更优雅。Linux等系统的内存分配可能"成功"但实际不可用，导致访问时崩溃
-• **设计哲学演进**（mcherm）：Zig新口号"有一种惯用的方式去做"优于旧版"只有一种明显的方式"，也优于Python和Perl的理念。关键不是禁止其他写法，而是要有一个公认的惯用方式
-• **价值观争议**（melon_tusk）：认为Zig的"激进主义"（activism）会赶走一半潜在用户，使其无法与Odin、Jai、C3等语言竞争
-• **积极反馈**（Validark）：欣见"Together we serve the users"回归，怀念旧版README中"谦卑地请求构建服务用户的软件"的表述
 
-补充讨论：
-有用户询问Codeberg托管平台的使用效果，另有用户表示不清楚具体改动背景。讨论涉及技术设计、语言哲学和社区价值观多个层面。</div>
+• **看好本地AI前景派**（infecto, dofm）：认为从成本和安全角度考虑，本地运行AI模型越来越可行；Microsoft和Nvidia推出此产品表明他们意识到云端AI模式不可持续，这是对OpenAI云端模式的挑战
+
+• **技术怀疑派**（dagmx, AmazingTurtle）：认为作者分析肤浅，该设备性能被高估——共享带宽仅为专用GPU的2/3，实际GPU性能可能只有一半；600GB/s带宽远低于高端GPU的1800GB/s，Nvidia可能故意限制带宽以推动云服务
+
+• **性价比质疑派**（npn, jmyeet）：预计售价高达5000美元，同等价格可购买RTX 5090组装机；与M5 Max相比性能相当但可能落后于即将发布的M5 Ultra
+
+• **Apple对比派**（seanalltogether, alberth, llm_nerd）：质疑其"统一内存"是否像Apple Silicon那样真正统一；CPU单核性能远不及Apple，但多核可达M5水平；散热是笔记本形态的挑战（140W TDP）
+
+补充讨论：SwtCyber指出重点是Nvidia试图让GPU成为PC核心而非附加卡；部分评论者批评作者的自我营销方式和文章深度</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48422769" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48424605" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -145,38 +185,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://microsoft.github.io/RustTraining/python-book/" target="_blank">Introduction – Rust for Python Programmers</a>
+                    <a href="https://techcrunch.com/2026/06/05/google-will-pay-spacex-920m-per-month-for-compute/" target="_blank">Google will pay SpaceX $920M per month for compute</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: linhns</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-06 10:52</span>
+                    <span>作者: ramanan</span> |
+                    <span>评分: 159</span> |
+                    <span>评论数: 24</span> |
+                    <span>发布时间: 2026-06-06 11:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一份面向Python开发者的Rust完整培训指南。内容分为四部分：第一部分（1-6章）涵盖基础语法、数据类型和控制流等与Python相似的概念；第二部分（7-12章）介绍Rust特有的所有权、借用、trait和泛型等核心概念；第三部分（13-16章）讲解并发、unsafe代码、PyO3互操作和迁移模式等高级主题；第四部分是CLI任务管理器实战项目。指南采用循序渐进的方式，帮助Python开发者理解从动态类型、垃圾回收语言转向静态类型、编译时内存安全的系统编程语言所需的概念转变。建议学习时间为1-2周。</p>
+                    <p>SpaceX在IPO前与谷歌达成算力租赁协议，谷歌将从2026年10月至2029年6月每月支付9.2亿美元，租用约11万个NVIDIA GPU及相关设备。这是继5月与Anthropic达成每月12.5亿美元协议后的第二笔大单。谷歌称此举是为应对其Gemini Enterprise平台超预期的客户需求。协议包含终止条款，双方可在2026年底后提前90天取消。SpaceX即将在纳斯达克上市，目标估值1.75万亿美元，融资750亿美元，将创史上最大IPO纪录。谷歌作为SpaceX长期投资者，IPO后持股预计价值超千亿美元。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：微软发布的 Rust 教程质量问题，以及 Rust 语言本身的学习难度
+                    <div class="comments-summary">主要讨论点：Google与SpaceX/xAI之间110亿美元数据中心租赁协议的性质、动机和风险
 
 不同观点：
 
-• **教程质量批评派**（Tiberium, iloveoof）：认为该教程是 AI 生成的低质量内容，充斥着"bullet list slop"格式，解释过于简短，时间估算不合理，建议开发者直接使用 LLM 获得更好效果，Brown 教程质量更优
+• **金融工程论**：tristanj认为这是精心设计的交易，Google通过增加SpaceX收入提升其估值（持有5%股份可获400亿利润），同时帮助SpaceX达到S&P 500盈利要求
 
-• **Rust 语言设计批评派**（onlyrealcuzzo）：认为 Rust 本身并不难，但语言设计存在问题——许多小的设计决策累积起来增加了学习门槛。主要问题包括：
-  - 迭代器需要显式 `.collect()` 而非自动推断返回类型
-  - 类型系统对新手"吓人"（如 `Arc<Mutex<T>>`）
-  - 应该让常见用法成为默认，而非强制新手理解底层优化
+• **估值泡沫论**：runako强烈质疑SpaceX估值，指出其100倍市销率远超行业标准（数据中心REIT为10倍，Meta为7倍），认为估值正常化时将"非常痛苦"
 
-• **语言难度辩护**：onlyrealcuzzo 认为 Rust 名声比实际难度更吓人，本可以做得像脚本语言一样简单
+• **IPO造势论**：devops000分析合同条款后认为这只是为提升IPO价格的短期协议，怀疑交易真实性，因为合同允许2026年后90天通知即可终止
 
-补充讨论：争议焦点在于 Rust 的设计哲学——是优先考虑性能和显式控制（当前设计），还是应该优先考虑新手友好性和常见场景的便利性。onlyrealcuzzo 正在尝试创建一种新语言来解决这个问题。</div>
+• **产能疑虑论**：doubtfuluser和ggm对SpaceX实际交付能力表示怀疑，认为Google风险有限（无法交付可终止），但担心未来终止合同对SpaceX估值的冲击
+
+• **战略逻辑论**：est31从AI行业角度解释，认为这是正常的产能互补机制——AI收入高度不确定且增长快速，企业间互相购买算力可避免产能浪费
+
+补充讨论：有人质疑Google自研芯片效果、xAI数据中心环境污染问题，以及对SpaceX核心业务定位的困惑（火箭、ISP、社交媒体、数据中心混合体）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48423615" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48423990" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -241,6 +282,173 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.learnix-os.com/ch02-03-implementing-the-bitfields-proc-macro.html" target="_blank">Building Rust Procedural Macros from the Grounds Up</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Sagi21805</span> |
+                    <span>评分: 34</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-05-31 19:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Rust的过程宏（procedural macros）。主要内容包括：
+
+**宏的定义**：宏是将输入映射到输出的规则，但与函数不同，宏操作源代码并在编译时执行。
+
+**TokenStream**：过程宏函数接收TokenStream作为输入并返回TokenStream。TokenStream是对源代码的标记化表示，包含TokenTree节点（Group、Ident、Punct、Literal）。
+
+**执行时机**：宏在编译时求值，将源代码映射为另一段源代码，而普通函数是将Rust代码映射为汇编代码。
+
+文章通过示例展示了如何理解和使用过程宏，为后续实现bitflags宏做准备。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">这个请求只包含一条评论，无法进行多观点分析和讨论总结。
+
+**当前情况：**
+只有一位用户（Sagi21805）的单独发言，内容是关于他们在开发 Learnix 操作系统时实现 bitflags 的经验分享。
+
+**建议：**
+如果您需要分析评论讨论，请提供：
+• 多条评论内容
+• 包含不同用户的回复
+• 有互动和讨论的评论串
+
+或者，如果您想让我分析这条评论本身的内容要点，我可以总结 Sagi21805 分享的技术实践。请告诉我您需要哪种分析。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48348876" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://pokeemerald.com/" target="_blank">Pokemon Emerald Ported to WebAssembly (100k FPS)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tripplyons</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-06 11:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>I see you've shared what appears to be a game emulator interface with keyboard controls. How can I help you today? 
+
+If you're working on a project, need help with code, writing, analysis, or have any questions, let me know what you'd like to accomplish.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于口袋妖怪绿宝石WebAssembly版本的技术实现和游戏体验
+
+不同观点：
+• **技术实现派**：dmitrygr指出这不是GBA模拟器，而是将反编译的游戏源码直接编译成WASM，这是技术亮点；itsthecourier分享了用Rust从零开发Game Boy模拟器并导出WASM的经验
+• **功能改进需求**：danielrmay希望有更现代直观的触控操作而非传统D-pad；gobdovan询问音频支持；eigenspace关注PWA功能在Android Firefox上的可用性
+• **游戏体验派**：weird-eye-issue强调模拟器加速功能对游戏体验至关重要，否则可能放弃；hawkice确认存档功能有效并期待交易功能
+• **模拟器可靠性讨论**：firefax分享了模拟器存档损坏和实体卡带电池失效的经历，质疑模拟器可靠性
+
+补充讨论：有性能相关的技术讨论（Innittech提到29 FPS），以及oceansky提出纯JavaScript实现的构想。整体氛围积极，技术爱好者对WASM实现表示认可。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48423762" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=rJ2gQ5Md60U" target="_blank">Tribute to Jiro Yamada, Automotive Artist (1960-2025) [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: NaOH</span> |
+                    <span>评分: 17</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-05 20:52</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这不是一篇文章，而是YouTube网站的页脚链接列表。内容包括：关于我们、版权声明、联系方式、创作者中心、广告服务、开发者资源、服务条款、隐私政策、安全政策、YouTube运作方式介绍、新功能测试以及NFL Sunday Ticket服务。这是2026年Google LLC的标准网站页脚信息。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：日本工匠 Jiro Yamada 于2025年8月去世，但直到2026年中才被公众确认，引发了关于信息传播延迟的困惑和反思。
+
+不同观点：
+• **困惑与质疑**：评论者对死讯延迟近一年才被确认表示不解，认为这在信息时代很不寻常
+
+• **低调生活的可能性**：推测 Yamada 可能过着远离公众视线的生活，因此其去世消息传播缓慢
+
+• **自我反思**：评论者认为这一事件可能反映了自己的信息获取局限——一个人去世近一年才知晓，说明个人关注范围有限
+
+补充讨论：评论提到该纪念视频发布3天仅有288次观看，暗示 Yamada 可能并非广为人知的公众人物，这或许解释了消息传播的滞后性。评论者通过外部链接证实了死亡时间，显示出对信息准确性的重视。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48418125" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://engelsbergideas.com/notebook/the-new-bibliomaniacs/" target="_blank">The new bibliomaniacs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: RickJWagner</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2026-06-06 12:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了古籍珍本收藏的复兴现象。纽约国际古书展参观人数从2022年到2026年增长了62%,全球稀有图书市场价值超过70亿美元,年增长率超6%。值得注意的是,35岁以下年轻人正成为收藏主力——在数字时代成长的他们反而更渴望通过实体物品与历史建立真实连接。收藏范围已超越传统古书,包括手稿、地图、抗议海报、签名物品等各类历史文物,人们追求的是"触摸历史"的独特体验。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：年轻一代为何购买实体旧书，以及实体书与电子书的价值对比
+
+不同观点：
+• **记忆载体论**：实体书作为"记忆图腾"，能唤起阅读时的具体场景和内容，而电子书缺乏这种物理存在感，导致"遗忘感"（keiferski）
+
+• **永久性与防篡改**：实体书内容不会被修改或删除，而网络文字和电子书可能被修改或"记忆清除"，实体书提供历史确定性（black6、everdrive）
+
+• **实用主义立场**：电子书在人体工学、空间、成本和环保方面更优，实体书唯一优势是寿命更长（armchairhacker）
+
+• **社交差异化动机**：购买旧书可能更多源于人类在大群体中寻求差异化的本能，而非内在价值（cyanydeez）
+
+• **经济投机因素**：书籍收藏类短视频流行，展示旧书潜在收益，可能刺激购买行为（iLoveOncall）
+
+补充讨论：有人出于历史保存目的收藏特定时期文献（vmsp），也有人注意到AI训练可能让被遗忘作品中的观念"重生"（warumdarum）。争议焦点在于这种趋势是真实的情感需求还是社交表演。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48424125" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://arstechnica.com/tech-policy/2026/06/sp-500-blocks-fast-spacex-entry-wont-waive-rule-for-unprofitable-ai-firms/" target="_blank">S&P 500 rejects SpaceX, also blocking entry for OpenAI and Anthropic</a>
                 </h3>
                 <div class="story-meta">
@@ -268,193 +476,6 @@
 补充讨论：部分评论认为指数机构的决定并非出于智慧和克制，而是受到来自先锋等基金公司及其机构投资者的压力。也有人对评论区质量表示担忧，指出高质量评论下充斥着宣传性回复。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48421442" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://salvagedcircuitry.com/sigma-45mm.html" target="_blank">The intracies of modern camera lens repair (2024)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: transistor-man</span> |
-                    <span>评分: 192</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-06 00:33</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一篇关于维修 Sigma 45mm f/2.8 镜头的技术文章。作者以低价购入一支外观完好但电子控制失灵的镜头，症状是安装后相机能显示画面但所有按钮和拨盘均无响应。文章详细记录了拆解过程：先移除后部装饰环和螺丝，取下卡口和垫片，检查柔性排线的连续性（确认完好），然后拆卸后壳铝制外壳。作者强调了使用 JIS 螺丝刀、保持零件方向记录、小心处理易损的聚酰亚胺柔性电缆等关键注意事项。文章提供了详细的工具清单和分步骤拆解指南。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于现代相机镜头的维修、设计和技术演进
-
-不同观点：
-• 【镜头技术进步派】现代无反相机镜头已高度电子化，配备USB-C接口可更新固件、无线控制、自定义按键功能，大幅提升摄影师的灵活性和工作效率，是巨大进步
-• 【传统机械派】更喜欢维修老式手动镜头（如Nikon AI/AI-S时代），认为纯机械镜头更简单、不那么可怕
-• 【维修实用主义】欣赏详细的拆解教程，享受维修非一次性设备的乐趣；提出实用技巧如用双面胶固定螺丝避免丢失
-
-补充讨论：
-技术细节争论：有人指出PH螺丝刀用于JIS螺丝会滑丝，强调工具匹配的重要性。另有关于保险丝的专业讨论：保险丝响应速度远慢于半导体元件（如TPS62140的30ns传播延迟），其真正作用是防火和保护电池而非保护元件，许多现代工程师对此存在误解。行业现状：镜头设计工作令人着迷但薪资不足以留住人才；厂商因人工成本不愿提供维修服务，有人建议用机器人配合公开维修手册解决此问题。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48420148" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://techcrunch.com/2026/06/05/google-will-pay-spacex-920m-per-month-for-compute/" target="_blank">Google will pay SpaceX $920M per month for compute</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ramanan</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2026-06-06 11:46</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>SpaceX在IPO前与谷歌达成算力租赁协议，谷歌将从2026年10月至2029年6月每月支付9.2亿美元，租用约11万个NVIDIA GPU及相关设备。这是继5月与Anthropic达成每月12.5亿美元协议后的第二笔大单。谷歌称此举是为应对其Gemini Enterprise平台超预期的客户需求。协议包含终止条款，双方可在2026年底后提前90天取消。SpaceX即将在纳斯达克上市，目标估值1.75万亿美元，融资750亿美元，将创史上最大IPO纪录。谷歌作为SpaceX长期投资者，IPO后持股预计价值超千亿美元。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Google向SpaceX租赁GPU算力引发的行业解读和质疑
-
-不同观点：
-
-• **正常商业行为论**（est31）：这是AI经济的常态运作方式。数据中心建设需要数年和数十亿投资，AI收入高度不可预测但增长迅速（如Anthropic年增10倍），公司间互相购买算力是双赢策略。当前AI泡沫主要体现在债务而非公开市场。
-
-• **Google技术能力质疑**（dwroberts）：Google拥有自研芯片用于推理和训练，为何还需租用Nvidia GPU？这是否意味着其专有芯片方案失败？
-
-• **财务工程操作论**（devops000, doubtfuluser）：合同条款显示2026年9月前若未交付可立即终止，仅是为提升IPO估值的纸面交易，实际交易量存疑。对Google而言风险很小，更像是帮SpaceX抬高估值。
-
-• **行业困惑**（comboy, Signez）：Google租用xAI基础设施出乎意料，令人对科技公司运作逻辑感到迷惑。各大科技巨头去年每天CapEx超10亿美元，为何还需向SpaceX这样的非传统算力公司租赁？
-
-补充讨论：有评论提及算力成本（380美元/秒）、SpaceX核心业务边界模糊、以及财务结构中养老金承担风险等话题。整体氛围在商业合理性解释与对交易真实性的质疑之间分化。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48423990" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.ycombinator.com/companies/mbodi-ai/jobs/WYAcNkX-founding-machine-learning-engineer" target="_blank">Mbodi AI (YC P25) Is Hiring Founding Machine Learning Engineer (Robotics)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: chitianhao</span> |
-                    <span>评分: 1</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-06 12:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Mbodi AI 是一家构建具身AI平台的初创公司，让工业机器人能像人类一样通过自然语言学习和操作。其软件允许任何人通过对话教授机器人新技能，并在几分钟内可靠执行。公司获顶级投资者支持，入选YC X25批次，已与ABB等全球工业伙伴及财富100强客户合作。现招聘创始机器学习工程师，负责开发部署前沿ML模型和智能体系统，要求精通Python/PyTorch，熟悉transformer、扩散模型、视觉语言模型等技术，具备真实系统构建经验。这是参与定义机器人与AI交叉领域核心技术的早期机会。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48424103" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.rochester.edu/newscenter/what-is-desalination-definition-ocean-water-704732/" target="_blank">New method turns ocean water into drinking water, without waste</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 255</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-05 15:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>罗切斯特大学研究人员开发了一种新型太阳能海水淡化技术。该系统使用激光蚀刻的超吸光黑色金属面板，利用太阳能将海水转化为饮用水，无需化学添加剂。其自清洁表面能够分离并收集盐分，避免产生有害的浓盐水废弃物。系统还可从收集的盐分中提取锂等矿物质，用于电池生产。与传统反渗透和热蒸馏技术相比，该方法更节能环保，可同时解决全球缺水问题和矿物资源需求，已在太平洋、大西洋和印度洋水样中成功测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于太阳能海水淡化新技术的可行性、效率和影响
-
-不同观点：
-• **技术效率质疑派**：认为传统反渗透(RO)已接近理论最优能效，该热能方法应与同面积太阳能板驱动传统设备对比效率。指出海水淡化存在基本能量需求下限(ajb)
-• **实用性怀疑派**：技术仍处于实验室玻璃容器阶段，关键防堵塞机制和盐分清除系统尚未验证，需证明可长年运行(Animats)。成本高昂且需要飞秒激光等专利技术，难以规模化推广(shevy-java)
-• **潜在价值派**：直接产出晶体盐比盐水更易处理且可能有商业价值，尤其是镁、锂等矿物提取可能抵消部分淡化成本。海水中镁含量可观，固体副产品提取效率更高(scythe, photochemsyn)
-• **生态担忧派**：海洋矿物提取一旦盈利可能导致过度开采，威胁生态系统，希望技术无法规模化(noripcord)
-• **应用场景派**：设备复杂且对温度敏感，更适合应急响应或游艇等小规模场景，而非大规模部署(photochemsyn)
-
-补充讨论：有人提议低技术方案(如除湿机+太阳能板用于灌溉)，也有人对沙漠海岸蒸发通道结合红树林的构想表示兴趣。论文数据显示日产水10.33升/平方米，盐0.38公斤/平方米。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48413500" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://acoup.blog/2026/06/05/collections-pre-modern-armies-for-worldbuilders-part-i-why-they-fight/" target="_blank">Pre-Modern Armies for Worldbuilders, Part I: Why They Fight</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gostsamo</span> |
-                    <span>评分: 105</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-06 03:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨军事系统如何映射到社会结构。作者计划用系列文章分析前工业时代军队的组建方式，包括：招募动机和方法、军费来源、领导体系、部队凝聚力等方面。
-
-核心观点是：**军队必然重现其平民社会结构**。军事系统源于并反映民间社会，军队等级往往复制平民阶层。文章聚焦前工业时代军队，因为样本丰富，更易发现组织模式的规律。作者将通过历史和虚构案例说明这些模式，帮助理解历史并为想象奇幻世界提供框架。许多虚构作品常犯的错误就是创造了与社会结构不匹配的军队系统。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于《星际迷航》中克林贡帝国的社会结构分析及其现实隐喻
-
-不同观点：
-• **支持者观点**：认为分析有价值，将克林贡武士阶层类比为历史上的军事寄生阶层（如奥斯曼帝国的禁卫军），指出warrior class在失去实际作用后仍占据大量资源的现象具有普遍性和现实意义
-
-• **历史背景补充**：强调需理解冷战语境——克林贡在TOS中是苏联的隐喻，TNG时期反映了1980-90年代西方对俄罗斯民主化的乐观期待，联邦与克林贡的结盟体现了当时的政治希望
-
-• **康威定律关联**：将军队复制民间社会结构的观点与软件开发中的康威定律类比，认为组织结构必然反映在产物中
-
-• **批评者观点**：认为整篇分析是"空洞的夸夸其谈"，史料依据薄弱，作者过度阐释以支撑自己的信念，批评这种分析方法乏味且缺乏实质
-
-补充讨论：争议焦点在于基于虚构作品进行社会学分析的有效性——支持者看到历史规律的投射，批评者质疑论证的严谨性</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48421171" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
