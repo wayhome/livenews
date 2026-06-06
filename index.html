@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-07 00:01 (北京时间)
+            最后更新时间: 2026-06-07 03:01 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,77 +61,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lwn.net/SubscriberLink/1076018/16f01bbbb8e0d1f0/" target="_blank">Moving beyond fork() + exec()</a>
+                    <a href="https://su3.io/posts/introducing-zeroserve" target="_blank">Zeroserve: A zero-config web server you can script with eBPF</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jwilk</span> |
-                    <span>评分: 63</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-06 14:34</span>
+                    <span>作者: losfair</span> |
+                    <span>评分: 80</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-06 14:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了Linux内核中进程创建的优化提案。传统的`fork()`和`exec()`模式存在效率问题：`fork()`复制整个进程状态成本高昂，而紧随其后的`exec()`又会丢弃这些复制的内存。Li Chen提出了"spawn templates"方案，通过预先缓存可执行文件信息来加速重复运行同一程序的场景，基准测试显示约2%的性能提升。但评审者Mateusz Guzik指出，真正的优化应该跳过`fork()`步骤，直接创建全新进程，而不是优化现有模式。该提案虽不会被采纳，但为未来的进程创建原语指明了方向。</p>
+                    <p>zeroserve是一个零配置的高性能HTTPS服务器。其核心特点是：将整个网站打包成单个tar文件直接提供服务，无需解压；通过用户态eBPF脚本替代传统配置文件，脚本被JIT编译为本机代码，可在每个请求上执行路由、认证、限流等中间件逻辑；全程使用io_uring处理网络和磁盘I/O；内置现代TLS支持（TLS 1.3、HTTP/2等）；支持热重载。性能上单核可超越nginx，部署只需替换tar文件并发送SIGHUP信号。设计理念是用可编程脚本统一配置和逻辑，避免传统服务器配置文件与脚本层分离的复杂性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Unix系统中fork()系统调用的设计是否过时，以及是否应该被替代或优化
+                    <div class="comments-summary">主要讨论点：关于一个新的 Web 服务器项目的评价，该项目使用 LLM 辅助开发，采用代码配置而非声明式配置，支持 eBPF。
 
 不同观点：
+• **配置方式质疑**（jarym）：认为"代码优于配置"的设计押注错误。用户长期以来更偏好声明式配置而非编写代码，nginx/Caddy 的内置功能已满足大多数需求，无需编写 C 代码。
 
-• **fork()设计优雅派**：uecker认为fork() + exec()模型的优雅之处在于，fork后可以使用常规API进行各种配置，任何试图用单一调用替代的方案都会因为需要将所有配置选项作为参数而变得复杂且难以扩展
+• **技术实现建议**（mmastrac）：喜欢这个想法但提出改进方向 - 应使用 Rust 而非 C 编写 eBPF、期待真正的内核加速、应支持多线程（通过 SO_REUSEPORT 实现很简单）、如果用 io_uring 应该同时用 kTLS 简化设计。
 
-• **fork()已过时派**：rom1v引用微软研究论文指出，fork()是1970年代的聪明hack，现在已成为负担，应当废弃并作为历史产物教学；sanderjd认为"克隆当前进程"的需求远少于"创建全新进程"，缺乏直接表达后者的方式很荒谬
+• **应用场景质疑**（mmarian）：不应专注于静态文件服务，因为现在很少有人为此单独搭建服务器。
 
-• **实现层面质疑**：mrkeen指出文章遗漏了copy-on-write这一关键优化（fork并不真正复制所有内存）；hparadiz质疑共享库的内存优化问题
+• **AI 生成内容的信任危机**（bflesch）：项目看起来不错但缺乏真实感。因为 README、博客等都是 AI 生成，无法判断指标是否造假、功能是否真实可用、是否有适当的安全加固。这种 AI 辅助开发模式让人怀疑文档中描述的命令行参数是否真的存在。
 
-• **替代方案探讨**：debatem1建议采用类似sched_ext_ops的方法，构建fork-exec流程图并用eBPF钩子实现灵活定制；lokar认为应将git核心做成可链接库而非运行二进制文件
-
-补充讨论：ComputerGuru认为Raymond Chen的补丁针对的是极端小众场景不值得支持，但同意需要原生实现；burnt-resistor讽刺每隔几年就有人声称找到"解决方案"</div>
+补充讨论：rashkov 质疑为何使用 tarball 分发；多位评论者认可 LLM 降低了探索新想法的成本。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48425528" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2606.05818" target="_blank">Benchmarks in Leipzig</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: root-parent</span> |
-                    <span>评分: 58</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-06 14:00</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇论文介绍了"莱比锡基准测试"项目：2026年4月至5月间，49位数学家（主要在莱比锡马普数学研究所的3天研讨会期间）创建了包含100道研究级数学问题的数据集，所有问题都有已知答案。研究团队分三个阶段用大型语言模型（LLM）测试这些问题：第一阶段使用5个先进LLM各尝试一次，41题未解；第二阶段用3个模型各运行20次，剩余16题未解；第三阶段用2个深度思考模型各运行3次，最终仅2题未解。结果表明LLM的数学推理能力正变得令人印象深刻。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大型语言模型在研究级数学问题上的表现评估
-
-不同观点：
-• **准确率重要性（spuz）**：不仅要看答对多少，更要看答错多少。以Opus为例，虽然解决了40%的问题，但失败率高达78%，实际应用可信度低。建议未来基准测试应评估一次性答对的能力。
-
-• **问题难度说明（christianstump，研究负责人）**：这些问题远超普通考试难度，相当于该数学领域PhD学生需要数天至数周才能解决的问题，更接近给二年级博士生的研究问题。
-
-• **数据泄露质疑（zerobees）**：这些问题的答案可能已存在于公开数据中（训练材料），因此测试的不是前沿挑战解决能力，而是"数学家能否出LLM无法作弊的考题"。论文结论认为基于公开研究的练习式基准已达极限。
-
-• **数据集保护建议（puttycat）**：希望他们对数据集加密保护，防止污染未来训练数据。
-
-补充讨论：实际基准结果远低于"仅2题未解"的宣传（qsort指出这意味着"任何模型任何配置都未解决"）。OpenAI模型在数学领域表现明显更优，可能源于后训练差异。有人担忧意识问题（Towaway69）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48425247" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48425723" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -175,6 +134,198 @@
 补充讨论：SwtCyber指出重点是Nvidia试图让GPU成为PC核心而非附加卡；部分评论者批评作者的自我营销方式和文章深度</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48424605" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2606.05818" target="_blank">Benchmarks in Leipzig</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: root-parent</span> |
+                    <span>评分: 88</span> |
+                    <span>评论数: 11</span> |
+                    <span>发布时间: 2026-06-06 14:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文介绍了"莱比锡基准测试"项目：2026年4月至5月间，49位数学家（主要在莱比锡马普数学研究所的3天研讨会期间）创建了包含100道研究级数学问题的数据集，所有问题都有已知答案。研究团队分三个阶段用大型语言模型（LLM）测试这些问题：第一阶段使用5个先进LLM各尝试一次，41题未解；第二阶段用3个模型各运行20次，剩余16题未解；第三阶段用2个深度思考模型各运行3次，最终仅2题未解。结果表明LLM的数学推理能力正变得令人印象深刻。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于大型语言模型在研究级数学问题上的能力评估及其意义的争论
+
+不同观点：
+• **高度赞赏派**（christianstump, tomtomatoide）：强调这些问题难度极高，需要博士生数天至数周才能解决，远超考试题目。认为模型能力令人印象深刻，人们倾向于低估解决未见问题所需的深层理解能力。
+
+• **实用质疑派**（spuz）：关注错误率而非正确率。指出Opus模型虽解决40%问题，但失败率高达78%，作为实际工具不可靠。建议未来基准测试应衡量一次性正确回答能力，而非多次尝试后的成功率。
+
+• **范围界定派**（zerobees）：澄清这是测试从已知文献推断答案的能力，而非解决前沿挑战。认为这标志着"基于公开研究编写习题式基准"的方法已达极限。
+
+• **数据污染担忧**（puttycat）：担心数据集需要密码保护，暗示训练数据泄露问题。
+
+补充讨论：qsort指出"仅2题未解"是指"任何配置下均未解决"，实际基准分数更低；注意到OpenAI模型在数学领域表现突出，推测与后训练差异有关。danielovichdk和davidmpaz的评论较为轻松幽默，未涉及实质讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48425247" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://magazine.atavist.com/2026/mccann-cocaine-fugitives" target="_blank">You Can Run</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bryanrasmussen</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-06 15:55</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了McCann家族的逃亡故事。1984年，13岁的Erin和10岁的Meredith生活在匹兹堡富裕郊区，过着优渥生活。某天联邦特工登门后，母亲Leah突然带她们逃离，声称父亲John因税务问题被政府追查。姐妹俩被迫改名换姓，永远告别过去的朋友和生活。多年后，Erin得知母亲藏有两箱政府文件，记录着父亲真正的犯罪事实。文章揭示这个家庭隐藏的秘密远比税务问题严重得多，而当年还是孩子的姐妹俩被蒙在鼓里。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于一个逃犯/毒贩故事及其对家庭影响的叙事评价
+
+不同观点：
+• bee_rider认为故事铺垫过于隐晦冗长，核心是骗子/毒贩的故事与其家庭影响的交织。标题"You can run"（你可以逃跑）与内容关联不强，除了涉及逃犯这一点外，并无特别深刻的联系
+
+• delichon引用《以西结书》18:20探讨更深层的伦理问题：子女不应为父母的罪孽承担责任，反之亦然。但指出这在公元前590年是理想化的，至今仍是。认为要真正隔绝父母罪行对子女的影响，需要解散家庭结构本身
+
+补充讨论：两位评论者的焦点不同。bee_rider侧重叙事技巧和标题贴合度的文学批评；delichon则将讨论提升到道德哲学层面，探讨家庭罪责连带这一永恒命题。delichon实际上在回应故事背后更根本的问题：犯罪者的家人是否不可避免地受到影响。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48426202" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.nbcnews.com/politics/national-security/pentagon-raised-threat-israeli-spying-us-highest-level-sources-say-rcna348565" target="_blank">Pentagon raised threat of Israeli spying on U.S. to highest level, sources say</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: MilnerRoute</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-06 18:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>美国五角大楼国防情报局近期将以色列的反间谍威胁等级提升至最高级别"关键级"。美方担忧以色列正加强对美国高级官员的监视，以获取特朗普政府在中东冲突问题上的内部决策信息。此举发生在美以两国因伊朗战争和以色列在黎巴嫩的军事行动产生分歧之际，特朗普与内塔尼亚胡近期通话中关系紧张。以色列方面否认对美开展间谍活动，称情报收集仅针对敌人而非盟友。美国官员表示，虽然盟友间相互监视很常见，但以色列的行为已超出正常范围。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于特朗普总统回应内塔尼亚胡的讽刺评论
+
+不同观点：
+• 这是一条引用《洋葱报》(The Onion)的评论。《洋葱报》是美国知名讽刺新闻网站，专门发布虚构的搞笑新闻
+
+补充讨论：由于只有这一条评论，没有其他人的回应或讨论，因此无法识别出不同的观点立场或争议焦点。这更像是一个单独的幽默分享，而非实质性的政治讨论。如果需要分析讨论，需要提供更多相关评论内容。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48427523" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lwn.net/SubscriberLink/1076018/16f01bbbb8e0d1f0/" target="_blank">Moving beyond fork() + exec()</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jwilk</span> |
+                    <span>评分: 184</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-06 14:34</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了Linux内核中进程创建的优化提案。传统的`fork()`和`exec()`模式存在效率问题：`fork()`复制整个进程状态成本高昂，而紧随其后的`exec()`又会丢弃这些复制的内存。Li Chen提出了"spawn templates"方案，通过预先缓存可执行文件信息来加速重复运行同一程序的场景，基准测试显示约2%的性能提升。但评审者Mateusz Guzik指出，真正的优化应该跳过`fork()`步骤，直接创建全新进程，而不是优化现有模式。该提案虽不会被采纳，但为未来的进程创建原语指明了方向。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：fork() + exec() 模型是否应该被废弃，以及如何设计更好的进程创建机制
+
+不同观点：
+
+• **支持废弃 fork()：** fork() 是1970年代的产物，现已过时成为负担。它成本高昂（需复制整个进程状态），且通常紧随 exec() 调用会丢弃刚复制的内存。即使有 copy-on-write 优化，复制页表项仍是 O(N) 操作。概念上也不合理——启动新进程却要先克隆当前进程。
+
+• **反对废弃 fork()：** fork() + exec() 的优雅在于分离关注点，fork 后可用所有常规 API 配置进程（如 dup2、设置进程组、信号处理、文件描述符、命名空间、seccomp 等）。任何试图用单一调用替代的方案都需要把所有配置选项作为参数，难以扩展且容易混乱。有经验的开发者认为这个模型经过时间检验，比线程编程更易理解。
+
+• **Windows 模型对比：** CreateProcessW 更直接自然，但接口更窄、不灵活，通过结构体传递初始值限制了可扩展性。
+
+补充讨论：posix_spawn 已提供类似 Windows 的接口；有提议创建空白进程后强制执行系统调用序列；或使用类似 eBPF 的钩子机制实现可定制的进程创建流程。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48425528" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://pokeemerald.com/" target="_blank">Pokemon Emerald Ported to WebAssembly (100k FPS)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tripplyons</span> |
+                    <span>评分: 173</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-06 11:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>I see you've shared what appears to be a game emulator interface with keyboard controls. How can I help you today? 
+
+If you're working on a project, need help with code, writing, analysis, or have any questions, let me know what you'd like to accomplish.</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：基于WebAssembly的宝可梦绿宝石游戏在浏览器中运行的体验与技术讨论
+
+不同观点：
+• **技术实现的价值**：dmitrygr指出这不是模拟器而是将游戏本身编译成WASM，基于社区反编译的源码，这是技术亮点；oceansky希望看到纯JavaScript版本
+• **功能需求分歧**：vesche希望能导出/重载存档（因常清理浏览器数据）；gobdovan询问音效支持；eigenspace想要PWA支持；danielrmay建议改进触控操作而非仅D-pad和A/B按钮
+• **游戏速度偏好**：wis和weird-eye-issue赞赏加速功能，认为提速让游戏更流畅；wild_pointer建议设置常规和加速两种模式，用按键切换以跳过无聊部分
+• **稳定性问题**：theowaway213456发现实体显示为数字的bug；Navaie和wis报告了游戏崩溃（使用药水时、选择Pokemon菜单时）
+
+补充讨论：
+• hawkice确认存档功能有效并好奇是否能实现交换功能
+• firefax分享了模拟器游戏存档损坏的经历，对模拟器可靠性表示怀疑
+• ianm218询问WASM平台最佳游戏推荐
+• wis发现可用z/x键触发A/B按钮，建议UI应标注键盘操作</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48423762" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -282,200 +433,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.learnix-os.com/ch02-03-implementing-the-bitfields-proc-macro.html" target="_blank">Building Rust Procedural Macros from the Grounds Up</a>
+                    <a href="https://uonr.github.io/poincake/" target="_blank">Show HN: Infinite canvas notes in the non-Euclidean Poincaré disk</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Sagi21805</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-05-31 19:28</span>
+                    <span>作者: uonr</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-02 16:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Rust的过程宏（procedural macros）。主要内容包括：
-
-**宏的定义**：宏是将输入映射到输出的规则，但与函数不同，宏操作源代码并在编译时执行。
-
-**TokenStream**：过程宏函数接收TokenStream作为输入并返回TokenStream。TokenStream是对源代码的标记化表示，包含TokenTree节点（Group、Ident、Punct、Literal）。
-
-**执行时机**：宏在编译时求值，将源代码映射为另一段源代码，而普通函数是将Rust代码映射为汇编代码。
-
-文章通过示例展示了如何理解和使用过程宏，为后续实现bitflags宏做准备。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">这个请求只包含一条评论，无法进行多观点分析和讨论总结。
-
-**当前情况：**
-只有一位用户（Sagi21805）的单独发言，内容是关于他们在开发 Learnix 操作系统时实现 bitflags 的经验分享。
-
-**建议：**
-如果您需要分析评论讨论，请提供：
-• 多条评论内容
-• 包含不同用户的回复
-• 有互动和讨论的评论串
-
-或者，如果您想让我分析这条评论本身的内容要点，我可以总结 Sagi21805 分享的技术实践。请告诉我您需要哪种分析。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48348876" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://pokeemerald.com/" target="_blank">Pokemon Emerald Ported to WebAssembly (100k FPS)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tripplyons</span> |
-                    <span>评分: 97</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-06 11:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>I see you've shared what appears to be a game emulator interface with keyboard controls. How can I help you today? 
-
-If you're working on a project, need help with code, writing, analysis, or have any questions, let me know what you'd like to accomplish.</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于口袋妖怪绿宝石WebAssembly版本的技术实现和游戏体验
+                    <div class="comments-summary">主要讨论点：一个基于双曲几何/球面透视的笔记界面设计
 
 不同观点：
-• **技术实现派**：dmitrygr指出这不是GBA模拟器，而是将反编译的游戏源码直接编译成WASM，这是技术亮点；itsthecourier分享了用Rust从零开发Game Boy模拟器并导出WASM的经验
-• **功能改进需求**：danielrmay希望有更现代直观的触控操作而非传统D-pad；gobdovan询问音频支持；eigenspace关注PWA功能在Android Firefox上的可用性
-• **游戏体验派**：weird-eye-issue强调模拟器加速功能对游戏体验至关重要，否则可能放弃；hawkice确认存档功能有效并期待交易功能
-• **模拟器可靠性讨论**：firefax分享了模拟器存档损坏和实体卡带电池失效的经历，质疑模拟器可靠性
+• **正面评价**：用户普遍认为界面流畅、直观，导航体验独特，像是在球面上移动或进行球面透视缩放
+• **可用性改进建议**：建议添加视觉辅助（如明暗渐变表示距离、网格显示距离关系）以更好地理解空间和距离概念
+• **功能扩展需求**：希望支持其他拓扑结构选项，增加界面的灵活性
+• **实际问题担忧**：笔记重叠时难以访问底层内容，需要精确调整画布位置，现有的"untangle"功能不够有效
 
-补充讨论：有性能相关的技术讨论（Innittech提到29 FPS），以及oceansky提出纯JavaScript实现的构想。整体氛围积极，技术爱好者对WASM实现表示认可。</div>
+补充讨论：
+有用户提到 HyperRogue 游戏采用了相同的双曲几何模型，还有人将其比作科幻作家 Greg Egan 的笔记本（Egan 以在作品中使用复杂数学和几何概念著称）。核心争议在于创新的几何交互方式与实际使用场景（特别是处理重叠内容）之间的平衡。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48423762" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.youtube.com/watch?v=rJ2gQ5Md60U" target="_blank">Tribute to Jiro Yamada, Automotive Artist (1960-2025) [video]</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: NaOH</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-05 20:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这不是一篇文章，而是YouTube网站的页脚链接列表。内容包括：关于我们、版权声明、联系方式、创作者中心、广告服务、开发者资源、服务条款、隐私政策、安全政策、YouTube运作方式介绍、新功能测试以及NFL Sunday Ticket服务。这是2026年Google LLC的标准网站页脚信息。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：日本工匠 Jiro Yamada 于2025年8月去世，但直到2026年中才被公众确认，引发了关于信息传播延迟的困惑和反思。
-
-不同观点：
-• **困惑与质疑**：评论者对死讯延迟近一年才被确认表示不解，认为这在信息时代很不寻常
-
-• **低调生活的可能性**：推测 Yamada 可能过着远离公众视线的生活，因此其去世消息传播缓慢
-
-• **自我反思**：评论者认为这一事件可能反映了自己的信息获取局限——一个人去世近一年才知晓，说明个人关注范围有限
-
-补充讨论：评论提到该纪念视频发布3天仅有288次观看，暗示 Yamada 可能并非广为人知的公众人物，这或许解释了消息传播的滞后性。评论者通过外部链接证实了死亡时间，显示出对信息准确性的重视。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48418125" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://engelsbergideas.com/notebook/the-new-bibliomaniacs/" target="_blank">The new bibliomaniacs</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: RickJWagner</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-06 12:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了古籍珍本收藏的复兴现象。纽约国际古书展参观人数从2022年到2026年增长了62%,全球稀有图书市场价值超过70亿美元,年增长率超6%。值得注意的是,35岁以下年轻人正成为收藏主力——在数字时代成长的他们反而更渴望通过实体物品与历史建立真实连接。收藏范围已超越传统古书,包括手稿、地图、抗议海报、签名物品等各类历史文物,人们追求的是"触摸历史"的独特体验。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：年轻一代为何购买实体旧书，以及实体书与电子书的价值对比
-
-不同观点：
-• **记忆载体论**：实体书作为"记忆图腾"，能唤起阅读时的具体场景和内容，而电子书缺乏这种物理存在感，导致"遗忘感"（keiferski）
-
-• **永久性与防篡改**：实体书内容不会被修改或删除，而网络文字和电子书可能被修改或"记忆清除"，实体书提供历史确定性（black6、everdrive）
-
-• **实用主义立场**：电子书在人体工学、空间、成本和环保方面更优，实体书唯一优势是寿命更长（armchairhacker）
-
-• **社交差异化动机**：购买旧书可能更多源于人类在大群体中寻求差异化的本能，而非内在价值（cyanydeez）
-
-• **经济投机因素**：书籍收藏类短视频流行，展示旧书潜在收益，可能刺激购买行为（iLoveOncall）
-
-补充讨论：有人出于历史保存目的收藏特定时期文献（vmsp），也有人注意到AI训练可能让被遗忘作品中的观念"重生"（warumdarum）。争议焦点在于这种趋势是真实的情感需求还是社交表演。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48424125" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arstechnica.com/tech-policy/2026/06/sp-500-blocks-fast-spacex-entry-wont-waive-rule-for-unprofitable-ai-firms/" target="_blank">S&P 500 rejects SpaceX, also blocking entry for OpenAI and Anthropic</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: maltalex</span> |
-                    <span>评分: 518</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2026-06-06 04:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>标普500指数拒绝为SpaceX破例加速入选。SpaceX申请将入选等待期从12个月缩短至6个月，并豁免公开流通股10%的要求（SpaceX仅计划公开3%股份）及盈利要求。标普道琼斯指数公司经过一个月咨询后决定维持现有标准。这意味着SpaceX无法立即获得被动投资基金约140亿美元的资金流入，OpenAI和Anthropic等AI公司的类似计划也被关闭。分析师认为SpaceX估值被高估，其1.75万亿美元的IPO目标远超实际价值评估的7800亿美元。纳斯达克和富时罗素指数已为SpaceX提供加速入选通道。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：S&P指数拒绝为SpaceX修改上市规则引发的市场反应和立场分歧
-
-不同观点：
-• **支持维持规则派**：被动投资者和部分用户认为指数应坚持一贯标准，不为特定公司破例。这体现了对指数诚信和长期信誉的重视，有评论指出这个决定"价值数万亿美元"
-• **质疑盈利标准派**：有人质疑SpaceX是否真正符合"盈利"要求，以Anthropic为例，指出烧钱数十亿美元却声称盈利的矛盾性
-• **反对裙带资本主义派**：强调核心问题不是SpaceX占比大小（约0.3%），而是为富人和权贵修改规则本质上是裙带资本主义。这200亿美元最终由被迫购买的指数基金投资者（公众）买单
-• **市场影响观察派**：注意到纳斯达克周五暴跌4.18%，认为这与SpaceX IPO前投资者撤资有关，市场不满情绪明显
-
-补充讨论：部分评论认为指数机构的决定并非出于智慧和克制，而是受到来自先锋等基金公司及其机构投资者的压力。也有人对评论区质量表示担忧，指出高质量评论下充斥着宣传性回复。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48421442" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48372138" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
