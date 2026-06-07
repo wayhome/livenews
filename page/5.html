@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-07 10:05 (北京时间)
+            最后更新时间: 2026-06-07 14:56 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.todepond.com/lab/splash/" target="_blank">Splash Is a Colour Format</a>
+                    <a href="https://andersmurphy.com/2026/06/05/the-perils-of-uuid-primary-keys-in-sqlite.html" target="_blank">The perils of UUID primary keys in SQLite</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tobr</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-06-03 21:22</span>
+                    <span>作者: emschwartz</span> |
+                    <span>评分: 141</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-05 23:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Splash是一种简化的颜色格式，用三位数字(0-9)分别表示红、绿、蓝三个色彩通道。例如900是纯红色，000是黑色，999是白色。这个系统只有1000种颜色组合，通过限制选择来避免选色时的决策困难。它是一个"情感工具"，让你不再纠结于寻找"完美"颜色。虽然限制了选择范围，但仍能创建个性化配色方案，且这种限制反而让人更能接受不完美，带来解放感。文章展示了常见颜色的Splash表示法及作者的个人配色主题。</p>
+                    <p>这篇文章探讨了在SQLite中使用UUID作为主键的性能问题。作者通过基准测试发现，使用随机UUID4作为主键比使用整数主键慢10-12倍，因为UUID4的无序性导致聚集索引的B树需要频繁重新平衡，产生大量额外的分页操作。通过性能分析图（diffgraph）证实了这一点。解决方案是使用时间有序的UUID7，其性能接近整数主键基线。文章强调了聚集索引的特性：表的物理存储顺序由索引键决定，因此主键的有序性对写入性能至关重要。这个问题不仅存在于SQLite，也适用于其他使用聚集索引的数据库。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一种新的颜色编码方案的实用性和必要性
+                    <div class="comments-summary">主要讨论点：数据库主键选择策略——UUID vs 整数ID，特别是 UUIDv7 在 SQLite 中的性能表现
 
 不同观点：
-• **质疑派**：涂料行业从业者认为此方案忽视了色彩学的复杂性，令人担忧；多位评论者指出这只是删减版RGB（每通道从256级降至10级），并非真正创新；有人质疑为何不直接用现有的3位hex码（如#a5c）
+• **反对过度使用UUID派**（blopker）：认为UUID被过度使用，bigint 在单数据库场景下更小更快，建议仅在分布式无主存储时考虑UUID，公开ID可用 Sqid 替代
 
-• **改进建议派**：有人提出应模仿调色板混色方式，用任意基础色（如ROYGBIVWK）混合表达，例如"r2b1w1"表示加了白色的紫红色，更贴近人类描述颜色的习惯；另有建议用3位八进制（000-777）实现512色板，更简单且能映射文件权限
+• **UUIDv7实用派**（sedatk, jdthedisciple, yepyoukno）：UUIDv7 与顺序整数类似但避免暴露计数信息，在不重视插入性能且需要隐藏信息的场景下，UUIDv4 也可行；UUIDv7 应转为二进制优化存储
 
-• **实践经验派**：有用户分享在数字设计中更喜欢使用Pantone色卡浏览器，认为一次看到10种色调比在RGB/HSV拾色器中随机移动鼠标更高效
+• **场景决定论**（adityaathalye）：本地单实例用 SQLite 自动整数 rowID 即可，但跨设备同步、实例协作场景下，顺序随机ID（如UUIDv7）价值凸显，便于合并、去重；强烈反对完全随机ID破坏树结构
 
-• **中立/支持派**：承认自己已习惯传统hex码，但乐见作者的创意尝试和分享精神
+• **双ID策略派**（bambax, ItsBob）：内部用整数 rowID/bigint 做主键和关联，外部暴露时用独立的UUID列，兼顾性能与安全
 
-补充讨论：争议焦点在于是否需要"简化"现有体系——批评者认为重新学习10级抽象反而增加负担且精度降低，而非真正简化工作流程。</div>
+补充讨论：
+• 有人质疑脚本细节（批次数量）和性能数据来源（百万级插入速度、UUID生成耗时）
+• Postgres 等支持并发写入的数据库中，顺序键可能导致页面竞争
+• 作者表示文章为草稿，计划补充不同行大小的影响</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48390269" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48419571" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,13 +104,132 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.kernel.sh/blog/firecracker-faster" target="_blank">How to make firecracker faster to start Chromium in < 20ms</a>
+                    <a href="https://www.0xkato.xyz/how-llms-actually-work/" target="_blank">How LLMs work</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: juecd</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-05 14:01</span>
+                    <span>作者: 0xkato</span> |
+                    <span>评分: 380</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2026-06-03 20:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章解释了大型语言模型（LLM）的工作原理。现代LLM主要通过堆叠transformer块构建。文章涵盖核心机制：
+
+1. **分词（Tokenization）**：将文本转换为整数ID序列，使用子词级别的词汇表
+2. **嵌入（Embeddings）**：通过嵌入矩阵将token ID转换为有意义的向量表示
+3. **位置编码**：让模型理解token的顺序
+4. **注意力机制**：token之间如何共享信息
+5. **多头注意力**：同时追踪多种关系
+6. **前馈网络**：存储模型的大部分结构化知识
+7. **残差流和层归一化**：使深层网络可训练
+8. **下一个token预测**：模型的实际输出机制
+
+文章强调，虽然不同LLM在训练数据、规模和配置上有差异，但它们共享相同的transformer架构骨架。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于LLM工作原理的文章引发了对AI技术本质、解释方式和内容质量的多角度讨论。
+
+不同观点：
+
+• **技术简单论**：[malwrar] 认为transformer架构本质上非常简单，OpenAI的突破仅在于把模型做大，AI公司成功地将其包装成"超级天才的作品"进行营销
+
+• **能力质疑论**：[AltruisticGapHN] 质疑"预测下一个词"的解释过于简化，LLM明显具有空间推理能力（如设计渐变边框），认为算法远比主流解释复杂
+
+• **解释充分论**：部分评论者认为理解底层架构（如transformer）就能理解LLM工作原理
+
+• **解释不足论**：[stalfie] 反驳称仅解释transformer架构无法真正理解现代LLM行为，就像了解神经元生化机制不等于理解大脑
+
+• **AI生成内容争议**：[cubefox] 指出讽刺现象——讲解LLM的文章本身可能是AI生成的，只能通过写作风格而非准确性来判断；[lhd1]和[vocram]就AI辅助内容的价值产生分歧
+
+补充讨论：多位评论者指出文章存在技术错误（如位置编码解释不当）和结构问题（内容跳跃、过多旁支），建议采用更清晰的层次化讲解方式。有人推荐Karpathy的microgpt作为更好的学习资源。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48389360" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ycombinator.com/companies/mbodi-ai/jobs/WYAcNkX-founding-machine-learning-engineer" target="_blank">Mbodi AI (YC P25) Is Hiring Founding Machine Learning Engineer (Robotics)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: chitianhao</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-06 12:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Mbodi AI 是一家构建具身AI平台的初创公司，让工业机器人能像人类一样通过自然语言学习和操作。其软件允许任何人通过对话教授机器人新技能，并在几分钟内可靠执行。公司获顶级投资者支持，入选YC X25批次，已与ABB等全球工业伙伴及财富100强客户合作。现招聘创始机器学习工程师，负责开发部署前沿ML模型和智能体系统，要求精通Python/PyTorch，熟悉transformer、扩散模型、视觉语言模型等技术，具备真实系统构建经验。这是参与定义机器人与AI交叉领域核心技术的早期机会。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48424103" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/hatearena/hate" target="_blank">HateArena – A free and open source arena shooter</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: death_eternal</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-07 01:26</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>HATE 是一个免费开源的多人 FPS 游戏，基于原始 Cube 引擎开发。这个 GitHub 仓库包含其源代码，获得了 41 个星标。项目采用 GPL-3.0 许可证，主要使用 C++（91.2%）编写，已发布 v0.0.1 版本。仓库提供了游戏网站、Itch.io 页面和游戏演示视频的链接，标签包括竞技场射击游戏、多人游戏和 3D 游戏等。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于某个游戏Demo的功能展示和网站体验反馈
+
+不同观点：
+• **技术功能观察**（vonunov）：注意到Demo保留了侧向跑动（strafe-running）时的快速移动特性，并询问边缘跳跃（edge-jumping）和蹲跳（crouch-jumping）是否为相同机制
+• **移动端体验问题**（winrid）：指出网站在移动设备（Moto G Power 2025）上无法正常使用，同时表达了对Assault Cube游戏的怀念和祝福
+• **简短认可**（Multiplayer）：仅对项目名称表示赞赏
+
+补充讨论：三条评论相对独立，未形成直接对话。vonunov关注游戏机制细节，winrid提出实际使用问题并分享情怀，Multiplayer给予简单肯定。没有明显争议点，整体氛围友好积极。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48430871" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.eetimes.com/computex-2026-are-we-heading-for-the-agentic-pc-era-yet/" target="_blank">Computex 2026: Are We Heading for the Agentic PC Era Yet?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rbanffy</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-06-06 20:24</span>
                 </div>
 
                 <div class="summary-section">
@@ -117,15 +239,18 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux userfaultfd 技术和 Firecracker 虚拟化性能对比
+                    <div class="comments-summary">主要讨论点：AI代理PC（Agentic PC）的未来发展方向和可行性
 
 不同观点：
-• **支持 userfaultfd 技术**：rgarcia 认为 userfaultfd 是一个非常优秀的技术，特别适合运行大规模同质化虚拟机集群。尽管该内核特性已存在十多年，但实践应用的内容很少，因此赞赏相关技术分享
-• **关注性能对比**：Jayko001 注意到内核方案明显优于原生 Firecracker，但对横向对比感兴趣——想了解与其他同样使用 Firecracker 的浏览器基础设施提供商相比的表现如何
+• **订阅制担忧**（Avicebron）：本地模型运行的AI PC概念可接受，但担心厂商强制绑定订阅服务才能使用
+• **交互形式预测**（Animats）：消费级AI PC应该是语音交互设备（如Alexa、智能电视、智能眼镜），而非传统键盘屏幕组合
+• **市场需求质疑**（devn0ll）：从消费者对Copilot按钮的冷淡反应来看，"代理时代"只是厂商一厢情愿，消费者并无真实需求
+• **悲观末日论**（Henchman21）：AI让人变蠢，加上教育削减、社交媒体、人口萎缩等因素，社会将走向后启示录式崩溃
+• **本地模型乐观派**（yogthos）：小模型质量飞速提升（如Qwen3.6-27B在笔记本上超越需要服务器的旧旗舰模型），预测未来将默认使用本地模型；苹果已押注本地化方向，而其他公司仍停留在云服务思维
 
-补充讨论：两位评论者关注点不同，一个聚焦技术本身的价值和应用场景，另一个更关心实际性能基准测试和竞争对比。评论之间没有直接对话或争议，而是从不同角度对同一技术方案表达兴趣。</div>
+补充讨论：yogthos提供了技术证据支持本地化趋势，包括模型性能跃升和harness优化的潜力，与其他人的抽象讨论形成对比。Mabusto的讽刺性开场暗指AI PC可能重蹈失败科技产品的覆辙。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48412708" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48428647" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -136,29 +261,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.thedictionaryofobscuresorrows.com" target="_blank">The Dictionary of Obscure Sorrows</a>
+                    <a href="https://elliotbonneville.com/programmers-arent-people/" target="_blank">Programmers Aren't People</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mhb</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-06 21:43</span>
+                    <span>作者: elliotbnvl</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-06 21:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是"模糊悲伤词典"网站，由John Koenig创建，专门收录那些难以名状的复杂情感词汇。网站认为"悲伤"原意是"充盈"，代表对体验的深刻觉察。特色词条如énouement（抵达未来却无法告知过去自己的苦乐参半感）展示了这些独特情感概念。网站提供词条浏览、用户投稿功能，并推出了配套书籍和应用程序，使用AI技术生成内容，旨在为人类微妙的情感体验赋予语言表达。</p>
+                    <p>这篇文章追溯了"computer"一词从指代人到指代机器的演变历史。最初三百年间，computer指从事计算工作的人，如19世纪法国的理发师、哈佛天文台的女性天文学家、NASA的女性计算员等。1945年ENIAC问世后，这个词迅速转移到机器身上。作者指出"programmer"面临同样命运——这些词本质上都是"动词+er"结构，描述的是功能而非人。当AI能完成编程工作时，"programmer"这个词也会像"computer"一样被机器占据，程序员需要像当年Dorothy Vaughan那样爬向更高的梯级。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">您提供的内容是单个词条定义，而非评论讨论。这是来自《The Dictionary of Obscure Sorrows》的词条"jouska"，定义了一个虚构的心理学概念。
+                    <div class="comments-summary">主要讨论点：程序员职业随技术发展的演变与定义变化
 
-如果您需要我分析评论和讨论，请提供包含多个评论者观点的实际评论内容。目前的输入只是一个词典定义，没有不同观点或讨论可供分析。
+不同观点：
+• **职业融合演变论**（greazy）：认为程序员正在经历类似"印刷工→平面设计师"的演变。随着LLM出现，多学科技能融合产生新领域，"软件工程师"可能是更准确的称呼，强调工程化思维而非单纯编码。
 
-请分享您希望我分析的评论内容，我会按照您要求的格式进行总结。</div>
+• **本质不变论**（turtleyacht）：编程的本质是逻辑和计算，实现介质并不重要（可以用纸带、鸟类通信、纺织品等）。当前只是恰好用机器实现，但编程的核心概念超越具体工具。
+
+• **抽象层递进论**（msla）：程序员的工作一直在演变（从机器码到高级语言），LLM只是又一层抽象。类比COBOL时代"用自然语言编程"的理想，但始终需要人来制定规范、验证正确性和修复问题。
+
+补充讨论：三位评论者虽然角度不同，但都认同技术变革不会消除程序员角色，而是转变其工作重心——从底层实现转向更高层次的设计、验证和问题解决能力。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48429288" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48429253" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -169,32 +299,76 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://dfarq.homeip.net/first-commodore-pet-sold-june-5-1977/" target="_blank">First Commodore PET sold, June 5, 1977</a>
+                    <a href="https://arxiv.org/abs/2605.00414" target="_blank">Trees to Flows and Back: Unifying Decision Trees and Diffusion Models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: erickhill</span> |
-                    <span>评分: 16</span> |
+                    <span>作者: rsn243</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-06-06 12:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文统一了决策树和扩散模型这两类看似完全不同的模型。作者建立了层次化决策树与扩散过程之间的数学对应关系,揭示了它们共享的优化原理——全局轨迹分数匹配(GTSM)。研究提出了两个实用方法:TreeFlow在表格数据生成上实现了更高保真度和2倍计算加速;DSMTree是一种新型蒸馏方法,能将层次决策逻辑迁移到神经网络中,在多个基准测试上与教师模型性能差距在2%以内。论文已被ICML 2026接收。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于决策树与扩散模型统一研究论文的讨论
+
+不同观点：
+• **支持论文清晰度**（gorold）：认为论文的图1有效解释了核心概念，消除了理解障碍
+
+• **质疑实用性**（niksmather）：对将扩散模型应用于表格数据的动机表示困惑，认为决策树已经在表格数据上表现很好，不清楚扩散模型能解决什么决策树无法处理的问题
+
+• **质疑理论严谨性**（semessier）：指出论文缺乏数学证明来支撑其大胆的理论声明
+
+• **关注可复现性**（henrydark）：询问代码开源情况
+
+• **论文作者立场**（rsn243）：强调工作的理论价值——通过全局轨迹分数匹配（GTSM）统一了两类模型，并展示了实际应用：TreeFlow在表格数据生成上有2倍速度提升，DSMTree实现了知识蒸馏
+
+补充讨论：争议焦点集中在该研究的必要性和理论完备性上。支持者认可其概念贡献，怀疑者质疑其相比传统方法的实际优势和数学基础的充分性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48424674" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.goto10retro.com/p/summer-of-85-dosbos-is-rejected-by" target="_blank">Summer of '85: DOSBOS is rejected by ANALOG Computing</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 50</span> |
                     <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-06 16:16</span>
+                    <span>发布时间: 2026-06-04 10:47</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了Commodore PET 2001个人电脑的历史。1977年6月5日，Commodore在消费电子展上接到首个经销商订单，成为"1977三巨头"（PET、Apple II、TRS-80）中最早销售的预装电脑之一。PET由6502处理器设计师Chuck Peddle主导开发，售价495美元，配备内置显示器、磁带录音机和4KB内存。值得注意的是，Commodore仅支付25,000美元就获得了微软BASIC的永久授权，这让微软后来非常后悔，因为该授权延续到了后来极为畅销的C-64和VIC-20。PET首年仅生产500台，供不应求。</p>
+                    <p>这篇文章讲述了作者1985年在Atari 800XL上开发的第一个完整程序DOSBOS的经历。DOSBOS是一个用BASIC编写的磁盘工具程序,可以查看磁盘内容等功能。作者父亲鼓励他投稿到ANALOG杂志,但因程序质量不够高被拒稿。作者保留了当时的拒稿信,信中有手写评语。虽然DOSBOS因为是BASIC程序而实用性有限,使用也较繁琐,但完成这个项目让作者很有成就感,这次经历成为他编程生涯的重要回忆。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：80年代个人计算机的怀旧回忆和存储设备的演进
+                    <div class="comments-summary">我看到您只提供了一条评论，而不是多条评论的讨论。这条评论来自 [somat]，内容是关于为什么 BASIC ROM 没有演变成磁盘操作系统的 shell。
 
-不同观点：
-• fipar的经历：使用过TK-90X和TK-95（改进版Spectrum克隆机），在80年代编程课程中短暂接触过某款计算机。最近在山景城计算机历史博物馆重见这些设备时情绪激动，推荐参观该博物馆，特别提到了馆内运行中的IBM 1401和打孔卡体验
+要完成您要求的分析任务（识别不同观点、讨论关系、争议焦点等），我需要看到**多条评论之间的对话和讨论**。
 
-• mjcohen的经历：作为PET计算机早期用户，声称获得了西海岸第一台外置磁带驱动器，但使用次数很少。真正的技术飞跃是获得软盘驱动器后，认为"可以做任何事了"
+请提供：
+- 对这条评论的回复
+- 相关讨论中的其他评论
+- 完整的评论串
 
-补充讨论：两位评论者都在分享个人的计算机历史体验，但关注点不同——fipar侧重于怀旧情感和博物馆体验，mjcohen则强调存储技术升级带来的能力提升。两者没有直接争议，而是在各自讲述平行的回忆。</div>
+这样我才能分析出不同的观点立场、论据、以及讨论中的争议点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48426405" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48396783" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -205,35 +379,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theregister.com/public-sector/2026/06/04/govuk-goes-dutch-on-payments-as-it-dumps-stripe/5250763" target="_blank">Gov.uk has replaced Stripe with Dutch provider Adyen</a>
+                    <a href="https://www.autodidacts.io/social-cache-busting/" target="_blank">Social Cache Busting</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: toomuchtodo</span> |
-                    <span>评分: 462</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-06-05 16:55</span>
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 124</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-02 13:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>英国政府数字服务(GDS)将其GOV.UK Pay支付服务的处理商从Stripe更换为荷兰供应商Adyen。这份为期三年、价值最高2530万英镑的合同涵盖地方政府、警察部门和武装部队的支付服务，约占GOV.UK Pay交易量的17%但覆盖超过70%的机构。新合作将引入"银行直付"功能，用户无需输入银行卡信息即可通过开放银行服务直接转账。约1000项服务将迁移至新供应商，对用户体验不会有明显影响。GOV.UK Pay自2016年推出以来已处理1.375亿笔交易，总额约92亿英镑。</p>
+                    <p>这篇文章讨论了人们在对话中的"缓存响应"现象——像公众人物一样，用预设的标准答案应对常见问题，而非真正投入思考。作者指出，要"破解缓存"需要提出对方从未被问过的问题，或做出足够敏锐的观察，让对方回到当下、产生新的思考。好问题能促使对方综合已有知识、发现自己潜在的认知，而非重复陈词。判断是否命中缓存的信号包括：对方立即回应（预加载的答案）vs. 停顿思考后回应（现场生成的想法)。破解缓存是一种礼物，能让对话变得鲜活，让双方都有原创性思考。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：英国政府选择荷兰支付公司Adyen替代美国Stripe的决定
+                    <div class="comments-summary">主要讨论点：关于人们在对话中使用"缓存式回答"（预设回应）的现象、原因及应对方式
 
 不同观点：
-• **支持欧洲自主性**：认为欧洲应减少对美国科技公司依赖，使用本土公司（Adyen）有助提升主权和自力更生，尤其在基础支付服务这类关键领域
-• **质疑合同规模**：多人指出合同金额出奇地小，甚至不及美国中型公司云账单，对Stripe影响微不足道，预期政府合同应更大
-• **Adyen门槛问题**：批评Adyen拒绝小客户（百万级以下），而Stripe更包容，但也有人认为找准大客户市场无可厚非
-• **英国本土选择缺失**：质疑为何英国（尤其脱欧后）没有自己的支付巨头，需依赖外国公司（无论美国或荷兰）
-• **双重标准批评**：指出HN社区常贬低欧洲科技，但当欧洲公司胜出时又找不到好话说，揭示潜在偏见
+• **支持打破缓存**：pdpi认为向他人解释问题能暴露自己理解的漏洞；chrismorgan喜欢问新颖的元问题来打破常规；anandbaburajan指出这取决于对方是否开放；alexpotato举例名人和精英常用缓存回答，Sean Evans的深度提问能打破这种模式
 
-补充讨论：
-有人关注实际效益（是否降低成本vs扩展支付选项）；有人建议让用户承担交易费以推动银行转账；也有对英国税务局数字服务退税流程的抱怨；Stripe在营销造势方面被认为强于Adyen。</div>
+• **理解并接受缓存**：Tade0认为缓存回答表明对方不想深谈，应尊重这一边界；xpct从最初反感到后来接受朋友间的可预测性；hypfer解释这是"社交脚本"，是节省资源的性能优化，特别在压力下更常见
+
+• **警告滥用风险**：xg15提醒不是所有人都愿意被打破缓存，可能引发负面反应；jszymborski指出政客和CEO用缓存回答来规避问题；Nevermark认为缓存回答常被用于宣传和逃避认知失调
+
+补充讨论：mrtksn建议用描述性语言代替主题词来迫使深度思考；dominicq批评"缓存"这个计算机术语的滥用；singpolyma3称赞文章的脚注设计</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48415217" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48369864" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -244,205 +417,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.saturnci.com/my-agent-skill-for-test-driven-development.html" target="_blank">My Agent Skill for Test-Driven Development</a>
+                    <a href="https://github.com/guycipher/keybench" target="_blank">Show HN: Keybench – Scriptable, extensible performance tool for key value stores</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: laxmena</span> |
-                    <span>评分: 162</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-04 14:10</span>
+                    <span>作者: alexpadula</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-06 23:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者如何通过自定义技能指导AI代理进行测试驱动开发(TDD)。作者指出AI写的测试通常质量很差，但通过遵循Kent Beck的Canon TDD方法可以显著改善。作者提出了"specify-encode-fulfill"循环替代传统的红绿重构，并创建了TDD技能和测试设计审查技能来指导AI。核心原则包括：先列出规范清单、将规范编码为测试、仅写满足当前测试的最少代码、行为变更后再重构。作者强调将AI与几十年前发现的不变软件原则结合，能获得最大生产力提升。</p>
+                    <p>keybench 是一个可脚本化、可扩展的键值存储性能测试工具。用户用 Lua 编写工作负载，keybench 在一个或多个存储引擎上运行并测量每个操作的时间，报告吞吐量和延迟分布。它测量两个速率：工作负载单元数/秒（wu/s）和原始操作数/秒（ops/s），以及各操作类型的延迟分布（p50、p99、p99.9、最大值）。工具由五部分组成：引擎（负责并发）、工作负载（Lua 脚本）、存储接口（统一的8个操作）、后端插件（支持内存 skiplist、RocksDB、TidesDB 等）和报告器（控制台、TSV、时间线等输出格式）。默认构建仅需 C 编译器和 pthreads，可通过 make 参数添加持久化引擎支持。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI代理开发中是否应该使用TDD（测试驱动开发）方法
-
-不同观点：
-• **支持TDD派**：认为TDD能有效减少bug，通过测试规范引导AI生成符合标准的代码，确保代码覆盖率和可验证性。有人建议结合多轮代理审查进一步提升代码质量，虽然增加token成本但长期节省修复时间
-• **反对TDD派**：指出TDD会大幅增加token成本和降低开发速度，在代码频繁重构时尤其低效。AI可能生成表面化的测试或产生错误的正向反馈，触发不必要的重构。有人认为测试在AI工程中是"虚荣心"，AI会修改测试而非修正代码
-• **折中/实用派**：认为TDD概念不需要专门技能编码，应通过AGENTS.md等直接指令实现。有人质疑缺乏实际对比数据，如果TDD真的更好应该已被纳入系统提示词
-
-补充讨论：
-- 有人提出使用"specify-encode-fulfill"循环，人工编写规范让AI实现
-- 讨论了回退机制过度使用的问题，可能导致静默错误
-- 强调需要通过注入bug验证测试有效性，避免无用测试
-- 建议用工单、提交记录和PR作为AI的记忆机制
-
-争议焦点：TDD的成本效益比和在AI代理场景下的实际价值</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48398925" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://sumnerevans.com/posts/software-engineering/stop-using-conventional-commits/" target="_blank">Conventional Commits encourages focus on the wrong things</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jsve</span> |
-                    <span>评分: 346</span> |
-                    <span>评论数: 75</span> |
-                    <span>发布时间: 2026-06-05 15:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章批评了 Conventional Commits 标准，认为它存在严重缺陷：
-
-**主要问题：**
-1. **优先级错误**：将 commit 类型(fix/feat/chore)置于作用域(scope)之前，但作用域才是最重要的信息
-2. **作用域被边缘化**：作用域被设为可选，但对于贡献者、调试者和事故响应者来说，了解"哪个模块被修改"比"修改类型"更关键
-3. **类型冗余且限制性强**：描述本身通常已表明修改类型，强制分类反而浪费空间且难以准确归类
-
-**核心观点：** Conventional Commits 关注点错误，未能兑现其承诺，应该停止使用这一标准。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于 Conventional Commits（约定式提交）规范的利弊及其实用性
-
-不同观点：
-
-• **支持方**：认为有标准总比没有好，即使不完美也能设定期望；对于持续交付很有帮助，可自动化版本管理和变更日志生成；在管理代码质量参差不齐的团队时很有用，易于通过合并策略强制执行
-
-• **反对方**：认为格式占用提交信息最重要部分的空间，类型分类（fix/feat）信息量少；用自然英语动词写成句子可读性更好；强制所有提交都符合终端用户变更日志标准不现实
-
-• **部分认可但提出改进**：同意需要某种结构，但认为应该倒置顺序（scope 比 type 重要）；建议将机器可读信息放在 footer/trailer 而非标题
-
-• **替代方案倡导者**：认为最重要的是包含 issue/JIRA 编号以提供"为什么"的上下文，而不是"做了什么"；偏好 Linux kernel 风格的提交信息
-
-补充讨论：
-争议焦点在于标准化 vs 灵活性、自动化便利 vs 人类可读性、git 提交信息 vs 用户面向的变更日志的受众差异。多数人认为不同项目有不同需求，一刀切的标准可能并不适合所有场景。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48414027" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://devblogs.microsoft.com/oldnewthing/20260605-01/?p=112391" target="_blank">The back cover of C++: The Language raises questions not answered by front cover</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: paulmooreparks</span> |
-                    <span>评分: 135</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-06-06 03:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一本C++教材的封面使用了JavaScript代码的图片，引发关于出版质量和行业现状的讨论
-
-不同观点：
-• **出版质量下降论**：出版商在基本工作上投入太少精力，使用不匹配的素材图片是典型的"低质量内容"(slop)，反映互联网时代低成本欺骗行为泛滥
-• **封面无关紧要论**：教材封面对实际销售影响很小，因为学生购买是被课程要求的，教授选教材看内容而非封面，且通常从免费样书中挑选
-• **内容可能优质论**：作者通常无法控制出版商选择的封面，书本身可能很优秀，不应仅凭封面判断
-• **以貌取书有理论**：虽然"以貌取书"名声不好，但在当下越来越有实用价值，可作为筛选信号
-
-补充讨论：
-有人提到JavaScript用C++实现所以"尚可原谅"；一位用户开玩笑称这是"预见未来"，因其在开发允许混合多语言语法的C³项目；另有人分享了类似的招聘者闹笑话经历，强调行业普遍存在的专业性问题。核心争议在于：封面错误是否真正影响教材价值判断。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48421079" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arstechnica.com/tech-policy/2026/06/sp-500-blocks-fast-spacex-entry-wont-waive-rule-for-unprofitable-ai-firms/" target="_blank">S&P 500 rejects SpaceX, also blocking entry for OpenAI and Anthropic</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: maltalex</span> |
-                    <span>评分: 518</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2026-06-06 04:38</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>标普500指数拒绝为SpaceX破例加速入选。SpaceX申请将入选等待期从12个月缩短至6个月，并豁免公开流通股10%的要求（SpaceX仅计划公开3%股份）及盈利要求。标普道琼斯指数公司经过一个月咨询后决定维持现有标准。这意味着SpaceX无法立即获得被动投资基金约140亿美元的资金流入，OpenAI和Anthropic等AI公司的类似计划也被关闭。分析师认为SpaceX估值被高估，其1.75万亿美元的IPO目标远超实际价值评估的7800亿美元。纳斯达克和富时罗素指数已为SpaceX提供加速入选通道。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：S&P指数拒绝为SpaceX修改上市规则引发的市场反应和立场分歧
-
-不同观点：
-• **支持维持规则派**：被动投资者和部分用户认为指数应坚持一贯标准，不为特定公司破例。这体现了对指数诚信和长期信誉的重视，有评论指出这个决定"价值数万亿美元"
-• **质疑盈利标准派**：有人质疑SpaceX是否真正符合"盈利"要求，以Anthropic为例，指出烧钱数十亿美元却声称盈利的矛盾性
-• **反对裙带资本主义派**：强调核心问题不是SpaceX占比大小（约0.3%），而是为富人和权贵修改规则本质上是裙带资本主义。这200亿美元最终由被迫购买的指数基金投资者（公众）买单
-• **市场影响观察派**：注意到纳斯达克周五暴跌4.18%，认为这与SpaceX IPO前投资者撤资有关，市场不满情绪明显
-
-补充讨论：部分评论认为指数机构的决定并非出于智慧和克制，而是受到来自先锋等基金公司及其机构投资者的压力。也有人对评论区质量表示担忧，指出高质量评论下充斥着宣传性回复。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48421442" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://law.stanford.edu/publications/law-professors-prefer-ai-over-peer-answers/" target="_blank">Law Professors Prefer AI over Peer Answers</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: davidbarker</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-06 18:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>该研究评估了大语言模型(LLM)在法学教育中的辅导能力。16位美国法学教授创建了40道合同法问题,并对2,918组匿名的人类和AI回答进行盲评。结果显示,教授们对LLM回答的评分远高于同行(平均胜率75.33%),AI表现接近最优秀的教师。LLM回答被标记为有害的比例仅3.53%,而教授回答为12.06%。评价标准在不同评估者间保持一致,反映了共同的专业标准。研究表明,在需要判断力的学科领域,AI辅导工具具有显著优势,且该评估方法可扩展至其他模型。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">您只提供了一条评论，我无法进行多观点分析和讨论关系的识别。
-
-**当前评论的核心观点：**
-
-• 科技行业外的专业人士（律师、金融从业者、会计师、医生等）对AI模型能力的认知严重不足
-• 这些行业在AI工具应用上远落后于科技行业
-• 他们尚未意识到必须适应AI时代的紧迫性，但这个"顿悟时刻"即将到来
-
-**需要更多评论才能完成的分析：**
-- 识别不同立场（支持/反对/质疑）
-- 捕捉评论间的讨论关系
-- 指出争议焦点
-- 对比不同论据
-
-请提供更多相关评论，我将为您进行完整的多观点分析。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48427592" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48429957" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
