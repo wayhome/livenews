@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-08 10:10 (北京时间)
+            最后更新时间: 2026-06-08 15:20 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://andersmurphy.com/2026/06/05/the-perils-of-uuid-primary-keys-in-sqlite.html" target="_blank">The perils of UUID primary keys in SQLite</a>
+                    <a href="https://openai.com/index/harness-engineering/" target="_blank">Harness engineering: Leveraging Codex in an agent-first world</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: emschwartz</span> |
-                    <span>评分: 170</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-06-05 23:13</span>
+                    <span>作者: pramodbiligiri</span> |
+                    <span>评分: 289</span> |
+                    <span>评论数: 55</span> |
+                    <span>发布时间: 2026-06-05 18:20</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章探讨了在SQLite中使用UUID作为主键的性能问题。作者通过基准测试发现，使用随机UUID4作为主键比使用整数主键慢10-12倍，因为UUID4的无序性导致聚集索引的B树需要频繁重新平衡，产生大量额外的分页操作。通过性能分析图（diffgraph）证实了这一点。解决方案是使用时间有序的UUID7，其性能接近整数主键基线。文章强调了聚集索引的特性：表的物理存储顺序由索引键决定，因此主键的有序性对写入性能至关重要。这个问题不仅存在于SQLite，也适用于其他使用聚集索引的数据库。</p>
+                    <p>OpenAI团队在过去五个月进行了一项实验：使用Codex构建一个内部产品，**零行手写代码**。从空仓库开始，现已生成约百万行代码，合并1500个PR，平均每位工程师每日3.5个PR。
+
+核心理念是**人类负责设计和指导，AI代理执行编码**。工程师的角色转变为：构建环境、明确意图、建立反馈循环，而非直接写代码。他们通过提示词驱动Codex工作，让AI自主完成代码编写、测试、审查和迭代。
+
+团队专注于提升系统可理解性——让应用UI、日志、指标对Codex可读，并让AI代理间互相审查代码。这种方法将开发效率提升了约10倍，人类时间和注意力成为唯一稀缺资源。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据库主键应该使用UUID还是整数，以及不同UUID版本的性能和适用场景
+                    <div class="comments-summary">主要讨论点：AI辅助编程（特别是OpenAI Codex）是否真正提升了软件开发效率和质量
 
 不同观点：
-• **优先使用bigint整数**：认为UUID被过度使用，bigint更小更快，除非是无主分布式系统才需要UUID。推荐整数做内部PK，UUID做公开ID（blopker, bambax, ItsBob）
 
-• **UUIDv7是最佳平衡**：既保留UUID的分布式优势，又通过时间排序解决了性能问题，适合需要跨实例协作的场景，如多设备同步（gvkhna, jdthedisciple, adityaathalye）
+• **支持派**：shepherdjerred和mohsen1等实践者认为AI编程确实有效，但需要完善的工程实践支撑——包括自动化测试、文档规范、可观测性工具和严格的架构约束。他们强调测试驱动和渐进式验证的重要性。
 
-• **UUIDv4仍有价值**：在某些安全场景下，随机ID可避免泄露计数或时间戳信息，牺牲插入性能换取隐私保护（sedatk）
+• **质疑派**：多位评论者（bko、yurimo、h4ny）质疑代码行数作为指标的合理性。他们指出现实中并未看到软件质量的明显提升，认为应该用用户反馈、SLA、故障率等结果指标衡量，而非产出量。代码应追求简洁而非冗余。
 
-• **利用SQLite的rowid**：建议使用SQLite自动生成的rowid作为内部主键，另建UUID索引列用于对外暴露（bambax, w10-1）
+• **实用主义派**：thelucent基于成本考虑，认为纯AI代理方式不现实（会快速耗尽token限额）。更有效的是人工搭建架构和示例代码，让AI在此基础上扩展，失败时回滚重试而非持续修补。
 
-补充讨论：争议焦点在于是否值得为分布式能力牺牲性能。多数人认同双主键方案（内部用整数join，对外用UUID）。有人指出这比vim vs Emacs的圣战还激烈。文章作者承认是草稿，计划补充更多细节。另有技术细节讨论：Postgres的并发写入场景、UUID应转binary存储、以及脚本可能有误。</div>
+• **透明度批评**：h4ny和drivebyhooting批评文章缺乏实质内容——既不展示产品也不提供可复现的具体流程，只是又一篇AI炒作文章。
+
+补充讨论：patdoli分享的案例警示了过度规划的风险——AI花一周生成140+份文档却零代码，"完美的空保险箱"。强调平衡规范与实际产出的重要性。murat124用电子烟工厂工人的比喻讽刺人类审查AI大量代码变更的荒谬性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48419571" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48416264" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,25 +106,109 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://apnews.com/article/white-house-ufc-fight-lawsuit-trump-birthday-da95554d7137ca297dd47951a3b95cc8" target="_blank">Lawsuit Seeks to Stop the UFC Fight on the White House South Lawn</a>
+                    <a href="https://github.com/a-yiorgos/wambook" target="_blank">Warren's Abstract Machine: A Tutorial Reconstruction</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: petethomas</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-08 01:28</span>
+                    <span>作者: nextos</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-05 21:52</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>一项联邦诉讼试图阻止6月14日在白宫南草坪举行的UFC格斗赛事。该活动为庆祝特朗普总统80岁生日及美国建国250周年而举办。诉讼称活动违反了国家公园管理局禁止在联邦公园用地举办体育赛事的规定，国会未批准建造拱门结构，且未进行环境审查。白宫反驳称诉讼"毫无根据"，并表示该活动与其他白宫草坪活动性质相同且已获得适当许可。UFC计划在南草坪建造5000座竞技场，并在附近公园发放最多85000张免费门票。</p>
+                    <p>这是一个GitHub仓库页面，存放Hassan Ait-Kaci撰写的《Warren's Abstract Machine: A Tutorial Reconstruction》一书的电子版本。该书详细讲解了Warren抽象机（WAM），目前已绝版。作者拥有版权并曾免费提供给非商业用途使用者。由于原托管网站vanx.org已失效，仓库创建者在GitHub上重新发布了这本书的电子版（PDF和PS格式），供感兴趣的读者访问。仓库获得了98个星标和16个分支。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于Warren抽象机(WAM)及其相关教材在Prolog编译器领域的价值
+
+不同观点：
+• **正面评价**（herodotus）：认为WAM是Prolog编译器的重要基础，比解释器快得多；Hassan Aït-Kaci的书是对Warren论文的出色阐释，是该领域必读之作
+
+• **负面经历**（Milpotel）：从实际学习角度批评，认为在考试中纸上执行WAM的课程毫无用处，暗示理论与实践脱节
+
+补充讨论：
+两个评论反映了学术界常见的矛盾：一方面WAM在技术上确实重要且有影响力，但另一方面其教学方式（死记硬背和纸上模拟）可能脱离实际应用场景，导致学生感到课程价值不高。争议焦点在于：技术本身的重要性 vs 教学方法的实用性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48418839" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.kdab.com/how-long-does-it-take-for-an-item-to-become-visible/" target="_blank">How Long Does It Take for a QQuickItem to Become Visible?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jandeboevrie</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-04 19:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了如何测量 Qt Quick 中 Item 从设置为可见到实际显示在屏幕上所需的时间，以此检测"掉帧"现象。
+
+**核心方法：**
+1. 创建继承自 QQuickItem 的类，默认 visible 为 false
+2. 监听 visibleChanged 信号，变为 true 时开始计时
+3. 连接到 QQuickWindow::afterFrameEnd 信号
+4. 使用 ensurePolished() 和 updatePolish() 确保测量的是真正绘制该组件的帧
+5. 将测量的毫秒数除以单帧时间（1000ms / 刷新率）得到"掉帧数"
+
+**关键点：** 需要区分其他动画触发的帧交换和实际绘制目标组件的帧，通过标志位确保只在正确的帧时刻进行测量。优化良好的程序应该显示 0 或接近 0 的掉帧数。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：渲染延迟的测量方法和"frame drop"术语的准确性
+
+不同观点：
+• **术语质疑**：评论者认为"frame drop"（丢帧）不应用来描述延迟，丢帧在技术上指完全不渲染某帧，与延迟是两个概念
+
+• **软件计算局限性**：仅通过渲染框架计算延迟是不完整的，因为只能测量软件层面认为内容"可见"的时间点，忽略了GPU驱动和显示器本身可能增加的额外帧延迟
+
+• **准确测量方法**：真正的端到端延迟测量需要物理手段，包括记录发送显示命令的时刻，以及用光电二极管或支持TTL信号输出的专业显示器来检测内容实际显示的时刻
+
+补充讨论：评论强调了理论计算与实际延迟之间的差距，指出硬件层面的延迟常被忽视，需要专业设备才能获得准确的延迟数据。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48403488" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arxiv.org/abs/2606.04299" target="_blank">Efficient and Training-Free Single-Image Diffusion Models</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: yorwba</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-07 09:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇论文提出了一种高效且无需训练的单图像扩散模型。传统方法需要在单张图像上训练扩散模型，耗时数小时。该方法通过使用多尺度图像块数据集，利用闭式最优去噪器直接计算噪声块的得分函数，完全避免了神经网络训练。该方法在生成质量和多样性上达到最优水平，支持无条件生成、文本引导风格化、图像对称化等应用，并可在潜在空间中运行。通过加速技术，可在1秒内生成百万像素图像，数分钟内生成十亿像素图像。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48440393" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48433305" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -130,91 +219,115 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2849122" target="_blank">Vitamin D3 During Pregnancy and Cognitive Performance at 10 Years</a>
+                    <a href="https://ntsc.rs/" target="_blank">Ntsc-rs – open-source video emulation of analog TV and VHS artifacts</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: supermatou</span> |
-                    <span>评分: 166</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-06-07 15:08</span>
+                    <span>作者: gregsadetsky</span> |
+                    <span>评分: 402</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2026-06-06 19:17</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>ntsc-rs 是一个免费开源的视频特效工具，用于精确模拟模拟电视和 VHS 录像带的画面效果。与其他简单使用颜色查找表和叠加层的效果不同，ntsc-rs 基于 NTSC 传输和 VHS 编码的实际工作原理建模。该工具用 Rust 编写，支持多线程和 SIMD 加速，可实时处理高分辨率视频。提供独立应用、网页版，以及 After Effects、Premiere 和所有 OpenFX 兼容软件（如 DaVinci Resolve、Hitfilm、Vegas）的插件版本。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：**孕期高剂量维生素D补充对儿童认知能力影响的研究可信度及维生素D的实际作用
-
-**不同观点：**
-
-• **质疑研究有效性（Aurornis, jtrn, shiandow）：** 研究测试了11项指标，仅1项（视觉记忆）在多重检验校正后保持显著性，存在p-hacking嫌疑。jtrn详细批评统计方法，指出研究在记忆域内仅包含2个函数的情况下应用FDR校正几乎无效，且观察数据未能佐证实验结果，效应量微弱，不足以支持补充建议。
-
-• **支持维生素D重要性（niteshpant, dzonga, OutOfHere）：** 维生素D控制多种身体机能，研究样本局限（仅丹麦白人女性），未考虑有色人种需要更高剂量。有人分享个人经验称高剂量维生素D改善情绪和精力。OutOfHere激进批评内分泌学会阻止人们补充和检测维生素D。
-
-• **谨慎解读（HexPhantom, p-o）：** 应理解为"孕期维生素D可能影响某些神经发育结果，值得进一步研究"，而非直接因果关系。需考虑社会经济环境等混淆因素。
-
-**补充讨论：**
-• cortic提出维生素D过量可能降低维生素K2，产生副作用间接影响认知表现
-• tarkin2质疑若存在因果关系，阳光充足地区应有更好记忆力
-• 有人提及低日照暴露对人类整体影响及AI工具用于事后分析的可能性</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48435584" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.0xkato.xyz/how-llms-actually-work/" target="_blank">How LLMs work</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 0xkato</span> |
-                    <span>评分: 888</span> |
-                    <span>评论数: 37</span> |
-                    <span>发布时间: 2026-06-03 20:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章解释了大型语言模型(LLM)的工作原理。现代LLM主要基于transformer架构，核心包括：
-
-1. **分词(Tokenization)**：将文本转换为整数序列
-2. **嵌入(Embeddings)**：为每个token赋予数值向量表示，语义相似的词向量空间位置接近
-3. **位置编码**：让模型理解token顺序
-4. **注意力机制**：token间信息交互
-5. **多头注意力**：同时追踪多种关系
-6. **前馈网络**：存储模型学到的大量知识结构
-7. **残差连接和层归一化**：使深层网络可训练
-8. **预测下一个token**：模型的实际输出机制
-
-文章强调不同LLM的差异主要在训练数据、规模配置和后期训练，而非基础架构。通过理解这些组件，可以读懂大多数现代LLM论文。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于LLM工作原理解释文章的质量和准确性争议
+                    <div class="comments-summary">主要讨论点：关于模拟复古视频效果（NTSC/VHS/CRT）的技术实现和应用价值
 
 不同观点：
-• **简单性观点**（malwrar）：LLM的核心架构极其简单,只是通过增大模型规模产生涌现能力,OpenAI的突破在于"把蒸汽机做大",而非技术复杂性。批评AI公司过度包装这种简单技术。
 
-• **单向生成限制**（miki123211）:强调LLM只能向前生成的根本缺陷——无法回头修改导致"为保持连贯性而撒谎"。指出CoT和推理机制通过"一步步思考"解决了部分问题,让模型有"救生筏"来修正答案。
+• **技术完整性派**：认为现有模拟器缺失重要细节。指出缺少垂直振荡器错误、色彩副载波相移、PAL汉诺威条纹等真实模拟电视故障效果，追求更完整的复古体验模拟
 
-• **文章质量批评**:多位评论者(aabdi, lateral_cloud)认为原文结构混乱、跑题过多、AI生成痕迹明显,建议按tokenizer→embedding→attention等清晰结构组织。
+• **实用应用派**：关注实际使用价值。包括视频制作团队需要90年代摄像机效果但无法使用老旧设备、用于数字化录像带、作为DaVinci等专业软件插件使用
 
-• **技术准确性质疑**（helloplanets）:指出文章对位置编码(RoPE)的解释有误——应只旋转Query和Key向量,而非整个token向量。批评解释顺序不当造成误导。
+• **技术探索派**：分享自己的实现经验。有人深入研究NTSC信号处理、开发SECAM/PAL解码器、创建简化版LED像素效果，强调学习DSP和技术理解过程
 
-• **理解深度质疑**（AltruisticGapHN, yukIttEft）:质疑"预测下一个词"的简化说法无法解释LLM的空间推理能力(如CSS布局设计),以及模型如何从文本样本中学习token关系。
+• **AI训练潜力派**：提出用此技术生成训练数据，让AI学习从低质量视频还原高质量版本的逆向应用
 
-补充讨论：有人认为AI辅助编辑不应影响文章质量评价(vocram),也有人分享通过观察慢速LLM输出理解其运作机制的经验(10GBps)。</div>
+• **怀旧哲学派**：引用Brian Eno名言，认为媒介的缺陷和失真（CD失真、8位音质、颗粒胶片）最终会成为该媒介的标志性特征，被珍视和模仿
+
+补充讨论：存在地区制式偏见问题（为何NTSC受关注多而PAL/SECAM少）；有人希望扩展到其他复古媒介模拟（黑胶唱片噪音、老式无线电干扰）；《怪奇物语》等影视作品中假VHS效果的文化现象讨论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48389360" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48428025" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://vim-classic.org/news/vim-8.3-released.html" target="_blank">Vim Classic 8.3 Released</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tempodox</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-07 06:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Vim Classic 8.3.0 是一个长期支持的 Vim 分支版本，基于 Vim 8.2.0148 开发，特点是不使用生成式 AI 工具维护，并移除了 Vim9 脚本。该版本保守地回溯了部分安全补丁和 bug 修复，但由于未评估所有上游补丁，可能存在安全漏洞和已知 bug。开发团队建议早期采用者在了解潜在风险的情况下使用。项目延续 Vim 的慈善性质，支持乌干达儿童救助。用户可从 SourceHut 下载，并订阅邮件列表获取更新通知。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于Vim 9的争议和"Vim Classic"项目
+
+不同观点：
+• **对Vim 9的疑虑**（filchermcurr）：表达困惑，询问Vim 9是否存在问题，特别提到可能与LLM（大语言模型）驱动有关，这是从"Vim Classic"网站上找到的唯一线索
+
+• **对项目可信度的认可**（nxrabl）：因为看到Drew DeVault的署名而开始认真对待这个项目，同时表达了对Drew DeVault近况的关心
+
+补充讨论：
+评论显示存在一个叫"Vim Classic"的项目，暗示Vim 9可能引入了一些有争议的变化（可能涉及LLM集成），导致部分用户寻求替代方案。Drew DeVault作为知名开发者的参与为项目增加了可信度。两条评论之间没有直接互动，但都围绕同一个项目展开。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48432439" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://pdimagearchive.org/" target="_blank">Public Domain Image Archive</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: davidbarker</span> |
+                    <span>评分: 219</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2026-06-07 00:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是一个公共领域图像档案库的网站介绍。该档案库收录了11,082件无版权作品，供用户免费浏览、下载和使用。数据库持续更新，每周添加新图像。用户可以通过多种方式浏览：按艺术家、世纪、风格、主题、标签分类，或查看全部内容。网站还提供"无限视图"浏览模式。这是一个精心策划的免费图像资源平台。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于公共领域图片档案网站的实用性、版权问题和用户体验
+
+不同观点：
+• **版权谨慎派**：认为网站虽提供"公共领域"图片，但缺乏明确的版权证明文档。担心商业使用（如亚马逊KDP出版）时可能被拒，因为网站免责声明表明"仅作指导，不构成法律建议"，建议使用者自行核实源机构的版权状态
+
+• **积极使用派**：称赞此类开放互联网资源，将其加入个人项目收藏。认为大英博物馆、荷兰国家博物馆等档案库提供了大量可用艺术作品，对网站持正面态度
+
+• **重复性质疑派**：指出类似网站每年都会出现，图片相似但设计不同，质疑是否真的可以免费使用这些图片
+
+补充讨论：
+用户体验方面有分歧："无限浏览"功能被认为很有趣且容易上瘾，但也有人抱怨鼠标滚轮功能损坏，以及拖动时误触打开页面。有用户欣赏网站没有明显AI元素的设计风格。部分用户发现了实用价值（如为游戏关卡寻找迷宫素材），还有人注意到网站新增了购买版画的功能。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48430539" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -260,36 +373,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2606.05818" target="_blank">Benchmarks in Leipzig</a>
+                    <a href="https://www.cnbc.com/2026/06/05/google-to-pay-spacex-920-million-a-month-for-xai-compute-capacity.html" target="_blank">Google to pay SpaceX $920M a month for compute capacity at xAI data centers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: root-parent</span> |
-                    <span>评分: 134</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-06-06 14:00</span>
+                    <span>作者: toephu2</span> |
+                    <span>评分: 295</span> |
+                    <span>评论数: 72</span> |
+                    <span>发布时间: 2026-06-05 20:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇论文介绍了"莱比锡基准测试"项目：2026年4月至5月间，49位数学家（主要在莱比锡马普数学研究所的3天研讨会期间）创建了包含100道研究级数学问题的数据集，所有问题都有已知答案。研究团队分三个阶段用大型语言模型（LLM）测试这些问题：第一阶段使用5个先进LLM各尝试一次，41题未解；第二阶段用3个模型各运行20次，剩余16题未解；第三阶段用2个深度思考模型各运行3次，最终仅2题未解。结果表明LLM的数学推理能力正变得令人印象深刻。</p>
+                    <p>SpaceX在IPO前与Google签订重大协议，每月向Google提供AI算力服务，收费9.2亿美元，为期32个月。协议涉及约11万个Nvidia GPU。这是SpaceX继5月与Anthropic达成类似协议后的第二笔大型基础设施交易。Google母公司Alphabet曾在2015年投资SpaceX（当时估值120亿美元），如今SpaceX计划以超1.75万亿美元估值上市，Alphabet获得巨额回报。SpaceX正努力通过出租数据中心算力来变现其在AI领域的重金投入，尽管其AI业务目前仍处于亏损状态。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于LLM在研究级数学问题上的表现评估及其意义
+                    <div class="comments-summary">主要讨论点：Google向SpaceX/xAI租赁数据中心算力引发的估值争议和商业逻辑质疑
 
 不同观点：
-• **乐观派**：认为LLM解决研究级数学问题的能力令人印象深刻，这些问题难度远超考试题，相当于博士生需要数天到数周才能解决的水平，模型在100道题中仅剩2道未解决展示了惊人进步
 
-• **谨慎派**：强调需要关注错误率而非仅看成功率。例如Opus模型虽解决40%问题，但78%的失败率意味着实际应用风险很高。建议未来基准测试应衡量一次性回答正确的能力，以评估实际可用性
+• **严重高估派**（runako）：认为SpaceX估值达到收入的100倍极不合理。xAI收入95%来自数据中心租赁，本质是"数据中心+社交媒体+火箭+ISP"的组合体，而最好的数据中心REITs仅10倍市销率且有分红，Meta为7倍。估值终将回归正常水平。
 
-• **方法论质疑**：指出这些问题的答案可从现有文献（训练数据）中推断，并非解决前沿挑战。研究结论本质上是"基于公开研究的练习题基准已达极限"，出题者无法事先调整问题直到模型失败
+• **金融工程杰作派**（tristanj）：称赞这是精妙的财务操作。Google早期投资SpaceX持股5%，这笔110亿美元年收入的交易按94倍市销率计算可使SpaceX估值增加1万亿美元，Google净赚400亿。更关键的是让SpaceX实现盈利，满足进入标普500指数的要求。
 
-• **透明度关注**：有人质疑是否有AI实验室赞助该研究，建议像其他领域一样披露商业赞助信息
+• **泡沫警告派**（BLKNSLVR）：用"吹泡泡糖"比喻循环交易——SpaceX买英伟达硬件、英伟达买Google服务，质疑这种资金循环的可持续性。
 
-补充讨论：OpenAI模型在数学相关任务上表现明显优于其他模型，可能源于训练后处理的差异。也有人提醒需对数据集加密保护，防止泄露到未来训练数据中。</div>
+• **商业逻辑合理派**（est31）：解释这是AI经济的正常运作模式。数据中心建设周期长、AI收入不可预测且增长快速，公司间互相购买算力是双赢策略，类似SaaS合同和电力市场的长期+现货双轨制。
+
+补充讨论：多人质疑合同细节（无违约惩罚条款）、环保承诺矛盾（碳中和vs燃气发电）、技术兼容性（Google TPU代码能否在英伟达GPU运行），以及这笔交易对SpaceX估值支撑的真实性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48425247" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48417490" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -300,142 +414,31 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://magazine.atavist.com/2026/mccann-cocaine-fugitives" target="_blank">You Can Run</a>
+                    <a href="https://github.com/gonum" target="_blank">gonum</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bryanrasmussen</span> |
-                    <span>评分: 133</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-06-06 15:55</span>
+                    <span>作者: tosh</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-07 13:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了McCann家族的逃亡故事。1984年，13岁的Erin和10岁的Meredith生活在匹兹堡富裕郊区，过着优渥生活。某天联邦特工登门后，母亲Leah突然带她们逃离，声称父亲John因税务问题被政府追查。姐妹俩被迫改名换姓，永远告别过去的朋友和生活。多年后，Erin得知母亲藏有两箱政府文件，记录着父亲真正的犯罪事实。文章揭示这个家庭隐藏的秘密远比税务问题严重得多，而当年还是孩子的姐妹俩被蒙在鼓里。</p>
+                    <p>Gonum 是一个为 Go 语言开发的数值计算库集合，包含矩阵、统计、优化和数据可视化等功能。主要仓库包括核心库 gonum（8.4k stars）、绘图库 plot（3k stars）以及 BLAS/LAPACK 的 C 封装 netlib。该组织共有 23 个代码仓库，使用 BSD-3-Clause 许可证，部分旧项目已归档。最近更新集中在 2026 年 4-5 月，主要使用 Go、C++ 和 Fortran 语言开发。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一篇关于毒贩家庭故事的长文评论
+                    <div class="comments-summary">主要讨论点：关于 Gonum（Go 语言的数值计算库）的介绍和历史讨论
 
 不同观点：
-• **叙事结构评价分歧**：有人认为铺垫有效、故事引人入胜；也有人批评文章冗长拖沓，4000字才揭示父亲是可卡因走私犯的核心秘密，且内容早已被剧透，结尾令人失望
+• [leourbina] 指出项目信息不够清晰，需要额外搜索才能理解 Gonum 的具体功能和定位
+• [gnabgib] 提供了历史背景信息，指出 2017 年曾有过较大规模的讨论（140 个点赞，45 条评论）
 
-• **标题误导性**："You Can Run"标题引发误解，有人以为是跑步训练应用，实际与逃犯故事关联不强，只是"跑得了跑不掉"的隐喻
-
-• **道德与社会议题**：引用《以西结书》讨论子女是否应为父母罪行承担后果；有评论尖锐对比非法毒贩入狱与合法推销阿片类药物的Sackler家族逍遥法外，指出后者造成更大社会危害却未受惩罚
-
-• **父亲行为解读争议**：文中描述父亲严格管教（统一着装、礼仪要求、学习任务）被某些读者视为"完全正常的事被描绘成阴险行为"
-
-补充讨论：文章涉及伊朗门事件证据等历史细节；有人联想到80年代赛车与毒品走私的紧密联系；部分读者表达对真实犯罪题材的厌倦，或调侃70-80年代信息难以核实的时代特点。</div>
+补充讨论：评论较少，主要反映出项目在信息展示上可能存在可发现性问题，以及社区对该项目有持续关注的历史</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48426202" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2605.31514" target="_blank">If LLMs Have Human-Like Attributes, Then So Does Age of Empires II</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ketchup32613</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 35</span> |
-                    <span>发布时间: 2026-06-07 18:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇论文质疑将类人属性(如道德、语言理解)归因于大语言模型(LLM)的做法。作者通过在《帝国时代II》游戏上训练简单神经网络,论证任何足够强大的系统(包括乐高或波士顿地区)都可能表现出类似属性。因此,LLM的所谓类人特征并非独特。论文指出,在缺乏明确测量标准的情况下,断言这些属性存在与否会导致循环论证或无信息结论。作者提出"零假设"方法,假设LLM的非独特性而非类人属性来设计实验,并证明《帝国时代II》具有功能完备性和图灵完备性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一篇关于LLM人类属性与图灵完备性的论文引发争议，核心在于"如果LLM具有人类属性，那么任何图灵完备系统（如《帝国时代II》）是否也具有相同属性"。
-
-不同观点：
-• **论文质量批判**（Veedrac）：认为论文逻辑混乱，混淆了基础设施与表现层，荒谬地暗示用乐高表达情感也不算智能证据，充斥无意义的冗长表述
-• **论证对象不明**（currymj, glenstein）：论文立场谨慎但写作风格像是激烈反驳，却不清楚在反驳谁；类似论证在Substack泛滥，滥用类比将高层次相似性当作等同性证明
-• **哲学接受派**（kybernetikos）：已接受人类关键属性与基础设施无关的人，本就认可游戏元素可能类人，这个论证对他们没有冲击
-• **技术平凡性**（ddosmax556, azan_, pmontra）：这只是图灵完备性的平凡推论，与LLM无关；如果人类属性可用物理描述就能被模拟，论文结论虽慢但成立
-• **意识悖论延伸**（currymj）：可推至荒谬极端——一杯水分子速度的同构映射是否意味着水也有意识？
-
-补充讨论：有人质疑论文标题本身的合理性，有人仅关注游戏技术细节，还有人认为我们最终只能以"是否为人类"作为关怀标准，寻找抽象属性是徒劳的。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48437568" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lwn.net/SubscriberLink/1076018/16f01bbbb8e0d1f0/" target="_blank">Moving beyond fork() + exec()</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jwilk</span> |
-                    <span>评分: 338</span> |
-                    <span>评论数: 29</span> |
-                    <span>发布时间: 2026-06-06 14:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了Linux内核中进程创建的优化方案。传统的fork()/exec()模式存在效率问题，因为fork()复制的内存在exec()时会被丢弃。Li Chen提出了"spawn templates"方案，通过缓存可执行文件信息来优化重复执行同一程序的场景，基准测试显示约2%的性能提升。但评审者Mateusz Guzik指出，该方案未触及fork()这个真正的性能瓶颈，建议应该彻底抛弃fork()+exec()模式，转向类似posix_spawn()的新原语。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Unix的fork()系统调用是否应该被废弃，以及如何替代它
-
-不同观点：
-
-• **支持废弃fork()**：fork()是1970年代的聪明hack，现在已成为负担。它要求克隆整个进程状态，但大多数场景只需要"启动新进程"而非"克隆当前进程"。实际使用中经常遇到需要在fork后清理文件描述符等问题，概念上不够直观
-
-• **反对废弃fork()**：fork()+exec()模型的优雅在于可以在fork后使用所有常规API进行配置（如dup2、设置进程组ID、信号处理等）。任何试图用单一调用替代的方案都需要把所有配置选项作为参数传递，变得复杂且难以扩展。Windows的CreateProcessW接口就是反例——更窄、更不灵活
-
-• **技术澄清**：文章遗漏了copy-on-write优化的说明，但即使有COW，fork()的开销仍是O(N)的（与进程大小线性相关），因为需要复制页表条目
-
-补充讨论：提出了几种替代方案：Mach的组合式原语（地址空间+内存对象+线程）；创建空白进程后强制执行系统调用序列；spawn系统调用配合轻量级loader。也有人建议将git等工具改为库而非二进制程序以避免重复启动开销。posix_spawn已是类似Windows风格的现有方案。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48425528" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theatlantic.com/national-security/2026/06/dday-survivor-world-war-ii-history/687392/" target="_blank">The Last of the D-Day Veterans</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: paulpauper</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-07 23:25</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了100岁二战老兵乔·皮卡德的故事。他是参与诺曼底登陆（D-Day）的幸存者之一。如今，1600多万参战美国军人中仅存不到0.5%。皮卡德虽已百岁，但对80年前战争的记忆依然清晰。他经常向学生讲述战争经历，多次重返欧洲战场纪念。文章对比了当年志愿参军的爱国精神与今日职业军队的分离状态，皮卡德担忧美国社会已难以再现当年的团结。文章还回顾了他18岁应征入伍，加入552野战炮兵营，因会打字成为部队文书，记录战争历程的经历。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48439697" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48434819" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
