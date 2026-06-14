@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-15 00:17 (北京时间)
+            最后更新时间: 2026-06-15 03:04 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.janestreet.com/formal-methods-at-jane-street-index/?from_theconsensus=1" target="_blank">Formal Methods and the Future of Programming</a>
+                    <a href="https://planetscale.com/blog/the-only-scalable-delete" target="_blank">The only scalable delete in Postgres is DROP TABLE</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: eatonphil</span> |
-                    <span>评分: 49</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-14 12:35</span>
+                    <span>作者: hollylawly</span> |
+                    <span>评分: 77</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-11 16:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Jane Street过去25年对形式化方法持怀疑态度，认为成本过高（如seL4项目每行代码需半个工作日验证）。但AI代理编程的出现改变了他们的看法。一方面，AI模型大幅降低了形式化方法的使用成本；另一方面，AI生成的代码质量参差不齐，需要大量验证工作，而形式化方法能提供比测试更强的通用保证（如彻底消除数据竞争）。此外，形式化方法可为AI提供更好的反馈，提升其解决问题的能力。因此Jane Street现在正组建团队专注形式化方法研究，希望让它像类型系统一样成为普遍适用的工具。</p>
+                    <p>这篇文章讨论了Postgres数据库中大规模删除数据的最佳实践。主要观点是：
+
+大量使用`DELETE`会降低性能，因为它不会立即释放磁盘空间，还会产生"死元组"增加vacuum负担，并给读取查询带来额外开销。Postgres的MVCC机制会保留多个行版本，删除操作实际上是"增加工作"而非"完成工作"。
+
+相比之下，`DROP TABLE`和`TRUNCATE`直接删除物理文件，立即释放空间，不产生死元组，性能开销与数据量基本无关。
+
+文章建议：对于需要大规模删除数据的场景，应设计schema使其可以通过`DROP TABLE`或`TRUNCATE`来实现，而不是使用`DELETE`。对于一次性清理场景，可以使用事务DDL创建临时表保留需要的数据，然后直接DROP原表。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在GenAI大量生成代码的时代，形式化验证方法是否能有效提升代码质量和开发效率
+                    <div class="comments-summary">主要讨论点：数据库大规模DELETE操作的性能问题及解决方案
 
 不同观点：
-• **谨慎乐观派（awinter-py, mark4）**：认同形式化方法的价值，但强调需要更符合人体工程学的工具。目前Dafny、Iris等工具最接近工业应用，但尚未出现像TypeScript那样的零成本抽象工具。Amazon S3已在使用TLA+
 
-• **实用怀疑派（jdw64）**：担心过度的数学严格性会导致程序员寻找绕过规则的技巧（类似Rust借用检查器）。主张"进攻性编程"——快速迭代修复而非过度防御，认为形式化方法只适合需求明确的成熟行业（如Jane Street），对于探索性业务是"奢侈品"
+• **DELETE可扩展性正常派**（crazygringo）：认为DELETE本身扩展性良好，与INSERT工作量相当。大规模删除慢是因为批量操作本质上不同于小事务，需要专门的批量解决方案（如DROP TABLE）。这不是DELETE的问题，而是批量操作的通用特性。
 
-• **成本质疑派（eddiepete）**：质疑逻辑链条——如果以前代码质量高但验证成本太高，现在代码更粗糙且数量更多，为何验证反而变得可行？除非有非人类的高质量验证智能，否则瓶颈依然存在。可能的解法是投资可复用的通用验证系统
+• **DELETE存在问题派**（sgarland, jandrewrogers）：指出DELETE会给数据库增加大量实际无用的工作（如元组可见性维护），在PostgreSQL中尤其明显。UPDATE实际是INSERT+DELETE，问题更严重。选择性删除在大规模场景下基本是未解决的问题。
 
-• **现实主义派（xvilka）**：指出即使是形式化验证的seL4微内核也存在严重bug，强调形式化验证不是银弹，只是ASAN、SAST、模糊测试等多种加固手段之一
+• **实践可行派**（saisrirampur）：认为原文过于绝对。配置良好的autovacuum可以让DELETE在TB级规模运行良好，配合手动VACUUM效果更佳。DROP TABLE有风险，需要排他锁且会阻塞后续语句，不适合高并发CRUD应用。
 
-补充讨论：开发者普遍认同AST工具和自定义linter目前体验较差，期待更好的工具链支持</div>
+• **分区方案派**（多人共识）：使用分区表+删除整个分区是最佳实践。但levkk指出分区难以精确划分业务数据，可能需要先ETL到数仓再删除，或采用分片方案分散vacuum负载。
+
+补充讨论：
+cowthulhu认为需要清空整表说明设计有问题；foreigner发现小规模删除时DELETE常快于TRUNCATE；twotwotwo分享了MySQL大规模删除导致复制延迟的生产事故案例，强调了从代码审查到监控的多层防护重要性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48526633" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48492822" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,32 +109,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=48528029" target="_blank">I indexed 669 GB of my GoPro videos using my M1 Max computer and local ML models</a>
+                    <a href="https://blog.tacoda.dev/lisps-influence-on-ruby-6a54f1a7740e" target="_blank">Lisp's Influence on Ruby</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: iliashad</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-14 15:13</span>
+                    <span>作者: tacoda</span> |
+                    <span>评分: 173</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-06-11 14:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章探讨了Lisp对Ruby语言的深刻影响。作者指出，Ruby创始人Matz从Lisp出发设计Ruby，保留了函数式编程特性但去除了宏和S表达式。文章列举了Ruby从Lisp借鉴的核心特性：
+
+1. **问号方法名**（如`nil?`）源自Scheme的谓词命名约定
+2. **闭包和块**是Lisp闭包概念的简化语法版本
+3. **一等函数**允许函数作为值传递，体现在`&:method_name`等语法中
+4. **符号**（Symbol）继承自Lisp的原子/符号，用于高效比较和元编程
+5. **集合方法**（`map`、`select`等）直接源自Lisp的`mapcar`、`filter`等函数
+
+作者认为，Rubyists最喜爱的特性本质上是函数式的，Ruby只是为Lisp的思想穿上了更友好的外衣。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某个视频索引工具/项目的简短评论
+                    <div class="comments-summary">主要讨论点：Ruby与Lisp的设计关系及各自的优劣
 
 不同观点：
-• 有人以玩笑口吻询问该工具是否适用于成人内容收藏（Beijinger的调侃性提问）
-• 有人认为这个项目更适合作为"Show HN"类型的帖子发布（rho138建议改变发帖分类）
-• lgats提供了项目链接，指向作者对669GB GoPro视频进行索引的博客文章
+• **Lisp实用派**（jksmith）：脱离企业后全面使用Lisp，享受用S表达式直接编写配置和持久化数据的便利，仅在对接外部系统时才导出JSON
 
-补充讨论：这些评论都很简短，缺乏深入讨论。第一条是调侃性质，第二条是关于HN发帖规范的建议，第三条仅是分享链接。整体上没有形成实质性的技术讨论或观点对立。</div>
+• **代码可读性批评**（hyperrail）：传统Lisp的函数式风格存在反直觉问题——需要从内到外或从下到上阅读嵌套代码，而Ruby的链式调用（left-to-right）更符合思维顺序。指出其他语言通过扩展方法、管道等机制解决了这一问题
+
+• **混合方案支持者**（evw, danlitt）：建议尝试Elixir（结合两者优点）；希望Ruby能加回宏功能
+
+• **性能改进期待**（dismalaf）：虽然喜欢Ruby，但希望它能获得类似Common Lisp的编译器和运行时特性（无装箱类型、原生编译、实时镜像等）
+
+补充讨论：
+pjmlp指出Ruby实际上是受到Lisp影响的Smalltalk和Perl的综合产物，揭示了编程语言演化的历史脉络。核心争议在于**语法便利性vs表达能力**：Lisp的宏和同像性vs Ruby的可读性和链式调用。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48528029" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48491048" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -137,66 +158,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/nex-agi/Nex-N2/issues/4" target="_blank">Rio de Janeiro's "homegrown" LLM appears to be a merge of an existing model</a>
+                    <a href="https://www.aptiv.com/en/insights/article/usb-power-delivery-plugging-into-the-benefits" target="_blank">USB Power Delivery: Plugging into the Benefits</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: unrvl22</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-14 15:37</span>
+                    <span>作者: mooreds</span> |
+                    <span>评分: 12</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-11 12:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一个GitHub issue，指控prefeitura-rio声称的397B原创模型"Rio-3.5-Open-397B"实际上是直接合并了Nex-N2_pro和Qwen3.5-397B的权重（约0.6:0.4比例），并非独立训练。证据包括：1）移除硬编码提示词后，Rio模型79%情况下自称"Nex"，0%自称"Rio"，甚至会复述Nex-AGI的背景故事；2）所有60层网络的权重张量都符合0.6/0.4的混合比例，达到数千个标准差的统计显著性。作者认为这是模型剽窃行为。</p>
+                    <p>这篇文章介绍了USB供电技术的演进。USB从1996年诞生以来，不断提升供电能力：从USB 1.1的0.5W发展到USB-C的15W。2021年发布的USB PD协议支持最高100W功率，通过提升电压至20V实现快速充电。USB EPR进一步将功率提升至240W，可为笔记本等高功耗设备供电。
+
+文章还介绍了"电源共享"技术，能让多设备同时充电，智能分配功率。例如：低电量设备获得100W，高电量设备获得25W，优化充电效率的同时降低成本。Aptiv已与OEM合作推出符合标准的产品，预计2029年将有更多认证产品面世。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">根据您提供的信息，这里只有一条陈述，没有多个评论进行讨论。我需要实际的评论内容才能分析不同观点和讨论要点。
+                    <div class="comments-summary">主要讨论点：USB-C作为通用充电标准的便利性和未来应用前景
 
-目前的信息仅描述了一个事件：
-- 里约热内卢市政府发布了 Rio-3.5-Open-397B 模型，声称是 Qwen3.5 的微调版本
-- 有人质疑这实际上是 Nex-N2 Pro (60%) 和 Qwen3.5-397B-A17B (40%) 的加权合并
-- Nex-N2 在约一周前发布
+不同观点：
+• **支持USB-C统一标准**：edent分享了旅行中所有便携设备（笔记本、手表、牙刷、电子书阅读器、相机、手机等）都使用USB-C充电的便利体验，强调全球范围内更换线缆和充电器的便捷性，甚至公交车也配备USB-C接口
 
-**请提供完整的评论讨论内容**，我将为您分析其中的不同观点、论据和争议焦点。您可以：
-1. 复制相关 issue 或讨论区的评论
-2. 提供论坛帖子的回复内容
-3. 分享社交媒体上的讨论
+• **扩展应用场景的期待**：hazkoulia期待USB-C PD技术应用于小型化PC领域，认为如果USB-C能提供多种电压输出，可以取代传统电源供应器，从而进一步缩小SFFPC（小型PC）的体积
 
-有了具体的评论内容后，我会按照您要求的格式进行分析。</div>
+补充讨论：
+技术兼容性问题——edent提到部分廉价设备拒绝使用PD协议，仅支持5V/2A充电，不过多数旅行充电器配备了非PD接口来解决这一问题。edent还幽默地展望未来电动汽车可能使用USB-PD-Max替代CCS充电标准。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48528371" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.science.org/doi/10.1126/science.adu4373" target="_blank">Global density and biomass of arbuscular mycorrhizal fungal networks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-13 16:58</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48519102" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48489309" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -211,8 +201,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: alebal123bal</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 2</span> |
+                    <span>评分: 39</span> |
+                    <span>评论数: 4</span> |
                     <span>发布时间: 2026-06-14 14:37</span>
                 </div>
 
@@ -233,7 +223,16 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：在RK3588S硬件上使用YOLOv8进行边缘视觉推理的技术实现
+
+不同观点：
+• **robinduckett的疑问**：为什么大多数研究和实例都使用已有3年历史的YOLOv8，而不是更新的v9-12版本？是因为特殊优势还是硬件限制？
+
+• **stefan_的批评**：认为该方案是"slop"（低质量代码）。指出提高吞吐量的正确方法是增加batch size，而不是像对待CPU那样尝试"多线程"提交任务到NPU。
+
+• **alebal123bal的实现说明**：关键不在YOLO模型版本，而在管道架构设计——通过ISP的MIPI捕获、RGA的resize/色彩转换、3个NPU核心并行推理（每核一个RKNN上下文）。3线程推理池将帧率从31 FPS提升至46 FPS上限。内存占用小（单流137-152 MB），使用预分配缓冲池而非逐帧分配。
+
+补充讨论：作者提供了完整的多进程管道（通过Unix域套接字进行检测、追踪、时序特征处理），还包括可选的Qwen2.5-0.5B LLM总结步骤（LLM运行时可暂停摄像头以独占NPU）。项目定位为通用边缘推理示例，而非实际监控系统。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48527623" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
@@ -246,32 +245,153 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://arcadeblogger.com/2026/06/14/how-did-atari-apply-side-art-to-arcade-cabinets/" target="_blank">How did Atari apply side art to Arcade Cabinets?</a>
+                    <a href="https://news.ycombinator.com/item?id=48528029" target="_blank">I indexed 669 GB of my GoPro videos using my M1 Max computer and local ML models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: msephton</span> |
-                    <span>评分: 36</span> |
+                    <span>作者: iliashad</span> |
+                    <span>评分: 122</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-14 15:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在M系列Mac上本地索引大量视频文件的技术实现
+
+不同观点：
+• **相似项目对比**：asenna指出几天前做了几乎相同的项目并也上了HN首页，使用类似技术索引视频，正在开发Framedex添加摄影功能
+• **现成方案存在**：robrain提醒DaVinci 21已内置AI索引功能（AI IntelliSearch），Studio用户可直接使用，无需自己开发
+• **硬件性能疑问**：WarOnPrivacy对M1 Max的ARM架构性能感兴趣，询问是否相当于11代Intel i9，以及Windows ARM性能是否相似
+• **技术实现建议**：m3kw9简要概括了实现思路（提取帧、降低分辨率、分类、合并元数据、写入SQL）
+
+补充讨论：
+- fl0id提供了在容器中使用Apple GPU的技术方案（podman+runkit+mesa或vllm-metal）
+- lgats和rho138提供了链接和发帖建议
+- Beijinger提出应用场景疑问
+- 作者iliashad征求反馈和功能建议
+
+核心争议：自研方案vs现成商业软件的价值权衡</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48528029" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://mgunlogson.github.io/magma/" target="_blank">Show HN: 3D print Z reinforcement via injected loops</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mgunlogson</span> |
+                    <span>评分: 28</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-06-09 13:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Magma是一个OrcaSlicer的实验性分支，旨在解决FDM 3D打印Z轴强度弱的问题。其核心思路是：在打印过程中生成带有密封垂直通道的三角形网格填充结构，然后利用现有挤出机向这些通道注入熔融塑料，形成贯穿整个部件的实心垂直加强柱，无需硬件改装。
+
+软件层面已完全实现（网格生成、双区填充、注入G代码等），但物理打印尚未成功——注入的塑料会融化刚打印的通道壁。作者公开代码是希望社区尝试不同方案：双挤出机异材料组合、低熔点材料（如PCL）、高流量喷嘴、改进密封设计等。这是一个研究性发布，欢迎实验反馈。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一种新的3D打印填充技术（MAGMA），通过在打印过程中向内部通道注入熔融塑料来增强强度
+
+不同观点：
+• **强烈质疑派（Aurornis）**：认为技术根本不可行。理由是熔融塑料接触打印件会快速冷却固化，无法成功注入大型空腔。指出README已承认物理打印失败（注入会熔化腔壁），怀疑项目过度依赖LLM而缺乏实际可行性验证
+
+• **谨慎怀疑派（slabity）**：对技术持开放但存疑态度。担心注入压力会导致壁面分层或变形，高翘曲材料（如ABS）在不均匀冷却下会出问题。核心质疑：缺乏实际数据和照片证明技术有效，没有抗拉强度对比测试
+
+• **技术细节询问派（deckar01、coryrc、dwallin）**：对实现方式感兴趣，提出具体问题：填充流程是否从顶部填满一个通道直到连接通道从底部填充？为何不使用传统的浅层直孔填充？为何不用多个小型2-4层桥接代替大通道？
+
+• **等待验证派（gus_massa）**：直接要求提供实物照片或视频证据
+
+补充讨论：作者（mgunlogson）表示愿意回答问题，但社区普遍缺乏对项目实际效果的验证。争议焦点在于理论可行性与实际物理限制的矛盾。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48460762" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.science.org/doi/10.1126/science.adu4373" target="_blank">Global density and biomass of arbuscular mycorrhizal fungal networks</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-13 16:58</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于真菌生物量分布的可视化需求
+
+不同观点：
+• **可视化需求方**：bhouston 希望看到一张地球图像，能够显示假定的真菌生物量密度分布情况，以便更直观地理解真菌在全球的分布模式
+
+补充讨论：目前仅有一条评论，尚未形成多方讨论或争议。这是一个关于科学数据可视化的建议性意见。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48519102" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://lore.kernel.org/lkml/CAHk-=wi4BF4bMhZNZ1tqs+FFV4OuZRe3ZqdWB+LxRLmRweUzQw@mail.gmail.com/T/#u" target="_blank">Linux 7.1</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: berlianta</span> |
+                    <span>评分: 106</span> |
                     <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-14 12:57</span>
+                    <span>发布时间: 2026-06-14 16:01</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了80年代初Atari街机柜体的丝网印刷工艺。该技术将图案分解成多个颜色层，每种颜色制作独立的印刷网版。通过感光乳剂和胶片曝光制作镂空模板，然后用刮板将油墨逐层印刷到木质面板上。整个过程需要精确对位，确保多层颜色完美叠加。Atari使用半自动化平板丝网印刷系统提高效率，例如《导弹司令》生产了28,000块面板。相比现代喷墨打印，丝网印刷的墨层更厚实、色彩更饱满，这也是原版Atari街机侧面图案至今仍保持鲜艳的原因。</p>
+                    <p>这是一个网站反爬虫保护页面。网站管理员部署了名为 Anubis 的保护系统，用于防止 AI 公司大规模爬取内容导致服务器宕机。Anubis 采用类似 Hashcash 的工作量证明机制——对单个用户影响微小，但能大幅增加批量爬虫的成本。这是临时方案，未来计划通过指纹识别和无头浏览器检测（如字体渲染方式）来更精准地拦截爬虫。该系统需要现代 JavaScript 支持，请禁用 JShelter 等插件才能正常访问。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某篇文章中提到的丝网印刷技术的讨论
+                    <div class="comments-summary">主要讨论点：Linux内核版本号更新的意义
 
 不同观点：
-• [jdswain] 提出文章未涉及的问题：丝网可以重复使用多少次？关注工艺的实用性和耐用性
-• [esafak] 对YouTube作为知识来源表达赞赏，认为它是宝贵的资源
-• [Symbiote] 直接总结文章核心内容（"TLDR the slop"），指出技术要点是直接在柜体侧面进行丝网印刷，并提供了YouTube视频链接
+• **讽刺Debian更新缓慢**：naturalmovement调侃Debian Stable需要到2036年才能看到这个版本，暗示Debian稳定版的更新周期极长，软件包版本过于保守陈旧
 
-补充讨论：三条评论角度各异，没有直接争议。jdswain关注技术细节的缺失，esafak表达对平台的肯定，Symbiote则为其他读者提供快速理解的入口。整体讨论较为简短，缺乏深度交流。</div>
+• **版本号无特殊意义**：globular-toast指出这只是常规的版本号进位，当第二位数字过大时第一位就会增加，并非有任何技术突破或重大变化
+
+• **质疑新闻价值**：imoverclocked认为这只是"Linus在旅行中"和"又一个数字"，质疑这条新闻是否有实质性内容值得报道
+
+补充讨论：三位评论者都对这次版本更新持轻描淡写的态度，认为没有特别值得关注的技术变化，更多是对版本号命名规则和Linux发行版更新策略的讨论。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48526793" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48528729" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -282,39 +402,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://paulgraham.com/earn.html" target="_blank">How to Earn a Billion Dollars</a>
+                    <a href="https://twitter.com/zenmagnets/status/2065796012820848699" target="_blank">Rio de Janeiro's city government model Rio3.5 beats Qwen3.7 in recent benchmarks</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kingstoned</span> |
-                    <span>评分: 41</span> |
-                    <span>评论数: 43</span> |
-                    <span>发布时间: 2026-06-14 11:50</span>
+                    <span>作者: lucasfcosta</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-14 14:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章解释了人们如何通过创业成为亿万富翁。作者基于21年运营Y Combinator的经验指出，成为亿万富翁并非不可能或需要作恶，而是通过创造用户喜爱的产品实现指数级增长。文章用数学计算证明：一个拥有200万美元、月增长率93%的初创公司，只需9.5个月就能达到10亿美元；即使是15%的月增长率，5年后收入也能增长4384倍。关键在于持续的高增长率，而这来自于为用户创造真正的价值，而非剥削。作者强调，通过努力工作和让用户满意来致富是完全可能的。</p>
+                    <p>这篇推文讨论了AI大模型领域的变化：阿里巴巴的Qwen3.7因采取专有（非开源）策略，正逐渐失去在前沿领域的影响力。与此同时，两个新的竞争者崭露头角：Minimax M3，以及令人意外的Rio 3.5 397b——后者由里约热内卢市政府的IT公司开发。这反映了开源模型正在挑战封闭模型的地位，且AI开发主体日趋多元化，连地方政府机构也参与其中。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Paul Graham关于"赚取十亿美元是否需要作弊"的文章引发争议
+                    <div class="comments-summary">主要讨论点：Rio AI Labs发布的Rio-3.5-Open-397B模型的真实性和性能质疑
 
 不同观点：
+• **模型造假质疑**：有评论指出这不是新训练的模型，而是混合两个现有模型后伪装成原创，通过指令让模型自称"Rio"
+• **后训练/微调立场**：部分人认为这是基于Qwen 3.5 397B的后训练或微调（post-training/fine-tuning），属于正常的模型开发方式
+• **基准测试作弊论**：认为小团队容易针对特定基准进行过度优化（benchmaxxing），导致基准分数虚高但实际通用能力下降。强调需要更多证据证明其性能，怀疑小团队超越原模型开发者的可能性
+• **积极看法**：认为城市政府资助AI模型微调是有趣的尝试
 
-• **支持PG的数学论证**：通过指数增长（200万本金，93%增长率，持续9.45个月）在数学上可以达到十亿，这是纯粹的算术问题，不必然涉及作弊
-
-• **质疑PG回避核心问题**：PG用数学公式回应道德质疑是答非所问。政治家批判的不是"数学上能否达到"，而是在维持高增长率过程中是否必然剥削劳工、操纵市场、破坏环境。他只说"做你想要的东西"却回避了如何在不作恶的前提下维持增长
-
-• **系统性不公平论**：整个制度本身存在不公。创始人能获得教育和启动资金已是特权，而成功后获得的巨额财富远超其实际劳动价值。财富积累存在"递减的earned成分"——钱生钱的系统在大规模时产生严重问题
-
-• **实际案例证明必然作弊**：列举大量YC资助的公司（Uber、Airbnb、OpenAI等）都通过操纵市场、规避法律来实现指数增长。为快速增长而无视法律精神就是"企业兴奋剂"
-
-• **创造性破坏的道德代价**：科技创新在创造价值的同时也造成破坏（如Uber与出租车司机），忽视这种"有毒副产品"在道德上不可接受
-
-补充讨论：YC孵化6500家公司仅30人成为亿万富翁（<0.5%），反而证明了成为亿万富翁的极端困难性</div>
+补充讨论：
+评论区普遍对基准测试的可信度持怀疑态度，将"benchmaxxing"比作加密货币交易策略——只能欺骗外行。有人讽刺Twitter上的争论毫无意义，强调信息价值而非数字竞赛。整体氛围偏向质疑和谨慎，要求实际测试验证而非仅看基准分数。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48526360" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48527634" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -325,129 +440,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://matthewbutterick.com/extinction-level-capitalism.html" target="_blank">Extinction-Level Capitalism</a>
+                    <a href="https://friedkielbasa.substack.com/p/rome-fell-and-nobody-noticed" target="_blank">Rome Fell and Nobody Noticed</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: laurex</span> |
-                    <span>评分: 50</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-14 14:29</span>
+                    <span>作者: fkozlowski</span> |
+                    <span>评分: 21</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-14 18:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章主要探讨AI技术的政治风险。作者认为AI是inherently political（本质上具有政治性）的技术，即使运作正常，也会通过加剧资本集中等现有趋势，逐步侵蚀自由民主制度，导致不可逆的政治经济转变。作者引用政治理论家Langdon Winner关于"技术的政治性"概念，指出某些技术天然地倾向于特定的社会结构——如机械番茄采摘机导致小农场主被淘汰。文章强调这种风险无需恶意行为者或AI故障，仅需AI放大既有趋势即可发生，因此值得更多关注。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI和资本主义对权力集中及社会未来的影响
+                    <div class="comments-summary">这条评论只有一个观点，没有形成讨论。以下是内容分析：
 
-不同观点：
-• **反对AI必然集中权力论**（epsteingpt）：认为AI不一定导致单一权力集中，反而需要市场化竞争来对抗威权国家的AI垄断威胁，否则愿意使用技术镇压异见者的威权政府将获胜。
+**主要讨论点：**罗马帝国衰亡的历史教训与当代社会的相似性
 
-• **资本主义的自我强化问题**（himata4113）：认为资本主义本身不错，但问题在于财富的无限累积效应——达到一定阶段后成功变得容易（如马斯克效应）。主张在某个财富阈值后（约100万/年）设限，因为超过此数额的财富已失去激励意义，变成纯粹的权力游戏。
+**核心观点：**
+• 罗马帝国衰亡的关键原因是腐败的金融精英阶层渗透到政府，制定规则以最大化精英财富提取，忽视经济长期健康
+• 到帝国末期，政府实质上是在"榨干海绵"（过度压榨已枯竭的资源）
+• 现代文明似乎没有从历史中吸取教训，正在重复同样的错误模式
 
-• **技术作为权力工具的悲观论**（huragok, sucrosesucrose）：认为某项关键技术发明前资本主义尚可，AI的出现确保了黑暗未来，因人性固有的腐败、过度追求便利和对自然的剥削。
+**评论特点：**
+• 这是一个单独的观点陈述，未见其他用户回应或反驳
+• 使用历史类比来批评当代社会的经济和政治结构
+• 带有悲观主义色彩，认为历史教训被忽视
 
-• **转移注意力论**（PaulHoule）：认为这些讨论只是在转移对能源和环境等真实问题的关注。
-
-• **二元对立观**（euroderf）：简洁表达社会主义与反乌托邦的互斥关系。
-
-补充讨论：核心争议在于技术进步（特别是AI）是否加剧资本主义的权力集中趋势，以及应采取市场竞争还是限制措施来应对。</div>
+**注：**如需分析不同观点和讨论关系，需要提供更多评论内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48527533" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.cnn.com/2026/06/12/climate/cold-blob-atlantic-amoc-ocean-circulation" target="_blank">A 'cold blob' in the Atlantic could be a sign of AMOC shutdown – CNN</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tambourine_man</span> |
-                    <span>评分: 74</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-06-14 14:40</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>北大西洋格陵兰南部出现异常"冷斑"区域，自1900年以来降温近1摄氏度。新研究表明，这是大西洋经向翻转环流(AMOC)减弱的信号。AMOC像海洋传送带，将热带暖水输送到北半球。全球变暖导致冰川融化，淡水涌入打破平衡，使AMOC走向临界点。若AMOC崩溃将带来灾难：美国东海岸海平面加速上升，欧洲陷入严寒，非洲季风改变引发干旱。研究发现冷斑不仅表层降温，深海也在降温，证实是洋流变化而非大气因素导致。科学家警告AMOC可能本世纪内达到崩溃临界点。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大西洋经向翻转环流(AMOC)减弱及气候变化的真实性和影响
-
-不同观点：
-
-• **气候变化紧迫派**（hliyan）：认为气候数据无可辩驳，CO2排放与全球温度高度相关，现有计算模型可预测温度变化，质疑怀疑论者的依据
-
-• **科学谨慎派**（metalman）：强调气候系统复杂且未被充分理解，任何具体理论都很可能是错误的，但承认气候正在以前所未有的速度变化
-
-• **欧洲影响关注派**（clort, camgunz）：聚焦AMOC崩溃对欧洲的直接冲击，担心欧洲温度骤降将严重影响农业和居住环境，可能引发社会动荡
-
-• **技术乐观派**（NDlurker, deadbabe）：半开玩笑地提出在冷水区建数据中心，利用免费冷却同时为欧洲供暖
-
-• **系统批判派**（jdw64）：将问题归咎于资本主义体制，认为资本阶层消耗公共资源后拒绝修复
-
-• **怀疑论者**（mikert89）：因气候数据造假传闻而完全不相信气候变化
-
-• **虚无主义派**（skeledrew）：认为人类无法改变，不如让地球重启，等待下一个智慧物种
-
-补充讨论：评论中出现明显的立场分化，从科学讨论到政治归因再到极端虚无，反映了气候议题的复杂性和社会撕裂。争议焦点在于：气候数据的可信度、人类行动的必要性和可能性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48527658" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://sqltoerdiagram.com/" target="_blank">Free SQL→ER diagram tool, runs in the browser, nothing uploaded</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: robhati</span> |
-                    <span>评分: 247</span> |
-                    <span>评论数: 24</span> |
-                    <span>发布时间: 2026-06-14 03:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这看起来是一个在线SQL schema可视化工具的界面说明。主要功能包括：
-
-1. **核心功能**：粘贴SQL的CREATE TABLE语句，自动生成数据库表结构的可视化图表
-2. **交互操作**：支持拖拽表格、滚动缩放、双击重命名、完成后导出
-3. **隐私特性**：100%本地运行，数据不离开浏览器，无需注册账号或上传文件
-4. **便捷性**：提供示例schema加载功能
-
-这是一个注重隐私保护的SQL数据库结构设计和可视化工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个免费、离线的SQL数据库可视化工具的发布及讨论
-
-不同观点：
-• **高度认可派**：多数用户称赞工具实用性强，特别是移动端体验出色、无需注册登录、数据本地处理等特性，认为优雅地解决了老问题（如替代笨重的MySQL Workbench）
-• **技术细节关注派**：开发者分享了有趣的实现细节——使用Canvas而非DOM/SVG渲染、SQL解析器保留源代码格式、URL包含完整schema、曾尝试Rust/WASM但因边界开销最终选择纯JS（32KB gzipped）
-• **术语争议派**：有用户指出从SQL无法真正生成ER图，因为实体(entity)与表(table)概念不同，SQL信息不足以构建准确的ER图，承认自己有些pedantic但这是概念性区别
-• **功能需求派**：用户提出具体改进建议——希望隐藏特定表的连接（如多租户应用中的tenant表链接）、使用直角连线代替曲线、支持更多SQL方言（建议集成sqlglot转换）
-
-补充讨论：用户推荐了类似工具如explain.dalibo.com（查询计划可视化）、Mermaid ER图、datagram.studio，并询问AI辅助开发的比例。整体氛围积极，开发者技术实现受到关注。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48523992" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48530841" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
