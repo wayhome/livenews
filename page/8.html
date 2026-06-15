@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-16 03:01 (北京时间)
+            最后更新时间: 2026-06-16 06:55 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,34 +61,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://faroutcompany.com/" target="_blank">FarOutCompany</a>
+                    <a href="https://planetscale.com/blog/the-only-scalable-delete" target="_blank">The only scalable delete in Postgres is DROP TABLE</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 118</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-14 14:09</span>
+                    <span>作者: hollylawly</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2026-06-11 16:48</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一份20世纪60-70年代反主流文化运动的视觉档案目录。内容涵盖：嬉皮公社（如Tree Frog、Rainbow等）、地下出版物（如Helix、Actuel、Chicago Seed）、音乐场馆海报（Boston Tea Party等）、独立书店和艺术空间、以及Rick Griffin、Wes Wilson等反文化艺术家的作品。这些条目记录了从旧金山到波士顿、从加拿大到欧洲的嬉皮运动视觉文化，包括迷幻海报、地下报纸、公社生活照片和独立出版物，是那个时代青年反叛、精神探索和另类生活方式的图像见证。</p>
+                    <p>这篇文章讨论了Postgres数据库中大规模删除数据的最佳实践。主要观点是：
+
+大量使用`DELETE`会降低性能，因为它不会立即释放磁盘空间，还会产生"死元组"增加vacuum负担，并给读取查询带来额外开销。Postgres的MVCC机制会保留多个行版本，删除操作实际上是"增加工作"而非"完成工作"。
+
+相比之下，`DROP TABLE`和`TRUNCATE`直接删除物理文件，立即释放空间，不产生死元组，性能开销与数据量基本无关。
+
+文章建议：对于需要大规模删除数据的场景，应设计schema使其可以通过`DROP TABLE`或`TRUNCATE`来实现，而不是使用`DELETE`。对于一次性清理场景，可以使用事务DDL创建临时表保留需要的数据，然后直接DROP原表。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于1960-70年代反文化运动影像资料的价值和意义
+                    <div class="comments-summary">主要讨论点：数据库大规模DELETE操作的性能问题及替代方案
 
 不同观点：
-• **社区主义vs财富孤立观**：反文化运动展现了人们在简单生活中相互帮助、共同生活的社区模式，与现代财富带来的私人庄园、空旷豪宅形成鲜明对比。这种集体生活方式让人们感到快乐和舒适
 
-• **历史档案的可及性**：有评论者指出土耳其等国家通过官方平台（如filmmirasim.ktb.gov.tr）提供类似历史影像资料的访问，强调历史资料保存和公开的重要性
+• **DELETE可扩展性争议**：crazygringo认为DELETE本身是可扩展的，问题在于批量操作需要不同策略；saisrirampur认为调优良好的autovacuum可让DELETE在TB级别正常工作，文章过于绝对
 
-• **商业使命的认可**：Far Out Company致力于挖掘被低估的60-70年代反文化艺术家作品，这种带有使命感的商业模式获得肯定
+• **DROP TABLE替代方案的风险**：saisrirampur警告DROP TABLE需要ACCESS EXCLUSIVE LOCK，可能阻塞其他语句，不适合高并发CRUD应用；而多数评论者认可这是大规模删除的有效方案
 
-补充讨论：有评论提到内容的美学风格让人想起《全球概览》（Whole Earth Catalog），暗示这些影像延续了当年反文化运动的视觉和精神传统。另有亲历者表达了对那个时代的怀念。整体氛围积极正面，评论者们从不同角度肯定了保存和传播这段历史的价值。</div>
+• **分区策略的适用性**：elnerd和buremba展示了基于时间分区的成功案例（DNS日志、时序数据）；levkk指出CRUD应用难以结构化分区，可能误删重要业务数据；cowthulhu认为需要清空整表本身就说明设计有问题
+
+• **通用性认知**：jandrewrogers和insumanth强调这是所有数据库的共性问题，UPDATE实际是INSERT+DELETE，Elasticsearch等系统表现更明显
+
+补充讨论：评论提到pg_partman工具、pg_repack方案、Oracle相对PG的DELETE优势，以及小规模删除时DELETE可能比TRUNCATE更快的反直觉现象。整体共识是批量操作需要专门优化策略。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48527360" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48492822" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -99,41 +108,30 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://aresluna.org/segmented-type/" target="_blank">Segmented type appreciation corner (2018)</a>
+                    <a href="https://news.ycombinator.com/item?id=48546618" target="_blank">Anthropic pauses credit change for Claude Code</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: unexpectedVCR</span> |
-                    <span>评分: 49</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-11 12:50</span>
+                    <span>作者: fabianlindfors</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-15 20:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>您提供的内容看起来像是一些数字和零散的文本片段，而不是一篇完整的文章。这些内容包括：
-
-- 一系列数字（8, 16, 24, 34, 43, 66, 93等）
-- 一些不完整的词语（"Exprâtal"、"Produced"）
-- 提示文本"Just start typing!"
-
-如果您想让我总结某篇文章，请提供完整的文章内容或文章链接。如果这些数字和文本有特定的背景或含义，请告诉我更多信息，我可以帮助您分析。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一个16段数码显示器网站的反馈和应用场景
+                    <div class="comments-summary">主要讨论点：对某封邮件缺乏上下文信息的抱怨
 
 不同观点：
-• **功能建议**：mrgriscom建议添加Posy视频中展示的概念显示效果，认为可以增强项目表现力
-• **面试应用价值**：mohsen1认为制作7段显示器是考察前端开发者的优秀面试题，能测试CSS定位、JS计时器和组件化思维等基础能力
-• **实际硬件应用**：radeeyate表示正好需要这个工具来模拟硬件习惯追踪器的显示屏，称赞其实用性和实时输入显示功能
-• **硬件兼容性疑问**：Retr0id询问是否有真实硬件使用相同的分段方案，注意到提到了西班牙火车但链接失效
-• **Bug反馈**：a_t48指出输入"3.141"会显示5个字符而非4个，表达不满
-• **功能赞赏**：bloqs简短评价16段显示器versatile（多功能）
+• hungryhobbit 认为收到的邮件完全没有意义，因为缺少任何背景信息或上下文
 
-补充讨论：dang作为网站管理员说明已使用项目官网的标题替换了原投稿标题。整体氛围积极，多数评论聚焦于实用价值和技术细节，仅有一条负面反馈关于小数点处理的bug。</div>
+补充讨论：目前只有一条评论，尚未形成多方讨论或争议。这是对沟通质量问题的单方面批评，重点在于邮件信息不完整导致无法理解其内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48489636" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48546618" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -144,33 +142,114 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://bumbershootsoft.wordpress.com/2026/06/13/programming-the-zx-spectrums-bitmap-display/" target="_blank">Programming the ZX Spectrum's Bitmap Display</a>
+                    <a href="https://www.theregister.com/research/2026/06/15/google-says-prc-linked-spies-hid-in-medical-research-networks-for-more-than-a-year/5254547" target="_blank">PRC-linked spies hid inside medical and military networks for more than a year</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 7</span> |
+                    <span>作者: Bender</span> |
+                    <span>评分: 27</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-15 16:42</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>谷歌发现中国政府间谍组织UNC6508潜伏在北美多家医疗和军事研究机构网络中超过一年。攻击者通过入侵REDCap服务器，部署名为InfiniteRed的定制恶意软件窃取登录凭证，并利用Gmail内容合规规则秘密转发敏感邮件。他们搜索的目标包括无人机技术、国防系统信息，以及基孔肯雅病毒等医学研究数据。该间谍活动最早可追溯至2023年9月，攻击者在系统中隐藏超过一年后才被发现，影响了多个知名临床机构、学术中心和军事医疗机构。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">您提供的评论内容过于简短，只有一条评论："And they found a few of the less competent ones."（他们发现了一些能力较弱的人）。
+
+**无法完成分析的原因：**
+
+这条评论缺少：
+• 讨论的上下文和主题
+• 其他参与者的观点
+• 具体的论据或例子
+• 评论之间的互动关系
+
+**建议：**
+
+请提供完整的评论串或讨论内容，包括：
+• 多条评论（至少3-5条）
+• 原始讨论的主题或背景
+• 不同参与者的发言
+
+这样我才能识别不同观点、分析争议焦点，并为您提供有意义的总结。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48543848" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://su3.io/posts/zeroserve-caddy-compat" target="_blank">Caddy compatibility for zeroserve: 3x throughput and 70% lower latency</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: losfair</span> |
+                    <span>评分: 203</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-06-14 13:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>zeroserve 是一个高性能 HTTPS 服务器，现在支持 Caddy 兼容模式。它将 Caddyfile 配置 JIT 编译为 eBPF 和本地机器码，在 io_uring 事件循环中运行。性能测试显示：zeroserve 吞吐量达 38,948 req/s，是 Caddy 的 3 倍；延迟 p50 为 1.45ms，比 Caddy 低 70%；内存占用仅 30.9 MiB，远低于 Caddy 的 67.4 MiB。支持图灵完备的 eBPF 脚本，可从 Caddyfile 调用自定义代码，例如实现 AWS SigV4 认证的 S3 反向代理。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于 zeroserve（一个新的 Rust 编写的 Web 服务器）的技术价值和实用性争议
+
+不同观点：
+
+• **质疑实用性派**：认为项目缺少关键功能（如 ACME 自动证书管理和插件系统），NGINX 已经足够好，不需要重写；担心项目会在 6 个月内死亡，没有支持和历史记录，真正需要性能的用户不会采用
+
+• **安全担忧派**：指出 io_uring 存在安全漏洞（最近几周刚发布安全公告），JIT 编译增加了巨大的攻击面，3400 行的锁文件也引发安全疑问；有用户遇到奇怪的证书弹窗
+
+• **性能质疑派**：认为优化了错误的指标，Caddy 从来不是瓶颈，35k QPS 对大多数应用已经过剩，水平扩展更实际；单主机后端达不到这种流量需求
+
+• **技术困惑派**：不理解"在用户空间运行 eBPF"的意义（eBPF 的核心价值就是在内核空间运行）；质疑项目方向变化（最初承诺无配置文件，现在又加回来了）
+
+• **积极兴趣派**：对技术实现感到印象深刻，想抽时间尝试该项目
+
+补充讨论：有开发者询问 io_uring 用于 Web 服务器的安全实践，是否应该使用 libuv 替代以换取安全性</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48527145" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.theregister.com/cyber-crime/2026/06/11/shinyhunters-claims-oracle-peoplesoft-0-day-hit-100-orgs/5254443" target="_blank">ShinyHunters hacked 100 orgs by exploiting an Oracle PeopleSoft 0-day</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: billybuckwheat</span> |
+                    <span>评分: 15</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-15 11:21</span>
+                    <span>发布时间: 2026-06-15 19:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了ZX Spectrum计算机的位图显示系统。主要内容包括：
-
-**显示内存结构**：位图信息存储在$4000-$5AFF，其中$4000-$57FF为像素数据（6KB），$5800-$5AFF为颜色信息（768字节）。
-
-**颜色映射**：768字节按32×24网格排列，每字节控制一个8×8像素块的颜色，包括前景色、背景色、亮度和闪烁属性。
-
-**位图布局**：采用独特的内存排列方式，将屏幕分为三个8行区域（起始于$4000、$4800、$5000），同一颜色块内垂直移动需加减256，水平移动加减1。这种设计简化了硬件解码和字符绘制的软件实现。
-
-文章指出，虽然布局奇特，但这是为了在硬件和软件层面优化性能而做的设计权衡。</p>
+                    <p>黑客组织ShinyHunters利用Oracle PeopleSoft的零日漏洞(CVE-2026-35273)攻击了100多个组织的300个系统实例。诺丁汉大学是首个公开受害者,被窃取40GB学生个人数据和账单记录后,因拒绝支付赎金而遭数据泄露。该漏洞评分9.8分,允许未经身份验证的远程攻击者通过HTTP完全控制PeopleSoft平台。Google证实5月27日至6月9日期间发现恶意活动,已通知100多个受影响组织,其中68%为高等教育机构,大部分位于美国。Oracle已发布缓解措施,补丁即将推出。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48539694" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48545693" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -181,39 +260,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.aptiv.com/en/insights/article/usb-power-delivery-plugging-into-the-benefits" target="_blank">USB Power Delivery: Plugging into the Benefits</a>
+                    <a href="https://www.cs.yale.edu/homes/perlis-alan/quotes.html" target="_blank">Perlisisms (1982)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 61</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-11 12:15</span>
+                    <span>作者: tosh</span> |
+                    <span>评分: 128</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2026-06-14 14:56</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了USB供电技术的演进。USB从1996年诞生以来，不断提升供电能力：从USB 1.1的0.5W发展到USB-C的15W。2021年发布的USB PD协议支持最高100W功率，通过提升电压至20V实现快速充电。USB EPR进一步将功率提升至240W，可为笔记本等高功耗设备供电。
+                    <p>这是一系列关于编程的警句格言，涵盖了软件开发的核心智慧：
 
-文章还介绍了"电源共享"技术，能让多设备同时充电，智能分配功率。例如：低电量设备获得100W，高电量设备获得25W，优化充电效率的同时降低成本。Aptiv已与OEM合作推出符合标准的产品，预计2029年将有更多认证产品面世。</p>
+**核心观点：**
+- 数据结构比函数更重要，应晚绑定、重复用（第2、9条）
+- 简洁性来自复杂之后，而非之前（第31条）
+- 程序员的价值在于案例分析的完整性，而非技巧（第32条）
+- 优化阻碍演化，模块化易产生误解（第20、21条）
+- 递归是计算的根本，用描述换取时间（第12条）
+- 好的编程语言会改变思维方式（第19条）
+
+**哲学思考：**
+程序永远是其他程序的一部分（第4条），最终都会变成华丽然后崩塌（第14条）。理解程序需要同时成为机器和程序本身（第23条）。编写无错程序只有第三种方法有效（第40条）。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：USB-C PD技术的优缺点及应用前景
+                    <div class="comments-summary">主要讨论点：Alan Perlis的编程格言在LLM时代的相关性和解读
 
 不同观点：
 
-• **积极支持派**：认为USB-C统一了充电标准，旅行时一个充电器可为所有设备供电，全球可随时购买替换线缆，极大提升便利性。甚至期待更多应用场景（如小型PC、电动车）
+• **LLM与编程的关系**
+  - 支持派：引用#27"理解程序后让别人来写"和#93"只说想做什么的语言"，认为这些格言预见了LLM编程助手的理念
+  - 质疑派：引用#102"无法通过形式化手段从非形式化过渡到形式化"，认为这对基于LLM的编程系统（如Claude）构成挑战
 
-• **技术质疑派**：批评USB-C存在严重缺陷——电流方向无法控制（手机可能反向给充电宝充电）、过度复杂导致脆弱性、软件驱动的电压协商可能出现灾难性故障、微小接口承载大电流不安全
+• **对经典格言的现代解读**
+  - 有人强调#99"人机共生中人必须调整"在自动化时代仍值得深思
+  - 有人认为#113关于神经科学和心理学的论述通过软件研究连接起来，在LLM时代更具意义
 
-• **安全担忧派**：指出USB-C是最糟糕的安全场景，恶意线缆/充电器可对笔记本发起攻击，认为传统DC适配器更安全。提到苹果专利壁垒问题
+• **对具体格言的不同理解**
+  - #18关于循环和结构变量：有人反驳说电子表格等无循环程序也很有用
+  - 低级语言的定义（需关注无关细节）获得认可
+  - #31"简单跟随复杂而非先于复杂"被视为经典智慧
 
-• **实用主义派**：关注具体技术问题，如廉价设备不支持PD协议、PD诱骗模块电压转换不稳定会导致设备掉电、需要专业工具测试实际供电能力
-
-补充讨论：有评论质疑240W功率是否过度（调侃会出现USB烤面包机），另有人欣赏此类"被低估技术"的正面报道。最后有人指出文章存在误导信息。争议焦点集中在便利性与安全性/可靠性的权衡。</div>
+补充讨论：有评论者建立了专门网站展示这些格言，另有人最初误读为"Perl语言"相关内容，还有人感叹怀念那个时代的编程环境。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48489309" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48527820" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -224,39 +317,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://zengm.com/blog/2026/06/vibecoded-games/" target="_blank">Being an old school web-based sports sim dev in the era of vibe coded games</a>
+                    <a href="https://www.wsj.com/tech/ai/the-ai-price-war-is-here-piling-pressure-on-openai-and-anthropic-86e1d21b" target="_blank">The AI Price War Is Here, Piling Pressure on OpenAI and Anthropic</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: YesBox</span> |
-                    <span>评分: 57</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-12 18:52</span>
+                    <span>作者: AnodicElegy</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-15 18:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了一位老派网页体育模拟游戏开发者的感受。作者从2012年开始开发Basketball GM(BBGM),当时web开发工具非常原始。经过多年努力,BBGM在2021年成为他的全职工作,既受欢迎又盈利。
-
-作者曾认为自己的市场地位很安全,因为从经济角度看,竞争对手很难超越一个已建立的免费网页游戏。但AI的出现改变了一切——现在即使是非专业程序员也能用AI"vibecode"(AI辅助编程)快速开发游戏。几乎每天都有新的AI生成的体育模拟游戏发布,虽然质量参差不齐,但一些作品已经相当出色,对他的市场地位构成了威胁。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI辅助编程对游戏开发的影响及未来趋势
+                    <div class="comments-summary">主要讨论点：AI服务的价格战与成本效益对比
 
 不同观点：
-• **AI作为提效工具的支持者**（LarsDu88）：AI能快速实现功能、修复性能问题、并行处理多任务。但强调人类经验至关重要——能识别AI建议的适用性（如碰撞检测优化在飞行模拟器中不适用）。担忧未来全AI生成代码将因开发者失去理解力而导致质量下降
-
-• **对"vibe-coded"游戏的质疑**（schnitzelstoat）：质疑是否存在成功的AI生成游戏案例，认为可能并无实际成功先例
-
-• **内容管线优势论**（RobRivera）：认为优秀的游戏引擎+内容生成管线才是关键，能快速交付高质量游戏，AI生成的低质内容会被淹没在噪音中
-
-• **商业竞争视角**（alexpotato）：引用Pinboard案例说明技术栈选择的商业重要性——低成本架构带来盈利优势
+• **价格差异显著**：工作场景使用Claude处理大型代码库，月成本$500-$1000+；个人项目使用Deepseek仅$20可持续2周以上，成本相差25-50倍
+• **性能体验相近**：尽管价格差异巨大，用户认为Deepseek与Claude在实际使用中表现"几乎没有差异"（negligible difference）
+• **使用场景影响成本**：大型monorepo与重型技能使用导致token消耗快速；简单项目即使重度使用也成本可控
 
 补充讨论：
-部分评论偏离主题（dvh关于童年游戏机的回忆，tantalor对"old school"时间定义的感慨）。akoboldfrying表达对AI时代的不确定性和对保持有意义工作的希望。</div>
+有用户分享了WSJ关于AI价格战的文章免费链接，表明AI定价策略正在成为行业关注焦点。这些评论反映出AI服务市场正经历激烈的价格竞争，低价选项（如Deepseek）正在挑战高价服务商（如Claude）的市场地位。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48508021" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48545285" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -267,201 +354,102 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://wizardzines.com/comics/write-for-one-person/" target="_blank">Write for One Person</a>
+                    <a href="https://tumbleweed.nu/r/lm-3/uv/amber.html" target="_blank">Chaosnet (1981)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: evakhoury</span> |
-                    <span>评分: 209</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-06-12 17:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这段内容不是一篇文章，而是一个网站页面的订阅提示。它邀请读者订阅周六漫画通讯或浏览更多漫画内容。没有实质性的文章主题可以总结。
-
-如果你想让我总结某篇文章，请提供完整的文章内容或链接。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于技术写作和内容创作中如何定位目标受众的策略讨论
-
-不同观点：
-• **为特定个人写作派**：Syzygies通过亲身经历证明"每个观众都是一个人的观众"，为少数人用心创作反而带来意外机会。simonw建议"为三年前的自己写作"，Multiplayer主张为自己而写以避免陷入取悦所有人的困境。
-
-• **平衡可及性派**：chabad360认为可通过展开首字母缩写、提供链接等小细节让内容更易理解，不必二选一。neilv提出用超链接解决问题，为不同水平读者提供分层信息。zxter指出最难找的恰恰是衔接基础和高级的中间层资源。
-
-• **受众细分派**：zkmon认为这只是"目标受众"的常规做法，并非新原则。Animats和Jap2-0强调需为具体用户画像写作，而非泛泛迎合某个群体。
-
-• **计算机素养焦虑派**：GarnetFloride担忧用户计算机素养下降，纠结该降低到何种程度，同时感慨许多实践经验未能转化为机构知识就消失了。
-
-补充讨论：matheusmoreira分享了忽视AI建议保持个人风格却遭遇负面评价的经历，提醒发布内容存在风险。thedreammachine将此类比为产品策略：10个深度用户胜过1000个浅层用户。NookDavoos则提出相反思路：是否可能像欧几里得《几何原本》那样提供完整的文学编程文档。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48507039" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://gabrielweinberg.com/p/people-are-consuming-ai-like-they" target="_blank">Not everyone is using AI for everything</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: yegg</span> |
-                    <span>评分: 491</span> |
-                    <span>评论数: 65</span> |
-                    <span>发布时间: 2026-06-14 14:44</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章反驳了"所有人都在用AI做所有事"的说法。数据显示，美国AI使用情况大致为：三分之一积极使用、三分之一偶尔使用、三分之一从不使用。过去一年AI采用率几乎停滞，反而负面情绪显著上升。人们限制AI使用的主要原因包括：担心AI取代工作（42%）、侵犯隐私（35%）、传播虚假信息（33%），以及对AI实际价值持怀疑态度。AI的社会正面评价仅为+8%，与社交媒体相当，远低于互联网、手机等技术。结论：实际情况是"一些人在某些事情上使用AI"，而非"所有人用AI做所有事"。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI工具在日常工作和生活中的实际使用情况及其效果差异
-
-不同观点：
-
-• **积极但谨慎派**：AI在某些领域（如PHP后端开发）表现出色，显著提升生产力，但在其他领域（如Swift UIKit）质量堪忧，需要人工监督。认为AI擅长发现问题但不一定能很好地解决问题。
-
-• **有限价值派**：编程领域（特别是Claude）因GitHub代码标注效果好，但研究等其他任务表现平庸，与搜索引擎或维基百科差别不大。许多公司用更慢更差的LLM替代原有确定性系统，体验下降。
-
-• **隐性使用派**：AI已深度嵌入日常工具（Google搜索、手机应用），多数人实际上每天都在"使用AI"但并未意识到。未来增长点在于AI功能融入现有软件，而非聊天界面的使用频率。
-
-• **抵制/未使用派**：部分人完全不使用AI，或担心因不使用AI而在职场中落后、被管理层发现。
-
-• **质量担忧派**：AI可能因"低努力+便利性"战胜"最佳质量"，导致整体质量下降。27%美国成年人读写能力极低（Level 1以下），部分人根本无法有效使用AI。
-
-补充讨论：求职者在技术面试中回答"如何使用AI"时面临两难，需在AI热衷型和AI犹豫型雇主间平衡。代理型AI产品目前效果不佳，实际应用有限。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48527700" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/jietang/status/2065784751345287314" target="_blank">GLM 5.2 Is Out</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: aloknnikhil</span> |
-                    <span>评分: 728</span> |
-                    <span>评论数: 52</span> |
-                    <span>发布时间: 2026-06-13 16:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>智谱AI发布GLM-5.2开源模型，回应某些前沿模型因非技术原因被限制访问的情况。该公司强调科学应是全球性的，AGI不应被垄断，因此选择激进开放策略。GLM-5.2是智谱目前最强开源模型，支持100万token上下文窗口，在长时程任务执行上保持领先，并作为国产编程模型的主引擎。模型于6月13日下午5:21向GLM编程计划用户开放，API将于次周上线。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：中国智谱AI在美国限制Anthropic Claude模型（Fable事件）后，立即开源发布GLM-5.2模型，引发关于开源vs闭源、中美AI竞争的讨论。
-
-不同观点：
-• **支持激进开源派**：认为AGI应属于全人类，反对技术垄断。中国实验室（智谱、MiniMax、Kimi）的开源贡献极具价值，开源模型不受政治因素影响，是未来趋势（khalic, segmondy）
-• **实用主义者**：关注模型实际能力。若GLM-5.2达到今年1月Opus水平是重大突破，可替代工作流中的闭源模型，但仍需验证代码质量和架构理解能力（abustamam, Havoc）
-• **谨慎乐观派**：承认开源进步，但认为SOTA模型仍需巨大算力，真正前沿能力仍掌握在大公司手中。期待去中心化方案打破垄断（evilturnip, jwblackwell）
-• **技术细节关注者**：希望看到完整benchmark、性能指标、优化技术细节，而非仅营销宣传（throwaw12, mgc8）
-
-补充讨论：
-有人指出此次发布时间（5:21pm）刻意对应Fable禁令时间，属于蹭热度的营销策略。部分用户期待更快的flash版本和本地运行可行性。普遍共识是编码任务可能已接近"被解决"，但前沿任务仍需顶级模型。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48518684" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lisyarus.github.io/blog/posts/quivers-a-year-of-linear-algebra-by-drawing-arrows.html" target="_blank">Quivers: A year of linear algebra by drawing arrows</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ibobev</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-10 11:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>您还没有提供完整的文章内容。目前我只看到了文章的前半部分，讲述了：
-
-1. **表示论基础**：通过将复杂对象表示为更易理解的形式（如矩阵）来研究它们。例如，复数 i 可以表示为旋转矩阵。
-
-2. **箭图（Quivers）**：箭图就是有向图（允许多重边和自环）。文章提到研究箭图的表示论可以推广大学一年级线性代数课程的内容。
-
-3. **矩阵与算子的区别**：强调向量和算子是抽象几何对象，不依赖于特定的坐标表示和基的选择。
-
-文章在解释什么是箭图以及为何用这个术语时被截断了。如果您能提供完整文章，我可以给出更全面的总结。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于用范畴论（quiver/箭图）方法讲解线性代数的文章或教程
-
-不同观点：
-• **支持者观点**（FallenSky2077）：认为这是范畴论应用于线性代数的入门教程，quiver是优雅的小型范畴构造。提到q.uiver.app是用于绘制范畴论交换图的可视化工具
-• **质疑者观点**（philip-b）：对教学完整性提出质疑——缺少定理和证明，质疑这种箭图方法能否证明传统线性代数课程中的常见定理
-• **术语争议**（jdonaldson）：认为用"quiver"替代"有向无环图(DAG)"的做法令人困惑，倾向使用已有的简洁术语DAG
-
-补充讨论：核心分歧在于数学教学方法——是否应该引入范畴论框架来重构线性代数，以及新术语体系是否必要。philip-b的问题触及了关键：形式化工具的美感与实际证明能力之间的平衡。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48474982" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arcadeblogger.com/2026/06/14/how-did-atari-apply-side-art-to-arcade-cabinets/" target="_blank">How did Atari apply side art to Arcade Cabinets?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: msephton</span> |
+                    <span>作者: RGBCube</span> |
                     <span>评分: 98</span> |
                     <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-14 12:57</span>
+                    <span>发布时间: 2026-06-14 19:14</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了80年代初Atari街机柜体的丝网印刷工艺。该技术将图案分解成多个颜色层，每种颜色制作独立的印刷网版。通过感光乳剂和胶片曝光制作镂空模板，然后用刮板将油墨逐层印刷到木质面板上。整个过程需要精确对位，确保多层颜色完美叠加。Atari使用半自动化平板丝网印刷系统提高效率，例如《导弹司令》生产了28,000块面板。相比现代喷墨打印，丝网印刷的墨层更厚实、色彩更饱满，这也是原版Atari街机侧面图案至今仍保持鲜艳的原因。</p>
+                    <p>Chaosnet是1975年由MIT人工智能实验室开发的局域网系统，用于连接地理位置相近的计算机群。其名称来源于缺乏中央控制元素的设计理念。最初为Lisp Machine系统开发，后扩展到MIT及其他研究机构的多种设备。
+
+系统设计目标是简洁性和高性能。通过高速传输介质和简单协议实现快速响应和高吞吐量，而非复杂算法。硬件采用类似Xerox PARC以太网的载波侦听多路访问结构，使用同轴电缆作为物理介质。软件定义了基于数据包的高层协议。
+
+Chaosnet专注于局域网应用，不处理长距离传输、低速链路等复杂场景，适用于文件系统访问、打印机等共享资源的连接。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于丝网印刷技术在街机柜体装饰中的应用及其历史演变
+                    <div class="comments-summary">主要讨论点：Chaosnet网络协议的历史和技术特点
 
 不同观点：
-• 怀旧认同：SoftTalker回忆起在中学工艺课学习丝网印刷的经历，认为这是一项传统手工艺技术，包括手工切割和光敏乳剂制版
-• 技术演进观：yesfitz指出经过30多年的贴花和包装时代后，Spooky Pinball重新引入直接印刷("butter cabs")，使用大型喷墨打印机。强调直接印刷让图像"成为物体的一部分"而非"贴在物体上"，带来更好的质感体验
-• 技术细节补充：sowbug解释了"套准"(registration)工艺和套准标记的作用，提到这对老一辈人来说是常识，年轻一代可能在牛奶盒底部还能见到
-• 质疑态度：fnord77认为这只是"普通的丝网印刷，没什么革命性的"
+• **技术对比角度**：有用户关注Chaosnet与同时期以太网的具体技术差异，想了解两者在设计上的不同之处（ranger207）
+• **协议标准角度**：有人询问这是否就是IP数据包中协议号0x10的CHAOS协议，试图将其与现代网络标准关联（ale42）
+• **实用主义角度**：有用户指出Chaosnet目前仍在模拟器上活跃使用，支持多种老式计算机系统，强调其持续的实用价值（larsbrinkhoff）
+• **历史回顾角度**：有用户从硬件层面出发，认为文章描述的物理传输方案可作为"从第一性原理构建的最简单局域网"的实验基础，赞赏其技术简洁性（peter_d_sherman）
 
-补充讨论：
-jdswain提出实用性问题——丝网可以重复使用多少次；esafak简短评价YouTube是宝库；MdRobiul的"2"评论意义不明。整体讨论氛围平和，没有明显争议，更多是信息交流和经验分享。</div>
+补充讨论：有用户提醒不要将Chaosnet与Chaos VPN混淆，后者是德国混沌计算机俱乐部（CCC）网络连接工具；另有用户提到Space Cadet键盘和CADR模拟器对Chaosnet的支持，反映出复古计算机爱好者社区的兴趣。整体讨论氛围积极，侧重技术细节而非争议。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48526793" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48531449" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.euronews.com/my-europe/2026/06/15/air-travellers-to-enjoy-free-cabin-luggage-and-keep-delay-compensation-after-decade-long-t" target="_blank">EU Air travellers to enjoy free cabin luggage and keep delay compensation</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: TechTechTech</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-15 17:25</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>欧盟理事会和欧洲议会达成协议，维持航空旅客权益规定：航班延误3小时以上可获250至600欧元赔偿；禁止收取随身行李费，乘客可免费携带一个小物品和一个7公斤以内的登机箱；不携带行李的乘客可选择降价票。新规将于2027年生效。该法案经历十余年谈判，航空公司曾反对称会增加成本，但议会坚持维护消费者权益。廉价航空如瑞安航空需调整商业模式，将行李费纳入票价。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：航空公司行李政策与票价分层的实际效果
+
+不同观点：
+• [weinzierl的质疑]：批评现有政策虚伪性。认为低价票名义上允许携带登机箱，但实际操作中航空公司会施压让乘客托运，导致"登机行李"权利形同虚设。高价票才真正保障两件登机行李，低价票实际等同于零件行李。
+
+• [kkwtflz的困惑]：对政策变化表示不解。指出Ryanair等廉航早已实行"要行李就加钱"的模式，质疑新政策与现状有何本质区别——既然已经可以通过付费选择行李，那改变的意义何在？
+
+补充讨论：两位评论者从不同角度审视同一问题：一个关注政策执行中的落差（承诺与现实不符），另一个质疑政策本身的新颖性（与既有做法无异）。核心分歧在于对航空公司定价策略的评价角度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48544413" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://en.wikipedia.org/wiki/Balkan_sworn_virgins" target="_blank">Balkan Sworn Virgins</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Semaphor</span> |
+                    <span>评分: 14</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-15 17:37</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>"宣誓处女"(burrnesha)是巴尔干地区的传统第三性别社会角色,主要存在于阿尔巴尼亚北部、科索沃和黑山等父权制地区。出生时被指定为女性的人通过宣誓守贞,终生以男性身份生活,受部落法律Kanun承认。她们放弃女性的性别、生育和社会身份,获得与男性同等的自由:可穿男装、担任户主、自由社交和从事传统男性工作。这一习俗在女性角色受限的时代为她们提供了另一种生活选择。2002年估计剩余不到102人,2022年约仅存12人。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48544568" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
