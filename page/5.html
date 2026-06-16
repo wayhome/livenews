@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-16 06:55 (北京时间)
+            最后更新时间: 2026-06-16 10:17 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,56 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cnn.com/2026/06/15/us/b-52-crash-edwards-california" target="_blank">B-52 bomber crashes shortly after takeoff at California's Edwards Air Force Base</a>
+                    <a href="http://ernesernesto.github.io/writes/portingmatchmorphosistowasm/" target="_blank">Ported my C game to WASM, here's every bug that I hit</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: bluedino</span> |
-                    <span>评分: 22</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-15 20:34</span>
+                    <span>作者: birdculture</span> |
+                    <span>评分: 103</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-06-12 17:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>周一上午，一架B-52轰炸机在加州爱德华兹空军基地起飞后不久坠毁，机上8名机组人员被认为已全部遇难。这架轰炸机正在执行常规测试任务，坠毁时留下巨大黑色烟柱。官方表示初步判断无人生还。B-52是美国空军最古老的飞机之一，1955年开始服役，目前仍有76架在役。上一次致命事故发生在2008年关岛附近。由于该机型已于1962年停产，任何替换只能从亚利桑那州戴维斯-蒙森空军基地的"飞机坟场"获取退役机身。</p>
+                    <p>你好！我注意到你的消息似乎被截断了。你想让我总结这篇关于用 Emscripten 将 C 游戏移植到 Web 的技术文章吗？
+
+如果是的话，这里是 200 字以内的中文总结：
+
+**主要内容总结：**
+
+作者用纯 C 和自定义引擎（bgfx、SDL2 等）开发游戏，并通过 Emscripten 移植到 Web。关键问题包括：
+
+1. **32位vs 64位**：WASM 是 32 位，指针 4 字节而非 8 字节，导致结构体布局错位。解决方法是分离运行时数据和烘焙数据，避免结构体中直接使用指针。
+
+2. **调试策略**：在 32 位原生环境调试而非浏览器，配合 ASan 和数据断点快速定位问题。
+
+3. **内存分配 bug**：`sizeof(ThingHandle*)` 在 64 位恰好等于 `sizeof(ThingHandle)`，在 32 位则不同，导致内存分配错误。
+
+4. **渲染差异**：OpenGL ES（WebGL）比 D3D 严格得多，需注意顶点布局、组件数量匹配、Y 轴翻转等问题。
+
+5. **着色器兼容**：需重新编译为 GLSL ES，注意 `lerp`/`mix` 差异和整数浮点类型严格性。
+
+文章似乎还有第 6 点关于 Web Audio 的内容未完整显示。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">这条评论内容不足以进行完整的观点分析。它只是一条单独的陈述，提到在某段视频中没有看到大块碎片，并附带了两个参考链接（一个Reuters新闻链接和一个Edwards空军基地的社交媒体链接）。
+                    <div class="comments-summary">主要讨论点：将老旧游戏代码移植到 WebAssembly 的技术挑战与解决方案
 
-要完成您要求的分析任务，我需要：
-- 多条评论来识别不同观点
-- 评论之间的互动和讨论
-- 更完整的上下文来理解讨论主题
+不同观点：
 
-请提供：
-1. 更多相关评论
-2. 这些评论所讨论的完整话题背景
-3. 评论之间的回复关系
+• **WASM 32位限制的质疑**：thewavelength 质疑为何 WASM 要重复 32 位指针的错误；xydone 指出 memory64 提案已合并，质疑为何还选择 32 位
 
-这样我才能按照您的要求总结出不同观点、论据和争议焦点。</div>
+• **数据序列化方式的争议**：diath 强烈反对直接读写结构体到文件，建议使用正式的序列化器以避免编译器填充差异和安全漏洞；而 hexer303 和原文作者采用了直接内存映射的方式
+
+• **渲染架构选择**：deadbabe 提出是否应该用 WASM 做游戏逻辑、JS 做渲染；DonHopkins 详细分享了 Micropolis 项目中采用 C++ 引擎 + TypeScript/Svelte UI 的混合架构，通过 Embind 桥接实现清晰分离
+
+• **WASM 对 Web 开发的影响**：arcadialeak 认为 WASM 模糊了 Web 和原生编程的界限，有助于 JS 开发者理解底层执行，并可能促进原生 UI 的回归
+
+补充讨论：
+hexer303 分享了类似移植经验，选择用浏览器原生 API 替代 WASM 音频库；有人指出 Chrome 调试扩展可提供断点和内存监控；unwind 建议改进内存分配代码写法；DonHopkins 详述了使用 Svelte 5 runes、WebGPU 和 Embind 的复杂架构方案；rvz 提醒 C 移植到 WASM 仍会继承 C 的安全漏洞。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48546697" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48506980" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,13 +121,119 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://gizmodo.com/us-government-reportedly-allowing-federal-data-center-rules-to-expire-2000772083" target="_blank">US Government Reportedly Allowing Federal Data Center Rules to Expire</a>
+                    <a href="https://github.com/firish/claude_code_vs" target="_blank">Show HN: Claude Code for Visual Studio (native diff with accept/reject)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: 01-_-</span> |
-                    <span>评分: 28</span> |
+                    <span>作者: firish</span> |
+                    <span>评分: 13</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-15 23:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是一个将 Claude Code 集成到 Visual Studio 2026 的社区扩展项目。主要功能包括：
+
+1. **原生差异视图**：Claude 的代码编辑在 VS 的 diff 窗口中显示，可接受/拒绝修改
+2. **自动上下文**：自动共享编译器错误、警告和代码选择
+3. **实时面板**：显示连接状态、编辑决策和 token 使用成本估算
+4. **协议桥接**：通过 WebSocket 连接 claude CLI，扩展本身不调用 AI 模型
+
+工作原理：启动本地 WebSocket 服务器，claude CLI 自动连接并通过 MCP/JSON-RPC 协议驱动 VS 的 diff 窗口和诊断功能。仅支持 VS 2026，需要预先安装并认证 claude CLI。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：逆向工程未记录协议的可靠性和维护策略
+
+不同观点：
+• [rsg29] 提出核心问题：如何处理未记录协议的合约漂移（contract drift）。他逆向工程了 Claude IDE 协议，担心在没有官方规范的情况下，如何保证代码的长期稳定性和兼容性。寻求有类似经验者的建议。
+
+• [contextfree] 表达兴趣但未提供实质性反馈，仅表示会尽快尝试该项目。
+
+补充讨论：这是一个典型的技术风险讨论。核心焦点在于**依赖逆向工程的不稳定性** —— 当上游协议变更时，缺乏官方文档会导致破坏性变化难以预测和应对。目前缺少有经验的开发者给出具体的应对策略（如版本锁定、自动化测试、协议变更检测等）。讨论尚未展开深入的技术方案探讨。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48548381" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.ycombinator.com/companies/dalus/jobs/5IDmKJt-senior-software-frontend-engineer-germany-office" target="_blank">Dalus (YC W25) Is Hiring a Senior Software Engineer in Germany</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sebastianvoelkl</span> |
+                    <span>评分: 1</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-15 07:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Dalus是一家成立于2024年的初创公司，正在开发AI驱动的硬件系统设计软件平台，用于火箭、卫星、电动汽车等复杂系统的设计。公司现招聘高级前端工程师（驻德国），年薪7-9万欧元加期权。职位要求：5-8年以上经验，精通React，有优秀的UI/UX品味，能独立负责前端开发。核心挑战是将复杂的工程数据转化为直观易用的界面。这是早期高自主权角色，直接与创始人合作塑造产品。公司目标是用现代化工具替代行业中过时的桌面软件，让硬件开发更快、更安全、更具扩展性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48537556" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://bbenchoff.github.io/pages/8Tracks.html" target="_blank">LLMs Will Replace 8-Track Duplication Engineers</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: wanderingjew</span> |
+                    <span>评分: 23</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-15 20:06</span>
+                    <span>发布时间: 2026-06-15 19:00</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了8轨磁带制作中的一个NP难问题。8轨磁带有四个等长的节目段，制作时需要将专辑歌曲分配到四段中，使各段时长尽可能均衡。最长的段决定磁带总长度，其他段的剩余时间会产生空白。作者以Fleetwood Mac的《Rumours》专辑为例，分析了实际发行版本与计算机优化方案的差异——仅交换两首歌的位置就能节省4秒磁带。在当年没有计算机辅助的情况下，音频工程师凭经验手工解决了这个复杂的优化问题，展现了人类在NP难问题上的实际表现。作者还提到正在为自己的汽车制作Frank Ocean专辑的8轨版本。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM在数学计算和计数任务中的适用性
+
+不同观点：
+• [razorbeamz]认为LLM不是处理此类任务的理想工具，因为LLM无法进行数学运算或计数
+
+补充讨论：目前只有一条评论，暂无其他观点或争议。该评论指出了LLM的局限性，但未说明具体任务背景或提供替代方案。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48545569" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://andreklein.net/your-epub-is-fine-kobo-disagrees-blame-adobe/" target="_blank">Your ePub Is fine</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sohkamyung</span> |
+                    <span>评分: 873</span> |
+                    <span>评论数: 50</span> |
+                    <span>发布时间: 2026-06-14 22:54</span>
                 </div>
 
                 <div class="summary-section">
@@ -118,19 +243,21 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">我需要更多信息才能分析评论和总结观点。您提供的只有一条评论：
+                    <div class="comments-summary">主要讨论点：电子书阅读器和EPUB格式的技术问题，特别是Adobe RMSDK的维护不善及其对行业的影响
 
-"We had this law for three years. What did it actually do?"
+不同观点：
 
-这是一个单独的问题，询问某项法律在三年内的实际效果。
+• **Adobe维护不力派**：Adobe对RMSDK和Flash的糟糕支持导致市场份额流失。产品bug众多却不提供支持，联系渠道形同虚设，甚至内部员工都找不到相关文档。这种行为涉嫌反竞争垄断。
 
-要完成您要求的分析任务，我需要：
-- 完整的评论讨论串（包括对这条评论的回复和相关讨论）
-- 或者一组关于同一话题的多条评论
+• **EPUB标准混乱派**：EPUB 3.x引入WHATWG HTML"活标准"后问题重重，无版本控制和QA。新标准让旧文件不合规，Calibre仍推荐使用2.0或3.1版本。电子阅读器不是常青浏览器，复杂CSS规范并不适用。
 
-请提供完整的评论内容，我将按照您的要求进行分析和总结。</div>
+• **Kobo解决方案派**：Kobo的KEPUB格式和更先进的渲染引擎能解决很多问题。通过Calibre转换为KEPUB可改善排版，设备支持侧载且更开放。Kobo正重写软件，逐步摆脱RMSDK转向LCP。
+
+• **最小兼容性派**：应使用最基础的HTML/CSS以保证兼容性，除非绝对需要复杂格式（如数学公式）。针对最低公分母开发是市场现实。
+
+补充讨论：PineNote等开源硬件、Pocketbook等支持多格式的替代设备受到关注。Adobe已将Digital Editions出售给Wipro Engineering，行业正在加速转型。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48546358" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48533848" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -141,71 +268,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.salesforce.com/news/press-releases/2026/06/15/salesforce-signs-definitive-agreement-to-acquire-fin/?bc=HL" target="_blank">Salesforce to Acquire Fin (formerly Intercom) for $3.6BN</a>
+                    <a href="https://nodered.org/blog/2026/06/09/version-5-0-released" target="_blank">Node-Red 5 Released</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: colesantiago</span> |
-                    <span>评分: 160</span> |
-                    <span>评论数: 28</span> |
-                    <span>发布时间: 2026-06-15 12:08</span>
+                    <span>作者: kristopherleads</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-15 21:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Salesforce宣布以约36亿美元收购客户服务AI公司Fin（原Intercom）。Fin的AI Agent能通过多渠道端到端解决复杂客户查询，平均解决率达76%，其专有AI模型Apex在客户支持领域表现优于主流商业模型。此次收购将加速Salesforce在中小企业市场的AI部署能力，为各规模企业提供快速部署的服务代理解决方案。交易预计在2027财年第四季度完成，不影响Salesforce现有财务指引和资本回购计划。Fin拥有超过3万家企业客户。</p>
+                    <p>Node-RED 5.0 是该项目历史上编辑器体验的最大更新。主要变化包括：
+
+**编辑器现代化**：重新设计的侧边栏支持同时显示两个面板，新增资源管理器和信息面板分离，内置深色主题，改进可访问性，优化节点选择外观和缩放交互。
+
+**功能增强**：调试输出可暂停，Function节点可调用Link节点，节点选择列表支持排序，Delay节点新增突发模式。
+
+**安全更新**：更多TLS选项，增强身份验证机制。
+
+**底层改进**：支持Node.js 24，捆绑npm，现代化开发环境配置。
+
+整体目标是提升用户体验、改善节点外观、增强功能并更新项目基础设施。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Salesforce收购Intercom/Fin的交易及AI客服的价值争议
+                    <div class="comments-summary">主要讨论点：Node-RED在家庭自动化中的应用价值，特别是与Home Assistant的比较
 
 不同观点：
+• **持保留态度（tryptophan）**：曾使用Node-RED配合Home Assistant，但随着HA自身自动化功能改进后放弃使用。认为Node-RED最大缺陷是缺乏可视化调试能力，无法轻松追踪执行历史和问题排查，而HA能展示所有执行细节。即使Node-RED功能更强大，糟糕的调试体验使HA系统更优。
 
-• **AI客服持正面态度**：janderson215认为执行得当的AI客服体验远超传统客服，无需重复说明且如同直接对接三级支持；DoingSomeThings称赞Intercom的AI聊天产品在团队自助服务方面表现最佳，无需咨询顾问
+• **积极推荐态度（kristopherleads）**：强调Node-RED 5的重大更新，包括全新UI、节点功能增强、无障碍特性提升，以及"缩放适配"功能解决了跨屏幕尺寸工作的痛点。作为日常用户，认为各方面都有巨大改进。
 
-• **AI客服持负面态度**：twodave认为AI客服只会编造无法帮忙的理由或仅能做UI已有功能，实际价值为负；projektfu表示AI客服从未成功帮助过他，最终都要转人工；vintagedave基于Anthropic支持体验对Fin评价极低
-
-• **对收购的战略解读**：wgyn指出Intercom面向初创企业而Salesforce面向大型企业，收购可能是为了快速拓展企业市场；light_triad认为这是Salesforce CEO与前联席CEO创立的Sierra竞争的举动，也是防止AI客服成为CRM外部控制点
-
-• **对收购的悲观预期**：zelphirkalt断言Salesforce会让产品变得令人讨厌；jmuguy认为Intercom本质上零价值，企业自训AI后会被替代；Robdel12对Intercom的AI转型感到失望
-
-补充讨论：alpineman质疑若最流行AI支持工具估值如此，不支持Nvidia等公司万亿估值；pbiggar批评CEO McCabe 2019年性骚扰指控后未受惩罚</div>
+补充讨论：两条评论并非直接对话，kristopherleads可能在回应tryptophan提出的可视化/易用性问题，暗示新版本可能已改善这些体验。核心争议在于功能强大vs易用性调试之间的权衡，以及新版本是否解决了旧版本的痛点。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48540126" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://v1c.rocks/log/exploiting-slack-video/" target="_blank">Show HN: Exploiting Slack's video embeds to achieve E2EE communication</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: victorio</span> |
-                    <span>评分: 20</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-15 15:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>作者利用 Slack 的 video block 功能（实际是 iframe）开发了一个端到端加密消息应用。核心思路是：用户在客户端生成密钥对，加密后的私钥存储在服务器，当需要加解密操作时，服务器通过 video block 将密钥发回客户端，所有加解密操作都在本地完成，服务器永远无法获取解密后的私钥。实现上使用 TypeScript 和 openpgpjs 库，通过 slug 系统传递必要数据。这是一个利用 Slack 灵活性的巧妙 hack，展示了 Web 技术在主流服务中嵌入完整应用的可能性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于主流服务是否应该支持内嵌完整功能应用的讨论
-
-不同观点：
-• **支持内嵌应用模式**：评论者指出中国的微信、支付宝等平台已经广泛采用小程序(mini apps)模式，证明这种方式是可行且成功的
-
-补充讨论：这条评论主要是对某个建议的回应，用中国互联网生态作为实际案例，说明"在客户端内运行完整功能应用"的模式已经在实践中得到验证。评论者通过举例来支持原讨论中提出的想法。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48542970" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48547422" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -263,13 +361,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://andreklein.net/your-epub-is-fine-kobo-disagrees-blame-adobe/" target="_blank">Your ePub Is Fine. Kobo Disagrees. Blame Adobe</a>
+                    <a href="https://www.reuters.com/business/aerospace-defense/us-air-force-b-52-bomber-crashes-after-takeoff-edwards-air-force-base-says-2026-06-15/" target="_blank">US Air Force B-52 bomber crashes after takeoff, Edwards Air Force Base says</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sohkamyung</span> |
-                    <span>评分: 186</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-06-14 22:54</span>
+                    <span>作者: tartoran</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-15 20:02</span>
                 </div>
 
                 <div class="summary-section">
@@ -279,63 +377,21 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：电子书EPUB标准实现混乱，Adobe等厂商技术支持不力导致行业困境
+                    <div class="comments-summary">主要讨论点：美国B-52轰炸机在爱德华兹空军基地坠毁事件
 
 不同观点：
-
-• **Adobe问题严重派**：Adobe历史上就有产品质量差、客户支持缺失的问题（Flash例子）；RMSDK完全无法获取，邮件无回复，内部都找不到文档；最近将Digital Editions卖给Wipro后迁移更加混乱，平台加速逃离Adobe
-
-• **标准本身有问题派**：EPUB标准引用WHATWG等"living standards"导致没有版本控制和QA；EPUB 3.2让现有电子书不合规；epubcheck无法验证渲染器兼容性问题；建议使用EPUB 2或3.1
-
-• **实用主义派**：保持最简单的HTML/CSS格式最保险，避免花哨样式；针对最低公分母设计，类似当年兼容IE6；只在Google Docs和LibreOffice上编辑，能在Kindle/Kobo/Calibre打开就算成功
-
-• **行业垄断批评派**：出版商只通过Apple、Amazon、Adobe发行，其他两家完全封闭，Adobe技术又不可及，这是反竞争行为
+• **事故严重性判断**：mrandish认为起飞后不久发生事故是最危险的时刻，低高度、低速度加满油的情况下后果严重，推测机组人员可能未全部幸存
+• **系统性问题质疑**：KingMachiavelli提出三种可能原因——使用老旧设备、采用战时快速程序、或仅因飞行频率高导致统计概率问题。强调美军非战斗死亡率过高，训练期间伤亡超过实战
+• **装备老化问题**：qq66指出B-52已停产64年，认为美军依赖过于陈旧的飞机，急需更新换代
+• **常态化看法**：blitzar持相对平淡态度，认为飞行足够久总会发生这类事故，将其视为航空运营的正常风险
 
 补充讨论：
-Kobo正在欧盟测试完全重写的阅读器软件，不再基于RMSDK；PineNote提供开放硬件替代方案；有开发者制作HTML转EPUB工具(EPublish)解决兼容性；IP法务在大公司地位高于开发者，这是根本原因</div>
+• verzali提到近期还有F-18坠毁，暗示可能存在更广泛的问题
+• hagbard_c和2OEH8eoCRo0注意到同一天俄罗斯Tu-22M3轰炸机也坠毁，形成巧合对比
+• optimalsolver分享1994年B-52历史坠机视频作为参考
+• ranger_danger担心可能涉及核武器事故（broken arrow）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48533848" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/YusufB5/ASCILINE" target="_blank">Asciline – real-time ASCII video rendering engine</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: godot</span> |
-                    <span>评分: 53</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-12 04:39</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>ASCILINE是一个高性能跨平台实时ASCII视频渲染引擎，将视频像素转换为文本字符并通过WebSocket流式传输。核心优势包括：纯文本操作可应用CSS特效、适合AI/LLM处理、超低带宽零GPU需求（ASCII模式）、绕过浏览器媒体限制。技术架构采用Python后端（OpenCV解码+NumPy映射）和原生JS前端（Canvas渲染），支持多种色彩模式（黑白到1600万色）。可选自适应编解码器通过RAW/ZLIB/DELTA三种编码动态压缩帧数据，静态画面可节省99.7%带宽。支持播放列表、文件夹队列、循环播放等灵活视频管理功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 一个ASCII视频渲染项目的实用性和技术价值争议
-
-**不同观点：**
-
-• **质疑实用价值派：** 认为项目缺乏实际用途，README充满"vibe nonsense"；不理解为什么要把视频渲染成HTML canvas中的文本；质疑其相比libcaca、aalib等成熟工具的优势，后者在demoscene社区已有数十年积累且输出更优
-
-• **技术实现批评派：** 指出该项目只是简单的字符着色而非真正的ASCII渲染（始终使用相同字符，仅改变颜色标签），牺牲了"酷炫"这一ASCII艺术的核心价值；认为"跨平台"说法不成立，因为平台就是浏览器本身
-
-• **生态缺失派：** 提出关键问题是浏览器不原生支持.ans格式的<canvas>渲染，需要Ansilove.js或Xterm.js等hack方案；建议开发基于ANSI、通过FFmpeg预渲染的原生AV格式以支持<video>标签
-
-• **潜在应用派：** 认为可用作视频会议工具，在tmux窗口中显示极客朋友们
-
-**补充讨论：** 有人质疑该项目短时间内获得数千GitHub stars的真实性，怀疑是否存在刷星行为；有评论讽刺"绕过浏览器限制"的说法，认为这并非用户真正需要的功能</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48499993" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48546306" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -393,13 +449,13 @@ Kobo正在欧盟测试完全重写的阅读器软件，不再基于RMSDK；PineN
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.reuters.com/business/aerospace-defense/us-air-force-b-52-bomber-crashes-after-takeoff-edwards-air-force-base-says-2026-06-15/" target="_blank">US Air Force B-52 bomber crashes after takeoff, Edwards Air Force Base says</a>
+                    <a href="https://www.princeton.edu/~wbialek/rome/refs/shannon_51.pdf" target="_blank">Prediction and Entropy of Printed English - Claude Shannon (1950) [pdf]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tartoran</span> |
-                    <span>评分: 79</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-15 20:02</span>
+                    <span>作者: consumer451</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-15 22:32</span>
                 </div>
 
                 <div class="summary-section">
@@ -409,69 +465,9 @@ Kobo正在欧盟测试完全重写的阅读器软件，不再基于RMSDK；PineN
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美军B-52轰炸机坠毁事故引发的军机安全问题讨论
-
-不同观点：
-
-• **系统性安全问题论**（KingMachiavelli）：质疑是否存在系统性问题导致军机事故频发，可能原因包括使用老旧装备、战时流程在和平时期的不当应用、或仅因飞行频率高导致统计概率问题。特别指出训练中的死亡率高于实战，从政策角度令人担忧
-
-• **装备老化论**（qq66）：B-52已停产64年，美军依赖过于老旧的飞机，急需更新换代
-
-• **正常风险论**（blitzar）：认为这是飞行时间累积后的正常现象——"飞得够久，总会发生这种事"
-
-• **事故时机分析**（mrandish）：指出起飞后不久是最危险时刻，低高度、低速度加满油的状态下，事故会迅速恶化
-
-补充讨论：
-- 有人提到近期还有F-18坠毁和俄罗斯轰炸机坠毁，暗示这可能不是孤立事件
-- 有人担心是否涉及核武器意外（"broken arrow"）
-- 多人分享了其他资料链接和历史案例（1994年费尔柴尔德基地坠机视频）
-
-争议焦点：军机频繁事故究竟是装备老化、制度问题，还是高风险职业的常态？</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48546306" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://americanexpress.io/cell-based-architecture-for-resilient-payment-systems/" target="_blank">American Express: Cell-Based Architecture for Resilient Payment Systems</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-15 22:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国运通的核心支付系统采用**单元化架构（Cell-Based Architecture）**来确保全球支付平台的高可用性和低延迟。
-
-**核心设计原则：**
-- 每个单元是独立的部署单元，包含自己的微服务、数据库和组件
-- 单元间无同步依赖，故障被隔离在单个单元内，不会扩散
-- 静态和半静态数据（如汇率、商户分类码）预先复制到每个单元，避免事务处理时的跨单元查询
-- 单元不跨地域部署，所有处理资源保持本地化
-
-**优势：**
-- 缩小故障影响范围
-- 降低延迟（减少网络跳转和外部依赖）
-- 易于水平扩展（增加独立单元）
-- 支持独立维护和部署
-
-这种架构在2018年现代化改造中被采用，确保了全球范围内的支付交易可靠处理。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48547969" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48547929" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
