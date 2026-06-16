@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-16 16:37 (北京时间)
+            最后更新时间: 2026-06-16 21:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,35 +61,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.reuters.com/business/aerospace-defense/us-air-force-b-52-bomber-crashes-after-takeoff-edwards-air-force-base-says-2026-06-15/" target="_blank">US Air Force B-52 bomber crashes after takeoff, Edwards Air Force Base says</a>
+                    <a href="http://ernesernesto.github.io/writes/portingmatchmorphosistowasm/" target="_blank">Ported my C game to WASM, here's every bug that I hit</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tartoran</span> |
-                    <span>评分: 98</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-06-15 20:02</span>
+                    <span>作者: birdculture</span> |
+                    <span>评分: 111</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2026-06-12 17:30</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>你好！我注意到你的消息似乎被截断了。你想让我总结这篇关于用 Emscripten 将 C 游戏移植到 Web 的技术文章吗？
+
+如果是的话，这里是 200 字以内的中文总结：
+
+**主要内容总结：**
+
+作者用纯 C 和自定义引擎（bgfx、SDL2 等）开发游戏，并通过 Emscripten 移植到 Web。关键问题包括：
+
+1. **32位vs 64位**：WASM 是 32 位，指针 4 字节而非 8 字节，导致结构体布局错位。解决方法是分离运行时数据和烘焙数据，避免结构体中直接使用指针。
+
+2. **调试策略**：在 32 位原生环境调试而非浏览器，配合 ASan 和数据断点快速定位问题。
+
+3. **内存分配 bug**：`sizeof(ThingHandle*)` 在 64 位恰好等于 `sizeof(ThingHandle)`，在 32 位则不同，导致内存分配错误。
+
+4. **渲染差异**：OpenGL ES（WebGL）比 D3D 严格得多，需注意顶点布局、组件数量匹配、Y 轴翻转等问题。
+
+5. **着色器兼容**：需重新编译为 GLSL ES，注意 `lerp`/`mix` 差异和整数浮点类型严格性。
+
+文章似乎还有第 6 点关于 Web Audio 的内容未完整显示。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国B-52轰炸机在爱德华兹空军基地坠毁事件
+                    <div class="comments-summary">主要讨论点：将老游戏/C++项目移植到WebAssembly的技术经验与挑战
 
 不同观点：
-• 事故原因推测：起飞后不久是最危险时刻，低空低速满油状态下容易出现严重事故；可能与B-52J升级项目的新引擎测试有关
-• 装备老化问题：B-52已停产64年，美军依赖过于老旧的飞机，需要更新换代
-• 系统性安全隐患：质疑军用飞机频繁事故是否存在系统性问题——使用老旧设备、战时流程在和平时期的不当应用、或是飞行频次过高导致的统计必然性
-• 训练伤亡率关注：美军非战斗伤亡（特别是训练中）比例过高，从政策角度令人担忧
-• 相关性质疑：有人质疑此类新闻是否适合出现在Hacker News
+• **WASM 32位限制的看法**：部分开发者质疑为何WASM仍采用32位指针（thewavelength认为是重复错误），而xydone指出memory64提案已合并，建议使用64位
+• **序列化方式争议**：diath强烈反对直接读写struct到文件，建议用专门的序列化器以避免编译器填充差异和安全漏洞；而hexer303和原作者的老代码恰恰使用了这种"直接内存映射"方式
+• **音频处理策略**：hexer303选择在Emscripten中用内联JS替代SoLoud库，认为浏览器原生支持更轻量；但遇到循环播放间隙问题
+• **渲染方案选择**：deadbabe询问是在WASM中直接渲染还是分离逻辑与渲染；DonHopkins的实践是C++处理模拟逻辑、TypeScript/Svelte处理UI和渲染，通过Embind桥接
 
 补充讨论：
-同日发生多起战略轰炸机事故——美国F-18坠毁、俄罗斯Tu-22M3轰炸机在伊尔库茨克坠毁，引发关注。有评论援引1994年费尔柴尔德空军基地B-52坠毁视频作为历史参照。机组人员伤亡情况尚未公布，爱德华兹空军基地计划召开新闻发布会。</div>
+• 多位开发者分享成功移植经验（Panzerschrek用SDL2、DonHopkins移植SimCity）
+• 技术细节：WebGL/WebGPU比桌面GL更严格、需要转换DirectX固定管线到shader、C++异常在Emscripten开销大
+• 实用建议：使用Chrome调试扩展获取断点支持、避免sizeof(Type*)改用sizeof *variable
+• 安全提醒：WASM继承C语言漏洞（rvz）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48546306" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48506980" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -100,38 +120,65 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ohdear.app/news-and-updates/the-ghost-domain-problem-in-dns-and-what-were-doing-about-it" target="_blank">The ghost domain problem in DNS, and what we're doing about it</a>
+                    <a href="https://github.com/AnthonySturdy/micro-radar" target="_blank">Micro Radar: a tiny open-source flight radar for your desk</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Mojah</span> |
+                    <span>作者: asturdy</span> |
+                    <span>评分: 31</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-15 22:13</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是一个开源桌面微型航班雷达项目。核心硬件是带240x240 IPS屏幕的ESP32-C3模块。项目使用OpenSky API获取航班数据，建议注册免费账号以提高请求次数（从400次增至4000次/天）。
+
+组装需要3D打印外壳、镜片、热熔螺母等配件，耗时1-2小时。主要步骤包括：打印外壳部件、安装热熔螺母、固定镜片（可选）、组装挡板和屏幕模块、连接USB-C延长线。
+
+固件通过VS Code和PlatformIO IDE扩展烧录。整个项目无需焊接，适合DIY爱好者制作个性化航班追踪显示器。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于一个自制飞行雷达Arduino项目的分享和反馈
+
+不同观点：
+• **项目作者立场（asturdy）**：为朋友婚礼设计开发了迷你飞行雷达，这是首个Arduino项目，对成果满意但希望获得反馈和改进建议，距离送礼还有两周时间
+• **积极赞赏立场（abstractspoon, kordlessagain）**：对项目表示高度认可，使用"totally fab"和"amazing"等词汇赞美成果
+• **社区发展视角（espinielli）**：希望看到更多"贡献者（feeders）"的增加，期待更多人对众包项目产生热情并回馈社区
+
+补充讨论：这是一个友好的技术分享场景，没有明显争议。espinielli的评论虽然不直接针对该项目，但反映了对开源/众包社区生态发展的关注，可能是在更广泛层面呼吁更多技术爱好者参与贡献。整体氛围积极正面，体现了maker社区的互助精神。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48547732" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.theatlantic.com/ideas/2026/06/ai-writing-style-literature/687536/" target="_blank">The rise of machine writing is a great opportunity for literature</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: samclemens</span> |
                     <span>评分: 8</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-12 13:09</span>
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-16 04:24</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了DNS系统中的"幽灵域名"问题：当域名注册商从DNS区域中移除某个域名后（如.de域名因联系信息验证失败被移除），该域名在运行时间检查器中可能仍显示正常数天。
-
-问题根源在于DNS缓存机制：递归解析器缓存了域名的权威NS记录（来自域名自身，优先级高于注册商提供的记录）。当A记录过期后，解析器直接查询缓存中的权威DNS服务器，而这些服务器并不知道域名已被移除，仍会正常响应。只有当NS记录也过期时，解析器才会重新向注册商查询，此时才发现域名已不存在。
-
-这个问题影响所有依赖递归解析器缓存的监控服务，目前已有IETF草案提出解决方案，但仍是DNS领域的小众问题。</p>
+                    <p>这篇文章探讨了AI写作的特征。作者指出，通过表面特征（如破折号使用）识别AI文本并不可靠，就像19世纪错误地通过面相判断罪犯一样。真正的区别在于更深层次：AI写作没有固定风格，因为它没有固定的自我。通过让ChatGPT讲故事的实验，作者发现AI倾向于创作寓言式故事，能根据要求改变文体（如模仿简·奥斯汀），但始终坚持故事必须包含明确道德教训这一理念，反映出其概率性生成文本的本质——基于训练数据预测最可能出现的词语组合。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：DNS缓存导致已删除域名在TTL过期前仍可访问的问题
-
-不同观点：
-• **quuxplusone的观点**：这不是DNS本身的问题，而是运营商递归解析器缓存导致的。解决方案是运行自己的bind9实例并禁用缓存，或使用`dig +trace`。认为"缓存资源在TTL内保持可见"是运营监控服务的基本原则，这是TTL机制的正常行为，不应称为"幽灵域名"。
-
-• **johnhtodd的立场**：提出两种解决方案。一是在注册表层面主动阻止刚删除的域名（Quad9采用此方法，因多数为恶意域名）；二是清除递归解析器中"刚删除"域名的缓存条目，但成本较高。强调阻止比删除更有利于追踪滥用指标。
-
-• **winstonwinston的补充**：指出从技术角度看，由于NS记录通常有很长的缓存时间，每个域名在TTL过期前都可视为"幽灵域名"，这是DNS缓存机制的常态。
-
-补充讨论：核心分歧在于这是否属于"问题"——quuxplusone认为这是预期行为，而johnhtodd从安全角度提供了实用的缓解方案。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48503675" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48550563" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -142,34 +189,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.bbc.co.uk/programmes/w3ct8k70" target="_blank">Why does paper fold so well?</a>
+                    <a href="https://commodore.net/callback/" target="_blank">Commodore Callback</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zeristor</span> |
-                    <span>评分: 102</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-13 19:31</span>
+                    <span>作者: peterkelly</span> |
+                    <span>评分: 18</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-16 09:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是BBC《群众科学》节目关于纸张折叠特性的内容。听众Haruka从小折纸鹤，发现用布料很难折叠，由此好奇纸张为何能很好地保持折痕。节目探访了世界首个机械化造纸厂，专家解释了造纸工艺和纸张化学结构如何实现可折叠性。折纸老师演示了不同纸张类型的折叠差异，曼彻斯特大学教授通过显微镜揭示其原因。最后介绍了东京大学教授发明的复杂折纸工具"Origamizer"。节目时长26分钟，探讨了纸张结构与折叠记忆的科学原理。</p>
+                    <p>Commodore推出了一款名为Callback 8020的"非智能手机"，定位于智能手机和功能机之间。这款翻盖手机刻意移除了社交媒体、浏览器、工作应用等容易让人上瘾的功能，采用触摸屏禁用、T9键盘输入等设计增加使用摩擦，帮助用户减少屏幕时间。
+
+手机基于隐私优先的Sailfish OS系统，支持99%的Android应用（但排除社交和浏览器），保留WhatsApp、Signal等通讯工具。配备48MP索尼相机、发烧级音频DAC、FM收音机和高品质耳机。售价499.99美元，6月30日开启预订。
+
+核心理念：通过物理设计和功能限制，帮助用户摆脱数字成瘾，重获专注力和心理健康。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：纸张的物理特性，特别是折叠和压缩的原理
+                    <div class="comments-summary">主要讨论点：对某个重启的老品牌计算机公司的质疑
 
 不同观点：
-• **折叠产生直线的几何特性**（srean）：纸张折叠能产生完美直线，这是因为纸张不可拉伸但可弯曲的特性。认为这是从零开始获得直边的最佳方法，该特性在黎曼几何中也成立
+• **怀疑论者观点**：认为这只是营销公司收购了老品牌名称后进行的营销炒作，缺乏实质内容，产品可能只是贴牌或概念性宣传
 
-• **空气间隙压缩理论**（Peterz_shu）：纸张可折叠是因为纤维间有大量空气间隙。固体不可压缩，实际被压缩的是空气。对比钨等致密材料更难折叠
-
-• **实用主义回应**（其他评论者）：分享相关视频资源、折纸网站，或简单表达对内容的欣赏
-
-补充讨论：评论中提到几个相关的物理现象（Dirac腰带技巧、布料撕裂方向），以及纸张会沉水的疑问（"压缩的木头为什么会沉"）。整体氛围是对日常材料物理特性的科学好奇，没有明显争议，更多是知识分享和补充。srean的几何视角和Peterz_shu的材料科学视角从不同层面解释了纸张特性。</div>
+补充讨论：由于只有一条评论，无法呈现多方讨论或争议焦点。该评论表达了对品牌真实性和产品实力的质疑，但缺少具体的产品信息、其他用户的反驳观点或支持性论据。需要更多评论内容才能进行完整的观点分析。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48520596" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48552570" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -180,36 +227,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/tamnd/kage" target="_blank">Show HN: Kage – Shadow any website to a single binary for offline viewing</a>
+                    <a href="https://www.notesfromtheroad.com/desertmexico/chili-peppers.html" target="_blank">Chili peppers of the world: cultivars, species, and heat</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: tamnd</span> |
-                    <span>评分: 681</span> |
-                    <span>评论数: 51</span> |
-                    <span>发布时间: 2026-06-14 17:25</span>
+                    <span>作者: fanf2</span> |
+                    <span>评分: 48</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-06-12 17:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>kage 是一个网站克隆工具，可将网站完整保存到本地供离线浏览。它通过无头 Chrome 浏览器渲染页面，等待页面加载完成后快照 DOM，然后移除所有 JavaScript 并下载 CSS、图片和字体到本地。生成的静态文件无需网络即可浏览，不会执行任何脚本或追踪代码。
-
-主要功能包括：克隆网站（`kage clone`）、本地预览（`kage serve`）、打包成单文件（`kage pack`）和查看归档（`kage open`）。支持增量更新、深度控制、子域名抓取等选项。可将整个网站打包成 ZIM 归档文件或自包含的可执行二进制文件，方便长期保存和分享。</p>
+                    <p>这篇文章介绍了全球辣椒的演化历史和多样性。野生辣椒最初为鸟类传播种子而演化出辣椒素，这种物质让哺乳动物感到灼热但鸟类无感。美洲原住民驯化出五个主要品种（C. annuum、C. chinense、C. frutescens、C. baccatum、C. pubescens）。哥伦布将辣椒带到欧洲后，通过贸易路线快速传播到非洲和亚洲，各地农民培育出适应本土的品种。文章配有176幅手绘辣椒插图，展示这段从野生到全球化的演变历程。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于kage（网站离线归档工具）的实用性、技术实现和替代方案
+                    <div class="comments-summary">主要讨论点：关于辣椒信息网站的评价及辣椒知识讨论
 
 不同观点：
-• **支持派**：认为工具很有用，特别适合离线访问公司wiki、在飞机上阅读文章等无网络场景，有人计划用于代码协作和版本控制
-• **技术质疑派**：质疑为何静态结果需要server而不能直接用浏览器打开；担心--no-sandbox参数的安全风险；认为会给目标网站造成过大负载
-• **替代方案派**：推荐其他工具如SingleFile（打包成单个HTML文件）、httrack、wget --mirror等，认为这些方案更成熟或更简洁
-• **实用性怀疑派**：指出对有弹窗、延迟加载等动态交互的网站可能失效；有人认为简陋的HTML存档反而比"完美"归档更实用，RSS源的长期可用性更好
+• **网站设计赞赏派**：多位用户（lgcmo, Talusmaximus, LargoLasskhyfv, vixen99）高度评价网站及其插图的精美程度，惊叹于辣椒品种的多样性。lgcmo建议增加交互式地图功能。
+
+• **科学质疑派**：IAmBroom对文章中"辣椒素进化是为了惩罚哺乳动物、奖励鸟类"的观点提出异议，认为这是过时假设且缺乏数据支持。他引用研究指出辣椒素主要是杀菌剂，其含量（史高维尔辣度单位）与当地真菌水平相关，强调抵抗感染比选择种子传播者更重要。
+
+• **实用应用派**：littlexsparkee分享使用黄灯笼椒制作热带风味辣酱的经验，推荐特定品牌和自制方法。
 
 补充讨论：
-有用户关注技术细节如demo生成方式（使用ascii-gif和VHS）、与gwern.net/gwtar的对比，以及是否适合给AI代码助手提供完整网站信息。核心争议在于**静态归档vs动态网站的兼容性**，以及**独立HTML文件vs需要服务器**的架构选择。</div>
+• account42发现信息错误：prik kee noo（泰国小米椒）被重复列在不同科属下
+• Markoff指出网站遗漏了捷克超市常见的Rush/Rush F1品种辣椒
+• 整体氛围积极，但也反映出科学准确性和信息完整性需要改进</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48529990" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48507128" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -220,47 +268,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://karthinks.com/software/even-more-batteries-included-with-emacs/" target="_blank">Even more batteries included with Emacs</a>
+                    <a href="https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/apple-foundation-models" target="_blank">Apple Foundation Models</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: signa11</span> |
-                    <span>评分: 339</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-06-15 02:30</span>
+                    <span>作者: MehrdadKhnzd</span> |
+                    <span>评分: 309</span> |
+                    <span>评论数: 35</span> |
+                    <span>发布时间: 2026-06-15 04:55</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一篇关于 Emacs 编辑器内置功能的系列文章（第三篇）。作者介绍了几个实用但鲜为人知的功能：
-
-1. **字典悬停提示**（dictionary-tooltip-mode）：鼠标悬停在单词上即可显示释义
-2. **通配符查找**：在 find-file 和 dired 命令中使用通配符批量打开文件或生成自定义文件列表
-3. **URI 列表**（ffap-menu）：扫描整个缓冲区中的文件路径和 URL，并提供交互式选择界面
-
-文章强调这些是 Emacs 原生功能，无需额外安装包，学习成本低（5分钟内掌握），适合有一定经验的用户发现新工具。作者建议新手先掌握基础概念和常用包后再阅读此类进阶内容。</p>
+                    <p>你没有提供文章内容。请分享你想要我总结的文章，我会用中文为你提供200字以内的简明摘要。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Emacs编辑器的优缺点、学习曲线和生态系统稳定性
+                    <div class="comments-summary">主要讨论点：Apple推出Foundation Models框架集成Claude API的意义和实现方式
 
 不同观点：
 
-• **Emacs稳定性分歧**
-  - 支持方（QwenGlazer9000）：使用Doom Emacs多年，更新后基本正常运行，认为生态系统比Neovim稳定
-  - 反对方（buzzwords, gnulinux）：每次更新都会出问题，包之间冲突频繁，尤其是LSP、自动补全等功能容易损坏，难以维持稳定工作环境
+• **硬件战略派**：认为这是Apple将LLM商品化同时保持UX控制权的策略，作为硬件公司继续销售最佳AI设备（harrouet）
 
-• **学习路径争议**
-  - 从零开始派（justinhj）：应该从vanilla配置开始，逐步构建自己的配置，认为发行版（Doom/Spacemacs）跳过了必要的学习过程
-  - 开箱即用派（noelwelsh）：批评"vanilla纯粹主义"，认为Emacs需要更好的开箱体验才能获得更广泛采用，多数人把编辑器视为工具而非目标
+• **本地模型期待派**：希望看到本地运行而非云端API。担心多个App重复下载同一模型会占用存储空间，质疑Apple是否提供共享机制（rock_artist, post-it, ryanshrott提出共享守护进程是唯一可行方案）
 
-• **功能发现问题**
-  - 原作者认为是"可发现性问题"，通过博客分享内置功能
-  - gnulinux反驳：问题不在发现功能，而在包组合的稳定性
+• **战略布局派**：认为这是为Apple自研模型铺路的抽象层，方便开发者未来无缝切换到Apple模型，节省成本并改善UX（daniel_iversen, mcintyre1994）
 
-补充讨论：多位长期用户（Steeeve用自1994年起）表达对Emacs深厚感情，认可其强大功能（org-mode等），但也承认学习曲线陡峭。有趣的是，即使资深用户也在持续发现新功能（如ruler-mode）。</div>
+• **实用性质疑派**：
+  - 认为这只是API的薄封装层，不理解其重大意义（simianwords）
+  - 质疑让用户输入API key的UX门槛太高（VadimPR, _pdp_）
+  - 批评hardcode模型名称而非动态发现机制，导致需要App更新才能支持新模型（pgt）
+  - 认为coding agent本身就是强加的层级，增加token消耗和降低透明度（zkmon）
+
+• **隐私观察派**：指出Apple声称不在请求路径中、看不到prompts/responses，从消费者角度看很讽刺（adithyassekhar）
+
+补充讨论：有人质疑是否包含在小开发者免费AI额度中（theopsimist），以及代码示例看起来像原始Anthropic API而非Apple抽象层（mark_l_watson）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48535886" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48536776" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -271,84 +315,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://stratechery.com/2026/anthropics-safety-superpower/" target="_blank">Anthropic's Safety Superpower</a>
+                    <a href="https://www.newyorker.com/magazine/2026/06/22/mutiny-noam-scheiber-book-review-yuppies-dylan-gottlieb" target="_blank">When Did White-Collar Work Start to Look So Bleak?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: swolpers</span> |
-                    <span>评分: 191</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-15 10:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章讨论了Anthropic公司发布Fable模型后引发的争议。Anthropic声称其Mythos模型因网络安全能力过强而危险,两个月后发布了带安全防护的Fable版本。但该模型很快被"越狱"破解,美国政府以国家安全为由要求停止向外籍人士提供访问。Anthropic认为政府反应过度,双方产生冲突。作者指出这种冲突不可避免,并质疑:如果模型真的危险,为何还要发布?文章认为Anthropic面临经济压力,需要发布模型来竞争,但其独特之处在于如何为这些行为辩护。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Anthropic公司因ITAR法规关闭Mythos模型引发的争议，核心是AI安全理念与权力控制之间的矛盾
-
-不同观点：
-
-• **技术护城河论**（botw44）：Anthropic的"权力"论调站不住脚，模型几个月内就被中国免费复现，真正瓶颈是算力和数据而非模型本身。ITAR限制暴露其无法实施国籍管控，只能全面关闭，并非强势把关者所为
-
-• **企业权力扩张批评**（swalsh, kordlessagain）：Anthropic领导层认为只有自己应掌控AI决策权，结合其"AI可执行所有经济活动"的论调，实质是想掌控一切。Project Glasswing等举措显示企业正控制人类思维，需夺回主动权
-
-• **安全理念辩护**（blueblisters, thedreammachine）：Anthropic的行为源于LessWrong/理性主义社区的AI安全信仰体系，其决策与信念一致。安全话语为其大胆政策变革提供了道德词汇和平台权力
-
-• **监管困境分析**（chasil, hedora）：ITAR法规要求限制外国人访问，违规可判10年监禁。但同样审计指令既能用于安全也能用于攻击，无法区分善恶意图，若全面封锁反而让工厂暴露于开源模型威胁
-
-• **商业竞争视角**（harry19023）：公司保护IP防止竞争对手窃取很正常，Ben Thompson对Anthropic的批评掺杂个人偏见，无法理性看待
-
-• **道德责任质疑**（keybored, intended）：以"真诚相信"为借口不可接受，当预测失败时用"为人类福祉"开脱是通往地狱之路。技术规模化带来巨大影响，从诈骗到人口贩运，安全成本不可忽视
-
-补充讨论：BullshitBench测试显示Anthropic模型在应对无意义请求时表现突出，体现其特殊的安全设计理念；有人建议Anthropic离开美国以摆脱腐败独裁的影响</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48539078" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://zengm.com/blog/2026/06/vibecoded-games/" target="_blank">Being an old school web-based sports sim dev in the era of vibe coded games</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: YesBox</span> |
-                    <span>评分: 57</span> |
+                    <span>作者: littlexsparkee</span> |
+                    <span>评分: 29</span> |
                     <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-12 18:52</span>
+                    <span>发布时间: 2026-06-15 22:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了一位老派网页体育模拟游戏开发者的感受。作者从2012年开始开发Basketball GM(BBGM),当时web开发工具非常原始。经过多年努力,BBGM在2021年成为他的全职工作,既受欢迎又盈利。
-
-作者曾认为自己的市场地位很安全,因为从经济角度看,竞争对手很难超越一个已建立的免费网页游戏。但AI的出现改变了一切——现在即使是非专业程序员也能用AI"vibecode"(AI辅助编程)快速开发游戏。几乎每天都有新的AI生成的体育模拟游戏发布,虽然质量参差不齐,但一些作品已经相当出色,对他的市场地位构成了威胁。</p>
+                    <p>这篇文章讨论了美国年轻人对职场前景的焦虑。2026年多所大学毕业典礼上，当嘉宾谈及AI将改变一切职业时，学生们发出嘘声。文章以《纽约时报》记者Jodi Kantor的新书《如何开始》为切入点，探讨了职场理想的变迁。Kantor虽经历过职场黑暗面，仍鼓励年轻人不要放弃工作。文章通过1988年电影《上班女郎》的对比，指出曾经代表成功和抱负的公司职位，如今却让毕业生感到绝望，反映出白领就业前景从充满希望到令人沮丧的转变。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI辅助编程对游戏开发的影响及未来趋势
+                    <div class="comments-summary">主要讨论点：职场环境和经济状况是否变得更加"黯淡"(bleak)
 
 不同观点：
-• **AI作为提效工具的支持者**（LarsDu88）：AI能快速实现功能、修复性能问题、并行处理多任务。但强调人类经验至关重要——能识别AI建议的适用性（如碰撞检测优化在飞行模拟器中不适用）。担忧未来全AI生成代码将因开发者失去理解力而导致质量下降
+• **物质条件改善论**（dlcarrier）：从绝对物质标准看，现代人拥有的远超过去（大电视、大房子、家电等），但相对社会地位感知下降。这是"精英过剩"的周期性现象——经济增长不等于社会地位提升，因为地位本质上是相对的。
 
-• **对"vibe-coded"游戏的质疑**（schnitzelstoat）：质疑是否存在成功的AI生成游戏案例，认为可能并无实际成功先例
+• **经济安全感下降论**（cratermoon）：80年代毕业生能快速还清学贷、买房、养家、享受假期、供孩子上学、最终带着养老金退休。这种稳定的中产阶级生活轨迹已不复存在。
 
-• **内容管线优势论**（RobRivera）：认为优秀的游戏引擎+内容生成管线才是关键，能快速交付高质量游戏，AI生成的低质内容会被淹没在噪音中
+• **工作环境恶化论**（JohnFen）：从独立办公室到隔间工位的转变标志着职场环境质量的下降。
 
-• **商业竞争视角**（alexpotato）：引用Pinboard案例说明技术栈选择的商业重要性——低成本架构带来盈利优势
+• **技术变革焦虑论**（bag_boy）：AI/LLM等技术快速迭代带来的持续学习压力令人疲惫。
 
-补充讨论：
-部分评论偏离主题（dvh关于童年游戏机的回忆，tantalor对"old school"时间定义的感慨）。akoboldfrying表达对AI时代的不确定性和对保持有意义工作的希望。</div>
+补充讨论：dlcarrier强调幸福不应建立在追求高社会地位上，因为统计上多数人注定处于平均或以下水平。tocs3用狄更斯小说角色暗示职场困境古已有之。核心争议在于：当代职场困境是真实恶化还是相对剥夺感的心理问题？</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48508021" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48547832" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -359,37 +355,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/themartiano/luz" target="_blank">Show HN: I wrote a C++ ray tracer from scratch without AI</a>
+                    <a href="https://mrmarket.lol/what-the-fuck-happened-to-nerds/" target="_blank">What happened to nerds?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: martiano</span> |
-                    <span>评分: 139</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-06-15 09:34</span>
+                    <span>作者: vrnvu</span> |
+                    <span>评分: 661</span> |
+                    <span>评论数: 115</span> |
+                    <span>发布时间: 2026-06-15 08:23</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Luz是一个用C++20从零开发的路径追踪渲染器，无任何第三方依赖。主要功能包括：蒙特卡洛路径追踪、全局光照、BVH加速、自适应采样、降噪、大气散射等。支持多种几何体（球体、平面、三角形、OBJ网格等）和材质类型。提供自定义.luz场景文件格式和Blender导出插件。具备多线程CPU渲染、景深、抗锯齿、色调映射等后处理功能。支持macOS、Linux和Windows平台，使用Make或CMake构建，包含确定性基准测试工具用于性能对比。</p>
+                    <p>这篇文章探讨了科技行业领袖形象的演变。作者认为，过去四十年科技行业积累了基于"书呆子"特质的信任——谦逊、专注工作、对领域痴迷。但近十年来，行业领袖开始将这种信任转化为关注度，越来越多自我中心的人占据舞台中心，在网上不断谈论自己。
+
+文章回顾了三个阶段：1）乔布斯和沃兹尼亚克时代，创始人是神秘的产品缔造者；2）TED演讲时代，创始人成为励志故事；3）如今，创始人变成了追求名利的"科技寡头"。
+
+作者警告说，这种信任资产的变现最终会付出代价，建议创始人回归核心价值：热爱学习、好奇心、专业专注和谦逊，而非追求病毒式传播和名人效应。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 作者分享了一个用C++从零开始编写的路径追踪器项目，引发了关于AI使用声明、项目价值和技术学习的讨论。
+                    <div class="comments-summary">主要讨论点：科技圈"极客"(nerds)文化的变迁——从技术驱动到资本和权力导向的转变
 
-**不同观点：**
+不同观点：
 
-• **AI使用声明引争议** - 多人调侃"without AI"成为新的流行标签（类似"用Rust写的"），有人认为这是吸引注意力的手段，也有人对HN社区对AI的矛盾态度感到困惑
+• **极客本质未变，只是变得可见了**：真正的极客仍在HN等社区默默工作，只是媒体和算法放大了自我推销者的声音。问题在于观察角度错误，而非极客消失（xlii, jameshart）
 
-• **项目作为学习经历** - 部分人认为光线追踪是图形学领域的"成人礼"，曾是大学课程的标准作业（2-3周项目），推荐了相关学习资源（raytracing.github.io、书籍等）
+• **金钱腐化了极客**：当巨额财富涌入科技行业，吸引了追逐权力和金钱的人；即使原本的极客也在财富面前改变，用金钱影响政治实现个人愿景（TrackerFF, piker）
 
-• **项目价值质疑** - 有人认为此类项目在当今已不够impressive，需要"二阶效果"——即用自己构建的工具Y去完成真正令人印象深刻的事情X，工具本身只是实现细节
+• **极客神话本就是谎言**：所谓"温和极客"从未存在，科技圈一直充斥着自负、反社会的人。Jobs、Musk等人从未是真正的极客，而是善于利用他人劳动的商人（RaSoJo, kasey_junk, geremiiah）
 
-• **技术认可** - 也有评论单纯表示这是技术上具有挑战性的优秀工作，分享了类似经历（如用TS/WebGPU实现）
+• **我们自己改变了**：不是创始人变了，而是极客群体成长后看清了真相——财富和权力才是这些人的真实目标，我们曾经选择性地忽视这一点（samsartor）
 
-**补充讨论：** 提到Sebastian Lague的视频系列曾引发大量人尝试构建光线追踪器，反映出这类项目的教育价值和流行度。</div>
+• **系统性问题**：风投模式转变（MVP→超高速增长→垄断）、经济不平等加剧、算法驱动的自我推销文化、以及选择性的社会激励机制（Assange被迫害 vs Zuckerberg获得帝国）共同塑造了当前环境（piker, jappgar, OgsyedIE）
+
+补充讨论：多位评论者指出，真正创造价值的是成千上万的工程师和公共研发投入，但CEO个人攫取了所有荣誉和财富，这本身就是一个结构性问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48538833" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48538229" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -400,43 +402,31 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://planetscale.com/blog/the-only-scalable-delete" target="_blank">The only scalable delete in Postgres is DROP TABLE</a>
+                    <a href="https://bbenchoff.github.io/pages/8Tracks.html" target="_blank">LLMs Will Replace 8-Track Duplication Engineers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hollylawly</span> |
-                    <span>评分: 164</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-06-11 16:48</span>
+                    <span>作者: wanderingjew</span> |
+                    <span>评分: 37</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-15 19:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了Postgres数据库中大规模删除数据的最佳实践。主要观点是：
-
-大量使用`DELETE`会降低性能，因为它不会立即释放磁盘空间，还会产生"死元组"增加vacuum负担，并给读取查询带来额外开销。Postgres的MVCC机制会保留多个行版本，删除操作实际上是"增加工作"而非"完成工作"。
-
-相比之下，`DROP TABLE`和`TRUNCATE`直接删除物理文件，立即释放空间，不产生死元组，性能开销与数据量基本无关。
-
-文章建议：对于需要大规模删除数据的场景，应设计schema使其可以通过`DROP TABLE`或`TRUNCATE`来实现，而不是使用`DELETE`。对于一次性清理场景，可以使用事务DDL创建临时表保留需要的数据，然后直接DROP原表。</p>
+                    <p>这篇文章探讨了8轨磁带制作中的一个NP难问题。8轨磁带有四个等长的节目段，制作时需要将专辑歌曲分配到四段中，使各段时长尽可能均衡。最长的段决定磁带总长度，其他段的剩余时间会产生空白。作者以Fleetwood Mac的《Rumours》专辑为例，分析了实际发行版本与计算机优化方案的差异——仅交换两首歌的位置就能节省4秒磁带。在当年没有计算机辅助的情况下，音频工程师凭经验手工解决了这个复杂的优化问题，展现了人类在NP难问题上的实际表现。作者还提到正在为自己的汽车制作Frank Ocean专辑的8轨版本。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数据库大规模DELETE操作的性能问题及替代方案
+                    <div class="comments-summary">主要讨论点：这两条评论来自不同的讨论主题，没有直接的对话关系。
 
 不同观点：
+• razorbeamz 的技术性观点：认为大型语言模型（LLM）不适合处理某项任务，因为 LLM 在数学运算和计数方面存在局限性
+• camkego 的文化发现：分享了一个关于 70 年代 Sticky Finger 牛仔裤品牌命名来源的新知识，该品牌名称源自滚石乐队的专辑
 
-• **DELETE可扩展性争议**：crazygringo认为DELETE本身是可扩展的，问题在于批量操作需要不同策略；saisrirampur认为调优良好的autovacuum可让DELETE在TB级别正常工作，文章过于绝对
-
-• **DROP TABLE替代方案的风险**：saisrirampur警告DROP TABLE需要ACCESS EXCLUSIVE LOCK，可能阻塞其他语句，不适合高并发CRUD应用；而多数评论者认可这是大规模删除的有效方案
-
-• **分区策略的适用性**：elnerd和buremba展示了基于时间分区的成功案例（DNS日志、时序数据）；levkk指出CRUD应用难以结构化分区，可能误删重要业务数据；cowthulhu认为需要清空整表本身就说明设计有问题
-
-• **通用性认知**：jandrewrogers和insumanth强调这是所有数据库的共性问题，UPDATE实际是INSERT+DELETE，Elasticsearch等系统表现更明显
-
-补充讨论：评论提到pg_partman工具、pg_repack方案、Oracle相对PG的DELETE优势，以及小规模删除时DELETE可能比TRUNCATE更快的反直觉现象。整体共识是批量操作需要专门优化策略。</div>
+补充讨论：这两条评论似乎来自不同的文章或讨论串，没有形成争议或互动。第一条是对 AI 技术能力的批判性评价，第二条是个人的文化知识分享。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48492822" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48545569" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -447,48 +437,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://traceapp.info" target="_blank">Show HN: Trace – Offline Mac meeting transcripts you can flag mid-call</a>
+                    <a href="https://www.fractalkitty.com/there-is-3-such-that/" target="_blank">There Is(Ǝ) – Such That (∋)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: AG342</span> |
-                    <span>评分: 199</span> |
-                    <span>评论数: 38</span> |
-                    <span>发布时间: 2026-06-13 20:41</span>
+                    <span>作者: evakhoury</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-11 14:13</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Trace是一款Mac应用，可在本地转录会议音频，无需云端或账户。主要功能：
-
-- **本地处理**：音频和转录完全在Mac上完成，数据不离开设备
-- **快捷操作**：通过键盘快捷键启动录音（⌘R）、标记关键时刻（⌘K）、查看最近内容（⌘?）
-- **实时标注**：会议中可随时标记重点，自动插入时间戳
-- **快速转录**：基于Apple silicon芯片，几秒内完成转录
-- **Markdown输出**：生成可导入Notion、Obsidian或AI工具的格式化文档
-- **隐私优先**：无服务器、无账户、无遥测，支持日历集成和说话人识别
-
-适合需要本地化、私密的会议记录方案。</p>
+                    <p>这篇文章介绍了一个可视化时钟创作语言和工具。核心概念包括：在圆形画布上用时间向量（乌鸦代表时、乌鸦代表分、喜鹊代表秒）构建时钟。向量可以形成标量、修改向量、字形（月亮、太阳、星星等可视元素）和栖息地（草地、树木、星云等画布填充）。用户通过节点图编辑器（Loom）拖拽连接组件，实时预览（Weave）并导出为独立HTML文件。技术栈包括Svelte 5、p5.js、TypeScript。设计特点：无文字界面、程序化生成、可视化调试模式、本地存储自动保存。作者在Recurse Center的6周项目中开发了这个工具。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Mac音频转录应用Trace的用户反馈和需求讨论
+                    <div class="comments-summary">主要讨论点：关于一个用鸟类和数学符号制作时钟的DSL项目的可理解性和表达方式
 
 不同观点：
+• **符号使用困惑派**：批评数学符号使用不当（如用∋表示"such that"）和过度抽象的表述（"there exists a raven such that the vector of hours"），认为表达方式过于晦涩难懂，怀疑是否由AI生成
+• **项目本质理解派**：认为这实际上是一个简单的可视化图形布局系统，用于制作自定义时钟；有人指出其数学本质是Q[e^i]域的重新标记
+• **欣赏但需改进派**：赞赏项目创意和高概念艺术，但认为诗意层、数学符号和实际机制之间缺乏足够桥梁，建议提供"从头到尾"的简明教程来降低理解门槛
+• **完全不理解派**：表示完全看不懂项目内容，或因技术问题（Safari移动端）无法正常使用
 
-• **积极评价方**：认为Trace的"关键时刻标记"功能很有创意，与被动转录形成鲜明对比；MacWhisper Pro定价过高，而Trace更有性价比；界面设计和用户体验良好
-
-• **技术问题方**：指出现有转录应用存在三大根本性缺陷——崩溃恢复差、磁盘空间浪费（保存大量wav文件）、麦克风串音导致重复转录；有用户反映Trace占用麦克风导致Teams无法正常使用
-
-• **功能需求方**：希望增加多语言支持（尤其是德语）、LLM文本修正、说话人识别和学习、会议自动命名、RAG知识库查询等高级功能；需要与Outlook/Google日历集成
-
-• **隐私和合规方**：德国用户因隐私法限制，只能录制自己的声音，需要单独录音模式；企业Mac受限无法安装此类软件
-
-• **商业模式方**：部分用户不愿使用App Store购买，希望有独立购买选项；有人认为$10定价偏高，倾向于用Claude自己实现或希望开源试用
-
-补充讨论：多数应用基于FluidAudio构建；用户关注模型下载体验、麦克风自动切换、系统深浅模式适配等细节问题。</div>
+补充讨论：有评论联想到Recurse Center的教育模式、量子计算书籍、Little Alchemy游戏等；也有人感叹这类项目在LLM时代的开发效率提升；数学符号阅读困难引发部分人的共鸣</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48521236" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48490649" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
