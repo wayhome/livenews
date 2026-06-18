@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-19 04:05 (北京时间)
+            最后更新时间: 2026-06-19 06:50 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,82 +61,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://aasheesh.vercel.app/blog/lsm-tree" target="_blank">My LSM tree was slower than a B-tree. Then I profiled it</a>
+                    <a href="https://mroczek.dev/articles/the-token-compression-illusion-why-im-skeptical-of-rtk/" target="_blank">The Token Compression Illusion: Why I'm Skeptical of RTK</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: aasheeshrathour</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-15 15:42</span>
+                    <span>作者: lackoftactics</span> |
+                    <span>评分: 62</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-06-18 17:37</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者为理解RocksDB的存储引擎原理，用Go实现了一个LSM树。初始版本写入性能仅25万次/秒，远低于B树数据库BoltDB。通过性能分析逐步优化：
+                    <p>RTK（一款开发工具）声称能削减60-90%的token使用量，但作者对其持高度怀疑态度，主要原因包括：
 
-1. **写入系统调用优化**（34%→2.16%）：将WAL日志改用内存映射（mmap），避免频繁系统调用
-2. **GC和排序优化**（48%消除）：将压缩过程从"加载全部数据后排序"改为流式k路归并，使用最小堆逐个处理已排序的SSTable
-3. **布隆过滤器bug修复**：修正了压缩后布隆过滤器大小计算错误，该bug导致读取性能显著下降
+1. **虚假节省**：宣传的节省比例仅针对命令行输出，忽略了文件读取、上下文等主要成本来源
+2. **静默失败风险**：压缩过程可能丢失关键信息（如错误堆栈），且AI代理无法察觉
+3. **缺乏准确性基准**：只展示token节省数据，未提供任务成功率等关键指标
+4. **架构脆弱**：依赖外部层解析CLI输出，一旦工具更新格式就会失效
+5. **非核心产品**：本质上是个功能特性，主流CLI工具可轻易集成类似能力
 
-最终将写入性能从25万次/秒提升至近200万次/秒。核心经验：通过profiler定位瓶颈，逐个解决，而非凭猜测优化。LSM树通过将随机写转化为顺序写来超越B树的写入性能。</p>
+结论：为了虚荣指标而牺牲可靠性和语义完整性，不值得冒生产环境风险。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于LSM树实现中的性能问题和设计缺陷
+                    <div class="comments-summary">主要讨论点：RTK（一个用于压缩命令行输出以节省LLM token的工具）的实用性和可靠性争议
 
 不同观点：
-• **代码推理派（Retr0id）**：认为100位布隆过滤器存储10万个键会立即饱和，这种问题应该在编码前通过推理发现，而不是靠"vibecoding"（盲目编码）后测试才发现
+• **批评派**：认为RTK是"魔法盒"式的snake oil，缺乏准确性基准测试，依赖脆弱的正则表达式解析，当CLI工具更新格式时会静默失败，开发者变成了"施法的魔术师"而非工程师（cityofdelusion, lackoftactics, tlarkworthy）
 
-• **AI代码质量质疑（teraflop）**：指出项目的基准测试程序明显是AI生成的，暗示整个项目的代码质量可能存在问题
+• **支持派**：实际使用中节省了大量token（370万输出token压缩自390万输入），RTK的设计哲学是过滤失败时回退到原始输出而非静默失败，质疑批评者缺乏实际使用证据（compuficial, giancarlostoro, ziyasal）
 
-• **持久化必要性（jmalicki）**：强调每次写入都必须写磁盘以保证数据持久性，讽刺那些为了性能牺牲可靠性的做法（"/dev/null是更快的数据库"）
-
-• **技术细节分析（dj_axl）**：怀疑布隆过滤器的配置问题，可能是误设置了最大假阳性率或BloomFalsePositive参数未被正确使用
-
-• **异步写入方案（AtlasBarfed）**：建议采用Cassandra的做法，将写入放入队列后续压缩处理
-
-补充讨论：核心争议在于基础设计错误（布隆过滤器容量设置）与实现方法论（先设计后编码 vs 测试驱动），以及性能与可靠性的权衡。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48542963" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/modos-e-paper-monitor" target="_blank">Modos Color Monitor Pushes E-Paper Displays Further</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Vinnl</span> |
-                    <span>评分: 128</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2026-06-18 11:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Modos公司的两位电子纸工程师在开发套件成功后，继续通过众筹方式推出电子纸显示器产品。该公司正在为制造集成式电子纸显示器进行众筹。文章作者Matthew S. Smith是IEEE Spectrum的特约编辑，曾任Digital Trends首席评测编辑。这篇消费电子新闻报道展示了电子纸技术创业者如何依靠众筹模式来推动产品开发和商业化。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Modos彩色电子纸显示器的产品发布和市场前景
-
-不同观点：
-• **积极支持派**：认为这类替代显示技术（电子纸、RLCD）前景广阔，户外可用且省电的显示屏能开启更多应用场景，期待轻量级平板+键盘的组合设备
-• **技术规格关注派**：对13.3英寸、3200×2400分辨率、60Hz刷新率和触控功能表示赞赏，认为这些规格令人印象深刻
-• **实用性质疑派**：担心手写笔可能采用USI标准而非S-pen或Apple Pencil，使用体验会大打折扣；关注高功耗问题，希望能连接智能手机移动使用
-• **商业动机质疑派**：认为相关内容本质上是产品广告
+• **折中派**：承认RTK的价值但也认可文章提出的维护性问题，建议使用CLI原生的简化输出标志，或者通过本地轻量模型代理过滤输出（cephei, graphememes, arcanemachiner）
 
 补充讨论：
-有评论提到Garmin停产电子纸智能手表的反例，担心这可能反映市场过窄或显示技术经济性的根本问题。另有人设想将此技术与LLM结合，实现类似《哈利波特》魔法肖像的交互效果。多人关注定价信息但未得到回应。整体氛围是对独立科技创新的支持，但伴随实际应用层面的具体顾虑。</div>
+争议焦点在于**token节省的实际价值vs潜在的正确性风险**。支持者强调对大型组织（2000人规模成本250万）的成本节约意义，批评者则指出压缩主要针对工具调用输出，而长编码会话中真正占用token的是消息内容。有评论建议真正需要的是子代理的激进上下文管理而非压缩，也有人呼吁提供实际的准确性基准测试数据。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48583897" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48588755" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -147,120 +108,82 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://xvw.lol/en/articles/emacs-start.html" target="_blank">Emacs, how it all started for me</a>
+                    <a href="https://www.kcl.ac.uk/news/hospitals-and-universities-repurposing-drugs-at-90-lower-cost" target="_blank">Hospitals and universities repurposing drugs at 90% lower cost</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: nukifw</span> |
-                    <span>评分: 83</span> |
+                    <span>作者: giuliomagnifico</span> |
+                    <span>评分: 246</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-18 10:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>大学和医院正在以比制药企业低90%的成本重新利用现有药物进行后期试验。这个在专利体系外运作的"隐藏"研究系统具有巨大潜力，能为社会提供可负担的治疗方案。伦敦国王学院的研究显示，医院和大学进行大量后期临床试验的资金成本不到制药公司报告成本的10%。这是因为重新利用仿制药的专业门槛、风险和资本需求都较低，而临床医生和科学家的动机是帮助患者康复和推进职业发展，而非专利激励。各国政府已开始制定计划正式认可这一研究体系，确保患者获得廉价药物。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：药物再利用的价值、挑战以及美国医疗系统的定价问题
+
+不同观点：
+
+• **支持药物再利用但强调安全风险**：眼科医生案例显示，Avastin虽比Lucentis便宜30倍（50美元vs 1500美元），但重新包装过程存在污染风险。一位医生曾检测出含菌批次，若未发现可能导致患者失明。许多医生因此放弃使用便宜替代品
+
+• **认为药物再利用对罕见病至关重要**：对亨廷顿病等罕见病，大药企不会投资开发新药，药物再利用是患者缓解症状的唯一希望
+
+• **批评系统性激励扭曲**：Spravato案例——保险公司每月支付17000美元购买专利改良药物（疗效更差），而原药ketamine更有效且便宜，但因未获FDA批准无法使用。保险公司不愿联合资助研究以长期节省开支
+
+• **指出监管障碍**：即使研究证明药物再利用有效，没有制造商同意就无法正式批准新适应症，只能作为"标示外使用"
+
+• **认为需要系统性改革**：主张废除Bayh-Dole法案，政府资助的药物研究应开源，临床试验由政府透明进行，私企竞争生产以降低价格
+
+• **强调新药开发不可替代**：长期新冠和ME-CFS等疾病无现有药物可治，药物再利用无法解决一切问题，新药研发投资被削减令人担忧
+
+补充讨论：多位评论者认为美国医疗定价被垄断控制，药企影响学术机构和搜索结果，系统本质是"卡特尔"而非自由市场竞争。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48583386" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.cs.cornell.edu/courses/cs6120/2025fa/self-guided/" target="_blank">CS 6120: Advanced Compilers: The Self-Guided Online Course (2020)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ibobev</span> |
+                    <span>评分: 224</span> |
                     <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-15 15:32</span>
+                    <span>发布时间: 2026-06-18 11:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者从2008年开始使用Emacs的个人经历。作者最初学习编程时走了很多弯路：用Microsoft Word写PHP代码，后来转用记事本、Notepad++、Eclipse和Sublime Text。通过Le Site du Zéro网站社区，作者接触到各种编程语言和工具。最终选择Emacs是因为它在Windows上支持良好，且每个问题都有对应的模式(mode)可以解决。作者强调这不是教程，而是个人故事，选择Emacs是出于实用考虑而非政治立场，对编辑器之争并不狂热。</p>
+                    <p>CS 6120是康奈尔大学Adrian Sampson开设的博士级编译器课程，现已开放为自学在线课程。课程涵盖中间表示、数据流、经典优化等通用编译器主题，以及并行化、即时编译、垃圾回收等研究性话题。学习内容包括阅读论文和使用LLVM及专为该课程设计的教育性中间表示(Bril)完成开源编程任务。课程共14个单元，涉及程序表示、局部与全局分析优化、SSA、循环优化、别名分析、内存管理、动态编译、并发并行等核心主题。所有材料开源在GitHub上，学习者可按自己节奏完成，无需遵守截止日期。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Emacs编辑器的学习路径选择和使用体验
+                    <div class="comments-summary">主要讨论点：关于CS 6120高级编译器在线课程的评价和相关问题
 
 不同观点：
-• **反对使用发行版**：fileeditview强烈建议新手从原生Emacs开始配置，认为Doom/Spacemacs等发行版过于复杂。他10年vim用户，多次尝试Emacs发行版失败，最终通过AI辅助从零配置成功，虽然后来回到nvim但借鉴了Emacs的优秀工具（dired、magit等）
+• **对课程内容的批评**：titzer指出动态编译器部分过于关注trace compilation（这是一个已被多次放弃的死胡同），认为应该更多讨论类型反馈、推测执行、去优化、快速编译器和分层编译等重要概念
 
-• **支持简化配置**：ashton314推荐使用Emacs Bedrock项目——这不是框架，只是提供更好的默认配置和示例，作为起点而非长期依赖。他认为Emacs本身功能已很强大，问题在于为保持向后兼容而保留的陈旧默认设置
+• **对"高级"定位的质疑**：j2kun认为课程涵盖的主题（死代码消除、数据流分析、支配节点分析、SSA形式等）应该属于编译器入门课程，对课程被标记为"高级"感到困惑
 
-• **Emacs作为爱好**：VariousPrograms（5年用户）认为Emacs是"永无止境的兔子洞"，适合折腾，但日常工作更倾向vim的高效性。他曾被老用户的资历吓退，后通过System Crafters入门
+• **课程的积极评价**：titzer虽然批评了部分内容，但整体认为课程很好，称赞Adrian将如此多内容在线提供
 
-• **时代变迁观点**：bitwize指出在VS Code/Zed等现代编辑器出现前，Emacs/vim是跨语言开发的必然选择。如今新手没必要从这些古老工具入手，尽管Emacs绝对用户数仍在增长
-
-补充讨论：gazonk代表老一代用户（80年代起），Emacs是其唯一选择并使用至今；tempfile提出学习困惑，质疑"自发现"特性和帮助系统的实用性</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48542784" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.submission.directory/" target="_blank">A website that lists websites to submit your website to</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: azeemkafridi</span> |
-                    <span>评分: 169</span> |
-                    <span>评论数: 27</span> |
-                    <span>发布时间: 2026-06-18 15:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一个精选的网站提交目录，帮助企业、初创公司提交网站以获取高质量反向链接，提升搜索引擎和AI搜索排名。目录按域名权重(DR)排序，涵盖多个类别：发布平台(Medium、Hacker News)、创业目录(Crunchbase、Product Hunt)、SaaS目录(G2、Capterra)、AI工具目录(There's An AI For That、Futurepedia)、开发者社区(Dev.to、Indie Hackers)、设计展示(Awwwards、Land-book)等。每个平台标注了DR值、链接类型(dofollow/nofollow)和费用模式(免费/付费/混合)，帮助用户选择最适合的提交渠道。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于"网站提交目录列表"的价值和SEO效果的争论
-
-不同观点：
-
-• **支持者观点**：这类目录有实际价值。marc分享了创建submit.co的经验，将其作为无法在BetaList上架的创业公司的替代方案，最终反而为BetaList带来了流量。anujshashimal表示通过目录获得了首个客户。susam等人维护并分享了精选的高质量目录列表。
-
-• **质疑者观点**：pembrook指出反向链接的SEO价值已大幅下降，Google逐渐降低其权重，社交平台也抑制外链，LLM爬虫根本不使用反向链接作为信号。firefoxd警告公开列表会招致垃圾信息，强调应该先融入社区再分享，而非"开车路过式"的到处发帖。
-
-• **怀疑态度**：Retr0id质疑"质量反向链接"的说法，认为纯为SEO而提交链接是不礼貌的。m_w_直接发问是否有人认真对待G2和Product Hunt。enthdegree对营销话术表示反感直接关闭页面。
-
-补充讨论：transitorykris将此与90年代Submit It服务类比，认为这是"旧事重演"。部分评论者以幽默方式回应（andrelaszlo的递归网站笑话、NDlurker建议恢复web rings）。pwython分享了包含1057个网站的更大列表。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48586631" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://gerrymandle.cc/" target="_blank">Show HN: Gerrymandle - Daily puzzle game where you redraw electoral districts</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: realmofthemad</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2026-06-18 14:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>**Gerrymandle游戏玩法与背景（198字）**
-
-这是一个模拟划分选区的策略游戏。玩家需点击相邻格子组成选区，每个选区必须连续且大小相同，所有房屋都要被分配。彩色房屋代表不同党派选民，获得最多房屋的党派赢得该选区。目标是让你的党派赢得最多选区。
-
-游戏揭示了"杰利蝾螈"（gerrymandering）现象：通过操纵选区边界使少数票变多数席位。主要手法是"集中"（将对手选民挤入少数选区）和"分散"（将剩余对手选民分散到各区使其无法获胜）。
-
-现实中，这种做法严重损害民主原则，导致大选失去意义、少数族裔权益受损。美国2020年以来超过25%的国会席位被重新划分，德州、加州等多州频繁操作，选区划分已成为持续的政治工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一个Gerrymandering（选区划分操纵）主题游戏的反馈和讨论
-
-不同观点：
-• **积极评价派**：多数用户认为游戏创意优秀，是教育公民课程的好工具，能有效传达选区操纵概念，寓教于乐地提升公众意识
-• **机制改进派**：建议增加新手引导关卡、每日真实历史地图挑战，以及将比例代表制作为可选项来展示替代方案
-• **现实主义批评**：指出"平局则无人获胜"规则不符合实际选举情况（实践中不会出现平局）
-• **制度改革派**：认为应推动比例代表制替代"赢者通吃"制度，从根本上解决选区操纵问题；有人提出增加众议院席位以缩小选区规模，恢复代表与选民的社区联系（建议比例从现在的76万:1降至8万:1）
-• **技术问题反馈**：多位用户报告SSL证书错误和游戏界面bug
+• **学习路径问题**：awesomeMilou询问是否有"基础编译器"的自学课程，作为进入高级课程前的准备
 
 补充讨论：
-有用户分享了相关桌游推荐和学术论文（关于公平选区划分的数学方法），显示社区对此议题有深入兴趣。部分用户建议融入投票改革教育内容，如排序复选投票制的效果演示。</div>
+tomhow提供了该课程在HN上的历史讨论记录（2020-2024年多次被讨论）；xqb64询问该课程与Nora Sandler的"Writing a C compiler"相比的学习收益；GL26提到Rust编译器使用机器学习算法来检测可能崩溃的代码；gaze对Alexia Massalin的近况表示好奇。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48585739" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48583606" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -271,49 +194,118 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.rahuljuliato.com/posts/emacs-31-around-the-corner" target="_blank">Emacs 31 is around the corner: The changes I'm daily driving</a>
+                    <a href="https://www.dpolakovic.space/blogs/zork-part2#update" target="_blank">Zork name origin got an update on Wikipedia</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: frou_dh</span> |
-                    <span>评分: 304</span> |
-                    <span>评论数: 33</span> |
-                    <span>发布时间: 2026-06-18 12:10</span>
+                    <span>作者: dpola</span> |
+                    <span>评分: 19</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-18 20:27</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Emacs 31即将带来的重要改进，作者已在日常使用中测试这些功能：
-
-**主要内容：**
-
-1. **Tree-sitter自动化**：通过`treesit-auto-install-grammar`和`treesit-enabled-modes`配置，Emacs 31大幅简化了tree-sitter语法的安装和启用流程，无需手动配置语法源。
-
-2. **内置markdown-ts-mode**：作者参与开发的Markdown模式，提供类似Org-mode的操作体验、实时代码块语法高亮等功能。
-
-3. **其他改进**：文章还提到了更多即将到来的功能更新。
-
-作者强调这些都是Emacs核心功能，无需额外安装包，体现了"开箱即用"的设计理念。文章为Emacs 31正式发布前的预览。</p>
+                    <p>这篇文章探讨了"Zork"一词的来源争议。作者质疑维基百科上"zork是MIT用来指代未完成程序的行话"这一说法。通过挖掘编辑历史，作者发现这个说法在2001年首次出现，直到2014年才添加来源。然而多个早期资料显示"zork"只是个无意义的通用词（类似"foobar"），并非专指未完成程序。作者联系了RMS等MIT老人但无人证实该用法，认为如果"zork"真是常用行话，不应在今天消失无踪。文章呼吁知情者提供证据以澄清这一计算机历史细节。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Emacs 31 版本更新及 Emacs 在现代开发环境中的地位和使用现状
+                    <div class="comments-summary">您提供的内容只有一条简短的评论：
+
+"[dpola]: After a month I bring a good news."
+
+这是一条单独的陈述，没有其他评论或讨论可供分析。要完成您要求的评论分析任务，我需要：
+
+1. 多条评论内容（至少2-3条）
+2. 评论之间存在观点交流或讨论
+3. 可识别的不同立场或论点
+
+请提供完整的评论列表或讨论串，我将按照您的要求进行分析和总结。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48591066" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://tester.army" target="_blank">Launch HN: TesterArmy (YC P26) – Agents that test web and mobile apps</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: okwasniewski</span> |
+                    <span>评分: 72</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-18 14:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>TesterArmy 是一个 AI 驱动的自动化测试服务，通过真实浏览器检查 Web 和移动应用的关键流程。用户只需用自然语言描述测试场景，无需编写测试代码，AI 代理会自动执行操作并生成带截图、录屏的 bug 报告。支持 OAuth/OTP 认证、GitHub 集成、CI/CD 自动触发、定时监控等功能。与 Playwright/Cypress 等测试框架不同，TesterArmy 是托管服务，无需维护测试脚本和基础设施，专注于快速发现问题并提供清晰的故障报告。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于AI驱动的E2E测试工具TesterArmy的产品讨论，涉及技术可行性、成本效益和未来发展方向。
 
 不同观点：
 
-• **长期忠实用户群体**：多位用户表示使用 Emacs 20-34 年无换用计划，认为其快速、可配置、完全可控，不会被强制升级功能。特别强调多窗口代码显示优势，4K 屏幕可同时展示 6 个上下文
+• **质疑必要性派**：dbbk认为如果已用Opus写代码，它应该能直接生成E2E测试，无需外部工具；Laurel1234质疑是否只是用agent创建E2E测试，没看到新方法
 
-• **AI 时代重新评估**：部分用户因 AI 集成（如 Claude）重返 Emacs，认为 LLM 特别适合通过文本配置 Emacs。AI 功能削弱了传统 IDE 优势，文本编辑器足以胜任
+• **成本与稳定性担忧派**：poisonborz质疑agent运行的token成本vs传统测试成本，关注非确定性结果的稳定性保证；Lionga直言这是"最不稳定的测试即服务"，认为不可靠的测试不如没有测试
 
-• **配置复杂度争议**：有用户批评初始配置门槛高（需 200 行配置才能达到现代编辑器基础功能），希望提供预设配置方案。但也有用户表示习惯后就不再改变使用方式
+• **平台支持询问派**：peterspath关注Apple全平台支持；antifarben寻找轻量级移动测试方案；yohguy询问原生应用和Expo支持
 
-• **编辑器选择分歧**：Vim 用户认为 Vim 模拟在各 IDE 普及，难以切换到 Emacs。但承认 Magit 等 Emacs 独有工具确实优秀
+• **竞品比较派**：tcoff91提到Revyl作为对比；j0sip询问与mobileboost.io（Duolingo使用）的差异
 
-• **跨平台兼容性担忧**：Windows 用户对 tree-sitter 语法自动安装能否正常工作表示怀疑，寻找预编译语法一直很麻烦
+• **产品前景乐观派**：RayFitzgerald称赞产品方向，认为会成为"测试领域的Vercel"；rpunkfu祝贺产品发布
 
-补充讨论：用户普遍对 31 版本的 tree-sitter 自动安装、可编辑 xref、窗口布局转置等新特性表示欢迎。Emacs 快捷键在 Chrome、CLI 工具中广泛支持也被视为优势。项目在 10 年前曾停滞，tree-sitter 的引入被认为重新激活了开发活力。</div>
+补充讨论：_pdp_提出深层思考——UI/UX是否有长期未来，认为AI agent可能让大部分传统界面交互变得多余；msencenb询问能否针对PR自动测试代码路径；yohguy质疑定价方案的实用性（hobby计划每月仅支持10个PR）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48584135" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48586299" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://agenticresourcediscovery.org/introduction/" target="_blank">Agentic Resource Discovery Specification</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: damick</span> |
+                    <span>评分: 40</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-17 17:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>ARD（Agentic Resource Discovery Specification，代理资源发现规范）解决AI客户端如何发现可用外部能力的问题。随着工具、API、MCP服务器、工作流等代理资源快速增长，手动配置已不可行。ARD让客户端通过统一方式询问"哪些资源能帮助完成此任务"，获得匹配能力的描述、提供方、位置和调用方式。ARD只负责发现环节，不涉及具体调用。任何发现服务（如GitHub Agent Finder、Hugging Face Discover）都可实现此规范，使资源发布一次即可被多个客户端发现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于AI Agent发现和使用外部工具/资源的标准化方案
+
+不同观点：
+• **实用派（gavinray）**：主张使用Wiki+可执行脚本的组合方案，通过模糊搜索和知识图谱建立工具间的关联，当信息缺失时由Agent询问并更新Wiki。认为新提案与现有MCP"Resources"概念重叠，本质是创建一个可消费多协议（MCP/A2A等）的搜索注册表。
+
+• **简化派（_pdp_）**：建议使用.well-known/agent.md或domain/agent.md文件让Agent自主引导配置，下载技能和配置MCP等，认为不需要额外的新文件或标准。
+
+• **反对派（iandanforth）**：直接指出这就是搜索功能的重新包装，认为Agent可以直接使用Google等现有搜索工具，并像人类一样判断质量。质疑是否真的需要专门的规范和新缩写词。
+
+• **质疑派（wslh）**：承认标准接口有用，但指出无法解决更困难的发现问题。一旦出现在顶部结果中产生价值，系统将面临与SEO/应用商店相同的对抗性问题（垃圾信息、欺诈等）。
+
+补充讨论：核心争议在于是否需要为Agent工具发现创建新标准，还是应该利用现有的搜索基础设施和标准（如MCP）。质量控制和反作弊是被提及的关键挑战。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48573268" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -367,13 +359,13 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://chat.deepseek.com/" target="_blank">DeepSeek Introduces Vision</a>
+                    <a href="https://www.intheweights.com/" target="_blank">Show HN: Are You in the Weights?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: RIshabh235</span> |
-                    <span>评分: 203</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2026-06-18 06:17</span>
+                    <span>作者: turtlesoup</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 41</span> |
+                    <span>发布时间: 2026-06-18 20:49</span>
                 </div>
 
                 <div class="summary-section">
@@ -383,58 +375,21 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Deepseek推出视觉理解功能引发的讨论
+                    <div class="comments-summary">主要讨论点：用户测试"In The Weights"工具，该工具检测AI模型是否"认识"用户的名字
 
 不同观点：
-• **功能评价派**：部分用户认为视觉功能表现良好且快速，训练集足够大，能准确识别图片内容；但有用户指出这是图像理解而非生成，不能修改图片
-• **可用性质疑派**：多位用户询问API是否支持视觉功能，表示迫切需要API接入以替代更昂贵的Qwen和Gemini；有用户反映链接只显示登录页面，缺乏功能介绍
-• **产品改进建议派**：建议添加语音转文字和文字转语音功能；希望推出类似Qwen的Flash轻量版本以便集成；期待官方发布能力、质量和准确度等参数的详细说明
-• **地缘竞争视角**：认为这证明中国能推出与OpenAI、Anthropic等美国公司竞争的优秀模型
-• **使用体验反馈**：有用户报告最近频繁收到中文回复和中文推理过程，怀疑是否有静默更新；部分用户表示数月前已可使用该功能
+• 被准确识别组：nickcw（开源领域）、presidentender（被Kimi识别）等表示模型能找到关于自己的准确信息，认为这与其在特定领域的曝光度有关
+• 未被识别/幻觉组：hyperpape（完全是幻觉）、zingar（被错认为橄榄球运动员）等发现模型要么找不到自己，要么生成虚假信息
+• 部分识别组：tiagobraw、kjuulh等发现不同模型表现差异大，某些模型能识别部分信息但不完整
+• 隐私担忧者：Alive-in-2025怀疑这是收集真实姓名的"聪明把戏"
 
-补充讨论：有用户好奇该模型对敏感图片（如坦克人）的反应；有人提到可结合Apple Vision框架做本地预处理以降低成本</div>
+补充讨论：
+• 数据源差异：AgentME注意到Fable模型有更准确信息，推测训练数据选择不同
+• 成本问题：Jaxkr指出这个演示工具运营成本很高
+• 技术限制：floren遇到429错误（请求过多）
+• 名字冲突：foxfired、kylecazar提到与其他同名者混淆的问题</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48581458" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://devanshpanda.com/writing/volatility/" target="_blank">The value of employee equity depends a lot on volatility</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: devanshp</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-18 08:02</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了初创公司股权补偿的真实价值计算。作者指出，传统计算方法（将股权价值除以4年）严重低估了实际价值，因为员工拥有"嵌入式看涨期权"——可以随时离开表现不佳的公司。
-
-以估值5000万美元的公司为例：如果公司波动性高（5%概率1年内达到10亿美元，95%概率归零），员工预期工作时间仅1.15年却能获得50万美元股权，年化价值43.4万美元，而非简单计算的12.5万美元。波动性越高，这种期权价值越大——3个月高波动情况下年化价值可达114万美元。
-
-当然还需考虑风险厌恶、现金薪酬和心理压力等因素，但从纯收益角度看，高波动性初创公司的股权价值远超表面数字。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：员工股权期权的实际价值
-
-不同观点：
-• **悲观现实派**（throwway120385）：员工股权价值接近零，只有极少数人（5%）能获益，大多数人（95%）最终一无所获。强调不要被期望值论证误导，因为现实中各公司条件差异巨大，成功概率极低
-
-• **风险提醒派**（gobdovan）：指出期权的额外风险——公司可能在cliff（通常是一年的等待期）到期前一天解雇员工，导致期权完全作废。这是对第一个观点的补充，揭示了期权的制度性陷阱
-
-补充讨论：两位评论者都对员工股权持批判态度，但角度不同。第一位从统计概率质疑股权的整体价值，第二位则揭示了具体的操作风险。两者共同构成对"股权激励"承诺的警示，提醒打工者认清期权可能既没有经济价值，还存在被公司利用的制度风险。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48582278" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48591348" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -449,8 +404,8 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: FergusArgyll</span> |
-                    <span>评分: 185</span> |
-                    <span>评论数: 17</span> |
+                    <span>评分: 254</span> |
+                    <span>评论数: 21</span> |
                     <span>发布时间: 2026-06-18 10:29</span>
                 </div>
 
@@ -467,18 +422,62 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Git中除了.gitignore之外的其他忽略文件方法及其适用场景
+                    <div class="comments-summary">主要讨论点：Git 忽略文件的不同方法和最佳实践
 
 不同观点：
-• **支持用户级配置派**：认为IDE、操作系统相关文件应放在~/.config/git/ignore中，避免污染每个项目的.gitignore。项目级.gitignore应只包含构建产物、依赖目录等项目特定内容
-• **支持项目级配置派**：认为.DS_Store等文件最好放在项目.gitignore中，因为如果团队有多个Mac用户，统一配置更可靠，不依赖每个人都正确设置个人配置
-• **.git/info/exclude的拥护者**：喜欢用它存放个人脚本、Makefile等仅本地需要、协作者不关心的文件
-• **质疑exclude实用性者**：认为exclude容易导致问题（"recipe for sadness"）
 
-补充讨论：
-评论中分享了实用技巧，如.gitattributes可隐藏package-lock.json的diff、在任意项目创建attic目录存放临时文件、使用git-check-ignore命令调试。有人指出"global"命名容易混淆（实为per-user而非machine-wide）。多位开发者表示此前不知道这些功能，感叹Git的强大。</div>
+• **全局忽略 vs 项目忽略的使用场景**：kevincox 和 dofm 对此有不同看法。kevincox 主张 IDE/OS 特定文件应放在用户全局配置中，项目 .gitignore 只放构建输出等项目相关内容；dofm 则认为如果团队多人使用同一系统（如 macOS 的 .DS_Store），应统一放在项目 .gitignore 中
+
+• **配置文件位置的偏好**：hk1337 推荐使用 ~/.config/git/ignore 和 ~/.config/git/config 而非 ~/.gitignore_global，认为这样能保持根目录更整洁
+
+• **不同忽略工具的适用场景**：
+  - hungryhobbit 推荐 .gitattributes 用于"伪忽略"（文件仍提交但不显示 diff）
+  - bryancoxwell 大量使用 .git/info/exclude 存放个人脚本
+  - elyobo 和 leleat 介绍了 --assume-unchanged 和 --skip-worktree 用于本地实验
+
+补充讨论：judofyr 分享了在全局忽略中添加 "attic" 目录的创意做法，用于存放临时文件。多位评论者表示之前不了解这些功能，感到受益匪浅。Hendrikto 批评文章内容过于浅显。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48583356" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://spectrum.ieee.org/modos-e-paper-monitor" target="_blank">Modos Color Monitor Pushes E-Paper Displays Further</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Vinnl</span> |
+                    <span>评分: 206</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-18 11:41</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Modos公司的两位电子纸工程师在开发套件成功后，继续通过众筹方式推出电子纸显示器产品。该公司正在为制造集成式电子纸显示器进行众筹。文章作者Matthew S. Smith是IEEE Spectrum的特约编辑，曾任Digital Trends首席评测编辑。这篇消费电子新闻报道展示了电子纸技术创业者如何依靠众筹模式来推动产品开发和商业化。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Modos电子墨水屏显示器的技术突破与应用前景
+
+不同观点：
+• **技术乐观派**：认为Modos在电子墨水屏领域取得重大进展，特别是60Hz刷新率和高分辨率(3200x2400)的突破，让电子墨水屏首次达到日常使用水平。jackb4040期待户外可用、低功耗的替代显示技术能催生更多辅助设备。
+
+• **技术怀疑派**：empalms担心高刷新率可能影响Carta面板寿命，质疑新方案是否真正解决眼睛疲劳问题，还是只是复制了LCD/LED的闪烁问题。functionmouse认为USI触控笔体验远不如S-pen或Apple Pencil。
+
+• **实用主义者**：ndiddy好奇实际使用场景，指出便携电子墨水屏已存在近10年但应用场景不明确。joshu在黑白版和彩色版之间纠结。MrPapz关注便携性，希望能连接手机移动办公。
+
+• **商业角度**：smlacy质疑这只是产品广告。throwwwll直接关心价格。
+
+补充讨论：有人提到配合LLM可实现"哈利波特魔法肖像"般的互动；Garmin停产电子墨水智能手表引发对该技术商业可行性的担忧；t23414321关注屏幕尺寸是否匹配A4格式。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48583897" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
