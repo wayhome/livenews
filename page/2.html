@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-19 01:54 (北京时间)
+            最后更新时间: 2026-06-19 04:05 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,33 +61,44 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://mroczek.dev/articles/the-token-compression-illusion-why-im-skeptical-of-rtk/" target="_blank">The Token Compression Illusion: Why I'm Skeptical of RTK</a>
+                    <a href="https://aasheesh.vercel.app/blog/lsm-tree" target="_blank">My LSM tree was slower than a B-tree. Then I profiled it</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: lackoftactics</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-18 17:37</span>
+                    <span>作者: aasheeshrathour</span> |
+                    <span>评分: 11</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-06-15 15:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>RTK（一款开发工具）声称能削减60-90%的token使用量，但作者对其持高度怀疑态度，主要原因包括：
+                    <p>作者为理解RocksDB的存储引擎原理，用Go实现了一个LSM树。初始版本写入性能仅25万次/秒，远低于B树数据库BoltDB。通过性能分析逐步优化：
 
-1. **虚假节省**：宣传的节省比例仅针对命令行输出，忽略了文件读取、上下文等主要成本来源
-2. **静默失败风险**：压缩过程可能丢失关键信息（如错误堆栈），且AI代理无法察觉
-3. **缺乏准确性基准**：只展示token节省数据，未提供任务成功率等关键指标
-4. **架构脆弱**：依赖外部层解析CLI输出，一旦工具更新格式就会失效
-5. **非核心产品**：本质上是个功能特性，主流CLI工具可轻易集成类似能力
+1. **写入系统调用优化**（34%→2.16%）：将WAL日志改用内存映射（mmap），避免频繁系统调用
+2. **GC和排序优化**（48%消除）：将压缩过程从"加载全部数据后排序"改为流式k路归并，使用最小堆逐个处理已排序的SSTable
+3. **布隆过滤器bug修复**：修正了压缩后布隆过滤器大小计算错误，该bug导致读取性能显著下降
 
-结论：为了虚荣指标而牺牲可靠性和语义完整性，不值得冒生产环境风险。</p>
+最终将写入性能从25万次/秒提升至近200万次/秒。核心经验：通过profiler定位瓶颈，逐个解决，而非凭猜测优化。LSM树通过将随机写转化为顺序写来超越B树的写入性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
+                    <div class="comments-summary">主要讨论点：关于LSM树实现中的性能问题和设计缺陷
+
+不同观点：
+• **代码推理派（Retr0id）**：认为100位布隆过滤器存储10万个键会立即饱和，这种问题应该在编码前通过推理发现，而不是靠"vibecoding"（盲目编码）后测试才发现
+
+• **AI代码质量质疑（teraflop）**：指出项目的基准测试程序明显是AI生成的，暗示整个项目的代码质量可能存在问题
+
+• **持久化必要性（jmalicki）**：强调每次写入都必须写磁盘以保证数据持久性，讽刺那些为了性能牺牲可靠性的做法（"/dev/null是更快的数据库"）
+
+• **技术细节分析（dj_axl）**：怀疑布隆过滤器的配置问题，可能是误设置了最大假阳性率或BloomFalsePositive参数未被正确使用
+
+• **异步写入方案（AtlasBarfed）**：建议采用Cassandra的做法，将写入放入队列后续压缩处理
+
+补充讨论：核心争议在于基础设计错误（布隆过滤器容量设置）与实现方法论（先设计后编码 vs 测试驱动），以及性能与可靠性的权衡。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48588755" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48542963" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -136,31 +147,120 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://kiesow.net/tech-ceos-are-breaking-the-law/" target="_blank">Tech CEOs are breaking the law</a>
+                    <a href="https://xvw.lol/en/articles/emacs-start.html" target="_blank">Emacs, how it all started for me</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: speckx</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-18 16:54</span>
+                    <span>作者: nukifw</span> |
+                    <span>评分: 83</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-06-15 15:32</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章探讨了特斯勒定律（复杂度守恒）在产品设计和AI时代的应用。核心观点是：每个产品都有不可减少的固有复杂度，必须由系统或用户承担。硅谷通过算法和基础设施将复杂度转移给系统，最小化用户摩擦。但文章批判了CEO们试图用生成式AI自动化员工的想法，指出这是一个错误：1）发现人类需求无法自动化，需要深思熟虑的过程；2）将复杂度外包给AI只会引发无限回归问题。企业不能一边消除内部人力，一边期望服务好外部用户。</p>
+                    <p>这篇文章讲述了作者从2008年开始使用Emacs的个人经历。作者最初学习编程时走了很多弯路：用Microsoft Word写PHP代码，后来转用记事本、Notepad++、Eclipse和Sublime Text。通过Le Site du Zéro网站社区，作者接触到各种编程语言和工具。最终选择Emacs是因为它在Windows上支持良好，且每个问题都有对应的模式(mode)可以解决。作者强调这不是教程，而是个人故事，选择Emacs是出于实用考虑而非政治立场，对编辑器之争并不狂热。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Uber是否违反法律以及这些法律的合理性
+                    <div class="comments-summary">主要讨论点：Emacs编辑器的学习路径选择和使用体验
 
 不同观点：
-• 承认违法但认为法规不合理：Uber确实违反了出租车牌照法和雇佣/税务法规，但这些都是"愚蠢的规定"，所以没人在意
-• 隐含的反对立场：开头引用的讽刺性评论暗示存在反对者，认为为Uber违法行为辩护的逻辑不连贯
+• **反对使用发行版**：fileeditview强烈建议新手从原生Emacs开始配置，认为Doom/Spacemacs等发行版过于复杂。他10年vim用户，多次尝试Emacs发行版失败，最终通过AI辅助从零配置成功，虽然后来回到nvim但借鉴了Emacs的优秀工具（dired、magit等）
 
-补充讨论：评论反映了科技公司"先破坏后合法化"策略的争议——是创新突破不合理监管，还是特权企业凌驾于法律之上的问题。</div>
+• **支持简化配置**：ashton314推荐使用Emacs Bedrock项目——这不是框架，只是提供更好的默认配置和示例，作为起点而非长期依赖。他认为Emacs本身功能已很强大，问题在于为保持向后兼容而保留的陈旧默认设置
+
+• **Emacs作为爱好**：VariousPrograms（5年用户）认为Emacs是"永无止境的兔子洞"，适合折腾，但日常工作更倾向vim的高效性。他曾被老用户的资历吓退，后通过System Crafters入门
+
+• **时代变迁观点**：bitwize指出在VS Code/Zed等现代编辑器出现前，Emacs/vim是跨语言开发的必然选择。如今新手没必要从这些古老工具入手，尽管Emacs绝对用户数仍在增长
+
+补充讨论：gazonk代表老一代用户（80年代起），Emacs是其唯一选择并使用至今；tempfile提出学习困惑，质疑"自发现"特性和帮助系统的实用性</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48588206" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48542784" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.submission.directory/" target="_blank">A website that lists websites to submit your website to</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: azeemkafridi</span> |
+                    <span>评分: 169</span> |
+                    <span>评论数: 27</span> |
+                    <span>发布时间: 2026-06-18 15:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是一个精选的网站提交目录，帮助企业、初创公司提交网站以获取高质量反向链接，提升搜索引擎和AI搜索排名。目录按域名权重(DR)排序，涵盖多个类别：发布平台(Medium、Hacker News)、创业目录(Crunchbase、Product Hunt)、SaaS目录(G2、Capterra)、AI工具目录(There's An AI For That、Futurepedia)、开发者社区(Dev.to、Indie Hackers)、设计展示(Awwwards、Land-book)等。每个平台标注了DR值、链接类型(dofollow/nofollow)和费用模式(免费/付费/混合)，帮助用户选择最适合的提交渠道。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于"网站提交目录列表"的价值和SEO效果的争论
+
+不同观点：
+
+• **支持者观点**：这类目录有实际价值。marc分享了创建submit.co的经验，将其作为无法在BetaList上架的创业公司的替代方案，最终反而为BetaList带来了流量。anujshashimal表示通过目录获得了首个客户。susam等人维护并分享了精选的高质量目录列表。
+
+• **质疑者观点**：pembrook指出反向链接的SEO价值已大幅下降，Google逐渐降低其权重，社交平台也抑制外链，LLM爬虫根本不使用反向链接作为信号。firefoxd警告公开列表会招致垃圾信息，强调应该先融入社区再分享，而非"开车路过式"的到处发帖。
+
+• **怀疑态度**：Retr0id质疑"质量反向链接"的说法，认为纯为SEO而提交链接是不礼貌的。m_w_直接发问是否有人认真对待G2和Product Hunt。enthdegree对营销话术表示反感直接关闭页面。
+
+补充讨论：transitorykris将此与90年代Submit It服务类比，认为这是"旧事重演"。部分评论者以幽默方式回应（andrelaszlo的递归网站笑话、NDlurker建议恢复web rings）。pwython分享了包含1057个网站的更大列表。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48586631" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://gerrymandle.cc/" target="_blank">Show HN: Gerrymandle - Daily puzzle game where you redraw electoral districts</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: realmofthemad</span> |
+                    <span>评分: 82</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2026-06-18 14:16</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>**Gerrymandle游戏玩法与背景（198字）**
+
+这是一个模拟划分选区的策略游戏。玩家需点击相邻格子组成选区，每个选区必须连续且大小相同，所有房屋都要被分配。彩色房屋代表不同党派选民，获得最多房屋的党派赢得该选区。目标是让你的党派赢得最多选区。
+
+游戏揭示了"杰利蝾螈"（gerrymandering）现象：通过操纵选区边界使少数票变多数席位。主要手法是"集中"（将对手选民挤入少数选区）和"分散"（将剩余对手选民分散到各区使其无法获胜）。
+
+现实中，这种做法严重损害民主原则，导致大选失去意义、少数族裔权益受损。美国2020年以来超过25%的国会席位被重新划分，德州、加州等多州频繁操作，选区划分已成为持续的政治工具。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于一个Gerrymandering（选区划分操纵）主题游戏的反馈和讨论
+
+不同观点：
+• **积极评价派**：多数用户认为游戏创意优秀，是教育公民课程的好工具，能有效传达选区操纵概念，寓教于乐地提升公众意识
+• **机制改进派**：建议增加新手引导关卡、每日真实历史地图挑战，以及将比例代表制作为可选项来展示替代方案
+• **现实主义批评**：指出"平局则无人获胜"规则不符合实际选举情况（实践中不会出现平局）
+• **制度改革派**：认为应推动比例代表制替代"赢者通吃"制度，从根本上解决选区操纵问题；有人提出增加众议院席位以缩小选区规模，恢复代表与选民的社区联系（建议比例从现在的76万:1降至8万:1）
+• **技术问题反馈**：多位用户报告SSL证书错误和游戏界面bug
+
+补充讨论：
+有用户分享了相关桌游推荐和学术论文（关于公平选区划分的数学方法），显示社区对此议题有深入兴趣。部分用户建议融入投票改革教育内容，如排序复选投票制的效果演示。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48585739" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -224,77 +324,39 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://gerrymandle.cc/" target="_blank">Show HN: Gerrymandle - Daily puzzle game where you redraw electoral districts</a>
+                    <a href="https://blog.elenarossini.com/w-social-public-institutions-and-the-theater-of-european-digital-sovereignty/" target="_blank">Has W Social switched to closed source?</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: realmofthemad</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-18 14:16</span>
+                    <span>作者: nemoniac</span> |
+                    <span>评分: 133</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-18 12:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>**Gerrymandle游戏玩法与背景（198字）**
-
-这是一个模拟划分选区的策略游戏。玩家需点击相邻格子组成选区，每个选区必须连续且大小相同，所有房屋都要被分配。彩色房屋代表不同党派选民，获得最多房屋的党派赢得该选区。目标是让你的党派赢得最多选区。
-
-游戏揭示了"杰利蝾螈"（gerrymandering）现象：通过操纵选区边界使少数票变多数席位。主要手法是"集中"（将对手选民挤入少数选区）和"分散"（将剩余对手选民分散到各区使其无法获胜）。
-
-现实中，这种做法严重损害民主原则，导致大选失去意义、少数族裔权益受损。美国2020年以来超过25%的国会席位被重新划分，德州、加州等多州频繁操作，选区划分已成为持续的政治工具。</p>
+                    <p>这篇文章揭露了欧洲社交平台W Social的争议问题。作者发现欧盟委员会、欧洲央行等重要机构账号从Bluesky迁移到了W Social服务器，这是一个由瑞典企业家控制的营利性私企。更令人担忧的是，W Social悄然删除了其GitHub公开代码库，从开源平台变成了闭源平台。相比之下，欧洲已有非营利组织Modal运营的透明开源平台Eurosky。作者质疑这些机构是否做过尽职调查，因为W Social在技术架构、数据主权承诺等方面缺乏透明度，与其宣称的"欧洲数字主权"形象存在巨大反差。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Gerrymandle游戏（一款关于选区划分的益智游戏）的用户反馈
+                    <div class="comments-summary">主要讨论点：W Social关闭源代码引发争议，欧盟政界人士选择W Social而非开源替代方案Eurosky
 
 不同观点：
-• 正面评价：游戏设计优秀，通过趣味方式传播选区划分（Gerrymandering）知识，适合教育场景使用，呈现效果好，规则清晰
-• 游戏机制问题：部分用户遇到操作困惑（如何开始新选区、无法完成最后选区），平局规则不够现实（实际选举中不会出现平局）
-• 改进建议：增加新手引导关卡、展示选举改革方案（如排序选择投票制）如何减少不公平划分的效果
-• 技术问题：个别用户遇到SSL错误无法访问
 
-补充讨论：
-多数用户认同游戏的教育价值，认为这是将严肃政治议题转化为互动学习工具的有效方式。有用户指出美国现实中的选区划分问题严重且违法。部分用户在理解规则后（如每个选区最多4个房屋但无需面积相等）感到游戏变得更简单。整体反馈积极，但需要改善操作引导和界面交互。</div>
+• **质疑W Social合法性与可信度**：GitHub仓库曾短暂关闭引发法律疑问（贡献者代码授权问题）；从首次推广起就显得可疑；注册流程繁琐需13步包括护照扫描，存在安全隐患（如无XSS防护）
+
+• **批评欧盟政客的选择**：高层政要加入W Social而非开源的Eurosky/mu.social，被认为是无能或寻求可控平台；有评论将其比作"欧洲版Truth Social"——政客为避免依赖政敌平台而建立自有阵地
+
+• **质疑"数字主权"动机**：欧盟大佬关心的是数据主权和扶持本土企业外表，而非真正的开源；"主权"被视为保护主义包装，欧洲企业难以竞争美国平台，不断移动门槛选择偏好方
+
+• **商业模式担忧**：创始人金融背景，W Social是营利性公司，未来可能推广告和付费功能；公司命名糟糕体现欧盟品牌能力弱
+
+• **支持开源替代方案**：多人推荐Eurosky和mu.social等公开透明的ATproto网络，或直接使用Mastodon
+
+补充讨论：W Social在达沃斯论坛发布并获媒体关注，而Eurosky几乎无报道；这种"低成本山寨"获政府资助可能是诈骗式项目的典型</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48585739" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.independent.co.uk/us/money/craigslist-multimillionaire-craig-newmark-b2980681.html" target="_blank">The founder of Craigslist has given away half a billion dollars</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Tomte</span> |
-                    <span>评分: 39</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-18 16:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Craigslist创始人Craig Newmark已向慈善事业捐赠5亿美元,并签署了"捐赠誓言"(The Giving Pledge),承诺在有生之年捐出大部分财富。他批评一些亿万富翁(如Peter Thiel)反对慈善捐赠的立场,认为"没人需要这么多钱"。Newmark的慈善理念源于童年时期犹太社区的教育——善待他人、知足常乐。他在1996年创建Craigslist时从未想过会致富,认为自己只是"恰逢其时"。尽管尊重他人的选择,但他无法理解为何富人不愿回馈社会,尤其是在当前美国社会向个人主义和炫富转变的背景下。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于 Newmark 捐赠承诺的不同反应和看法
-
-不同观点：
-• **赞赏其生活态度**：有人欣赏 Newmark 的简朴生活方式，15年前采访中他表示"已经有好水压了，还需要什么"，体现了"知足"的理念，这在富豪中很少见
-• **质疑捐赠实际性**：有人关注操作细节，指出这只是承诺而非实际转账，质疑如何捐赠私人公司股份，以及是否通过信托在去世后执行
-• **认为为时已晚**：有人认为这对美国工薪阶层来说只是空话，现在民众已经憎恨富人，慈善姿态无法改变现状
-• **负面亲身经历**：有评论者分享与该组织面试的糟糕体验，面试官态度傲慢像"兄弟会成员"，最终没有兑现承诺
-
-补充讨论：一位评论者抱怨文章来源网站难以阅读，希望有更好的信息源。整体上，评论在对个人品质的赞赏与对富豪慈善实际效果的怀疑之间存在张力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48588216" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48584497" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -343,122 +405,80 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://neutronbytes.com/2026/01/09/terrapower-in-mega-deal-with-meta-for-eight-natrium-345-mw-advanced-nuclear-plants/" target="_blank">TerraPower in Deal with Meta for Eight Natrium 345 MW Advanced Nuclear Plants</a>
+                    <a href="https://devanshpanda.com/writing/volatility/" target="_blank">The value of employee equity depends a lot on volatility</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mpweiher</span> |
-                    <span>评分: 55</span> |
+                    <span>作者: devanshp</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-18 08:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了初创公司股权补偿的真实价值计算。作者指出，传统计算方法（将股权价值除以4年）严重低估了实际价值，因为员工拥有"嵌入式看涨期权"——可以随时离开表现不佳的公司。
+
+以估值5000万美元的公司为例：如果公司波动性高（5%概率1年内达到10亿美元，95%概率归零），员工预期工作时间仅1.15年却能获得50万美元股权，年化价值43.4万美元，而非简单计算的12.5万美元。波动性越高，这种期权价值越大——3个月高波动情况下年化价值可达114万美元。
+
+当然还需考虑风险厌恶、现金薪酬和心理压力等因素，但从纯收益角度看，高波动性初创公司的股权价值远超表面数字。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：员工股权期权的实际价值
+
+不同观点：
+• **悲观现实派**（throwway120385）：员工股权价值接近零，只有极少数人（5%）能获益，大多数人（95%）最终一无所获。强调不要被期望值论证误导，因为现实中各公司条件差异巨大，成功概率极低
+
+• **风险提醒派**（gobdovan）：指出期权的额外风险——公司可能在cliff（通常是一年的等待期）到期前一天解雇员工，导致期权完全作废。这是对第一个观点的补充，揭示了期权的制度性陷阱
+
+补充讨论：两位评论者都对员工股权持批判态度，但角度不同。第一位从统计概率质疑股权的整体价值，第二位则揭示了具体的操作风险。两者共同构成对"股权激励"承诺的警示，提醒打工者认清期权可能既没有经济价值，还存在被公司利用的制度风险。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48582278" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nelson.cloud/.gitignore-isnt-the-only-way-to-ignore-files-in-git/" target="_blank">.gitignore Isn't the only way to ignore files in Git</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: FergusArgyll</span> |
+                    <span>评分: 185</span> |
                     <span>评论数: 17</span> |
-                    <span>发布时间: 2026-06-18 15:13</span>
+                    <span>发布时间: 2026-06-18 10:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>TerraPower与Meta达成大型核能协议，计划建设8座345兆瓦的Natrium先进核反应堆，总装机容量达2.8吉瓦，最早2032年投运。每个反应堆配备储能系统，可将输出提升至500兆瓦。这是Meta首次直接投资新建核电项目，用于支持其数据中心和AI业务的电力需求。TerraPower已完成设计、建立供应链并通过关键监管审批。首座商业化Natrium反应堆预计2030年完工，该项目依赖HALEU浓缩铀燃料的供应保障。</p>
+                    <p>Git 有三个层级的文件忽略机制：
+
+1. **.gitignore** - 项目级别，会提交到版本库，团队共享
+2. **.git/info/exclude** - 仓库级别，不提交到版本库，适合个人工作流中的临时文件（如个人笔记）
+3. **~/.config/git/ignore** - 全局级别，机器范围生效，适合操作系统生成的文件（如 macOS 的 .DS_Store）
+
+可通过 `git config --global core.excludesFile` 自定义全局忽略文件路径。使用 `git check-ignore -v <文件名>` 命令可查看某文件被哪个配置忽略。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Meta投资核反应堆初创公司用于AI数据中心供电的可行性和合理性
+                    <div class="comments-summary">主要讨论点：Git中除了.gitignore之外的其他忽略文件方法及其适用场景
 
 不同观点：
+• **支持用户级配置派**：认为IDE、操作系统相关文件应放在~/.config/git/ignore中，避免污染每个项目的.gitignore。项目级.gitignore应只包含构建产物、依赖目录等项目特定内容
+• **支持项目级配置派**：认为.DS_Store等文件最好放在项目.gitignore中，因为如果团队有多个Mac用户，统一配置更可靠，不依赖每个人都正确设置个人配置
+• **.git/info/exclude的拥护者**：喜欢用它存放个人脚本、Makefile等仅本地需要、协作者不关心的文件
+• **质疑exclude实用性者**：认为exclude容易导致问题（"recipe for sadness"）
 
-• **技术怀疑派**：认为2031年首个示范反应堆上线后，在2032年前建成8个生产反应堆不现实，预测项目会失败或被悄悄搁置（pico303、Octoth0rpe质疑690MW全年无休性能承诺过于乐观）
-
-• **安全担忧派**：强烈反对Meta参与核反应堆运营，认为应由公用事业公司管理，担心高净值个人可能将核副产品用于武器生产或黑市交易，主张禁止此类投资（doodlebugging）
-
-• **商业质疑派**：不理解Meta的AI投资逻辑——VR产品已失败数十亿美元，AI领域却没有可见的成功产品，质疑数据中心投资的必要性（kamranjon）；认为这是资本支出泡沫，建议150-200美元区间买入Meta股票（baq）
-
-• **务实派**：指出协议措辞暧昧，缺乏具体投资数字，难以判断是真实投资还是公关噱头（MichaelNolan）
-
-• **技术爱好者**：希望钍熔盐反应堆或Helion等更安全技术能获得机会（gopalv、ck2推荐钍反应堆为最安全未来方案）
-
-• **乐观派**：即使失败也比元宇宙项目好（pornel）
-
-补充讨论：有用户指出这是1月旧闻，当时已有讨论；另有人质疑承包商缺乏政府合同经验。技术细节方面，有人询问储能方式是热水还是电池。</div>
+补充讨论：
+评论中分享了实用技巧，如.gitattributes可隐藏package-lock.json的diff、在任意项目创建attic目录存放临时文件、使用git-check-ignore命令调试。有人指出"global"命名容易混淆（实为per-user而非machine-wide）。多位开发者表示此前不知道这些功能，感叹Git的强大。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48586648" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://xvw.lol/en/articles/emacs-start.html" target="_blank">Emacs, how it all started (for me)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nukifw</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-15 15:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者从2008年开始使用Emacs的个人经历。作者最初学习编程时走了很多弯路：用Microsoft Word写PHP代码，后来转用记事本、Notepad++、Eclipse和Sublime Text。通过Le Site du Zéro网站社区，作者接触到各种编程语言和工具。最终选择Emacs是因为它在Windows上支持良好，且每个问题都有对应的模式(mode)可以解决。作者强调这不是教程，而是个人故事，选择Emacs是出于实用考虑而非政治立场，对编辑器之争并不狂热。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Emacs编辑器的学习路径和使用体验
-
-不同观点：
-• **反对使用发行版配置**：第一位用户强烈建议从零开始配置Emacs，而非使用Doom或Spacemacs等发行版。他认为发行版过于复杂，导致配置困难。经过一年的原生配置体验后，虽然最终回到了neovim，但吸收了Emacs的优秀设计理念（如dired、magit、compile-mode）。
-
-• **时代背景变化论**：bitwize指出Emacs的学习必要性已今非昔比。过去（1995年前后）学习Emacs/Vim是跨语言编程的必经之路，但现在VS Code、Zed等现代编辑器已提供足够好的体验，使得新手没必要从这些"古老而独特"的编辑器入门。尽管Emacs绝对用户数在增长，但影响力和市场份额已大不如前。
-
-• **简洁实用派**：lanycrost简短表达了从vim迁移到nvim的满意体验，认为nvim日常使用便捷，而Emacs像"火箭"一样（暗示复杂或强大但难以驾驭）。
-
-补充讨论：tempfile提出了关键困惑——Emacs的"自我发现"特性名不副实，他无法有效使用内置帮助系统，仍需依赖Google搜索，质疑了Emacs宣传的易用性。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48542784" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.windowslatest.com/2026/06/15/microsofts-new-outlook-takes-10-seconds-to-do-what-outlook-classic-does-instantly-on-windows/" target="_blank">Microsoft new Outlook takes 10 seconds to do what Outlook Classic does instantly</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Adam-Hincu</span> |
-                    <span>评分: 380</span> |
-                    <span>评论数: 70</span> |
-                    <span>发布时间: 2026-06-18 12:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>微软新版Outlook存在严重的通知响应问题。点击Windows 11的邮件通知后，新Outlook需要约10秒才能显示对应邮件，而经典版Outlook几乎即时打开。更荒谬的是，直接打开Outlook应用手动查找邮件只需5秒。
-
-问题根源在于新Outlook基于WebView2构建，本质上是个浏览器窗口加载Outlook.com。它在任务管理器中运行10个独立进程，每次交互都需要初始化web层、认证和渲染。虽然新Outlook的冷启动速度已接近经典版，但通知响应的性能差距暴露了web架构的局限性。微软已推迟企业强制迁移至2027年3月，显示该应用尚未完全就绪。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：微软Outlook及Windows应用性能严重退化，尽管硬件性能大幅提升，软件反而变得更慢更臃肿。
-
-不同观点：
-
-• **技术架构问题派**：新Outlook基于WebView2导致性能差，加载顺序错误、渲染冗余数据。对比Fastmail等Web邮件客户端证明Web技术本身不是问题，是实现质量差。过度依赖Web可移植性论证，引入大量非确定性延迟。
-
-• **历史对比派**：Windows XP时代512MB内存+40GB硬盘就能流畅运行，现在8GB内存都不够。记事本启动需3-4秒，计算器加载都要等待。过去20+ Gbps SSD都无法弥补软件效率低下。引用"我的超能力是我老了，所以记得电脑曾经很快"。
-
-• **组织文化归因派**：微软曾发明"dogfooding"并强制使用Exchange直到修复所有bug，现在质量控制缺失。90年代至2000年代初微软工程师水平远超今天。管理层为短期利益牺牲工程文化，对性能问题不在意（如员工建议"买英特尔股票，用户会升级电脑"）。
-
-• **产品膨胀派**：成熟产品为保持收入被迫添加功能导致臃肿。安全合规标准也不断堆叠，忽视生产力和性能影响。
-
-补充讨论：具体案例包括Yahoo-微软搜索合作中欧洲请求需经4次跨大西洋跳转导致1500ms延迟，微软工程师对此无动于衷；Teams新旧版本对比视频反而暴露新版启动需9秒；移动端打开通知先显示旧邮件，数秒后才切换到正确邮件。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48584207" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48583356" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
