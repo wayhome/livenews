@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-22 03:09 (北京时间)
+            最后更新时间: 2026-06-22 06:08 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,44 +61,90 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://injuly.in/blog/napkin-inference-cost/index.html" target="_blank">Inference cost at scale with napkin math</a>
+                    <a href="https://www.phoronix.com/news/Linux-7.2-Drops-strncpy" target="_blank">Linux eliminates the strncpy API after six years of work, 360 patches</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gmays</span> |
-                    <span>评分: 60</span> |
+                    <span>作者: simonpure</span> |
+                    <span>评分: 222</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-20 20:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Linux 7.2 终于完全移除了内核中的 strncpy API。这个函数因 NUL 终止语义不直观和零填充导致的性能问题，长期以来是内核 bug 的持续来源。经过六年努力和约 362 个补丁，所有 strncpy 使用都已被替换。现在内核代码应使用更安全的替代方案：strscpy()（NUL 终止）、strscpy_pad()（带零填充）、strtomem_pad()（固定宽度字段）、memcpy_and_pad()（显式填充）或 memcpy()（已知长度复制）。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Linux内核移除strncpy函数的工作及C语言字符串处理的历史问题
+
+不同观点：
+
+• **strncpy是设计失误**：多位开发者认为strncpy语义反直觉、容易产生bug（WalterBright表示每次审查C代码都能在strncpy处发现bug），kstenerud指出99.999%的情况下它都不是正确选择，函数名选择也很糟糕
+
+• **零终止符字符串是根本错误**：mrlonglong和rswail认为NUL终止字符串是计算机史上最大错误，Pascal风格的字符串更安全；cm2187指出这些痛苦都源于C缺少字符串数据类型；senfiaj建议应该使用带长度的字符串结构（类似C++的std::string）
+
+• **历史机会的错失**：sirwhinesalot详细列举了三次改进机会——Dennis Ritchie在1990年提出的胖指针、2007年Walter Bright的文章、以及C11和C23标准制定——都未能解决问题，反而加入了_Generic和VLA等特性
+
+• **务实的工程态度**：lambdaone和twothreeone赞扬这种"无聊但重要"的基础工作，认为移除坏特性比添加新功能更重要，且这类跨越数十年的基础设施改进才是真正的系统工程
+
+补充讨论：D-Coder提醒360个补丁是移除的使用次数而非bug数量；rswail指出评论中常混淆NUL（字符）和NULL（指针）；DerSaidin探讨了新的strtomem_pad函数设计细节</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48612943" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.philipzucker.com/td4-4bit-cpu/" target="_blank">Guide to the TD4 4-bit DIY CPU</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: andrewstuart</span> |
+                    <span>评分: 56</span> |
                     <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-16 18:57</span>
+                    <span>发布时间: 2026-06-18 20:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲解如何用简单数学估算GPU集群服务AI模型的成本和规模上限。主要内容包括：
+                    <p>这篇文章介绍了作者从速卖通购买的TD4 4位CPU套件的组装和工作原理。TD4有2个寄存器、LED显示和16字节程序ROM。
 
-1. **GPU基础指标**：峰值吞吐量(FLOP/s)和内存带宽是关键参数
-2. **矩阵乘法成本**：AI模型核心运算，需要2NMd次内存访问和浮点运算
-3. **语言模型工作原理**：LLM通过自回归方式，用attention机制逐个生成token
-4. **Attention机制详解**：通过Q、K、V矩阵计算，但存在内存读取瓶颈
-5. **KV-Cache优化**：缓存已计算的K、V值，避免重复计算，显著降低成本
+**组装部分**：焊接过程中，贴片二极管方向和USB接口安装较为棘手。建议先焊USB口，因为IC插座会妨碍操作。
 
-文章通过"餐巾纸数学"(napkin math)帮助开发者快速评估每用户成本、单GPU可服务用户数、token生成速度等关键指标，用于规划GPU集群规模和优化推理成本。</p>
+**工作原理**：
+- 16个拨码开关构成程序ROM，每组的5-8位是操作码(ADD/MOV/IN/OUT/JNC/JMP)，1-4位是立即数
+- 地址解码器选择对应的拨码开关组
+- 命令解码器将操作码转换为控制信号
+- 数据选择器根据指令选择A/B寄存器、输入或零信号
+- 加法器执行运算
+- 结果锁存到A/B/OUT/PC寄存器
+- 进位标志位存储在D触发器中，用于条件跳转
+
+整体设计简洁，适合学习计算机架构基本原理。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于B200 GPU服务AI模型的成本计算准确性和完整性
+                    <div class="comments-summary">主要讨论点：围绕自制计算机项目的可行性、扩展性和历史回顾
 
 不同观点：
-• **模型假设质疑**：breput认为文章使用32B密集模型的假设有问题，特别是提到的DeepSeek实际是284B参数的MoE模型（激活13B），这会完全改变成本计算结果，建议增加可调参数让读者自行测算
+• **期待简化版套件**（andrehacker）：希望有价格合理、易于获取的一体化套件，目前市场上的方案要么太贵（如Ben Eater套件），要么零件停产难以复现，普通爱好者缺少入门途径
 
-• **硬件部署方式困惑**：smalltorch对"购买GPU但放在数据中心"的说法感到疑惑，不确定这是否指托管服务，还是将"维护费用"等同于本地电费
+• **功能扩展探索**（kmmbvnr_和ee3ee）：讨论如何扩展系统功能，包括运行4位游戏的可能性，以及如何添加输入输出设备（屏幕、键盘），参考DPD-11或ODRA1305等经典架构，甚至考虑升级到10位系统
 
-• **运营成本关注**：JBAnderson5和BadBadJellyBean都指出文章缺少运营成本分析。JBAnderson5详细计算了电费（B200平均600W功耗，每用户每月约$0.20），认为电费相对便宜，但不清楚机房托管成本
+• **编程方式确认**（andrewstuart）：对使用DIP开关编程的方式表示认同，认为这是真正的"老派"做法
 
-• **数学错误指正**：stevenaenns发现文章中的数学计算有误："2B = 562 => B = 331"应该是B = 281
+• **历史经验分享**（asdefghyk）：回忆1974年的EDUC-8项目，这是一个8位串行设计、使用TTL芯片的自制计算机，专为业余爱好者设计，证明类似项目在历史上确有成功先例
 
-补充讨论：核心争议在于文章的成本模型过于简化，忽略了模型规模的实际差异、运营成本（电力、冷却、维护、租金）以及不同部署方式（自购vs租赁、本地vs托管）的成本差异，导致结论可能严重失真。</div>
+补充讨论：评论反映出自制计算机爱好者群体的核心困境——理想与现实的矛盾。既想体验底层硬件原理，又希望降低门槛；既追求复古体验，又期待功能扩展。历史案例提供了参考，但零件供应链问题依然是主要障碍。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48560227" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48591276" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -109,32 +155,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/alan-turings-delilah" target="_blank">The Lost Story of Alan Turing's "Delilah" Project (2025)</a>
+                    <a href="https://alexkritchevsky.com/2024/02/28/geometric-algebra.html" target="_blank">The case against geometric algebra (2024)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: asdefghyk</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-21 05:15</span>
+                    <span>作者: Hbruz0</span> |
+                    <span>评分: 97</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-21 11:06</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了艾伦·图灵的秘密语音加密项目"Delilah"。2023年11月，一批图灵战时文件以近50万美元拍卖，揭示了这个鲜为人知的工程项目。1943-1945年间，图灵在英国汉斯洛普园区秘密研制出便携式语音加密系统Delilah，仅重39公斤，由三个鞋盒大小的单元组成，相比美国贝尔实验室重达5万公斤的SIGSALY系统实现了大幅小型化。这批由图灵助手唐纳德·贝利保存的文件，展现了图灵从数学逻辑转向电路工程的转变，为理解图灵作为电气工程师的一面提供了新视角。</p>
+                    <p>这篇文章批评几何代数(GA)的现状。作者认为GA虽然有价值，但存在严重问题：过度强调几何积(geometric product)这个并不理想的运算，导致理论不够compelling；GA社群缺乏自我批评意识，带有宗教式狂热，把不被主流接受归咎于传统数学的保守；这使GA被视为"民科"边缘理论，陷入持续的平庸状态。作者希望GA能正视并解决这些结构性问题，因为其哲学方向(多重向量和楔积等概念)是正确的，数学确实应该朝这个方向发展，但需要改进才能真正成功。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">您提供的内容只有一个标题"A look inside Turing's notebooks shows his DIY approach"，没有实际的评论内容可供分析。
+                    <div class="comments-summary">主要讨论点：几何代数(GA)的实用价值与理论基础之间的争议
 
-要完成评论分析任务，我需要：
-• 多条评论内容
-• 评论者之间的对话或讨论
-• 不同的观点表达
+不同观点：
 
-请提供完整的评论内容，我将按照您要求的格式进行分析和总结。</div>
+• **实用主义支持派**：工程师和应用者认为GA比李代数、微分几何更易上手，虽然有局限但提供了实用工具。不关心理论证明，只要能解决实际问题即可。类似观点认为GA在动画绑定、机器人学等领域有直观优势。
+
+• **理论批评派**：数学家批评GA混淆了"几何对象"与"作用于对象的算子"，缺乏清晰的理论基础。认为楔积(wedge product)才是基础，GA是"奇怪的意识形态"。指出GA研究论文概念混乱，不如双向量(bivector)语言简洁。
+
+• **社群问题论**：文章作者批评GA吸引了"失败的学者"和"民科"，社群过于激进。但也有人反驳这是人身攻击，认为社群的热情和包容性恰恰帮助初学者入门，不应因推广方式否定其价值。
+
+• **技术局限派**：物理学家认为GA相比李代数、克利福德代数等标准工具并无显著优势，在引力论等领域直接写张量/克利福德指标更快更不易出错。几何向量缺乏固定单位导致量纲分析失效。
+
+补充讨论：争议焦点在于"几何积"(geometric product)是否有普适的解释和应用价值，以及是否应该在形式框架中严格区分对象与算子。复数的几何平均作为角平分线的例子展示了GA的简洁性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48615890" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48617782" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -145,40 +196,79 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://spectrum.ieee.org/phoenix-semiconductors-legacychips-oems" target="_blank">Semiconductor Lifeline Keeps Fighter Jets in the Air</a>
+                    <a href="https://www.thehistoryblog.com/archives/76314" target="_blank">Rare medieval bookmark exceeds expectations at auction</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rbanffy</span> |
-                    <span>评分: 68</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-16 12:31</span>
+                    <span>作者: speckx</span> |
+                    <span>评分: 30</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-06-16 18:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了半导体初创公司Phoenix的业务模式。该公司专注于为关键系统中已停产的老旧芯片提供替代方案，针对高混合、小批量的市场需求。Phoenix设计的芯片可以替代那些不再生产但仍在关键系统中使用的传统芯片，例如Xilinx EEPROM和Datel DAC等产品的复刻版本。</p>
+                    <p>一枚15世纪初的罕见"旋转式"书签在多塞特拍卖会上以7000英镑成交,是最高估价的六倍。这种书签全球仅存约36枚。书签长10英寸,带有可旋转的羊皮纸圆盘,上面标有阿拉伯数字1-4。印刷术发明前,抄写员用它标记页面位置和抄写栏数。圆盘上刻有"Rota versatilis"(可转之轮),提醒抄写员离开前转动标记。此书签最早的documented拥有者是20世纪初的书籍收藏家Alfred Brewis,之后一直由其家族收藏。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于军事和工业系统中老旧芯片替代与技术延续性的讨论
+                    <div class="comments-summary">**主要讨论点：** 关于一个古代转盘书签的功能用途及其引申讨论
+
+**不同观点：**
+
+• **书签使用位置的争议**：Luc认为这个转盘书签应该放在源书（被抄写的书）中标记阅读位置和列号，而不是放在抄写的副本中，这样更符合抄写员的实际工作流程
+
+• **现代物品的考古联想**：ungreased0675以自己桌上的复杂飞轮fidget spinner为例，想象未来考古学家可能会对现代日常物品的功能产生误解，暗示古代物品功能判断的不确定性
+
+• **产品创新机会**：dukeofdoom认为书签产品需要创新，暗示当前市场可能缺乏有趣的书签设计
+
+• **调侃式评论**：polnurfer将其比作NFT，可能是在讽刺对古物价值的过度炒作
+
+**补充讨论：**
+hypercube33指出文章和拍卖页面都未列出该物品的预估或实际成交价格，表达了对信息完整性的不满</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48560050" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.apnic.net/2026/04/28/google-hits-50-ipv6/" target="_blank">Google Hits 50% IPv6</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: barqawiz</span> |
+                    <span>评分: 149</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-21 08:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章主要讨论IPv6的全球采用进展。谷歌测量显示IPv6使用率首次达到50%，标志着IPv6已成为成熟且可大规模部署的协议。但IPv6采用并非均匀分布，不同国家和地区差异明显。APNIC Labs的测量数据为42%，低于谷歌数据，主要因为APNIC采用统计加权方法，根据各经济体互联网用户人口进行调整，而非简单汇总原始样本。两个数据集可以共同反映IPv6实际采用范围。文章认为IPv6部署需要大量技术投入和资本投资，进展因地区而异属正常现象。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：IPv6采用率达到50%，但实际部署和应用仍面临诸多障碍
 
 不同观点：
-• **技术惯性普遍存在**（ggm）：从汽车制造商使用软盘驱动器模拟器，到航空公司依赖IBM大型机时代的终端系统，再到银行核心系统层层模拟旧架构，技术遗留问题根深蒂固且跨行业存在
+• **乐观派**：Google数据显示全球IPv6达50%，法国高达85%，认为这是重要进展里程碑
 
-• **国防部应有预见性**（fmajid）：质疑为何国防部没有为昂贵且长寿命的武器系统储备电子元件备件，认为擅长后勤规划的军方本应提前囤积关键芯片
+• **怀疑派**：认为客户端采用率虽高，但服务端支持不足。Cloudflare数据显示过去一年增长停滞在40%，许多高知名度服务仍仅支持IPv4，实际IPv6流量占比可能更低
 
-• **民间渠道可能有存货**（aimattb）：建议从拍卖会、仓库等非传统渠道寻找老旧芯片库存
+• **悲观派**：认为应承认IPv6迁移已是"沉没成本"，永远无法达到关闭IPv4所需的100%，建议放弃迁移
 
-• **行业先例早已存在**（egl2020）：指出Strobe Data公司几十年前就为PDP-11和DG Nova等老设备提供类似替代方案，这并非新现象
+• **实践者困境**：ISP不提供支持（英国Virgin Media承诺15年未兑现、荷兰T-Mobile多年未实施）；企业客户几乎无人主动要求IPv6；AWS等云服务商部分功能仍不支持；家用路由器默认阻断IPv6入站连接
 
 补充讨论：
-• 有人对Phoenix公司使用"几乎相同"而非"完全相同"的芯片表示意外（bear8642），反映出对军事系统精确性要求的关注
-• 提到Jazz Semiconductor等小型晶圆厂可能在生产这类小众但重要的芯片（CaliforniaKarl）
-
-争议焦点：替代芯片是否必须与原件完全一致，以及国防采购体系是否存在前瞻性规划缺陷</div>
+争议焦点在于责任归属——ISP、云服务商、设备厂商、企业客户形成"互相等待"的僵局。有评论指出周末流量显示企业网络未部署IPv6。技术层面，有人批评IPv6过度工程化，也有人提出用灵活正则表达式替代的非主流方案。实际使用中IPv6仅作为IPv4补充而非替代。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48554206" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48616800" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -189,13 +279,49 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.thinkgeoenergy.com/quaise-energy-achieves-100-meters-of-drilling-using-millimeter-wave-technology/" target="_blank">Millimeter wave technology drills 100 meters into granite</a>
+                    <a href="https://blog.tacoda.dev/why-i-still-live-in-the-terminal-0d27918d85bb" target="_blank">I Still Live in the Terminal</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Jimmc414</span> |
-                    <span>评分: 51</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-20 18:24</span>
+                    <span>作者: tacoda</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-21 15:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者坚持使用终端工作的原因。核心观点包括：Unix管道机制让命令组合变得简单高效；文本作为通用接口，使工具间无需特殊集成就能互联；Makefile提供了跨时代的稳定命令接口；键盘操作减少了思维和行动之间的延迟；终端擅长处理文本类工作（代码、日志、配置等），这是五十年来不断优化的结果。作者建议找出每周重复的鼠标操作，用命令行替代它，通过简单的别名和脚本就能大幅提升效率。GUI有其价值，但对于工程师的主要工作——处理文本，终端仍是最优选择。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：使用终端/命令行工具的偏好和原因
+
+不同观点：
+• **怀旧派回归者**（otekengineering）：曾经离开终端，现在通过Claude Code + API重新回归。认为现代网页设计对用户不友好，全屏命令行界面让他找回DOS时代的舒适感，像重拾童年玩具般温暖
+• **基础设施需求派**（hawky89）：从实用角度出发，认为存储基础设施工作必须使用终端，这是技术需求而非偏好
+• **默认共识派**（Avicebron、jruohonen）：简短表达"我也是"，暗示使用终端是开发者群体的普遍共识或默认选择
+
+补充讨论：评论展现了技术社区对终端工具的广泛认同，但动机各异——有人出于情感和体验，有人出于工作必要性。otekengineering的观点最具体，将工具选择与用户体验质量直接关联，体现了对简洁、高效界面的追求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48619702" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://startupwiki.tech/" target="_blank">Show HN: StartupWiki – A Free Alternative to Crunchbase</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: shpran</span> |
+                    <span>评分: 156</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-20 15:59</span>
                 </div>
 
                 <div class="summary-section">
@@ -205,20 +331,18 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Quaise公司使用毫米波技术进行深层地热钻探的可行性和经济性
+                    <div class="comments-summary">主要讨论点：一个创业公司数据库产品的功能改进和数据可靠性问题
 
 不同观点：
-• **技术可行性支持者**：mncharity分享了详细的技术资料，包括公司官网、YouTube视频、2024年硕士论文和学术论文，展示了该技术的学术基础和发展进程。论文描述了使用金属波导传输毫米波束、氩气作为填充介质的技术方案
+• **数据来源与质量担忧**：多位用户质疑AI和社区生成内容的可靠性，搜索不到自己的公司，担心数据过时无用。认为需要严格的数据时效性规则和来源透明度
+• **主动数据收集建议**：建议让创业公司主动上传startup.txt文件、提供API让用户触发AI抓取、从YC等投资者portfolio页面爬取数据、整合Wikidata/Crunchbase等现有数据源
+• **认证机制需改进**：VERIFIED徽章缺少溯源信息链接，在"假设一切不正确"的免责声明下缺乏公信力
+• **用户体验优化**：反对强制Google登录，希望支持OpenRouter OAuth以分担推理成本；建议在首页展示统计数据；需要明确小公司的入驻流程
+• **创新功能建议**：加入众筹功能衡量traction、绑定加密地址到域名、用JS代码片段追踪用户活跃度
 
-• **经济性质疑者**：anakaine作为前地质学家和钻探从业者，指出该技术需要使用氩气作为波导填充介质和清洗气体，这将使成本"非常昂贵且快速上升"，相比传统机械钻探缺乏经济优势。但他认为可能存在一个经济转折点——在极深处机械钻探因塑性变形而失效时，毫米波技术才有优势
-
-• **技术特性观察**：iberator关注技术细节，指出这是300GHz频率的无线电波应用，认为这是"非常有趣的应用"
-
-补充讨论：eternityforest用电影《地心抢险记》中的激光钻头类比这项技术，体现了公众对该技术科幻感的认知
-
-争议焦点：技术的经济可行性——氩气使用成本是否会抵消深层钻探的技术优势</div>
+补充讨论：开发者已响应部分反馈（添加了agent ledger显示AI处理过程），但数据覆盖面和准确性仍是核心痛点。有用户质疑三天内重复征求反馈的必要性。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48611585" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48610224" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -229,170 +353,33 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nochan.net/b/Internet-Crap/20230829-Think-Of-The-Children/" target="_blank">Think of the children: How to force real ID for all internet traffic (2023)</a>
+                    <a href="https://github.com/Refloow/Refloow-Photo-Studio" target="_blank">Refloow Photo Studio – A local, offline photo editor with on-device AI</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Bender</span> |
-                    <span>评分: 253</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-06-19 20:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：互联网身份验证和年龄验证法规对隐私、匿名性和言论自由的威胁
-
-不同观点：
-
-• **激进抵抗派**（asdff）：主张建立地下无线电中继网络，绕过监管建立点对点通信系统，即使违反FCC规定也要捍卫匿名通信权利，认为这是为自身权利而非精英利益的斗争
-
-• **技术解决派**（nodrog3000, edoceo）：认为应通过路由器家长控制等技术手段解决问题，保持互联网开放；或寻找既能验证年龄又不泄露具体身份的技术方案
-
-• **商业阴谋论**（winrid, zapataband1）：认为年龄验证法规背后是广告公司和科技精英（如Peter Thiel）的利益驱动，AI时代他们需要将流量与政府ID绑定来识别真实用户
-
-• **严格问责派**（mentalgear）：主张对处理身份数据的公司实施严厉惩罚（每泄露一个身份赔偿100万美元），用经济手段迫使企业放弃收集敏感数据
-
-• **悲观预测派**（Buttons840, Svoka）：认为匿名性必然消失，西方在现代宣传技术面前已处劣势，引用1984已过时
-
-• **政府扩权批评**（ian_holt, lacoolj）：将此视为政府控制生活的更大图景一部分，包括数字身份、数字货币等，最终指向"你将一无所有"的议程2030
-
-补充讨论：有人提到历史上V-Chip法规的教训（hakfoo）和KYC/AML式监管导致的过度审查（orbital-decay），以及20年前就有类似警告（teddyh）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48602817" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://countryroadsmagazine.com/art-and-culture/people-places/nola-nacular/" target="_blank">NOLA 'Nacular: One man's crusade to preserve New Orleans's vernacular signage</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: NaOH</span> |
-                    <span>评分: 35</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-17 01:51</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了摄影师Anthony DelRosario在卡特里娜飓风后,开始记录新奥尔良街头手绘招牌的故事。他将这个项目命名为"Nola 'Nacular",旨在保存这些正在消失的本土艺术。文章重点介绍了招牌画家Lester Carey,DelRosario不仅记录他的作品,还为他提供材料、寻找委托,并将其字体数字化供公众免费下载。这些手绘招牌是社区文化的声音,虽然数字印刷更便宜便捷,但手绘招牌承载着独特的地方色彩和人文温度。Carey于2017年去世,但他的艺术遗产通过DelRosario的努力得以保存和传承。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于艺术风格和新奥尔良未来的两个独立话题
-
-不同观点：
-• 艺术推荐角度：__alexander 推荐了 Margaret Kilgallen 的作品，认为她在 90 年代旧金山的艺术理念与讨论中的艺术风格相似，为感兴趣的人提供了参考方向
-
-• 环境担忧角度：bdangubic 表达了对新奥尔良未来的悲观预测，认为由于气候变化，该城市可能在几十年内被淹没，虽然表示祝福（godspeed），但暗示当前的艺术或文化努力可能面临环境威胁
-
-补充讨论：两条评论之间没有直接的争论关系，而是针对不同方面的独立观点。一个关注艺术传承和历史参考，另一个关注地理和环境可持续性问题。这种对比隐含了艺术/文化价值与环境现实之间的张力。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48564763" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://birdhistory.substack.com/p/the-100-greatest-bird-names-of-all" target="_blank">100 Greatest Bird Names of All Time</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bookofjoe</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-21 11:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于有趣鸟类名称的轻松讨论
-
-不同观点：
-• **地区命名差异**：Kaliboy指出Bananaquit在不同语言中有不同叫法（Papiamentu语叫"黄腹"，荷兰语叫"小偷糖者"），展示了同一物种的文化多样性命名
-• **命名的荒诞性**：SommaRaikkonen喜欢Inaccessible Island Rail，因为这个名字完全看不出是什么物种，突出了某些鸟类命名的抽象性
-• **遗憾清单**：fat_cantor和krylon认为列表有遗漏，分别提到Great Tits和Blue-footed Booby应该入选前十
-• **新发现的兴趣**：dwagnerkc对Predicted Antwren产生兴趣，表达了发现新奇鸟类名称的愉悦
-
-补充讨论：hiyer的幽默评论暗示这些鸟名可以作为密码使用，为讨论增添了轻松氛围。整体讨论氛围友好，参与者分享个人喜好和文化知识，无明显争议。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48618086" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/oraziorillo/microcrad" target="_blank">Show HN: Microcrad – Micrograd Reimplemented in C</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: oraziorillo</span> |
-                    <span>评分: 74</span> |
+                    <span>作者: refloow</span> |
+                    <span>评分: 8</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-17 13:34</span>
+                    <span>发布时间: 2026-06-21 14:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>microcrad 是一个用 C 语言实现的微型标量自动微分引擎，附带简单的神经网络实现。它是 Andrej Karpathy 的 micrograd（Python 版）的 C 语言重写版，旨在帮助理解反向传播的工作原理。
+                    <p>Refloow Photo Studio 是一款免费开源的桌面照片编辑软件，旨在让专业级照片编辑变得简单易用。主要特点包括：
 
-核心特点：
-- 基于**标量**而非张量运算，每个数值都是计算图中的节点
-- 通过反向遍历计算图应用链式法则求导
-- 使用引用计数管理内存
-- 实现了多层感知机，支持前向传播、反向传播和梯度下降
+**核心功能**：一键去背景、裁剪、镜像、调节亮度/对比度/饱和度，支持图层叠加和拖放操作，内置40多种专业滤镜（复古、黑白、赛博朋克等）。
 
-这是一个**教育性实现**，代码简洁易读，适合学习自动微分原理，但不适用于生产环境或大规模数据集。核心数据结构 `Value` 包含标量值、梯度、操作码和前驱节点指针，构成有向无环计算图。</p>
+**隐私优势**：完全本地运行，无需账号登录，不收集数据，无水印无广告，永久免费。
+
+**技术要求**：基于 Electron 构建，支持 Windows/macOS/Linux，需要 Node.js v20.10.0+，推荐 4GB 内存。
+
+**许可证**：社区版采用 AGPL-3.0 开源协议，企业版提供商业授权。设计理念是"用最少的步骤实现专业效果"。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">这是一个单一的项目介绍帖子，没有评论讨论。作者 Orazio 介绍了他用 C 语言重新实现 Andrej Karpathy 的 micrograd 项目。
-
-**项目核心信息：**
-• microcrad（带 'c'）：标量值自动微分引擎
-• 基于计算图实现反向传播，每个数值是一个 Value 节点
-• 约 1,350 行代码，MIT 许可，仅依赖标准库和 libm
-• 包含两个示例：玩具回归和 MNIST 任务
-
-**作者明确的定位：**
-• 这是学习项目，目的是从第一性原理重温反向传播
-• 不是生产级框架 - 标量值设计导致速度慢
-• 未针对数值稳健性或大数据集优化
-• 无商业目的
-
-**作者期待的反馈：**
-• 机器学习工程方面的意见
-• C 语言代码风格是否符合习惯
-
-**补充说明：**
-目前没有其他用户的评论或讨论。这是一个开放性的项目分享，作者寻求社区对其学习项目在 ML 实现和 C 编程规范方面的反馈。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48570364" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48619100" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -403,36 +390,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ianbarber.blog/2026/06/19/llms-are-complicated-now/" target="_blank">LLMs Are Complicated Now</a>
+                    <a href="https://gwern.net/doc/science/physics/astronomy/2010-aslaksen.pdf" target="_blank">The Mathematics of the Chinese Calendar [pdf]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: matt_d</span> |
-                    <span>评分: 184</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-20 01:25</span>
+                    <span>作者: mysticaltech-</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-21 11:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>大型语言模型(LLM)变得越来越复杂。2022-2023年Llama模型架构简洁，但如今已演变出多种注意力机制变体(分组查询、稀疏、线性、滑动窗口等)、专家混合路由、多模态编码器融合等复杂结构。这类似于推荐系统的演进历程——性能优化从可选变为必需。研究迭代需要在探索新架构与保持性能之间平衡，单靠手动融合或AI生成都不够，关键是前期设计的可组合性。PyTorch的FlexAttention展示了通过模板生成可验证内核的有效方法。未来AI研究循环的成功既依赖智能代理，也依赖将架构精简为可组合本质的能力。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于机器学习/大语言模型发展现状和技术博客的多角度评论
-
-不同观点：
-• **技术发展规律观点**（jordanb）：AI技术遵循"苦涩教训"周期——早期通过简单应用数据和资源获得巨大收益，随后进入收益递减阶段，需要投入更多工程努力才能获得微小进步
-• **理论缺失批判**（physix）：当前ML领域缺乏基础理论支撑，只能依赖经验和迭代，类似于相对论和量子力学出现前的物理学状态，这导致技术难以理解
-• **方法论质疑**（charcircuit）：作者的技术比较方法存在问题——比较两个不同架构族系的LLM（而非同族的GLM 5.2）然后指出差异，这个结论缺乏说服力；主要差异在于MoE结构和注意力机制实现
-
-补充讨论：
-• vivzkestrel提出用户体验问题，抱怨博客缺少文章目录页面，导航困难
-• aesthesia简短评论发现了"Claude Telenovela"这个新内容
-
-争议焦点：技术比较的科学性——是否应该在相同架构族系内比较模型</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48605355" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48618011" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -443,41 +419,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.argusred.com/cli" target="_blank">Show HN: We post-trained a model that pen tests instead of refusing</a>
+                    <a href="https://github.com/oven-sh/WebKit/pull/249" target="_blank">Bun has an open PR adding shared-memory threads to JavaScriptCore</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dk189</span> |
-                    <span>评分: 76</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-20 13:49</span>
+                    <span>作者: gr4vityWall</span> |
+                    <span>评分: 144</span> |
+                    <span>评论数: 38</span> |
+                    <span>发布时间: 2026-06-20 17:02</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Argusred 是一个安全扫描 CLI 工具，提供两种模式：
+                    <p>这是JavaScriptCore的共享内存线程实现提案。核心特性是`new Thread(fn)`可以在另一个线程上执行函数，共享同一个堆和对象，无需结构化克隆或消息传递。
 
-**Security Scan（只读模式）**：自动扫描代码库中的安全漏洞，包括依赖漏洞、SQL注入、XSS、密钥泄露等8个模块。可选择开启 Exploit Verification 在隔离环境中验证漏洞。输出 Markdown 格式报告，包含漏洞位置、严重程度和修复建议。首次使用赠送 200万免费 tokens。
+主要优势：
+- 函数可作为真正的闭包跨线程执行，访问导入和变量
+- 直接共享对象，无需复制数据
+- 简化并行map、共享缓存等场景
+- 取消和进度追踪只需操作共享布尔值/计数器
 
-**Pen Test（渗透测试模式）**：需授权的主动攻击测试模式，实际尝试利用漏洞。
-
-工具基于 Cosine 账户运行，采用 Go 强制只读保护，不会修改代码。扫描时间取决于代码规模，3万行代码约10分钟。</p>
+当前状态：并行JavaScript已在四层JIT中运行，测试通过，但尚未完成（需thread-sanitizer清理、模糊测试等）。这是设计审查PR，可能不会合并。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于基于Kimi K2.6微调的渗透测试AI模型的发布政策、技术实现和安全影响
+                    <div class="comments-summary">主要讨论点：Bun项目使用AI（Claude）生成的大规模多线程JavaScriptCore代码PR引发的信任与技术争议
 
 不同观点：
-• **访问限制质疑**：cortesoft指出该产品的访问政策实际上与Anthropic和OpenAI相同，只是换了标准，质疑其宣称的差异性
-• **技术必要性存疑**：luminati认为在AWS/Bedrock上运行Shannon等现有模型已足够，质疑微调Kimi的价值；并批评其营销中未提及基础模型Kimi K2.6，认为"微调不等于模型实验室"，缺乏谦逊
-• **防御无效论**：jjcm认为这证明了AI防护措施只是临时阻碍，只要开源模型存在，AI黑客工具终将普及；skiing_crawling补充指出任何去审查的开源模型都能实现类似功能
-• **安全担忧**：lacoolj预测政府可能介入监管；Catloafdev质疑为何开发攻击工具而非防御扫描工具，认为无法安全公开发布
-• **技术细节兴趣**：andai和mkaszkowiak对后训练方法和对抗性代理评估基准表示兴趣，希望了解技术实现细节
-• **营销真实性质疑**：jrflowers讽刺这只是"让Claude生成营销页面"
 
-补充讨论：多位评论者关注授权问题，提及Kimi的许可协议可能要求标注来源，类似Cursor曾遇到的问题</div>
+• **反对派 - 信任缺失**：认为1800个文件的AI生成代码无法建立信任，即使代码质量再好也不会使用。软件不仅是代码，稳定性和信任同样重要。AI在多线程代码方面表现不佳，这类代码需要"显然没有bug"而非"没有明显bug"
+
+• **反对派 - 设计理念质疑**：JavaScript的单线程异步模型本身就是为了避免共享内存的多线程复杂性，这是其优势。对于CPU密集型任务应该选择其他语言，而非在JS中引入多线程
+
+• **支持派 - 技术突破**：作者Jarred认为这实现了真正的共享对象多线程，是基于WebKit博客设计的创新尝试。有人赞赏LLM能够原型化如此大规模的想法，为未来软件实验提供了可能性
+
+• **中立派 - 阴谋论与担忧**：有人怀疑Anthropic收购Bun是为了向开源项目推送AI代码；也有人担心这会让AI成为"单人开发"的工具，难以扩展到团队协作
+
+补充讨论：多位评论者对PR缺乏人工描述、潜在竞态条件、与上游WebKit同步困难表示担忧。原设计作者pizlonator的工作未获充分致谢也引发不满。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48609231" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48610841" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
