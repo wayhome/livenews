@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-22 06:08 (北京时间)
+            最后更新时间: 2026-06-22 10:16 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://alexwlchan.net/2021/slashes/" target="_blank">A tale of two path separators</a>
+                    <a href="https://www.humprog.org/~stephen/blog/2026/06/15/#system-call-instrumentation-on-intel-negative-result" target="_blank">System call instrumentation on Linux/x86‑64 using memory‑indirect calls, part I</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dbaupp</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-17 10:14</span>
+                    <span>作者: matt_d</span> |
+                    <span>评分: 23</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-17 07:03</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了 macOS 中的双路径分隔符现象。macOS 同时支持斜杠（/）和冒号（:）作为路径分隔符，这源于其融合了两个父系统：经典 Mac OS（使用 HFS+ 文件系统，用冒号分隔）和类 Unix 的 NeXTSTEP（使用 UFS 文件系统，用斜杠分隔）。系统会在不同上下文中自动转换这两种分隔符，导致文件名在 Finder 中显示为斜杠，在终端 ls 命令中却显示为冒号。尽管 2017 年苹果用 APFS 替换了 HFS+，但为了向后兼容，这种双分隔符机制仍然保留。AppleScript 是现代 macOS 中最常遇到冒号路径的地方。</p>
+                    <p>这篇文章讨论了在 Linux x86-64 系统上对系统调用进行插桩的技术挑战。核心问题是系统调用指令只有2字节，而跳转指令需要5字节，导致难以直接替换。文章介绍了几种解决方案：指令双关技术（instruction punning）利用相邻指令的字节构造跳转；E9Patch 采用统计方法处理跳转目标；zpoline 用 `call *%rax` 替换系统调用，但需要映射零地址页面且有安全隐患。作者尝试探索利用 x86 分段机制的新方法，通过修改本地描述符表实现间接跳转，但最终效果不如预期。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同操作系统的文件路径处理机制及其历史遗留问题
+                    <div class="comments-summary">主要讨论点：Linux内核系统调用的设计问题及解决方案
 
 不同观点：
-• **Classic Mac OS的特殊性**：使用冒号(:)作为路径分隔符，双冒号(::)表示上级目录，以冒号开头的路径为相对路径。Mac别名(alias)是实际文件而非符号链接，保存在Resource Fork中，支持网络路径并能自动更新移动后的文件位置。
+• **反对方观点**：认为相关解决方案过度复杂，属于"写作狂"（graphomania）。系统调用本身很简单，不需要如此臃肿的实现。同时批评其使用GNU/Linux的"左派"许可证。
 
-• **macOS的混乱兼容**：现代macOS同时支持多种路径表示，冒号和斜杠在Finder和Terminal中显示互换——Terminal中用冒号命名的文件在Finder显示为斜杠，反之亦然。Finder可显示POSIX路径但不允许文件名包含冒号。
+• **支持改革观点**：认为Linux允许任意用户空间代码直接进行系统调用是个糟糕设计。这种模式剥夺了系统在用户空间拦截系统调用的能力，导致昂贵的特权模式切换。建议借鉴OpenBSD模式，强制所有系统调用必须通过libc或VDSO（类似Windows的ntdll.dll），这样就能通过修改libc/VDSO调度来轻松hook系统调用，无需重写指令。
 
-• **Windows的历史包袱**：反斜杠分隔符源于DOS，但实际也支持正斜杠(来自XEDOS的Unix兼容尝试)。每个驱动器号保留独立的当前目录，如"D:"指向该盘最后访问位置而非根目录，"C:foo"相对于C盘当前目录。
+补充讨论：第二位评论者提出具体改革建议：从现在开始，所有新系统调用必须通过VDSO，否则发送SIGKILL信号终止进程。这样可以通过LD_PRELOAD在VDSO前插入代码，实现用户空间的系统调用拦截。
 
-• **设计vs惯性的质疑**：有评论质疑这些行为有多少是有意设计，多少只是为了向后兼容而保留的历史包袱。现代文件系统是否仍受旧设计约束。
-
-补充讨论：有人提及日元符号(¥)作为路径分隔符的故事，以及设想完全没有目录或文件系统的操作系统。</div>
+争议焦点：是保持Linux当前的系统调用灵活性，还是为了更好的可维护性和拦截能力而引入强制中间层。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48568181" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48566824" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,151 +99,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cnn.com/2026/06/20/americas/brazil-hackers-unauthorized-alert-latam" target="_blank">Unauthorized alert sent to cell phones across Brazil</a>
+                    <a href="https://alshe.substack.com/p/i-canceled-my-french-tutor-and-built" target="_blank">I Canceled My French Tutor and Built an LLM Tool That Does It Better</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 175</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2026-06-20 20:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>巴西多个州的手机用户在周六凌晨收到未经授权的"极端警报"，显示"misantropi4"（misanthropy，厌世）字样。巴西政府表示这可能是黑客攻击所为。该警报通过国家民防预警平台发送，覆盖圣保罗、里约热内卢等主要城市。事件发生后，该预警平台已被临时关闭。巴西国家民防机构确认，这条消息由非系统内部人员远程触发，目前正在调查来源并恢复系统安全。各州民防部门均表示未发出官方警报，也无任何灾害风险需要预警。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：波兰全国性警报系统被入侵事件的安全漏洞、责任归属及警报系统的滥用问题
-
-不同观点：
-
-• **安全管理严重失职**：黑客通过Windows 7（已停止支持）个人电脑窃取VPN凭证，该电脑无杀毒软件，且员工共享凭证。黑客甚至用CapCut录制视频时暴露了身份信息，显示出极度的安全疏忽和不专业
-
-• **警报系统过度使用导致用户麻痹**：有人分享关闭所有警报（包括总统警报）的经历，因为收到的Amber警报常在数百英里外，天气警报频繁误报，导致用户习惯性忽略所有警报
-
-• **术语使用不当**：有评论指出媒体误用"hacker"一词，真正的黑客是建设者，而入侵者应称为"cracker"（骇客），两者有本质区别
-
-• **警报系统的潜在滥用风险**：有人担忧美国"总统警报"等系统可能在2029年前被滥用，质疑政府掌握大规模信息推送权力的合理性
-
-补充讨论：评论中提到多起类似的警报误报案例（加拿大、夏威夷导弹警报、达拉斯警报系统），说明此类系统的脆弱性是全球性问题。还有人指出波兰电信系统允许任意伪造来电号码，被诈骗犯利用冒充警察和银行。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48612502" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wired.me/story/commodore-made-a-digital-detox-phone-that-isnt-dumb" target="_blank">The Commodore Callback 8020 smart flip phone</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Audiophilip</span> |
-                    <span>评分: 90</span> |
-                    <span>评论数: 30</span> |
-                    <span>发布时间: 2026-06-18 16:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Commodore推出了一款名为Callback 8020的翻盖手机，主打"数字排毒"理念。该手机运行基于Linux的Sailfish OS系统，可使用Uber、WhatsApp、Spotify等基础应用，但屏蔽了社交媒体、浏览器、邮件等分心应用。配置包括联发科处理器、4800万像素索尼摄像头、可拆卸电池和3.5mm耳机孔。具有复古录像滤镜、C64芯片音乐铃声和经典游戏。售价500-640美元，6月30日开始预订，年底发货。定位于需要基本智能功能但想减少屏幕时间的用户。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Commodore推出的翻盖"数字排毒"手机的市场定位和实用性
-
-不同观点：
-• **怀疑派**：认为产品定位失败，目标客户不明确。Commodore老粉丝对翻盖机无感，就像对传真机无感一样。定价过高（$500-600 vs 同配置三星$120），时机不对，重复Commodore历史上的错误决策
-
-• **价格理性派**：小众替代手机必然溢价，因为缺乏规模经济和数据变现。想要不同于大众消费的产品就要付出代价。主流厂商靠规模和"间谍经济"压低价格，价格对比意义不大
-
-• **实用主义反对派**：翻盖机无法解决数字成瘾，真正问题在笔记本和桌面端。相机质量差是硬伤，没人会为拍照再转到电脑编辑。双手机方案（转移eSIM、WhatsApp等）过于麻烦
-
-• **潜力挖掘派**：这是口袋Linux终端，结合语音导航+SSH连接家庭AI服务器，可成为AI时代真正隐私优先的智能手机替代品。音质好、续航一周、蓝牙热点稳定，黑客可深度定制
-
-• **有条件支持派**：SailfishOS系统是亮点，但需要能解除应用限制或刷原版系统。实体键盘+耳机孔有吸引力，但拒绝预装Meta和Spotify，希望能装Signal
-
-补充讨论：有人提出双手机策略（日常用极简机，必要时用全功能机）和关机策略作为替代方案</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48587619" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://martinfowler.com/articles/reliable-llm-bayer.html" target="_blank">Building reliable agentic AI systems</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sarangk90</span> |
-                    <span>评分: 149</span> |
-                    <span>评论数: 25</span> |
-                    <span>发布时间: 2026-06-21 04:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>拜耳公司与Thoughtworks合作开发了PRINCE平台，用于解决药物研发中的临床前数据检索难题。该系统采用代理式RAG（检索增强生成）和Text-to-SQL技术，将传统关键词搜索升级为智能研究助手，能够回答复杂问题并起草监管文件。系统通过多个专业代理（研究、反思、写作）协同工作，强调透明度、可解释性和人机协作。PRINCE展示了AI在制药行业的变革潜力，显著提升了数据可访问性和研究效率，同时确保合规性和可靠性。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于AI代理系统（特别是RAG系统）在医药研究领域应用的评价和技术实现争议
-
-不同观点：
-
-• **批评派**：系统评分仅3.1/5.0且存在幻觉问题，在医药研究这种关乎生命的领域不可接受（BodyCulture）；文章过度描述基础RAG系统却缺乏评估细节（AJRF）；多代理系统架构缺乏实证支持，更像是"感觉对"而非真正有效（padolsey）
-
-• **数据优先派**：数据库质量和清洁度是关键，实际工作中99%时间在处理数据，1%在调优代理；动态获取数据会导致问题层出不穷，静态数据库更可控（bob1029）
-
-• **技术演进派**：2024年构建的系统已过时，2026年的大上下文窗口和更智能模型可以更好地解决问题（stevex）；但大上下文不能替代精细的上下文控制（Littice）
-
-• **应用场景派**：AI代理在信息检索方面表现出色，但在代码编写和长文本创作上质量堪忧，局部连贯但全局混乱（ThePhysicist）
-
-补充讨论：模型选择对系统设计影响巨大但文章未充分讨论（agentdev001）；实际应用中token消耗惊人且效果不佳（hirako2000）；文章本身使用AI撰写的程度存疑（altmanaltman）</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48615680" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://oilprice.com/Alternative-Energy/Renewable-Energy/Energy-Security-Not-Climate-Goals-Is-Now-Driving-the-Clean-Power-Boom.html" target="_blank">Energy Security, Not Climate Goals, Is Now Driving the Clean Power Boom</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rustoo</span> |
-                    <span>评分: 4</span> |
+                    <span>作者: Anon84</span> |
+                    <span>评分: 10</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-21 21:19</span>
+                    <span>发布时间: 2026-06-21 22:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>您没有提供完整的文章内容。您粘贴的是一个石油价格网站的页面框架，包含导航菜单、各类原油价格数据和新闻标题列表，但文章在最后一条新闻标题处被截断了（"First Iranian Oil Moves Past U..."）。
-
-请提供您想要总结的完整文章内容，我将为您用中文进行200字以内的概括。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48622697" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48623371" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -256,35 +128,226 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://atgreen.github.io/repl-yell/posts/libffi-plan-cache/" target="_blank">Performance Improvements in Libffi</a>
+                    <a href="https://lcamtuf.substack.com/p/the-100000-whys-of-ai" target="_blank">The 100k Whys of AI</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: atgreen</span> |
-                    <span>评分: 8</span> |
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 113</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-21 05:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：LLM生成内容的同质化现象及其可识别性
+
+不同观点：
+
+• **同质化成因派**：认为LLM训练数据相似、缺乏人类的生活经验和情绪差异，导致输出高度趋同。有人指出这是"模式坍缩"问题，可能源于指令微调过程
+
+• **可识别性争议**：部分用户认为AI内容"一眼可识别"，有明显的"气味"和模式；但另一部分用户看不出差异，争论焦点在于识别AI内容是否需要经验积累
+
+• **领域差异派**：编程领域中同质化反而是优点，因为程序员本就追求可预测和明显的代码；但在创意写作中这成为缺陷
+
+• **消费者影响派**：认为多数人已能区分AI内容但不在乎；也有观点认为大众消费者从未真正关注内容质量，会无限期被AI内容困住
+
+• **技术改进派**：建议通过调整温度参数或引入"覆盖率"指标来增加多样性
+
+补充讨论：
+实际案例显示批量生成的50+篇内容会收敛到相同模式；AI生成书籍充斥实体书店引发担忧；也有人质疑展示的书籍是否真由不同作者生成，若是同一人操作则不足以证明问题。另有观点指出AI书籍还存在大量错误。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48616017" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.devashish.me/p/two-qwen3-models-on-one-dgx-spark" target="_blank">Two Qwen3 models on one DGX Spark: the residency math</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: devashish86</span> |
+                    <span>评分: 72</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-18 16:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讲述了作者在DGX Spark上同时运行两个Qwen3模型的实践经验。主要内容：
+
+作者从单一ollama模型服务迁移到vLLM，以支持多模型共存。目标是在119.67 GiB显存上同时运行Qwen3-Next-80B（重型推理）和Qwen3-4B（快速响应）。
+
+核心发现：
+1. **gpu_memory_utilization是相对总显存而非剩余显存的比例**，两个进程的配置需总和<0.95
+2. Qwen3-Next-80B-Thinking模型在`tool_choice: "auto"`模式下无法正常输出工具调用，必须换用Instruct版本
+3. 最终配置：80B使用0.80/32k上下文/2并发，4B使用0.10/16k上下文/8并发，成功实现共存
+
+关键教训是显存分配计算必须考虑CUDA框架开销（~5GB）和实际模型占用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">**主要讨论点：** 本地部署大语言模型（LLM）的实践经验、性能表现和投资决策
+
+**不同观点：**
+
+• **积极实践派（wolttam）：** 从单Spark运行DwarfStar起步（11-14 tok/s生成），升级到双Spark运行DSv4 Flash后性能显著提升（40-50 tok/s生成，2000 tok/s预填充）。认为本地LLM已能胜任大部分编码任务，对前景乐观。
+
+• **观望犹豫派（shireboy）：** 虽然对在线服务性价比不满，但担心硬件快速过时和需要维护。纠结于5000美元投资是否值得，在128G MacBook Pro、Framework或Spark等方案间犹豫不决。希望获得本地部署的建议。
+
+• **技术优化派（dzink）：** 建议尝试llama.cpp配合unsloth和GLM flash等工具，认为能更快体验新发布的模型，但承认尚未进行长期部署验证。
+
+• **技术细节派（devashish86，作者）：** 澄清Qwen3-Next的tool_choice="auto"失败并非解析问题，而是模型推理后未输出工具调用。强调应根据实际显存占用（而非目标值）规划模型加载，CUDA框架本身约占5 GiB。
+
+**补充讨论：** 
+有人好奇双LLM同时运行的可行性；有人询问Qwen3.6性能数据；有评论指出文章疑似由LLM撰写，要求标明。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48587865" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://movq.de/blog/postings/2026-06-20/0/POSTING-en.html" target="_blank">Windows UI evolution: Clicking an unassociated file</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jandeboevrie</span> |
+                    <span>评分: 129</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-21 06:24</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章追溯了Windows系统中点击未关联文件类型时UI界面的演变历程。从Windows 2.11（1989）仅显示"无法执行"，到Windows 3.1（1992）开始提供文件关联配置入口，再到Windows 95（1995）允许直接在对话框中选择程序。Windows XP（2001）尝试引入网络服务查询功能，但效果不佳。到Windows 10（2015）则采用扁平化设计，通过应用商店或本地程序列表来建立文件关联。整体趋势是从简单报错到提供越来越便捷的关联设置方式。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Windows文件关联功能的演变及其用户体验变化
+
+不同观点：
+• **怀旧派认为老版本更优**：Windows 9x是巅峰时期，界面清晰、信息密度高、响应迅速，现代UWP应用反而显得笨重易崩溃（reddalo）
+
+• **批评功能退化**：文件关联从Windows 3.1/95/2000/XP的简单易用，逐渐变得复杂；Windows 7移除了文件类型管理器，Windows 10需要更多点击和隐藏选项才能创建关联，是典型的"劣化"案例（rkagerer）
+
+• **现代版本存在Bug**：Windows 10/11卸载现代记事本后无法关联.txt文件，需要注册表技巧；Win 11甚至会弹出错误提示，必须先关闭特定开关（Krssst, petee）
+
+• **在线查找功能失败**：Windows多年来的"在线查找"功能（查扩展名、找驱动等）从未真正有用，被认为是微软的嘲讽（stavros, nailer）
+
+补充讨论：
+• 文章作者缺少Windows Me到XP之间版本的测试环境，评论者认为这些版本并不难在虚拟机中配置（donatj）
+• Windows 10/11对话框缺少明显的取消按钮，只能按Esc键（brewmarche）
+• .NET品牌曾像今天的Copilot一样被激进推广（1bpp）
+• 微软十年前推出了CLI版本工具，可用于脚本化配置（1970-01-01）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48616173" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://zeux.io/2026/06/17/zigzag-decoding-avx512/" target="_blank">Zigzag Decoding with AVX-512</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: luu</span> |
+                    <span>评分: 110</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-06-17 17:43</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了在meshoptimizer中使用AVX-512加速顶点解码时发现的两种优化技术，重点关注zigzag编码整数的解码问题。
+
+Zigzag编码用于高效存储有符号整数：将正值v编码为2*v，负值编码为2*(~v)+1，使得小数值（无论正负）都用较少位数表示。传统的无分支解码公式为`(v >> 1) ^ -(v & 1)`。
+
+文章介绍了SIMD解码的实现方法，在SSE2上需要4条指令、3个时钟周期的延迟。作者随后探索了利用AVX-512新特性（如掩码操作）来进一步优化这一过程的可能性，虽然这些优化最终未被采用，但展示了AVX-512指令集的独特能力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于MeshOptimizer库性能优化技术的讨论，涉及编码方案、SIMD指令和编译器优化能力
+
+不同观点：
+• **MeshOptimizer的行业地位**：flohofwoe认为MeshOptimizer已成为游戏行业的核心基础库之一，地位类似于资源管道中的curl，承载了半个游戏行业
+• **编码方案的性能权衡**：MaskRay通过技术分析指出，虽然可以用zigzag编码将SLEB128转换为ULEB128，但在x86、AArch64和RISC-V架构上，生成的代码性能不如或仅持平SLEB128，尤其是单字节编码场景
+• **编码技术的应用前景**：wood_spirit认为zigzag编码这类压缩技巧已在Parquet格式中广泛应用，推测这些技术可能在数据处理和分析领域有更多应用空间
+• **编译器自动优化的局限**：londons_explore提出核心问题——为什么编译器不能自动完成这类优化？指出通过AVX512和深入思考可以实现1000倍加速，希望能自动化这个过程以获得巨大性能提升
+
+补充讨论：fc417fc802对位移矩阵的表示方式产生疑问，后发现是指令从下到上填充矩阵导致的误解。讨论整体反映了底层优化的复杂性和手工优化与编译器自动化之间的差距。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48573902" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://news.ycombinator.com/item?id=48624168" target="_blank">Ask HN: Are you being "529 Overloaded" by Anthropic too?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: hmokiguess</span> |
+                    <span>评分: 5</span> |
                     <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-21 14:18</span>
+                    <span>发布时间: 2026-06-22 00:41</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>libffi是一个函数调用解释器，在运行时根据函数签名动态处理参数传递。传统做法是每次调用都重新计算参数位置，约650条指令的开销却产生相同结果。
-
-优化方案是引入"计划"(plan)机制：将参数位置预编译成扁平的移动指令列表（类似字节码）。首次调用时计算并缓存，后续直接执行移动操作，跳过重复分类。
-
-针对常见场景（全部是64位寄存器参数），还提供了手写thunk直接加载参数到寄存器，完全避免解释开销。这种方案保持纯解释器架构，不需要运行时代码生成或可写可执行内存，符合现代系统安全要求，同时大幅提升性能。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于 prepare 函数的实际功能与预期不符
+                    <div class="comments-summary">我需要先访问这个链接来获取评论内容。让我为您读取这个 Hacker News 讨论页面。
 
-不同观点：
-• rurban 认为 prepare 函数应该已经处理参数解码（arg decoding），但实际上并没有，对此感到疑惑
-• 提出质疑：既然有 prepare 步骤存在，为什么它不执行参数解码的准备工作
+<search_web>
+  <query>site:news.ycombinator.com/item?id=48624153</query>
+</search_web>
 
-补充讨论：这是一条独立评论，表达了对某个代码实现中 prepare 函数设计意图的困惑。评论者预期 prepare 应该包含参数解码的预处理逻辑，但发现实际实现与预期不一致。</div>
+很抱歉，我无法直接访问外部网页内容。要完成这个任务，您需要：
+
+1. **复制评论内容**：请访问该链接，复制您想要我分析的评论内容，然后粘贴给我
+
+2. **或者提供截图**：如果评论较多，您可以提供页面截图
+
+3. **或者手动摘录**：如果只是部分评论，可以直接将关键评论文本发送给我
+
+收到评论内容后，我会按照您要求的格式进行分析：
+- 识别不同观点立场
+- 总结论据和例子
+- 指出争议焦点
+- 用中文输出，500字以内
+- 分点列出
+
+请提供评论内容，我随时准备为您分析。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48619207" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48624168" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -295,33 +358,36 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.nature.com/articles/s41551-026-01660-4" target="_blank">Whole cross-sectional human ultrasound tomography</a>
+                    <a href="https://cleantechnica.com/2026/06/16/shipping-freight-energy-fossil-cargo/" target="_blank">Fossil Fuels Are 40% of Freight Shipping Tonnage, but Half Its Fuel Use</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: lnyan</span> |
-                    <span>评分: 105</span> |
-                    <span>评论数: 8</span> |
-                    <span>发布时间: 2026-06-18 09:23</span>
+                    <span>作者: choult</span> |
+                    <span>评分: 147</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2026-06-21 14:43</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了一种新型全截面超声断层成像系统，用于人体成像。该系统采用512元环形接收阵列和旋转发射器，能够生成人体腹部和大腿的完整二维横截面图像，同时具备反射和透射模式。研究展示了两个关键应用：一是无辐射评估腹部脂肪分布和厚度；二是实现视频速率下活检针相对于内部组织的定位。与传统手持超声相比，该系统克服了视野局限、操作依赖性和接触变形等问题，成像结果与临床MRI高度一致，有望成为满足临床未解决需求的实用工具。</p>
+                    <p>这篇文章讨论航运业能源转型策略。主要观点是：不应简单地用替代燃料一对一替换现有船用燃料，而应先认识到化石燃料货运（煤炭、石油、天然气及铁矿石）占船运能耗的一半以上。随着能源转型，这些货运需求将大幅下降，同时短途航线可电气化。因此真正需要替代液体燃料的剩余需求会显著减少。文章强调应先通过"缩小分母"（减少化石货运、推进电气化、提升效率）来降低燃料总需求，然后再考虑为剩余部分寻找替代燃料方案。这比试图为当前全部燃料需求找替代品更可行。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于超声波全身扫描技术（特别是水槽式扫描系统）的技术可行性和实际部署挑战
+                    <div class="comments-summary">主要讨论点：海运燃料消耗在全球石油使用中的占比及其对能源转型的影响
 
 不同观点：
-• **技术乐观派**：认为这是创新的系统架构突破，通过水槽环形布置传感器可实现全身扫描，无需专业超声技师操作是重要的规模化优势
-• **技术怀疑派**：指出核心问题在于灵敏度不足——60-70cm距离导致信号严重衰减，1MHz低频率虽降低衰减但牺牲分辨率（约1.5mm），成像质量远不如MRI
-• **部署现实派**：强调最大挑战不是技术本身，而是医疗系统部署问题——低灵敏度全身扫描易导致过度诊断（偶发瘤）和医源性副作用，需要重新培训医生和重构医疗体系
-• **成本权衡观点**：高灵敏度医用超声设备（15万美元、150公斤）成本和体积都难以在水槽周围大规模部署，而低成本传感器灵敏度不够
+• **海运占比虽小但仍值得关注**（bryanlarsen）：海运仅占石油使用的一小部分，远低于公路运输（20倍）和航空（2倍）。从油田到炼油厂的运输损耗相对较小，主要能源损失（40%）发生在炼油和配送环节。尽管海运只占3%排放，但绝对数值仍然可观，值得寻找解决方案
 
-补充讨论：有人提出家用化愿景（浴缸中使用小型设备），也有人指出需要传感器技术本身的创新突破（更小、更便宜、更低功耗），而非仅仅改变形态因子或扩大生产规模。争议焦点集中在：技术可行性vs临床实用性的gap。</div>
+• **能源转型可行性乐观**（epistasis）：海运仅占全球排放约1%，在停止其他化石燃料使用后降至0.5%，这只是舍入误差。甲醇、氨等合成燃料可替代海运化石燃料。可再生能源经济比化石燃料更稳定、更便宜，应加速转型
+
+• **文章逻辑混乱**（hedora）：标题具有误导性，未应用类似阿姆达尔定律的分析框架。应关注"货物中有多少碳来自海运"而非燃料占比，因为最后一公里配送和制造环节的碳排放才是主导因素
+
+• **文章质量存疑**：多位评论者（netsharc, userbinator, metalspot, danw1979）质疑文章标题的逻辑性，认为内容空洞或疑似AI生成
+
+补充讨论：mynegation指出应使用吨公里而非吨位衡量货运量更为合理</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48582894" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48619394" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -332,39 +398,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.satisfice.com/blog/archives/488148" target="_blank">Don’t use AI to write things that you present as your own work</a>
+                    <a href="https://www.economist.com/briefing/2026/06/14/donald-trumps-blocking-of-anthropic-is-capricious-and-chaotic" target="_blank">NSA director: 'Mythos "broke into almost all of our classified systems in hours"</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: satisfice</span> |
-                    <span>评分: 61</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-06-21 04:50</span>
+                    <span>作者: ricksunny</span> |
+                    <span>评分: 59</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-21 09:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>作者坚持不使用AI代写任何署名作品。他认为让AI帮助写作与完全代写没有实质区别，就像用直升机登顶珠峰却声称自己攀登了一样。作者曾为他人代笔，深知这会影响内容本质。他强调真正的协作（如与Jeff Nadelman合写章节）需要大量投入和互动。使用AI写作会损害个人信誉，因为无法证明实际付出了多少努力。在AI泛滥的时代，声称"AI帮我写作"等同于承认可能完全依赖AI，这会让所有作品被打上问号。作者呼吁：不要用AI代写，不要撒谎，否则专业声誉将毁于一旦。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于在写作中使用AI工具是否应该披露，以及如何看待AI辅助创作的真实性和价值。
+                    <div class="comments-summary">主要讨论点：Mythos AI模型据称在数小时内攻破NSA几乎所有机密系统的真实性和安全影响
 
 不同观点：
+• **怀疑报道准确性**：mrandish认为这是经过参议员和将军多次转述的夸大说法，原始证词可能只是"发现了潜在严重漏洞"，而非真正攻破所有系统
+• **质疑测试条件**：protocolture和instagib追问这是外部入侵还是内部未打补丁的系统测试，scotty79推测可能只是测试了内部松散的安全系统
+• **认为NSA安全糟糕**：georgehotz讽刺这不是显示Mythos有多强，而是暴露NSA安全有多差；AngryData认为现代安全系统95%依赖"隐蔽性安全"
+• **担忧其他模型也能做到**：mirekrusin警告如果Mythos能做到，其他公开模型（GPT、Claude、Gemini）以及国家支持的模型也必然能做到，只是时间问题
+• **历史视角**：mikewarot感叹40年前就解决了计算机安全问题（KeyKOS），但这些知识已经遗失
 
-• **反对使用AI创作派**：认为阅读人类创作才有价值，AI生成内容是"slop"（垃圾内容）。作者的个性和努力是其价值所在，读者可以直接使用LLM而不需要中间人。使用AI就像让机器人替你看电影，毫无意义。
-
-• **必须披露但不信任派**：认为使用AI必须在文章开头明确披露，否则是欺骗行为。但即使披露了也会失去信任，因为无法证明作者投入了多少真实努力。就像在Nike鞋上贴假标签。
-
-• **有限使用AI派**：可以用AI检查语法、标点等技术问题（类似文案编辑），但不应直接复制粘贴AI输出。AI应该是协作工具而非创作主体，最终决策权在人。
-
-• **场景区分派**：个人博客、信件等需要真实声音的场合不用AI；但对于不重要的沟通（如回复招聘邮件）可以使用AI润色，无需愧疚。
-
-• **质疑双标派**：指出反AI者也在使用手机自动补全功能，本质上也是"下一个token生成器"。认为多数人无法区分AI和人类写作，却急于评判。披露AI使用反而会遭受不公平对待。
-
-补充讨论：核心矛盾在于信任问题——使用AI被视为缺乏真实努力的信号，而AI辅助程度无法量化验证，导致"一旦使用就失去信任"的困境。</div>
+补充讨论：CobaltFire分享亲身经历，称曾发现NIPR和SIPR的权限提升漏洞但因遗留系统维护需要未被修复；MaxPock担忧开源模型6个月后达到同等能力的后果；ggm分析NSA传统安全原则是"电子信息不出域"，如果边界失守将是重大事件。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48615776" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48617278" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -375,80 +436,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://brooker.co.za/blog/2026/06/19/waiting.html" target="_blank">Alice is impatient</a>
+                    <a href="https://cen.acs.org/materials/2-d-materials/graphene-2D-materials-reproducibility-industry/104/web/2026/06" target="_blank">Graphene experts are trying to close reproducibility gap in 2D materials</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: birdculture</span> |
-                    <span>评分: 140</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-06-20 20:32</span>
+                    <span>作者: EvgeniyZh</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-21 19:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讨论了服务指标与用户体验之间的差异。作者通过"检查悖论"解释：当服务报告平均响应时间100ms或平均恢复时间1分钟时，用户实际感受到的却是1秒或1小时。原因在于服务按请求或事件数量计算平均值，而用户按时间体验，长时间的请求或故障在用户感知中占据更大权重。文章用数学公式和交互式模拟展示了这种差异，强调尾部延迟对用户体验的重要性，并质疑使用修剪平均值等指标的合理性。核心观点：用户体验的平均值 = 服务指标的平均值 + 方差/平均值。</p>
+                    <p>石墨烯等二维材料具有优异性能，但实验条件敏感，研究结果难以重复，阻碍了商业化进程。丹麦技术大学的 Bøggild 召集学术界、工业界和资助机构专家，制定了详细的实验报告指南，要求研究人员记录更多实验细节，包括温度、湿度等微小变化。二维材料每个原子都暴露在外，极易受污染影响。工业界常发现学术论文只报告最佳结果，忽略失败案例，且缺乏完整信息。新指南旨在提高透明度和可重复性，帮助企业更容易采用和规模化学术研究成果，推动技术转化。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于服务延迟测量方式的争议，核心是"时间加权平均延迟"是否比传统指标更能反映用户实际体验。
-
-不同观点：
-
-• **支持时间加权视角**：glitchc指出系统使用者体验的统计数据与系统运营者看到的不同，这是设计系统时的重要洞察；文章作者认为用户体验的是t-加权版本的延迟分布（inspection paradox）
-
-• **质疑时间加权指标**：penteract认为这个指标在玩弄"平均延迟"的含义，对Web服务帮助不大，因为稍微减慢最快响应就能改善时间加权平均；amluto认为文章解释很差，用户采样请求恢复的是X分布而非X²
-
-• **倾向尾部指标(p99)**：trb强调应关注p99而非中位数，因为所有用户都会遇到<1%的慢请求，优化最坏情况比改善中位数更有帮助
-
-• **主张用户影响度量**：perching_aix不喜欢典型尾部测量，更关注"体验不可接受"的独立用户占比，认为p99可能导致了糟糕的服务质量
-
-补充讨论：michaelt通过CDN缓存未命中例子说明双峰分布如何不成比例地影响某些用户；reisse提到排队论可真实估算等待时间；多人抱怨文章缺乏数学推导（rustybolt、zaik）；mdavid626反映现实中服务普遍变慢变差的用户感受。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48612740" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arrowtsx.dev/bigger-models/" target="_blank">GPT-5.5 hallucinates 3x more than MIT-licensed GLM-5.2</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: oshrimpton</span> |
-                    <span>评分: 536</span> |
-                    <span>评论数: 49</span> |
-                    <span>发布时间: 2026-06-19 16:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章指出AI发展正从"越大越好"转向质疑无限扩大参数规模的范式。Claude Fable 5因安全风险被美国政府封禁，成为首个因国家安全被禁的大模型。开源模型GLM-5.2（753B参数）与GPT-5.5等万亿级参数模型性能接近，说明智能增长已趋平缓。更大的模型反而产生更严重的幻觉问题——DeepSeek V4 Pro幻觉率高达94%，而GLM-5.2仅28%。实测显示，超大模型用10倍推理资源却给出错误答案，小模型反而能快速识别问题悖论。作者认为行业面临"能力、准确性、效率"三难困境，不能再盲目追求规模，需要平衡这三个维度。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大型语言模型的幻觉问题及模型规模扩展的有效性
-
-不同观点：
-
-• **质疑"模型越大幻觉越多"的结论**（wolttam, andai）：认为过去几年的趋势恰恰相反，较新的大模型比早期175B的ChatGPT幻觉更少。当前行业只是发现sub-1T模型仍有潜力可挖，需要更高质量的数据而非简单扩大规模。
-
-• **幻觉率指标需谨慎解读**（aesthesia, nghnam）：幻觉率是条件概率（在模型不知道答案时才计算），不代表日常使用中遇到幻觉的真实概率。模型大小并非唯一因素，DeepSeek-V4 Flash参数量小但幻觉率低，Opus 4.8虽大但绝对幻觉率与GLM-5.2相近（19% vs 21%）。
-
-• **幻觉问题源于训练方式而非规模**（frankohn）：训练语料多为完整问答，缺少"不知道"的示例；RLHF过程偏好有趣答案；LLM缺乏类似人类恐惧机制的"杏仁核"来抑制错误回答。建议创建独立的"恐惧器官"模块。
-
-• **技术可解决但未优先处理**（stalfie）：RLVR理论上可通过将"不知道"作为有效答案来训练模型，但实践中可能不如想象简单。
-
-• **行业估值风险**（solid_fuel）：若扩展已到S曲线顶部，OpenAI和xAI等公司的高估值将面临挑战。
-
-补充讨论：有用户质疑文章作者动机（hereme888指出作者只发此贴且与其产品相关）；实际使用体验存在分歧（xlii称GLM-5.2反而更易偏离需求）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48600167" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48621908" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
