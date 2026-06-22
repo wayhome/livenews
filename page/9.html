@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-22 16:47 (北京时间)
+            最后更新时间: 2026-06-22 22:23 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,47 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.techpolicy.press/tech-workers-are-fighting-against-silicon-valleys-ai-push/" target="_blank">Tech Workers Are Fighting Against Silicon Valley's AI Push</a>
+                    <a href="https://www.devashish.me/p/two-qwen3-models-on-one-dgx-spark" target="_blank">Two Qwen3 models on one DGX Spark: the residency math</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: reasonableklout</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-21 23:29</span>
+                    <span>作者: devashish86</span> |
+                    <span>评分: 72</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-18 16:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>硅谷科技工作者正掀起反抗AI浪潮的运动。Meta员工因公司收集电脑使用数据训练AI而发起请愿，已有1600多人签名；Google DeepMind英国员工投票成立工会；Oracle被裁员工联名抗议公司利用他们训练AI后解雇。2025年以来近40万科技工作者被裁，其中15万人今年被裁，多数与公司转向AI有关，而同期这些公司利润却在增长。工作者感到失去了对影响自身工作决策的话语权，因此选择集体组织和抗争。这打破了白领科技工作者不需要工会的长期假设，标志着新一轮以劳工权益为核心的科技工人运动正在兴起。</p>
+                    <p>这篇文章讲述了作者在DGX Spark上同时运行两个Qwen3模型的实践经验。主要内容：
+
+作者从单一ollama模型服务迁移到vLLM，以支持多模型共存。目标是在119.67 GiB显存上同时运行Qwen3-Next-80B（重型推理）和Qwen3-4B（快速响应）。
+
+核心发现：
+1. **gpu_memory_utilization是相对总显存而非剩余显存的比例**，两个进程的配置需总和<0.95
+2. Qwen3-Next-80B-Thinking模型在`tool_choice: "auto"`模式下无法正常输出工具调用，必须换用Instruct版本
+3. 最终配置：80B使用0.80/32k上下文/2并发，4B使用0.10/16k上下文/8并发，成功实现共存
+
+关键教训是显存分配计算必须考虑CUDA框架开销（~5GB）和实际模型占用。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：科技行业裁员与从业者困境
+                    <div class="comments-summary">**主要讨论点：** 本地部署大语言模型（LLM）的实践经验、性能表现和投资决策
 
-不同观点：
-• **历史必然论**：linzhangrun认为时代变革对个人影响巨大，用"沙粒成山"比喻，将科技工作者处境类比历史上"计算员"职业的消失，暗示这是不可抗拒的趋势
+**不同观点：**
 
-• **同理心缺失批评**：searealist指出科技从业者的双标——过去对全球化导致蓝领工人失业缺乏同情，现在自己面临类似困境时才感受到痛苦
+• **积极实践派（wolttam）：** 从单Spark运行DwarfStar起步（11-14 tok/s生成），升级到双Spark运行DSv4 Flash后性能显著提升（40-50 tok/s生成，2000 tok/s预填充）。认为本地LLM已能胜任大部分编码任务，对前景乐观。
 
-• **管理问题归因**：qsxfthnkp2322将失业归咎于硅谷科技公司管理层的无能，强调公司仍在盈利却大规模裁员的矛盾
+• **观望犹豫派（shireboy）：** 虽然对在线服务性价比不满，但担心硬件快速过时和需要维护。纠结于5000美元投资是否值得，在128G MacBook Pro、Framework或Spark等方案间犹豫不决。希望获得本地部署的建议。
 
-• **个人财务责任论**：brcmthrowaway批评科技工作者生活方式膨胀，过度依赖股票奖励(RSU)，暗示困境部分源于个人财务管理不善
+• **技术优化派（dzink）：** 建议尝试llama.cpp配合unsloth和GLM flash等工具，认为能更快体验新发布的模型，但承认尚未进行长期部署验证。
 
-补充讨论：评论间存在责任归属的争议焦点——是时代洪流、管理决策、行业文化还是个人选择导致了当前困境？各方从不同角度审视同一现象，反映出对科技行业变革的复杂情绪。</div>
+• **技术细节派（devashish86，作者）：** 澄清Qwen3-Next的tool_choice="auto"失败并非解析问题，而是模型推理后未输出工具调用。强调应根据实际显存占用（而非目标值）规划模型加载，CUDA框架本身约占5 GiB。
+
+**补充讨论：** 
+有人好奇双LLM同时运行的可行性；有人询问Qwen3.6性能数据；有评论指出文章疑似由LLM撰写，要求标明。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48623695" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48587865" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,34 +112,74 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.cell.com/neuron/fulltext/S0896-6273(26)00339-9" target="_blank">Slow breathing modulates brain function and risk behavior</a>
+                    <a href="https://www.bostonglobe.com/2026/06/17/business/lyme-disease-tick-test/" target="_blank">15-minute at-home Lyme disease tick test</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: croes</span> |
-                    <span>评分: 368</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-06-20 22:22</span>
+                    <span>作者: bookofjoe</span> |
+                    <span>评分: 223</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-18 12:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>LymeAlert是一种即将于8月上市的家用莱姆病检测产品，售价40美元。用户将叮咬自己的蜱虫放入设备中研磨，然后用化学试纸在15分钟内检测是否携带莱姆病细菌，无需去急诊室等待一周以上的实验室结果。该产品由麻省理工学院MBA学生Erin Dawicki开发，旨在帮助人们避免不必要的抗生素使用和医疗费用。公司还计划推出手机应用，让用户匿名报告感染蜱虫的地理位置，结合卫星数据预测疾病传播趋势。专家提醒该测试无法检测其他蜱虫传播的病原体，被叮咬后仍应就医。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：延长呼气的呼吸练习对生理和心理的影响
+                    <div class="comments-summary">主要讨论点：莱姆病检测工具的实用性及蜱虫防护策略
 
 不同观点：
-• **支持派**：慢呼吸和延长呼气可激活副交感神经系统，降低心率（5-10 bpm），缓解焦虑和恐惧，适用于公开演讲、焦虑症治疗等场景。有研究显示每天20分钟的规律呼吸练习（6次/分）可显著改善焦虑症状
-• **质疑派**：指出副交感神经激活增加冒险行为这一结论令人意外；质疑深呼吸去除皮质醇与本研究结论矛盾，对研究可信度存疑
-• **实践导向派**：关注如何将短期效果转化为长期习惯，寻求可持续的呼吸模式训练方法和高精度监测设备（如10Hz采样的肺部扩张测量）
-• **谨慎派**：认为恐惧有其合理性，只应在确认为非理性恐惧时才用呼吸调节对抗
+• **检测工具局限性派**：mgerdts指出该检测只能测试找到的蜱虫，无法检测未发现的蜱虫；且未充血的蜱虫传播疾病概率低，质疑工具实际价值。bilsbie呼应这一观点，强调"问题在于你没找到的蜱虫"
+
+• **积极预防派**：billfor采取主动用药策略，被蜱虫叮咬后服用强力霉素预防；josters分享给狗使用氟雷拉纳杀蜱药物的经验，遗憾该药未获人用批准
+
+• **疫苗期待派**：mfi提到辉瑞正在推进莱姆病疫苗的三期临床试验，为预防带来新希望
+
+• **个人经历分享**：beaker52自述可能因早年蜱虫暴露导致慢性疲劳、焦虑等未确诊症状，表达对治疗的绝望；gaiagraphia从不在意到养成"波兰式偏执"防护习惯（裤腿塞进袜子）的转变
+
+补充讨论：cheesecakegoo承认对蜱虫的非理性恐惧影响搬迁决策；poszlem质疑是否真有人因蜱虫叮咬去急诊；jaeckel提到德国有更便宜的多菌种检测产品；部分评论涉及替代疗法讨论。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48584261" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.satisfice.com/blog/archives/488148" target="_blank">Don’t use AI to write things that you present as your own work</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: satisfice</span> |
+                    <span>评分: 94</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-21 04:50</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者坚持不使用AI代写任何署名作品。他认为让AI帮助写作与完全代写没有实质区别，就像用直升机登顶珠峰却声称自己攀登了一样。作者曾为他人代笔，深知这会影响内容本质。他强调真正的协作（如与Jeff Nadelman合写章节）需要大量投入和互动。使用AI写作会损害个人信誉，因为无法证明实际付出了多少努力。在AI泛滥的时代，声称"AI帮我写作"等同于承认可能完全依赖AI，这会让所有作品被打上问号。作者呼吁：不要用AI代写，不要撒谎，否则专业声誉将毁于一旦。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在写作中使用AI是否需要披露，以及如何界定AI辅助写作的合理性
+
+不同观点：
+• **无需披露派**：认为AI使用类似拼写检查器、同义词词典等工具，都是辅助手段，读者应以内容价值为准，披露要求是精英主义和读者的傲慢（627467, purplepatrick）
+• **必须披露派**：AI生成的内容应明确标注，因为作者署名代表个人创作和信誉担保，读者投入时间阅读需要这种信任基础，隐瞒使用等同于欺诈（beej71, torben-friis, AnodicElegy, cadamsdotcom）
+• **区分使用方式派**：关键在于AI参与程度——用于纠错、语法优化可接受，但直接复制粘贴AI输出不算自己的写作；copywriter不署名，AI也不应该（f4stjack, scotty79）
+• **实用主义派**：在某些场景（如与招聘人员的程式化沟通）使用AI合理且高效，不必为所有情况感到羞愧（mjd）
 
 补充讨论：
-有评论将此与瑜伊传统联系，认为科学验证了古老实践却忽视其文化起源；有人提出预先决策（如飞行员思维）比临场调节更重要；还有人分享个人经验——呼吸问题严重影响认知和情绪健康，凸显呼吸的基础重要性。争议焦点在于研究结论与既有认知（深呼吸去皮质醇、副交感神经与冒险行为关系）的矛盾。</div>
+多位评论者指出当前困境：简历筛选、学术评分等系统实际上奖励AI生成内容，选择不用AI等于"困难模式"（0x20cowboy）；披露AI使用反而可能被贴上负面标签，导致讽刺现象——真诚披露者受损，实际AI生成内容却能蒙混过关（anupshinde）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48613555" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48615776" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -139,271 +190,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.theregister.com/systems/2026/06/19/tensordyne-makes-a-big-bet-on-log-math-to-beat-nvidia/5258662" target="_blank">Tensordyne makes a big bet on log math to beat Nvidia</a>
+                    <a href="https://github.com/mysk-research/loupe" target="_blank">Loupe – A iOS app that raises awareness about what native apps can see</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: galaxyLogic</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-22 06:28</span>
+                    <span>作者: Cider9986</span> |
+                    <span>评分: 531</span> |
+                    <span>评论数: 30</span> |
+                    <span>发布时间: 2026-06-20 12:08</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>AI基础设施初创公司Tensordyne推出首款商用加速器Napier，采用3nm工艺制造。其核心创新是利用对数运算将乘法转换为加法，降低AI矩阵运算的计算复杂度。芯片配备144GB HBM3e内存、功耗300瓦，性能达2.1 petaFLOPS。公司声称其机架系统TDN72（含72块加速器）比Nvidia Blackwell系统每瓦输出17倍token、吞吐量高13倍。系统采用风冷设计，单机架可容纳4套系统共288块芯片，计划明年上市，将与Nvidia新一代产品竞争。</p>
+                    <p>Loupe是一款iOS/iPadOS开源应用，旨在展示设备指纹识别技术如何追踪用户。它调用公开API读取设备信息（如时区、屏幕、电池等），并按访问难度分为三类：被动信息（无需授权）、需授权信息（需用户许可）和高级信息（利用侧信道技术）。应用完全在本地运行，不上传任何数据，主要由AI工具开发完成。项目采用MIT开源协议，需Xcode 26+编译，同时支持macOS版本。开发者Mysk希望通过此应用提升用户对隐私泄露的认知。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48626493" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/namgyaaal/avoxelgame" target="_blank">A 3D voxel game engine written in APL</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sph</span> |
-                    <span>评分: 150</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2026-06-21 08:04</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一个用 Dyalog APL 语言和 SDL3 开发的实验性体素游戏项目。项目证明了 APL 符号表示法可以用于制作体素游戏。游戏支持基本的移动、跳跃、视角控制和方块放置功能。需要 Dyalog APL 20.0、C 编译器、CMake 和 Vulkan/DirectX12/Metal 图形支持。目前在 Windows 上存在性能问题，DirectX12 后端暂不支持。项目使用 MIT 许可证开源。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：使用APL语言开发体素游戏引擎的项目
-
-不同观点：
-• **对APL用于游戏开发的好奇**：Vedor表示对APL开发游戏引擎的过程和挑战很感兴趣，赞赏项目ReadMe的诚实态度（承认是有bug的passion project）
-• **质疑项目成效**：fourthark直接询问开发者是否赢得了"APL更适合做体素游戏"的赌注，暗示对这个技术选择持保留态度
-• **认同APL的适配性**：Littice认为体素世界是APL的好案例，因为APL的问题在于符号表示而非模型本身，暗示APL在这个场景下有优势
-• **关注性能对比**：Panzerschrek希望看到与C++或Rust等传统语言实现的性能对比数据，体现对APL实际工程能力的质疑
-
-补充讨论：eric_khun分享了自己的体素编辑器项目（kamio.ai），但这是独立的推广而非针对APL引擎的评论。整体讨论围绕"非主流语言做游戏开发"的可行性展开，既有技术好奇也有实用性质疑。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48616713" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.humprog.org/~stephen/blog/2026/06/15/#system-call-instrumentation-on-intel-negative-result" target="_blank">System call instrumentation on Linux/x86‑64 using memory‑indirect calls, part I</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: matt_d</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-17 07:03</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了在 Linux x86-64 系统上对系统调用进行插桩的技术挑战。核心问题是系统调用指令只有2字节，而跳转指令需要5字节，导致难以直接替换。文章介绍了几种解决方案：指令双关技术（instruction punning）利用相邻指令的字节构造跳转；E9Patch 采用统计方法处理跳转目标；zpoline 用 `call *%rax` 替换系统调用，但需要映射零地址页面且有安全隐患。作者尝试探索利用 x86 分段机制的新方法，通过修改本地描述符表实现间接跳转，但最终效果不如预期。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux内核系统调用的设计问题及解决方案
-
-不同观点：
-• **反对方观点**：认为相关解决方案过度复杂，属于"写作狂"（graphomania）。系统调用本身很简单，不需要如此臃肿的实现。同时批评其使用GNU/Linux的"左派"许可证。
-
-• **支持改革观点**：认为Linux允许任意用户空间代码直接进行系统调用是个糟糕设计。这种模式剥夺了系统在用户空间拦截系统调用的能力，导致昂贵的特权模式切换。建议借鉴OpenBSD模式，强制所有系统调用必须通过libc或VDSO（类似Windows的ntdll.dll），这样就能通过修改libc/VDSO调度来轻松hook系统调用，无需重写指令。
-
-补充讨论：第二位评论者提出具体改革建议：从现在开始，所有新系统调用必须通过VDSO，否则发送SIGKILL信号终止进程。这样可以通过LD_PRELOAD在VDSO前插入代码，实现用户空间的系统调用拦截。
-
-争议焦点：是保持Linux当前的系统调用灵活性，还是为了更好的可维护性和拦截能力而引入强制中间层。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48566824" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theguardian.com/society/2026/jun/17/hpv-jabs-reduce-risk-dying-cervical-cancer-before-30-zero-study-finds" target="_blank">HPV vaccine cuts risk of dying from cervical cancer before 30</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: toomuchtodo</span> |
-                    <span>评分: 237</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-06-18 00:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>伦敦玛丽女王大学研究显示，12-13岁接种HPV疫苗的女性在30岁前死于宫颈癌的风险几乎为零。自2008年引入该疫苗以来，已挽救近200名年轻女性生命，2020-2024年间20-24岁年龄组首次零死亡。然而疫苗接种率从疫情前的90%降至75%（伦敦仅60%），专家警告若不提升接种率，每年可能增加15-25例可避免的死亡。研究强调需结合疫苗接种和筛查才能实现WHO 2030年消除宫颈癌的目标。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：HPV疫苗的有效性报道及接种政策
-
-不同观点：
-• **标题过于耸动派**：认为30岁以下宫颈癌死亡率本就极低,标题夸大效果;应该同时报道治疗成本和手术创伤的减少,而非只关注死亡率;缺少未接种组对比数据,新闻不够严谨
-
-• **支持男性接种派**：强调男性也应接种HPV疫苗以预防其他癌症;分享自费接种经验(50岁/600欧元),认为即使年龄较大仍有保护价值,因疫苗覆盖9种病毒株
-
-• **质疑自行接种派**：批评论坛上老年男性"炫耀"自费接种的行为,认为这是不信任公共卫生官员的表现;强调应听从医生建议而非网络论坛
-
-• **接种困难派**：30多岁男性分享多次尝试接种失败经历,遭遇记录混乱、保险不覆盖(1200美元自费)等障碍;质疑男性接种是否只是"网络迷因"
-
-补充讨论：有评论批评媒体使用"jabs"俚语不专业;另有人质疑媒体报道动机,怀疑是制药公司营销与新闻部门的交叉产物,认为此类复杂医疗问题不应由企业媒体简化报道</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48579013" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://alexwlchan.net/2021/slashes/" target="_blank">A tale of two path separators</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dbaupp</span> |
-                    <span>评分: 64</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2026-06-17 10:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了 macOS 中的双路径分隔符现象。macOS 同时支持斜杠（/）和冒号（:）作为路径分隔符，这源于其融合了两个父系统：经典 Mac OS（使用 HFS+ 文件系统，用冒号分隔）和类 Unix 的 NeXTSTEP（使用 UFS 文件系统，用斜杠分隔）。系统会在不同上下文中自动转换这两种分隔符，导致文件名在 Finder 中显示为斜杠，在终端 ls 命令中却显示为冒号。尽管 2017 年苹果用 APFS 替换了 HFS+，但为了向后兼容，这种双分隔符机制仍然保留。AppleScript 是现代 macOS 中最常遇到冒号路径的地方。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：不同操作系统的文件路径分隔符设计及其历史演变
-
-不同观点：
-• **经典Mac设计的独特性**：使用冒号(:)作为分隔符，双冒号(::)表示上级目录，以冒号开头表示相对路径，不以分隔符开头则首部为卷名。支持空格命名（如"Macintosh HD"），这与Unix/DOS完全不同
-• **现代macOS的混乱兼容**：冒号在Finder中不可用但Terminal可创建（显示时会转换成斜杠），而斜杠在Finder可用但Terminal显示为冒号。Finder可显示POSIX路径但系统仍保留旧有限制
-• **Windows的双重标准**：虽以反斜杠闻名，实际也支持正斜杠（源于XEDOS的Unix兼容意图）。每个盘符维护独立的当前目录（DOS遗留特性），如D:指向该盘上次位置而非根目录
-• **别名/快捷方式的差异**：Mac OS别名是实际文件，路径信息存于Resource Fork，支持网络路径遍历和自动挂载，系统会尝试自动更新移动/重命名后的别名
-
-补充讨论：有评论质疑这些行为是有意设计还是历史惯性，现代文件系统是否仍受旧选择约束；另有人提及日元符号(¥)路径分隔符和ASCII 28-31字符的潜在用途</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48568181" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://postmarketos.org/blog/2026/06/21/v26.06-release/" target="_blank">PostmarketOS v26.06 (Alpen Avocado) released</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kokada</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-21 23:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>postmarketOS v26.06 "Alpen Avocado"主要更新：
-
-**命名变更**：采用新命名方案，以壁纸名(Alpen)和水果的头韵命名。
-
-**核心升级**：基于Alpine Linux 3.24，systemd升级至261版本。
-
-**用户界面**：GNOME 50、KDE Plasma Mobile 6.6.5、Phosh 0.55.0等主流移动UI均获更新。
-
-**启动优化**：从pbsplash切换到Plymouth，新增启动动画和振动反馈功能。
-
-**其他改进**：通用内核包持续更新、Plasma Bigscreen重新可用、ModemManager支持小区广播、默认使用sudo-rs替代doas。
-
-本版本主要面向Linux爱好者，专注于稳定性改进和自动化测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：N900和Poco F1设备在PostmarketOS系统中从测试阶段转为社区稳定支持
-
-不同观点：
-• 用户tetris11表达积极态度，对老旧设备获得稳定驱动支持表示欢迎，认为这延长了设备使用寿命
-• 体现了对PostmarketOS项目的支持和认可
-
-补充讨论：这是一条单一评论，未呈现争议或多方讨论。评论者强调的核心价值是：通过开源操作系统让老设备重获新生，体现了可持续使用和环保理念。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48623617" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://taoofmac.com/space/blog/2026/06/18/1845" target="_blank">Running MicroVMs in Proxmox VE, the Easy Way</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zdw</span> |
-                    <span>评分: 219</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-06-19 15:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：在Proxmox环境中使用microVM技术的可行性、优势和挑战
+                    <div class="comments-summary">主要讨论点：iOS应用在无需特殊权限情况下可收集大量设备信息的隐私问题
 
 不同观点：
 
-• **支持派**：认为microVM技术值得在Proxmox中推广，特别是启动速度快（<300ms）、硬件隔离好，适合代理沙箱、快速测试等场景。OCI导入和virtiofs等功能使其更接近容器的使用体验
+• **批评iOS权限设计过于宽松**：用户震惊于应用无需权限即可获取已安装应用列表、设备最后设置时间、卷创建日期、剪贴板变更次数等高精度指纹信息，认为这些应该需要明确授权或被模糊化处理
 
-• **谨慎派**：担心pve-daemon补丁方式风险高，可能在更新时失效。当前方案不够成熟，希望等待官方原生支持。实际可用时间（TTI）比启动时间更重要，需要考虑网络配置、guest agent就绪等因素
+• **呼吁更严格的网络访问控制**：建议应用的网络访问应改为选择性加入(opt-in)机制，认为大多数应用无需联网，阻止数据外泄能防止大量隐私侵害
 
-• **替代方案派**：提出使用libkrun/krun、SlicerVM、Kata Containers等专门为microVM设计的工具，这些方案在API驱动、guest-agent集成、快速克隆等方面更成熟
+• **澄清iOS已有部分保护措施**：有开发者指出iOS实际上不允许应用列出所有已安装应用，只能查询LSApplicationQueriesSchemes中预先声明的特定应用，且Apple审核会拒绝无关应用的大量查询列表
 
-技术争议焦点：
+• **肯定隐私工具的价值**：多位用户赞赏这类可视化隐私泄漏的工具，认为提升用户意识很重要，有人分享了类似的Web端工具
 
-• **GPU支持**：多人提到CUDA透传是痛点，vfio方式过于笨重且限制主机使用GPU。Vulkan+Venus可部分解决但缺少视频编码加速
-
-• **维护成本vs收益**：Proxmox团队2020年评估认为维护成本不值得，但随着动态负载均衡等新功能，可能需要重新评估
-
-• **内存管理**：ballooning技术允许内存超配，只在实际使用时分配并自动释放
-
-补充讨论：邮件列表工作流（git send-email）被认为比Web forge更高效；systemd等传统组件会增加启动开销但提供Docker/eBPF等功能支持</div>
+补充讨论：用户提出应用商业模式依赖数据收集是根本问题，建议"干脆不收集额外数据"；部分用户因此选择尽量少装应用；也有人询问Android是否有类似工具。争议焦点在于iOS的隐私保护是否足够严格，以及应用获取这些信息的合理性边界。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48599555" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48608645" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -414,37 +231,252 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.phoronix.com/news/Linux-7.2-Drops-strncpy" target="_blank">Linux eliminates the strncpy API after six years of work, 360 patches</a>
+                    <a href="https://geohot.github.io//blog/jekyll/update/2026/06/21/the-doom-justifies-the-valuation.html" target="_blank">The Doom Justifies the Valuation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: simonpure</span> |
-                    <span>评分: 222</span> |
+                    <span>作者: inatreecrown2</span> |
+                    <span>评分: 122</span> |
                     <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-20 20:59</span>
+                    <span>发布时间: 2026-06-22 00:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Linux 7.2 终于完全移除了内核中的 strncpy API。这个函数因 NUL 终止语义不直观和零填充导致的性能问题，长期以来是内核 bug 的持续来源。经过六年努力和约 362 个补丁，所有 strncpy 使用都已被替换。现在内核代码应使用更安全的替代方案：strscpy()（NUL 终止）、strscpy_pad()（带零填充）、strtomem_pad()（固定宽度字段）、memcpy_and_pad()（显式填充）或 memcpy()（已知长度复制）。</p>
+                    <p>作者批评旧金山/伯克利的AI圈已变成"邪教式"氛围，充斥着末日论宣传和炒作。他对比了中国GLM-5.2的务实技术博客与Anthropic等公司的危言耸听，认为后者通过制造恐慌来支撑不合理的估值，而非依靠实际技术进步。作者质疑AI泡沫何时破裂，呼吁追究相关人员责任，并思考如何建立可持续的经济社会体系，防止类似炒作再次发生。全文表达了对当前AI行业浮夸风气的强烈不满。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux内核移除strncpy函数的工作及C语言字符串处理的历史问题
+                    <div class="comments-summary">主要讨论点：Anthropic等AI公司的"末日论"营销策略是否出于真实安全担忧，还是为了商业利益和市场操控
+
+不同观点：
+• **怀疑派**：认为AI公司通过散播恐慌来吸引投资和提升估值，末日叙事是营销手段。Anthropic的安全警告实际上让自己成为讨论中心，为IPO铺路。这种炒作类似NFT和元宇宙泡沫
+• **辩护派**：指出Anthropic一直定位为重视AI安全的公司，内部员工已接触更先进模型（代码75%由AI编写），他们对技术进步有第一手认知，警告可能基于真实担忧
+• **理性派**：批评简单化思维，认为多种矛盾现象可同时存在——既有炒作也有真实风险，既有泡沫也有实际价值。反对将复杂问题简化为单一叙事
+• **监管角度**：有人认为即使出于营销，Anthropic的做法也在自损（如出口管制问题），质疑末日论对估值的实际影响
+
+补充讨论：
+有评论提到媒体和社交平台偏好耸人听闻内容导致理性分析被忽视；也有人批评硅谷AI文化的空洞和过度炒作；还有极端观点建议对媒体误导追究法律责任。整体争议焦点在于：安全警告的动机是商业算计还是真实关切。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48624195" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/nikitadoudikov/claude-pulse" target="_blank">Show HN: Pulse – Dashboard for Claude Code, approve tool calls from your phone</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: nikitadvd</span> |
+                    <span>评分: 25</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-06-20 20:46</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Claude Pulse 是一个本地仪表板工具，用于监控 Claude Code 的运行状态。主要功能包括：
+
+1. **实时监控**：显示 Claude 的工作状态、token 消耗和成本统计
+2. **远程审批**：通过手机推送通知批准或拒绝 Claude 的工具调用请求
+3. **会话恢复**：自动保存会话快照，崩溃后可一键恢复
+4. **全文搜索**：搜索所有历史会话记录
+5. **本地私密**：仅读取本地 `~/.claude` 目录，无需联网，零依赖
+
+通过 `npx pulse-for-claude-code` 即可运行，支持后台运行和开机自启。所有数据保存在本地，确保隐私安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于远程控制功能的讨论，对比现有Claude Code内置功能与新工具Pulse
+
+不同观点：
+• **现有功能已足够派**：多位用户（m12k、cebert）指出Claude Code已内置远程控制功能，可通过手机应用响应权限提示，功能运行良好
+• **功能局限需改进派**：tomasz-tomczyk认为CC远程控制无法在电脑上启动新终端会话，询问Pulse是否支持此功能
+• **体验问题派**：felooboolooomba表示愿意尝试新工具，因CC的Android通知功能近期失效，导致远程控制实用性下降
+• **市场关注度质疑派**：pradeep1177质疑此类工具的市场需求，提及自己也有类似工具softcane/cc-blackbox
+• **支持态度**：orchester简单表示认可
+
+补充讨论：讨论反映出远程控制工具存在功能完整性（终端会话支持）和稳定性（通知推送）两大痛点，部分用户对新工具持观望态度，认为现有方案已基本满足需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48612844" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://fosterelli.co/developers-dont-understand-cors" target="_blank">Developers don't understand CORS (2019)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: toilet</span> |
+                    <span>评分: 375</span> |
+                    <span>评论数: 67</span> |
+                    <span>发布时间: 2026-06-21 01:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章指出许多Web开发者不理解CORS（跨域资源共享）的工作原理。作者以Zoom的安全漏洞为例：Zoom在本地运行Web服务器，但为绕过CORS限制，采用了加载图片的方式而非正常AJAX请求，导致任何网站都能访问该服务器，造成严重安全隐患。
+
+正确做法应该是：在localhost服务器上设置`Access-Control-Allow-Origin`头部，仅允许`https://zoom.us`域名访问。作者强调，不理解CORS而采用hack方式绕过它会带来巨大安全风险，这个问题在开发者社区很普遍。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：开发者对CORS（跨源资源共享）机制的普遍误解及其根源
 
 不同观点：
 
-• **strncpy是设计失误**：多位开发者认为strncpy语义反直觉、容易产生bug（WalterBright表示每次审查C代码都能在strncpy处发现bug），kstenerud指出99.999%的情况下它都不是正确选择，函数名选择也很糟糕
+• **CORS功能被误解**：多位评论者指出CORS不是安全保护机制，而是"反安全特性"，用于放松浏览器的同源策略（SOP）限制。设置Access-Control-Allow-Origin头不能阻止其他网站发送请求，只是允许特定来源读取响应
 
-• **零终止符字符串是根本错误**：mrlonglong和rswail认为NUL终止字符串是计算机史上最大错误，Pascal风格的字符串更安全；cm2187指出这些痛苦都源于C缺少字符串数据类型；senfiaj建议应该使用带长度的字符串结构（类似C++的std::string）
+• **理解困难的原因**：
+  - 使用频率低，多数开发者只在新项目初期配置一次就不再接触
+  - 文档从实现角度而非"为什么需要"的角度编写，缺乏威胁模型的清晰解释
+  - 协议本身复杂且规则多变，开发者往往"调试到能用为止"
+  - 前后端开发者视角不同：后端认为无关紧要，前端视为麻烦
 
-• **历史机会的错失**：sirwhinesalot详细列举了三次改进机会——Dennis Ritchie在1990年提出的胖指针、2007年Walter Bright的文章、以及C11和C23标准制定——都未能解决问题，反而加入了_Generic和VLA等特性
+• **根本问题在同源策略**：需要先理解SOP（同源策略）才能真正理解CORS。SOP阻止跨源读取数据但不阻止写入，CORS则允许放松这种限制
 
-• **务实的工程态度**：lambdaone和twothreeone赞扬这种"无聊但重要"的基础工作，认为移除坏特性比添加新功能更重要，且这类跨越数十年的基础设施改进才是真正的系统工程
+• **安全模型反直觉**：CORS的安全逻辑与常规"客户端不可信、服务器验证权限"的模式相反，需要仔细阅读才能理解，但急于写代码的开发者往往跳过这一步
 
-补充讨论：D-Coder提醒360个补丁是移除的使用次数而非bug数量；rswail指出评论中常混淆NUL（字符）和NULL（指针）；DerSaidin探讨了新的strtomem_pad函数设计细节</div>
+补充讨论：评论区本身印证了作者观点——即使经验丰富的工程师也存在理解偏差，错误消息被故意简化也增加了调试难度</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48612943" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48614844" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://medium.com/@NoamShazeer/shape-suffixes-good-coding-style-f836e72e24fd" target="_blank">Shape Suffixes – Good Coding Style</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sebg</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-18 21:49</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一种改善代码可读性的命名规范——形状后缀（Shape Suffixes）。核心做法是：为张量的逻辑维度定义单字母代号（如B表示批次大小，L表示序列长度），然后在变量名末尾附加这些字母来表示张量的维度信息。例如`input_token_id_BL`表示一个二维张量，包含批次和长度两个维度。文章提供了Transformer代码示例，展示如何在实际代码中应用这一规范。作者表示Character.AI从2022年起一直使用这个约定，并推荐读者尝试以提升代码清晰度。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：某项技术或设计决策被认为类似于匈牙利命名法的重新发明
+
+不同观点：
+• voidUpdate 的观点：认为当前讨论的方案本质上是从头重新发明了匈牙利命名法（一种在变量名中编码类型信息的编程约定），暗示这可能是在重复已有的解决方案
+• avilay 的联想：将此与 PyTorch 的"Named Tensor"实验进行类比，指出历史上也有类似的尝试（通过为张量维度命名来提高代码可读性和减少错误）
+
+补充讨论：两条评论都指向同一个模式——通过显式命名或标注来增加代码的自描述性。voidUpdate 可能带有批判意味（"重新发明轮子"），而 avilay 提供了一个相关的历史案例作为参考，但未明确表态支持或反对。讨论的焦点可能是：这种做法是有价值的改进还是不必要的复杂化。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48592123" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/mherrmann/djevops" target="_blank">Djevops: Self-Host Django Easily</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mherrmann</span> |
+                    <span>评分: 28</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-18 08:47</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>djevops 是一个用于将 Django 应用部署到 Linux VPS 的命令行工具。其主要特点包括：
+
+**核心优势**：不使用 Docker，部署速度快（秒级），配置比 Ansible 简洁，专为 Django 优化。
+
+**主要功能**：
+- 自动生成和续期 SSL 证书
+- 支持 SQLite 和 PostgreSQL 数据库
+- 自动数据库备份（通过 Litestream 或 pgBackRest）
+- 错误邮件通知
+- 支持 Celery 后台任务和 Redis
+- 便捷的日志管理
+
+**使用方式**：通过简单的配置文件定义服务器、Git 仓库、数据库、邮件等设置，执行 `djevops deploy` 即可完成部署和更新。适合需要快速自托管 Django 应用的开发者。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：应用部署和托管方案的选择
+
+不同观点：
+• **自托管爱好者**（codingjoe）：展示了在PS5上托管个人项目的实践案例，推崇非传统硬件的创造性使用
+• **Docker容器派**（mmarian）：偏好使用Docker Swarm进行服务编排，强调在单个低成本VPS（5美元/月）上运行约10个服务的经济性和可扩展性
+• **定制框架用户**（factorialboy）：已构建自己的Django工具集，暂时无法采用新方案，但对未来项目持开放态度
+• **传统技术倡导者**（spwa4）：质疑现代复杂化趋势，认为Apache的mod_php/mod_python等传统方案在多小型站点场景下效率更高，即使隔离性不完美但足够实用
+
+补充讨论：评论反映了开发者在部署方案上的多元选择：从追求轻量级传统方案到现代容器化技术，从成本优化到创新实验，没有明显的争议冲突，更多是各自分享适合自己场景的技术路径。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48582629" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://martinfowler.com/articles/reliable-llm-bayer.html" target="_blank">Building reliable agentic AI systems</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sarangk90</span> |
+                    <span>评分: 149</span> |
+                    <span>评论数: 25</span> |
+                    <span>发布时间: 2026-06-21 04:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>拜耳公司与Thoughtworks合作开发了PRINCE平台，用于解决药物研发中的临床前数据检索难题。该系统采用代理式RAG（检索增强生成）和Text-to-SQL技术，将传统关键词搜索升级为智能研究助手，能够回答复杂问题并起草监管文件。系统通过多个专业代理（研究、反思、写作）协同工作，强调透明度、可解释性和人机协作。PRINCE展示了AI在制药行业的变革潜力，显著提升了数据可访问性和研究效率，同时确保合规性和可靠性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于AI代理系统（特别是RAG系统）在医药研究领域应用的评价和技术实现争议
+
+不同观点：
+
+• **批评派**：系统评分仅3.1/5.0且存在幻觉问题，在医药研究这种关乎生命的领域不可接受（BodyCulture）；文章过度描述基础RAG系统却缺乏评估细节（AJRF）；多代理系统架构缺乏实证支持，更像是"感觉对"而非真正有效（padolsey）
+
+• **数据优先派**：数据库质量和清洁度是关键，实际工作中99%时间在处理数据，1%在调优代理；动态获取数据会导致问题层出不穷，静态数据库更可控（bob1029）
+
+• **技术演进派**：2024年构建的系统已过时，2026年的大上下文窗口和更智能模型可以更好地解决问题（stevex）；但大上下文不能替代精细的上下文控制（Littice）
+
+• **应用场景派**：AI代理在信息检索方面表现出色，但在代码编写和长文本创作上质量堪忧，局部连贯但全局混乱（ThePhysicist）
+
+补充讨论：模型选择对系统设计影响巨大但文章未充分讨论（agentdev001）；实际应用中token消耗惊人且效果不佳（hirako2000）；文章本身使用AI撰写的程度存疑（altmanaltman）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48615680" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
