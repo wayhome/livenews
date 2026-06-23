@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-24 03:47 (北京时间)
+            最后更新时间: 2026-06-24 06:07 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,81 +61,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.crunchydata.com/blog/british-columbia-and-time-zone-changes" target="_blank">British Columbia, Time Zones, and Postgres</a>
+                    <a href="https://00f.net/2026/06/23/webassembly-runtimes-2026/" target="_blank">Performance of WebAssembly Runtimes in 2026</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sprawl_</span> |
-                    <span>评分: 130</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-06-22 19:21</span>
+                    <span>作者: jedisct1</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-23 14:40</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了2026年3月英属哥伦比亚永久采用夏令时(UTC-7)后，Postgres时区存储面临的问题。文章指出，使用timestamptz存储未来预约时间会因时区规则变更导致时间偏差——原本存储的10点预约，在tzdata更新后查询会显示为11点。
+                    <p>这篇文章对比了2024-2026年间WebAssembly运行时性能的演进。作者使用libsodium加密库基准测试，在AMD Ryzen AI 9 HX 470上测试了多个运行时的三年版本。
 
-**解决方案**：采用"双列模式"存储：
-1. local_time（本地时间戳）
-2. timezone_name（IANA时区名）  
-3. starts_at_utc（计算得出的UTC时间）
+主要发现：
+- **最快运行时**：WAVM和WasmEdge表现出色，WAMR AOT模式也很快
+- **接近原生性能**：wasm2c、Wasmer和Wasmtime都接近原生速度
+- **改进趋势**：Wasmtime稳步提升（从2.67倍慢降至2.41倍），Node也有改善（8.60倍降至7.95倍）
+- **关键特性**：wide_arithmetic指令对加密代码性能提升显著
+- **稳定但较慢**：Wazero保持在4.7倍左右
 
-这种模式适用于需要保留"本地意图"的未来事件（如预约、日历事件），而历史事件或以UTC为准的数据（日志、交易记录）仍应使用普通timestamptz。</p>
+测试包含原生x86-64和多个WebAssembly变体（plain、lime1、simd128、wide_arithmetic组合）。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：英属哥伦比亚省取消夏令时后，如何在数据库和软件系统中正确存储和处理时间数据
-
-不同观点：
-
-• **未来事件存储本地时间+时区，历史事件用UTC**：未来预约（如医生预约）应存储事件发生地的本地时间和时区，因为即使时区规则改变，预约时间的本地意义不变（周一早上8:30仍是8:30）；历史事件则用UTC时间戳
-
-• **只存储UTC时间戳**：数据库中只应存储UTC的Unix时间戳（本质是计数器，全球同一瞬间数值相同），所有时区转换交给经过充分测试的软件库处理，避免手动处理时区带来的风险
-
-• **使用SQL标准类型DATE和TIME**：对于与地点绑定的预约，应使用ANSI SQL的DATE和TIME类型，时区转换应在表示层完成，不属于数据库层
-
-• **双字段存储法**：文章建议的两列存储方法可行，但仍应依赖成熟的软件库处理
-
-补充讨论：
-多位评论者强调**必须使用tzdata等成熟库**，不要自己实现时区转换逻辑；有人指出本地时间存储在时钟回拨时会产生**歧义问题**（同一小时出现两次）；也有人认为这类时区变更极少发生，倾向于**事后快速修补数据**而非提前过度设计；BC省内部不同地区时区选择仍在争议中，增加了复杂性。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48634787" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://kreya.app/blog/new-http-query-method-explained/" target="_blank">The new HTTP QUERY method explained</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: CommonGuy</span> |
-                    <span>评分: 163</span> |
-                    <span>评论数: 22</span> |
-                    <span>发布时间: 2026-06-23 06:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>HTTP新增了QUERY方法（RFC 10008）来解决复杂查询的问题。传统上，GET请求通过URL参数过滤数据，但复杂查询会导致URL过长、编码问题和结构表达困难。虽然GET理论上可以带请求体，但各种客户端和服务器实现不一致，可能导致兼容性问题。POST虽支持请求体，但语义上是非幂等的创建操作，不适合查询场景，也无法被缓存。QUERY方法填补了这一空白，它类似GET但支持请求体，被定义为安全和幂等的，可缓存。但目前支持有限，需要谨慎使用，简单查询仍应使用GET，需要分享链接的场景也不适合QUERY。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：HTTP QUERY 新方法的必要性及其与 GET 方法带 body 的争议
-
-不同观点：
-• **支持 QUERY 方法**：GET 带 body 是 hack 行为，不符合规范，显式的 QUERY 方法更合理；解决了大规模 GET 请求的痛点，body 解析支持不统一的问题
-• **反对 QUERY 方法**：应该直接标准化 GET 的 body 支持更简单；新增方法语义与现有方法不匹配，设计不够优雅；CoAP 已支持 GET body，新方法反而造成代理转换摩擦
-• **实用性担忧**：企业防火墙和旧版浏览器可能长期不支持 QUERY；昂贵的 SSL 代理设备仅支持 HTTP/1.1，可能导致 DoS；HTTPS 加密导致 CDN 无法缓存 QUERY body，需重构互联网拓扑才能真正受益
-
-补充讨论：有人质疑过度关注 HTTP 方法设计 RESTful 接口的做法，认为 RPC 场景下优先考虑可缓存性元信息不合理；也有人担心网站会用 QUERY 阻止链接分享；DELETE 方法也存在类似 body 支持问题但影响较小。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48640974" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48645731" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -229,6 +182,245 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://www.crunchydata.com/blog/british-columbia-and-time-zone-changes" target="_blank">British Columbia, Time Zones, and Postgres</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: sprawl_</span> |
+                    <span>评分: 130</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-22 19:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>本文讨论了2026年3月英属哥伦比亚永久采用夏令时(UTC-7)后，Postgres时区存储面临的问题。文章指出，使用timestamptz存储未来预约时间会因时区规则变更导致时间偏差——原本存储的10点预约，在tzdata更新后查询会显示为11点。
+
+**解决方案**：采用"双列模式"存储：
+1. local_time（本地时间戳）
+2. timezone_name（IANA时区名）  
+3. starts_at_utc（计算得出的UTC时间）
+
+这种模式适用于需要保留"本地意图"的未来事件（如预约、日历事件），而历史事件或以UTC为准的数据（日志、交易记录）仍应使用普通timestamptz。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：英属哥伦比亚省取消夏令时后，如何在数据库和软件系统中正确存储和处理时间数据
+
+不同观点：
+
+• **未来事件存储本地时间+时区，历史事件用UTC**：未来预约（如医生预约）应存储事件发生地的本地时间和时区，因为即使时区规则改变，预约时间的本地意义不变（周一早上8:30仍是8:30）；历史事件则用UTC时间戳
+
+• **只存储UTC时间戳**：数据库中只应存储UTC的Unix时间戳（本质是计数器，全球同一瞬间数值相同），所有时区转换交给经过充分测试的软件库处理，避免手动处理时区带来的风险
+
+• **使用SQL标准类型DATE和TIME**：对于与地点绑定的预约，应使用ANSI SQL的DATE和TIME类型，时区转换应在表示层完成，不属于数据库层
+
+• **双字段存储法**：文章建议的两列存储方法可行，但仍应依赖成熟的软件库处理
+
+补充讨论：
+多位评论者强调**必须使用tzdata等成熟库**，不要自己实现时区转换逻辑；有人指出本地时间存储在时钟回拨时会产生**歧义问题**（同一小时出现两次）；也有人认为这类时区变更极少发生，倾向于**事后快速修补数据**而非提前过度设计；BC省内部不同地区时区选择仍在争议中，增加了复杂性。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48634787" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.techradar.com/vpn/vpn-services/security-experts-reveal-proton-is-the-only-vpn-to-avoid-internal-tunnel-ip-fingerprinting-on-ios" target="_blank">Proton avoids internal IP fingerprinting</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: chamsom</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-23 19:59</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>根据安全研究机构Mysk的测试，Proton VPN是唯一成功避免iOS系统内部隧道IP指纹追踪的VPN服务。
+
+问题根源在于iOS允许应用读取VPN隧道的内部IP地址，而大多数VPN（如Mullvad）为每个会话分配独特的静态IP，这可被用作跨应用追踪用户的标识符。
+
+Proton VPN采用创新方案：为所有用户分配相同的保留IP地址（10.2.0.2），从而消除了个人数字指纹。研究人员使用Loupe工具验证了这一发现。
+
+这是iOS平台层面的问题，苹果尚未明确是否会修复。此外，iOS在VPN应用更新期间还存在流量泄漏问题，目前也未得到解决。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48650485" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://kreya.app/blog/new-http-query-method-explained/" target="_blank">The new HTTP QUERY method explained</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: CommonGuy</span> |
+                    <span>评分: 163</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-23 06:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>HTTP新增了QUERY方法（RFC 10008）来解决复杂查询的问题。传统上，GET请求通过URL参数过滤数据，但复杂查询会导致URL过长、编码问题和结构表达困难。虽然GET理论上可以带请求体，但各种客户端和服务器实现不一致，可能导致兼容性问题。POST虽支持请求体，但语义上是非幂等的创建操作，不适合查询场景，也无法被缓存。QUERY方法填补了这一空白，它类似GET但支持请求体，被定义为安全和幂等的，可缓存。但目前支持有限，需要谨慎使用，简单查询仍应使用GET，需要分享链接的场景也不适合QUERY。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：HTTP QUERY 新方法的必要性及其与 GET 方法带 body 的争议
+
+不同观点：
+• **支持 QUERY 方法**：GET 带 body 是 hack 行为，不符合规范，显式的 QUERY 方法更合理；解决了大规模 GET 请求的痛点，body 解析支持不统一的问题
+• **反对 QUERY 方法**：应该直接标准化 GET 的 body 支持更简单；新增方法语义与现有方法不匹配，设计不够优雅；CoAP 已支持 GET body，新方法反而造成代理转换摩擦
+• **实用性担忧**：企业防火墙和旧版浏览器可能长期不支持 QUERY；昂贵的 SSL 代理设备仅支持 HTTP/1.1，可能导致 DoS；HTTPS 加密导致 CDN 无法缓存 QUERY body，需重构互联网拓扑才能真正受益
+
+补充讨论：有人质疑过度关注 HTTP 方法设计 RESTful 接口的做法，认为 RPC 场景下优先考虑可缓存性元信息不合理；也有人担心网站会用 QUERY 阻止链接分享；DELETE 方法也存在类似 body 支持问题但影响较小。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48640974" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://jchri.st/blog/in-praise-of-memcached/" target="_blank">In praise of memcached</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: j03b</span> |
+                    <span>评分: 180</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-23 01:15</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章对比了 Redis 和 memcached 作为缓存的使用场景。作者指出 Redis 虽然功能丰富，但常被误用为持久化数据库，导致运维负担加重。相比之下，memcached 更适合作为纯缓存使用：它不支持持久化，故障处理简单（客户端自动忽略连接异常），集群配置通过客户端哈希实现（无需服务端支持），可作为无状态服务部署。作者建议优先使用 memcached 作为缓存，并提醒在引入缓存前应先优化数据库查询和索引。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Redis vs Memcached 在缓存场景下的选择争议
+
+不同观点：
+
+• **Redis职责混乱派**（downsplat, kijin）：Redis试图同时做持久化存储和易失性缓存两件事，导致问题。建议缓存用Memcached，需要数据结构时才用Redis。需要严格配置（强制过期时间、分离数据库、设置内存上限）才能安全用作缓存。
+
+• **Redis实用主义派**（kylewpppd, tempest_, AussieWog93）：虽然Redis有各种生产问题（内存溢出、AOF失败、数据被误当持久化），但Memcached的架构限制更大，大团队最终还是会引入Redis，不如一开始就用。Redis API设计优秀且稳定。
+
+• **Memcached技术优势派**（nasretdinov）：Memcached所有操作都是O(1)，避免了Redis单线程架构下复杂操作导致的随机延迟，这是被忽视的关键优势。
+
+• **中立/质疑派**（bawolff, jdw64, drchaim）：问题不在技术本身而在使用方式——把易失性缓存当持久化存储是配置错误。开源项目功能膨胀是必然趋势，没有绝对答案。质疑何时真正需要这些技术（PostgreSQL未必不够用）。
+
+补充讨论：有人推荐替代方案（Aerospike、Valkey），有人指出Redis的范围查询能力是关键差异（TreeMap vs HashMap），还有人批评文章观点属于稻草人谬误。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48638886" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.hydroponictrash.solar/cyberdecks-going-analog-and-convivial-technology/" target="_blank">Cyberdecks, going analog, and convivial technology</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: akkartik</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-20 02:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了人们逐渐脱离社交媒体和企业互联网的趋势。作者指出，互联网正在扁平化，主流平台设计趋同，通过算法和无限feed让用户上瘾。作为反抗，人们开始回归被遗忘的事物：重拾纸质日记、计划本和素描本；使用旧MP3播放器替代流媒体；通过盗版重获内容所有权；以及构建个性化的cyberdecks（赛博设备）。这些行为反映了人们对过度连接导致的孤立感和企业订阅制侵蚀所有权的不满，试图通过回归实体媒介和DIY技术文化，寻找一种既怀旧又面向未来的替代性数字生活方式。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Cyberdeck（赛博甲板）运动是真正的反文化革命还是仅仅是一种爱好？
+
+不同观点：
+• **怀疑派**：认为许多所谓的cyberdeck项目只是社交媒体上的流量收割工具，与作者宣称的"逃离科技公司算法种植园"的反文化理念背道而驰。新兴项目成为了他们批判对象的一部分。
+
+• **实用主义者**：质疑cyberdeck的日常实用性，认为它只是有趣的DIY项目和学习经历，但不具备真正的革命意义或日常使用价值。最终还是会让被反对的系统从中获利。
+
+• **技术爱好者**：认可定制硬件的价值，但更倾向于制作"配件式"设备（如基于ESP32的定制硬件）而非试图复制完整电脑体验。强调实用性而非形式。
+
+• **怀旧主义者**：指出当代cyberdeck与《神经漫游者》等赛博朋克文学中的原始概念不符——真正的cyberdeck应该使用AR/VR眼镜而非屏幕，当前只是"复古DIY笔记本"。
+
+• **乐观参与者**：承认自己无意中成为运动的一部分（使用开源手机、3D打印配件等），认为这些小的技术选择本身就是一种实践。
+
+补充讨论：有人提出地域化社交网络的替代方案，强调回归本地社区而非全球平台；另有评论从历史角度分析，将当代抵抗与中世纪行会、工艺美术运动相联系，认为这是普通人合作社对抗统治阶级的延续。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48605776" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://caplets.dev" target="_blank">Show HN: Caplets - Give your agent capabilities, not giant tool walls</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ianpascoe</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-23 16:31</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Caplets 是一个为 AI 代理优化的工具管理系统，解决传统 MCP 服务器将所有工具和模式一次性暴露给代理的问题。它采用渐进式披露设计：代理首先看到精简的能力卡片，仅在需要时才深入查看具体工具、模式和调用方法。
+
+核心优势：
+1. **减少上下文消耗** - 基准测试显示相比直接 MCP 减少 72% 的 token 使用
+2. **聚焦能力** - 将分散的工具整合为命名能力，通过 inspect/search/get/call 路径按需展开
+3. **简化配置** - 统一管理认证和提供商连接
+
+支持 OSV（漏洞查询）、GitHub、Sourcegraph 等集成。要求 Node 24+，通过 `caplets setup` 安装配置。在 10 项任务测试中保持 10/10 完成率的同时大幅降低提示词开销。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48647498" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://github.com/imtomt/ymawky/tree/linux" target="_blank">Show HN: A pure ARM64 Assembly web server, now on Linux with CGI for no reason</a>
                 </h3>
                 <div class="story-meta">
@@ -259,225 +451,6 @@
 补充讨论：多数评论者对手写汇编表示赞赏和敬意，认为这是有趣的学习项目；有人提到作者可能误解了WebAssembly；Linux移植版本获得欢迎。</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=48640278" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://comuniq.xyz/post.php?t=1307" target="_blank">Why Windows 95 Was Tech's Last True Revolution</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: 01-_-</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-23 17:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章回顾了Windows 95的历史意义。1995年8月，微软斥资超3亿美元进行史上最大规模的科技产品营销，将PC从专业工具转变为家用电器。尽管遭到"反微软委员会"等组织的抵制（批评其强制硬件升级），Windows 95仍凭借三大创新改变了行业：开始菜单、任务栏和回收站，让电脑操作从DOS命令行变得简单直观。系统还实现了32位架构和长文件名支持。但文章也指出其稳定性问题和营销与实际体验的落差。作者认为这是科技界最后一次真正的革命性时刻。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Windows 95的历史评价和技术地位
-
-不同观点：
-• **[astrashe2] 认为Windows 95只是修补性产品**：Win 95只是修补了微软产品线的漏洞，当时Mac系统比Win 95/98/SE更稳定，Unix服务器（如Sun Sparc 5s）稳定性更胜一筹，可以数年不重启。核心论点是微软凭借市场垄断地位掩盖了产品质量问题。
-
-• **[antonvs] 强烈反对上述观点**：用"荒谬的说法"（ridiculous claim）直接驳斥，但未展开具体论据。
-
-• **[atxpace] 认为"最后真正的革命"说法过誉**：承认Win 95是优秀的消费级产品，但质疑其"最后真正的革命"的定位，暗示后续还有更多重要技术变革被忽略。
-
-补充讨论：三条评论形成了递进式争论——从技术稳定性对比，到直接否定，再到对"革命性"定义的质疑。核心分歧在于：Win 95是革命性突破还是市场策略成功？技术质量评价应以何为标准？</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48648341" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.bleepingcomputer.com/news/security/lastpass-confirms-data-breach-in-klue-supply-chain-attack/" target="_blank">LastPass confirms data breach in Klue supply chain attack</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: thm</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-23 16:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>LastPass确认在Klue供应链攻击中发生数据泄露。6月12日，第三方情报平台Klue遭黑客入侵，攻击者窃取OAuth令牌后访问了LastPass的Salesforce环境。泄露数据包括客户姓名、联系方式、地址和支持工单等CRM信息，但产品服务、基础设施和密码库未受影响。Icarus勒索组织声称对此负责，已影响多家企业。LastPass已禁用员工访问Klue、轮换令牌并通知执法部门，提醒用户警惕钓鱼攻击。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：LastPass 安全问题及用户迁移密码管理器的经历
-
-不同观点：
-• **对 LastPass 失去信任**：有用户表示 LastPass 几年前泄露了他们的机密信息，认为 LastPass 在被收购后服务质量下降，已转用 1Password
-• **早期迁移用户**：有用户约10年前就已切换到 Bitwarden，暗示对 LastPass 的不满或预见性选择
-• **最新安全事件报道**：LastPass 在 Klue 供应链攻击中 OAuth 令牌被窃，黑客通过 Salesforce 环境访问了客户数据
-
-补充讨论：评论反映出密码管理器行业的信任危机。用户普遍因安全事件选择迁移，1Password 和 Bitwarden 是主要替代选择。LastPass 被收购后的多次安全事件成为用户流失的核心原因。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48647272" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/ryukinix/cl-bbs" target="_blank">CL-BBS: the schemeBBS-like textboard rewritten in Common Lisp</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: lerax</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-21 07:15</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>cl-bbs 是一个用 Common Lisp 编写的匿名文本论坛（BBS）引擎，是 MIT Scheme SchemeBBS 的高性能现代克隆版本。
-
-**核心特性：**
-- 完全复刻 SchemeBBS 经典布局和单一表单设计
-- 支持丰富的文本格式化（粗体、斜体、代码、剧透、引用、帖子引用）
-- 自动预览图片链接
-- 多主题支持（通过 Cookie 保存偏好）
-- 零 JavaScript 依赖，完全服务端渲染
-- 使用 S 表达式文件存储数据
-
-**技术栈：** SBCL + Roswell + Hunchentoot + Clack，包含 29 项测试用例。通过环境变量可配置数据目录、只读板块和管理员账户。使用 `make server` 启动（8222端口），`make check` 运行测试。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">这是单条帖子而非评论讨论，无法进行观点对比分析。该帖子是作者 lerax 分享自己的 textboard 项目：
-
-**帖子主要内容：**
-
-• **核心观点**：作者认为 textboard 在某些方面优于像 Reddit 这样的 imageboard，偏好无需身份验证的应用，强调简单性和隐私保护
-
-• **技术背景**：过去 2 年使用 MIT Scheme 托管 SchemeBBS，但认为其生态系统有限，不利于功能扩展
-
-• **新项目特性**：
-  - 持久化偏好设置（主题、默认板块）
-  - URL 图片预览（承认这偏离 textboard 概念，但实用）
-  - 管理员内容审核页面
-  - 搜索系统
-
-• **目的**：寻求各类反馈
-
-**分析说明：**
-这是项目分享帖而非讨论串。如需分析不同观点，请提供包含多条回复评论的完整讨论内容。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48616437" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://captnemo.in/blog/2026/06/17/package-managers-need-hooks/" target="_blank">Package Managers need global hooks</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: evakhoury</span> |
-                    <span>评分: 30</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-06-18 15:20</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章呼吁所有包管理器添加**全局钩子（global hooks）**支持，作为应对软件供应链攻击的解决方案。
-
-作者认为现有的防御措施（依赖冷却期、依赖策略、安全防火墙等）要么依赖特定API/命令模式，要么需要额外基础设施，对个人开发者不友好。
-
-全局钩子可以让用户在包管理器的各个阶段（如安装前、构建前）运行自定义代码，实现威胁检测、恶意软件扫描等功能。作者用StepSecurity威胁源和pnpm构建了概念验证，但发现大多数包管理器不支持全局钩子配置。
-
-文章建议向各包管理器（pnpm、npm、yarn、uv等）提交功能请求，统一添加这一安全机制，而非在每个工具中重复开发防御功能。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：包管理器的安全问题及解决方案
-
-不同观点：
-
-• **威胁情报检测派**（ozim）：通过威胁数据源检测恶意包，但承认问题是很多恶意包未被标记，且Debian等策展式仓库的做法被忽视
-
-• **私有策展源派**（zihotki）：使用私有包源替代公共源，所有更新先在私有源审查后再部署，通过安全实践应对供应链攻击
-
-• **Unix哲学派**（jamesrom）：反对包管理器承担安全职责，应通过外部工具链（如bash脚本/别名）调用钩子，遵循"只做一件事"原则
-
-• **根本问题派**（YuechenLi）：NPM允许包作者静默运行任意安装后脚本是根源缺陷，安全系统再好也无用如果前门大开
-
-• **深度安全派**（cookiengineer，反恶意软件工具开发者）：需要系统性改革——强制可重现构建、禁止安装时执行/网络访问、容器隔离、每资源级白名单、锁定传递依赖。批评现有DevSecOps工具和流程对抗变异恶意软件（LLM生成）完全失效
-
-• **怀疑派**（drdexebtjl, TZubiri）：担心新方案本身成为攻击向量；批评威胁数据源方案是重复2000年代签名式杀毒软件的失败，攻击者可混淆载荷、分离机制、控制时序
-
-补充讨论：有人提及Nix没有此问题；有人用"标准竞争"梗讽刺可能产生更多标准；系统包管理器（apt/portage）已有钩子机制但语言包管理器情况模糊。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48586767" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://j3d.org/matrix_faq/matrfaq_latest.html" target="_blank">Matrix and Quaternion FAQ</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: signa11</span> |
-                    <span>评分: 19</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-23 04:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>你没有提供完整的文章内容。你发送的是《矩阵与四元数常见问题解答》(Matrix and Quaternions FAQ)的目录部分，包含文档的版本信息(1.21版，2003年11月30日)、贡献者列表、历史版本记录，以及问题分类的开头部分(基础知识、算术运算、行列式与逆矩阵等章节)。
-
-如果你想让我总结完整文章，请提供文章的正文内容。如果只是总结这个目录页面，那就是：这是一份矩阵与四元数技术文档的FAQ目录，涵盖矩阵基础概念、运算方法、行列式计算等主题，由多位贡献者维护更新。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于四元数（quaternion）和计算机图形学参考资料的质量和实用性问题
-
-不同观点：
-• **fsloth的谨慎态度**：不推荐在生产环境中直接使用速查表（cheat sheets），认为应该参考专业的计算机图形学教材。速查表只适合已经理解概念的人使用，且需要确认其表示方法与实际问题域一致。同时指出目前缺乏既精确又实用的好书。
-
-• **xeonmc的技术批评**：指出速查表中四元数转矩阵和四元数转轴角的公式存在严重缺陷——仅在四元数模长恰好为1时有效。具体问题包括错误地使用`sqrt(1 - a*a)`假设和`acos`函数，应该使用实际分量和`atan2`函数。批评这种有缺陷的公式在网络学习资料（包括维基百科）中普遍存在。
-
-补充讨论：xeonmc强调如果从第一性原理推导四元数三明治公式，就会发现"假设单位四元数的便利简化"实际上是不必要的步骤，在浮点数实现中完全有害无益。这反映出理论简化与工程实践之间的矛盾。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48640389" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
