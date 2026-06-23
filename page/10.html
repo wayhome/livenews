@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-24 01:10 (北京时间)
+            最后更新时间: 2026-06-24 03:47 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,38 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.crunchydata.com/blog/british-columbia-and-time-zone-changes" target="_blank">British Columbia, Time Zones, and Postgres</a>
+                    <a href="https://worksinprogress.co/issue/the-wonder-of-epidurals/" target="_blank">Epidurals are a miracle technology</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: sprawl_</span> |
-                    <span>评分: 130</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-06-22 19:21</span>
+                    <span>作者: karakoram</span> |
+                    <span>评分: 79</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-20 16:24</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>本文讨论了2026年3月英属哥伦比亚永久采用夏令时(UTC-7)后，Postgres时区存储面临的问题。文章指出，使用timestamptz存储未来预约时间会因时区规则变更导致时间偏差——原本存储的10点预约，在tzdata更新后查询会显示为11点。
-
-**解决方案**：采用"双列模式"存储：
-1. local_time（本地时间戳）
-2. timezone_name（IANA时区名）  
-3. starts_at_utc（计算得出的UTC时间）
-
-这种模式适用于需要保留"本地意图"的未来事件（如预约、日历事件），而历史事件或以UTC为准的数据（日志、交易记录）仍应使用普通timestamptz。</p>
+                    <p>这篇文章主要介绍了分娩镇痛技术——硬膜外麻醉。文章指出分娩是极其痛苦的经历，可能导致产后抑郁或创伤后应激障碍。硬膜外麻醉通过在脊椎间插入导管注入麻醉剂，可安全有效地消除大部分分娩疼痛，同时保持产妇清醒。这项技术已有百年历史，现代硬膜外麻醉允许产妇自主调节剂量。虽然可能延长分娩时间并有低血压、头痛等副作用，但相比无麻醉分娩的剧痛，这是非常值得的选择。作者以自身经历证明了硬膜外麻醉的有效性和安全性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：英属哥伦比亚省取消夏令时后，如何在数据库和软件系统中正确存储和处理时间数据
+                    <div class="comments-summary">主要讨论点：硬膜外麻醉在医疗场景中的应用、风险和争议
 
 不同观点：
+• **支持使用但承认风险**：DivingForGold分享脊柱狭窄治疗经历，多次硬膜外注射效果短暂，计划手术根治。rocqua引用播客指出硬膜外可能失败，医疗系统对失败处理不善，专业人士也承认这一问题
 
-• **未来事件存储本地时间+时区，历史事件用UTC**：未来预约（如医生预约）应存储事件发生地的本地时间和时区，因为即使时区规则改变，预约时间的本地意义不变（周一早上8:30仍是8:30）；历史事件则用UTC时间戳
+• **质疑分娩中的必要性**：mef51提出仰卧分娩姿势是现代发明，传统蹲姿或前倾可能减轻疼痛，质疑硬膜外是否必需。kshahkshah强烈反对过度医疗化，认为分娩被变成创伤性体验
 
-• **只存储UTC时间戳**：数据库中只应存储UTC的Unix时间戳（本质是计数器，全球同一瞬间数值相同），所有时区转换交给经过充分测试的软件库处理，避免手动处理时区带来的风险
+• **极端反对立场**：nikolay认为无痛分娩对母婴都不好，痛苦能增强母子联结，批评现代人软弱，主张"痛苦是生活必需部分"（但承认慢性疼痛例外）
 
-• **使用SQL标准类型DATE和TIME**：对于与地点绑定的预约，应使用ANSI SQL的DATE和TIME类型，时区转换应在表示层完成，不属于数据库层
+• **医疗系统问题**：stivatron反映阿根廷护士阻挠使用，导致产妇因剧痛要求剖腹产。economistbob质疑硬膜外配方不标准化如何评估安全性。Roark66惊讶剖腹产死亡率达13/10万，但其国家半数采用
 
-• **双字段存储法**：文章建议的两列存储方法可行，但仍应依赖成熟的软件库处理
+补充讨论：Findecanor分享硬膜外渗漏造成心理创伤；readthenotes1提到硬膜外会降低"分娩高潮"概率
 
-补充讨论：
-多位评论者强调**必须使用tzdata等成熟库**，不要自己实现时区转换逻辑；有人指出本地时间存储在时钟回拨时会产生**歧义问题**（同一小时出现两次）；也有人认为这类时区变更极少发生，倾向于**事后快速修补数据**而非提前过度设计；BC省内部不同地区时区选择仍在争议中，增加了复杂性。</div>
+争议焦点：医疗干预程度 vs 自然分娩，疼痛管理的必要性与风险权衡</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48634787" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48610475" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,359 +103,367 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lwn.net/Articles/1029767/" target="_blank">Linux and Secure Boot certificate expiration (2025)</a>
+                    <a href="https://patrickmccanna.net/the-text-in-claude-codes-extended-thinking-output-is-not-authentic/" target="_blank">The text in Claude Code’s “Extended Thinking” output</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: weaksauce</span> |
-                    <span>评分: 126</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-06-22 18:24</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>微软用于签名Linux发行版Secure Boot引导加载器shim的密钥将于9月到期。替代密钥自2023年起可用，但许多系统可能未安装。这可能导致启用了Secure Boot的Linux系统无法从安装介质启动。已安装的系统通常不受影响，因为它们使用发行版自己的密钥。解决方案包括：硬件供应商提供固件更新添加新密钥，或通过LVFS和fwupd工具更新。但部分旧系统可能因EFI变量空间不足而更新失败，最终可能需要禁用Secure Boot才能安装新系统。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Linux Secure Boot证书即将过期，引发系统无法启动的担忧，以及对Secure Boot机制本身的争议。
-
-不同观点：
-
-• **实用主义者**：建议直接禁用Secure Boot（h4kunamata, jmclnx），认为Linux单系统无需此功能，只有双启动Windows才需要
-
-• **技术自主派**：质疑微软作为PKI信任方的合理性（arcza, drnick1），主张使用自己的密钥而非依赖微软签名，呼吁建立类似Let's Encrypt的开放替代方案
-
-• **担忧派**：预期大量Linux机器（包括虚拟机）将在未来几个月无法重启（NelsonMinar），批评发行版缺乏面向新手的检查指南（laserbeam）
-
-• **乐观派**：Red Hat确认现有系统会继续启动（naturalmovement），认为发行版有一年准备时间；Proxmox等已主动提供修复工具（NelsonMinar提及）
-
-补充讨论：
-- 技术细节：efivar空间碎片化可能导致更新失败（0xCMP惊讶此问题存在）
-- fwupd的匿名统计数据显示KEK更新98%成功率、db更新99%成功率（its-summertime）
-- 社区对Secure Boot安全价值存在根本分歧，有人认为它在消费级设备上"深度破损"且无实际安全价值</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48633941" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2606.09498" target="_blank">Self-Harness: Harnesses That Improve Themselves</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jonnonz</span> |
-                    <span>评分: 23</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-22 19:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇论文提出了Self-Harness范式，让基于大语言模型的智能体能够自主改进其操作框架，无需人工工程师或更强外部模型的介入。该方法通过三个迭代阶段实现：弱点挖掘（从执行轨迹识别模型特定的失败模式）、框架提议（生成针对性的最小化修改方案）和提议验证（通过回归测试接受候选编辑）。在Terminal-Bench-2.0基准测试中，使用三个不同模型族的实验显示，Self-Harness将测试通过率分别从40.5%提升至61.9%、23.8%提升至38.1%、42.9%提升至57.1%，证明了该方法能有效将模型特定弱点转化为可执行的框架改进。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48635075" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://the-criterion-closet.vercel.app" target="_blank">Show HN: Criterion Closet as a website – pull any of 1,247 films off the shelf</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: olievans</span> |
-                    <span>评分: 186</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-06-20 13:18</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个Criterion Closet的3D虚拟展示项目的用户反馈
-
-不同观点：
-• **积极肯定派**：多位用户表示"很棒"、"令人印象深刻"，认为应该成为Criterion官网的标准功能，有用户表示会频繁使用并已用它替代Netflix
-• **文字渲染问题**：两位用户指出文字方向错误（应该从上到下而非从下到上），另有用户认为文字难以阅读，建议使用Slug渲染技术
-• **功能改进建议**：包括添加导演推荐列表的链接、按"closet picks"数量排序、添加摄像头录制功能、支持Y轴反转控制等
-
-补充讨论：
-• 有用户发现Amazon链接包含追踪代码
-• "Brazil"(#51)的Criterion流媒体链接失效
-• 一位用户特别解释了Criterion Closet的背景（YouTube频道，邀请名人挑选并评论喜爱的电影）
-• 用户普遍喜欢VR/XR的展示方式，但希望能看到封面而非只有书脊</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48609054" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://apertvs.ai/" target="_blank">Apertus – Open Foundation Model for Sovereign AI</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: T-A</span> |
-                    <span>评分: 523</span> |
-                    <span>评论数: 36</span> |
-                    <span>发布时间: 2026-06-21 21:29</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Apertus是瑞士AI计划推出的完全开放的主权AI基础模型，由EPFL、ETH苏黎世和CSCS联合开发。该模型完全开源（包括训练数据、代码、权重、方法和对齐原则），符合欧盟AI法案要求（尊重退出机制、删除个人信息、防止记忆化）。提供8B和70B参数规模版本，性能与同级顶尖开源模型相当，支持1000多种语言的多语言训练。项目已发布Apertus Mini小型模型集，技术报告被ACL 2026会议接收。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Apertus开源AI模型的实用性、竞争力及"主权AI"概念的价值
-
-不同观点：
-
-• **乐观派**：认为Apertus代表了开源AI的重要进展，其价值在于培养团队和建立开放生态，类似Linux模式。有用户反馈在RAG场景下表现尚可，可用于构建实用软件
-
-• **质疑派**：批评Apertus V1性能不佳，进展缓慢如"委员会速度"，多语言支持存在严重幻觉问题，版权保护承诺也未兑现。认为即使有V2也难以赶上当前主流模型
-
-• **替代方案支持者**：指出中国开源模型（DeepSeek、GLM等）和其他完全开源项目（OLMo 3.1、K2 Think V2、Nemotron）表现更好，质疑"主权AI"概念的必要性——"开放就够了，为何强调主权？"
-
-• **商业模式担忧**：质疑Cohere等"主权AI"商业方案的价值，认为随着开源模型成熟，各国政府为何还要花费巨资购买商业解决方案
-
-补充讨论：
-- 数据隐私机制引发关注：需定期下载哈希过滤器以移除个人数据，但验证删除请求真实性的机制不明确
-- Apertus团队缺乏迭代经验，第二次训练可能以四分之一成本获得更好结果
-- 当前instruct模型仍基于去年的Llama3.1微调，新模型进展不明</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48622778" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://brandur.org/minimum-viable-unit" target="_blank">The minimum viable unit of saleable software</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: brandur</span> |
-                    <span>评分: 205</span> |
-                    <span>评论数: 38</span> |
-                    <span>发布时间: 2026-06-21 16:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了AI时代软件公司的生存问题。作者通过案例分析指出，虽然大语言模型(LLM)降低了软件开发成本，但并非归零。以替换Jira为例，作者计算发现：工程师时薪96美元，维护自建系统需每月至少2小时，加上初期开发成本，需37个月才能收回400美元月费。但对于高价SaaS(如Salesforce每月2.5万美元)，自建更具经济性。作者认为存在一个"可行区间"——价格适中的SaaS产品仍有市场空间，因为LLM虽降低了开发成本，但人工监督、维护和质量把控仍需持续投入，使得"购买vs自建"的决策依然复杂。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI编码工具降低软件开发成本后，"自建 vs 购买"决策的变化及其影响
-
-不同观点：
-
-• **成本降低但仍有门槛**（zingar, ahamilton454）：虽然初期开发成本大幅下降，但维护、迭代仍需持续投入，实际开发时间常被低估，许多项目在早期热情过后停滞
-
-• **自建成本被严重低估**（xyzzy123）：即使$25k/月的Salesforce看似昂贵，但自建需考虑集成、培训、运维、合规、安全等隐性成本；工程师认知带宽有限，应聚焦核心业务而非重造轮子；选择成熟方案风险更低
-
-• **缩小而非消失的可行区间**（bze12）：开发成本降低也意味着第三方竞争者更容易进入市场，会压低SaaS价格，"可行区间"缩小但依然存在
-
-• **定制化需求场景适合自建**（andreybaskov, satnhak）：当现有产品仅满足20-40%需求且缺少关键业务逻辑时，自建核心业务软件可能值得；实际案例显示一周可完成符合特定需求的工具
-
-• **社区效应与数据护城河**（monkeydust, deftio）：商业软件的功能演进依赖用户社区反馈，孤立自建方案难以获得此效益；某些业务的聚合数据和领域知识壁垒不会因AI编码而消失
-
-补充讨论：决策者需警惕工程师对"有趣项目"的偏好；AI仍依赖第三方包而非从零构建；客户决策往往是非理性的，营销比技术更难</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48620342" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.openassistivetech.org/how-i-actually-play-video-games-with-sma-the-tools-i-use-every-day/" target="_blank">How I play video games with spinal muscular atrophy</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: dannyobrien</span> |
-                    <span>评分: 164</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2026-06-18 18:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：无障碍游戏技术和辅助设备的发展现状与挑战
-
-不同观点：
-• **开源硬件倡导**：VonGuard和love0972强调开源辅助技术的重要性，反对制造商远程禁用设备的行为。GOAT组织通过开源方案帮助用户获得设备控制权，避免被厂商锁定
-• **技术整合需求**：cobbzilla指出当前辅助工具过于分散，需要更统一的集成体验。多个专用工具的复杂性可能成为下一个改进方向
-• **可用性担忧**：ElenaDaibunny质疑面部追踪技术的实用性，认为非自主面部动作可能导致误触问题。tsol提到智力障碍用户面临额外困难，现有方案可获得性和适配性不足
-• **积极认可**：多数评论者（throwaway2037、PetitPrince、DigiEggz等）对技术进步表示赞赏，分享了残障玩家在竞技游戏中的成功案例
-
-补充讨论：
-有评论建议将这些技术整合到Steam等主流平台，扩大影响力。部分人表达了进入无障碍技术领域工作的兴趣。Xbox自适应控制器作为成功案例被多次提及。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48589687" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.lukesalamone.com/posts/creating-tiny-semantic-search/" target="_blank">Semantic Search in Under 3MB</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: salamo</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-23 09:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章介绍了如何将语义搜索模型优化到3MB以下。作者从11.4MB压缩到2.79MB，主要通过以下方法：
-
-1. **移除ORT依赖**，这是减小体积的最大因素
-2. **Term dropout**：随机丢弃高频词，防止过拟合，提升抽象概念匹配
-3. **从真实招聘信息挖掘查询**：用LLM生成94-1000个查询对，提升21% MRR
-4. **架构优化**：采用max pooling替代mean pooling；使用低秩分解压缩嵌入；尝试ColBERT风格的多向量交互
-5. **词表剪枝**：将BERT词表从3万缩减到5000个token，移除无用和外语token
-6. **降维**：嵌入维度从768降至256
-
-最终模型虽小但性能超越30倍大小的重排序模型，并应用在作者的简历页面。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48642299" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.marble.onl/posts/cancel_claude.html" target="_blank">There is minimal downside to switching to open models</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: amarble</span> |
-                    <span>评分: 389</span> |
-                    <span>评论数: 42</span> |
-                    <span>发布时间: 2026-06-21 20:56</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>文章将当前开源LLM模型与专有模型的差距，类比为早期Linux与Windows的关系。作者指出，虽然Claude和GPT等专有模型在性能和易用性上仍领先，但随着Claude推出身份验证要求，以及开源模型快速追赶（通常只落后几个月），切换到开源模型的代价正在降低。作者认为，出于隐私考虑和对专有模型限制的担忧，转向本地部署或云端运行的开源模型虽会短期影响生产力，但不会像过去放弃专业软件那样造成重大损失，开源模型已接近"可用"状态。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：开源大语言模型是否能够替代闭源商业模型（如 Claude、GPT）
-
-不同观点：
-
-• **支持开源模型派**：认为开源模型已足够好，几个月前的 Claude/GPT 水平就能满足需求，代码库没变就不该移动目标柱（julianlam）；4.6 版本的 Claude 已够用，开源达到这水平即可（whatever1）
-
-• **质疑开源模型派**：实际使用中开源模型远不如 Claude Opus 和 GPT，尤其在复杂任务上差距明显，benchmark 数据不能反映真实表现（Aurornis）；开源模型在软件开发等任务上尚未达到 Claude Opus 水平（PeterStuer）
-
-• **基础设施限制派**：开源模型需要昂贵硬件才能运行，普通用户无法负担，失去了开源软件的可修改性优势（tumdum_）；缺乏训练数据、GPU 算力和团队资源，社区驱动难以对抗商业模型（GL26）
-
-• **务实观望派**：现在用 Claude 等补贴服务，等被"割韭菜"时再切换不迟（anuramat）；商业公司在推理、工具链、代理应用上的投入不是小事（implexa_founder）
-
-补充讨论：文章标题与内容矛盾（作者仅"希望"切换成本低却断言无障碍）；前沿模型仍将占据主要经济价值；可能出现监管打压开源模型的风险。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48622518" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://david.newgas.net/did-my-old-job-only-exist-because-of-fraud/" target="_blank">Did my old job only exist because of fraud?</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: advisedwang</span> |
-                    <span>评分: 807</span> |
+                    <span>作者: 0o_MrPatrick_o0</span> |
+                    <span>评分: 316</span> |
                     <span>评论数: 63</span> |
-                    <span>发布时间: 2026-06-21 21:40</span>
+                    <span>发布时间: 2026-06-22 14:22</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章讲述了作者职业生涯早期在英国创业公司GenieDB工作的经历。该公司被美国风投基金Frost VP收购后，作者随之来到美国。十年后，作者发现该基金经理Stuart Frost因欺诈被SEC起诉——通过向投资组合公司收取过高服务费来侵吞投资者资金。
+                    <p>这篇文章揭露了Claude Code的"思考记录"机制存在的透明度问题：
 
-作者深入研究案件记录后发现，GenieDB很可能就是为了收取费用而被纳入投资组合的工具。这让作者意识到，改变自己整个人生轨迹的那份工作可能只是欺诈计划的一部分。
+1. **加密签名**：Claude将推理过程加密成600字符的签名，密钥由Anthropic持有，用户机器无法解密。
 
-尽管如此，作者最终释怀：GenieDB的核心概念本身是有价值的，团队也在认真工作。每个人的人生都会被偶然事件和意外因素改变，只是自己恰巧发现了背后的黑暗暗流。</p>
+2. **摘要非原文**：API返回的"extended thinking"只是推理的**摘要**，不是实际推理过程本身，类似有损压缩转换。
+
+3. **审计困境**：用户无法从本地日志文件中还原AI代理的真实推理逻辑，获取完整思考输出需要企业协议。
+
+4. **文档含糊**：Anthropic的文档措辞间接，容易让人误以为能获得完整推理记录。
+
+作者批评这种做法缺乏透明度，呼吁开源模型加速性能改进。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：职场中遇到的欺诈、资金浪费和商业道德困境
+                    <div class="comments-summary">主要讨论点：AI公司隐藏模型推理过程的做法及其影响
 
 不同观点：
 
-• **受害者视角**：多数评论者认为普通员工是欺诈的受害者，他们在不知情的情况下被利用，追求有意义工作的愿望被滥用，不应自责（solid_fuel, Zhenya支持这一观点）
+• **商业保护派**：隐藏推理是合理的商业行为。公司投入巨额研发成本开发优越的思维过程，公开会让竞争对手免费获取核心技术，等同于"告诉猎人你的位置"。主要目的是防止竞争对手用推理链训练自己的模型。
 
-• **系统性问题论**：认为欺诈和资金浪费是结构性问题——政府资金被大公司截留（加拿大孵化器案例）、外包商加价、企业预算挥霍、税务优化型空壳公司等都是常态，这反映了权力阶层的腐败传统（danans, greengreengrass, MASNeo）
+• **安全风险派**：拒绝使用隐藏推理的模型。理由包括：(1)攻击者可通过提示注入在隐藏推理中执行秘密目标并窃取数据；(2)无法发现模型是否在推理阶段"空转"浪费token；(3)难以进行提示优化。认为只有在模型达到AGI且免疫提示注入时才可接受。
 
-• **实用主义立场**：承认在注定失败或存疑的公司工作仍有价值——获得技术成长、职业经验、高薪，且员工难以判断公司真实意图。有人直接提问：如果明知公司有问题但待遇好，你会拒绝吗？（greengreengrass, yowo）
+• **技术怀疑派**：质疑推理链是否真正对应人类的"推理"。引用研究指出推理可能是"不可理解的"或存在"思维幻觉"。有案例显示推理过程可能包含无意义内容却得出正确答案，暗示推理可能只是自我强化机制而非真正思考。
 
-• **警惕信号论**：强调应识别危险信号并及时离开——管理层频繁变动、帝国建设者、员工退休金捆绑公司股票等都是预警（siskiyou）
+• **实用主义派**：认为完整推理链实用性有限，摘要反而更利于上下文管理。理解加密的必要性，因为推理链对模型蒸馏极有价值。
+
+补充讨论：有人类比人类也是"事后合理化者"；企业用户关注黑盒服务的可依赖性、可观测性和ROI；有用户发现Opus 4.8在处理大量token后会泄露推理内容。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48630535" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.zarfhome.com/2026/06/steam-machine-oh-no" target="_blank">I am a person who will look at the Steam Machine and cry</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: speckx</span> |
+                    <span>评分: 35</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2026-06-23 18:07</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者原本期待Valve的Steam Machine，但2026年的实际售价（512GB版1049美元，2TB版1349美元）远超预期的600-800美元区间，已超出其购买意愿。作者认为Valve以保本价销售，销量会很少。虽然有能力购买，但考虑到经济不稳定和就业风险，不愿做大额冲动消费。作者决定用现有的Steam Deck连接电视和沙发来玩游戏，虽然性能有限但足够应付大部分puzzle游戏，只需再购买一个Steam Controller即可。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Steam Machine的价值定位和购买必要性
+
+不同观点：
+
+• **支持Steam Machine**：认为是优质便携游戏设备，$200溢价换来即插即用体验和软件保障，对于不想自己组装维护小型PC的用户是合理选择（smcg, butz）
+
+• **反对当前定价**：认为价格过高导致难以推荐给普通用户，可能市场失败，应该等待未来升级降价版本（foo12bar）
+
+• **推荐替代方案**：建议购买$400左右的迷你PC配合Bazzite/SteamOS，性价比更高；或二手Craigslist设备自行安装系统（yathern, bigyabai）
+
+• **质疑购买动机**：批评作者已有闲置Steam Deck却还想买新设备，认为应先用现有设备或卖掉换购，而非盲目追求新硬件（Aurornis, jrm4, post_break）
+
+• **First world problems**：讽刺这种为第三台游戏设备纠结的行为本身就是富裕社会的无病呻吟（mnls, tekla）
+
+补充讨论：核心争议在于Steam Machine的$200品牌溢价是否合理——支持者看重便利性和保障，反对者认为DIY方案更经济。另有评论指出真正问题是消费主义心态而非设备本身。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48648893" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://hustvl.github.io/Moebius/" target="_blank">Moebius: 0.2B image inpainting model with 10B-level performance</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: DSemba</span> |
+                    <span>评分: 305</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-22 13:53</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Moebius是一个超轻量级图像修复框架，仅用0.22B参数（不到FLUX.1-Fill-Dev的2%）就达到了10B级模型的性能表现。核心创新包括：(1) LλMI模块通过固定大小线性矩阵压缩空间和语义信息，大幅减少参数；(2) 自适应多粒度蒸馏策略在潜空间对齐教师模型能力。结果是推理速度提升15倍以上（26ms/步），在6个自然场景和人像基准测试中与10B级模型持平甚至超越，证明了针对特定任务的轻量化专用模型可以在效率和质量上同时超越庞大的通用模型。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Moebius 0.2B 图像修复模型的实际表现与应用价值
+
+不同观点：
+• **积极评价**：认为这是有用的 AI 技术，为小型模型（0.2B）表现令人印象深刻，展示样本效果不错，开辟了许多应用场景
+• **质疑实用性**：修复区域过于平滑，与原图细节不匹配；512×512 分辨率限制太小；难以媲美 10B 大模型；在新颖物体上表现差；仅够用于缩略图处理
+• **技术实现讨论**：有开发者成功移植到浏览器运行（ONNX，1.3GB），多个在线演示空间可用但部分失败率高
+• **行业应用经验**：商业项目中遇到模型添加意外元素（"grumpy old man"）、不同服务商输入要求不一致、最终客户未采用等实际问题
 
 补充讨论：
-评论揭示了多种欺诈形式：政府项目虚报工时、收购后的财务欺诈（WorldCom案例250亿美元）、专利诉讼掩护下的空壳运营、风投/私募的税务游戏。争议焦点在于：员工在无法获知全貌时是否有道德责任离开可疑公司？多数人认为员工信息有限，难以判断，不应承担罪责。</div>
+有用户询问基础概念（什么是 inpainting）和当前 SOTA 模型；特定领域需求如漫画翻译、电商场景（房屋外墙遮阳篷）；对论文中 AI 生成式营销用语的质疑；对展示样例评判标准不一致的技术性批评（冲浪板变形问题）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48622867" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48630171" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://xenodium.com/ytr-youtube-radio-for-emacs" target="_blank">ytr: YouTube Radio for Emacs</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: xenodium</span> |
+                    <span>评分: 58</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-22 21:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>作者开发了一个新的 Emacs 包 **ytr**（YouTube radio），用于在 Emacs 中流式播放 YouTube 音频。虽然作者此前一直使用 ready-player 包进行离线音乐播放，但考虑到偶尔需要流式播放 YouTube 音频，且 ready-player 基于文件驱动（使用 dired），不适合大规模重构，因此决定开发新包。ytr 以小部件形式呈现，支持添加频道 URL 并自动获取元数据，通过 mpv 和 yt-dlp 实现流媒体播放，还包含动画效果。目前仅在 macOS 测试，项目托管在 GitHub，作者欢迎反馈。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于一个 Emacs YouTube 播放工具的使用体验和技术讨论
+
+不同观点：
+• **积极支持派**（tecoholic）：工具运行良好，特别赞赏资源占用优势（68MB mpv vs 1GB+ 浏览器标签），但在 Doom Emacs 环境遇到快捷键冲突问题，怀疑是 Whichkey 和 Evil mode 导致
+• **理性反思派**（scorpioxy）：认可 Emacs 的可扩展性，但认为 Emacs 有时被推向不适合的方向，倾向于"用正确的工具做正确的事"而非强行在 Emacs 实现所有功能
+• **技术担忧派**（ks2048）：指出 Google 最近对 yt-dlp 进行了打击，暗示工具可能面临可用性风险
+
+补充讨论：
+• guestbest 提出界面设计问题（为何是浮动窗口而非 frame）
+• scorpioxy 特别提到作者在有新生儿的情况下还能完成开发，表示敬佩
+• 评论整体氛围积极，对作者表示感谢和认可</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48636380" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://mrmarket.lol/job-application-asked-for-my-sat-scores/" target="_blank">Job application asked for my SAT scores</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: seltzerboys</span> |
+                    <span>评分: 75</span> |
+                    <span>评论数: 38</span> |
+                    <span>发布时间: 2026-06-22 20:55</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章讨论了一家初创公司在招聘时要求申请者提供SAT成绩的做法。作者质疑这种做法的合理性，认为用十几年甚至几十年前的标准化考试成绩来评估应聘者存在问题：分数反映的是17岁时的状态，且测试条件无法验证。文章随后回顾了招聘评估的历史，从一战时期的军队测试到间谍选拔的评估中心，并指出目前研究显示结构化面试是预测工作表现的最佳方法，而非认知测试。作者认为科技公司应该寻找更好的方式评估当前能力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：科技公司招聘要求SAT成绩的合理性和有效性
+
+不同观点：
+
+• **支持方**：SAT与IQ相关性达0.81，能有效预测知识工作表现；加州大学2400名教师呼吁恢复SAT要求以确保基础能力；取消SAT导致能力差距扩大和成绩通胀问题
+
+• **反对方**：SAT是过时的青少年表现指标，对有研究生学历的求职者毫无意义；这是变相的IQ测试，可能违反劳动法规；存在作弊和代考现象，不够可靠
+
+• **实用主义批评**：SAT无法衡量工程师的关键素质（可靠性、团队协作、沟通能力）；评分标准多次改变（1600/2400分制变化），不同年代成绩无法比较；排除了大量未参加标准化考试的群体（如移民）
+
+• **隐性问题**：可能是年龄歧视的隐蔽手段；体现文化偏见（如亚裔创始人的教育背景展示）；反映管理层对"摇滚明星程序员"的执念
+
+补充讨论：多数评论者认为这是明显的红旗信号，应避开此类公司；建议采用工作样本测试等更相关的评估方式；AI时代应更新测试方法以匹配实际工作需求。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48636062" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://sakana.ai/fugu/" target="_blank">Sakana Fugu</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Finbarr</span> |
+                    <span>评分: 228</span> |
+                    <span>评论数: 46</span> |
+                    <span>发布时间: 2026-06-22 02:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Sakana Fugu 是一个多智能体系统,通过单一API动态协调多个顶尖AI模型来处理复杂任务。它基于ICLR 2026的两篇论文(TRINITY和Conductor),能自动学习如何组合和协调不同模型,而非依赖预设工作流程。
+
+系统提供两个版本:Fugu(平衡性能与延迟)和Fugu Ultra(追求最高性能)。用户可通过OpenAI兼容API访问,并可根据数据隐私、合规等需求灵活选择参与的模型。适用于编码、推理、数据分析等高质量要求的场景,目前暂不支持EU/EEA地区。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Sakana AI推出的Fugu产品（AI模型协调服务）引发的争议，核心围绕其性能、定价和商业价值展开讨论。
+
+不同观点：
+• **支持方**：认为多模型协同是未来趋势，Fugu在复杂任务上表现优于GPT-5.5，团队技术实力强（CEO David Ha曾是Goldman Sachs最年轻董事总经理，在Google做ML研究）。Beta用户认为其先于市场验证了模型互检的可行路径。
+
+• **质疑方**：$200/月订阅费过高但使用时限极短（每周<3小时），性能未达Fable水平，API响应慢。$20订阅的5小时额度消耗快，实际使用成本反而高于直接订阅Claude。技术报告显示改进幅度微小，且易被OpenAI/Anthropic等原厂通过改进自身产品替代。
+
+• **讽刺派**：批评这是"黑盒套黑盒"，花更多钱获得更慢的服务。调侃订阅费堆叠现象（Anthropic $200 + OpenAI $200 + Cursor $200...），认为产品是笑话。
+
+补充讨论：争议焦点在于Sakana自称"前沿AI实验室"但主要向日本企业销售B2B应用，且招聘策略被指过于激进甚至敌对。非美国开发者期待OpenAI/Anthropic的替代方案，但认为Fugu尚不足以胜任。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48624782" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=8GZDOpV2OXk" target="_blank">Nintendo Wii U games running from a 1980's Bernoulli disk [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: zdw</span> |
+                    <span>评分: 90</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-21 20:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这不是一篇文章，而是 YouTube 页面底部的标准页脚链接列表，包含：关于、版权、联系方式、创作者资源、广告服务、开发者工具、服务条款、隐私政策、安全政策、YouTube 运作方式、NFL Sunday Ticket 以及 Google LLC 的版权声明。这些是网站的法律信息和导航链接。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：1980-90年代可移动存储设备（主要是Bernoulli和ZIP驱动器）的技术特点和使用体验
+
+不同观点：
+• **SCSI并非标准配置**（xattt）：强调SCSI在当时是昂贵的附加功能，需要额外购买PCI卡，消费级PC不标配。SCSI外设价格高昂，如SCSI版ZIP驱动器比并口版贵很多。并口可通过菊花链连接多设备，但性能差。
+
+• **Bernoulli的历史价值**（tubetime）：指出Bernoulli推出时多数PC无硬盘或仅5-10MB容量，Bernoulli单盒10-20MB双驱动器在当时很实用，可通过SASI/SCSI启动系统，缺点是比硬盘慢。
+
+• **产品代际与可靠性对比**（jakedata）：纠正时间线（90MB版本1991年发布），认为Bernoulli比硬盘片的SyQuest更可靠，速度快于当时20MB ESDI硬盘，自己仍保留设备和磁盘。
+
+补充讨论：
+• 有用户（everyone）分享ZIP磁盘使用经历，表示从未遇到"死亡咔嗒"故障，强调在U盘出现前ZIP是传输中大型文件的主要方式
+• 出现一条疑似误发的Wii U模拟器评论（stuxnet79），与主题无关</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48622241" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://arun.is/blog/japan-symbols/" target="_blank">Japanese symbols that speak without words</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: msephton</span> |
+                    <span>评分: 189</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-06-22 19:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章探讨了日本独特的符号文化体系。文章介绍了日本传统的家纹（kamon）系统，以及现代交通领域中无需文字即可传达含义的符号：警车上的金色旭日徽章、消防车上的雪晶图案、特急列车的金色带翼三角标志等。文章还提到日本驾驶员必须理解的四种标志，包括新手驾驶员的"若叶标志"（🔰）。这些符号体现了日本长久以来通过简洁图形传递信息的文化传统，在现代生活中仍广泛应用并被公众普遍理解。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：日本符号系统的特殊性及其文化背景
+
+不同观点：
+• **质疑派**：wetwater和1-6认为日本符号并无特别之处，指出其他国家也有类似系统（如英国的"L"标志、欧洲路标），纯符号系统未必是最佳方案
+• **比较派**：netsharc对比美欧路标差异，美国路标多用文字且直观，欧洲则需学习符号含义；nephihaha补充西方也有类似设计如向日葵挂绳
+• **文化解读派**：BrenBarn深入分析符号vs文字的利弊，推测日本非字母书写系统可能影响符号偏好；TacticalCoder和CHUNK_CHUNK强调日本文化的视觉化特征和"读空气"概念，认为符号系统是更广泛文化模式的一部分
+• **实用派**：robocat从社会行为角度切入，认为符号效果取决于文化礼貌程度，新西兰的"L"标志反而招致不友善对待
+• **细节讨论**：kazinator批评听障标志的蝴蝶设计基于日语谐音双关，对非日语使用者不友好
+
+补充讨论：dd-sharma分享日语学习难度，侧面说明日本人习惯处理复杂视觉符号系统；多位评论者提到各国都有独特标识系统，争议焦点在于日本系统是否真正更优越，还是仅是文化差异的体现。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48634803" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://techstackups.com/comparisons/glm-5.2-vs-opus/" target="_blank">GLM 5.2 vs. Opus</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ritzaco</span> |
+                    <span>评分: 505</span> |
+                    <span>评论数: 82</span> |
+                    <span>发布时间: 2026-06-22 07:22</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章对比测试了新发布的开源模型GLM-5.2与Claude Opus 4.8，让两者从零开始构建3D平台游戏。结果显示：Opus速度更快（33.5分钟 vs 70分钟），代码更清晰，且支持视觉输出检查；但GLM-5.2成本仅为Opus的四分之一（5.39美元 vs 21.92美元），且作为开源模型永久可用，不会像闭源模型那样被突然下线。虽然GLM-5.2在基准测试中接近顶级闭源模型，但作者认为它更适合作为补充工具而非主力模型，其价格优势和开放性是最大亮点。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：GLM 5.2与Claude Opus 4.8在实际编程任务中的对比评测及其有效性
+
+不同观点：
+
+• **质疑单次提示测试的有效性**：多位评论者（meander_water, 0xbadcafebee）认为一次性提示不能代表真实使用场景，缺乏可靠性和可控性测试，且测试变量过多（不同工具、提示词、供应商）使对比失去意义
+
+• **GLM 5.2性能肯定派**：habosa和postatic等用户认为GLM 5.2是开源模型的突破，达到了"开箱即用"水平，性能约为Opus的90%但成本仅1/5，日常工作中已开始实际使用
+
+• **实际使用体验的局限性**：xlii指出GLM 5.2虽输出质量好但速度慢（比GPT慢5倍），在规划阶段容易偏离且不易引导；lukaslalinsky表示无法像使用Opus那样进行协作式开发
+
+• **理想的评测标准**：cultofmetatron主张应测试代理在遵循规范、持续执行计划、识别bug等多步骤任务中的表现，而非简单的"构建X"测试
+
+补充讨论：部分用户提出混合使用策略（用Opus做规划和代码审查，GLM执行具体工作）和多模态补充方案（为GLM配备视觉模型）以弥补其缺陷；有人质疑GLM的延迟来源；也有人感慨开源模型进步惊人。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48626866" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
