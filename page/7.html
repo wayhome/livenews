@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-23 09:54 (北京时间)
+            最后更新时间: 2026-06-23 14:37 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,37 +61,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.minecraft.net/en-us/article/minecraft-java-edition-26-2" target="_blank">Minecraft: Java Edition 26.2, the first version with Vulkan 1.2</a>
+                    <a href="https://github.com/golang/go/issues/80084" target="_blank">UUID: NewV7() always generates a UUID with 7000 on browsers (Golang)</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ObviouslyFlamer</span> |
-                    <span>评分: 198</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-17 07:33</span>
+                    <span>作者: mfrw</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-22 08:59</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Minecraft Java版26.2更新推出"混沌立方"内容：新增硫磺立方（Sulfur Cube）生物，可吸收方块并根据方块类型呈现不同物理特性（弹跳、滑行、爆炸等）；新增硫磺洞穴生物群系，含硫磺池和朱砂；加入硫磺、朱砂方块组；新增好友列表功能；实验性支持Vulkan渲染；添加新音乐碟片"Bounce"及5首背景音乐；支持瑞士法语等5种新语言。硫磺立方被击杀后分裂成小立方，可用史莱姆球喂养长大，空桶可收集。</p>
+                    <p>这是一个 Go 语言的 bug 报告。在 js/wasm 目标平台上，`uuid.NewV7()` 函数生成的 UUID 总是在特定位置包含 `7000`，而这部分本应包含随机字节。用户在 Go 1.27rc1 版本中发现，无论运行多少次，生成的 UUID 都会在版本号后出现固定的 `000` 模式（如 `019ee60f-29b3-7000-a12b-...`），这违反了 UUID v7 规范中应该填充随机数据的要求。该问题仅在浏览器/WebAssembly 环境中出现。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Minecraft Java版迁移到Vulkan渲染API的技术决策及游戏整体发展状况
+                    <div class="comments-summary">主要讨论点：UUID v7 生成器在浏览器环境下的时间戳精度问题及其修复方案
 
 不同观点：
 
-• **质疑派（bullen）**：认为重写OpenGL实现是浪费资源，Vulkan的多核渲染对体素游戏意义不大，因为CPU核心需用于体素计算、物理、网络等其他任务。但承认去混淆和新音乐是进步。
+• **JdeBP的技术分析观点**：指出问题根源在于时钟精度不足（浏览器仅支持毫秒级），当前修复方案虽然针对 `GOOS == "js"` 做了处理，但在时间戳唯一性检查时错误地将12位随机数据当作时间戳的一部分进行递增，需要进一步修正以正确处理毫秒精度的情况。同时提到多进程场景下计数器实现困难，现有实现回避了这个问题。
 
-• **技术分析派（jchw）**：认为选择Vulkan合理，因为游戏需跨平台支持（含MoltenVK），但对微软子公司选择Direct3D竞争对手表示意外，回顾微软曾对OpenGL支持不力的历史。
+• **paulddraper的解决方案观点**：认为问题描述不完全准确，虽然 `Date.getTime()` 只有毫秒精度，但现代浏览器大多支持 `Temporal.Now.instant()` API，它可以提供更高精度。建议在支持的情况下优先使用 Temporal API，并保留 Date 作为降级方案。
 
-• **性能受益派（SugarReflex）**：实际测试显示在Linux Mint + 1080 Ti环境下，Minecraft运行流畅，证明Vulkan迁移带来正面效果。
+• **OsrsNeedsf2P的批评观点**：批评维护者最初想以"按设计工作"为由关闭问题的做法，认为这是"只见树木不见森林"，忽视了实际存在的问题。
 
-• **批评派（cpill、charcircuit、everyone）**：强烈不满游戏发展缓慢，认为内容更新敷衍、技术落后需依赖mod改善性能，提到AI生成代码导致严重bug，以及多人游戏封禁机制存在争议。
-
-补充讨论：有人提出OpenGL已支持独显优先（ramon156质疑这是否真是改进），有人期待Luanti（原Minetest）追赶，另有人误以为游戏早已使用bgfx。整体显示社区对技术进步持谨慎乐观态度，但对游戏整体运营和内容更新普遍失望。</div>
+补充讨论：核心争议在于如何在浏览器环境正确实现 UUID v7 的时间戳和单调性保证，涉及平台兼容性、API选择和实现细节的权衡。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48567028" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48627625" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,74 +100,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.openassistivetech.org/how-i-actually-play-video-games-with-sma-the-tools-i-use-every-day/" target="_blank">How I play video games with spinal muscular atrophy</a>
+                    <a href="https://qsoe-dev.blogspot.com/2026/06/qsoe-project-v01-is-released.html" target="_blank">QSOE: QNX-inspired OS with dual-kernel architecture</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dannyobrien</span> |
-                    <span>评分: 164</span> |
-                    <span>评论数: 15</span> |
-                    <span>发布时间: 2026-06-18 18:45</span>
+                    <span>作者: ymz5</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-06-22 13:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>QSOE项目发布v0.1版本，这是一个QNX兼容的操作系统，包含两个内核变体：QSOE/N（使用自研Skimmer内核）和QSOE/L（基于seL4微内核）。两个变体共享相同的用户空间（quser、qsh shell和libc）。此版本的重要里程碑是QSOE/L现已能在SiFive Unmatched硬件上从NVMe存储启动到交互式登录shell。项目源码以Apache-2.0许可证在GitLab开源，旨在提供一个在不同微内核上运行的统一QNX环境。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：无障碍游戏技术和辅助设备的发展现状与挑战
+                    <div class="comments-summary">您提供的内容只有一条评论，没有多个评论之间的讨论和不同观点的交流。这是一个技术求助帖，作者在询问如何在RISC-V系统上初始化NVidia显卡到VGA文本模式。
 
-不同观点：
-• **开源硬件倡导**：VonGuard和love0972强调开源辅助技术的重要性，反对制造商远程禁用设备的行为。GOAT组织通过开源方案帮助用户获得设备控制权，避免被厂商锁定
-• **技术整合需求**：cobbzilla指出当前辅助工具过于分散，需要更统一的集成体验。多个专用工具的复杂性可能成为下一个改进方向
-• **可用性担忧**：ElenaDaibunny质疑面部追踪技术的实用性，认为非自主面部动作可能导致误触问题。tsol提到智力障碍用户面临额外困难，现有方案可获得性和适配性不足
-• **积极认可**：多数评论者（throwaway2037、PetitPrince、DigiEggz等）对技术进步表示赞赏，分享了残障玩家在竞技游戏中的成功案例
+**主要讨论点：** 在RISC-V系统（如Unmatched或Polarfire）上初始化NVidia显卡到基本VGA模式3（80x25文本模式）的技术问题
 
-补充讨论：
-有评论建议将这些技术整合到Steam等主流平台，扩大影响力。部分人表达了进入无障碍技术领域工作的兴趣。Xbox自适应控制器作为成功案例被多次提及。</div>
+**当前状况：**
+• 作者ymz5希望为QSOE获得真实控制台输出
+• 已尝试通过U-Boot的bios_emulator运行视频BIOS，但未成功
+• 正在向显卡专家寻求帮助
+
+**补充说明：** 这是一个未解决的技术问题求助，尚未收到其他用户的回复或建议。需要更多评论才能分析不同观点和讨论关系。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48589687" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.wsj.com/pro/sustainable-business/dhl-set-to-transport-goods-on-new-wind-powered-cargo-ships-eca5d5a0" target="_blank">DHL Set to Transport Goods on New Wind-Powered Cargo Ships</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: julienchastang</span> |
-                    <span>评分: 123</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-06-22 14:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：风帆货船商业可行性及其与传统货运的对比
-
-不同观点：
-• **怀疑派**：认为这是vanity project（虚荣项目），缺乏经济可行性。理由包括：运载量小（415吨 vs 单艘集装箱船10万吨，需250艘才能替代一艘）、速度慢、装卸效率低、人力成本高。除非燃油价格或排放法规发生数量级变化，否则没有经济激励采用风帆动力。
-
-• **现实观察派**：指出类似公司已不再运营，项目可能无法持续。质疑文章将飞机货运量与集装箱船长度对比的不当性，认为这是标题党行为。
-
-• **乐观派**：赞赏邮政/物流公司的创新能力（如Deutsche Post采购电动货车），认为老牌行业在新技术应用上表现积极。
-
-• **技术探索派**：建议在船上安装大型风力涡轮机作为现代化"风帆"，讨论柴电混合驱动的可能性，但也承认维护复杂性可能超过成本收益。
-
-补充讨论：项目仍在建设中（2030年目标5艘船），实际运营情况未知。有评论讽刺这像"回到1600年"或"太早/太晚航海时代"。文章发布时油价并未"因伊朗战争暴涨"（WTI $73.51），质疑其商业逻辑前提。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48631058" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48630085" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -184,118 +142,36 @@
                 </h3>
                 <div class="story-meta">
                     <span>作者: T-A</span> |
-                    <span>评分: 199</span> |
-                    <span>评论数: 22</span> |
+                    <span>评分: 523</span> |
+                    <span>评论数: 36</span> |
                     <span>发布时间: 2026-06-21 21:29</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Apertus是瑞士AI倡议开发的完全开放的主权AI基础模型，由EPFL、ETH苏黎世和CSCS合作打造。其核心特点包括：完全开放（训练数据、代码、权重、方法全部公开可复现）、符合EU AI法案合规要求（支持退出机制、移除个人信息、防止记忆化）、性能出色（8B和70B参数规模可与顶级开源模型竞争）、多语言支持（训练覆盖1000+种语言）。项目已发布Apertus Mini小型模型集，技术报告被ACL 2026会议接收。</p>
+                    <p>Apertus是瑞士AI计划推出的完全开放的主权AI基础模型，由EPFL、ETH苏黎世和CSCS联合开发。该模型完全开源（包括训练数据、代码、权重、方法和对齐原则），符合欧盟AI法案要求（尊重退出机制、删除个人信息、防止记忆化）。提供8B和70B参数规模版本，性能与同级顶尖开源模型相当，支持1000多种语言的多语言训练。项目已发布Apertus Mini小型模型集，技术报告被ACL 2026会议接收。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Apertus开源LLM项目的评价和开源AI发展前景
+                    <div class="comments-summary">主要讨论点：Apertus开源AI模型的实用性、竞争力及"主权AI"概念的价值
 
 不同观点：
 
-• **积极评价派**：认为Apertus项目最大价值在于培养团队人才，虽是首次尝试但未来潜力大；该模型在RAG场景下已具备实用性，可用于构建有用的软件
+• **乐观派**：认为Apertus代表了开源AI的重要进展，其价值在于培养团队和建立开放生态，类似Linux模式。有用户反馈在RAG场景下表现尚可，可用于构建实用软件
 
-• **质疑竞争力派**：认为Apertus进展缓慢，像委员会式运作，难以与当前主流模型竞争；其instruct模型仍基于去年的Llama3.1微调，缺乏新进展；70B规模难以匹敌顶级模型
+• **质疑派**：批评Apertus V1性能不佳，进展缓慢如"委员会速度"，多语言支持存在严重幻觉问题，版权保护承诺也未兑现。认为即使有V2也难以赶上当前主流模型
 
-• **质量批评派**：多语言支持不可靠，在翻译和动词变位等简单问题上频繁产生幻觉；知识截止时间为2024年3月过于陈旧；之前版本表现糟糕且版权保护承诺未兑现
+• **替代方案支持者**：指出中国开源模型（DeepSeek、GLM等）和其他完全开源项目（OLMo 3.1、K2 Think V2、Nemotron）表现更好，质疑"主权AI"概念的必要性——"开放就够了，为何强调主权？"
 
-• **商业模式怀疑派**：质疑Cohere等主权AI公司的价值主张——当开源模型日益可用时，为何要花大钱购买不拥有基础设施的解决方案
-
-• **开源路线争议**：有人认为真正的战场不在开源vs闭源，而在本地vs云端服务，当前因UX问题正在输掉这场战役；也有人寄希望于中国的开源模型
-
-补充讨论：数据保护机制（每六个月更新PII删除哈希文件）的实施细节和身份验证问题引发关注；其他完全开源LLM如OLMo 3.1、K2 Think V2和Nemotron也被提及作为对比</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48622778" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.amightygirl.com/blog?p=36753" target="_blank">Maria Isabel Sánchez Vegara on Her 100th "Little People, Big Dreams" Book</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: zeristor</span> |
-                    <span>评分: 32</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-20 09:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于某套儿童书籍的评论，涉及性别教育和榜样人物
-
-不同观点：
-• **性别教育关切观点**（MyHonestOpinon）：认为当前女孩发展良好，但男孩处境不佳，且男孩仍因历史上男性的行为而被责备，表达了对男孩教育处境的担忧
-• **中性推荐观点**（edu）：纯粹从书籍质量角度推荐，强调该书籍涵盖男女性启发性人物（如Ada Lovelace和Alan Turing），适合作为儿童礼物
-• **正面使用体验**（bwb）：作为家长分享实际使用经验，表示孩子（儿子）非常喜欢这套书
+• **商业模式担忧**：质疑Cohere等"主权AI"商业方案的价值，认为随着开源模型成熟，各国政府为何还要花费巨资购买商业解决方案
 
 补充讨论：
-第一条评论将书籍讨论引向了更广泛的性别教育议题，但后两条评论并未接续这个话题，而是保持在书籍本身的价值和使用体验上。三条评论之间缺乏直接对话关系，更像是独立的观点表达。没有明显的争议性辩论，仅第一条评论带有较强的观点色彩。</div>
+- 数据隐私机制引发关注：需定期下载哈希过滤器以移除个人数据，但验证删除请求真实性的机制不明确
+- Apertus团队缺乏迭代经验，第二次训练可能以四分之一成本获得更好结果
+- 当前instruct模型仍基于去年的Llama3.1微调，新模型进展不明</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48607671" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sidhantbansal.com/2026/Granularity-comes-at-a-cost/" target="_blank">Granularity comes at a cost</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: sidhantbansal</span> |
-                    <span>评分: 46</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-19 19:16</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章探讨了系统颗粒度的反直觉现象：更细的选择并非总是更好。
-
-**金融市场例子**：股票报价的最小变动单位(tick size)若过小，交易者可以轻易插队抢单，导致流动性提供者不愿积极报价，反而使价差变宽。
-
-**运动场地预订例子**：允许半小时错位预订(如10:30-11:30)会让用户钻空子——在9-10和12-1已被预订时，预订中间时段可"免费"占用前后各30分钟的空隙，因为系统不允许预订这些碎片时段。
-
-**核心观点**：在策略性系统中，过度的颗粒度会创造博弈空间，降低诚实参与的激励，需要找到最优平衡点。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：系统颗粒度（granularity）设计对资源分配效率和用户行为的影响
-
-不同观点：
-• **支持低颗粒度**（martin_drapeau）：网球俱乐部实际案例显示，30分钟起始时间虽允灵活预订（1小时、1.5小时、2小时），但会产生无法填补的30分钟空档，导致永远无法满负荷运营。即使限制某些时段预订也无法根本解决问题。
-
-• **质疑市场论证**（lesam）：低颗粒度补贴了做市商而损害小订单，价格竞争比以纳秒计的排队位置游戏更有经济价值，低颗粒度并非纯粹的好处。
-
-• **增加颗粒度可解决问题**（jpatten）：体育场地案例的问题恰恰可以通过提高颗粒度（允许用户更精细地选择时段长度）来解决，这样文中提到的不良策略就会失效。
-
-• **理论支持**（emil-lp）：纳什均衡对模型高度敏感，看似无害的修改可能导致更差结果，引用了Braess悖论等经典案例支持这一观点。
-
-补充讨论：dtgriscom对"granular"术语的相对使用提出质疑，认为该词在比较语境中容易造成混淆（更granular究竟是指更大还是更小的单位）。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48602144" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48622778" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -354,6 +230,110 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
+                    <a href="https://github.com/hanslub42/rlwrap" target="_blank">Rlwrap your CLI tools, dammit</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: nvader</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-22 21:06</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>rlwrap 是一个命令行工具包装器，使用 GNU Readline 库为其他命令提供行编辑和历史记录功能。它主要解决旧程序无法使用方向键编辑输入的问题。核心功能包括：输入历史记录跨会话保存、自定义补全（通过词表文件或历史输入输出）、过滤器机制实现特殊效果。支持多种 Unix 系统，能自动监测程序终端设置以正确处理单键输入和密码提示。对于已使用 Readline 的程序可通过 `-a` 选项强制使用 rlwrap 的编辑功能。由 Hans Lub 编写，基于 GNU Readline 库实现。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48636202" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.openassistivetech.org/how-i-actually-play-video-games-with-sma-the-tools-i-use-every-day/" target="_blank">How I play video games with spinal muscular atrophy</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: dannyobrien</span> |
+                    <span>评分: 164</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-06-18 18:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：无障碍游戏技术和辅助设备的发展现状与挑战
+
+不同观点：
+• **开源硬件倡导**：VonGuard和love0972强调开源辅助技术的重要性，反对制造商远程禁用设备的行为。GOAT组织通过开源方案帮助用户获得设备控制权，避免被厂商锁定
+• **技术整合需求**：cobbzilla指出当前辅助工具过于分散，需要更统一的集成体验。多个专用工具的复杂性可能成为下一个改进方向
+• **可用性担忧**：ElenaDaibunny质疑面部追踪技术的实用性，认为非自主面部动作可能导致误触问题。tsol提到智力障碍用户面临额外困难，现有方案可获得性和适配性不足
+• **积极认可**：多数评论者（throwaway2037、PetitPrince、DigiEggz等）对技术进步表示赞赏，分享了残障玩家在竞技游戏中的成功案例
+
+补充讨论：
+有评论建议将这些技术整合到Steam等主流平台，扩大影响力。部分人表达了进入无障碍技术领域工作的兴趣。Xbox自适应控制器作为成功案例被多次提及。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48589687" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://gizmodo.com/mexico-just-showed-off-a-new-extremely-cheap-government-backed-ev-2000769080" target="_blank">Mexican government unveils a prototype for a new homegrown, ultra-affordable EV</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: speckx</span> |
+                    <span>评分: 160</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-22 16:48</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：墨西哥推出低价电动车Olinia One，引发关于贸易保护、市场定位和产品竞争力的讨论
+
+不同观点：
+• **支持贸易保护派**：认为低价进口车会摧毁美国本土汽车业，需通过关税、补贴或提升竞争力应对。但批评短期关税策略会阻碍长期创新，强调应全力投入电动车开发而非保护燃油车
+• **市场定位质疑派**：指出77英里续航难以满足美国市场需求（需3-4倍续航），认为此车仅适合墨西哥本土或特定用户群体。网站明确标注"为墨西哥设计"证实其非美国市场产品
+• **技术怀疑派**：质疑产品可行性，包括能否通过美国安全法规、盒状设计的空气动力学缺陷（有人讽刺"1920年代汽车空气动力学都更好"）、廉价零件与安全舒适性平衡，以及墨西哥充电基础设施不足问题
+• **乐观期待派**：认为此举能推动墨西哥充电基础设施建设和可再生技术发展，部分用户表示愿等待10年后更成熟的电动车产品
+
+补充讨论：有评论直言这是墨西哥民粹政府的作秀项目，预测"造不出50辆"；也有人分享外国竞争如何促进本土企业进步的文章，暗示开放竞争优于保护主义。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48632652" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
                     <a href="https://www.marble.onl/posts/cancel_claude.html" target="_blank">There is minimal downside to switching to open models</a>
                 </h3>
                 <div class="story-meta">
@@ -399,34 +379,25 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/playX18/lisp-in-types/" target="_blank">Lisp in the Rust Type System</a>
+                    <a href="https://www.wsj.com/finance/commodities-futures/nonstop-trading-loads-of-leverage-how-perp-futures-are-shaking-up-wall-street-59682069" target="_blank">Nonstop Trading, Lots of Leverage. How 'Perp Futures' Are Changing Wall Street</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: quasigloam</span> |
-                    <span>评分: 108</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-20 05:43</span>
+                    <span>作者: JumpCrisscross</span> |
+                    <span>评分: 6</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-23 03:10</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是一个在 Rust 类型系统中实现 Lisp 解释器的项目。主要特性包括：支持递归函数、全局和词法作用域、函数调用和 call/ec（逃逸延续）。存在一些限制：符号需手动声明、数字范围限制在 0-8192、不支持负数、没有宏系统和 eval 函数。项目通过 Rust 的 trait 系统在编译期执行 Lisp 代码，例如可以计算阶乘等函数，所有计算都在类型层面完成。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：使用Rust声明式宏实现编译期Lisp解释器的技术成就
-
-不同观点：
-• **实用性质疑**（wuschel）：除了学习Rust的trait和类型系统，以及实验性/教育性探索之外，这是否有实际应用价值？
-• **技术欣赏派**（saghm）：惊喜于使用声明式宏而非过程宏实现。认为声明式宏虽然功能较弱但表达力惊人，喜欢探索其极限（即使不适合生产代码）
-• **技术深度认可**（ElenaDaibunny）：指出类型级别的call/ec（escape continuation）才是真正惊艳之处，大多数编译期Lisp实现只停留在基本eval，而逃逸续延需要通过trait解析进行真正的控制流推理
-• **兴趣激发**（bigfishrunning）：被项目吸引，想立即尝试
-• **实现方式震惊**（CupricTea）：对完全使用声明式宏实现感到震惊，通常这种任意语法会假定是过程宏实现
-
-补充讨论：评论整体呈正面态度，焦点在技术实现的巧妙性而非实用性。核心争议点是"学术价值vs实际应用"，但多数人更关注技术探索本身的趣味性和教育意义。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48606654" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48639742" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -437,37 +408,34 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/riverqueue/river" target="_blank">Rive, Fast and reliable background jobs in Go</a>
+                    <a href="https://www.davidrevoy.com/article1154/why-drawing-tablet-brands-wont-collaborate-on-linux-floss-drivers" target="_blank">Why Drawing Tablet Brands Won't Collaborate on Linux Floss Drivers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mountainview</span> |
-                    <span>评分: 33</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-22 10:37</span>
+                    <span>作者: Tomte</span> |
+                    <span>评分: 218</span> |
+                    <span>评论数: 14</span> |
+                    <span>发布时间: 2026-06-22 12:09</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>River是一个为Go和Postgres构建的高性能作业处理系统。其核心特点是利用Postgres数据库同时存储应用数据和作业队列，通过事务性入队机制避免分布式系统问题——作业在事务提交时才可见，回滚时自动删除。系统定义了JobArgs和Worker结构对来处理作业，使用JSON序列化并通过"kind"字符串唯一标识作业类型。River还提供了UI界面和在线演示，强调数据库事务一致性保证。</p>
+                    <p>作者定期为数位板品牌制作Linux测试视频，并将硬件规格报告给Red Hat开发者，以帮助开发开源驱动。因测试流程繁重，作者改变策略，尝试促成品牌直接与Linux社区合作。通过Gaomon联系到了负责Huion、XpPen、Gaomon、Ugee四个品牌的技术人员，邀请其与开源驱动团队合作。但最终被礼貌拒绝，原因是Linux数位板驱动基础设施的代码库（如libwacom）都以竞争对手Wacom命名，品牌方不愿在带有Wacom标识的项目中分享设备规格。作者认为这是历史遗留的命名问题导致的合作障碍。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：River（Go语言的持久化工作流队列系统）的功能定位、开源程度和使用场景
+                    <div class="comments-summary">主要讨论点：Linux平板驱动项目以"Wacom"命名是否阻碍其他厂商贡献，以及如何解决硬件厂商不参与开源驱动开发的问题
 
 不同观点：
+• **支持改名派**：认为应该将项目改为厂商中立的名称，类似master→main的改名。既然名称让竞争对手误以为是Wacom主导的项目而不愿贡献，改名成本不高且有实际意义
+• **怀疑改名效果派**：认为厂商不贡献的真正原因不是项目名称，而是缺乏合作意愿。讽刺"改个名就会贡献"的说法不切实际
+• **要求厂商技术文档派**：认为关键是让其他平板厂商发布技术规格PDF，这样产品就能"开箱即用"，对厂商也有好处
+• **Wacom用户满意派**：长期Wacom用户表示满意现状，appreciates统一的EMR触控笔生态系统可跨设备使用
 
-• **对付费功能的顾虑**：多位评论者（dwrodri、absoluteunit1）表示River将工作流等重要功能锁定在Pro版本后让人犹豫，倾向于选择完全开源的替代方案如RabbitMQ，担心供应商锁定
-
-• **与竞品的对比疑问**：hasyimibhar询问River与DBOS等成熟的持久化执行平台相比有何优势，暗示功能可能不够完整
-
-• **使用场景的困惑**：whinvik提出实际应用中的关键问题——是否自托管、是否与应用数据库共用、适用于哪类任务（API后台任务、批处理、定时任务），表明对这类系统的最佳实践不够清晰
-
-• **对技术声明的质疑**：jeffbee对River"通过构建非分布式系统来避免分布式系统问题"的宣称持讽刺态度，认为这是回避问题而非解决问题
-
-补充讨论：有评论者指出标题拼写错误（Rive应为River），另有人认可Go+云端持久化工作流的技术组合很理想，但被商业模式阻碍</div>
+补充讨论：
+有用户提出实用建议（fork项目并去除Wacom引用后分享给其他品牌）；有人指出Linux平板驱动GUI功能不如Windows完善（按键映射、屏幕区域自定义等）；还有人开玩笑建议用AI分析Windows驱动来生成Linux驱动。争议焦点在于：项目命名是表面问题还是实质障碍。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48628338" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48629064" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
