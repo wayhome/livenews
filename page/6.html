@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-06-27 21:02 (北京时间)
+            最后更新时间: 2026-06-27 23:58 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,32 +61,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://scottaaronson.blog/?p=9851" target="_blank">Bipartite Matching Is in NC</a>
+                    <a href="https://github.com/Tessil/hopscotch-map" target="_blank">A C++ implementation of a fast hash map and hash set using hopscotch hashing</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: amichail</span> |
-                    <span>评分: 94</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-22 22:43</span>
+                    <span>作者: gjvc</span> |
+                    <span>评分: 100</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-26 21:18</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇博文介绍了一项计算复杂性领域的重大突破：五位研究者证明了二分匹配问题属于NC复杂度类。二分匹配问题是在给定男女配对意愿的情况下，判断是否能让所有人都找到合适伴侣。1980年代的算法已能用多处理器加随机数在对数时间内解决此问题，而新研究实现了确定性求解，无需随机化。作者Scott Aaronson坦言尚未完全理解该算法原理。文末还呼吁纽约选民支持关注AI监管的国会候选人Alex Bores。</p>
+                    <p>**hopscotch-map** 是一个C++头文件库，使用开放寻址和跳房子哈希（hopscotch hashing）实现高性能哈希表，性能优于 `std::unordered_map`，内存占用少于 `google::dense_hash_map`。
+
+主要提供四类容器：
+- `tsl::hopscotch_map/set`：默认选择，速度更快，使用2的幂次增长策略
+- `tsl::hopscotch_pg_map/set`：质数增长策略，适合哈希函数质量较差的场景
+- `tsl::bhopscotch_map/set`：提供 O(log n) 最坏情况保证，可抵御哈希DoS攻击
+
+核心特性包括：仅需包含头文件、支持移动语义和异类查找（heterogeneous lookup）、可缓存哈希值加速查找、可禁用异常。
+
+与 `std::unordered_map` 的主要差异：迭代器在插入时全部失效；修改值需调用 `it.value()` 而非 `it->second`。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于二部图匹配（Bipartite Matching）算法的理论进展及其实际应用
+                    <div class="comments-summary">主要讨论点：关于哈希表实现的性能比较和技术选择
 
 不同观点：
-• **实际应用视角**（vintermann）：以BoardGameGeek的"Math Trades"为例，说明二部图匹配问题早已有实际应用场景。CS教授Chris Okasaki将其识别为二部图匹配问题并大幅提升了计算效率，暗示此次新成果可能带来进一步的实际加速。
+• **推荐boost::unordered_flat_set + rapidhash**：认为这是当前最佳实践，SIMD优化的cacheline性能难以超越，标准库的murmurhash极慢，boost/absl/folly的实现都远超标准库
 
-• **理论意义视角**（amirhirsch）：强调此次结果在计算复杂性理论上的重要性——将二部图匹配纳入NC类意味着该问题可以高度并行化。他特别指出NC与P的关系尚未证明，类比P≠NP问题，说明这一结果的理论份量。
+• **google::dense_hash_map更快**：根据benchmark图表，google::dense_hash_map的运行时间在所有测试方法中最低，性能优于hopscotch实现
 
-补充讨论：两条评论呈现互补而非对立的关系——一个落地于实际应用，一个聚焦于理论突破。争议焦点不明显，但隐含的开放问题是：NC=P是否成立？若成立，则更多P类问题将可并行求解，意义将远超单一的匹配算法。</div>
+• **倾向Robin Hood哈希**：认为hopscotch与robin hood性能曲线接近，但robin hood更为知名成熟，因此更倾向选择后者
+
+• **实际应用中可灵活处理冲突**：指出实践中可以对部分冲突元素采用带外处理，不必像标准哈希表那样强制插入所有元素，这种灵活性在真实负载中很有价值
+
+补充讨论：有开发者分享了10年前在游戏作弊器中使用hopscotch哈希的经历，后来学习到Cuckoo、Robin Hood等算法，理解了hopscotch是两者的结合；另有人质疑benchmark的时效性（最后更新于2019年），询问与boost unordered flat map的对比</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48637433" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48692090" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -97,52 +110,37 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://gossamer-lang.org/" target="_blank">Gossamer: a Rust-flavoured language with real goroutines and pause-free memory</a>
+                    <a href="https://blog.matthewbrunelle.com/my-steam-machine-is-a-50ft-hdmi-cable/" target="_blank">My Steam Machine is a 50ft HDMI cable</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mwheeler</span> |
-                    <span>评分: 82</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2026-06-26 18:32</span>
+                    <span>作者: speckx</span> |
+                    <span>评分: 200</span> |
+                    <span>评论数: 40</span> |
+                    <span>发布时间: 2026-06-23 17:45</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Gossamer 是一门新编程语言，主要特点如下：
-
-**语法与数据流**：支持前向管道操作符（`|>`），默认不可变，代码从上到下线性流动，逻辑清晰直观。
-
-**内存管理**：采用确定性引用计数和 `arena{}` 区域内存，无需 GC 停顿，也不需要 Rust 的借用检查器和生命周期标注。
-
-**并发模型**：基于 M:N 调度器的真正协程（goroutine），无需 `async/await`，没有函数着色问题，阻塞调用只挂起协程而非线程。
-
-**运行与发布**：提供字节码虚拟机和 REPL 供快速开发，也可通过 LLVM 编译为单一无依赖的原生二进制文件。VM 还可编译为 WebAssembly 在浏览器中运行。
-
-**类型系统**：支持 `Result`/`Option`/`?`、穷举 `match`、trait、泛型，无 `null`，对熟悉 Rust、Go 或 F# 的开发者友好。
-
-**标准库**：内置 HTTP、JSON、加密、SQL、压缩等模块，并支持调用 Rust 代码扩展。</p>
+                    <p>作者分享了从Steam Deck过渡到桌面PC游戏的经历。最初尝试用HDMI线连接电视很繁琐，后来在独立硬盘上安装Bazzite系统改善了体验。两个关键改变让新设置成功：购买Steam Controller 2（具有对称摇杆、触控板和更好的兼容性）和50英尺光纤HDMI线。作者放弃了Steam串流方案，认为直连HDMI是最低摩擦的选择。目前唯一问题是在Bazzite和NixOS双系统间切换时需要退出游戏，正考虑启用休眠功能解决。整体上，这套配置提供了类似游戏机的便捷体验，同时保留了PC的控制权。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Gossamer语言的定位和设计选择是否合理
+                    <div class="comments-summary">主要讨论点：如何实现远距离游戏体验的技术方案选择
 
 不同观点：
 
-• **质疑系统编程定位**（reocha, Zak）：没有宏、禁用unsafe、无移动语义、使用引用计数，这些设计让它不适合低级编程；编译器未用自身语言实现，不符合系统编程语言标准
+• **网络串流派**：推崇Sunshine/Moonlight组合，认为通过千兆以太网可实现4K HDR 120Hz低延迟串流。支持者使用Steam Deck、Chromecast、Apple TV等作为客户端，强调有线连接的重要性。部分用户表示相比Steam Remote Play更稳定。
 
-• **怀疑项目质量**（throwrioawfo, jeremyjh）：精美网站可能只是表面功夫，在当前AI生成内容泛滥的环境下持谨慎态度；即使设计理念吸引人，生态系统建设和可信度是巨大挑战
+• **物理线缆派**：倾向使用光纤HDMI线缆（15-20米）直连，认为可完全避免串流的延迟、编解码限制和网络问题。特别适合电视硬件解码能力弱、仅支持100Mbps网口的场景。需配合USB延长线解决控制器连接。
 
-• **技术实现问题**（Jtsummers, quotemstr）：同时提供go和spawn两种并发机制令人困惑，go继承了goroutine的弱点；使用循环收集器和引用计数会导致性能问题，忽视了30年的GC研究成果
-
-• **积极看法**（jeremyjh, IshKebab, samuell）：设计理念切中痛点，结合了多种语言优点；语言设计本身不错；赞赏采用M:N调度的轻量级线程
+• **HDMI-over-Ethernet方案**：使用专用扩展器通过CAT7网线传输HDMI信号，成本约50欧元，但受限于1080p@60fps。适合无法钻墙布线的租房场景，信号可绕行30-40米。
 
 补充讨论：
-- 发现代码示例错误（pantsforbirds指出Python示例使用set去重，Gossamer版本未实现）
-- 缺少REPL被认为是设计缺陷（throw10920）
-- 项目仅2个月历史，被认为是"vibe coded"（AI辅助生成）</div>
+
+Steam Machine的小型化设计获得认可，被认为是重要价值主张。光纤Thunderbolt线缆（20米）被提及用于高带宽需求。HDMI-CEC自动化控制是用户关注的便利性功能，部分通过Home Assistant等自动化方案解决。控制器无线范围（约44米视距）对某些方案构成限制。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48690231" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48648550" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -153,37 +151,266 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/DDecoene/WebBaseIII" target="_blank">Show HN: WebBase-III – dBASE III rebuilt in the browser with its own interpreter</a>
+                    <a href="https://healeycodes.com/a-tiny-compiler-for-data-parallel-kernels" target="_blank">A Tiny Compiler for Data-Parallel Kernels</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ddecoene</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 15</span> |
+                    <span>作者: healeycodes</span> |
+                    <span>评分: 36</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-25 13:32</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了作者构建的一个小型编译器（约180行Python代码），用于将普通循环代码转换为可并行执行的向量化代码。
+
+核心思想是将串行的`for`循环改写为`vector_for`循环，使多个迭代能同时执行。每个并行执行位置称为"lane"（通道）。编译器通过分析变量是"uniform"（所有lane共享同一值）还是"varying"（每个lane有不同值）来决定如何转换。例如，音频缩放中的音量参数是uniform，而数组索引是varying。
+
+转换后的代码使用`masked_load`和`masked_store`处理数组边界情况，确保当数据量不能被lane数整除时，多余的lane被屏蔽掉。这种转换为后续生成SIMD/SIMT指令奠定基础，理想情况下可将性能提升lane数的倍数。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于循环向量化和编译器优化技术的讨论
+
+不同观点：
+• **RossBencina的观点**：传统向量化算法（如Allen & Kennedy的方法）可以处理非平凡数据并行的循环，但向量化任意命令式代码很困难。建议从语言设计层面限制只允许可向量化的构造，例如用纯函数表达数据并行内核（类似shader程序的做法）。提供了phase累加循环的向量化示例。
+
+• **rapatel0的建议**：推荐参考Eigen库的实现思路，该库使用模板元编程来链接线性代数操作，使编译器能够优化内存布局和向量指令内核。但警告编译器输出会非常冗长（单个类型错误可能产生35页输出），不过在有LLM辅助的情况下问题不大。
+
+• **mgaunard的评论**：简短指出这本质上是一个迷你版的ISPC（Intel的隐式SPMD程序编译器）。
+
+补充讨论：核心分歧在于实现向量化的策略选择——是在编译器层面分析复杂依赖关系，还是在语言设计层面就限制表达能力以确保可向量化。讨论者们从不同技术栈（编译器算法、C++模板、专用并行语言）提供了参考方向。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48673115" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://scrollprize.org/firstscroll" target="_blank">An entire Herculaneum scroll has been read for the first time</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: verditelabs</span> |
+                    <span>评分: 1618</span> |
+                    <span>评论数: 65</span> |
+                    <span>发布时间: 2026-06-25 15:48</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>研究人员通过X射线扫描和机器学习技术，首次完整虚拟展开并通读了赫库兰尼姆古卷PHerc. 1667——一份自公元79年维苏威火山爆发后封存近2000年的碳化莎草纸卷轴。
+
+该卷轴保存了约22列希腊文，内容为一篇**斯多葛派伦理学论著**，涉及人性、冲动与道德进步，末列提及斯多葛哲学家克律西普斯的侄子兼弟子阿里斯托克瑞翁，年代可追溯至公元前2世纪。
+
+此外，研究还对另外两份卷轴取得突破：PHerc. Paris 4通过更高分辨率成像在三维X射线数据中直接呈现墨迹，独立验证了2023年的解读成果；PHerc. 139则成功识别出书名与作者——伊壁鸠鲁派哲学家菲洛德穆斯所著《论神》第八卷。
+
+这项成果标志着赫库兰尼姆古卷数字化解读从局部片段迈向完整通读的历史性跨越。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：维苏威卷轴破译项目的意义与展望
+
+不同观点：
+• **技术成就的震撼感**：多位评论者感叹这项技术的非凡性——用AI和现代成像技术读取2000年前被火山掩埋的炭化卷轴，堪比科幻。有人类比星际迷航，认为这正是人类文明的希望所在。
+
+• **历史跨度的哲学思考**：有人想象作者Aristocreon在公元前200年写作时，绝无法预见卷轴的命运——被火山毁又被保存，再由"沙与闪电造就的机器"重新读取。另有评论指出，该作者距离"破译其文字的技术诞生"的时间，比金字塔建造到该作者所处时代还要近，令人叹奇。
+
+• **未来潜力的期待**：Herculaneum遗址仅发掘了约20%，现有卷轴只是私人藏书，若发现完整图书馆，成百上千卷轴将可借此技术读取，令人极度期待。
+
+• **翻译与语言的局限性**：有评论质疑译文是否准确传递了原作者的语气——古人写的究竟是正式学术文章，还是类似现代社交媒体的随性表达？译者的偏见可能让一切都显得过于"学术化"。
+
+• **对当前科技生态的反思**：有人感慨，相比大量聪明人投身广告推送，此类项目提醒我们真正有意义的技术探索依然存在，只是声音较小。
+
+补充讨论：有人探讨如何让今日文字存留千年（用棉麻纸、碳墨、低温密封保存），并指出"写出值得保存的内容"才是最难的部分；另有人幽默地用2000年后的未来场景作类比，充满戏谑意味。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48675179" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://chatgptpro.substack.com/p/tyler-cowen" target="_blank">An "infovore" shares his chats</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: jger15</span> |
+                    <span>评分: 7</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-27 14:12</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48698481" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ngrok.com/blog/aol-was-down-1996" target="_blank">A human postmortem of the 1996 AOL outage</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: EndEntire</span> |
+                    <span>评分: 67</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-06-24 14:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于1996年AOL大规模宕机事件的回顾文章及其现实意义
+
+不同观点：
+• **怀旧支持派**：dobermanz和ThrowawayTestr表达正面情感，前者怀念90年代拨号上网的氛围，后者被文中Steve Schalchlin因及时获取艾滋病信息而改变命运的故事深深触动，认为这体现了互联网的重要价值
+
+• **技术考古派**：knuckleheads通过挖掘Usenet历史存档，展示当年用户对AOL的激烈批评（alt.aol-sucks讨论组）、Cisco设备的质疑、以及sendmail vs qmail的技术争论，认为用ChatGPT查询历史讨论是有趣的研究方法
+
+• **质疑实用性派**：stigz直接批评文章缺乏现实意义，指出尽管ngrok赞助此文是为探讨可靠性话题，但30年前的事故分析对现代技术并无实际帮助价值
+
+补充讨论：jyounker指出文章第一段的历史背景描述不准确（1996年尚无科技泡沫担忧和俄罗斯紧张局势）；nikau讽刺性地指出这篇讨论可靠性的博客本身出现了技术错误</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48660522" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://evmar.github.io/jjtut/" target="_blank">Evan's Jujutsu Tutorial</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: joecobb</span> |
+                    <span>评分: 61</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-26 21:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Jujutsu（简称jj）版本控制系统的教程网站。Jujutsu是一个既简单又强大的版本控制工具。文章作者Evan Martin是一位人类开发者，强调教程内容经过精心编写，没有AI生成的冗余内容。网站提供了学习jj的教程入口，并推荐了其他替代学习资源，包括Steve的会话式教程和Jujutsu官方文档中更详细的教程，供不同需求的用户选择。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于 jj (Jujutsu) 版本控制工具的初步评价和相关讨论
+
+不同观点：
+• dwenzek 被 jj 的宣传文档说服，决定尝试使用这个工具
+• atoav 已阅读多个 jj 教程，认为这个教程质量较高：结构清晰、少废话、适合 git 用户，但指出缺少 pull/push 工作流的内容
+• euroderf 提出了一个相关但不同的话题，询问另一个版本控制系统 pijul 的发展情况
+
+补充讨论：评论显示 jj 正在吸引来自 git 社区的关注，教程资源在增加，但文档覆盖度仍有待完善（如远程协作工作流）。同时也反映出开发者对 git 替代方案的持续兴趣。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48692083" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://om.co/2026/06/24/1966-2026/" target="_blank">Om Malik has died</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: minimaxir</span> |
+                    <span>评分: 1301</span> |
+                    <span>评论数: 107</span> |
+                    <span>发布时间: 2026-06-25 20:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是一篇悼念文章，宣布科技作家、摄影师和投资人Om Malik于2026年6月24日在斯坦福医院去世，此前他经历了长期的心脏健康问题。文章邀请人们在评论区或社交媒体上分享对他的追忆。评论区中，许多读者和科技界人士表达哀悼，称赞他多年来对科技行业的深刻洞察、优秀的写作、摄影才华以及对他人的慷慨帮助，认为他是科技新闻领域的先驱和导师，他的离世是巨大的损失。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：科技博客先驱Om Malik去世，人们缅怀他对科技journalism和个人职业生涯的深远影响
+
+不同观点：
+• **职业导师角色**：多位评论者（jmsflknr, mesibo）强调Om主动帮助陌生人，耐心指导职业发展，无私提携后辈，不求回报地开启机会之门
+• **journalism风格评价**：aanet赞赏其"brutally honest"的批判性报道（如揭露电信公司泡沫），bravura和russelldjimmy则强调其人性化、深度的写作风格，避免行业术语
+• **人格特质共识**：所有评论者一致认可Om的善良、真诚、无竞争心态；nikcub特别指出他从不卷入drama，是幕后调解者；anildash强调他坚持原则且不妥协道德标准
+• **个人健康关怀**：jeffiel分享的独特故事显示Om更关心创始人的健康而非仅关注商业新闻，体现其对"人"的关注超越职业角色
+
+补充讨论：
+多位评论者提到遗憾（gosuri后悔未及时见面，jmsflknr遗憾没机会再次交谈），最后一篇博文（"taking a few days off"）被反复提及，暗示Om可能预感身体不适。60岁的离世年龄被认为过早。整体氛围是对一位真正践行Valley精神（selflessly helping）的行业领袖的深切哀悼。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48678852" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://nerocam.com/scc_tap.asp" target="_blank">SCC Technical Assistance Program</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: luu</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 2</span> |
                     <span>发布时间: 2026-06-24 08:46</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>WebBase-III 是一个用现代 Web 技术重建的 dBASE III 系统。它在浏览器中提供完整的 dBASE III 体验：命令行终端、W3Script 解释器、BROWSE 数据网格、@ SAY GET 表单引擎、索引和查询功能。
-
-核心特性包括：用 TypeScript 编写的解释器、支持 .prg 程序文件、内置函数库、多用户 WebSocket 连接、SQLite 持久化存储。左侧助手栏提供可视化操作界面，每个操作都会生成对应的 W3Script 命令。
-
-项目可通过 GitHub Codespaces 一键试用，或本地运行 `npm install && npm run dev`。支持局域网访问，适合学习经典数据库语言或怀旧体验。</p>
+                    <p>这篇文章讲述了《Sport Compact Car》杂志推出的"技术援助计划"。一位读者因过度投资外观改装（大轮毂、车身套件、喷漆）而缺乏性能提升，面临与朋友的比赛。杂志团队在零预算限制下，通过四个步骤帮助提升性能：1) 测试基准数据；2) 换回15英寸轮毂减重52磅，提升0.3秒；3) 拆除内饰减重273磅，再提升0.5秒；4) 寻找免费动力提升方案。文章强调了减重和合理改装比单纯追求外观更能提升实际性能。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：WebBase-III项目（用现代技术重建dBASE III）引发的对80-90年代数据库开发工具的回顾与反思
+                    <div class="comments-summary">主要讨论点：关于防滚架（roll cage）必要性的讨论
 
 不同观点：
-• **怀旧与认可派**：多位开发者（nobleach, mtm_king, veggiepirate, psj, BubbleRings）表达了对dBASE/FoxPro/Clipper的美好回忆，认为当年用这些工具能快速高效地完成工作，是"一体化、完全集成"的开发体验
-• **技术复兴派**：部分人（jdswain, myth2018, mamcx）认为这类工具的理念值得重新审视，现代计算能力配合LLM辅助，可能带来新的开发方式；特别提到FoxPro允许用户自定义表单和报表的能力至今无法超越
-• **实用怀疑派**：nutifafa明确表示看不到实际用例，可能不适合自己的领域
-• **技术对比派**：nobleach提到当年从Harbour迁移到MySQL+Perl更痛苦，反思是否会对新技术栈产生同样的"玫瑰色滤镜"；shakna指出原始dBASE用汇编转C的自动化重写导致代码难以维护，与现在LLM重写有相似之处
+• **质疑派**：transitorykris 提出"谁需要防滚架？"的反问，暗示防滚架可能不是必需的或过度谨慎
 
-补充讨论：作者ddecoene详细说明了技术实现（TypeScript解释器、WebSocket、SQLite），强调这是"刻意的玩具项目"（AGPL协议），并提供了一键试用方式。多人期待FoxPro和Clipper的类似项目。</div>
+补充讨论：目前只有一条评论，缺乏其他观点形成对比。这可能是：
+- 对某个具体场景（赛车、越野车改装等）下安全配置的质疑
+- 讽刺性评论，暗示某种冒险或不负责任的态度
+- 针对成本效益的讨论开端
+
+**说明**：由于仅提供单条评论，无法识别多方观点的争论或讨论关系。如需完整分析，请提供更多相关评论内容。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48656986" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48656982" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -194,271 +421,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/neospe/autofit2" target="_blank">Show HN: Autofit2 – End-to-end pipeline for multilingual text classification</a>
+                    <a href="https://www.swiftlatex.com/" target="_blank">LaTeX.wasm: LaTeX Engines in Browsers</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: leschak</span> |
-                    <span>评分: 14</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-25 13:58</span>
+                    <span>作者: theanonymousone</span> |
+                    <span>评分: 104</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-23 20:04</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>**autofit2** 是一个基于 SetFit 和 SBERT 嵌入的少样本文本分类框架，具备以下核心特点：
+                    <p>**LaTeX.wasm** 是一个将 LaTeX 排版引擎（PdfTeX 和 XeTeX）编译为 WebAssembly、使其能在浏览器中运行的开源项目。
 
-- **少样本高精度**：仅需数十个标注样本即可达到 95–99% 的分类精度。
-- **多语言支持**：支持 20 种语言的预训练模型，评估语料覆盖 50+ 语言，可扩展至 100+ 种。
-- **全自动流水线**：通过单一 JSON 配置文件完成数据预处理、微调、评估和部署，支持断点续训。
-- **可复现性**：JSON 驱动配置，自动生成模型卡片并追踪 CO₂ 排放。
+主要特点：
+- 输出结果与 TexLive/MikTeX 完全一致
+- 运行速度仅比原生二进制慢约 2 倍
+- 支持通过 `<script>` 标签直接引入使用
+- 支持所见即所得（WYSIWYG）编辑
 
-配置文件定义任务、语言、基础模型及目标类型（`all` 生成完整制品，`custom` 自定义模型，`benchmark` 仅输出评分日志）。数据加载通过 loader 命令列表注入，支持灵活的训练/测试拆分逻辑。</p>
+使用流程简单：引入 JS 文件 → 初始化引擎 → 上传 .tex 文件 → 调用 `compileLaTeX()` 获取 PDF 二进制结果。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">您只提供了一条评论，我需要多条评论才能分析不同观点和讨论要点。
-
-目前这条评论的内容是：
-
-**评论者关注点：**
-• 询问某个工具与 SetFit 的区别，是否只是另一种实现
-• 分享了使用 HuggingFace 版本 SetFit 的正面经验
-• 强调其多语言分类效果好，用英文训练数据就能"免费"支持波兰语、德语等其他语言
-• 应用场景：意图匹配（intent matching）
-
-如果您能提供更多评论，我可以帮您分析不同观点之间的对比、争议焦点和讨论关系。请提供完整的评论列表。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48673527" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://animationobsessive.substack.com/p/pixars-believable-people" target="_blank">Pixar's Believable People</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: vinhnx</span> |
-                    <span>评分: 6</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-27 09:50</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48696734" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.agent-kits.com" target="_blank">AgentKits – 60 production-ready AI agent blueprints with guardrails</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: stoicstoic</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-26 21:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一个提供生产级AI Agent蓝图的平台，包含60个开源免费的Agent模板，覆盖30个类别。内容涵盖客户服务（支持、销售、营销）、工程数据（DevOps、代码审查、测试）、运营（财务、HR、法务）及垂直行业应用。每个蓝图提供完整的架构设计、系统提示词和工具配置，可在Claude、OpenAI、LangGraph等平台实现。特色是"防御性套件"，明确标注最坏情况和信任级别，确保Agent安全可控。用户可搜索、复制提示词或下载完整套件，无需登录，无平台锁定。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48692101" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nytimes.com/2026/06/25/technology/openai-ipo-artificial-intelligence.html" target="_blank">OpenAI leans toward waiting until next year for IPO</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mfiguiere</span> |
-                    <span>评分: 152</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2026-06-25 20:36</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：OpenAI推迟IPO的原因及其反映出的行业困境
+                    <div class="comments-summary">主要讨论点：将 LaTeX 引擎编译为 WASM 在浏览器中运行的可行性与价值
 
 不同观点：
-
-• **商业模式困境派**：OpenAI面临商业模式难题——消费级AI缺乏边际成本优势（每个用户都需GPU支出），广告电商模式尚未验证可行；同时开源模型快速进步威胁其市场地位
-
-• **估值泡沫派**：当前估值是"吹牛"，公司财务状况堪忧，推迟IPO是因为"账算不过来"，不如等待市场情绪改善（尽管信号显示情绪只会恶化）
-
-• **监管不确定派**：AI监管政策不明朗（如GPT-6能否向公众开放未知），且可能面临民粹主义政治反弹，难以给公司合理估值
-
-• **竞争策略派**：OpenAI想等Anthropic先崩盘成为"最后幸存者"，或等待更强模型（如Mythos级别）后再上市以获更高估值
-
-• **行业终结派**：认为OpenAI"完了"，开源模型和中国模型将快速追赶，最终市场会转向硬件方案（如英伟达+微软128GB设备）
-
-补充讨论：有评论讽刺SpaceX股价波动"早该预见"，暗示科技独角兽估值普遍虚高；部分人期待OpenAI上市后股价暴跌以"彻底终结Sam Altman时代"。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48678873" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://nsspot.herokuapp.com/imagetoaudio/" target="_blank">Show HN: Turn images into audio that can be decoded with a spectrogram</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jupr</span> |
-                    <span>评分: 7</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-24 19:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一个图像转音频和频谱图播放器应用。主要功能包括：
-
-1. **图像转音频**：将图片（jpg、png、gif等格式）转换为音频文件，可通过频谱图查看图像内容，实现隐秘传输。
-
-2. **频谱图播放器**：播放多种音视频文件（mp3、mp4等），并显示标准频谱图可视化。
-
-3. **输入来源**：支持本地电脑、Google Drive、摄像头和剪贴板导入。
-
-4. **参数设置**：可调整图像尺寸（700-1200px）、长度、频率（默认20000Hz）和密度等参数。
-
-频谱图是声音频率随时间变化的可视化表示，也称为声纹图。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于音频频谱图隐藏图像技术的应用和特点
-
-不同观点：
-• **娱乐/文化视角**：类比经典的"唱片倒放找隐藏信息"，认为这是一种更先进的在录音中隐藏图像的方式，具有趣味性和神秘感
-
-• **加密/隐写术应用**：认为这是一种实用的加密图片传输方法——将图像转换为音频后，一般人不会想到查看音频的频谱图，因此可用于隐蔽通信
-
-• **技术原理角度**：从专业角度指出这类似正交频分复用(OFDM)传真机的工作原理，将其与已知的通信技术进行类比
-
-补充讨论：有用户对网站的商业模式提出调侃——要求禁用广告拦截器才能免费使用，反映出对这类服务盈利方式的关注或不满</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48664556" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=48692474" target="_blank">The open source DOCX editor submitted to HN a few weeks ago has been deleted</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: gcanyon</span> |
-                    <span>评分: 91</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-06-26 21:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：一个开源项目（Patrick）突然下线，用户讨论项目状态、替代方案和可能的原因
-
-不同观点：
-• **项目仍可获取派**：原始代码仍在 GitHub 上以 Apache-2.0 许可存在，用户可以从 mhurhangee/patrick 仓库获取
-• **实验失败派**：推测开发者放弃了"实验"，引用 Show HN 评论区的预见性评论作为佐证
-• **访问权限问题派**：猜测开发者可能失去了某些资源的访问权限，提到最近这种情况很常见
+• **乐观派**：认为这项技术有潜力改变 Web 布局方式，LaTeX 可能在特定领域占据一席之地（jerf）；希望获得完整的 LaTeX 生态系统支持，特别是 LuaLaTeX（joshjob42、gs17）
+• **实用派**：希望用于离线环境，认为传统 LaTeX 安装过于臃肿且配置复杂（andai）
+• **怀疑派**：质疑浏览器打印功能已经退化，担心输出质量（hulitu）；讽刺 WASM 项目仍需安装且不跨平台，违背 WASM 初衷（casey2）
+• **技术问题反馈**：编辑器长期无法使用，可能因文档损坏风险被下线（williamstein）；格式文件缺失报错（stschaef）；Bibtex 需多次编译的困惑（christoff12）
 
 补充讨论：
-• 替代方案推荐：用户分享了 tinycld（使用 docx 作为后端存储，支持 YJS 多用户协作）和 superdoc 两个类似项目
-• AI 开发争议：有人联想到最近另一个声称用 AI 开发的项目被指控抄袭的事件，因为 Patrick 也提到使用了 AI
-• 用户影响：有团队已在测试环境中部署该项目，对突然下线表示失望，希望了解具体情况
-
-核心争议：项目下线的真实原因不明，是自愿放弃、资源问题还是其他因素尚无定论。</div>
+社区提到了相关项目 web2js 和 tectonic-wasm 作为替代方案；有用户询问为何没有 npm 包发布，反映出对易用性的关注。核心争议在于技术创新价值与实际可用性之间的差距。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48692474" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://twitter.com/ornith_/status/2070148887067963854" target="_blank">Ornith-1.0: A family of open-source LLMs specialized for agentic coding</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: jalopy</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-27 10:45</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Ornith-1.0是一个专门用于智能体编码的开源大语言模型家族，包含9B、31B、35B MoE和397B MoE四种规模。基于Gemma4和Qwen3.5进行后训练，采用创新的自我改进训练策略，通过强化学习同时优化任务脚手架和解决方案。在多个编码基准测试中表现优异，如SWE-Bench验证集达82.4分，Terminal-Bench 2.1达77.5分。所有模型采用MIT许可证，支持商业和研究用途。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">你好！我注意到你回复了"yes"，但我还没有收到需要分析的评论内容。
-
-请提供你想让我分析的评论文本，我将按照你之前提出的要求：
-- 识别不同观点立场
-- 保留重要论据和例子
-- 捕捉评论间的讨论关系
-- 指出争议焦点
-- 用中文总结（500字以内）
-- 分点列出观点
-
-请粘贴需要分析的评论内容。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48697068" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48650550" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
