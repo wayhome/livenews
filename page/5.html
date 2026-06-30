@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-07-01 03:28 (北京时间)
+            最后更新时间: 2026-07-01 06:08 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,43 +61,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://obsolescence.dev/pdp1-lisp-introduction.html" target="_blank">Exploring PDP-1 Lisp (1960)</a>
+                    <a href="https://marcin.juszkiewicz.com.pl/2026/06/26/the-end-of-the-aarch64-desktop-experiment/" target="_blank">The end of my AArch64 desktop experiment</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: ozymandiax</span> |
-                    <span>评分: 92</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-30 00:56</span>
+                    <span>作者: signa11</span> |
+                    <span>评分: 78</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-06-30 04:51</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了在DEC PDP-1计算机上运行Lisp编程语言的入门指南。
+                    <p>作者在使用 AArch64 桌面系统约11个月后决定结束实验。硬件配置为 Ampere Altra Q80-30（80核心3.0GHz）、128GB 内存、AMD Radeon RX6700XT 显卡等。
 
-**核心内容：**
-- **历史背景**：Lisp由John McCarthy于1958年开发，PDP-1版本由14岁的Peter Deutsch于1960年实现，首创了REPL交互式编程环境
-- **启动步骤**：设置Extend开关，加载lisp.rim磁带，配置内存地址(7750)和堆栈长度(400)，设置Sense Switch 5启用打字机输入
-- **基本操作**：通过空格键而非回车提交命令；地址开关需设为0004；输入`oblist`查看符号；使用`(plus 1 2)`等函数进行运算
-- **程序加载**：通过纸带输入加载函数库(如lisp-defs.pt)
+主要问题包括：
 
-文章强调这是极简化的Lisp实现，适合PDP-1的有限资源，并推荐了相关技术手册供深入学习。</p>
+1. **内核补丁维护负担**：Ampere Altra 的 PCIe 控制器存在 PCIE_65 缺陷，导致与 AMD GPU 不兼容，需要每周手动重新编译打补丁的内核。
+
+2. **性能不理想**：80核心并未带来理想的桌面性能。
+
+3. **AMD GPU 故障**：Linux 7.0 版本后出现视频解码失败、游戏崩溃等问题。
+
+4. **Nvidia GPU 兼容性问题**：更换为 Nvidia RTX 2060 后，FreeCAD 和 OrcaSlicer 等 Flatpak 应用因缺少 AArch64 架构的 Nvidia GL 支持而崩溃。
+
+最终因硬件兼容性和软件生态问题放弃了这次实验。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：PDP-1 Lisp的历史特性、实现者以及相关资源
+                    <div class="comments-summary">主要讨论点：使用ARM架构（特别是Ampere系统）作为日常Linux桌面的可行性及遇到的技术挑战
 
 不同观点：
-• **技术特性讨论**：DonaldFisk指出PDP-1 Lisp允许对原子执行CDR操作获取属性列表，这在Lisp 1.5和现代Lisp中是不合法的，体现了早期Lisp实现的独特性
-• **历史归属更正**：ozymandiax最初认为Peter Deutsch移植了Eliza到Lisp，后自我纠正指出实际是BBN的Bernie Cossell完成，并提供了源码链接
-• **尾递归必要性**：zombot对"递归是神圣的"这一说法提出条件限制，强调只有支持尾递归优化的语言才能真正发挥递归的优势
 
-补充讨论：
-• ozymandiax分享了PiDP-1模拟器项目，鼓励社区尝试并考虑将Eliza回溯移植到PDP-1
-• sourdecor寻求关于Lisp历史的书籍推荐，对《The Genius of Lisp》表示失望
-• 讨论涉及Peter Deutsch作为高中生在4K 18位字内存机器上的惊人成就，以及Python REPL概念的源头</div>
+• **性能瓶颈派**：认为问题核心在于单核性能不足。Ampere系统虽有80核，但单线程性能低，操作系统无法有效分配线程。对比Apple M系列成功的原因正是单核性能强劲，而非多核数量。目前80核对日常使用过度。
+
+• **技术问题可解决派**：质疑作者的技术方案，如为何需要每周重建内核、为何不回滚到可用版本、GPU解码超时可能是电源管理bug可通过内核参数解决、从源码编译缺失的包并不难、内核补丁终将合并到主线。
+
+• **实验价值肯定派**：认为这不是失败，而是有价值的探索。诚实记录问题比隐藏更重要，对科学文献有贡献。
+
+• **替代方案派**：建议使用Gentoo等源码发行版可能更适合这种场景，能更好管理内核补丁；有人提到DGX Spark作为ARM桌面表现良好；也有人表示ARM Debian桌面长期稳定使用无问题。
+
+• **Apple成功论**：指出ARM桌面实验在Apple M1上已成功，Apple Silicon已证明ARM桌面可行性。
+
+补充讨论：有人幽默指出ARM机器最终被用于交叉编译RISC-V包；Device Tree机制的复杂性；以及对AI工具辅助解决问题的探讨。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48727323" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48728599" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -108,13 +116,100 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://aeon.co/essays/who-are-the-fire-taming-healers-of-modern-france" target="_blank">Who are the fire-tamers?</a>
+                    <a href="https://opensourcelowtech.org/" target="_blank">Open Source Low Tech</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Caiero</span> |
-                    <span>评分: 27</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-28 17:49</span>
+                    <span>作者: grep_it</span> |
+                    <span>评分: 400</span> |
+                    <span>评论数: 22</span> |
+                    <span>发布时间: 2026-06-26 06:35</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Daniel Connell的开源技术项目。他设计并开发可用回收材料和简单工具制作的基础设施技术，包括风力涡轮机、太阳能炊具、火箭质量加热器、太阳能热水板和WiFi天线等。项目目标是让世界各地的人都能自主建造和维护基础设施，生产能源、食物、净水和通讯设备。所有设计完全开源免费，提供详细的制作教程。该项目无外部资金支持，完全依靠公众捐助维持运营。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于低技术、开源和适宜技术解决方案的价值和实践
+
+不同观点：
+• **支持本地化自给自足**：认为真正的帮助是教会贫困社区用本地材料制造和修理工具，而非依赖外部供给。强调授人以渔而非授人以鱼，发展中国家村庄中已有大量这类创新实践
+• **希望开源超越软件领域**：批评开源过度聚焦科技/软件，认为应该更多关注基本需求（如房屋、汽车、自行车），而非又一个容器集群协调方案
+• **质疑"低技术"的定义**：认为低技术与高技术的区别可能只是美学差异，如果设计不再看起来像"无政府原始主义者"设计的，是否还算低技术？
+• **强调技能保留的重要性**：用航母类比说明某些技能需要反复实践才能保持，不能完全外包给AI等工具，需要有意识地保留创造过程的核心部分
+
+补充讨论：
+多位评论者分享了相关资源和案例（Appropedia、Open Source Ecology、MIT D-Lab、Low-tech Magazine等），体现出社区对适宜技术和可持续设计的广泛兴趣。也有人提到制造和维修知识被刻意保密的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48683098" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://insurancedimes.com/2026/06/14/millions-of-american-homeowners-are-one-disaster-away-from-losing-everything/" target="_blank">American Homeowners Are One Disaster Away from Losing Everything</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: crookedroad44</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-06-30 18:38</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章揭示了美国房屋保险的严重不平等问题。约14.4%的美国房主（1220万户）没有购买房屋保险，但这一比例在不同群体间差异巨大：
+
+**种族差异**：原住民房主22%无保险，西班牙裔14%，黑人11%，而白人仅6%。
+
+**收入差异**：年收入低于5万美元的房主中15%无保险，贫困线以下者达22%；而高收入者（15万美元以上）仅3%无保险。
+
+**交叉影响**：低收入西班牙裔房主25%无保险，低收入黑人18%。
+
+**年龄因素**：除白人外，65岁以上老年房主的无保险率普遍更高。
+
+研究表明，经济能力是主要障碍，但种族因素也有影响，这使数百万家庭的最大资产完全暴露在风险之中。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">这个对话片段内容较少，讨论尚未充分展开。以下是目前的分析：
+
+**主要讨论点：** 加州地震保险的必要性及气候灾害保险的可行性
+
+**不同观点：**
+
+• **[shaftway] 质疑传统保险的观点**：认为在加州大地震发生时，由于影响范围广（可能波及三分之一加州人口），保险公司可能无力赔付而破产。提出用保费投注预测市场（polymarket）作为替代方案——地震不发生则损失保费（与买保险相同），地震发生则获得赔付。
+
+• **[AFF87] 关注气候风险与保险缺口**：引用资料指出，面临气候灾害风险最大的房主往往最缺乏保险保障。暗示保险公司可能正在回避这些高风险区域，这与第一位评论者的担忧形成呼应。
+
+**补充讨论：** 目前对话处于问题提出阶段，尚未有人提供"说服保留保险"的论据。两条评论实际上都在强化对传统保险体系应对大规模灾害能力的质疑。讨论可能需要进一步展开，涉及：保险公司的风险分散机制、再保险体系、政府灾害救助、预测市场的法律和实操问题等。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48737306" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.vincentschmalbach.com/claude-code-quietly-looks-5x-more-expensive/" target="_blank">Claude Code Just Got 5x More Expensive</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: vincent_s</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-06-30 21:03</span>
                 </div>
 
                 <div class="summary-section">
@@ -124,16 +219,9 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于民间疗法（特别是法国的"火焰驯服者"等传统治疗）的真实性和道德性
-
-不同观点：
-• **怀疑派**：认为这些疗法纯属伪科学，疣的消失是免疫系统自然作用，而非治疗师的功劳。批评这些做法是江湖骗术，利用病人的脆弱心理牟利
-• **温和理解派**：虽然不相信疗效，但认为这些疗法在心理层面提供了比传统医疗更人性化的体验。将其与水晶疗法、精油传销等同类现象相提并论，认为道德上差不多
-• **警惕派**：强调安慰剂效应的局限性，指出"反安慰剂效应"的存在。批评神秘疗法的常见逻辑：有效时归功于治疗师，无效时归咎于患者
-
-补充讨论：有评论者分享真实案例——严重烧伤患者即使妻子请来多位"火焰驯服者"，最终还是选择了吗啡止痛，以此证明民间疗法在严重病痛面前的无力。还有关于法语词汇"traiteur"在法国本土和路易斯安那法语中含义差异的文化观察（前者指餐饮服务商，后者指民间治疗师）。部分评论对刊登此类内容的出版物Aeon表示失望。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48709662" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48739168" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -144,43 +232,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://code.claude.com/docs/en/desktop-linux" target="_blank">Claude Desktop is now available on Linux (in beta)</a>
+                    <a href="https://www.youtube.com/watch?v=lHQ8c8i42VE" target="_blank">I'm building a Space Cadet Pinball Machine! [video]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: adocomplete</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-30 16:09</span>
+                    <span>作者: skibz</span> |
+                    <span>评分: 72</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-06-26 18:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了Claude桌面应用的Linux版本（测试阶段）。主要内容包括：
+                    <p>这是 YouTube 网站的页脚信息，包含：
 
-**系统要求**：Ubuntu 22.04+或Debian 12+，支持x86_64和arm64架构。
+- 公司信息链接（关于、新闻、版权、联系方式）
+- 用户相关（创作者、开发者）
+- 商业服务（广告）
+- 法律条款（服务条款、隐私政策、安全政策）
+- 产品信息（YouTube 运作方式、测试新功能、NFL Sunday Ticket）
+- 版权声明（© 2026 Google LLC）
 
-**安装方式**：推荐通过Anthropic的apt仓库安装，可自动更新；也可下载.deb包手动安装。
-
-**功能**：提供Chat、Cowork和Code功能，包括并行会话、可视化差异审查、集成终端和编辑器等。
-
-**限制**：暂不支持Computer Use（屏幕控制）、语音输入，以及Fedora/RHEL系统。Quick Entry快捷键在Wayland下需要桌面环境支持。
-
-更新通过系统包管理器进行，卸载使用apt remove命令。</p>
+这是标准的网站页脚导航和法律信息区域。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于"Cachy"的可用性和发布时间
+                    <div class="comments-summary">主要讨论点：关于复古技术和爱好的怀旧与实践
 
 不同观点：
-• rythmshifter 询问"Cachy"何时发布（"Cachy when"），表达对该项目/软件发布时间的关注
-• lrsjng 回应称其在Debian上已经可用（"available on Debian"），暗示Cachy可能已经发布或至少在Debian平台上可以获取
-• iamsyr 简单回应"yeah"，表示认同或确认前述信息
+• **纯粹主义观点**（orac81）：强调应该使用原装的蒸汽动力继电器和机械装置，认为保持原汁原味才有意义
+• **爱好疗愈观点**（metalman）：将非传统爱好（如在客厅造飞机）视为放松和自我实现的方式，认为做自己热爱的事才是"正常"的生活
+• **实用修复观点**（KingFelix）：注重实际动手修复老设备，即使外壳损坏但内部完好就值得修复，受他人启发而行动
+• **世代怀旧观点**（rmason）：分享业余无线电的黄金时代回忆，用幽默方式类比不同世代间的隔阂（老一辈排斥年轻人，如同现在Gen Z对待Boomer）
 
-补充讨论：
-这是一个非常简短的技术讨论，评论之间存在问答关系。第一条是提问，第二条是回答，第三条是确认。由于信息量有限，无法判断具体的争议点或更深入的技术细节。讨论焦点集中在软件可用性上，但缺乏关于Cachy具体功能、用途或其他技术细节的讨论。</div>
+补充讨论：评论整体氛围积极，展现了技术爱好者社区的相互鼓励。大家虽然关注点不同（原装保护 vs 实用主义 vs 生活方式选择），但都认同复古技术爱好的价值。rmason的代际玩笑也暗示了技术圈层的包容性问题在不同时代都存在。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48734754" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48689820" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -191,13 +278,94 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=48732627" target="_blank">Ask HN: Secure wrapper for coding agents?</a>
+                    <a href="https://quesma.com/blog/qwen-36-is-awesome/" target="_blank">Qwen 3.6 27B is the sweet spot for local development</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: rjzzleep</span> |
-                    <span>评分: 9</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-30 13:40</span>
+                    <span>作者: stared</span> |
+                    <span>评分: 1136</span> |
+                    <span>评论数: 116</span> |
+                    <span>发布时间: 2026-06-29 17:05</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了Qwen 3.6 27B模型在本地运行的优异表现。作者认为这是第一个真正具有通用智能的本地模型，尽管运行时会让电脑发热。文章通过创意写作、编程任务（如制作六边形扫雷游戏和落地页）等测试，展示了该模型的实用性。作者推荐使用llama.cpp运行模型，并提供了详细的配置方法，包括8-bit量化版本的使用。性能测试显示在M5芯片上可达到较快的推理速度，证明Qwen 3.6 27B适合作为本地开发的理想选择。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在本地运行大型语言模型（如 Qwen 3.6）进行 AI 辅助编程的硬件选择和成本效益
+
+不同观点：
+
+• **本地运行派**：认为本地运行有隐私优势和良好体验。部分用户在 M1/M3 Max（64GB）或 Framework AMD 笔记本上运行 Qwen 3.6 35B 量化版本，作为"第二双眼睛"和代码审查工具效果不错，虽然速度较慢但可接受
+
+• **云服务更优派**：强烈质疑本地运行的经济性。指出在 OpenRouter 上使用 DeepSeek V4 Flash 等云端模型便宜 10-20 倍，$10 美元可用很久，远低于高配硬件的成本和电费。认为为测试花费 $5000-$10000 不合理
+
+• **硬件方案分歧**：
+  - MacBook 批评者：128GB MBP（$6699-$10000）运行时过热噪音大，建议改用 Mac Mini M4 64GB 放远处通过网络连接，成本仅 1/3
+  - 替代方案支持者：推荐 Intel Arc Pro B50/B60/B70（$370-$1200，32GB VRAM）或双 3090 方案（$3k），认为性价比更高
+  - 统一内存警告：提醒统一内存设备（Mac、DGX Spark）运行密集模型较慢，独立 GPU 表现更好，建议运行稀疏 MoE 模型
+
+• **模型能力质疑**：有用户认为 Qwen 3.5/3.6 在处理现有代码库（特别是 C# 单体应用）时表现不如 Claude，零样本新项目容易但真实工作场景困难
+
+补充讨论：多数用户建议 64-96GB 内存是较平衡的配置；挪威政府正在评估 Qwen 3.6 用于开发者工具；部分用户认为 Gemma4 31B 被低估</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48721903" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://github.com/LinuxMD/linuxmd" target="_blank">Linux for the Sega MegaDrive</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: HardwareLust</span> |
+                    <span>评分: 198</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-29 15:01</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了一个将Linux移植到世嘉Megadrive游戏机上的项目LinuxMD。该项目使用最新的主流Linux内核，通过SD卡在现代存储外设上运行，可在原版硬件上工作。由于Megadrive的摩托罗拉68000处理器缺少内存管理单元(MMU)，因此使用-nommu选项编译内核。系统包含精简版的coreutils工具集smolutils。作者认为这个项目虽然不太实用，但展示了将游戏主机和内核推向极限的技术挑战，且这并非该游戏机上唯一的类Unix操作系统。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：在Sega Mega Drive（北美称Genesis）游戏机上运行Linux系统
+
+不同观点：
+• **怀旧派**：多位用户分享个人回忆，提到Mega Drive是他们的"成长游戏机"，保存至今的主机和游戏卡带仍能正常运行。有用户用HDMI适配器让老主机在新电视上使用，孩子们喜欢它"即时启动、无延迟、无广告"的特点
+• **技术惊叹派**：对在如此老旧硬件上运行Linux表示震惊和赞赏。有人原以为Linux必须要MMU（内存管理单元）才能运行，发现可以用-nommu选项编译。也有人好奇为何仅64KB RAM能运行，后得知实际使用了EverDrive卡带上的4MB内存
+• **技术探索派**：分享相关技术资源，如Motorola 68000架构文章、自制开发套件的35年前项目文档、QEMU模拟器分支等，体现对底层硬件的深入兴趣
+• **实用疑问派**：询问为何运行速度较慢（相比其他m68k工作站），以及能否在便携版Sega Nomad上启动
+
+补充讨论：有用户提醒美国读者Mega Drive即Genesis，还有人推荐经典游戏，整体氛围是"疯狂但精彩"的技术致敬项目</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48720186" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://longcat.chat/blog/longcat-2.0/" target="_blank">LongCat-2.0, a large-scale MoE model with 1.6T total and 48B Active</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: benjiro29</span> |
+                    <span>评分: 231</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-30 00:30</span>
                 </div>
 
                 <div class="summary-section">
@@ -207,191 +375,22 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何安全地隔离AI代理执行环境，防止其执行破坏性命令
+                    <div class="comments-summary">主要讨论点：中国公司美团推出的LongCat-2.0大模型及其技术实现
 
 不同观点：
-• **MacOS轻量级方案**（ca_tech）：推荐Agent Safehouse，基于macOS原生的sandbox-exec，维护良好且不锁定用户，可独立构建自定义规则
 
-• **微虚拟机方案**（sanju3026）：推荐Era，使用libkrun实现本地microVM隔离，专门解决"LLM幻觉生成破坏性bash命令"问题，开销小于完整虚拟机；同时提到Yolobox使用rootless Podman，两者都是积极维护的项目，区别于众多泛用包装器
+• **技术突破派**：认为使用华为Ascend 910C芯片（约5万片）完成训练是重要新闻，N-gram嵌入技术创新令人兴奋，证明AI ASIC替代Nvidia GPU的可行性，预示中国在AI硬件领域的突破
 
-• **容器方案**（aborsy/rohityin）：建议使用Docker，Docker已推出专门的沙箱功能
+• **性能质疑派**：实测认为模型表现一般，在核反应堆燃料选择等专业问题上给出错误答案，综合评价排在Gemini Flash和Qwen 3.7 Plus之后；有用户质疑模型真实性，称Huggingface无法下载且该公司"一贯造假"
+
+• **审查担忧派**：测试天安门广场相关问题时，首次提问即遭遇"请求过多"拦截，暗示存在内容审查机制
+
+• **规模争议派**：认为5万芯片规模相比OpenAI的百万级GPU"极其微小"，但可能复用了DeepSeek v4架构和权重，不需要太多算力
 
 补充讨论：
-评论展现了三种技术路线的权衡：OS原生沙箱（轻量但平台限定）、microVM（隔离性强且开销适中）、容器技术（成熟通用）。sanju3026特别强调了"切实解决问题"vs"通用包装器泛滥"的差异，暗示当前AI工具生态存在大量低质量项目。</div>
+模型体积过大（1.6T参数，400B激活）难以本地部署；有猜测这可能是OpenRouter上神秘免费模型owl-alpha的真身；部分用户遇到语言混乱问题（英文界面返回中文结果）；讨论延伸至AI芯片竞争格局和Nvidia垄断被打破的趋势。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48732627" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://letters.unchartedpathbreakthroughs.com/posts/why-problem-statements-arent-enough" target="_blank">Why problem statements aren't enough</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-26 01:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：科学家与咨询顾问在构建模型时的方法论差异
-
-不同观点：
-• **科学家的方法论**：采用严谨的迭代验证流程 - 构建模型后会推导其含义，检验观察结果是否与预期一致，若错误则修正或重建模型，正确后提交给同行验证。这是一个闭环的自我纠错过程。
-
-• **咨询顾问的方法论**：采用直接断言的方式 - 构建模型后直接告诉客户这就是正确答案，缺少验证、迭代和同行审查环节。暗示其缺乏科学严谨性。
-
-补充讨论：这个对比批判性地指出了两种职业在知识生产上的本质区别。科学家追求可验证的真理，强调方法的可重复性和结论的可证伪性；而咨询顾问更注重结论的说服力和实用性，可能牺牲了验证的严谨性。这反映了学术研究与商业咨询在目标、问责机制和知识标准上的根本差异。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48681499" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theguardian.com/us-news/2026/jun/29/supreme-court-geofence-warrants-case-decision" target="_blank">US Supreme Court rules geofence warrants require constitutional protections</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: cdrnsf</span> |
-                    <span>评分: 441</span> |
-                    <span>评论数: 23</span> |
-                    <span>发布时间: 2026-06-29 15:54</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国最高法院以6-3裁定，执法部门使用"地理围栏搜查令"获取智能手机位置数据构成第四修正案规定的搜查，需受宪法隐私保护。大法官卡根撰写多数意见指出，即使个人在公共场所，其手机位置记录也享有合理隐私期待。此案源于警方通过地理围栏搜查令追踪银行抢劫犯Chatrie，从Google获取其位置历史数据。法院认为这种大范围收集数据的做法属于搜查行为，驳回了政府关于短时间位置信息不构成搜查的论点。隐私倡导者认为此裁决限制了执法部门对位置数据的过度收集。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国最高法院裁定地理围栏搜查令（geofence warrant）违宪，引发关于隐私保护、执法权力边界和技术监控的讨论
-
-不同观点：
-• **支持裁决派**：认为这是隐私保护的重要胜利，搜查令应当极其具体并限制范围，而非像99%的情况那样被橡皮图章式批准；有人甚至因此使用GrapheneOS等隐私操作系统
-
-• **技术现实派**：指出即使没有地理围栏令，隐私泄露依然普遍存在——照片EXIF数据会暴露GPS坐标、Flock等产品无需搜查令即可获取数据、通过IP地址和酒店入住记录也能追踪定位（如Petraeus案例）
-
-• **对裁决细节的关注**：部分人注意到大法官投票组合不寻常，Alito和Thomas支持政府无限权力，Barrett加入少数派令人意外；有人赞赏判决书引用数据来源的严谨性
-
-• **Google的应对**：有评论指出Google已于去年取消集中式位置历史功能，改为设备本地存储，以规避此类搜查令
-
-补充讨论：有人认为当天另一项关于"单一行政权"理论的裁决（允许总统解雇FTC专员）更为重要，可能影响国会设立的独立机构的独立性。也有人关注此裁决对误判案件的影响——曾有人仅因恰好路过犯罪现场就被错误指控谋杀。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48720924" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.sqlite.org/howtocorrupt.html" target="_blank">How to corrupt an SQLite database file</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tosh</span> |
-                    <span>评分: 144</span> |
-                    <span>评论数: 10</span> |
-                    <span>发布时间: 2026-06-26 18:05</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>你没有提供完整的文章内容。这个页面是SQLite数据库损坏原因的技术文档，但在我收到的消息中被截断了。
-
-从目前可见的部分，文章主要讨论：
-
-**SQLite数据库损坏的主要原因：**
-
-1. **文件被覆盖** - 恶意线程/进程直接写入数据库文件，或在文件描述符关闭后继续使用
-2. **文件锁问题** - 锁实现缺失、跨线程取消锁、多个SQLite副本冲突等
-3. **同步失败** - 磁盘不执行同步请求或禁用PRAGMA同步
-4. **硬件故障** - 闪存控制器、假冒U盘等
-5. **内存损坏**
-6. **操作系统问题**
-7. **SQLite配置错误**
-8. **SQLite自身bug**
-
-文章强调SQLite虽然抗损坏能力强，但在某些场景下仍可能出问题。
-
-如需完整总结，请提供完整文章内容。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：SQLite数据库损坏的原因和可靠性问题
-
-不同观点：
-• **FTS5索引易损坏**：有用户指出FTS5全文搜索索引特别容易出问题，如果不完全理解文档就使用会导致静默损坏或模糊错误，不能把它当作黑盒扩展使用
-
-• **多SQLite实例冲突**：有开发者怀疑在同一Python进程中同时使用内置sqlite3和第三方apsw库访问数据库导致了损坏，印证了文档中"同一应用链接多个SQLite副本"的警告
-
-• **文件描述符复用缺陷**：针对文档中2013年Fossil仓库损坏案例（标准错误描述符被复用为数据库文件描述符，导致错误信息覆写数据库），有评论批评这是现代操作系统API设计的明显缺陷，认为stdin/out/err应该是保留描述符，或者干脆递增分配而不复用
-
-• **SQLite可靠性担忧**：刚用SQLite完成开源项目的开发者表达了紧张情绪，询问SQLite是否可靠。他唯一遇到的损坏是强制杀进程时发生的，认为这可以理解
-
-补充讨论：杀毒软件扫描也可能导致损坏场景；RAID存储会让损坏更高效（讽刺性评论）；文章时间是2022年1月，WASM环境下的情况在2022年中期OPFS出现后有所改变</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48689885" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://arxiv.org/abs/2606.22283" target="_blank">Apple Neural Engine: Architecture, Programming, and Performance</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Jimmc414</span> |
-                    <span>评分: 186</span> |
-                    <span>评论数: 7</span> |
-                    <span>发布时间: 2026-06-27 23:30</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这是一篇关于苹果神经引擎(ANE)的逆向工程研究论文，长达302页。作者通过直接测量和静态分析，揭示了ANE的架构、编程方式和性能特征。研究涵盖A11至A18以及M1至M5芯片系列，详细记录了数据通路、吞吐量、能耗上限、编译器、权重压缩方案、内核驱动和固件等技术细节。论文提供了绕过Core ML框架直接调用ANE的方法，但强调这仅用于研究和测量，生产环境仍应使用官方支持的Core ML接口。这是首份系统性的ANE技术参考文档。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Apple Neural Engine (ANE) 的实际应用效果和技术资源
-
-不同观点：
-
-• **实用派**：有开发者成功在iOS上用ANE加速文本转语音模型，认为比Android更简单；推荐ModernBERT在ANE上的实现（有完整代码），在分类任务中表现优秀
-
-• **怀疑派**：认为Neural Engine对LLM无用，架构不适配；质疑文章是AI生成内容（"slop"），希望找到更可靠的信息源
-
-• **技术补充**：指出文章未涵盖M5平台新发布的Neural Accelerators（相当于Tensor Cores），认为这是最重要的部分；推荐Apple Silicon发布时的逆向工程资源库
-
-补充讨论：争议焦点在于ANE的实际价值——支持者提供了具体成功案例（TTS、ModernBERT分类），而批评者认为其架构限制使其不适合LLM等主流应用。另有开发者发现扩散模型在ANE上运行困难，转而使用mlx-swift和iPhone GPU。社区对内容质量也有分歧，部分人质疑信息来源的可信度。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48702825" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48727116" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -450,36 +449,35 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://apnews.com/article/supreme-court-campaign-finance-party-spending-ohio-91e49ee112197ae1210a9abfa46986ed" target="_blank">Supreme Court strikes down limits on party spending in federal elections</a>
+                    <a href="https://www.reuters.com/world/crypto-firms-have-spent-189-million-so-far-2026-us-election-report-says-2026-06-30/" target="_blank">Crypto firms have spent $189M so far on 2026 US election, report says</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: khriss</span> |
-                    <span>评分: 34</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-06-30 15:34</span>
+                    <span>作者: tartoran</span> |
+                    <span>评分: 194</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-06-30 16:44</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>美国最高法院周二推翻了一项存在50多年的联邦选举法，取消了政党与国会及总统候选人协调支出的限额。这是继2010年"联合公民案"判决后，保守派大法官再次推翻国会对竞选资金的限制。该限额旨在防止大额捐赠者通过政党规避对候选人的个人捐款上限。共和党众议院和参议院竞选委员会于2022年在俄亥俄州提起诉讼，副总统万斯（时任参议员）等人参与。特朗普第二任期内，联邦选举委员会放弃为该法律辩护，转而支持推翻。自由派和保守派大法官在竞选资金限制问题上的分歧依然明显。</p>
+                    <p>无法获取文章内容</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：美国最高法院关于竞选财务监管的裁决及其政治影响
+                    <div class="comments-summary">主要讨论点：加密货币行业在美国选举中的巨额政治捐款及其对民主制度的影响
 
 不同观点：
-• **法律解读派**：引用最高法院判决（McCutcheon和Cruz案），强调法院明确限制了政府监管竞选财务的权力，仅允许针对"交换式腐败"（quid pro quo corruption）进行限制，而一般的影响力、接触权或感激之情不构成腐败，属于民主的核心特征。第一修正案要求在保护政治言论和压制言论之间选择时，应偏向保护。
 
-• **政治关注派**：质疑民主党政客是否呼吁最高法院改革，暗示对当前司法走向的政治关切，可能认为需要通过改革来应对法院的裁决方向。
+• **批评派**：认为这是民主倒退的标志。指出加密货币公司贡献了2026年选举企业捐款的三分之一以上（1.89亿美元），结合"公民联合案"判决和最高法院允许无限政治支出，富人阶层可以"购买政府"，美国正回到镀金时代。企业资金在选举中作用越来越大是反乌托邦的现实。
 
-• **激进派批评**：批评媒体将最高法院大法官称为"保守派"的说法，认为他们实际上是"激进派"，因为其裁决破坏先例、进行激进的政策变革，与真正的保守主义相悖。
+• **质疑派**：认为报道存在误导。指出最大捐赠者a16z是风投公司而非纯加密企业；Fairshake PAC本就是加密行业政治行动委员会，其捐款理所当然；该组织无意识形态倾向，只关心候选人是否支持加密货币；Leading the Future甚至是AI而非加密PAC。
 
-• **历史倒退派**：将此裁决视为拆除水门事件后改革的又一步骤，暗示这是系统性地削弱反腐败和竞选财务监管机制的趋势。
+• **相对化视角**：有人质疑这笔金额是多是少，希望与其他行业对比；有人认为"比银行业好不了多少"；也有人讽刺这只是"新手数字"。
 
-补充讨论：评论间未形成直接对话，但共同反映了对最高法院裁决的不同担忧角度——从法律条文解读到政治改革需求，再到对司法激进化和历史倒退的忧虑。</div>
+补充讨论：英国类似丑闻被提及作为对比（加密大佬给党派领袖500万英镑）；有人指出2026年2月加密货币未能通过"质量检验"，价值暴跌；还有人从非美国视角质疑依赖捐款的选举是否真正民主，以及某些完全禁止加密货币的国家可能是对的。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48734220" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48735376" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
