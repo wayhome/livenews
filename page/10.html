@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-07-01 15:03 (北京时间)
+            最后更新时间: 2026-07-01 19:51 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -57,6 +57,233 @@
             第 10/10 页，共 10 条
         </div>
 
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://fergusfinn.com/blog/what-happens-when-you-run-a-gpu-kernel/" target="_blank">What happens when you run a CUDA kernel?</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mezark</span> |
+                    <span>评分: 286</span> |
+                    <span>评论数: 12</span> |
+                    <span>发布时间: 2026-06-29 13:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章详细解析了CUDA kernel的执行过程。以一个简单的向量加法程序为例，文章追踪了从源代码编译到GPU执行的完整流程：
+
+**编译阶段**：nvcc编译器将CUDA代码分为主机代码和设备代码两部分。设备代码先由cicc编译成PTX（虚拟ISA），再由ptxas转换为SASS（实际机器码）。PTX使用无限虚拟寄存器，SASS则针对特定GPU架构优化。
+
+**执行流程**：程序通过CUDA驱动API分配GPU内存、传输数据、启动kernel。kernel启动涉及数百万条CPU指令、大量ioctl系统调用和内存映射的doorbell寄存器通信。GPU按照网格（grid）和线程块（block）组织线程，每个线程执行相同代码处理不同数据，最终将结果传回主机内存。
+
+文章深入展示了GPU编程的底层机制和编译优化过程。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于CUDA底层工作机制的技术文章引发的讨论
+
+不同观点：
+• **教学价值肯定派**：多位读者认为文章极具学习价值。kinow表示如果在HPC硕士课程前读到会很有帮助，特别是关于warp eligibility的部分。aberrahmane_b认为doorbell和QMD部分最有用，因为它连接了CUDA启动语法到GPU实际提交的过程，填补了大多数教程只讲到kernel/block/warp就停止的空白
+
+• **技术补充派**：一些开发者提供了额外的技术视角。saagarjha指出control codes比文章描述的更复杂，实际是表查找而非控制字中的位。einpoklum建议使用CUDA driver API而非runtime API可以获得更好的可见性，并推荐了相关代码示例和自己的封装库
+
+• **实用工具讨论**：fooblaster分享了NVIDIA官方文档链接，指出不需要读内核源码就能找到方法文档。mschuetz对比了CUDA与Vulkan的同步机制，赞赏CUDA隐式处理同步的设计
+
+补充讨论：orliesaurus提出kernel优化公司的商业前景问题；部分读者反映可读性问题（rampseeker看不懂vadd函数，b112遇到打印格式问题）</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48718863" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://rootly.com/blog/we-pay-engineers-to-cut-our-infra-bill" target="_blank">We pay engineers to cut our infra bill</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: backlit4034</span> |
+                    <span>评分: 20</span> |
+                    <span>评论数: 6</span> |
+                    <span>发布时间: 2026-07-01 05:02</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Rootly工程师通过优化ECR存储策略为公司节省了约4.4万美元/年，却只得到Slack点赞。这暴露了普遍问题：工程师常发现成本浪费，但成本优化被视为"额外工作"而非正式任务，缺乏激励。
+
+为此，Rootly推出"Save & Share"现金奖励计划：根据年化节省金额支付5%-12%的奖金（最低5000美元节省才有资格，个人年度上限5万美元）。涵盖AWS、SaaS等基础设施成本。
+
+关键机制：必须在实施前提交申请，锁定90天基线，部署后90天验证实际效果，由CTO和财务联合审核后发放。设置了防作弊规则：禁止事后索赔、12个月内不可重复申报同一项目、若引发严重事故或90天内回滚则取消奖励。
+
+首笔奖金追溯给了ECR优化案例，约3080美元。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于软件开发中成本优化激励机制的有效性及潜在问题
+
+不同观点：
+
+• **文化优先论**：认为成本优化和代码质量应该是团队文化的一部分，而非通过额外激励推动。例子显示只关注功能交付会导致技术债务累积、高bug率和员工流失。
+
+• **激励设计缺陷**：指出只奖励削减成本而不惩罚引入低效，会形成恶性循环 - 工程师可能故意制造问题再"优化"获取奖励，或者缺乏动力在初期就写出高效代码。
+
+• **团队协作vs个人竞争**：个人奖励可能导致工程师之间不信任和不合作，不愿分享想法或担心成果被窃取。建议采用利润分享制度促进团队协作。
+
+• **优先级矛盾**：这种激励实际上是在奖励工程师忽视管理优先级 - 功能开发有明确的截止日期和OKR，而成本优化没有，却给予金钱奖励。
+
+补充讨论：需要配套的事后分析机制，让引入问题的工程师解释原因，以防止草率开发行为。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48742449" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.cr.yp.to/20260630-risk.html" target="_blank">Understanding lattice risks: Many differences between marketing and reality</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: ledoge</span> |
+                    <span>评分: 15</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-06-30 21:29</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这是密码学家 Daniel J. Bernstein 的博客目录页面。文章涵盖后量子密码学、标准化进程、NSA/NIST政策分析等主题。主要关注点包括：NIST后量子密码竞赛中的安全性争议（特别是Kyber-512的安全级别计算问题）、IETF标准化过程中的利益冲突、混合加密方案的必要性、量子密钥分发(QKD)与后量子密码的对比，以及软件优化和安全实现等技术问题。作者对官方机构的决策提出质疑，强调独立安全分析的重要性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：后量子密码学（PQC）标准化中，是否应该采用混合方案（ECC+PQC）还是纯PQC方案
+
+不同观点：
+• **支持纯PQC方案**：Sophie Schmieg认为混合方案并非易事，将EC和PQ算法结合会增加复杂性，这种复杂性本身可能导致更多安全问题
+
+• **支持混合方案**：nneonneo主张采用ECC+PQC混合方案。理由包括：(1)椭圆曲线密码学已被广泛研究和理解；(2)PQC算法仍在发展中，新攻击不断出现；(3)PQC实现更难做到正确且存在侧信道攻击风险；(4)有人试图强推不够安全的纯PQC标准
+
+• **形式化验证的实践**：苹果和AWS等公司通过形式化验证来应对ML-KEM实现错误，已发布经过验证的实现，证明其功能正确性、内存安全性和抗侧信道攻击能力
+
+补充讨论：dgacmu指出这是密码学界更大争论的一部分，djb（Daniel J. Bernstein）似乎与许多优秀密码学家持不同立场，暗示这可能是学术界的观点分歧而非简单的技术问题</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48739467" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://ziglang.org/devlog/2026/#2026-06-26" target="_blank">Zig – SPIR-V Backend Progress</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Retro_Dev</span> |
+                    <span>评分: 93</span> |
+                    <span>评论数: 10</span> |
+                    <span>发布时间: 2026-06-25 22:03</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>您没有提供需要总结的文章内容。您发送的是Zig编程语言的开发日志（Devlog），包含两个技术更新：
+
+1. **SPIR-V后端进展**（6月26日）：新增`@SpirvType`内建函数支持GPU着色器类型，执行模式改为通过调用约定携带，支持多线程代码生成和`.spv`目标文件链接。行为测试通过率提升至49%。
+
+2. **`@bitCast`语义改进和LLVM后端优化**（6月25日）：改进LLVM后端对任意位宽整数类型的处理，涉及语言提案的实现。
+
+如果您想让我总结其他文章，请提供具体内容。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Zig语言在GPU/着色器编程方向的发展及其语言定位
+
+不同观点：
+• **技术可行性存疑派（mccoyb）**：认为用Zig编写GPU内核存在根本性挑战。GPU编程需要特殊的内存空间、指针语义和优化管道（如Triton、XLA），这些与CPU编程差异巨大。质疑是否要将GPU编译管道集成到Zig编译器中，或者应该用comptime构建独立的DSL和编译器。
+
+• **乐观支持派（Gerharddc）**：期待Zig能用于严肃的着色器开发工作。
+
+• **设计质疑派（PunchyHamster）**：认为将图形相关类型作为内置功能显得奇怪，暗示这不符合语言设计原则。
+
+• **语言价值困惑派（laszlojamf）**：喜欢Zig的治理和文化，但不理解语言本身的核心价值。觉得它像"手动分配的Go"或"只有命令式的Rust"，缺乏让人选择它而非其他语言的关键特性。
+
+• **工具链批评派（sylware）**：对使用LLVM表示失望，直接表示放弃。
+
+补充讨论：weitzj提出有趣的架构思考，建议Zig在"自带分配器"和"自带IO"基础上，进一步引入类似Go Context的机制，将NUMA架构的跨核延迟、远程调用等概念融入函数接口。fuzztester和LegNeato分别提及D语言和Rust的SPIR-V后端作为参考。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48679809" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.torproject.org/arti_2_5_0_released/" target="_blank">Tor’s Arti 2.5.0 Released: Stable Counter Galois Onion</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: iamnothere</span> |
+                    <span>评分: 9</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-07-01 00:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Arti 2.5.0 版本发布。Arti 是用 Rust 开发的下一代 Tor 实现。
+
+**主要更新：**
+
+- Counter Galois Onion 功能已稳定，包含在完整特性构建中
+- 拥塞控制（Congestion Control）默认启用，无需额外配置即可提升整体速度
+- 修复两个中等严重程度的 DoS 安全漏洞（TROVE-2026-024 和 TROVE-2026-027）
+- 持续开发中继节点和目录授权功能
+- 最低 Rust 版本要求提升至 1.91（2025年10月发布）
+- 包含多项代码优化、bug 修复和改进
+
+感谢所有贡献者和赞助商对 Arti 开发的支持。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">您好！我注意到您只提供了一条评论：
+
+**[smalltorch]**: "Can everyone start making Arti apps already and leave the current web as we know it in the dust?"
+
+要完成您要求的分析（识别不同观点、论据对比、讨论关系、争议焦点等），我需要多条评论或一个完整的讨论串。
+
+请提供：
+- 完整的评论列表或讨论帖子
+- 或者您想让我分析的具体话题下的多条回复
+
+这样我才能按照您的要求总结出不同的观点立场和讨论要点。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48740960" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <div class="card story-card">
             <div class="card-body">
@@ -101,164 +328,42 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://archive.org/details/colby1968-computer-aided-language-development-in-non-speaking-children" target="_blank">Computer-Aided Language Development in Nonspeaking Children (1968) [pdf]</a>
+                    <a href="https://humphri.es/blog/WATaBoy/" target="_blank">WATaBoy: JIT-Ing Game Boy Instructions to WASM Beats a Native Interpreter</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: dang</span> |
-                    <span>评分: 33</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-06-28 18:59</span>
+                    <span>作者: energeticbark</span> |
+                    <span>评分: 225</span> |
+                    <span>评论数: 13</span> |
+                    <span>发布时间: 2026-06-29 15:02</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>你没有提供需要总结的文章内容。你分享的是一个 Archive.org 网页的元数据，包含了一篇 1968 年发表在《普通精神病学档案》上的论文信息。
+                    <p>这篇文章介绍了一种绕过iOS JIT限制的创新方法。由于iOS禁止直接JIT编译（导致Dolphin等模拟器无法运行），作者提出利用Safari浏览器的例外：将模拟器代码编译成WebAssembly字节码，再由浏览器的JS引擎编译成本地机器码。
 
-这篇论文的主题是：使用计算机辅助技术帮助无语言能力儿童（包括自闭症儿童）进行语言发展训练。论文发表于 1968 年，作者是 Colby，属于早期探索辅助沟通技术在特殊儿童教育中应用的研究。
+作者开发了Game Boy模拟器WATaBoy作为概念验证，对比解释器和"JIT-to-Wasm"的性能。通过预测中断时机、必要时回退到解释器、延迟评估MMIO组件等技术，即使是Game Boy这样简单的系统也能从JIT获益。
 
-如果你想让我总结这篇论文的具体内容，需要提供论文的正文或 PDF 文件。你可以从该页面下载 PDF 后分享给我。</p>
+文章重点讲解了在Rust中生成Wasm字节码和后期链接的实现细节，使用wasm-encoder库而非常规的wasm-bindgen工具，以便更底层地控制Wasm生成过程。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：使用AI辅助自闭症非语言儿童沟通的工具分享
-
-不同观点：
-• **工具开发者观点（se4u）**：通过与专业治疗师合作开发tejutalks.com，使用OpenAI模型帮助3级自闭症非语言儿童表达。实践验证显示约10名儿童在3个月使用中取得成效，帮助他们展示了超出语言能力的认知水平。技术上从本地MLX推理起步，后转向OpenAI模型。
-
-• **支持者观点（quicon）**：认同这是大语言模型真正有用的应用领域，指出学术界已有关于生成式AI用于辅助沟通的研究文献支持。
-
-补充讨论：评论展现了AI在特殊教育和无障碍沟通领域的实际应用价值。开发者强调了与专业人员（言语治疗师和职业治疗师）合作的重要性，确保工具的专业性和实用性。这不是纯粹的技术讨论，而是关注AI如何解决真实的社会需求和改善特殊儿童生活质量的案例分享。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48710350" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://ethanplant.ca/writing/bill-c-34/" target="_blank">Bill C-34 Answers Child Safety with Identity Infrastructure</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ethanplant</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-06-30 20:34</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章批评加拿大的C-34法案（《安全社交媒体法》）。作者认为该法案虽然正确识别了保护儿童上网安全的问题，但其最低年龄规定（第27-29条）可能将儿童保护演变成对普通互联网访问的年龄验证基础设施。
-
-主要问题是：法案将多个议题（平台问责、儿童安全、年龄验证、AI聊天机器人等）混在一起，使其难以审查。作者担心这会要求加拿大人在参与在线公共空间前必须通过年龄验证系统，实质上是对公共话语的准入控制。作者认为这种重大变革应由议会明确辩论，而非交由未来的法规和委员会指导来决定。
-
-文章强调：保护儿童是正确的，但实施方式不应威胁所有人的在线参与自由。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：未成年人网络保护中，隐私保护与监管责任之间的矛盾
-
-不同观点：
-• 必须在两种方案中二选一：要么实施年龄验证（牺牲隐私），要么让家长承担子女网络安全的法律责任
-
-• 仅依靠家长自觉监管子女的想法不现实，认为这种期待是"荒谬的"
-
-• 强调需要通过改变激励机制来推动家长和组织的行为改变，而非寄希望于自发的行为转变
-
-补充讨论：该评论提出了一个二元选择的框架，认为在缺乏有效激励机制的情况下，单纯期待家长主动履行监护责任是不切实际的。这反映了对当前未成年人网络保护政策的务实态度，主张通过制度设计（法律责任或技术手段）来解决问题，而非依赖道德自觉。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48738810" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.nbcnews.com/business/business-news/commerce-department-gives-green-light-anthropic-bring-back-fable-5-rcna352501" target="_blank">Commerce Department gives green light for Anthropic to bring back Fable 5</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: rw2</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-07-01 04:41</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>美国AI公司Anthropic的强大AI模型Fable 5将于周三恢复公众访问。该模型于6月12日因潜在网络安全风险被商务部要求下线，与其姐妹模型Mythos 5一同被禁用。
-
-商务部长Howard Lutnick在周二致函Anthropic，表示公司在过去两周与政府密切合作，解决了模型相关的安全问题。Anthropic同意在未来模型发布时继续遵循协议和标准，并向美国政府报告任何恶意活动。
-
-此次事件反映了美国政府对AI监管的快速演变。政府最初担心用户可能绕过Fable 5的安全防护措施，但经过协商，认可了公司的合作态度。业界领袖曾担心这种临时禁令会威胁美国在AI领域对中国的领先地位。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">我注意到您提供了一个 Hacker News 讨论帖的链接引用，但没有提供具体的评论内容。
-
-要完成评论分析任务，我需要您提供实际的评论文本。您可以：
-
-1. **复制粘贴评论内容** - 直接将需要分析的评论文本粘贴给我
-2. **使用网页抓取** - 如果需要，我可以尝试帮助您获取该页面的内容（需要使用相应工具）
-
-请问您希望：
-- 提供具体的评论文本让我分析？
-- 还是需要我尝试获取该讨论页面的内容？</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48742322" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://htmx.org/essays/working-with-ai/" target="_blank">Working With AI: A concrete example</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: comma_at</span> |
-                    <span>评分: 165</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-06-29 14:53</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>作者Carson Gross分享了一个使用AI辅助维护hyperscript解析器的具体案例。用户报告了0.9.91版本的回归bug，`fetch`命令中的`as JSON`绑定错误。AI(Claude)快速帮助定位了问题根源：重构时意外扩展了语法，导致`as`关键字被表达式消费而非作为`fetch`修饰符。但AI提出的修复方案都不理想：第一个方案过于针对特定bug；第二个方案虽更好但引入了不必要的复杂性(上下文敏感的noConversions标志)。这展示了AI的优势(快速定位问题)和局限性(提出的解决方案欠佳)，印证了作者提出的"魔法师学徒问题"——开发者需要深刻理解系统才能正确解决问题，不能过度依赖AI。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：AI（特别是LLM）在软件开发中的能力边界，以及技术债务问题
+                    <div class="comments-summary">主要讨论点：使用WebAssembly实现Game Boy模拟器JIT编译，特别是在iOS平台上绕过苹果JIT限制的技术方案
 
 不同观点：
 
-• **AI设计能力的局限性**（jdlshore, deimos_28）：AI擅长分析和生成样板代码，但缺乏批判性思维和整体设计能力。它没有世界模型，无法像人类那样形成系统的心智模型，导致快速生产大量代码但积累技术债务。这可能是LLM的根本性限制。
+• **创新方案支持者**：认为通过WebKit的JIT例外规则来实现游戏模拟器JIT是巧妙的解决方案（bawolff），这个本科生项目非常出色（dag100）。有人16年前用类似方法做过实验，认为很有趣（jcmfernantes）
 
-• **测试设计的不足**（thorum）：Claude虽然能创建测试，但如果真正擅长设计智能测试，本可以提前避免那些被拒绝的错误方案（如过于具体的修复方案和阻止合法用例的方案）。
+• **性能质疑者**：有人指出原生编码模拟器在老硬件（166MHz Pentium）上比这个方案更快（lightedman），JavaScript方案在老硬件上不实用（iberator）。但也有技术分析指出WASM开销约20%远低于传统解释器的1000%开销（ahartmetz）
 
-• **技术细节缺失的质疑**（wiremine）：文章缺少关键信息（使用的Claude模型版本、工具和提示方法），这些细节对评估AI表现至关重要，否则就像"用卷尺来拔钉子然后抱怨卷尺不好用"。
-
-• **认知能力不会退化**（waffletower）：反对"AI使智力退化"的说法。从个人经验看，大脑具有可塑性，技能是"需要时就能用"而非"不用就失去"，AI的使用不会造成认知损害。
+• **技术批评者**：认为作者的基本假设错误，已经存在其他iOS上的JIT解决方案如StikDebug（jhatemyjob）
 
 补充讨论：
-• 技术债务呈指数级增长的观点值得深入探讨（Michelangelo11）
-• htmx新网站使用Tailwind和Astro的讽刺性（varun_ch）
-• AI+htmx的实际应用效果存疑（zuzululu反馈效果不佳转回React）</div>
+• 浏览器性能差异：Firefox比Chrome/Safari慢25%，原因未明
+• 技术延伸：有人询问苹果是否会允许原生应用直接运行WASM；有人希望看到iOS上原生解释器与WASM方案的性能对比
+• 有趣的技术概念："JIT-in-JIT"（JiJIT）的双层编译架构</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48720064" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48720190" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -310,111 +415,51 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://lcamtuf.substack.com/p/all-logic-no-bite" target="_blank">All Logic, No Bite</a>
+                    <a href="https://htmx.org/essays/working-with-ai/" target="_blank">Working With AI: A concrete example</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: surprisetalk</span> |
-                    <span>评分: 36</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-27 06:00</span>
+                    <span>作者: comma_at</span> |
+                    <span>评分: 190</span> |
+                    <span>评论数: 16</span> |
+                    <span>发布时间: 2026-06-29 14:53</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这篇文章通过一个hyperscript解析器的具体bug案例，展示了AI在软件开发中的优势与局限性。
+
+**主要内容：**
+
+作者在维护hyperscript时遇到一个解析回归问题。AI（Claude）快速帮助定位了问题根源：重构时意外扩展了`fetch`命令后的语法，导致`as`关键字被错误解析为表达式转换而非命令修饰符。
+
+然而在修复阶段，AI提出的方案存在明显缺陷：
+1. 第一个方案过于针对特定case，缺乏通用性
+2. 第二个方案虽然可行但引入了不必要的复杂性
+
+**核心观点：** AI擅长快速分析和定位问题，但在设计解决方案时容易产生局限性。开发者必须保持独立判断力，避免陷入"魔法师学徒"困境——过度依赖AI而失去深入理解和解决问题的能力。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：数学教育中形式逻辑和集合论的教学方法
+                    <div class="comments-summary">**主要讨论点：** AI辅助编程的能力边界、设计能力的局限性，以及由此产生的技术债务问题
 
-不同观点：
-• **需要形式化公理系统的学习者**：Diogenesian反对"只是玩别人游戏"的现代学术实践，认为Munkres拓扑学和Dummit & Foote抽象代数等教材只给出本体论/科学性的直觉解释，却不明确ZFC的精确规则。他必须先学习数学逻辑的形式化书籍才真正理解点集拓扑，认为自己的困惑源于缺乏明确的公理和形式语言。
+**不同观点：**
 
-• **支持半朴素集合论的主流方法**：Diogenesian承认标准的直觉式半朴素集合论对大多数数学学生是正确的教学方法，但他个人需要看到公理和形式语言才能理解。
+• **AI设计能力悲观派（jdlshore, deimos_28）**：认为LLM缺乏世界模型和批判性思维，无法进行整体性设计考量，只会快速跳到解决方案而非深入思考架构；这是结构性缺陷，会导致大量技术债务
 
-• **关于高中形式逻辑教育的争议**：Jtsummers质疑"高中不教形式逻辑"的说法，指出在美国，上世纪高中几何课程中形式逻辑是关键部分，虽然深度不及大学数学或哲学专业课程，但确实教授形式逻辑。
+• **测试驱动改进派（thorum）**：指出问题不在AI本身，而在于测试设计不足——如果AI能提前规划充分的测试用例，很多错误方案本可避免
 
-补充讨论：Joker_vD提供了一个逻辑等价的例子（条件句与析取句的转换），但未明确表达立场，可能是对形式逻辑教学的实例补充。</div>
+• **方法论质疑派（wiremine）**：认为批评缺少关键上下文（具体模型、工具链、提示策略），没有这些细节就评判AI能力不够公平，就像"用卷尺拔钉子然后抱怨卷尺不好用"
+
+• **认知影响乐观派（waffletower）**：用职业转型经验反驳"AI让人变笨"的担忧，强调大脑可塑性，认为"需要时就能重新掌握"而非"用进废退"
+
+• **实践效果派（zuzululu）**：从实战角度表示尝试LLM+htmx效果不佳，最终回归React
+
+**补充讨论：**
+
+Michelangelo11深入阐述技术债务指数增长的机制：在有债务的代码上构建新功能会产生新债务，因为抽象如拼图片相互依赖，无法单独替换；Varun_ch指出htmx新官网使用复杂工具栈与其简单理念形成讽刺</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48695585" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://geodataviewer.com/" target="_blank">Show HN: Free Online GIS Viewer and Format Converter</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: twainyoung</span> |
-                    <span>评分: 3</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-06-30 23:35</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>GeoDataViewer 是一个免费的在线 GIS 查看器和格式转换工具，主要特点包括：
-
-**核心优势：**
-- 100%本地处理：使用 WebAssembly 技术在浏览器中运行，数据不上传服务器，完全安全
-- 格式支持广泛：支持20+种地理空间格式，包括 Shapefile、GeoJSON、KML、GPX、DXF、DWG、GeoPackage 等
-- 无需安装：直接在浏览器中使用，跨平台兼容
-
-**使用流程：**
-1. 拖放文件到浏览器
-2. 在交互式地图上查看和分析数据
-3. 转换并导出为其他格式（支持340+种转换路径）
-
-**定位：** 面向 GIS 专业人员和数据分析师的快速查看工具，适合文件预览和格式转换，但不替代 QGIS/ArcGIS 等专业桌面软件。完全免费，无需注册。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48740637" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://letters.unchartedpathbreakthroughs.com/posts/why-problem-statements-arent-enough" target="_blank">Why problem statements aren't enough</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: mooreds</span> |
-                    <span>评分: 31</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-26 01:57</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：科学家与咨询顾问在构建模型时的方法论差异
-
-不同观点：
-• **科学家的方法论**：采用严谨的迭代验证流程 - 构建模型后会推导其含义，检验观察结果是否与预期一致，若错误则修正或重建模型，正确后提交给同行验证。这是一个闭环的自我纠错过程。
-
-• **咨询顾问的方法论**：采用直接断言的方式 - 构建模型后直接告诉客户这就是正确答案，缺少验证、迭代和同行审查环节。暗示其缺乏科学严谨性。
-
-补充讨论：这个对比批判性地指出了两种职业在知识生产上的本质区别。科学家追求可验证的真理，强调方法的可重复性和结论的可证伪性；而咨询顾问更注重结论的说服力和实用性，可能牺牲了验证的严谨性。这反映了学术研究与商业咨询在目标、问责机制和知识标准上的根本差异。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48681499" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48720064" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
