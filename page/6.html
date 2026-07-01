@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-07-02 01:07 (北京时间)
+            最后更新时间: 2026-07-02 03:29 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,13 +61,52 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://ai.meta.com/blog/brain2qwerty-brain-ai-human-communication/?_fb_noscript=1" target="_blank">From brain waves to words: a new path to communication without surgery</a>
+                    <a href="https://maskray.me/blog/2026-06-27-a-deep-dive-into-smallvector-push-back" target="_blank">A deep dive into SmallVector:push_back</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: alok-g</span> |
-                    <span>评分: 169</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-06-30 21:29</span>
+                    <span>作者: mariuz</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 4</span> |
+                    <span>发布时间: 2026-06-29 16:30</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>文章介绍 LLVM `SmallVector::push_back` 对近似平凡可拷贝类型的优化：将扩容后的插入慢路径拆到 `noinline` 函数并尾调用，避免快路径保存寄存器和栈帧，使汇编从14条降至7条。结果 lld 文本段缩小约40KB，LLVM 编译指令数减少约0.4%–0.5%，但慢路径和少数二进制体积略增。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：编译器优化的局限性与vector容器的性能优化策略
+
+不同观点：
+
+• **抽象泄漏观点**（someonebaggy）：编译器虽然优秀但仍是有漏洞的抽象层，开发者有时需要深入理解底层实现才能写出高效代码
+
+• **批量优化策略**（im3w1l）：虽然单个位置调用reserve收益很小，但如果在整个代码库中系统性地优化（如将循环中的多次push_back优化为单次分配+memcopy），累积效果可能显著。认为编译器应该能识别这种模式并自动优化
+
+• **编译器缺陷批评**（dzaima）：gcc和clang的shrink-wrapping实现较差，尤其是clang。认为将代码合理推入慢路径或高寄存器压力区域能带来通用性能提升。同时指出C++缺乏足够的别名信息，限制了编译器的优化能力
+
+补充讨论：dzaima还针对具体实现提出技术建议——在非x86架构上，push实现应复用容量检查时已读取的size值，避免重复读取，但当前C++的语言特性阻碍了编译器自动完成此类优化。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48721345" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.reuters.com/legal/government/meta-loses-bid-dismiss-us-states-claims-that-facebook-instagram-addict-children-2026-06-30/" target="_blank">Meta loses bid to dismiss US states' claims that FB, Instagram addict children</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: tartoran</span> |
+                    <span>评分: 136</span> |
+                    <span>评论数: 9</span> |
+                    <span>发布时间: 2026-07-01 15:40</span>
                 </div>
 
                 <div class="summary-section">
@@ -77,21 +116,23 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Meta发布的脑电波解码技术论文，利用AI从脑电信号推断文字内容
+                    <div class="comments-summary">**主要讨论点：**社交媒体平台（特别是Facebook）对用户尤其是青少年的负面影响，以及应对措施的争议
 
-不同观点：
+**不同观点：**
 
-• **技术评价派**：认为这是对现有技术的渐进改进而非革命性突破，但赞赏开源数据集和代码；有人期待更多数据能带来类似GPT的突破性进展；也有人探讨结合LLM分析EEG数据或多模态融合提升性能
+• **监管干预派**：认为需要通过法律和判例保护儿童，反对行业自我监管；支持年龄验证等政府措施，认为这类诉讼案件揭示了监管必要性
 
-• **隐私担忧派**：强烈警告"神经追踪"的隐私风险，担心从便捷登录演变为强制性神经扫描；引用反乌托邦影视作品中用脑机接口审讯员工、操控思维的场景，认为技术滥用风险正在成为现实
+• **经济手段派**：提出"用户时长税"方案，认为应通过税收直接打击平台的成瘾盈利模式，使其不再从用户沉迷中获利
 
-• **应用乐观派**：看好人机交互界面的未来发展，认为Meta在AR/VR、智能眼镜到脑机接口上持续创新值得肯定；提及机器人控制等实际应用场景
+• **个人责任派**：批评司法系统和诉讼，指出Facebook已有13岁以下禁令和16岁限制，认为问题根源在于用户缺乏个人责任感，政府只是想要赔偿金
 
-• **技术质疑派**：质疑大脑思考是概念而非文字，能否真正解码？为何没有现场演示？设备体积过大等实用性问题
+• **悲观放弃派**：认为大规模社会问题无解，政府只会推出身份验证等表面措施，预言"互联网已死"，建议回归传统生活方式
 
-补充讨论：有人注意到这与2017年Facebook F8展示的技术有关联；也有人提出反向应用可能性（文字转脑电波实现远程"读心"）</div>
+• **阴谋论视角**：将社交媒体与CIA的MKULTRA心理控制实验联系，认为这些平台在全球范围部署类似的操纵技术
+
+**补充讨论：**有评论详细分析了Facebook的成瘾机制设计（随机算法、垃圾邮件轰炸、"可能认识的人"等心理操纵手段）；也有人从科技从业者角度质疑行业道德，感叹科技对日常生活的负面影响越来越大。争议焦点在于责任归属和解决路径的选择。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48739466" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48748679" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -102,42 +143,29 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://hatari.frama.io/hatari/online/hatari.html" target="_blank">Hatari – Online Atari ST/STE/TT/Falcon Emulator</a>
+                    <a href="https://www.thefunsinthefight.com/p/welcome-to-the-dual-state-of-ai-regulation" target="_blank">Welcome to the Dual State of AI Regulation</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: gregsadetsky</span> |
-                    <span>评分: 81</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-06-30 22:34</span>
+                    <span>作者: m-hodges</span> |
+                    <span>评分: 8</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-07-01 15:26</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>你没有提供具体的文章内容。你发送的文本看起来是 Hatari（Atari 模拟器）的界面元素，包含下载、调整画布和锁定/隐藏鼠标指针等功能选项。
+                    <p>本文讨论特朗普政府对前沿AI的监管方式。美国政府曾对Anthropic的AI模型实施出口管制并要求下架，两周后通过非公开谈判解除了部分限制。作者认为这建立了一个不透明的事实许可制度。
 
-如果你想让我总结某篇文章，请提供完整的文章内容或链接。</p>
+文章引入"双重国家"概念：规范国家遵循法律程序，特权国家则不受法律约束、充满任意性。作者认为特朗普政府体现了这种双重结构——在AI监管中，决策过程完全保密，无法验证其是否出于合法安全考虑还是政治报复。
+
+文章指出，即使国会制定新法律，特朗普政府的秘密性、腐败和报复性特征（如总统2025年个人收入超22亿美元）使得监管过程缺乏信任基础。这种双重国家将是未来几年前沿AI治理不可避免的现实。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：围绕 Atari ST/Hatari 模拟器的用途、局限、网页版体验，以及真实硬件在 MIDI 等场景中的价值展开。
-
-不同观点：
-• 真实 Atari 仍有独特优势：Aldipower 表示自己仍用真机做 MIDI 编曲，认为其时序非常紧、几乎无抖动；MIDI 端口与 CIA/CPU 直接连接，相比 USB MIDI 差距明显。因此 Hatari 模拟器无法复制这种低延迟优势，不适合严肃 MIDI 用途。
-
-• Hatari 的定位主要是游戏兼容：lproven 认为 Hatari 主要面向经典 ST 游戏运行，而非生产力或硬件级实时应用；并补充 Aranym 是另一种 ST 模拟器，更偏向在现代机器上运行 GEM、生产力软件，牺牲部分硬件精确性换取性能、高分辨率等功能。
-
-• 希望有更强的现代化实现：lproven 提到希望看到裸机版 Raspberry Pi Aranym，把树莓派变成“最快、满配的 Atari TT030”。
-
-• 网页版体验存在问题：pjmlp 反馈在 HDPI 显示器上界面太小，鼠标定位不准，导致几乎不可用，但仍觉得项目有趣。
-
-• 对“在线模拟器”说法的纠正：Glandalf 指出 Hatari 本身不是在线模拟器，这只是它的一个在线构建版本。
-
-• 新意受到质疑：AtlasBarfed 认为 Hatari 已存在多年，网页版可能只是移植/转译到 Web，并不算特别新。
-
-补充讨论：评论中形成了“真实硬件低延迟优势”与“模拟器便捷性/兼容性”的对比；同时也区分了 Hatari 偏游戏兼容、Aranym 偏现代生产力环境的不同路线。</div>
+                    <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48740135" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48748447" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -148,53 +176,53 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.ti.com/product/MSPM0C1104" target="_blank">1.38 Millimeter Microcontroller</a>
+                    <a href="https://github.com/iProgramMC/NanoShellOS" target="_blank">NanoShell: A preemptively multi-tasked 32-bit OS with a windowed GUI</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: kristianpaul</span> |
-                    <span>评分: 144</span> |
-                    <span>评论数: 9</span> |
-                    <span>发布时间: 2026-06-26 16:38</span>
+                    <span>作者: mrunix</span> |
+                    <span>评分: 4</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-07-01 16:57</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这是德州仪器(TI)的MSPM0C1104微控制器产品页面。主要规格：
+                    <p>NanoShell 是一个32位操作系统，具有窗口化图形界面和抢占式多任务功能。这是测试级软件，目前开发已不活跃。
 
-- **核心**：24MHz Arm Cortex-M0+处理器
-- **存储**：16KB闪存，1KB SRAM
-- **模拟外设**：12位ADC，最多10个外部通道，1.5Msps采样率
-- **数字外设**：3个定时器（支持14路PWM），DMA控制器，看门狗
-- **通信接口**：1个UART（支持LIN）、1个I2C、1个SPI
-- **低功耗**：运行87µA/MHz，待机5µA，关断200nA
-- **I/O**：最多18个GPIO，2个5V容忍引脚
-- **工作条件**：-40至125℃，1.62-3.6V供电
-- **封装**：提供7种封装选项（8-20引脚）
+**主要特性：**
+- 完全运行在 ring-0，设计目标是趣味性而非安全性
+- 支持 ELF 加载、任务切换、动态内存分配
+- 内置基础 Shell 和 GUI API
+- 已移植 DOOM 和超级马里奥64
 
-适用于通用嵌入式应用，支持裸机开发，提供LaunchPad开发板。</p>
+**技术支持：**
+- 驱动：PS/2 键鼠、VBE 图形、SoundBlaster 16、AHCI/ATA 存储
+- 文件系统：EXT2 和 FAT32（读写支持）
+- 使用 Limine 引导加载器
+
+**构建方式：**
+Linux 环境下使用 clang 编译，需要 xorriso 等依赖。
+
+项目采用 GNU GPL v3 许可证，欢迎贡献。作者表示这不是最佳设计范例，仅供学习娱乐。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：TI新推出的超小型微控制器MSPM0G1505的实用性和市场定位
+                    <div class="comments-summary">我注意到您提供的分析要求是针对多条评论的对比分析，但目前只看到一条来自 vintagedave 的评论。
 
-不同观点：
+**当前这条评论的内容：**
+• 指出该项目主要开发在 2022 年完成，强调这不是"vibe coded"（即不是随意编写的代码，而是认真开发的）
+• 赞赏其复古的外观设计
+• 特别提到项目完全运行在 ring 0（内核态），表达了对这一技术特点的喜爱
 
-• **供应链问题**（emctech）：最小封装（1.38mm²）虽已推出近2年但刚退出预生产状态，实际项目中难以采购，导致设计妥协，不得不使用更大封装
+**需要补充：**
+要完成您要求的分析（识别不同观点、争议焦点、讨论关系等），我需要更多评论内容。
 
-• **市场竞争角度**（anonli）：这是TI对标中国厂商（CH32V003、PY32）和STM32C0的产品，单价$0.20/千片，参与"廉价通用MCU"竞争；但1KB SRAM过小，只适合裸机开发且需谨慎管理堆栈
-
-• **设计效率赞赏**（peteforde）：GPIO数量=总引脚数-2，引脚利用率极高，设计经济实用
-
-• **应用场景困惑**：
-  - arnejenssen质疑此类MCU对简单应用（如体重秤）是否过剩
-  - self_awareness和其他评论者对"普通人"如何使用这类芯片表示困惑
-
-• **趣味性讨论**：有人联想到GBA游戏机性能对比，或设想用数千颗组建微型计算集群等科幻场景
-
-补充讨论：价格信息仅给出千片级报价，万片级采购价格仍不明确。整体反映出专业用户对供应链稳定性的担忧，以及普通用户对超小型MCU实际应用场景的认知鸿沟。</div>
+请问您是否想：
+1. 提供更多评论让我进行对比分析？
+2. 还是希望我针对这一条评论做深入解读？</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48688685" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48749869" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -205,35 +233,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://nickcarr.com/scouting-a-decommissioned-nuclear-power-plant/" target="_blank">Long Island's decommissioned nuclear power plant</a>
+                    <a href="https://cleberg.net/blog/homelab-maintenance.html" target="_blank">I Don't Maintain My Homelab</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: mkmk</span> |
-                    <span>评分: 135</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-06-24 21:41</span>
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 44</span> |
+                    <span>评论数: 23</span> |
+                    <span>发布时间: 2026-06-29 14:15</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了长岛肖勒姆核电站的探访经历。该核电站1973年开建，1985年完工但仅以5%功率试运行，因三里岛和切尔诺贝利事故引发的公众反对，加上应急疏散计划未获批准，最终未能正式运营。1992年以1美元卖给州政府，1994年完成退役拆除，成为美国首个被拆除的商业核反应堆。如今内部设施完整保留，包括布满按钮、仪表和开关的70年代风格控制室，以及7英尺厚混凝土外壳和钢制密封门保护的反应堆区域，呈现出一个冻结在时间中的工业遗迹。</p>
+                    <p>这篇文章讲述了作者如何构建一个几乎无需人工维护的家庭实验室(homelab):
+
+**基础设施简化**:将四台服务器整合为一台,大幅降低复杂度;树莓派运行Home Assistant OS自动更新;UniFi网络设备支持定时自动更新。
+
+**软件自动化**:通过crontab每周自动更新所有Docker服务;设置自动备份任务,包括数据库导出和文件同步到ZFS存储池。
+
+**维护成本**:每月仅需约15分钟进行系统更新,甚至可以6个月不管也不会出问题。作者认为这种"设置后即可忘记"的方式,在隐私、安全和便利性之间达到了理想平衡,特别适合工作繁忙的情况。
+
+核心理念:通过精简架构和自动化脚本,让系统自我维护。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：长岛Shoreham核电站退役现场探访及核能发展的争议
+                    <div class="comments-summary">主要讨论点：家庭服务器（homelab）如何实现低维护运行，以及这种状态是否仍算"实验室"
 
 不同观点：
 
-• **反对核能派（经济角度）**：核电站过于复杂，需要大量训练有素的人员维护，控制室庞大、管道系统繁复、清理工作繁琐。相比之下，太阳能和风能安装简单、维护便宜、无需太多人工。从投资角度看，即使考虑基载需求，储能技术也比核能更有吸引力。核能最大的问题是经济上不可行。
+• **最小维护派**：通过固定软件版本、使用Docker自动启动、限制局域网访问等策略，实现月均15分钟以下的维护时间。代表做法包括旧硬件复用、NFS共享配置文件、定期自动备份到云端
 
-• **支持核能派（环保角度）**：核电站关闭是令人沮丧的结果，它本可以为数十万家庭提供廉价、零碳排放的电力。如果设计能够更新，重启核电站将是很好的选择。
+• **现实主义派**：承认总体维护已经很少，但指出某些服务（NextCloud、Immich、Minecraft服务器）仍需要人工干预，如维护模式、配置文件编辑、版本不匹配等问题
 
-• **历史见证者**：回忆当年社区反核情绪极其强烈，人们甚至讨论建造通往康涅狄格州的桥梁作为撤离路线，那时的激烈程度远超现在对任何议题的争论。
+• **工具派**：通过特定技术栈实现超低维护，如NixOS（3年稳定）、Debian配合unattended-upgrade（可2年不管），甚至有人写Go程序自动监控维护
 
-补充讨论：多位评论者分享了相关信息和资源，包括长岛其他核反应堆（BNL的高通量束流反应堆）、现场后续利用（燃气轮机和跨海电缆）、探访视频链接等。有人注意到废弃现场灯光全开的异常现象，也有人对测量残余辐射表示兴趣。</div>
+• **定义质疑派**：认为如果不需要频繁折腾，那就不再是"实验室"而是"稳定家庭基础设施"。真正的lab应该是不断尝试新硬件、学习新技术（如BGP、集群）
+
+补充讨论：多位评论者强调稳定性对于家庭多用户场景的重要性（如配偶使用），这与企业环境的频繁更新策略不同。另有趣的是，多人期待AI agent自动维护，但原帖作者并未采用此方案。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48665958" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48719573" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -244,226 +282,55 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://rarehistoricalphotos.com/the-stockholm-telephone-tower-1890/" target="_blank">The Stockholm Telephone Tower with Approximately 5,500 Telephone Lines, 1890</a>
+                    <a href="https://www.lbc.co.uk/article/spanish-bans-palantir-national-security-5HjdcNp_2/" target="_blank">Spanish government 'quietly bans use of Palantir' in critical state systems</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: thunderbong</span> |
+                    <span>作者: donpott</span> |
+                    <span>评分: 38</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-07-01 15:23</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>西班牙政府因国家安全担忧，已开始悄悄禁止国有企业与美国数据分析公司Palantir签署新合同。西班牙主权财富基金控制的公司被要求将该公司列入黑名单，特别是在关键通信、国防、军事技术和公共基础设施等领域。
+
+Palantir由硅谷亿万富翁Peter Thiel创立，客户包括以色列军方和美国移民执法局。英国也面临类似压力，议员警告对Palantir的依赖构成"不可接受的弱点"，伦敦市长最近阻止了警察局与该公司的5000万英镑合同。
+
+尽管如此，西班牙国防部仍在讨论续签和扩大与Palantir的现有合同。批评者担心该公司在公共服务领域的扩张会削弱国家主权和数据安全。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于Palantir公司及其Maven Smart System的使用政策和禁令问题
+
+不同观点：
+• **质疑禁令有效性**：荷兰新闻报道显示NATO已全面采用Palantir的Maven Smart System，这与某个声称的禁令相矛盾，表明禁令可能并不真实或执行不力
+
+• **支持相关决策**：有评论者认为相关政策是明智的（"Smart"），暗示支持对Palantir采取限制措施
+
+• **希望效仿**：英国用户表达强烈愿望，希望英国政府也能实施类似的Palantir禁令政策
+
+补充讨论：评论揭示了政策宣传与实际执行之间可能存在的差距——尽管可能有禁令声明，但NATO等重要国际组织仍在采用该技术，引发了对政策一致性和执行力度的质疑。讨论反映出不同国家和组织在对待Palantir等争议性技术公司时的态度分歧。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48748392" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.bloomberg.com/news/articles/2026-07-01/krafton-agrees-to-pay-subnautica-2-bonuses-as-developer-s-ceo-resigns" target="_blank">Krafton Agrees to Pay 'Subnautica 2' Bonuses as Developer's CEO Resigns</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: healsdata</span> |
                     <span>评分: 5</span> |
                     <span>评论数: 0</span> |
-                    <span>发布时间: 2026-07-01 15:27</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>19世纪末的斯德哥尔摩，由于技术限制，每部电话都需要独立的物理线路连接到交换机。为此建造了80米高的Telefontornet电话塔，约5500条电话线从塔顶向城市各方向延伸，形成壮观但荒谬的景象。
-
-这种设计极易受恶劣天气影响，从大风到冰暴和火灾都会造成损坏。当时电话服务非常昂贵，年费相当于今天的1100-1966美元，只有富人能负担。
-
-随着技术进步，1913年电话线路开始地下化，电话塔失去功能。剩余的塔身作为地标保留数十年，最终在1953年因火灾被拆除。这段历史见证了通信技术从笨拙走向成熟的演变过程。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48748464" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://lilianweng.github.io/posts/2026-06-24-scaling-laws/" target="_blank">Scaling Laws, Carefully</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: tehnub</span> |
-                    <span>评分: 54</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-06-26 17:55</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>本文介绍深度学习中的缩放定律(Scaling Laws)：训练损失随模型规模(N)、数据量(D)和计算量(C)的增加呈幂律下降，在对数图上表现为直线。这种可预测性允许通过小规模实验拟合缩放定律，进而外推估算大模型的数据和计算需求。文章回顾了从早期机器学习损失可预测性研究到Kaplan和Chinchilla等现代缩放定律的发展历程，探讨了如何在数据充足和数据受限情况下优化计算资源在模型规模和数据量之间的分配。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：深度学习中scaling laws的发现、验证及其深远意义
-
-不同观点：
-
-• **从怀疑到确信的科学验证过程**（gdiamos）：最初看到scaling laws时极度怀疑，担心是实验错误或仅适用于单一数据集。通过在多个实验中复现（特别是Joel Hestness的"scaling is predictable empirically"工作）以及OpenAI在完全不同环境中的验证，最终确信其真实性。最令人震撼的是：复杂的深度学习系统竟能用简单的三项方程描述，暗示"制造智能"可能比想象中简单。
-
-• **历史连续性视角**（ekelsen）：补充历史背景，指出Jeff Dean早在2007年就在n-gram语言模型中绘制了类似scaling law的图表，说明这一现象的观察比人们认为的更早。
-
-• **对AI怀疑论者的呼吁**（aspenmartin）：强调scaling laws持续有效这一事实，认为理解scaling laws对评估AI能力至关重要，这是过去5年AI能力预测的核心依据。
-
-补充讨论：三位评论者均认同scaling laws的重要性，没有争议焦点。核心共识是：scaling laws揭示了智能系统发展的可预测性，这从根本上改变了我们对AI发展的理解。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48689744" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.propublica.org/article/florida-death-penalty-executions-ron-desantis" target="_blank">Florida Is Executing Prisoners at a Record Pace</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: petethomas</span> |
-                    <span>评分: 11</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-07-01 16:23</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讲述了佛罗里达州神父Dustin Feddon为死囚提供精神辅导的经历。2025年1月起，州长DeSantis加速签署死刑令，该州当年执行19人死刑，打破1936年创下的11人年度纪录，占全美执行总数的40%。2026年已执行9人，超过其他所有州总和。
-
-快速的执行节奏彻底改变了神父的工作性质——从陪伴死囚度过漫长刑期变成准备他们赴死。死囚监区三个牢房常年满员，像流水线般运转。这给神父带来巨大心理压力，他开始夜间惊醒、过度警觉他人的死亡。
-
-文章将佛罗里达的做法与全美趋势对比：33个州已废除死刑或十年未执行，而佛罗里达却逆势而行，成为死刑执行的"重镇"。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">您好！我注意到您要求分析多条评论并总结不同观点，但目前只提供了一条来自 rbanffy 的评论。
-
-这条评论的内容是关于在监狱外庆祝死刑执行的人，表达了对这种行为的批判性看法。
-
-要完成您要求的分析任务，我需要：
-- 完整的评论列表或讨论串
-- 多个不同的观点和立场
-- 评论之间的互动关系
-
-请提供您想要分析的完整评论内容，这样我就能帮您：
-1. 识别不同的观点立场
-2. 总结论据和例子
-3. 分析讨论关系
-4. 指出争议焦点
-5. 按您的格式要求输出中文总结
-
-您可以直接粘贴所有需要分析的评论，我会为您进行全面分析。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48749367" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://buttondown.com/hillelwayne/archive/stroustrups-rule/" target="_blank">Stroustrup's Rule (2024)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: bmacho</span> |
-                    <span>评分: 104</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-06-27 21:01</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章讨论了"Stroustrup规则"：初学者需要明确的语法，而专家偏好简洁的语法。
-
-文章指出，当编程语言引入新特性时，人们倾向于使用冗长明确的语法（如Rust早期的错误处理）；随着开发者逐渐熟悉，会转向更简洁的表达方式（如`?`操作符）。
-
-这种演变既发生在个人层面（从初学者成长为专家），也发生在社区层面（语言逐渐增加"专家友好"的简洁特性）。但这可能给初学者带来学习困难，如Python的海象操作符引发的争议。
-
-作者在教学中发现，必须有意识地使用明确语法而非自己偏好的简洁写法，以帮助初学者理解。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Stroustrup提出的"编程语言语法演变规则"——新手偏好显式语法，专家偏好简洁语法。
-
-不同观点：
-
-• **支持派**：认为这符合自然语言演变规律（常用词变短）、人类认知压缩机制（大脑自然简化常见模式）、以及最小努力原则。shell命令简写（如rg代替ripgrep）是典型例子。Rust的Editions机制体现了好的语言设计应该拥抱这种演变。
-
-• **修正派**：认为关键不是"专家vs新手"，而是"使用频率"——只有被证明高频使用的功能才值得简洁语法。这是选择偏差：少用的冗长功能不被注意到。还有人强调"正交性"比简洁性更重要——功能必须能独立推理。
-
-• **质疑派**：认为例子都不成立。Python的walrus运算符恰恰被老手反对（违背"Python之道"），Rust的?运算符对初学者更直观，TLA+的简洁版本实际上更清晰。偏好取决于个人品味和使用场景，而非专业程度。
-
-• **实用派**：提出在AI时代简洁代码更省tokens，但可能需要工具帮助人类读者理解。
-
-补充讨论：一个有趣的推论是教学困境——教简洁语法学生立即不满，教冗长语法学生日后不满。争议焦点在于：这个规则是普遍真理还是过度简化？简洁性何时有益何时有害？</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48701721" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.pcgamer.com/gaming-industry/open-source-game-engine-godot-will-no-longer-accept-ai-authored-code-contributions-we-cant-trust-heavy-users-of-ai-to-understand-their-code-enough-to-fix-it/" target="_blank">Godot will no longer accept AI-authored code contributions</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: pjmlp</span> |
-                    <span>评分: 239</span> |
-                    <span>评论数: 37</span> |
-                    <span>发布时间: 2026-07-01 07:43</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>开源游戏引擎Godot宣布禁止AI生成代码的贡献。该项目此前深受AI"垃圾代码"（slop）困扰，大量AI生成的pull requests让维护者的审查工作变得令人沮丧。
-
-Godot基金会将更新贡献政策，明确禁止：AI编写的代码、AI代理提交的请求，以及人际交流中的AI生成文本。基金会指出，AI无法承担责任，重度使用AI的贡献者也难以充分理解代码以修复问题。
-
-新政策强调所有贡献必须来自能对代码负责的人类。贡献者只能将AI用于"琐碎任务"且必须披露。此举旨在减轻维护者负担，同时保持培养新贡献者成为未来维护者的渠道。基金会表示将持续以保守态度对待AI工具。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Godot引擎宣布拒绝接受AI生成的代码贡献，引发关于开源项目如何应对AI贡献的广泛讨论
-
-不同观点：
-
-• **支持该政策者**：强调PR审查的真正目的是培养未来维护者，AI贡献无法实现这一目标；开源维护者的免费时间是宝贵资源，不应被AI"拒绝服务攻击"消耗
-
-• **质疑AI代码质量者**：分享"AI宿醉"现象——使用时感觉强大，但事后发现代码充满细微裂缝和不一致；实际加速效果从感觉的10倍降至1.5-3倍；核心问题是贡献者可能不理解自己提交的内容
-
-• **质疑政策合理性者**：认为应该针对"低质量PR"而非AI本身；指出矛盾现象——AI公司估值基于"未来所有代码都用AI写"，但开源项目却在抵制AI贡献
-
-• **实用主义建议者**：提出通过流程改进解决问题（如要求先开issue讨论）；反向思考是否可用AI审查PR质量；建议建立拒绝AI项目的索引列表
-
-补充讨论：部分评论困惑AI贡献者的动机——为何花钱生成无人需要且会被拒绝的代码？政策预期效果存在两种可能：消极情况是贡献者伪装成人类风格，积极情况是促使提交更简洁有效的贡献。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48743472" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.economist.com/leaders/2026/06/25/university-for-all-harms-poor-students-the-most" target="_blank">University-for-all harms poor students the most</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: andsoitis</span> |
-                    <span>评分: 4</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-07-01 13:15</span>
+                    <span>发布时间: 2026-07-01 18:45</span>
                 </div>
 
                 <div class="summary-section">
@@ -475,7 +342,110 @@ Godot基金会将更新贡献政策，明确禁止：AI编写的代码、AI代�
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48746223" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48751449" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://technology.inquirer.net/145959/20-nintendo-patents-rejected" target="_blank">Nintendo patents rejected on monster-capturing mechanics amid Palworld</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: mushstory</span> |
+                    <span>评分: 10</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-07-01 17:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>日本专利局驳回了任天堂20多项"捕获怪物"相关专利申请，理由是缺乏新颖性且存在大量在先技术。审查员指出《方舟：生存进化》、《怪物猎人4》等游戏已有类似机制。美国专利商标局此前也撤销了任天堂一项角色召唤专利的全部26项权利要求，同样基于在先技术。这些专利申请与任天堂及宝可梦公司起诉Palworld开发商Pocketpair的案件有关。重复驳回表明任天堂难以对广泛使用的游戏系统获得独占权。Pocketpair认为生物捕获机制是游戏行业长期存在的通用功能。诉讼仍在东京地方法院审理中。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48750582" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://karolina.mgdubiel.com/drone/" target="_blank">Building a custom octocopter from scratch with no prior hardware experience</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: noleary</span> |
+                    <span>评分: 350</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-06-28 04:17</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：一个关于八旋翼无人机DIY项目的评论分析，核心讨论围绕制造方法选择、技术可信度和设计细节展开。
+
+不同观点：
+
+• **制造方法争议**：TacticalCoder质疑为何使用CNC铣削G-10玻璃纤维和碳纤维，而不是使用家用3D打印机。他举例说明有人用250美元的打印机制作了能飞3小时的无人机，以及用1500美元打印机制作赛车车身的案例，认为3D打印更经济实用。
+
+• **技术可信度质疑**：urban_winter对作者声称"从未做过CAD设计却在一天内用Fusion 360完成设计"表示强烈怀疑，认为Fusion 360有严重的学习曲线，不可能一天掌握。这引发了关于项目真实性的讨论。
+
+• **技术优化建议**：Tossrock从工程角度讨论八旋翼设计，提出使用环形结构替代臂式结构的可能性（基于6.28r < 8r的数学关系），探讨使用碳纤维或尼龙张力结构的可行性。
+
+• **社群支持与辩护**：mickeyp批评部分评论者过于挑剔细节（如标点符号、词源等），为作者辩护，认为这是很棒的项目，并建议考虑使用超轻3D打印材料。多数评论者（kar0lina、pjdkoch、sanex等）表达了支持和赞赏。
+
+补充讨论：hazrmard分享了NASA项目中关于容错八旋翼控制的研究资源；felooboolooomba关注材料加工的实际问题，提醒碳纤维粉尘的健康危害；tamimio从跨学科角度赞赏作者的网络安全和机器人学混合背景。整体氛围积极，但存在对技术细节和可信度的理性质疑。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48704289" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.politico.eu/article/eu-countries-oil-exploration-green-investment/" target="_blank">EU countries want oil exploration to be classed as a green investment</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: aleda145</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-07-01 19:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章报道了欧盟在绿色投资政策上的争议。欧盟成员国周三达成协议,放宽了可持续投资基金的准入标准——大型油气公司即使在建设新的化石燃料项目,只要同时投资风能、太阳能等绿色项目(占年度资本支出的至少20%),就可以被纳入可持续投资基金。
+
+这与欧盟委员会的原始提案相悖。委员会希望明确区分真正的绿色基金和过渡基金,并排除正在开发新化石燃料项目的公司,以防止"漂绿"行为。
+
+绿色组织批评成员国的修改为漂绿打开大门,会误导相信自己投资于可持续活动的投资者和消费者。这一政策还需获得欧洲议会和委员会的同意才能实施。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48751726" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
