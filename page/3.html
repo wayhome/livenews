@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-07-03 09:28 (北京时间)
+            最后更新时间: 2026-07-03 14:22 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,45 +61,45 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://kendal.codeberg.page/inkwell/" target="_blank">Show HN: Inkwell – An RSS reader for e-ink devices</a>
+                    <a href="https://www.dbos.dev/blog/co-locating-workflow-state-with-your-data" target="_blank">Postgres transactions are a distributed systems superpower</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: imkendal</span> |
-                    <span>评分: 21</span> |
-                    <span>评论数: 3</span> |
-                    <span>发布时间: 2026-07-02 15:38</span>
+                    <span>作者: KraftyOne</span> |
+                    <span>评分: 108</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-07-02 18:38</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>inkwell 是一个专为 Kindle 设备优化的自托管 RSS/Atom 阅读器。它将文章转换为静态 HTML，适配 Kindle 内置浏览器的阅读体验。系统通过后台任务预先提取文章内容并转码嵌入的图片，确保用户点击时能从本地磁盘直接获取已处理好的内容，实现快速加载。
+                    <p>这篇文章论述了将工作流系统与应用数据共置在同一个 Postgres 数据库中的优势。
 
-文档包含完整的使用指南：支持源码构建和 Docker 部署，提供 docker-compose 配置、反向代理、访问控制和备份升级方案。功能涵盖文章列表、阅读视图、稍后阅读，以及订阅源和分组管理、OPML 导入等管理功能。特别提供了 Kindle 设备的认证网关，无需在设备上输入即可完成登录。配置文档详细说明了所有 YAML 字段和环境变量的默认值。</p>
+**核心观点**：通过共置（co-location），工作流元数据和应用数据可以在同一数据库事务中更新，从而消除部分失败问题。
+
+**解决的两个关键问题**：
+
+1. **幂等性**：将步骤执行和检查点写入放在同一事务中，实现恰好一次（exactly-once）执行语义，无需额外的应用层幂等逻辑和簿记表。
+
+2. **原子性**：使用事务性发件箱模式，在单个事务中同时完成数据库更新和消息写入，确保数据库与下游系统的一致性。
+
+**结论**：分布式系统中的共置是一种超能力，通过数据库事务可以大幅简化复杂的边缘情况处理，避免传统方案中的额外复杂性。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">我无法按要求完成这个分析任务，因为提供的评论内容过于简短，缺乏实质性讨论。
+                    <div class="comments-summary">主要讨论点：使用 Postgres 实现分布式系统事务一致性的可行性与局限性
 
-**评论内容概况：**
+不同观点：
 
-提供的两条评论分别是：
-• [eckertliam]: 提到最初以为是指 Rust 的 LLVM 包装器（inkwell），但后来发现名称在另一个语境下更合理
-• [Lord_Zero]: 简单询问是否有更多截图
+• **根本性质疑**：多位评论者（mrkeen, cloudie78, zyngaro）认为这不是真正的分布式事务解决方案。Outbox 模式只是将问题从"跨 DB 和消息队列的事务"转移为"DB 内部事务 + 最终一致性"，本质上仍需要轮询和重试。有人直言这只是"带中心数据库的服务集合"而非真正的分布式系统。
 
-**分析说明：**
+• **实用主义支持**：部分开发者（Crowberry, munk-a）基于实际经验表示这种方案确实有效。关键是理解系统如何失败、接受权衡、缩小不可逆操作间的时间窗口。Cadamsdotcom 幽默总结：要么全工作要么全崩溃，简化了运维。
 
-这两条评论之间没有形成讨论或辩论关系：
-- 没有不同的观点立场
-- 没有论据或例子的交锋
-- 没有争议焦点
-- 两条评论各自独立，互不关联
+• **技术权衡分析**：Jdw64 指出这会导致数据库与工作流紧耦合，难以后期分离。Zadikian 认为实际场景中幂等性比原子性更重要，且无外部副作用时可能根本不需要持久化工作流。Bsaul 质疑 UDF 方案与消息队列没有本质区别。
 
-第一条评论只是个人的名称联想澄清，第二条是对更多视觉内容的请求。要完成您要求的深度分析（识别观点、论据、争议点等），需要更具实质性和互动性的讨论内容。
-
-**建议：** 如果您有更完整的评论讨论串，我可以进行更有意义的分析。</div>
+补充讨论：Evilturnip 提出更深层问题——能否将 Postgres 作为分布式应用的通用状态存储？这涉及与 Redis/Valkey 等专用方案的对比。整体争议集中在：这是否是真正的分布式解决方案，还是通过架构妥协换取开发简便性的权宜之计。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48763222" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48765639" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -110,13 +110,74 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://try.piecesof.me/" target="_blank">Show HN: Pieces – Social network for people</a>
+                    <a href="https://github.com/HUANGCHIHHUNGLeo/claude-real-video" target="_blank">Claude-real-video － any LLM can watch a video</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: domo__knows</span> |
-                    <span>评分: 28</span> |
-                    <span>评论数: 12</span> |
-                    <span>发布时间: 2026-07-01 17:30</span>
+                    <span>作者: cortexosmain</span> |
+                    <span>评分: 119</span> |
+                    <span>评论数: 17</span> |
+                    <span>发布时间: 2026-07-02 19:10</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>claude-real-video 是一个让大语言模型真正"观看"视频的本地工具。
+
+**核心问题**：现有AI工具（ChatGPT、Claude）处理视频时只读字幕或固定间隔采样，会遗漏关键画面。
+
+**解决方案**：
+- **智能帧提取**：基于场景变化检测提取关键帧，而非固定间隔采样
+- **去重优化**：使用滑动窗口算法去除重复画面，减少冗余
+- **音频转录**：通过Whisper将音频转为文字
+- **本地处理**：所有操作在本地完成，无需上传
+
+**使用方式**：
+```bash
+pip install claude-real-video
+crv "YouTube链接" 或 crv 本地文件.mp4
+```
+
+输出：关键帧图片 + 字幕文本 + 清单文件，可直接导入Claude/ChatGPT/Gemini分析。
+
+**技术要求**：需安装ffmpeg，支持macOS/Windows/Linux，Python 3.10+。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：使用AI模型（特别是Claude）处理视频帧的可行性、成本和技术局限性
+
+不同观点：
+
+• **技术局限派**：多位用户（noufalibrahim、gvkhna、octember）通过实际测试指出，Claude在处理视频相关任务时表现不佳。关键帧不等于视频理解，模型难以推断运动、物体持久性和动画细节。即使尝试网格排列、热图等方法，效果仍不理想。
+
+• **成本效率派**：fzysingularity强调用Claude处理视频"极其昂贵"，建议使用Gemini或本地VLM模型，并推荐了相关库。nickvec关注每秒视频的token消耗量。
+
+• **隐私安全派**：bonoboTP指出工具声称"视频留在本地"存在误导，因为提取的帧实际会被发送到Anthropic服务器。
+
+• **实用乐观派**：ElijahLynn分享了实际应用场景（测试充电设备），认为这种方法能简化数据收集和分析流程。
+
+• **产品定位派**：多位用户（zitterbewegung、BeetleB）建议重命名项目，不要局限于Claude，使其更通用。
+
+补充讨论：Lerc提出了有趣的基准测试想法（用多帧判断运动真实性），fred123123关注快速滚动等边缘场景的处理。整体而言，社区对创意表示认可，但对实际效果和成本持保留态度。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48766005" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.okturtles.org/2026/07/short-leash-ai-method/" target="_blank">The short leash AI coding method for beating Fable</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Riseed</span> |
+                    <span>评分: 100</span> |
+                    <span>评论数: 32</span> |
+                    <span>发布时间: 2026-07-02 19:11</span>
                 </div>
 
                 <div class="summary-section">
@@ -126,22 +187,146 @@
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 关于新社交媒体平台的可行性、技术架构选择和身份认证政策的多角度讨论
+                    <div class="comments-summary">**主要讨论点：**在软件开发中使用AI代理（如Claude/Fable）时，应该采用"短绳子"严格监督策略，还是给予更多自主权？
 
 **不同观点：**
 
-• **社交媒体根本价值的质疑**：catapart认为大规模社交平台会让噪音淹没信号，小型论坛式的策划社区可能更有价值；andrewstuart更悲观，提出应对平台恶化的答案可能是"完全不要社交网络"
+• **反对严格控制派**：认为"短绳子"是拐杖，浪费了强大模型的能力。通过深入讨论和迭代，AI能提供超出预期的解决方案（如MILP库建议）。有人认为AI已经能自主测试、修复bug并驱动新功能，完全自主agents的时代正在到来。
 
-• **技术架构的开放性要求**：danpalmer强调必须采用开放协议（如ATProto）支持自托管和联邦化，而不是从头构建封闭系统，否则会失去重点
+• **支持谨慎监督派**：强调开发者必须亲自构建代码库的心智模型，否则会迷失。指出LLM本质仍是token预测器，在复杂项目中局限明显。当出现故障时，人类需要承担最终责任，不能把blame推给Claude。
 
-• **"社交契约"概念的批评**：dofm指出单方面可修改的规则不能称为契约，只是换了名字的条款和条件，要求实质性的不同
+• **实践平衡派**：将AI视为初级到中级工程师，给予独立工作空间但严格review PR。建议在绿地项目需要密切监督，但建立代码风格模式后可以放松。提出使用不同模型互相审查代码，避免自我审查的缺陷。
 
-• **身份包容性争议**：LoganDark质疑平台对"真实人类"的强调是否排斥非人类身份认同者（如Otherkin群体），涉及数字身份的多元性问题
+• **工具演进派**：怀念早期工具如Aider，关注开源替代方案。建议使用更小的本地模型做代码补全，提高交互性和代码理解。
 
-**补充讨论：**
-有用户关注技术细节（Ultra HDR支持）和执行机制（如何检测无面孔账户和机器人），反映出从理念到落地的实际挑战。</div>
+**补充讨论：**争议焦点在于软件开发中的问责制文化——传统上开发者习惯"先发布后修复"，但随着AI自动化代码增多，这种低问责文化是否可持续存疑。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48750402" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48766026" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://zk.golf/" target="_blank">Show HN: zkGolf – Competitive optimization of formally verified circuits</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: rot256</span> |
+                    <span>评分: 56</span> |
+                    <span>评论数: 5</span> |
+                    <span>发布时间: 2026-07-02 15:40</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于某个技术项目（似乎涉及Lean证明）的初步反馈和疑问
+
+不同观点：
+• **文档清晰度问题**：IshKebab指出页面缺少对"circuit"的定义，导致他误以为是硅设计相关项目，建议改进术语说明
+• **积极支持态度**：baby和TheFirstNubian表达了对项目的热情，前者急于成为首批提交者，后者通过LinkedIn了解并认可这一倡议
+• **意图质疑**：rirze提出关键性问题，怀疑项目本质上是数据收集操作，目的可能是训练或收集Lean证明样本
+
+补充讨论：
+评论整体呈现出两种截然不同的态度——多数人表现出积极参与的意愿，但也有人对项目真实目的持谨慎怀疑态度。争议焦点在于：这是一个开放的技术倡议，还是一个变相的数据收集项目？IshKebab的反馈也暗示项目在对外沟通上可能存在不够清晰的问题。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48763246" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://growtheflowutah.org/laketracker/" target="_blank">Great Salt Lake Tracker – Grow the Flow</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: cfowles</span> |
+                    <span>评分: 87</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-07-02 19:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>无法获取文章内容</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：大盐湖水位危机及其影响
+
+不同观点：
+
+• **环境退化观察派**：多位评论者通过个人经历描述湖泊萎缩的严重性。水位已低于安全线7英尺（对于仅15英尺深的湖泊来说非常严重），历史景观如螺旋防波堤艺术品已距岸边一英里，桥下无水、岛屿变陆地等现象反映生态恶化
+
+• **历史对比视角**：1983-1984年曾发生大洪水，湖水满溢需建堤坝保护铁路和高速公路，与当前极端干旱形成鲜明反差，显示气候波动剧烈
+
+• **工程解决方案派**：有人提议建设海洋输水管道等大型基础设施项目，但承认美国已缺乏实施此类项目的能力；也有人建议通过体育营销提高公众意识
+
+• **政治阴谋论**：最具争议的观点指出"Grow The Flow"等环保运动实为利益输送，州官员和富豪家族（包括罗姆尼家族）通过修改法律和收购水权牟利，借2034冬奥会之名获取数亿政府资金
+
+补充讨论：铁路建设（1904年）造成湖泊分隔，北部盐度过高几乎无生命存在，属历史遗留的结构性问题</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48766286" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://petapixel.com/2026/06/24/a-special-wireless-free-nikon-camera-is-publicly-available-for-the-first-time/" target="_blank">A Special Wireless-Free Nikon Camera Is Publicly Available for the First Time</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: HardwareLust</span> |
+                    <span>评分: 41</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-06-25 01:11</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>尼康推出了一款特殊版本的Z6 III相机——"无无线连接版"，售价比标准版高出近400美元。这款相机完全移除了WiFi和蓝牙芯片，无法进行任何无线通信。
+
+尼康表示，这类相机通常为政府和工业客户定制生产，用于对安全有严格要求的环境。虽然功能更少，但因需要改变生产流程、移除硬件组件并在软件层面禁用相关功能，制造成本反而更高。
+
+这是尼康首次通过零售渠道公开销售此类特殊相机，目的是评估市场需求。对于大多数摄影师来说，这款相机并不理想，但为需要在特定安全环境中使用高端相机的用户提供了更便捷的选择。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：尼康推出的无无线功能相机（Z6 III去除WiFi/蓝牙版本），围绕其技术设计、定价策略和市场定位展开讨论
+
+不同观点：
+
+• **技术可行性派**：指出GPS接收功能技术上可以单独实现而不需要发射能力，但严格的政府安全场景可能要求完全无天线设计。同时提到中国2016年前因保密法规禁售带GPS相机，现代集成技术将多个功能整合在同一模块中
+
+• **价格质疑派**：认为移除功能反而贵400美元不合理，有用户想要无无线版本但不愿为此多付费，质疑定价逻辑
+
+• **市场策略批评派**：尖锐指出尼康声称"评估市场需求"，却让产品更贵且零营销推广，认为这种做法毫无意义，无法真实反映市场需求
+
+• **实用主义派**：质疑普通用户是否直接在标准版本禁用相关功能即可，暗示此产品主要针对高安全场景
+
+• **专用设备怀念派**：通过亲身经历分享在高安全环境工作的需求，表达对简单专用设备的怀念，对比智能手机的多功能整合趋势
+
+补充讨论：有用户对尼康SnapBridge应用质量表示不满，暗示失去无线功能未必是损失</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48667568" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -194,13 +379,13 @@ Flow同时实现了三大工程目标：通过原生代码获得高性能、通�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://growtheflowutah.org/laketracker/" target="_blank">Great Salt Lake Tracker – Grow the Flow</a>
+                    <a href="https://cdn.arstechnica.net/wp-content/uploads/2026/07/EFF-letter-to-FTC-on-X-consent-order-7-2-26.pdf" target="_blank">EFF letter to FTC on X consent order (2 July 2026) [pdf]</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cfowles</span> |
-                    <span>评分: 59</span> |
-                    <span>评论数: 6</span> |
-                    <span>发布时间: 2026-07-02 19:33</span>
+                    <span>作者: Terretta</span> |
+                    <span>评分: 102</span> |
+                    <span>评论数: 7</span> |
+                    <span>发布时间: 2026-07-02 19:27</span>
                 </div>
 
                 <div class="summary-section">
@@ -210,21 +395,19 @@ Flow同时实现了三大工程目标：通过原生代码获得高性能、通�
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：大盐湖水位危机的严重性、成因及解决方案的争议
+                    <div class="comments-summary">主要讨论点：Grok AI图像生成功能的限制措施及其背后的政治因素
 
 不同观点：
 
-• **技术说明派**：水位相对海平面下降7英尺，对于正常深度仅15英尺的湖泊来说是严重问题（占比近50%）；1904年修建的铁路将湖泊分割，北半部分盐度已达到毒性水平
+• **技术限制观察**：Grok Imagine近期大幅收紧了亲密图像生成功能，不仅针对CSAM或真实人物，而是全面限制色情内容生成，可能源于多方压力
 
-• **亲历见证派**：多位评论者用个人经历描述湖泊干涸——曾经的桥下已无水，岛屿与陆地相连；著名艺术装置Spiral Jetty距离湖岸已有一英里，无法作为"堤坝"参观
+• **政治交易质疑**：马斯克2024年投入3亿美元竞选资金是为获得政治保护；特朗普要求SpaceX股票用于"儿童储蓄账户"被视为明显的利益交换证据
 
-• **利益质疑派**（核心争议）：指控"拯救大盐湖"运动是权贵骗局——犹他州自然资源部主管Joel Ferry修改法律允许水权租赁，自己暗中收购水权；Romney家族的组织获得3亿州资金和10亿联邦预算，借2034年奥运会之名牟利
+• **自由主义立场冲突**：质疑EFF（电子前沿基金会）为何主张限制AI使用自由，认为EFF应该反对政府干预计算自由，而非支持内容限制
 
-• **工程解决派**：提议修建海水管道等大型工程，但认为美国已无法完成此类项目，只有中国具备这种能力
-
-补充讨论：争议焦点在于环保行动的真实动机——是genuine的生态保护，还是政商精英借环保之名进行利益输送和资源掠夺。</div>
+补充讨论：核心争议在于如何平衡技术自由与内容监管——支持者认为需要防止有害内容生成，反对者认为这违背了计算自由的原则。马斯克的政商关系成为讨论的政治背景。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48766286" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48766209" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -235,102 +418,51 @@ Flow同时实现了三大工程目标：通过原生代码获得高性能、通�
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/HUANGCHIHHUNGLeo/claude-real-video" target="_blank">Claude-real-video － any LLM can watch a video</a>
+                    <a href="https://github.com/segaboy/vulkan-netbsd" target="_blank">Vulkan is now available on NetBSD</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: cortexosmain</span> |
-                    <span>评分: 76</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-07-02 19:10</span>
+                    <span>作者: segaboy81</span> |
+                    <span>评分: 52</span> |
+                    <span>评论数: 8</span> |
+                    <span>发布时间: 2026-07-02 18:36</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>claude-real-video 是一个让大语言模型真正"观看"视频的本地工具。
+                    <p>这是一个将Vulkan软件栈移植到NetBSD系统的开源项目。
 
-**核心问题**：现有AI工具（ChatGPT、Claude）处理视频时只读字幕或固定间隔采样，会遗漏关键画面。
+**项目目标：** NetBSD是唯一缺乏Vulkan支持的主要BSD系统，该项目旨在构建Mesa/Lavapipe软件Vulkan驱动，并实现自动化安装流程。
 
-**解决方案**：
-- **智能帧提取**：基于场景变化检测提取关键帧，而非固定间隔采样
-- **去重优化**：使用滑动窗口算法去除重复画面，减少冗余
-- **音频转录**：通过Whisper将音频转为文字
-- **本地处理**：所有操作在本地完成，无需上传
+**当前进展（beta阶段）：** 
+- Lavapipe驱动已在NetBSD 10.1 amd64上成功编译、安装和注册
+- 驱动文件（libvulkan_lvp.so）和ICD清单已正确部署
+- 整个构建过程已实现端到端自动化
 
-**使用方式**：
-```bash
-pip install claude-real-video
-crv "YouTube链接" 或 crv 本地文件.mp4
-```
+**待完成工作：**
+- 需要集成Vulkan加载器（libvulkan.so.1）才能运行实际应用
+- 计划提供预编译二进制文件简化安装
+- 修复一个编译警告的临时解决方案
 
-输出：关键帧图片 + 字幕文本 + 清单文件，可直接导入Claude/ChatGPT/Gemini分析。
-
-**技术要求**：需安装ffmpeg，支持macOS/Windows/Linux，Python 3.10+。</p>
+项目提供详细文档和自动化脚本，让用户在全新NetBSD系统上通过几个命令即可完成驱动构建和安装。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 一个将视频转换为关键帧供LLM分析的工具(claude-real-video)，通过场景变化检测和去重算法优化token使用
-
-**不同观点：**
-
-• **成本效率质疑**：有人认为用Claude处理视频代价过高，建议使用Gemini或本地VLM模型会更经济，并推荐了vlm-run等替代方案
-
-• **技术局限性争议**：部分开发者指出关键帧采样无法真正理解视频运动，模型难以从静态图片推断动态信息。有人分享经验称尝试过网格排列、运动热图等方法，但效果都不如直接文字描述
-
-• **隐私声明问题**：有评论指出"视频留在本地"的说法有误导性，因为提取的帧实际会被发送到Anthropic服务器
-
-• **实用价值认可**：有用户看到了实际应用场景（如测量设备充电性能），认为这个工具能简化数据收集和分析流程
-
-• **命名建议**：多人建议工具不应局限于Claude，应改为更通用的名称以支持多种模型
-
-**补充讨论：** 技术细节方面，有人关心token消耗率和快速滚动场景的处理；作者强调工具通过场景变化检测而非固定间隔采样，可将600帧压缩至5-15关键帧，节省90%以上token</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48766005" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://blog.okturtles.org/2026/07/short-leash-ai-method/" target="_blank">The short leash AI coding method for beating Fable</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: Riseed</span> |
-                    <span>评分: 60</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-07-02 19:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何有效使用AI编程助手（Fable/Claude等），特别是应该严格控制（"短绳索"）还是给予更多自主权
+                    <div class="comments-summary">主要讨论点：NetBSD上Vulkan支持项目的实际价值、完成度和透明度问题
 
 不同观点：
 
-• **反对严格控制派**：认为"短绳索"是浪费强模型潜力的拐杖，应该通过深入讨论设计让AI提出更好方案，而非手把手指导每个细节
+• **质疑实际功能**：标题宣称"Vulkan现在可用"，但文档明确写着"还不能运行Vulkan程序"，只是编译链接成功。且目前仅支持Lavapipe（CPU软件渲染），并非真正的GPU加速，存在标题误导。
 
-• **AI自主派**：认为担心AI脱轨的观点已过时，现在AI可以自己测试、修复bug和驱动功能，人类甚至不需要理解代码库
+• **质疑项目难度**：有人认为在BSD上实现Vulkan并不困难，FreeBSD已有现成实现，即使没有AI辅助也只是个周末项目的工作量，暗示项目价值有限。
 
-• **谨慎现实派**：强调LLM本质上是token预测器，在复杂项目中仍有明显局限，必须有人类参与循环，否则容易得到次优方案或危险错误
+• **AI使用透明度争议**：项目代码疑似AI编写或辅助，但文档中完全未提及，引发对开源项目透明度的关注。
 
-• **工程管理类比派**：将AI视为初中级工程师，给予独立环境和权限，像审查真实工程师代码一样审查AI输出，反对微观管理
+• **支持态度**：认为NetBSD作为替代选择的存在有价值，尤其在Linux放弃旧平台支持的背景下，期待这个非官方项目能被完善并整合到官方。
 
-• **迭代优化派**：问题不在于控制程度，而在于试图一次性完成，应该通过描述具体问题进行针对性迭代修复
-
-• **效率质疑派**：认为过度控制比自己写代码更慢，不如通过预设技能和提示严格控制输出格式
-
-补充讨论：有人质疑原文对AI能力的低估，也有人批评很多建议作者缺乏足够经验就充当权威。争议焦点在于当前AI的真实能力边界以及人类监督的必要程度。</div>
+补充讨论：技术细节方面，有人注意到NetBSD使用`ftp`命令下载文件（而非FreeBSD的`fetch`）这一不寻常设计；另有人指出pkgsrc仓库中其实已存在Vulkan相关组件。多人误以为这是官方项目，实际是个人非官方努力。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48766026" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48765607" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -341,181 +473,47 @@ crv "YouTube链接" 或 crv 本地文件.mp4
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://github.com/immich-app/immich/discussions/29439" target="_blank">Immich 3.0</a>
+                    <a href="https://blog.fsck.com/2026/06/15/Superpowers-6/" target="_blank">Superpowers 6</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: hashier</span> |
-                    <span>评分: 190</span> |
-                    <span>评论数: 13</span> |
-                    <span>发布时间: 2026-07-02 14:13</span>
+                    <span>作者: seahorseemoji</span> |
+                    <span>评分: 125</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-06-30 21:28</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Immich v3.0.0 正式发布。本次更新包含多项重要功能：
+                    <p>Superpowers 6发布公告：性能提升50%，成本降低60%。
 
-**核心新特性：**
-- 移动端非破坏性照片编辑，支持裁剪、旋转等操作，可在网页端继续调整
-- 工作流预览功能，通过拖拽式编辑器实现自动化任务
-- 背景备份改进、完整性检查、时间线性能优化
-- HLS 实时视频转码预览、全新网页视频播放器
-- 移动端幻灯片、OCR 识别、直接上传到相册等功能
+原本计划发布5.2版本，增加了对多个AI模型的支持、改进了代码审查功能、修复了大量bug。但Anthropic发布Fable后，作者决定用它优化Subagent Driven Development系统。
 
-**重要提醒：**
-本版本包含破坏性更新，主要影响第三方 API 集成工具。更新前需查看迁移指南，特别是 v1.133.0 之前版本需完成 pgvecto.rs 迁移。
+主要优化成果：
+- 通过优化协调器与审查者的交接流程，降低10%的token消耗和时间
+- 合并代码审查和规范审查流程，再节省15%
+- 运行自动研究循环，执行25个优化实验，花费约165美元
+- 最终方案：使用Opus作为控制器，Haiku作为实现者，简化审查契约，在测试中成本从11-14美元降至约6美元
 
-**更新方式：**
-修改 .env 文件中 IMMICH_VERSION 为 v3，然后执行 docker compose 命令更新。</p>
+核心突破：利用AI驱动的自动化实验系统，系统性优化了整个开发流程，在保持代码质量的同时大幅提升效率和降低成本。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** Immich作为自托管相册解决方案的优缺点，特别是围绕端到端加密的必要性和实际使用体验
-
-**不同观点：**
-
-• **反对E2EE立场**：认为端到端加密没有必要，因为丢失密钥会导致数据永久丢失（如手机丢失后无法恢复珍贵照片），不加密反而更安全实用
-
-• **支持E2EE立场**：隐私保护至关重要，正因为Immich缺少E2EE而选择Ente Photos等有加密功能的替代方案，认为这是关键功能
-
-• **实用主义者**：将Immich与Google Photos并用，看重本地访问速度和存储大文件的能力，配合Tailscale VPN使用体验接近商业产品
-
-• **自托管犹豫者**：担心维护成本（更新、备份、硬件故障、能耗等），希望有既支持E2EE又省心的托管方案
-
-**补充讨论：**
-
-技术问题集中在：iOS大量照片同步失败、Google Takeout数据导入困难（700GB分块文件）、多用户场景下缩略图重复占用存储空间、只读文件夹支持等实际部署痛点。整体评价正面，但成熟度和易用性仍有提升空间。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48761944" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://petapixel.com/2026/06/24/a-special-wireless-free-nikon-camera-is-publicly-available-for-the-first-time/" target="_blank">A Special Wireless-Free Nikon Camera Is Publicly Available for the First Time</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: HardwareLust</span> |
-                    <span>评分: 13</span> |
-                    <span>评论数: 5</span> |
-                    <span>发布时间: 2026-06-25 01:11</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>尼康推出了一款特殊版本的Z6 III相机——"无无线连接版"，售价比标准版高出近400美元。这款相机完全移除了WiFi和蓝牙芯片，无法进行任何无线通信。
-
-尼康表示，这类相机通常为政府和工业客户定制生产，用于对安全有严格要求的环境。虽然功能更少，但因需要改变生产流程、移除硬件组件并在软件层面禁用相关功能，制造成本反而更高。
-
-这是尼康首次通过零售渠道公开销售此类特殊相机，目的是评估市场需求。对于大多数摄影师来说，这款相机并不理想，但为需要在特定安全环境中使用高端相机的用户提供了更便捷的选择。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Nikon Z6 III无无线功能版本的技术实现、目标用户和定价合理性
+                    <div class="comments-summary">主要讨论点：Superpowers（一个针对开发工作的AI技能集合）的实际效果和价值
 
 不同观点：
 
-• **技术可行性派**：认为技术上可以实现"只接收不发射"的设计（保留GPS接收功能但无WiFi/蓝牙），因为GPS是单向接收技术。但承认对于政府高安全需求，任何天线的存在都可能构成问题。
+• **强烈质疑派**：认为Superpowers是"AI虚假软件"，实测表现比普通Claude更差，消耗大量tokens却效果不佳，评分仅1/5。类比于20年前复杂的vim配置文件——看似强大实则无用，"说服LLM它能做得更好"的方法本身就不可行
 
-• **功能质疑派**：质疑为何需要专门版本——普通用户应该可以在标准型号上手动关闭所有无线功能，这个无无线版本似乎只为极高安全需求场景设计。
+• **积极支持派**：在特定场景下效果显著，特别是TDD（测试驱动开发）功能表现优秀，能处理更长规范。有实例显示在专业人士手中完成了两个此前因工作量大而被搁置的大项目（统一重复库、迁移脚本到ansible）
 
-• **价格不满派**：认为去除功能的版本反而贵400美元不合理，可能有用户想要无无线版本但不愿为此多付费。
+• **技能依赖论**：多位评论者指出效果取决于使用者的技能水平——"Superpowers只在懂得操纵它的人手中有用"。新手可能从中受益，但有经验的开发者更倾向使用原生工具
 
-• **应用体验派**：指出Nikon SnapBridge应用体验不佳，去掉它反而不是损失。
+• **方法论认可**：有人指出Superpowers基于评估(evals)而非直觉构建，这是其优势所在
 
-补充讨论：评论反映出市场对这一产品定位的困惑——技术上的减配却要加价，目标用户群体（政府/高安全需求）与普通消费者需求之间存在矛盾。</div>
+补充讨论：token消耗是普遍关注点；缺乏与竞品（如Matt Pocock's skills、GSD等）的对比基准；部分功能可能已被Claude Code原生集成；实际使用率数据显示触发频率较低（仅5%和1%）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48667568" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://dfarq.homeip.net/apricot-computers-an-underrated-british-brand/" target="_blank">Apricot Computers: An underrated British brand</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: giuliomagnifico</span> |
-                    <span>评分: 17</span> |
-                    <span>评论数: 4</span> |
-                    <span>发布时间: 2026-07-01 07:26</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Apricot是1980-90年代的英国电脑品牌，曾是首家发布486 PC的公司，并采用IBM的Microchannel架构，坚持在英国本土设计和制造。1990年BBC节目《Trouble Shooter》记录了其困境：作为小公司难以与IBM等巨头竞争，硬件制造不盈利但研发成本高昂，产品线过于庞杂（同时生产MCA和AT两条产品线）。专家指出，兼容机必须以更低价格提供更多功能才能与IBM竞争。最终Apricot决定转型，将重心转向盈利的软件和维护业务，为制造部门寻找战略合作伙伴。1999年6月30日，Apricot关闭苏格兰工厂，品牌逐步消失。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于Apricot品牌电脑的历史回顾和产品评价
-
-不同观点：
-• **怀旧派（Perenti）**：回忆1984年Apricot公司计划推出m68k架构机器的消息，当时感到非常兴奋，但不确定该产品是否最终上市
-
-• **设计赞赏派（jnaina）**：有销售Apricot电脑的经历，认为Apricot和Grid的PC在工业设计上表现出色，从众多"米色丑陋机器"中脱颖而出
-
-• **质疑派（jaggs）**：直接否定前述正面评价，使用英式俚语"pants"（糟糕的意思）表达对这些电脑的负面看法，认为它们实际表现不佳
-
-补充讨论：
-• nonamesleft提出了技术性问题，指出页面只显示activitystream json格式，这可能是网页显示故障，与主要讨论内容无关
-
-**争议焦点**：Apricot电脑的实际质量评价存在明显分歧——jnaina强调外观设计优势，而jaggs则对产品整体持否定态度。这反映出不同用户基于各自经验对同一品牌产品的评价差异。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48743362" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.ycombinator.com/companies/hazel-2/jobs/3epPWgu-full-stack-engineer-ts-sci" target="_blank">Hazel (YC W24) Is Hiring for Our Largest Government Contract</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: augustschen</span> |
-                    <span>评分: 1</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-07-02 13:14</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>**Hazel公司全栈工程师招聘摘要:**
-
-Hazel是一家为美国政府提供AI采购解决方案的初创公司,年采购规模达2.7万亿美元。现招聘全栈工程师,负责构建和部署AI驱动的投标评估系统。
-
-**核心要求:**
-- 必须是美国公民,需获得Top Secret/SCI安全许可(公司可协助申请)
-- 3年以上全栈开发经验
-- 技术栈:AWS、Python、TypeScript、React/Next.js、PostgreSQL、Docker等
-- 需25%时间在华盛顿DC现场工作,部署到保密网络
-
-**待遇:**
-- 年薪15-20万美元 + 0.25%-0.75%股权
-- 无限带薪假期、医疗保险、401(k)、搬迁补助
-
-**工作内容:** 直接与联邦政府合作,定制化部署AI采购平台,完成安全认证,在保密环境中交付创新解决方案。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">暂无评论</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48761068" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48739459" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
