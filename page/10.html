@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-07-09 03:03 (北京时间)
+            最后更新时间: 2026-07-09 05:58 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,25 +61,275 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://literaryreview.co.uk/out-of-the-armchair" target="_blank">Out of the Armchair</a>
+                    <a href="https://replicated.live/blog/away" target="_blank">Automating AI Away</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: Thevet</span> |
-                    <span>评分: 5</span> |
-                    <span>评论数: 0</span> |
-                    <span>发布时间: 2026-07-01 19:14</span>
+                    <span>作者: gritzko</span> |
+                    <span>评分: 122</span> |
+                    <span>评论数: 18</span> |
+                    <span>发布时间: 2026-07-07 15:11</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>本文探讨了LLM（如Claude）在软件开发中的局限性：虽然聪明但容易犯低级错误，且这种不精确和非确定性是其本质特征。
+
+作者提出的解决方案是将LLM"夹在"确定性工具和正式流程之间——底层用可靠的确定性工具（如Ragel解析器）处理精确任务，顶层建立正式工作流程，让LLM专注于其擅长的高层决策。
+
+关键思路是让工具和流程可编程：当LLM重复某些操作时就将其自动化，当它频繁失败时就自动化验证步骤。本质上是让LLM"自动化掉自己"，转化为简单可靠的确定性工具。
+
+Beagle SCM实现了这一理念：LLM可用JavaScript编写自己的例程，核心功能用C实现，工具层和工作流层用JavaScript动态加载，类似增强版的git hooks系统。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：如何在自动化系统中合理使用LLM，以及LLM与确定性代码的关系
+
+不同观点：
+
+• **确定性优先派**：认为应该将人工流程逐步转化为确定性代码，而不是用LLM替代。代码是确定性的、可重复运行且成本低，LLM只应加速代码创建和维护过程，而不是成为生产系统的核心（alexpotato, stego-tech强调将概率系统交给确定性过程是本末倒置）
+
+• **工具化中间层派**：主张让LLM生成工具或通过精心设计的工具集工作，而非直接操作。例如让LLM编写Roslyn API代码来转换代码，或为每个视图提供定制的工具列表，将图灵完备问题简化为二元决策（contextfree, bob1029, iamflimflam1将流程分为数据收集和处理阶段）
+
+• **实用主义分层派**：提出"确定性软件>LLM>人工"的优先级体系，将LLM视为"新CPU"嵌入确定性工作流，在合适场景使用LLM但尽快用确定性方法替换（mchusma, sebastianconcpt）
+
+• **技术本质派**：指出问题核心不在非确定性，而在自然语言的非正式性和模型认知局限。认为需要自我验证循环来改善准确性，而不是简单追求确定性输出（orbital-decay）
+
+补充讨论：Animats提出LLM可用于形式化验证的证明推导；多位评论者呼吁需要更多实践案例和深度产品评测来指导工具选择。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48818937" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.zksecurity.xyz/posts/circl-bugs/" target="_blank">AI Meets Cryptography 1: What AI Found in Cloudflare's Circl</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: duha</span> |
+                    <span>评分: 55</span> |
+                    <span>评论数: 3</span> |
+                    <span>发布时间: 2026-07-07 18:36</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>zkSecurity公司使用其开发的AI审计工具zkao扫描了Cloudflare的CIRCL实验性加密库，发现并确认了7个真实漏洞，所有漏洞已在上游修复。
+
+这7个漏洞包括：
+1. TSS/RSA多项式计算中的float64精度丢失（关键）
+2. qndleq通过prover控制的SecParam伪造
+3. BLS聚合缺少消息唯一性检查
+4. DLEQ可靠性通过FillBytes符号碰撞破坏
+5. HPKE PSK验证通过位运算OR开关绕过
+6. TSS/RSA拉格朗日系数使用int64
+7. CP-ABE访问控制通过AND共享漏洞破坏（严重）
+
+实验使用了两种配置：纯LLM和带专家技能的LLM。值得注意的是，AI评估的漏洞严重性与Cloudflare确认的严重性存在差异。这是zkSecurity关于AI在开源加密项目中发现漏洞的系列文章首篇，展示了AI辅助安全审计的能力和局限性。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：对一篇AI辅助安全审计文章的技术性评论，涉及审计方法论和加密实现细节
+
+不同观点：
+
+• **审计流程质疑**（dboreham）：关注AI辅助审计的效率问题，询问LLM生成的候选报告与最终确认漏洞的比例，试图了解"人工审核"环节的工作量和价值
+
+• **测试覆盖度质疑**（dboreham）：针对CP-ABE访问控制漏洞，质疑为何缺少高层级的功能测试（如"没有所需属性时无法解密"），认为这类似于忘记测试"错误密码无法登录"的基础场景
+
+• **工具定义困惑**（dboreham）：对zkao工具的实际功能表示不清楚，不确定它是持续审计系统还是某种特殊的LLM
+
+• **加密实现惊讶**（ur-whale）：对在加密算法中使用浮点数表达强烈意外，认为这不符合常规做法，仅知道djb曾用浮点单元做过非常规的整数运算优化
+
+补充讨论：两条评论没有直接交互，一个聚焦方法论和工具，一个聚焦实现细节，体现了技术审查中不同关注维度</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48821749" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.youtube.com/watch?v=3R0Lp86GEBk" target="_blank">A better way to tie gym shorts (or any drawstring) [video]</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: surprisetalk</span> |
+                    <span>评分: 523</span> |
+                    <span>评论数: 47</span> |
+                    <span>发布时间: 2026-07-07 12:45</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>您提供的内容似乎只是YouTube页面的页脚链接（关于、版权、隐私政策等），而不是一篇文章。
+
+请确认：
+- 您是否可以重新复制文章的正文内容？
+- 或者提供文章的链接让我帮您获取？
+
+这样我才能为您提供有意义的摘要。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：关于短裤抽绳绳结系法（Lapp Knot）的实用性及替代方案
+
+不同观点：
+
+• **支持Lapp Knot派**：有用户认为该结能很好地收紧抽绳，特别适合滑溜的绳子，虽然两端会不等长但整体好用；还有用户正在尝试并觉得有前景
+
+• **反对/放弃派**：有用户尝试后因绳结经常打成死结而放弃，改用日常鞋带的Ian Knot，认为速度快且很少出错
+
+• **替代方案派**：建议用滑动式绳结（类似prusik）可以保持张紧且易于调节；或直接用绳锁硬件代替绳结，可缩短抽绳且不会丢失
+
+• **简化主义者**：认为不应该把简单的事情复杂化；有人担心洗衣时抽绳会缩进裤腰难以取出
+
+补充讨论：评论延伸到绳结学习的broader话题，包括shoelace的granny knot常见错误、最实用的绳结组合选择，以及Bowline等经典绳结的应用场景。有人分享了阿富汗传统裤子使用类似系法的文化背景，还有解开死结的小技巧。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48816956" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://herdr.dev/" target="_blank">Herdr: One terminal to rule them all</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: handfuloflight</span> |
+                    <span>评分: 144</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-07-02 04:28</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Herdr 是一个终端复用器，专为管理多个编码代理（coding agents）设计。核心特性包括：
+
+**功能亮点**：
+- 在单个终端中运行所有代理，每个代理运行在独立的真实终端中
+- 支持远程 SSH 使用，服务器保持会话持久化
+- 可视化显示代理状态（工作中/阻塞/完成）
+- 支持从任何设备重新连接
+
+**技术特点**：
+- 纯二进制程序，无 Electron、无账户注册、无遥测
+- 支持 Linux/macOS（稳定版）和 Windows（预览版）
+- 提供脚本、Homebrew、Nix 等多种安装方式
+
+**定位**：类似 tmux 的现代化替代品，专注于代理编排和多任务管理，被 Google、AWS、NVIDIA 等公司的工程师使用。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Herdr（一个新的终端复用器）与 tmux 的对比，特别是在 AI agent 管理场景下的优劣
+
+不同观点：
+
+• **支持 Herdr 的观点**：运行多个 AI agent 时，Herdr 提供更好的可见性和状态管理。一位用户管理 10+ 个 agent，发现 tmux 难以追踪哪些 agent 在等待批准或已空闲数日。Herdr 的侧边栏和状态显示（idle/working）解决了这个痛点。
+
+• **质疑 Herdr 价值的观点**：部分用户认为除了 agent 状态通知外，看不出相比 tmux 有何实质性优势。有用户满意于 tmux 的功能（如可在手机上使用），不认为需要切换。
+
+• **功能特性讨论**：Herdr 的优势包括鼠标友好、display-popup UI、自动剪贴板复制、更好的嵌套会话支持、跨会话重连能力。但也存在问题：输入延迟、键盘复制粘贴在某些终端（wezterm）中不好用、缺少键位重绑定功能。
+
+• **工作流集成需求**：开发者关注 git worktree 支持，希望在多个 worktree 中并行运行 agents。现有工具（Emdash、Nimbalyst）管理状态的方式不够灵活。
+
+• **商业模式争议**：有评论质疑 Herdr 是否在向新手收费，而这些功能用 tmux 等免费工具也能实现。另有人指出其营销材料中使用公司 logo 可能存在法律风险。
+
+补充讨论：TUI 工具的兴起被认为反映了现有 GUI 的不足；多位用户推荐了替代工具（belfry、terminai.app、Superset、Conductor）；Herdr 的目标用户似乎是需要同时管理大量 AI agents 的重度用户。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48756578" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://docs.eventsourcingdb.io/blog/2026/07/09/claude-start-my-database/" target="_blank">Claude, Start My Database</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: goloroden</span> |
+                    <span>评分: 3</span> |
+                    <span>评论数: 1</span> |
+                    <span>发布时间: 2026-07-08 20:08</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Claude Code Plugin for EventSourcingDB 发布 1.1.0 版本，核心更新是 Claude 现在可以自主启动本地数据库实例。
+
+通过新增的 `/esdb:start-server` Skill，用户只需一句话即可启动 EventSourcingDB，无需记忆复杂的 Docker 命令。Claude 会自动检查 Docker 运行状态、端口占用和现有实例，然后以开发模式启动数据库（临时存储、HTTP 协议、内置管理界面）。
+
+此版本还优化了长会话体验：统一事件源管理、规范事件类型前缀、深化 CloudEvents 格式理解。文章演示了完整工作流程：从零启动数据库、写入事件、查询历史、执行 EventQL 查询，全程使用自然语言交互。
+
+需要注意：此配置仅适用于开发和实验，生产环境需要正式部署方案。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：EventSourcingDB的Claude Code Plugin宣称无需SDK、配置或Docker容器的做法是否可行和可靠
+
+不同观点：
+• **质疑AI原生方案的稳定性**：评论者认为直接在Claude上构建原生平台是在"非常不稳定、随机性很强的基础上"进行开发，SDK和脚本等传统工具才是可靠的解决方案
+
+• **营销术语质疑**：查看官方文档后发现实际部署仍需要传统配置方式，因此"无需SDK/配置"的说法更像是面向读者的营销话术而非技术现实
+
+• **数据库与AI的本质矛盾**：数据库提供商应该是稳定可靠、很少出问题的基础设施，而AI具有生成性和容错性，两者特性相悖
+
+补充讨论：评论者承认AI在数据库领域有价值（因为需要综合大量信息），但反对让AI"完全接管"数据库操作，认为这不是可持续的未来模式。核心担忧是将稳定性要求极高的基础设施层与本质上会犯错的AI技术深度绑定的风险。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48836805" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://www.theregister.com/virtualization/2026/07/08/allstate-insurance-quits-broadcom-alleges-vengeful-license-audit-on-the-way-out/5268155" target="_blank">Allstate Insurance quits Broadcom, alleges vengeful license audit on the way out</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: Bender</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-07-08 19:21</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Broadcom旗下的CA和VMware正起诉Allstate保险公司，指控其侵犯版权并拒绝配合软件许可证审计。CA于2025年5月起诉，VMware于同年12月起诉。
+
+Allstate则反指Broadcom在得知其计划停止使用VMware和CA软件后，才发起报复性审计。Allstate称Broadcom同时启动四项审计，提出模糊且矛盾的要求。2025年9月，Allstate已移除所有VMware软件。
+
+双方曾尝试调解但未果，案件预计2027年5月前进行关键裁决。这并非孤例，T-Mobile、Tesco、西联汇款等多家大型企业也在离开VMware，部分涉及纠纷。此案凸显了Broadcom收购VMware后与客户关系的紧张局面。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
                     <div class="comments-summary">暂无评论</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48751790" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48836271" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -90,39 +340,43 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.wsj.com/arts-culture/food-cooking/the-family-keeping-watch-over-a-52-year-old-pot-of-soup-1e72f115" target="_blank">The family keeping watch over a 52-year-old pot of soup</a>
+                    <a href="https://www-cs-faculty.stanford.edu/~knuth/taocp.html" target="_blank">The Art of Computer Programming by Donald E. Knuth</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: petethomas</span> |
-                    <span>评分: 83</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-07-01 01:41</span>
+                    <span>作者: archargelod</span> |
+                    <span>评分: 231</span> |
+                    <span>评论数: 15</span> |
+                    <span>发布时间: 2026-07-07 05:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>这是Donald E. Knuth《计算机程序设计艺术》(TAOCP)的介绍页面。该书于1999年被《美国科学家》评为世纪最佳12本物理科学专著之一,与爱因斯坦、狄拉克等大师的著作齐名。
+
+文章介绍了该书的电子版本,强烈建议购买PDF格式,警告Kindle等非PDF版本质量很差,数学公式可能无法正常显示。
+
+页面详细列出了第1卷《基本算法》第三版的信息,以及该卷的各语言翻译版本,包括俄语、日语、中文、西班牙语、匈牙利语、波兰语、罗马尼亚语等多个译本。
+
+文章还提到,五卷套装的注册用户可免费下载包含完整索引的PDF文件。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：曼谷一家52年永久炖汤餐厅引发关于永久炖汤概念、网红效应和实际品质的讨论
+                    <div class="comments-summary">主要讨论点：Donald Knuth的最新论文及《计算机程序设计艺术》系列书籍的进展、价格和技术价值
 
 不同观点：
 
-• **本地居民的失望观点**：住在餐厅附近13年的评论者认为这家店"非常普通"，与其他同类餐厅没有区别，只是因为网红营销而排队数小时。实际品尝者表示味道"很一般"，只是普通肉汤加过量味精，没有多年积累的风味层次
+• **对AI的态度转变**：Knuth在2026年2月的预印本中表示需要重新审视对"生成式AI"的看法，赞扬AI在自动推理和创造性问题解决方面的"戏剧性进展"
 
-• **网红效应的双刃剑**：一位当地居民痛惜自己最爱的泰式打抛餐厅因YouTube视频走红后要排队2小时，虽然为店家成功高兴，但也坦承自己的自私失落感。这反映了网红文化对本地优质小店的冲击
+• **书籍价格争议**：印度读者认为35000卢比（约$340电子书全套）过于昂贵，相当于6个月食品开支；而有用户以$40误标价购得全套，认为物超所值
 
-• **永久炖汤的普遍性**：多位评论者指出这并非新鲜事——台湾有130年历史的滷肉酱，贫困家庭用此方法延长食物保存，有人祖母的永久汤甚至放麦当劳薯条，还有人8年不用冰箱靠每日重煮维持食物
+• **阅读体验分歧**：多数读者推崇该书为职业瑰宝（收到Knuth的错误奖励支票被视为职业高光时刻）；但有读者批评使用伪汇编语言作为示例代码，影响可读性
 
-• **优化与机会成本质疑**：从技术角度分析，坚持一个配方52年可能错过探索更优方案的机会，这类似于A/B测试中的探索-利用困境
+• **完成进度关注**：社区普遍关心Knuth能否健康完成第7卷，Knuth本人表示1-5卷是核心内容，6-7卷属于专门化主题，需视相关性决定是否出版
 
-• **食品安全担忧**：有人质疑亚硝酸盐等毒素是否会累积，以及风味是否存在递减效应
-
-补充讨论：评论还涉及永久炖汤与生命起源的热液喷口类比，以及不同文化中类似烹饪传统的分享</div>
+补充讨论：有人提出用前沿LLM或Fable工具验证书中定理和解决Knuth列出的开放问题，但立即有人警告不应将PDF喂给AI来检查错误（应直接报告给Knuth）。错误报告机制也被特别提及：仅纸质版错误才应报告给Knuth。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48741447" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48813929" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -133,374 +387,130 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://news.ycombinator.com/item?id=48834961" target="_blank">Ask HN: Another "Hacker News" with less AI and more human-focused hacking news?</a>
+                    <a href="https://cyberinsider.com/ublock-origin-chrome-extension-now-blocks-known-clickfix-sites/" target="_blank">uBlock Origin Chrome extension now blocks known ClickFix sites</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: weird_trousers</span> |
-                    <span>评分: 62</span> |
-                    <span>评论数: 18</span> |
-                    <span>发布时间: 2026-07-08 17:48</span>
+                    <span>作者: speckx</span> |
+                    <span>评分: 5</span> |
+                    <span>评论数: 0</span> |
+                    <span>发布时间: 2026-07-08 19:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
+                    <p>uBlock Origin浏览器扩展已在其内置恶意软件过滤列表中添加了针对ClickFix攻击的保护功能,可阻止访问试图诱骗用户复制和执行恶意命令的网站。
+
+ClickFix是一种常见的社交工程攻击手段,通过显示虚假的验证码页面、浏览器错误或安全提示,诱导用户将恶意命令复制粘贴到PowerShell、终端或Windows运行对话框中,从而感染自己的系统。
+
+这项保护功能同样适用于Chrome和其他Chromium浏览器的uBlock Origin Lite版本。这一更新反映了浏览器厂商和安全工具开发者越来越重视ClickFix威胁。Opera浏览器最近也推出了类似的Paste Protect功能。
+
+尽管过滤列表能降低风险,但并非完整解决方案,用户仍需警惕任何要求复制执行命令的网站。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：如何应对Hacker News上AI相关内容过多的问题
+                    <div class="comments-summary">暂无评论</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48836252" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://gamefromscratch.com/microsoft-fire-idtech-team-at-id-software/" target="_blank">Microsoft fire idTech team at Id software</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: bauc</span> |
+                    <span>评分: 645</span> |
+                    <span>评论数: 76</span> |
+                    <span>发布时间: 2026-07-07 15:33</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>根据报道，游戏开发史上极具影响力的id Software公司及其idTech引擎团队遭遇重创。作为Xbox史上最大规模重组的一部分，几乎所有负责开发idTech引擎的id Software员工被解雇。
+
+Xbox新任CEO Asha Sharma在全员邮件中宣布，将在2027财年裁减约3200名员工，首批立即裁减1600人，另有四个工作室将脱离Xbox。这次长达一年的重组被认为是Xbox历史上最重大的架构调整。
+
+受影响者包括在id Software工作超过20年的资深开发者Michael Maynard等多名核心成员。idTech引擎曾在游戏引擎历史排名中位列第四，对游戏行业有深远影响，这次裁员标志着一个时代可能即将终结。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">**主要讨论点：** 微软解散idTech引擎团队、让工作室转向虚幻引擎5的战略决策及其对游戏行业的影响
+
+**不同观点：**
+
+• **商业短视论**：多数评论者认为微软采用"酒店管理"思维削减成本，用低工资UE5承包商替代专业引擎团队，虽短期省钱但长期损害创新能力。这种把员工当可替换商品的做法会导致游戏质量下降和品牌价值流失
+
+• **垄断恶果论**：微软本可开源idTech引擎对抗垄断，却反而把市场让给Epic，造就新的引擎垄断。大公司收购优秀工作室后不作为，最终摧毁其独特文化和技术积累，这是典型的"拥抱、扩展、消灭"策略
+
+• **行业衰退担忧**：idTech引擎本身就是Doom/Quake系列的核心卖点，转向UE5会让这些游戏变得平庸，与其他UE5游戏无异。工作室同质化将引发创意螺旋式下降，玩家逐渐失去兴趣
+
+• **行业整合必然论**：有评论者详细分析指出，游戏工作室整合本就难以产生规模效应——各工作室工具链不同、引擎差异对消费者意义不大、多数开发者只是内容制作而非技术创新、AAA游戏价值在于内容量而非玩法创新
+
+• **少数异议**：有人质疑缺乏idTech团队被裁的实际证据，认为人才离开中层管理地狱或许对行业有利
+
+**补充讨论：** 部分评论关注技术生态影响（Vulkan在Windows的前景），以及微软任命缺乏经验的管理者导致Xbox部门逐步瓦解的组织问题</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=48819244" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://davit.app" target="_blank">Show HN: Davit, a Apple Containers UI</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: xinit</span> |
+                    <span>评分: 183</span> |
+                    <span>评论数: 20</span> |
+                    <span>发布时间: 2026-07-07 18:44</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>Davit 是一款轻量级的 macOS 原生容器管理工具。它直接通过 XPC 与 Apple 的开源容器守护进程通信,无需 Electron 或后台代理,应用体积仅约 17MB。
+
+**主要功能:**
+- 容器管理:启动、停止、删除,实时显示 CPU、内存和 IP
+- 一键终端访问,直接集成 Terminal 或 iTerm
+- 编辑并重建容器配置(端口、环境变量、挂载等)
+- 镜像、卷和网络管理,支持所有 OCI 标准仓库
+- 可自动安装容器平台(无需管理员权限)
+
+**技术特点:**
+完全使用 SwiftUI 构建的原生应用,利用 Apple Virtualization 框架,每个容器运行在独立轻量级 VM 中,启动速度极快,针对 Apple Silicon 优化。与 Docker Desktop 相比,架构更简洁,直接使用系统原生能力。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：Davit作为Docker Desktop轻量级替代方案的可行性，以及AI辅助开发的应用质量
 
 不同观点：
 
-• **无需替代，回归现实**：建议放弃寻找替代网站，转而参与本地技术社区的线下活动，因为很少有网站能达到HN的质量水平
+• **积极评价派**：认为应用小巧高效（17MB）、运行流畅，特别指出Claude深度参与的项目通常质量较高（原生体验、非Electron），愿意尝试替代现有方案
 
-• **技术过滤方案**：多人提出通过浏览器扩展过滤AI/LLM/agent等关键词，或使用已有AI过滤功能的镜像站点（如hcker.news）来净化阅读体验
+• **功能需求派**：希望增加Dockerfile直接构建、容器内文件浏览、菜单栏集成等功能，部分用户因缺少特定功能（如Caddy集成）暂时无法迁移
 
-• **转向其他社区**：推荐lobste.rs（可过滤vibecoding标签）、hackaday.com、engineeringblogs.xyz等替代技术社区，或尝试Mastodon等去中心化平台
+• **性能关注派**：主要关心内存占用，因Docker Desktop资源消耗大而寻找替代品，OrbStack虽好但收费模式让部分用户犹豫
 
-• **时间会解决问题**：认为AI热潮会像加密货币和NFT一样自然消退，只需耐心等待一年左右
+• **技术细节派**：讨论压缩比异常（17MB压缩vs 56MB二进制）、macOS UI设计趋势、容器兼容性等技术问题
 
-• **讽刺式解决**：有人幽默地建议用AI来过滤AI内容，或将AI相关词汇替换成其他词汇以获得娱乐效果
-
-补充讨论：有评论指出HN社区实际上已经在通过审核系统过滤大量AI相关内容，社区对AI态度既有"内容太多"的抱怨，也有"过于怀疑"的批评，这本身反映了社区的复杂态度。还有人提到可以查看HN的历史存档版本来回顾AI热潮之前的状态。</div>
+补充讨论：
+有人列举了其他类似的AI辅助项目（contained-app、berth），形成竞品对比。入门体验被认为需要改进（nginx:latest不是好的演示案例）。整体氛围偏正面，但用户更关注实际可用性而非概念验证。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48834961" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/github/freno" target="_blank">GitHub Freno: cooperative, highly available throttler service</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: nateb2022</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-07-06 02:06</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Freno是一个协作式高可用限流服务，用于控制对资源（主要是MySQL集群）的写入操作。它通过监控MySQL复制延迟状态，当延迟超过阈值时建议客户端停止写入。Freno使用Raft协议实现高可用，通过HTTP提供服务（返回200表示可写，429表示应停止）。客户端需主动查询并遵守其建议。适用于批量操作、数据迁移等场景，可动态适应服务器变化并支持强制限流特定应用。
-
-</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">您只提供了一条评论，无法进行多观点分析和讨论关系梳理。
-
-**当前评论内容：**
-
-这是一条讽刺GitHub服务稳定性的评论。作者提出两个玩笑：
-• GitHub宣称的"高可用性"与实际频繁宕机形成反差
-• 频繁宕机反而意外地起到了限流作用
-
-**分析说明：**
-
-要完成您要求的分析（识别不同观点立场、讨论关系、争议焦点等），需要提供包含多条评论的完整讨论串。目前只有单条评论，无法识别：
-- 不同立场的观点对比
-- 评论之间的互动关系
-- 争议的焦点和论据
-
-**建议：**
-请提供完整的评论区内容或讨论串，我将按照您的要求进行详细分析。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48799930" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://thisbugslife.com/2021/11/21/dolosse-a-south-african-invention-used-over-the-world/" target="_blank">Dolosse – a South African invention used over the world</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: andsoitis</span> |
-                    <span>评分: 124</span> |
-                    <span>评论数: 14</span> |
-                    <span>发布时间: 2026-07-04 15:32</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>Dolosse是南非发明的一种H形混凝土结构，广泛应用于南非海岸线的海洋工程防护。它们通常重达30-80吨，用于保护防波堤、港口墙和海岸建筑免受海浪侵蚀。例如伊丽莎白港Coega深水港的2.5公里防波堤就使用了近3万个30吨重的dolosse。
-
-这种结构的优势在于：不会被大浪移动，能让水流通过其间隙从而消散波浪力量，可随机放置或整齐堆叠。其设计灵感可能来自儿童游戏用的指关节骨或dubbeltjie刺。
-
-遗憾的是，发明者因当时受雇于南非铁路港口服务局，既未获得报酬认可，也未申请专利。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** Dolosse（多足锥体）作为海岸防波结构的实际效果及与其他防波块的比较
-
-**不同观点：**
-
-• **质疑Dolosse实效派**（nusq）：基于葡萄牙Sines 1979年崩溃案例，认为dolosse在高能量海域不可靠。其承重依赖块体间协作的设计理念在实践中失败——少数块体破损会导致整体结构在风暴中快速崩溃。相比之下，tetrapods等依靠自重和密度的设计更稳定。
-
-• **质疑海岸护甲总体方法派**（bix6）：提出更根本的批评——海岸护甲本身无法防止侵蚀。建议采用沙滩补充系统（如澳大利亚的泵送系统）或避免在海岸附近建设。
-
-• **Dolosse非最优派**（kulahan, cookiengineer）：认为dolosse既非首创也非最佳方案，tetrapods在欧洲等地更为普遍。
-
-• **德国案例派**（walski）：德国Sylt岛经数十年使用后移除了这些结构，发现对海岸保护无积极效果。
-
-**补充讨论：**
-• 文章准确性存疑：mk_stjames指出文章配图实际展示的是tetrapods而非dolosse
-• 多位评论者批评原文内容空洞，仅为维基百科链接的"blogspam"</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48786124" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://mattruby.substack.com/p/the-most-unbelievable-things-about" target="_blank">The most unbelievable things about life before smartphones (2020)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: downbad_</span> |
-                    <span>评分: 8</span> |
-                    <span>评论数: 1</span> |
-                    <span>发布时间: 2026-07-08 15:13</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>无法获取文章内容</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">您只提供了一条评论，这不足以完成您要求的分析任务。要识别不同观点、讨论关系和争议焦点，我需要：
-
-**缺少的内容：**
-• 原始帖子或文章（tocs3 评论中提到的"take on things"指的是什么）
-• 更多评论（至少需要多条评论才能比较不同观点）
-• 完整的讨论上下文
-
-**当前这条评论表达的观点：**
-• tocs3 认为某些现象是因为"年轻"而非"智能手机的有无"导致的
-• 这显然是对某个关于智能手机影响的讨论的回应
-
-**建议：**
-请提供完整的讨论内容，包括：
-1. 原始帖子/文章
-2. 多条评论（建议至少 3-5 条）
-3. 如果有的话，评论之间的回复关系
-
-这样我才能为您提供有意义的观点分析和讨论要点总结。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48833037" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://www.theatlantic.com/photo/2018/05/historic-photos-of-nasas-cavernous-wind-tunnels/560660/" target="_blank">Historic Photos of NASA's Cavernous Wind Tunnels</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: ohjeez</span> |
-                    <span>评分: 104</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-07-04 17:28</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>这篇文章展示了NASA风洞设施的历史照片集。20世纪期间，NASA及其前身NACA在弗吉尼亚兰利研究中心和加州艾姆斯研究中心建造了数十个专用风洞，用于测试飞机、航天器等的设计，检验高速气流、湍流、结冰等各种效应。这些设施规模庞大，其中最大的艾姆斯80英尺×120英尺风洞至今仍在运行。1990年代，由于政府风洞设施过剩以及计算机模拟技术的进步，许多老旧设施被整合拆除。文章通过39张历史照片记录了这些令人惊叹的风洞设施，包括1920年NACA的首个风洞、各种测试场景，以及1930-40年代的大型建设工程。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：**
-NASA及其他机构历史风洞设施的规模、技术特点及其建造历史
-
-**不同观点：**
-
-• **感官体验派**：多位评论者强调风洞的物理震撼——polpo描述80x120英尺风洞的视觉尺度难以理解，数英里外能听到低频轰鸣；JackFr回忆超音速风洞"难以置信的噪音"
-
-• **技术细节派**：echoangle赞赏磁悬浮测量技术的巧妙；yardie揭示风洞"烟雾"实为白色油的内幕；dolmen强调法国百年设施如何适应从水上飞机到自行车队的多元需求
-
-• **历史对比派**：int0x29和trebligdivad都注意到1937年施工照片中动物（驴子/马匹）与航天技术的强烈反差；close04从NACA复制英国风洞引申出"从模仿起步"的发展规律
-
-• **怀旧感叹派**：robviren将现代人看风洞比作罗马陷落后的人看水渠，感叹"用当时的工具以那样的速度建造如此复杂的大型设施"的能力似乎已失传
-
-**补充讨论：**
-dsrtslnd23提出关键问题：技术进步后为何仍广泛使用风洞而非纯计算方法？这个问题在评论中未获解答，反映出实验验证与计算模拟关系的持续相关性。mschaef从职业安全角度评论历史照片缺乏防护措施。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48787124" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/kklimuk/docx-cli" target="_blank">Show HN: Docx-CLI: agents read/edit Word docs using 1/2 the time and tokens</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: kirillklimuk</span> |
-                    <span>评分: 66</span> |
-                    <span>评论数: 17</span> |
-                    <span>发布时间: 2026-07-07 18:19</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>docx-cli 是一个专为 AI 代理设计的 Word 文档命令行工具，能够在保持格式完整的前提下编辑、批注和修订 .docx 文件。
-
-**核心优势**：
-- 使用稳定定位符直接修改 XML，避免传统方式需要手写 OOXML 的复杂性
-- 性能显著优于默认方法：在基准测试中，任务完成率提升 6 倍（弱模型）到 1.5 倍（强模型）
-- Token 消耗减少 2.2-2.6 倍，速度提升 1.7-2 倍
-- 生成的文档 100% 可被 Word 正常打开（默认方法约 14% 失败率）
-
-**工作原理**：为 AI 提供简单命令和 Markdown 视图，无需理解底层 XML 结构，同时保留自定义样式、主题色和嵌入对象。
-
-支持通过 npm 或独立二进制文件安装，提供 read、replace、find、track-changes 等命令进行文档操作。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** 关于使用CLI工具优化AI处理Word文档的效率和token使用的讨论
-
-**不同观点：**
-
-• **CLI工具优势派**：多位评论者认为CLI方式比传统方法更高效，能显著降低token消耗，解决AI"能力过剩"问题，适合日常实际使用场景
-
-• **格式批评派**：felooboolooomba指出Office格式是历史遗留问题和供应商锁定工具，AI时代应该抛弃这种专有格式而非继续支持它
-
-• **技术路线疑问**：DenisM困惑为何CLI而非MCP（Model Context Protocol）成为主流，与预期相反
-
-• **实用性质疑**：rubyfan质疑简单文本替换任务是否真需要LLM，传统命令行工具可能更可靠
-
-**补充讨论：**
-- 有多个类似项目正在开发（OfficeCLI、python-office-mcp-server等），社区建议进行基准测试对比
-- 技术细节关注点：如何处理OOXML中的嵌入图片等复杂结构
-- 项目目标是让非技术用户也能高效使用AI工具</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48821500" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://whimfiles.com" target="_blank">Show HN: Fast, native Mac file manager (filters, fuzzy find, 9 MB, no Electron)</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: whimbyte</span> |
-                    <span>评分: 95</span> |
-                    <span>评论数: 19</span> |
-                    <span>发布时间: 2026-07-07 08:12</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>WhimFiles 是一款专为 macOS 设计的文件管理器应用（售价 $19.99，一次性购买）。其核心特色是强大的实时过滤功能，可同时按文件类型、日期和大小筛选，支持递归搜索所有子文件夹。
-
-主要功能包括：双窗格并排浏览、模糊路径快速跳转（⌘G）、悬停预览图片和 PDF、多标签页管理、批量重命名、图片格式转换（HEIC/WebP/AVIF 转 JPG/PNG）、命令面板等。界面显示文件大小和文件夹总容量，支持从命令行直接打开。
-
-适用于需要管理大量文件的用户群体，如开发者、摄影师、设计师等。提供 30 天免费试用，仅支持 Apple Silicon 芯片的 macOS 12 及以上系统，应用体积约 9MB。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于一款新macOS文件管理器应用的多维度评价
-
-不同观点：
-
-• **设计规范争议**：部分用户指出UI不符合macOS设计规范（蓝色焦点框尺寸异常、按钮尺寸不达标、键盘快捷键与Finder不一致），但也有用户赞赏其9MB的轻量化设计，认为避免使用Electron是优点
-
-• **信任与安全担忧**：有用户质疑匿名开发者（hello@whimfiles.com）要求完整文件系统访问权限的可信度；另有用户询问是否使用AI技术构建
-
-• **技术可靠性质疑**：关注跨卷移动文件时复制失败是否会回滚或留下部分文件；质疑是否使用索引机制导致数据过时
-
-• **商业模式争议**：资深用户基于Path Finder的经验，担忧一次性付费模式无法支撑长期维护，质疑开发者是否会像其他AI生成应用一样几周后失去兴趣
-
-• **Finder替代需求分歧**：部分用户认为macOS文件管理严重不足，甚至远程使用Windows；另有用户困惑为何需要第三方文件管理器，认为这不应是普遍需求
-
-补充讨论：多位用户推荐替代方案（Nimble Commander、Marta、Forklift），反映市场上已有成熟竞品。核心争议在于该应用能否在设计、安全性和长期支持上建立差异化优势。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48814952" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://github.com/bkuan001/halo-record" target="_blank">Show HN: Halo – open-source, tamper-evident runtime evidence for AI agents</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: brian_kuan</span> |
-                    <span>评分: 37</span> |
-                    <span>评论数: 11</span> |
-                    <span>发布时间: 2026-07-07 14:07</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>halo-record是一个为AI代理提供防篡改审计日志的开源工具。它将代理的所有操作（工具调用、模型调用、数据访问等）记录到只能追加的哈希链日志中，任何人都可以验证日志未被篡改，无需信任日志生成方。
-
-核心特点：
-- 零运行时依赖，仅使用标准库
-- 不进行网络调用，数据不离开基础设施
-- 输入数据经过哈希和脱敏处理
-- 约4300行Python代码，易于审计
-- 支持多种集成方式（OpenTelemetry、LangChain、LiteLLM等）
-
-使用简单：一行代码包装代理入口点即可开始记录，然后生成自验证HTML报告。通过可选的witness服务可实现完备性验证，确保日志未被删除或选择性记录。适用于需要向客户证明AI代理操作透明度和可审计性的场景。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">**主要讨论点：** AI代理审计追溯系统的技术方案及其有效性
-
-**不同观点：**
-
-• **技术质疑派**：derdi质疑"自持链"方案的防篡改能力，认为既然由运营者持有，就可以编辑后重新封装；ambicapter质疑为何审计日志会是可编辑的，认为这不合理
-
-• **替代方案派**：mdellison提出使用学术预注册技术，通过预承诺与实际交付的对比来发现缺失，这样删除记录会显示为明显的gap而非无痕迹；gawkdev建议考虑第三方共同签名或透明日志方案
-
-• **架构选择派**：solarkraft质疑为何实现为Python库而非completions API代理；all2关注框架兼容性和拦截机制的技术细节
-
-• **落地挑战派**：nf-x认为想法不错但实现粗糙，指出核心困难在于缺少大公司愿意充当见证者角色
-
-**补充讨论：**
-brian_kuan作为作者邀请社区测试破解系统，并发起关于AI代理产品安全审查标准的开放讨论；rmonvfer询问能否应用于Claude Code等具体工具。核心争议在于信任模型：自持链能否真正防止运营者作恶，是否需要独立第三方见证。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=48818098" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=48821848" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
