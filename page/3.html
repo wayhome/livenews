@@ -49,7 +49,7 @@
     <div class="container py-5">
         <h1 class="mb-4">HackerNews 热门故事摘要</h1>
         <div class="text-muted mb-4">
-            最后更新时间: 2026-08-08 14:29 (北京时间)
+            最后更新时间: 2026-08-08 17:25 (北京时间)
         </div>
 
         <!-- 分页信息 -->
@@ -61,36 +61,41 @@
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.gingerbeardman.com/2026/08/02/games-at-the-press-of-a-button-the-rip-o-bot/" target="_blank">Games at the press of a button: The Rip-O-Bot (1989)</a>
+                    <a href="https://malisper.me/how-we-made-postgres-hundreds-of-times-faster-the-query-engine/" target="_blank">Making Postgres 300x faster for analytics: batching, operator fusion, and SIMD</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: msephton</span> |
-                    <span>评分: 29</span> |
-                    <span>评论数: 2</span> |
-                    <span>发布时间: 2026-08-02 20:19</span>
+                    <span>作者: poly2it</span> |
+                    <span>评分: 237</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-08-07 11:00</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>这篇文章介绍了日本游戏设计师MTJ（三辻富贵朗，《泡泡龙》等游戏的设计者）在1989年GAMEST杂志专栏中的预见性观点。
+                    <p>pgrust 0.2版本通过重构查询引擎实现了显著性能提升：OLTP场景下比Postgres快30%，在Clickbench分析型查询基准测试中快300倍，甚至超过了Clickhouse。
 
-MTJ批判了当时游戏行业的抄袭风气，并虚构了一个"近未来"场景：一台名为"Rip-O-Bot"（抄袭机器人）的机器，只需按几个按钮就能自动生成抄袭游戏——输入要模仿的游戏名，随机选择背景和角色，瞬间完成。
+核心优化源于对Postgres架构局限的认识。Postgres诞生于80年代，设计时主要瓶颈是磁盘I/O，但现代环境中数据常驻内存、NVMe固态硬盘普及，CPU和内存带宽成为新瓶颈。文章以简单求和查询为例，Rust实现比Postgres快55倍。
 
-这个1989年的科幻设想与今天的生成式AI工具惊人相似。MTJ警告这样的时代即将到来，普通设计师将因此被大量解雇。他强调，模仿工作机器也能做，人类设计师必须专注于独创性，因为"游戏归根结底就是创意"——这是设计师"最后的武器"。</p>
+pgrust采用批处理、算子融合和SIMD等技术改造传统的Volcano执行模型。Volcano模型逐行处理数据（通过next()方法），虽然简洁但效率低。通过批量处理、减少函数调用开销、利用现代CPU指令集，pgrust的查询引擎单独贡献了约10倍的性能提升。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：1989年某篇文章对游戏行业被衍生作品泛滥的预测，以及这个预测在现实中的体现
+                    <div class="comments-summary">主要讨论点：pgrust项目（Rust重写PostgreSQL）的可信度、技术路线和性能声明真实性
 
 不同观点：
-• 历史验证观点（schnevets）：认为预测的世界确实到来了——90年代有大量衍生卡通游戏，当代有廉价合作游戏和恐怖游戏等"低质量"类型。但关键论据是：即使存在大量衍生品和低质作品，创新和质量从未被真正掩埋，优质内容总能脱颖而出。以《阿拉丁》和《狮子王》横版游戏为例，虽然都是衍生品，但在动画、物理、关卡设计上的差异足以让两款游戏都有价值
 
-• 技术乐观观点（qingcharles）：认同预测的先见之明，但提出新的思考角度——AI工具应该能促进原创性而非削弱它。论据是AI能让开发者快速原型开发、快速试错，理论上应该降低创新门槛
+• **质疑项目真实性**：有评论指出项目仅有2次提交，首次提交包含150万行代码且提交信息为"hey claude, do a breakthrough"，认为这是AI生成项目，缺乏工程严肃性，作者"伪装成严肃团队"，bus factor为1且不可信
 
-补充讨论：两位评论者对"衍生品泛滥"的态度不同。第一位强调生态系统的自我调节能力（cream rises to the top），第二位则关注技术如何改变创作门槛，暗示对未来抱有不同期待。</div>
+• **怀疑商业前景**：认为即使技术上更优秀，人们也不会选择pgrust而非PostgreSQL，因为缺少可信团队背书、生态系统和长期维护保障
+
+• **支持技术创新**：部分人对自适应规划等新特性表示期待，认为这证明了相关技术的可行性；也有人用SQL Server的批处理模式例子支持性能提升的可能性
+
+• **质疑性能数据**：对300倍性能提升表示怀疑，认为真有这个性能提升应该忙于处理客户而非宣传；批评博客用堆上循环求和与数据库查询对比，认为是"华而不实的演示"
+
+补充讨论：作者强调正确性验证工作（形式化证明、模糊测试），发现了pgrust约100个bug和PostgreSQL约20个bug。技术讨论涉及IO调度器、线程池、算子融合等优化技术的实现细节。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=49147907" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=49208535" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -101,39 +106,39 @@ MTJ批判了当时游戏行业的抄袭风气，并虚构了一个"近未来"场
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://www.sciencealert.com/radical-study-suggests-life-on-earth-arose-from-non-living-matter-twice" target="_blank">Radical Study Suggests Life on Earth Arose Twice</a>
+                    <a href="https://blog.cloudflare.com/kitesurf/" target="_blank">Kitesurf: Agent-first browser that runs in V8 isolates</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: jnord</span> |
-                    <span>评分: 127</span> |
-                    <span>评论数: 16</span> |
-                    <span>发布时间: 2026-08-07 12:45</span>
+                    <span>作者: m3h</span> |
+                    <span>评分: 173</span> |
+                    <span>评论数: 21</span> |
+                    <span>发布时间: 2026-08-07 10:42</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>一项发表在《科学进展》的新研究提出惊人观点：地球生命可能独立起源了两次。研究发现，细菌和古菌这两大生命谱系可能各自独立完成了从非生命到生命的转变。
-
-关键证据是：催化核心代谢反应的酶在这两个谱系中并不保守。研究人员分析了代谢酶的蛋白质结构，发现生命起源经历了四个阶段：最初完全依赖环境中的金属催化反应，逐步发展出自己的酶系统，最终摆脱对外部金属的依赖，成为自由生存的细胞。
-
-重要的是，细菌和古菌是在分离之后才各自独立完成这一过程的。研究者认为这意味着"一个遗传密码的起源，但两个生命的起源"。</p>
+                    <p>Cloudflare宣布推出Kitesurf——一个专为AI agents设计的全新浏览器,完全运行在Workers平台上。传统浏览器如Chromium为人类设计,对AI agents来说过于笨重且资源消耗大。Kitesurf剔除了标签页、主题、扩展等人类功能,专注于AI所需的token效率、性能和成本优化。该浏览器在CPU和内存消耗上显著优于Chromium,目前在Browser Run平台免费提供beta版本。开发过程中团队大量使用AI辅助编程,并通过Web Platform Tests确保代码质量,将人力集中在架构设计和审查上。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：关于生命是否在地球上"起源两次"的研究引发争议，核心分歧在于如何定义"独立起源"
+                    <div class="comments-summary">主要讨论点：Cloudflare推出的Kitesurf浏览器自动化工具引发的技术、商业和道德讨论
 
 不同观点：
 
-• **质疑"两次起源"说法**：多位评论者认为这是标题党，实际上是同一生命树的分支。randomImmigrant指出细菌和古菌共享DNA/RNA、蛋白质和代谢规则，只是通过不同路径填补代谢空白，应算作原始生命的分支而非独立起源。MarkusQ批评研究玩文字游戏，称依赖矿物表面的共同祖先"不算活着"
+• **利益冲突担忧**：多位用户质疑Cloudflare既提供CDN防护又提供浏览器自动化/爬虫工具存在根本矛盾。担心Cloudflare会给自己的Browser Run服务特权绕过自家的反爬机制，形成不公平竞争（minraws, QuantumNomad_）
 
-• **支持研究价值**：Rigdanir从科学角度分析，认为LUCA（最后共同祖先）缺乏基本代谢能力却有完整核苷酸代谢，说明早期生命被困在热液喷口，后来才演化出自由生存能力。hamilyon2补充说明代谢酶对金属离子的依赖反映了这段历史
+• **实用性质疑**：有人质疑浏览器代理（agents）的实际应用场景，认为"AI帮你购物"等说法只是高管口号，缺乏真实案例（cautiouscat）
 
-• **对研究意义的怀疑**：peter_stokes认为生命起源研究是"死胡同"，永远无法复制生命创造过程。qsera则表示对地球生命起源不感兴趣，更关注宇宙中的生命起源
+• **技术定义讨论**：有观点认为这种工具本质是"网页数据提取工具"而非真正的浏览器，因为缺少"浏览"这一核心用途（TheRealPomax）
 
-补充讨论：pingou提出这可能增大Drake方程中的生命出现概率；ChrisMarshallNY讨论地球生命的多次"归零重启"；部分人关注信息源质量和研究可信度问题</div>
+• **技术肯定**：开发者角度认可其基于Blitz引擎的技术实现，以及使用WPT测试进行验证的做法（nicoburns, Hexcles）
+
+• **开源诉求**：希望工具开源并可本地运行，担心易被网站识别和封禁（zuzululu）
+
+补充讨论：有人从商业角度理解Cloudflare的动机——流量不出Cloudflare网络可节省大量成本（scotty79）；也有技术观察指出架构的嵌套复杂性（Rust→WASM→V8）</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=49209572" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=49208393" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -234,39 +239,77 @@ MTJ批判了当时游戏行业的抄袭风气，并虚构了一个"近未来"场
         <div class="card story-card">
             <div class="card-body">
                 <h3 class="card-title">
-                    <a href="https://blog.cloudflare.com/kitesurf/" target="_blank">Kitesurf: Agent-first browser that runs in V8 isolates</a>
+                    <a href="https://www.theregister.com/security/2026/08/07/water-system-controllers-dont-belong-on-the-internet-says-ex-nsa-chief-after-suspected-iran-attacks/5285070" target="_blank">Water system controllers don't belong on the internet, says ex-NSA chief</a>
                 </h3>
                 <div class="story-meta">
-                    <span>作者: m3h</span> |
-                    <span>评分: 173</span> |
-                    <span>评论数: 21</span> |
-                    <span>发布时间: 2026-08-07 10:42</span>
+                    <span>作者: Bender</span> |
+                    <span>评分: 171</span> |
+                    <span>评论数: 19</span> |
+                    <span>发布时间: 2026-08-07 21:19</span>
                 </div>
 
                 <div class="summary-section">
                     <h5>文章摘要</h5>
-                    <p>Cloudflare宣布推出Kitesurf——一个专为AI agents设计的全新浏览器,完全运行在Workers平台上。传统浏览器如Chromium为人类设计,对AI agents来说过于笨重且资源消耗大。Kitesurf剔除了标签页、主题、扩展等人类功能,专注于AI所需的token效率、性能和成本优化。该浏览器在CPU和内存消耗上显著优于Chromium,目前在Browser Run平台免费提供beta版本。开发过程中团队大量使用AI辅助编程,并通过Web Platform Tests确保代码质量,将人力集中在架构设计和审查上。</p>
+                    <p>美国至少12个州的水系统遭网络攻击,疑似伊朗所为。前NSA局长Nakasone在DEF CON大会上表示,可编程逻辑控制器(PLC)不应连接互联网,需要提高安全标准。这些PLC设备可监控水位并控制水泵开关。虽然安全研究人员高度怀疑是伊朗黑客所为,但FBI尚未正式归因。美国拥有5万个水务设施,提供90%的供水,但这些设施普遍资金不足、IT人员缺乏,构成巨大攻击面。Nakasone强调需要通过合作伙伴关系和创新方法来加强关键基础设施的网络防御能力,包括DEF CON Franklin等志愿者项目。</p>
                 </div>
 
                 <div class="summary-section">
                     <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：Cloudflare推出的Kitesurf浏览器自动化工具引发的技术、商业和道德讨论
+                    <div class="comments-summary">主要讨论点：关键基础设施（水系统控制器等PLC设备）是否应该连接互联网
 
 不同观点：
 
-• **利益冲突担忧**：多位用户质疑Cloudflare既提供CDN防护又提供浏览器自动化/爬虫工具存在根本矛盾。担心Cloudflare会给自己的Browser Run服务特权绕过自家的反爬机制，形成不公平竞争（minraws, QuantumNomad_）
+• **完全隔离派**：认为关键基础设施应彻底断网。aliasxneo用亲身经历展示行业现状极其落后（承包商差点上传错误的客户程序到数据中心，行业从未听说过NAS或RAID），认为这个行业处于"黑暗时代"，不具备安全联网的能力。chmod775强调基础设施崩溃可能导致数百万人死亡，失职领导必须立即更换。
 
-• **实用性质疑**：有人质疑浏览器代理（agents）的实际应用场景，认为"AI帮你购物"等说法只是高管口号，缺乏真实案例（cautiouscat）
+• **条件联网派**：wolvoleo和Kim_Bruning认为通过VPN、防火墙等适当安全措施可以实现远程访问，便于维护管理（否则每个小问题都要现场处理）。强调问题不在联网本身，而在于多层安全防护的缺失。
 
-• **技术定义讨论**：有观点认为这种工具本质是"网页数据提取工具"而非真正的浏览器，因为缺少"浏览"这一核心用途（TheRealPomax）
+• **漏洞扩展讨论**：clbrmbr指出无线RF和蓝牙接口同样存在安全风险；nacozarina提到天然气管道压缩站也通过无线联网，易受DOS攻击影响。vannevar认为许多基础设施因成本考虑被草率地接入互联网。
 
-• **技术肯定**：开发者角度认可其基于Blitz引擎的技术实现，以及使用WPT测试进行验证的做法（nicoburns, Hexcles）
+• **政策责任层面**：jacobgold警告AI编程代理可能引发"9/11级别"的黑客事件，呼吁政府投入数十亿美元部署安全工程师；logicallee和Cider9986则讽刺NSA的双重标准。
 
-• **开源诉求**：希望工具开源并可本地运行，担心易被网站识别和封禁（zuzululu）
-
-补充讨论：有人从商业角度理解Cloudflare的动机——流量不出Cloudflare网络可节省大量成本（scotty79）；也有技术观察指出架构的嵌套复杂性（Rust→WASM→V8）</div>
+补充讨论：争议焦点在于"完全隔离"与"安全联网"之间的平衡，行业技术债务和管理文化被认为是根本问题。</div>
                     <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=49208393" target="_blank" class="text-muted">
+                        <a href="https://news.ycombinator.com/item?id=49216362" target="_blank" class="text-muted">
+                            <small>查看原始评论区 →</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card story-card">
+            <div class="card-body">
+                <h3 class="card-title">
+                    <a href="https://blog.gingerbeardman.com/2026/08/02/games-at-the-press-of-a-button-the-rip-o-bot/" target="_blank">Games at the press of a button: The Rip-O-Bot (1989)</a>
+                </h3>
+                <div class="story-meta">
+                    <span>作者: msephton</span> |
+                    <span>评分: 29</span> |
+                    <span>评论数: 2</span> |
+                    <span>发布时间: 2026-08-02 20:19</span>
+                </div>
+
+                <div class="summary-section">
+                    <h5>文章摘要</h5>
+                    <p>这篇文章介绍了日本游戏设计师MTJ（三辻富贵朗，《泡泡龙》等游戏的设计者）在1989年GAMEST杂志专栏中的预见性观点。
+
+MTJ批判了当时游戏行业的抄袭风气，并虚构了一个"近未来"场景：一台名为"Rip-O-Bot"（抄袭机器人）的机器，只需按几个按钮就能自动生成抄袭游戏——输入要模仿的游戏名，随机选择背景和角色，瞬间完成。
+
+这个1989年的科幻设想与今天的生成式AI工具惊人相似。MTJ警告这样的时代即将到来，普通设计师将因此被大量解雇。他强调，模仿工作机器也能做，人类设计师必须专注于独创性，因为"游戏归根结底就是创意"——这是设计师"最后的武器"。</p>
+                </div>
+
+                <div class="summary-section">
+                    <h5>评论摘要</h5>
+                    <div class="comments-summary">主要讨论点：1989年某篇文章对游戏行业被衍生作品泛滥的预测，以及这个预测在现实中的体现
+
+不同观点：
+• 历史验证观点（schnevets）：认为预测的世界确实到来了——90年代有大量衍生卡通游戏，当代有廉价合作游戏和恐怖游戏等"低质量"类型。但关键论据是：即使存在大量衍生品和低质作品，创新和质量从未被真正掩埋，优质内容总能脱颖而出。以《阿拉丁》和《狮子王》横版游戏为例，虽然都是衍生品，但在动画、物理、关卡设计上的差异足以让两款游戏都有价值
+
+• 技术乐观观点（qingcharles）：认同预测的先见之明，但提出新的思考角度——AI工具应该能促进原创性而非削弱它。论据是AI能让开发者快速原型开发、快速试错，理论上应该降低创新门槛
+
+补充讨论：两位评论者对"衍生品泛滥"的态度不同。第一位强调生态系统的自我调节能力（cream rises to the top），第二位则关注技术如何改变创作门槛，暗示对未来抱有不同期待。</div>
+                    <div class="mt-2">
+                        <a href="https://news.ycombinator.com/item?id=49147907" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
@@ -352,54 +395,6 @@ MTJ批判了当时游戏行业的抄袭风气，并虚构了一个"近未来"场
 补充讨论：评论展现了从理论解释、实用工具、编程实现到艺术欣赏的多维度视角，体现了技术创新与创意设计的结合</div>
                     <div class="mt-2">
                         <a href="https://news.ycombinator.com/item?id=49211660" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="https://textlog.cc/about" target="_blank">Show HN: textlog – A quiet, text-only microblogging platform, open-source, no JS</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: stagas</span> |
-                    <span>评分: 151</span> |
-                    <span>评论数: 20</span> |
-                    <span>发布时间: 2026-08-07 10:52</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>textlog 是一个简洁的社交文本平台，让用户在轻松的环境中分享想法。平台的核心特点包括：
-
-**功能设计**：笔记限制在280字符内，可关注用户和话题标签，参与对话。字数限制使内容更简洁易读，专注于单一想法的表达。
-
-**理念**：刻意保持小而简单，围绕文字构建，没有吸引眼球的机制或建立受众的压力，让分享回归本质。
-
-**账户管理**：用户资料和笔记公开可见，免费注册，可随时下载或删除个人数据，也可选择捐赠支持服务。
-
-**社区准则**：要求用户尊重他人，不得进行骚扰、滥用、垃圾信息、冒充或违法行为。</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">主要讨论点：textlog.cc 微博客平台的设计理念、功能限制和实用性
-
-不同观点：
-
-• **支持派**：认为以单个笔记为核心单位降低了发布心理门槛，简洁的设计和开源特性值得肯定，无图片/多媒体的纯文本形式回归了社交媒体的本质
-
-• **质疑280字符限制派**：认为这个限制过于武断且缺乏实际意义，指出平台自己的about页面都超过了这个限制，批评盲目模仿Twitter的2xSMS设计会导致用户分页发布（1/3形式），削弱了用户体验
-
-• **技术实现建议派**：质疑当前渲染方案的复杂度，建议采用静态站点生成器(SSG)等更简单的技术方案
-
-补充讨论：
-部分用户遇到DNS访问问题、magic link登录失败等技术故障；有用户指出缺少暗色模式切换功能；多位用户分享了类似的极简博客项目作为替代方案；有用户担忧平台可能被滥用而难以长期维持。核心争议聚焦在**280字符限制是否真正提升了写作体验还是仅仅复制了Twitter的限制**。</div>
-                    <div class="mt-2">
-                        <a href="https://news.ycombinator.com/item?id=49208458" target="_blank" class="text-muted">
                             <small>查看原始评论区 →</small>
                         </a>
                     </div>
