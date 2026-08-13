@@ -15,6 +15,7 @@ from scripts.fetch_hn import (
     _process_html_content,
     clean_html_text,
     get_article_content,
+    main,
 )
 
 # 测试数据
@@ -143,3 +144,10 @@ def test_process_html_content_non_html():
     )
     result = _process_html_content(mock_response)
     assert result is None
+
+
+def test_main_fails_when_no_stories_are_fetched():
+    """抓取失败时必须阻止空目录覆盖线上站点。"""
+    with patch("scripts.fetch_hn.fetch_top_stories", return_value=[]):
+        with pytest.raises(RuntimeError, match="未获取到任何故事"):
+            main()

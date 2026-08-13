@@ -341,19 +341,6 @@ def fetch_top_stories():
         if not OPENAI_API_KEY:
             raise ValueError("未设置 OPENAI_API_KEY")
 
-        # 验证 API 配置
-        try:
-            # 测试 API 连接
-            response = client.chat.completions.create(
-                model=OPENAI_MODEL,
-                messages=[{"role": "user", "content": "测试连接"}],
-                max_tokens=5,
-            )
-            print("API 连接测试成功")
-        except Exception as e:
-            print(f"API 连接测试失败: {e}")
-            raise
-
         # 初始化缓存
         cache = StoryCache()
 
@@ -599,17 +586,22 @@ def generate_html(stories):
         print(f"成功生成 {total_pages} 个页面")
     except Exception as e:
         print(f"生成HTML时出错: {e}")
+        raise
 
 
 def main():
     print("开始执行程序...")
     stories = fetch_top_stories()
-    if stories:
-        print("正在生成 HTML...")
-        generate_html(stories)
-        print("程序执行完成！")
-    else:
-        print("未获取到任何故事，请检查网络连接和API状态")
+    if not stories:
+        raise RuntimeError("未获取到任何故事，请检查网络连接和API状态")
+
+    print("正在生成 HTML...")
+    generate_html(stories)
+    if not os.path.isfile("public/index.html") or os.path.getsize(
+        "public/index.html"
+    ) == 0:
+        raise RuntimeError("HTML 生成失败：public/index.html 不存在或为空")
+    print("程序执行完成！")
 
 
 if __name__ == "__main__":
