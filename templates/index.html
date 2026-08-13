@@ -6,31 +6,62 @@
     <title>LiveNews 科技与金融情报</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background: #f6f8fa; }
-        .news-card { margin-bottom: 1rem; border: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
-        .hn-card { border-left: 4px solid #ff6600; }
-        .lobsters-card { border-left: 4px solid #ac130d; }
-        .github-card { border-left: 4px solid #24292f; }
-        .product-card { border-left: 4px solid #da552f; }
-        .arxiv-card { border-left: 4px solid #b31b1b; }
+        :root { --surface: #fff; --border: #e6e9ed; --muted: #667085; }
+        body { background: #f4f6f8; color: #20252b; }
+        a { text-underline-offset: .18em; }
+        .page-shell { max-width: 1280px; }
+        .page-title { letter-spacing: -.035em; }
+        .news-card { border: 1px solid var(--border); border-radius: .8rem; box-shadow: 0 2px 10px rgba(31, 35, 40, .055); transition: transform .15s ease, box-shadow .15s ease; }
+        .news-card:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(31, 35, 40, .09); }
+        .hn-card { border-top: 3px solid #ff6600; }
+        .lobsters-card { border-top: 3px solid #ac130d; }
+        .github-card { border-top: 3px solid #24292f; }
+        .product-card { border-top: 3px solid #da552f; }
+        .arxiv-card { border-top: 3px solid #b31b1b; }
         .finance-card { border-left: 4px solid #198754; }
         .market-card { border-left: 4px solid #6f42c1; }
-        .item-meta { color: #6c757d; font-size: .9rem; }
-        .summary-section { background: #f8f9fa; padding: 1rem; border-radius: .4rem; margin-top: 1rem; }
+        .item-meta { color: var(--muted); font-size: .86rem; }
+        .card-title-link { color: #1f2937; text-decoration: none; }
+        .card-title-link:hover { color: #0d6efd; text-decoration: underline; }
+        .summary-section { background: #f7f8fa; padding: .85rem 1rem; border-radius: .55rem; margin-top: .85rem; }
         .comments-summary { white-space: pre-line; }
-        .nav-tabs .nav-link { color: #495057; font-weight: 600; }
-        .nav-tabs .nav-link.active { color: #0d6efd; }
+        .topic-nav { flex-wrap: nowrap; gap: .45rem; overflow-x: auto; scrollbar-width: none; padding: .25rem 0 .65rem; border: 0; }
+        .topic-nav::-webkit-scrollbar { display: none; }
+        .topic-nav .nav-item { flex: 0 0 auto; }
+        .topic-nav .nav-link { border: 1px solid var(--border); border-radius: 999px; color: #4b5563; background: var(--surface); font-weight: 600; padding: .55rem .9rem; white-space: nowrap; }
+        .topic-nav .nav-link.active { color: #fff; background: #20252b; border-color: #20252b; }
+        .topic-nav .nav-link.active .badge { background: rgba(255,255,255,.18) !important; color: #fff !important; }
         .tab-count { font-size: .75rem; }
-        .source-heading { margin: 2rem 0 1rem; padding-bottom: .5rem; border-bottom: 1px solid #dee2e6; }
+        .source-heading { margin: 2.25rem 0 1rem; display: flex; align-items: center; gap: .6rem; }
+        .source-heading::after { content: ""; height: 1px; background: #dfe3e8; flex: 1; }
         .source-heading:first-child { margin-top: 0; }
+        .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+        .card-grid .news-card { margin: 0; height: 100%; }
+        .card-grid .card-body { display: flex; flex-direction: column; }
+        .card-grid .item-meta:last-child { margin-top: auto; }
+        .summary-toggle { margin-top: .85rem; border-top: 1px solid var(--border); padding-top: .65rem; }
+        .summary-toggle summary { cursor: pointer; color: #475467; font-size: .9rem; font-weight: 600; list-style: none; }
+        .summary-toggle summary::-webkit-details-marker { display: none; }
+        .summary-toggle summary::after { content: "＋"; float: right; }
+        .summary-toggle[open] summary::after { content: "−"; }
+        .paper-summary { color: #374151; line-height: 1.7; }
+        .action-row { margin-top: auto; padding-top: .75rem; }
+        @media (max-width: 767.98px) {
+            main.container { padding-left: 1rem; padding-right: 1rem; }
+            .page-title { font-size: 2rem; }
+            .topic-nav { margin-left: -1rem; margin-right: -1rem; padding-left: 1rem; padding-right: 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .source-heading { font-size: 1.2rem; margin-top: 1.75rem; }
+            .news-card .card-body { padding: 1rem; }
+        }
     </style>
 </head>
 <body>
-    <main class="container py-5">
-        <h1 class="mb-2">LiveNews 科技与金融情报</h1>
+    <main class="container page-shell py-4 py-md-5">
+        <h1 class="page-title mb-2">LiveNews 科技与金融情报</h1>
         <p class="text-muted mb-4">最后更新时间: {{ update_time }} (北京时间)</p>
 
-        <ul class="nav nav-tabs mb-4" id="topic-tabs" role="tablist">
+        <ul class="nav topic-nav mb-4" id="topic-tabs" role="tablist">
             <li class="nav-item" role="presentation"><button class="nav-link active" id="tech-community-tab" data-bs-toggle="tab" data-bs-target="#tech-community" type="button" role="tab" aria-selected="true">技术社区 <span class="badge rounded-pill text-bg-secondary tab-count">{{ stories|length + lobsters_stories|length }}</span></button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="open-source-tab" data-bs-toggle="tab" data-bs-target="#open-source" type="button" role="tab" aria-selected="false">开源生态 <span class="badge rounded-pill text-bg-secondary tab-count">{{ github_repositories|length + github_releases|length }}</span></button></li>
             <li class="nav-item" role="presentation"><button class="nav-link" id="new-products-tab" data-bs-toggle="tab" data-bs-target="#new-products" type="button" role="tab" aria-selected="false">新产品 <span class="badge rounded-pill text-bg-secondary tab-count">{{ product_hunt_products|length }}</span></button></li>
@@ -41,55 +72,67 @@
         <div class="tab-content" id="topic-tabs-content">
             <section class="tab-pane fade show active" id="tech-community" role="tabpanel" aria-labelledby="tech-community-tab" tabindex="0">
                 <h2 class="h4 source-heading">Hacker News</h2>
+                <div class="card-grid">
                 {% for story in stories %}
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a href="{{ story.url }}" target="_blank" rel="noopener">{{ story.title }}</a></h3>
+                    <h3 class="h5"><a class="card-title-link" href="{{ story.url }}" target="_blank" rel="noopener">{{ story.title }}</a></h3>
                     <div class="item-meta">作者: {{ story.author }} · 评分: {{ story.score }} · 评论: {{ story.comments_count }} · {{ story.time.strftime('%Y-%m-%d %H:%M') }}</div>
                     <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">{{ story.article_summary }}</p></div>
-                    <div class="summary-section"><h4 class="h6">评论摘要</h4><div class="comments-summary">{{ story.comments_summary }}</div><a href="{{ story.comments_url }}" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">{{ story.comments_summary }}</div><a href="{{ story.comments_url }}" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 {% else %}<div class="alert alert-warning">Hacker News 暂时无法获取。</div>{% endfor %}
+                </div>
 
                 <h2 class="h4 source-heading">Lobsters</h2>
+                <div class="card-grid">
                 {% for story in lobsters_stories %}
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a href="{{ story.url }}" target="_blank" rel="noopener">{{ story.title }}</a></h3>
+                    <h3 class="h5"><a class="card-title-link" href="{{ story.url }}" target="_blank" rel="noopener">{{ story.title }}</a></h3>
                     <div class="item-meta mb-2">{{ story.submitter }} · {{ story.score }} 分 · {{ story.comment_count }} 条评论 · {{ story.created_at }}</div>
                     <div class="d-flex flex-wrap gap-2">{% for tag in story.tags %}<span class="badge text-bg-light">{{ tag }}</span>{% endfor %}<a href="{{ story.comments_url }}" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 {% else %}<div class="alert alert-warning">Lobsters 暂时无法获取。</div>{% endfor %}
+                </div>
             </section>
 
             <section class="tab-pane fade" id="open-source" role="tabpanel" aria-labelledby="open-source-tab" tabindex="0">
                 <h2 class="h4 source-heading">GitHub Trending</h2>
+                <div class="card-grid">
                 {% for repo in github_repositories %}
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a href="{{ repo.url }}" target="_blank" rel="noopener">{{ repo.name }}</a></h3><p>{{ repo.description }}</p><div class="item-meta">{{ repo.language }} · ⭐ {{ repo.stars }} · Fork {{ repo.forks }} · {{ repo.stars_today }}</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="{{ repo.url }}" target="_blank" rel="noopener">{{ repo.name }}</a></h3><p>{{ repo.description }}</p><div class="item-meta">{{ repo.language }} · ⭐ {{ repo.stars }} · Fork {{ repo.forks }} · {{ repo.stars_today }}</div></div></article>
                 {% else %}<div class="alert alert-warning">GitHub Trending 暂时无法获取。</div>{% endfor %}
+                </div>
 
                 <h2 class="h4 source-heading">Trending 仓库最新版本</h2>
+                <div class="card-grid">
                 {% for release in github_releases %}
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a href="{{ release.url }}" target="_blank" rel="noopener">{{ release.repository }} · {{ release.name }}</a></h3><div class="item-meta">{{ release.tag }} · 发布日期: {{ release.published }}{% if release.prerelease %} · 预发布版{% endif %}</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="{{ release.url }}" target="_blank" rel="noopener">{{ release.repository }} · {{ release.name }}</a></h3><div class="item-meta">{{ release.tag }} · 发布日期: {{ release.published }}{% if release.prerelease %} · 预发布版{% endif %}</div></div></article>
                 {% else %}<div class="alert alert-warning">当前 Trending 仓库暂无可用的正式 Release。</div>{% endfor %}
+                </div>
             </section>
 
             <section class="tab-pane fade" id="new-products" role="tabpanel" aria-labelledby="new-products-tab" tabindex="0">
                 <h2 class="h4 source-heading">Product Hunt</h2>
+                <div class="card-grid">
                 {% for product in product_hunt_products %}
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a href="{{ product.url }}" target="_blank" rel="noopener">{{ product.name }}</a></h3><p>{{ product.description }}</p><div class="item-meta">Maker: {{ product.maker }} · 发布日期: {{ product.published }}</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="{{ product.url }}" target="_blank" rel="noopener">{{ product.name }}</a></h3><p>{{ product.description }}</p><div class="item-meta">Maker: {{ product.maker }} · 发布日期: {{ product.published }}</div></div></article>
                 {% else %}<div class="alert alert-warning">Product Hunt 暂时无法获取。</div>{% endfor %}
+                </div>
             </section>
 
             <section class="tab-pane fade" id="research" role="tabpanel" aria-labelledby="research-tab" tabindex="0">
                 {% for heading, papers in [('金融与量化研究', arxiv_papers), ('AI 与机器学习', arxiv_ai_papers)] %}
                 <h2 class="h4 source-heading">arXiv · {{ heading }}</h2>
+                <div class="card-grid">
                 {% for paper in papers %}
                 <article class="card news-card arxiv-card"><div class="card-body">
-                    <h3 class="h5"><a href="{{ paper.url }}" target="_blank" rel="noopener">{{ paper.title }}</a></h3>
+                    <h3 class="h5"><a class="card-title-link" href="{{ paper.url }}" target="_blank" rel="noopener">{{ paper.title }}</a></h3>
                     <div class="item-meta mb-3">{{ paper.authors | join(', ') }} · {{ paper.primary_category }} · 提交日期: {{ paper.published }}</div>
-                    <h4 class="h6">{% if paper.translation_available %}中文摘要{% else %}原文摘要（翻译暂不可用）{% endif %}</h4><p>{{ paper.summary_zh }}</p>
-                    <div class="d-flex flex-wrap gap-2 align-items-center"><a href="{{ paper.url }}" target="_blank" rel="noopener" class="small">论文详情</a><a href="{{ paper.html_url }}" target="_blank" rel="noopener" class="small">HTML 在线版</a>{% if paper.pdf_url %}<a href="{{ paper.pdf_url }}" target="_blank" rel="noopener" class="small">PDF</a>{% endif %}{% for category in paper.categories %}<span class="badge text-bg-light">{{ category }}</span>{% endfor %}</div>
+                    <details class="summary-toggle"><summary>{% if paper.translation_available %}展开中文摘要{% else %}展开原文摘要（翻译暂不可用）{% endif %}</summary><p class="paper-summary pt-2 mb-0">{{ paper.summary_zh }}</p></details>
+                    <div class="d-flex flex-wrap gap-2 align-items-center action-row"><a href="{{ paper.url }}" target="_blank" rel="noopener" class="small">论文详情</a><a href="{{ paper.html_url }}" target="_blank" rel="noopener" class="small">HTML 在线版</a>{% if paper.pdf_url %}<a href="{{ paper.pdf_url }}" target="_blank" rel="noopener" class="small">PDF</a>{% endif %}{% for category in paper.categories %}<span class="badge text-bg-light">{{ category }}</span>{% endfor %}</div>
                 </div></article>
                 {% else %}<div class="alert alert-warning">{{ heading }}论文暂时无法获取。</div>{% endfor %}
+                </div>
                 {% endfor %}
             </section>
 
