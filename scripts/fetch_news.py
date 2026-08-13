@@ -444,6 +444,7 @@ def fetch_arxiv_papers(limit=ARXIV_PAPER_LIMIT, cache=None):
                         ).split()
                     ),
                     "url": alternate_url,
+                    "html_url": f"https://arxiv.org/html/{paper_id}",
                     "pdf_url": pdf_url,
                     "authors": [
                         author.findtext(

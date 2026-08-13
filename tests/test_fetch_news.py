@@ -261,6 +261,7 @@ def test_fetch_arxiv_papers_translates_and_caches_abstract(tmp_path):
             "id": "2608.12345v1",
             "title": "Quantitative Trading with Signals",
             "url": "https://arxiv.org/abs/2608.12345v1",
+            "html_url": "https://arxiv.org/html/2608.12345v1",
             "pdf_url": "https://arxiv.org/pdf/2608.12345v1",
             "authors": ["Alice Researcher", "Bob Quant"],
             "categories": ["q-fin.TR"],
@@ -321,7 +322,7 @@ def test_generate_html_renders_source_tabs(tmp_path, monkeypatch):
         [],
         github_repositories=[{"name": "octocat/hello-world", "url": "https://github.com/octocat/hello-world", "description": "Hello", "language": "Python", "stars": "1", "forks": "0", "stars_today": "1 star today"}],
         product_hunt_products=[{"name": "Useful Product", "url": "https://example.com", "description": "Useful", "maker": "Maker", "published": "2026-08-13"}],
-        arxiv_papers=[{"id": "2608.12345v1", "title": "Quant Paper", "url": "https://arxiv.org/abs/2608.12345v1", "pdf_url": "https://arxiv.org/pdf/2608.12345v1", "authors": ["Researcher"], "categories": ["q-fin.TR"], "primary_category": "q-fin.TR", "published": "2026-08-13", "updated": "2026-08-13T10:00:00Z", "summary_zh": "中文摘要", "translation_available": True}],
+        arxiv_papers=[{"id": "2608.12345v1", "title": "Quant Paper", "url": "https://arxiv.org/abs/2608.12345v1", "html_url": "https://arxiv.org/html/2608.12345v1", "pdf_url": "https://arxiv.org/pdf/2608.12345v1", "authors": ["Researcher"], "categories": ["q-fin.TR"], "primary_category": "q-fin.TR", "published": "2026-08-13", "updated": "2026-08-13T10:00:00Z", "summary_zh": "中文摘要", "translation_available": True}],
     )
 
     html = (tmp_path / "public" / "index.html").read_text(encoding="utf-8")
@@ -332,4 +333,6 @@ def test_generate_html_renders_source_tabs(tmp_path, monkeypatch):
     assert "octocat/hello-world" in html
     assert "Useful Product" in html
     assert "中文摘要" in html
+    assert 'href="https://arxiv.org/html/2608.12345v1"' in html
+    assert "HTML 在线版" in html
     assert not (tmp_path / "public" / "page").exists()
