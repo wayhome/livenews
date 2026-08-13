@@ -325,19 +325,22 @@ def fetch_lobsters(limit=LOBSTERS_STORY_LIMIT):
             timeout=20,
         )
         response.raise_for_status()
-        return [
-            {
+        stories = []
+        for story in response.json()[:limit]:
+            submitter = story.get("submitter_user") or story.get("submitter") or "匿名"
+            if isinstance(submitter, dict):
+                submitter = submitter.get("username", "匿名")
+            stories.append({
                 "title": story.get("title", "无标题"),
                 "url": story.get("url") or story.get("comments_url", "https://lobste.rs"),
                 "comments_url": story.get("comments_url", "https://lobste.rs"),
                 "score": story.get("score", 0),
                 "comment_count": story.get("comment_count", 0),
-                "submitter": story.get("submitter_user", {}).get("username", "匿名"),
+                "submitter": submitter,
                 "tags": story.get("tags", []),
                 "created_at": story.get("created_at", "")[:10],
-            }
-            for story in response.json()[:limit]
-        ]
+            })
+        return stories
     except Exception as e:
         print(f"获取 Lobsters 时出错: {e}")
         return []

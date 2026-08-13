@@ -259,6 +259,19 @@ def test_fetch_lobsters():
     assert stories[0]["tags"] == ["programming"]
 
 
+def test_fetch_lobsters_accepts_string_submitter():
+    response = MagicMock()
+    response.raise_for_status.return_value = None
+    response.json.return_value = [
+        {"title": "Story", "submitter_user": "alice", "tags": []}
+    ]
+
+    with patch("requests.get", return_value=response):
+        stories = fetch_lobsters(limit=1)
+
+    assert stories[0]["submitter"] == "alice"
+
+
 def test_fetch_github_releases_skips_repositories_without_releases():
     release_response = MagicMock(status_code=200)
     release_response.raise_for_status.return_value = None
