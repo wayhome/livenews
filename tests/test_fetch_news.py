@@ -381,6 +381,7 @@ def test_fetch_polymarket_markets_parses_outcomes():
             "endDate": "2026-12-31T00:00:00Z",
             "markets": [
                 {
+                    "question": "Will it happen?",
                     "active": True,
                     "closed": False,
                     "outcomes": '["Yes", "No"]',
@@ -394,32 +395,153 @@ def test_fetch_polymarket_markets_parses_outcomes():
     with (
         patch.dict("scripts.fetch_news.POLYMARKET_TAGS", {"120": "金融"}, clear=True),
         patch("requests.get", return_value=response) as request,
+        patch(
+            "scripts.fetch_news.get_summary",
+            return_value='[{"index": 0, "summary": "该事件是否会发生。"}]',
+        ),
     ):
         markets = fetch_polymarket_markets(limit=1)
 
     assert request.call_args.kwargs["params"]["tag_id"] == "120"
     assert markets[0]["topics"] == ["金融"]
     assert markets[0]["outcomes"] == [
-        {"name": "Yes", "probability": 62.0},
-        {"name": "No", "probability": 38.0},
+        {"name": "Yes", "label": "会", "probability": 62.0},
+        {"name": "No", "label": "不会", "probability": 38.0},
     ]
     assert markets[0]["url"].endswith("/will-it-happen")
 
 
-def test_fetch_polymarket_markets_deduplicates_topics_and_sorts_by_volume():
+def test_fetch_polymarket_markets_keeps_concrete_contract_questions():
+    response = MagicMock()
+    response.raise_for_status.return_value = None
+    response.json.return_value = [
+        {
+            "id": "bitcoin-levels",
+            "title": "Bitcoin above ___ on August 14?",
+            "slug": "bitcoin-levels",
+            "volume24hr": 12000,
+            "liquidity": 5000,
+            "markets": [
+                {
+                    "question": "Will Bitcoin be above $58,000 on August 14?",
+                    "active": True,
+                    "closed": False,
+                    "outcomes": '["Yes", "No"]',
+                    "outcomePrices": '["0.72", "0.28"]',
+                    "volume24hr": 7000,
+                },
+                {
+                    "question": "Will Bitcoin be above $60,000 on August 14?",
+                    "active": True,
+                    "closed": False,
+                    "outcomes": '["Yes", "No"]',
+                    "outcomePrices": '["0.41", "0.59"]',
+                    "volume24hr": 5000,
+                },
+            ],
+        }
+    ]
+
+    with (
+        patch.dict("scripts.fetch_news.POLYMARKET_TAGS", {"21": "加密市场"}, clear=True),
+        patch("requests.get", return_value=response),
+        patch(
+            "scripts.fetch_news.get_summary",
+            return_value=(
+                '[{"index": 0, "summary": '
+                '"比特币在 8 月 14 日能否站上不同价格关口。"}]'
+            ),
+        ),
+    ):
+        markets = fetch_polymarket_markets(limit=10)
+
+    assert markets[0]["summary_zh"] == "比特币在 8 月 14 日能否站上不同价格关口。"
+    assert [contract["question"] for contract in markets[0]["contracts"]] == [
+        "Will Bitcoin be above $60,000 on August 14?",
+        "Will Bitcoin be above $58,000 on August 14?",
+    ]
+    assert markets[0]["contracts"][0]["outcomes"] == [
+        {"name": "Yes", "label": "会", "probability": 41.0},
+        {"name": "No", "label": "不会", "probability": 59.0},
+    ]
+
+
+def test_fetch_polymarket_markets_caps_crypto_at_twenty_percent():
+    def event(topic, index, volume):
+        return {
+            "id": f"{topic}-{index}",
+            "title": f"{topic} event {index}",
+            "slug": f"{topic}-{index}",
+            "volume24hr": volume,
+            "markets": [
+                {
+                    "question": f"Will {topic} event {index} happen?",
+                    "active": True,
+                    "closed": False,
+                    "outcomes": '["Yes", "No"]',
+                    "outcomePrices": '["0.6", "0.4"]',
+                    "volume24hr": volume,
+                }
+            ],
+        }
+
+    responses = []
+    for topic_index, topic in enumerate(("金融", "宏观经济", "AI", "加密市场")):
+        response = MagicMock()
+        response.raise_for_status.return_value = None
+        response.json.return_value = [
+            event(topic, index, 10000 - topic_index * 100 - index)
+            for index in range(10)
+        ]
+        responses.append(response)
+
+    with (
+        patch.dict(
+            "scripts.fetch_news.POLYMARKET_TAGS",
+            {"120": "金融", "225": "宏观经济", "439": "AI", "21": "加密市场"},
+            clear=True,
+        ),
+        patch("requests.get", side_effect=responses),
+        patch(
+            "scripts.fetch_news.get_summary",
+            return_value="[]",
+        ),
+    ):
+        markets = fetch_polymarket_markets(limit=10)
+
+    assert len(markets) == 10
+    assert sum("加密市场" in market["topics"] for market in markets) <= 2
+    assert {topic for market in markets for topic in market["topics"]} >= {
+        "金融",
+        "宏观经济",
+        "AI",
+    }
+
+
+def test_fetch_polymarket_markets_deduplicates_topics_and_prioritizes_coverage():
+    def contract(question, volume):
+        return {
+            "question": question,
+            "active": True,
+            "closed": False,
+            "outcomes": '["Yes", "No"]',
+            "outcomePrices": '["0.6", "0.4"]',
+            "volume24hr": volume,
+        }
+
     shared_event = {
         "id": "shared",
         "title": "Will AI company valuation rise?",
         "slug": "ai-valuation",
         "volume24hr": 200,
-        "markets": [],
+        "markets": [contract("Will AI company valuation rise?", 200)],
     }
     crypto_event = {
         "id": "crypto",
         "title": "Will Bitcoin rise?",
         "slug": "bitcoin-rise",
         "volume24hr": 300,
-        "markets": [],
+        "markets": [contract("Will Bitcoin rise?", 300)],
     }
     responses = []
     for events in ([shared_event], [shared_event], [crypto_event]):
@@ -435,14 +557,15 @@ def test_fetch_polymarket_markets_deduplicates_topics_and_sorts_by_volume():
             clear=True,
         ),
         patch("requests.get", side_effect=responses),
+        patch("scripts.fetch_news.get_summary", return_value="[]"),
     ):
         markets = fetch_polymarket_markets(limit=10)
 
     assert [market["question"] for market in markets] == [
-        "Will Bitcoin rise?",
         "Will AI company valuation rise?",
+        "Will Bitcoin rise?",
     ]
-    assert markets[1]["topics"] == ["AI", "金融"]
+    assert markets[0]["topics"] == ["AI", "金融"]
 
 
 def test_fetch_arxiv_papers_translates_and_caches_abstract(tmp_path):
@@ -559,7 +682,22 @@ def test_generate_html_renders_topic_tabs_and_sources(tmp_path, monkeypatch):
         arxiv_ai_papers=[{"id": "2608.54321v1", "title": "AI Paper", "url": "https://arxiv.org/abs/2608.54321v1", "html_url": "https://arxiv.org/html/2608.54321v1", "pdf_url": "", "authors": ["AI Researcher"], "categories": ["cs.AI"], "primary_category": "cs.AI", "published": "2026-08-14", "updated": "2026-08-14T10:00:00Z", "summary_zh": "AI 中文摘要", "translation_available": True}],
         macro_indicators=[{"id": "LNS14000000", "name": "美国失业率", "value": "4.2", "unit": "%", "date": "2026-07", "detail": "最新公布值", "url": "https://data.bls.gov/timeseries/LNS14000000"}],
         sec_filings=[{"ticker": "AAPL", "company": "Apple Inc.", "form": "8-K", "date": "2026-08-14", "description": "Current report", "url": "https://www.sec.gov/example"}],
-        polymarket_markets=[{"question": "Will it happen?", "url": "https://polymarket.com/event/test", "topics": ["AI", "金融"], "outcomes": [{"name": "Yes", "probability": 62.0}], "volume_24h": 1000, "liquidity": 500, "end_date": "2026-12-31"}],
+        polymarket_markets=[{
+            "question": "Will it happen?",
+            "summary_zh": "该事件是否会在年底前发生。",
+            "url": "https://polymarket.com/event/test",
+            "topics": ["AI", "金融"],
+            "contracts": [{
+                "question": "Will it happen before December 31?",
+                "outcomes": [
+                    {"name": "Yes", "label": "会", "probability": 62.0},
+                    {"name": "No", "label": "不会", "probability": 38.0},
+                ],
+            }],
+            "volume_24h": 1000,
+            "liquidity": 500,
+            "end_date": "2026-12-31",
+        }],
     )
 
     html = (tmp_path / "public" / "index.html").read_text(encoding="utf-8")
@@ -578,6 +716,9 @@ def test_generate_html_renders_topic_tabs_and_sources(tmp_path, monkeypatch):
     assert "AAPL" in html
     assert "Will it happen?" in html
     assert "Polymarket · 金融与 AI 预测市场" in html
+    assert "该事件是否会在年底前发生。" in html
+    assert "Will it happen before December 31?" in html
+    assert "会 62.0%" in html
     assert 'href="https://arxiv.org/html/2608.12345v1"' in html
     assert "HTML 在线版" in html
     assert not (tmp_path / "public" / "page").exists()

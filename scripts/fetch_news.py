@@ -32,6 +32,8 @@ LOBSTERS_STORY_LIMIT = 15
 GITHUB_RELEASE_LIMIT = 10
 SEC_FILING_LIMIT = 10
 POLYMARKET_LIMIT = 10
+POLYMARKET_CONTRACT_LIMIT = 3
+POLYMARKET_CRYPTO_MAX_SHARE = 0.2
 POLYMARKET_TAGS = {
     "120": "金融",
     "225": "宏观经济",
@@ -761,6 +763,134 @@ def _safe_float(value):
         return 0.0
 
 
+def _polymarket_outcomes(market):
+    names = _json_list(market.get("outcomes"))
+    prices = _json_list(market.get("outcomePrices"))
+    labels = {"yes": "会", "no": "不会"}
+    return [
+        {
+            "name": str(name),
+            "label": labels.get(str(name).lower(), str(name)),
+            "probability": round(_safe_float(price) * 100, 1),
+        }
+        for name, price in zip(names, prices)
+    ]
+
+
+def _select_polymarket_contracts(event):
+    """选择最有信息量的具体合约，避免只展示事件标题中的填空。"""
+    contracts = []
+    seen_questions = set()
+    for market in event.get("markets", []):
+        if not market.get("active", True) or market.get("closed", False):
+            continue
+        question = " ".join(str(market.get("question") or "").split())
+        outcomes = _polymarket_outcomes(market)
+        if not question or not outcomes or question in seen_questions:
+            continue
+        seen_questions.add(question)
+        yes_probability = next(
+            (
+                outcome["probability"]
+                for outcome in outcomes
+                if outcome["name"].lower() == "yes"
+            ),
+            None,
+        )
+        contracts.append(
+            {
+                "question": question,
+                "outcomes": outcomes,
+                "volume_24h": round(_safe_float(market.get("volume24hr"))),
+                "distance_from_even": (
+                    abs(yes_probability - 50) if yes_probability is not None else 50
+                ),
+            }
+        )
+
+    contracts.sort(
+        key=lambda contract: (
+            contract["distance_from_even"],
+            -contract["volume_24h"],
+        )
+    )
+    for contract in contracts:
+        contract.pop("distance_from_even", None)
+    return contracts[:POLYMARKET_CONTRACT_LIMIT]
+
+
+def _select_polymarket_events(markets, limit):
+    """优先覆盖金融、宏观和 AI，并限制加密事件占比。"""
+    ranked = sorted(markets, key=lambda market: market["volume_24h"], reverse=True)
+    crypto_limit = max(1, int(limit * POLYMARKET_CRYPTO_MAX_SHARE))
+    selected = []
+    selected_ids = set()
+    crypto_count = 0
+
+    def add(market):
+        nonlocal crypto_count
+        market_id = market["id"]
+        is_crypto = "加密市场" in market["topics"]
+        if market_id in selected_ids or (is_crypto and crypto_count >= crypto_limit):
+            return False
+        selected.append(market)
+        selected_ids.add(market_id)
+        crypto_count += int(is_crypto)
+        return True
+
+    for topic in ("金融", "宏观经济", "AI"):
+        for market in ranked:
+            if topic in market["topics"] and add(market):
+                break
+
+    for market in ranked:
+        if len(selected) >= limit:
+            break
+        add(market)
+    return selected[:limit]
+
+
+def _summarize_polymarket_events(markets):
+    """一次模型调用批量生成事件说明，失败时保留确定性说明。"""
+    source = json.dumps(
+        [
+            {
+                "index": index,
+                "event": market["question"],
+                "contracts": [
+                    contract["question"] for contract in market["contracts"]
+                ],
+                "end_date": market["end_date"],
+            }
+            for index, market in enumerate(markets)
+        ],
+        ensure_ascii=False,
+    )
+    raw_summaries = get_summary(
+        source,
+        prompt=(
+            "请逐项把以下 Polymarket 事件改写成一句不超过60字的简体中文说明。"
+            "必须明确标的、判断条件和日期；只根据输入翻译和概括，不补充事实、"
+            "不预测结果、不复述概率。严格返回 JSON 数组，格式为"
+            '[{"index":0,"summary":"中文说明"}]，不要输出代码块或其他文字。'
+        ),
+        max_retries=1,
+    )
+    summaries = {}
+    try:
+        for item in json.loads(raw_summaries):
+            index = int(item.get("index", -1))
+            summary = " ".join(str(item.get("summary") or "").split())
+            if 0 <= index < len(markets) and summary:
+                summaries[index] = summary
+    except (TypeError, ValueError, json.JSONDecodeError):
+        pass
+
+    fallback = "以下为该事件中交易活跃、概率较具参考性的具体合约。"
+    for index, market in enumerate(markets):
+        market["summary_zh"] = summaries.get(index, fallback)
+
+
 def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
     """获取 Polymarket 金融、宏观、加密市场和 AI 活跃事件。"""
     events = {}
@@ -800,22 +930,17 @@ def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
                 for market in event.get("markets", [])
                 if market.get("active", True) and not market.get("closed", False)
             ]
-            market = max(
-                active_markets,
-                key=lambda item: _safe_float(item.get("volume24hr")),
-                default={},
-            )
-            outcomes = _json_list(market.get("outcomes"))
-            prices = _json_list(market.get("outcomePrices"))
+            contracts = _select_polymarket_contracts(event)
+            if not contracts:
+                continue
             markets.append(
                 {
+                    "id": str(event.get("id") or event.get("slug", "")),
                     "question": event.get("title", "未命名事件"),
                     "url": f"https://polymarket.com/event/{event.get('slug', '')}",
                     "topics": sorted(item["topics"]),
-                    "outcomes": [
-                        {"name": name, "probability": round(_safe_float(price) * 100, 1)}
-                        for name, price in zip(outcomes, prices)
-                    ],
+                    "contracts": contracts,
+                    "outcomes": contracts[0]["outcomes"],
                     "volume_24h": round(_safe_float(event.get("volume24hr"))),
                     "liquidity": round(_safe_float(event.get("liquidity"))),
                     "end_date": (event.get("endDate") or "")[:10],
@@ -823,7 +948,10 @@ def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
             )
         except Exception as e:
             print(f"处理 Polymarket 事件时出错: {e}")
-    return sorted(markets, key=lambda market: market["volume_24h"], reverse=True)[:limit]
+    selected = _select_polymarket_events(markets, limit)
+    if selected:
+        _summarize_polymarket_events(selected)
+    return selected
 
 
 class StoryCache:
