@@ -27,6 +27,11 @@ HN_STORY_LIMIT = 30
 GITHUB_TRENDING_LIMIT = 20
 PRODUCT_HUNT_LIMIT = 20
 ARXIV_PAPER_LIMIT = 15
+ARXIV_AI_PAPER_LIMIT = 10
+LOBSTERS_STORY_LIMIT = 15
+GITHUB_RELEASE_LIMIT = 10
+SEC_FILING_LIMIT = 10
+POLYMARKET_LIMIT = 10
 ARXIV_SEARCH_QUERY = " OR ".join(
     f"cat:{category}"
     for category in (
@@ -40,8 +45,31 @@ ARXIV_SEARCH_QUERY = " OR ".join(
         "q-fin.TR",
     )
 )
+ARXIV_AI_SEARCH_QUERY = "cat:cs.AI OR cat:cs.LG OR cat:cs.CL"
+BLS_SERIES = {
+    "CUSR0000SA0": "美国 CPI 同比",
+    "LNS14000000": "美国失业率",
+    "CES0000000001": "美国非农就业月增量",
+}
+SEC_WATCHLIST = {
+    "AAPL": "0000320193",
+    "MSFT": "0000789019",
+    "NVDA": "0001045810",
+}
 REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; LiveNews/1.0; +https://github.com/wayhome/livenews)"
+}
+GITHUB_API_HEADERS = {
+    **REQUEST_HEADERS,
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+}
+if os.getenv("GITHUB_TOKEN"):
+    GITHUB_API_HEADERS["Authorization"] = f"Bearer {os.environ['GITHUB_TOKEN']}"
+SEC_REQUEST_HEADERS = {
+    "User-Agent": os.getenv("SEC_USER_AGENT")
+    or "livenews/1.0 wayhome@users.noreply.github.com",
+    "Accept-Encoding": "gzip, deflate",
 }
 
 # 确保 API 基础 URL 格式正确
@@ -288,6 +316,62 @@ def fetch_github_trending(limit=GITHUB_TRENDING_LIMIT):
         return []
 
 
+def fetch_lobsters(limit=LOBSTERS_STORY_LIMIT):
+    """获取 Lobsters 热门技术讨论。"""
+    try:
+        response = requests.get(
+            "https://lobste.rs/hottest.json",
+            headers=REQUEST_HEADERS,
+            timeout=20,
+        )
+        response.raise_for_status()
+        return [
+            {
+                "title": story.get("title", "无标题"),
+                "url": story.get("url") or story.get("comments_url", "https://lobste.rs"),
+                "comments_url": story.get("comments_url", "https://lobste.rs"),
+                "score": story.get("score", 0),
+                "comment_count": story.get("comment_count", 0),
+                "submitter": story.get("submitter_user", {}).get("username", "匿名"),
+                "tags": story.get("tags", []),
+                "created_at": story.get("created_at", "")[:10],
+            }
+            for story in response.json()[:limit]
+        ]
+    except Exception as e:
+        print(f"获取 Lobsters 时出错: {e}")
+        return []
+
+
+def fetch_github_releases(repositories, limit=GITHUB_RELEASE_LIMIT):
+    """获取 Trending 仓库的最新正式版本。"""
+    releases = []
+    for repository in repositories[:limit]:
+        try:
+            response = requests.get(
+                f"https://api.github.com/repos/{repository['name']}/releases/latest",
+                headers=GITHUB_API_HEADERS,
+                timeout=20,
+            )
+            if response.status_code == 404:
+                continue
+            response.raise_for_status()
+            release = response.json()
+            releases.append(
+                {
+                    "repository": repository["name"],
+                    "name": release.get("name") or release.get("tag_name", "未命名版本"),
+                    "tag": release.get("tag_name", ""),
+                    "url": release.get("html_url", repository["url"]),
+                    "published": release.get("published_at", "")[:10],
+                    "prerelease": release.get("prerelease", False),
+                }
+            )
+        except Exception as e:
+            print(f"获取 {repository['name']} 最新版本时出错: {e}")
+    return releases
+
+
 def fetch_product_hunt(limit=PRODUCT_HUNT_LIMIT):
     """从 Product Hunt 官方 Atom feed 获取热门产品。"""
     try:
@@ -376,14 +460,18 @@ class ArxivTranslationCache:
             print(f"保存 arXiv 翻译缓存失败: {e}")
 
 
-def fetch_arxiv_papers(limit=ARXIV_PAPER_LIMIT, cache=None):
-    """获取最新 q-fin 论文并将摘要翻译为中文。"""
+def fetch_arxiv_papers(
+    limit=ARXIV_PAPER_LIMIT,
+    cache=None,
+    search_query=ARXIV_SEARCH_QUERY,
+):
+    """获取最新 arXiv 论文并将摘要翻译为中文。"""
     cache = cache or ArxivTranslationCache()
     try:
         response = requests.get(
             "https://export.arxiv.org/api/query",
             params={
-                "search_query": ARXIV_SEARCH_QUERY,
+                "search_query": search_query,
                 "start": 0,
                 "max_results": limit,
                 "sortBy": "submittedDate",
@@ -471,6 +559,245 @@ def fetch_arxiv_papers(limit=ARXIV_PAPER_LIMIT, cache=None):
         return papers
     except Exception as e:
         print(f"获取 arXiv 论文时出错: {e}")
+        return []
+
+
+def fetch_arxiv_ai_papers(limit=ARXIV_AI_PAPER_LIMIT, cache=None):
+    """获取 AI、机器学习和自然语言处理的最新论文。"""
+    return fetch_arxiv_papers(
+        limit=limit,
+        cache=cache,
+        search_query=ARXIV_AI_SEARCH_QUERY,
+    )
+
+
+def _bls_period_key(observation):
+    return int(observation.get("year", 0)), int(observation.get("period", "M00")[1:])
+
+
+def fetch_bls_market_indicators():
+    """从 BLS Public Data API 获取月度 CPI、失业率和非农就业。"""
+    try:
+        current_year = datetime.now().year
+        response = requests.post(
+            "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+            json={
+                "seriesid": list(BLS_SERIES),
+                "startyear": str(current_year - 1),
+                "endyear": str(current_year),
+            },
+            headers={**REQUEST_HEADERS, "Content-Type": "application/json"},
+            timeout=30,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        if payload.get("status") != "REQUEST_SUCCEEDED":
+            raise ValueError("; ".join(payload.get("message", [])) or "BLS 请求失败")
+
+        indicators = []
+        for series in payload.get("Results", {}).get("series", []):
+            series_id = series.get("seriesID")
+            observations = sorted(
+                (
+                    item
+                    for item in series.get("data", [])
+                    if item.get("period", "").startswith("M")
+                    and item.get("period") != "M13"
+                ),
+                key=_bls_period_key,
+                reverse=True,
+            )
+            if not observations:
+                continue
+            latest = observations[0]
+            value = float(latest["value"])
+            display_value = f"{value:.1f}"
+            unit = "%"
+            detail = "最新公布值"
+
+            if series_id == "CUSR0000SA0":
+                previous_year = next(
+                    (
+                        item
+                        for item in observations[1:]
+                        if int(item["year"]) == int(latest["year"]) - 1
+                        and item["period"] == latest["period"]
+                    ),
+                    None,
+                )
+                if not previous_year:
+                    continue
+                value = (value / float(previous_year["value"]) - 1) * 100
+                display_value = f"{value:.1f}"
+                detail = "同比涨幅"
+            elif series_id == "CES0000000001":
+                if len(observations) < 2:
+                    continue
+                value -= float(observations[1]["value"])
+                display_value = f"{value:+.0f}"
+                unit = "千人"
+                detail = "较上月变化"
+
+            indicators.append(
+                {
+                    "id": series_id,
+                    "name": BLS_SERIES.get(series_id, series_id),
+                    "value": display_value,
+                    "unit": unit,
+                    "date": f"{latest['year']}-{latest['period'][1:]}",
+                    "detail": detail,
+                    "url": f"https://data.bls.gov/timeseries/{series_id}",
+                }
+            )
+        return indicators
+    except Exception as e:
+        print(f"获取 BLS 市场敏感指标时出错: {e}")
+        return []
+
+
+def fetch_treasury_yields():
+    """从美国财政部获取最新 2 年、10 年期收益率和期限利差。"""
+    try:
+        response = requests.get(
+            "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml",
+            params={
+                "data": "daily_treasury_yield_curve",
+                "field_tdr_date_value": datetime.now().year,
+            },
+            headers=REQUEST_HEADERS,
+            timeout=30,
+        )
+        response.raise_for_status()
+        root = ET.fromstring(response.content)
+        namespace = {
+            "atom": "http://www.w3.org/2005/Atom",
+            "d": "http://schemas.microsoft.com/ado/2007/08/dataservices",
+            "m": "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata",
+        }
+        rows = []
+        for entry in root.findall("atom:entry", namespace):
+            properties = entry.find("atom:content/m:properties", namespace)
+            if properties is None:
+                continue
+            date = properties.findtext("d:NEW_DATE", default="", namespaces=namespace)[:10]
+            two_year = properties.findtext("d:BC_2YEAR", default="", namespaces=namespace)
+            ten_year = properties.findtext("d:BC_10YEAR", default="", namespaces=namespace)
+            if date and two_year and ten_year:
+                rows.append((date, float(two_year), float(ten_year)))
+        if not rows:
+            return []
+        date, two_year, ten_year = max(rows, key=lambda row: row[0])
+        source_url = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView"
+        return [
+            {"name": "2 年期美债收益率", "value": f"{two_year:.2f}", "unit": "%", "date": date, "detail": "政策利率预期", "url": source_url},
+            {"name": "10 年期美债收益率", "value": f"{ten_year:.2f}", "unit": "%", "date": date, "detail": "长期折现率", "url": source_url},
+            {"name": "10Y−2Y 期限利差", "value": f"{ten_year - two_year:+.2f}", "unit": "百分点", "date": date, "detail": "收益率曲线斜率", "url": source_url},
+        ]
+    except Exception as e:
+        print(f"获取美国国债收益率时出错: {e}")
+        return []
+
+
+def fetch_sec_filings(limit=SEC_FILING_LIMIT):
+    """获取自选美股公司的最新 10-K、10-Q 和 8-K 公告。"""
+    filings = []
+    for index, (ticker, cik) in enumerate(SEC_WATCHLIST.items()):
+        try:
+            if index:
+                time.sleep(0.11)
+            response = requests.get(
+                f"https://data.sec.gov/submissions/CIK{cik}.json",
+                headers=SEC_REQUEST_HEADERS,
+                timeout=20,
+            )
+            response.raise_for_status()
+            recent = response.json().get("filings", {}).get("recent", {})
+            for index, form in enumerate(recent.get("form", [])):
+                if form not in {"8-K", "10-K", "10-Q"}:
+                    continue
+                accession = recent["accessionNumber"][index]
+                document = recent["primaryDocument"][index]
+                accession_path = accession.replace("-", "")
+                filings.append(
+                    {
+                        "ticker": ticker,
+                        "company": response.json().get("name", ticker),
+                        "form": form,
+                        "date": recent["filingDate"][index],
+                        "description": recent.get("primaryDocDescription", [""] * len(recent["form"]))[index],
+                        "url": (
+                            "https://www.sec.gov/Archives/edgar/data/"
+                            f"{int(cik)}/{accession_path}/{document}"
+                        ),
+                    }
+                )
+        except Exception as e:
+            print(f"获取 SEC 公告 {ticker} 时出错: {e}")
+    return sorted(filings, key=lambda filing: filing["date"], reverse=True)[:limit]
+
+
+def _json_list(value):
+    if isinstance(value, list):
+        return value
+    try:
+        return json.loads(value or "[]")
+    except (TypeError, json.JSONDecodeError):
+        return []
+
+
+def _safe_float(value):
+    try:
+        return float(value or 0)
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
+    """获取 Polymarket 按 24 小时交易量排序的活跃事件。"""
+    try:
+        response = requests.get(
+            "https://gamma-api.polymarket.com/events",
+            params={
+                "active": "true",
+                "closed": "false",
+                "limit": limit,
+                "order": "volume24hr",
+                "ascending": "false",
+            },
+            headers=REQUEST_HEADERS,
+            timeout=20,
+        )
+        response.raise_for_status()
+        markets = []
+        for event in response.json()[:limit]:
+            active_markets = [
+                market
+                for market in event.get("markets", [])
+                if market.get("active", True) and not market.get("closed", False)
+            ]
+            market = max(
+                active_markets,
+                key=lambda item: _safe_float(item.get("volume24hr")),
+                default={},
+            )
+            outcomes = _json_list(market.get("outcomes"))
+            prices = _json_list(market.get("outcomePrices"))
+            markets.append(
+                {
+                    "question": event.get("title", "未命名事件"),
+                    "url": f"https://polymarket.com/event/{event.get('slug', '')}",
+                    "outcomes": [
+                        {"name": name, "probability": round(_safe_float(price) * 100, 1)}
+                        for name, price in zip(outcomes, prices)
+                    ],
+                    "volume_24h": round(_safe_float(event.get("volume24hr"))),
+                    "liquidity": round(_safe_float(event.get("liquidity"))),
+                    "end_date": (event.get("endDate") or "")[:10],
+                }
+            )
+        return markets
+    except Exception as e:
+        print(f"获取 Polymarket 市场时出错: {e}")
         return []
 
 
@@ -798,8 +1125,14 @@ def generate_html(
     github_repositories=None,
     product_hunt_products=None,
     arxiv_papers=None,
+    lobsters_stories=None,
+    github_releases=None,
+    arxiv_ai_papers=None,
+    macro_indicators=None,
+    sec_filings=None,
+    polymarket_markets=None,
 ):
-    """生成包含多个来源 Tab 的单页 HTML。"""
+    """生成按主题分组的单页 HTML。"""
     try:
         with open("templates/index.html") as f:
             template = Template(f.read(), autoescape=True)
@@ -817,6 +1150,12 @@ def generate_html(
             github_repositories=github_repositories or [],
             product_hunt_products=product_hunt_products or [],
             arxiv_papers=arxiv_papers or [],
+            lobsters_stories=lobsters_stories or [],
+            github_releases=github_releases or [],
+            arxiv_ai_papers=arxiv_ai_papers or [],
+            macro_indicators=macro_indicators or [],
+            sec_filings=sec_filings or [],
+            polymarket_markets=polymarket_markets or [],
             update_time=current_time,
         )
         with open("public/index.html", "w", encoding="utf-8") as f:
@@ -835,13 +1174,36 @@ def main():
 
     print("正在获取 GitHub Trending...")
     github_repositories = fetch_github_trending()
+    print("正在获取 Lobsters...")
+    lobsters_stories = fetch_lobsters()
+    print("正在获取 GitHub Releases...")
+    github_releases = fetch_github_releases(github_repositories)
     print("正在获取 Product Hunt...")
     product_hunt_products = fetch_product_hunt()
     print("正在获取并翻译 arXiv 金融论文...")
-    arxiv_papers = fetch_arxiv_papers()
+    translation_cache = ArxivTranslationCache()
+    arxiv_papers = fetch_arxiv_papers(cache=translation_cache)
+    time.sleep(3)
+    print("正在获取并翻译 arXiv AI 论文...")
+    arxiv_ai_papers = fetch_arxiv_ai_papers(cache=translation_cache)
+    print("正在获取宏观指标、SEC 公告和预测市场...")
+    macro_indicators = fetch_bls_market_indicators() + fetch_treasury_yields()
+    sec_filings = fetch_sec_filings()
+    polymarket_markets = fetch_polymarket_markets()
 
     print("正在生成 HTML...")
-    generate_html(stories, github_repositories, product_hunt_products, arxiv_papers)
+    generate_html(
+        stories,
+        github_repositories,
+        product_hunt_products,
+        arxiv_papers,
+        lobsters_stories,
+        github_releases,
+        arxiv_ai_papers,
+        macro_indicators,
+        sec_filings,
+        polymarket_markets,
+    )
     if not os.path.isfile("public/index.html") or os.path.getsize(
         "public/index.html"
     ) == 0:

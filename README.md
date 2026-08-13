@@ -2,16 +2,18 @@
 
 [![Tests](https://github.com/wayhome/livenews/actions/workflows/test.yml/badge.svg)](https://github.com/wayhome/livenews/actions/workflows/test.yml)
 
-这是一个聚合 Hacker News、GitHub Trending、Product Hunt 和 arXiv 金融论文的开发者热点项目，使用 OpenAI 生成 Hacker News 摘要并翻译论文摘要，通过 GitHub Pages 展示。
+这是一个按技术社区、开源生态、新产品、前沿论文和金融动态组织的情报聚合项目，使用 OpenAI 生成 Hacker News 摘要并翻译论文摘要，通过 GitHub Pages 展示。
 
 ## 功能
 
 - 每天北京时间 07:00 和 19:00 自动刷新全部来源
 - 获取 30 条 Hacker News 热门故事及评论摘要
-- 获取 GitHub Trending 每日热门仓库
+- 获取 Lobsters 热门技术讨论
+- 获取 GitHub Trending 每日热门仓库及其最新 Releases
 - 获取 Product Hunt 热门产品
-- 获取最新 arXiv 金融与量化研究论文，并将摘要翻译为中文
-- 使用独立 Tab 切换不同来源
+- 获取最新 arXiv 金融与 AI 论文，并将摘要翻译为中文
+- 展示 BLS 月度 CPI/就业数据、美债收益率、SEC EDGAR 自选股公告和 Polymarket 热门预测市场
+- 使用五个主题 Tab 组织不同来源
 - 收集每个故事的前 15 条评论
 - 使用 OpenAI API 生成评论摘要
 - 生成静态 HTML 页面展示
@@ -24,6 +26,7 @@
    - `OPENAI_API_KEY`: 必填，你的 OpenAI API 密钥
    - `OPENAI_API_BASE`: 可选，自定义 OpenAI API 地址（默认为官方API）
    - `OPENAI_MODEL`: 可选，使用的模型名称（默认为 gpt-3.5-turbo）
+   - Actions Variable `SEC_USER_AGENT`: 建议设为 `应用名 联系邮箱`，便于 SEC 识别访问方
 3. 启用 GitHub Pages（设置为 gh-pages 分支）
 4. 确保 Actions 权限已开启
 5. 访问 `https://<你的用户名>.github.io/<仓库名>` 查看结果
@@ -64,11 +67,19 @@ uv run pytest tests/
 | OPENAI_API_KEY  | 是   | -                         | OpenAI API 密钥 |
 | OPENAI_API_BASE | 否   | https://api.openai.com/v1 | OpenAI API 地址 |
 | OPENAI_MODEL    | 否   | gpt-3.5-turbo             | 使用的模型名称  |
+| SEC_USER_AGENT  | 否   | 项目名及 GitHub 联系地址 | SEC EDGAR 声明式 User-Agent |
 
 ## 技术栈
 
 - Python
 - HackerNews API
+- Lobsters JSON feed
+- GitHub REST API
+- arXiv API
+- BLS Public Data API
+- U.S. Treasury yield curve data
+- SEC EDGAR API
+- Polymarket Gamma API
 - OpenAI API
 - GitHub Actions
 - GitHub Pages
