@@ -12,7 +12,7 @@
 - 获取 GitHub Trending 每日热门仓库及其最新 Releases
 - 获取 Product Hunt 热门产品
 - 获取最新 arXiv 金融与 AI 论文，并将摘要翻译为中文
-- 展示 BLS 月度 CPI/就业数据、美债收益率、SEC EDGAR 自选股公告和 Polymarket 热门预测市场
+- 展示 BLS 月度 CPI/就业数据、美债收益率、SEC EDGAR 自选股公告和 Polymarket 金融/AI 预测市场
 - 使用五个主题 Tab 组织不同来源
 - 收集每个故事的前 15 条评论
 - 使用 OpenAI API 生成评论摘要

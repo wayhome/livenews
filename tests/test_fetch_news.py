@@ -391,14 +391,58 @@ def test_fetch_polymarket_markets_parses_outcomes():
         }
     ]
 
-    with patch("requests.get", return_value=response):
+    with (
+        patch.dict("scripts.fetch_news.POLYMARKET_TAGS", {"120": "金融"}, clear=True),
+        patch("requests.get", return_value=response) as request,
+    ):
         markets = fetch_polymarket_markets(limit=1)
 
+    assert request.call_args.kwargs["params"]["tag_id"] == "120"
+    assert markets[0]["topics"] == ["金融"]
     assert markets[0]["outcomes"] == [
         {"name": "Yes", "probability": 62.0},
         {"name": "No", "probability": 38.0},
     ]
     assert markets[0]["url"].endswith("/will-it-happen")
+
+
+def test_fetch_polymarket_markets_deduplicates_topics_and_sorts_by_volume():
+    shared_event = {
+        "id": "shared",
+        "title": "Will AI company valuation rise?",
+        "slug": "ai-valuation",
+        "volume24hr": 200,
+        "markets": [],
+    }
+    crypto_event = {
+        "id": "crypto",
+        "title": "Will Bitcoin rise?",
+        "slug": "bitcoin-rise",
+        "volume24hr": 300,
+        "markets": [],
+    }
+    responses = []
+    for events in ([shared_event], [shared_event], [crypto_event]):
+        response = MagicMock()
+        response.raise_for_status.return_value = None
+        response.json.return_value = events
+        responses.append(response)
+
+    with (
+        patch.dict(
+            "scripts.fetch_news.POLYMARKET_TAGS",
+            {"120": "金融", "439": "AI", "21": "加密市场"},
+            clear=True,
+        ),
+        patch("requests.get", side_effect=responses),
+    ):
+        markets = fetch_polymarket_markets(limit=10)
+
+    assert [market["question"] for market in markets] == [
+        "Will Bitcoin rise?",
+        "Will AI company valuation rise?",
+    ]
+    assert markets[1]["topics"] == ["AI", "金融"]
 
 
 def test_fetch_arxiv_papers_translates_and_caches_abstract(tmp_path):
@@ -515,7 +559,7 @@ def test_generate_html_renders_topic_tabs_and_sources(tmp_path, monkeypatch):
         arxiv_ai_papers=[{"id": "2608.54321v1", "title": "AI Paper", "url": "https://arxiv.org/abs/2608.54321v1", "html_url": "https://arxiv.org/html/2608.54321v1", "pdf_url": "", "authors": ["AI Researcher"], "categories": ["cs.AI"], "primary_category": "cs.AI", "published": "2026-08-14", "updated": "2026-08-14T10:00:00Z", "summary_zh": "AI 中文摘要", "translation_available": True}],
         macro_indicators=[{"id": "LNS14000000", "name": "美国失业率", "value": "4.2", "unit": "%", "date": "2026-07", "detail": "最新公布值", "url": "https://data.bls.gov/timeseries/LNS14000000"}],
         sec_filings=[{"ticker": "AAPL", "company": "Apple Inc.", "form": "8-K", "date": "2026-08-14", "description": "Current report", "url": "https://www.sec.gov/example"}],
-        polymarket_markets=[{"question": "Will it happen?", "url": "https://polymarket.com/event/test", "outcomes": [{"name": "Yes", "probability": 62.0}], "volume_24h": 1000, "liquidity": 500, "end_date": "2026-12-31"}],
+        polymarket_markets=[{"question": "Will it happen?", "url": "https://polymarket.com/event/test", "topics": ["AI", "金融"], "outcomes": [{"name": "Yes", "probability": 62.0}], "volume_24h": 1000, "liquidity": 500, "end_date": "2026-12-31"}],
     )
 
     html = (tmp_path / "public" / "index.html").read_text(encoding="utf-8")
@@ -533,6 +577,7 @@ def test_generate_html_renders_topic_tabs_and_sources(tmp_path, monkeypatch):
     assert "美国失业率" in html
     assert "AAPL" in html
     assert "Will it happen?" in html
+    assert "Polymarket · 金融与 AI 预测市场" in html
     assert 'href="https://arxiv.org/html/2608.12345v1"' in html
     assert "HTML 在线版" in html
     assert not (tmp_path / "public" / "page").exists()

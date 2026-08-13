@@ -32,6 +32,12 @@ LOBSTERS_STORY_LIMIT = 15
 GITHUB_RELEASE_LIMIT = 10
 SEC_FILING_LIMIT = 10
 POLYMARKET_LIMIT = 10
+POLYMARKET_TAGS = {
+    "120": "金融",
+    "225": "宏观经济",
+    "21": "加密市场",
+    "439": "AI",
+}
 ARXIV_SEARCH_QUERY = " OR ".join(
     f"cat:{category}"
     for category in (
@@ -756,23 +762,39 @@ def _safe_float(value):
 
 
 def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
-    """获取 Polymarket 按 24 小时交易量排序的活跃事件。"""
-    try:
-        response = requests.get(
-            "https://gamma-api.polymarket.com/events",
-            params={
-                "active": "true",
-                "closed": "false",
-                "limit": limit,
-                "order": "volume24hr",
-                "ascending": "false",
-            },
-            headers=REQUEST_HEADERS,
-            timeout=20,
-        )
-        response.raise_for_status()
-        markets = []
-        for event in response.json()[:limit]:
+    """获取 Polymarket 金融、宏观、加密市场和 AI 活跃事件。"""
+    events = {}
+    for tag_id, topic in POLYMARKET_TAGS.items():
+        try:
+            response = requests.get(
+                "https://gamma-api.polymarket.com/events",
+                params={
+                    "active": "true",
+                    "closed": "false",
+                    "limit": limit,
+                    "order": "volume24hr",
+                    "ascending": "false",
+                    "tag_id": tag_id,
+                },
+                headers=REQUEST_HEADERS,
+                timeout=20,
+            )
+            response.raise_for_status()
+            for event in response.json():
+                event_id = str(event.get("id") or event.get("slug", ""))
+                if not event_id:
+                    continue
+                if event_id in events:
+                    events[event_id]["topics"].add(topic)
+                else:
+                    events[event_id] = {"data": event, "topics": {topic}}
+        except Exception as e:
+            print(f"获取 Polymarket {topic} 事件时出错: {e}")
+
+    markets = []
+    for item in events.values():
+        try:
+            event = item["data"]
             active_markets = [
                 market
                 for market in event.get("markets", [])
@@ -789,6 +811,7 @@ def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
                 {
                     "question": event.get("title", "未命名事件"),
                     "url": f"https://polymarket.com/event/{event.get('slug', '')}",
+                    "topics": sorted(item["topics"]),
                     "outcomes": [
                         {"name": name, "probability": round(_safe_float(price) * 100, 1)}
                         for name, price in zip(outcomes, prices)
@@ -798,10 +821,9 @@ def fetch_polymarket_markets(limit=POLYMARKET_LIMIT):
                     "end_date": (event.get("endDate") or "")[:10],
                 }
             )
-        return markets
-    except Exception as e:
-        print(f"获取 Polymarket 市场时出错: {e}")
-        return []
+        except Exception as e:
+            print(f"处理 Polymarket 事件时出错: {e}")
+    return sorted(markets, key=lambda market: market["volume_24h"], reverse=True)[:limit]
 
 
 class StoryCache:

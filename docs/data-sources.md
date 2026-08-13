@@ -198,7 +198,7 @@ Gamma 公共读接口无需认证；交易及部分 CLOB 操作才需要签名�
 
 ### 最小接入
 
-按 `volume24hr` 取 10～15 个活跃未关闭事件，页面展示事件标题、24 小时交易量、流动性以及主要 outcome 概率，链接构造为 `https://polymarket.com/event/{slug}`。Gamma schema 的产品属性较强，应对字段缺失和类型变化做防御性解析，并让该来源独立降级。
+分别通过 `tag_id` 查询 Finance（`120`）、Economics（`225`）、Crypto（`21`）和 AI（`439`），合并后按事件 ID 去重，再按 `volume24hr` 取 10 个活跃未关闭事件。页面展示主题标签、事件标题、24 小时交易量、流动性以及主要 outcome 概率，链接构造为 `https://polymarket.com/event/{slug}`。Gamma schema 的产品属性较强，应对字段缺失和类型变化做防御性解析，并让该来源独立降级。
 
 ## 实施顺序与边界
 
