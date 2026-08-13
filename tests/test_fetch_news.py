@@ -10,12 +10,16 @@ os.environ["OPENAI_API_BASE"] = "https://api.test.com/v1"
 os.environ["OPENAI_MODEL"] = "test-model"
 
 # 导入要测试的模块
-from scripts.fetch_hn import (
+from scripts.fetch_news import (
+    ARXIV_PAPER_LIMIT,
+    ARXIV_SEARCH_QUERY,
+    ArxivTranslationCache,
     HN_STORY_LIMIT,
     StoryCache,
     _process_html_content,
     clean_html_text,
     fetch_github_trending,
+    fetch_arxiv_papers,
     get_article_content,
     fetch_product_hunt,
     generate_html,
@@ -152,13 +156,17 @@ def test_process_html_content_non_html():
 
 def test_main_fails_when_no_stories_are_fetched():
     """抓取失败时必须阻止空目录覆盖线上站点。"""
-    with patch("scripts.fetch_hn.fetch_top_stories", return_value=[]):
+    with patch("scripts.fetch_news.fetch_top_stories", return_value=[]):
         with pytest.raises(RuntimeError, match="未获取到任何故事"):
             main()
 
 
 def test_hacker_news_is_limited_to_30_stories():
     assert HN_STORY_LIMIT == 30
+
+
+def test_arxiv_is_limited_to_15_papers():
+    assert ARXIV_PAPER_LIMIT == 15
 
 
 def test_fetch_github_trending():
@@ -219,6 +227,87 @@ def test_fetch_product_hunt():
     ]
 
 
+def test_fetch_arxiv_papers_translates_and_caches_abstract(tmp_path):
+    feed = """<?xml version="1.0" encoding="UTF-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+      <entry>
+        <id>http://arxiv.org/abs/2608.12345v1</id>
+        <title>  Quantitative Trading\n with Signals </title>
+        <summary>  An English abstract about quantitative trading. </summary>
+        <published>2026-08-13T10:00:00Z</published>
+        <updated>2026-08-13T10:00:00Z</updated>
+        <link href="https://arxiv.org/abs/2608.12345v1" rel="alternate" type="text/html" />
+        <link href="https://arxiv.org/pdf/2608.12345v1" rel="related" type="application/pdf" title="pdf" />
+        <category term="q-fin.TR" />
+        <arxiv:primary_category term="q-fin.TR" />
+        <author><name>Alice Researcher</name></author>
+        <author><name>Bob Quant</name></author>
+      </entry>
+    </feed>"""
+    response = MagicMock(content=feed.encode())
+    response.raise_for_status.return_value = None
+    cache = ArxivTranslationCache(cache_file=str(tmp_path / "arxiv_cache.json"))
+
+    with (
+        patch("requests.get", return_value=response) as mock_get,
+        patch("scripts.fetch_news.get_summary", return_value="中文量化交易摘要") as translate,
+    ):
+        papers = fetch_arxiv_papers(limit=1, cache=cache)
+        cached_papers = fetch_arxiv_papers(limit=1, cache=cache)
+
+    assert papers == cached_papers
+    assert papers == [
+        {
+            "id": "2608.12345v1",
+            "title": "Quantitative Trading with Signals",
+            "url": "https://arxiv.org/abs/2608.12345v1",
+            "pdf_url": "https://arxiv.org/pdf/2608.12345v1",
+            "authors": ["Alice Researcher", "Bob Quant"],
+            "categories": ["q-fin.TR"],
+            "primary_category": "q-fin.TR",
+            "published": "2026-08-13",
+            "updated": "2026-08-13T10:00:00Z",
+            "summary_zh": "中文量化交易摘要",
+            "translation_available": True,
+        }
+    ]
+    assert mock_get.call_args.kwargs["params"]["sortBy"] == "submittedDate"
+    assert mock_get.call_args.kwargs["params"]["sortOrder"] == "descending"
+    assert "q-fin.TR" in ARXIV_SEARCH_QUERY
+    assert "q-fin.*" not in ARXIV_SEARCH_QUERY
+    assert translate.call_count == 1
+
+
+def test_fetch_arxiv_papers_falls_back_to_english_abstract(tmp_path):
+    feed = """<?xml version="1.0" encoding="UTF-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom" xmlns:arxiv="http://arxiv.org/schemas/atom">
+      <entry>
+        <id>https://arxiv.org/abs/2608.54321v1</id>
+        <title>Market Microstructure</title>
+        <summary>An English abstract.</summary>
+        <published>2026-08-13T10:00:00Z</published>
+        <updated>2026-08-13T10:00:00Z</updated>
+        <arxiv:primary_category term="q-fin.TR" />
+      </entry>
+    </feed>"""
+    response = MagicMock(content=feed.encode())
+    response.raise_for_status.return_value = None
+    cache = ArxivTranslationCache(cache_file=str(tmp_path / "arxiv_cache.json"))
+
+    with (
+        patch("requests.get", return_value=response),
+        patch(
+            "scripts.fetch_news.get_summary",
+            return_value="摘要生成失败（网络错误）",
+        ),
+    ):
+        papers = fetch_arxiv_papers(limit=1, cache=cache)
+
+    assert papers[0]["summary_zh"] == "An English abstract."
+    assert papers[0]["translation_available"] is False
+    assert cache.cache == {}
+
+
 def test_generate_html_renders_source_tabs(tmp_path, monkeypatch):
     template = os.path.join(os.path.dirname(__file__), "..", "templates", "index.html")
     templates_dir = tmp_path / "templates"
@@ -232,12 +321,15 @@ def test_generate_html_renders_source_tabs(tmp_path, monkeypatch):
         [],
         github_repositories=[{"name": "octocat/hello-world", "url": "https://github.com/octocat/hello-world", "description": "Hello", "language": "Python", "stars": "1", "forks": "0", "stars_today": "1 star today"}],
         product_hunt_products=[{"name": "Useful Product", "url": "https://example.com", "description": "Useful", "maker": "Maker", "published": "2026-08-13"}],
+        arxiv_papers=[{"id": "2608.12345v1", "title": "Quant Paper", "url": "https://arxiv.org/abs/2608.12345v1", "pdf_url": "https://arxiv.org/pdf/2608.12345v1", "authors": ["Researcher"], "categories": ["q-fin.TR"], "primary_category": "q-fin.TR", "published": "2026-08-13", "updated": "2026-08-13T10:00:00Z", "summary_zh": "中文摘要", "translation_available": True}],
     )
 
     html = (tmp_path / "public" / "index.html").read_text(encoding="utf-8")
     assert 'id="hacker-news-tab"' in html
     assert 'id="github-trending-tab"' in html
     assert 'id="product-hunt-tab"' in html
+    assert 'id="arxiv-tab"' in html
     assert "octocat/hello-world" in html
     assert "Useful Product" in html
+    assert "中文摘要" in html
     assert not (tmp_path / "public" / "page").exists()

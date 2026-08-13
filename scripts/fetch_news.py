@@ -26,6 +26,20 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 HN_STORY_LIMIT = 30
 GITHUB_TRENDING_LIMIT = 20
 PRODUCT_HUNT_LIMIT = 20
+ARXIV_PAPER_LIMIT = 15
+ARXIV_SEARCH_QUERY = " OR ".join(
+    f"cat:{category}"
+    for category in (
+        "q-fin.CP",
+        "q-fin.GN",
+        "q-fin.MF",
+        "q-fin.PM",
+        "q-fin.PR",
+        "q-fin.RM",
+        "q-fin.ST",
+        "q-fin.TR",
+    )
+)
 REQUEST_HEADERS = {
     "User-Agent": "Mozilla/5.0 (compatible; LiveNews/1.0; +https://github.com/wayhome/livenews)"
 }
@@ -321,6 +335,141 @@ def fetch_product_hunt(limit=PRODUCT_HUNT_LIMIT):
         return products
     except Exception as e:
         print(f"获取 Product Hunt 时出错: {e}")
+        return []
+
+
+class ArxivTranslationCache:
+    """持久化 arXiv 中文摘要，避免重复调用翻译模型。"""
+
+    def __init__(self, cache_file="public/arxiv_translation_cache.json"):
+        self.cache_file = cache_file
+        self.cache = self._load()
+
+    def _load(self):
+        try:
+            if os.path.exists(self.cache_file):
+                with open(self.cache_file, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    return data if isinstance(data, dict) else {}
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"加载 arXiv 翻译缓存失败: {e}")
+        return {}
+
+    def get(self, paper_id, updated):
+        cached = self.cache.get(paper_id)
+        if cached and cached.get("updated") == updated:
+            return cached.get("summary_zh")
+        return None
+
+    def set(self, paper_id, updated, summary_zh):
+        self.cache[paper_id] = {
+            "updated": updated,
+            "summary_zh": summary_zh,
+        }
+        try:
+            cache_directory = os.path.dirname(self.cache_file)
+            if cache_directory:
+                os.makedirs(cache_directory, exist_ok=True)
+            with open(self.cache_file, "w", encoding="utf-8") as f:
+                json.dump(self.cache, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            print(f"保存 arXiv 翻译缓存失败: {e}")
+
+
+def fetch_arxiv_papers(limit=ARXIV_PAPER_LIMIT, cache=None):
+    """获取最新 q-fin 论文并将摘要翻译为中文。"""
+    cache = cache or ArxivTranslationCache()
+    try:
+        response = requests.get(
+            "https://export.arxiv.org/api/query",
+            params={
+                "search_query": ARXIV_SEARCH_QUERY,
+                "start": 0,
+                "max_results": limit,
+                "sortBy": "submittedDate",
+                "sortOrder": "descending",
+            },
+            headers=REQUEST_HEADERS,
+            timeout=30,
+        )
+        response.raise_for_status()
+        root = ET.fromstring(response.content)
+        namespace = {
+            "atom": "http://www.w3.org/2005/Atom",
+            "arxiv": "http://arxiv.org/schemas/atom",
+        }
+        papers = []
+
+        for entry in root.findall("atom:entry", namespace):
+            entry_id = entry.findtext("atom:id", default="", namespaces=namespace)
+            paper_id = entry_id.rstrip("/").split("/")[-1]
+            updated = entry.findtext("atom:updated", default="", namespaces=namespace)
+            abstract = " ".join(
+                entry.findtext("atom:summary", default="", namespaces=namespace).split()
+            )
+            summary_zh = cache.get(paper_id, updated)
+            translation_available = bool(summary_zh)
+            if not summary_zh:
+                translated_summary = get_summary(
+                    abstract,
+                    prompt=(
+                        "请将以下 arXiv 论文摘要准确、完整地翻译成简体中文。"
+                        "保留金融、数学和机器学习术语的含义，不要添加评论或改写成提纲。"
+                    ),
+                    story_id=paper_id,
+                )
+                translation_available = bool(
+                    translated_summary
+                    and not translated_summary.startswith("摘要生成失败")
+                )
+                summary_zh = translated_summary if translation_available else abstract
+                if translation_available:
+                    cache.set(paper_id, updated, summary_zh)
+
+            alternate_url = entry_id
+            pdf_url = ""
+            for link in entry.findall("atom:link", namespace):
+                if link.get("rel") == "alternate":
+                    alternate_url = link.get("href", alternate_url)
+                elif link.get("title") == "pdf":
+                    pdf_url = link.get("href", "")
+
+            primary = entry.find("arxiv:primary_category", namespace)
+            papers.append(
+                {
+                    "id": paper_id,
+                    "title": " ".join(
+                        entry.findtext(
+                            "atom:title", default="无标题", namespaces=namespace
+                        ).split()
+                    ),
+                    "url": alternate_url,
+                    "pdf_url": pdf_url,
+                    "authors": [
+                        author.findtext(
+                            "atom:name", default="匿名", namespaces=namespace
+                        ).strip()
+                        for author in entry.findall("atom:author", namespace)
+                    ],
+                    "categories": [
+                        category.get("term", "")
+                        for category in entry.findall("atom:category", namespace)
+                    ],
+                    "primary_category": (
+                        primary.get("term", "") if primary is not None else ""
+                    ),
+                    "published": entry.findtext(
+                        "atom:published", default="", namespaces=namespace
+                    )[:10],
+                    "updated": updated,
+                    "summary_zh": summary_zh,
+                    "translation_available": translation_available,
+                }
+            )
+
+        return papers
+    except Exception as e:
+        print(f"获取 arXiv 论文时出错: {e}")
         return []
 
 
@@ -643,8 +792,13 @@ def fetch_top_stories():
         return []
 
 
-def generate_html(stories, github_repositories=None, product_hunt_products=None):
-    """生成包含三个来源 Tab 的单页 HTML。"""
+def generate_html(
+    stories,
+    github_repositories=None,
+    product_hunt_products=None,
+    arxiv_papers=None,
+):
+    """生成包含多个来源 Tab 的单页 HTML。"""
     try:
         with open("templates/index.html") as f:
             template = Template(f.read(), autoescape=True)
@@ -661,6 +815,7 @@ def generate_html(stories, github_repositories=None, product_hunt_products=None)
             stories=stories,
             github_repositories=github_repositories or [],
             product_hunt_products=product_hunt_products or [],
+            arxiv_papers=arxiv_papers or [],
             update_time=current_time,
         )
         with open("public/index.html", "w", encoding="utf-8") as f:
@@ -681,9 +836,11 @@ def main():
     github_repositories = fetch_github_trending()
     print("正在获取 Product Hunt...")
     product_hunt_products = fetch_product_hunt()
+    print("正在获取并翻译 arXiv 金融论文...")
+    arxiv_papers = fetch_arxiv_papers()
 
     print("正在生成 HTML...")
-    generate_html(stories, github_repositories, product_hunt_products)
+    generate_html(stories, github_repositories, product_hunt_products, arxiv_papers)
     if not os.path.isfile("public/index.html") or os.path.getsize(
         "public/index.html"
     ) == 0:

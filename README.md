@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/wayhome/livenews/actions/workflows/test.yml/badge.svg)](https://github.com/wayhome/livenews/actions/workflows/test.yml)
 
-这是一个聚合 Hacker News、GitHub Trending 和 Product Hunt 的开发者热点项目，使用 OpenAI 生成 Hacker News 摘要，并通过 GitHub Pages 展示。
+这是一个聚合 Hacker News、GitHub Trending、Product Hunt 和 arXiv 金融论文的开发者热点项目，使用 OpenAI 生成 Hacker News 摘要并翻译论文摘要，通过 GitHub Pages 展示。
 
 ## 功能
 
@@ -10,6 +10,7 @@
 - 获取 30 条 Hacker News 热门故事及评论摘要
 - 获取 GitHub Trending 每日热门仓库
 - 获取 Product Hunt 热门产品
+- 获取最新 arXiv 金融与量化研究论文，并将摘要翻译为中文
 - 使用独立 Tab 切换不同来源
 - 收集每个故事的前 15 条评论
 - 使用 OpenAI API 生成评论摘要
@@ -42,7 +43,7 @@ OPENAI_MODEL=gpt-3.5-turbo  # 可选，自定义模型
 EOF
 
 # 运行脚本
-uv run python scripts/fetch_hn.py
+uv run python scripts/fetch_news.py
 
 # 运行测试
 uv run pytest tests/

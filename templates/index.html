@@ -11,6 +11,7 @@
         .hn-card { border-left: 4px solid #ff6600; }
         .github-card { border-left: 4px solid #24292f; }
         .product-card { border-left: 4px solid #da552f; }
+        .arxiv-card { border-left: 4px solid #b31b1b; }
         .item-meta { color: #6c757d; font-size: .9rem; }
         .summary-section { background: #f8f9fa; padding: 1rem; border-radius: .4rem; margin-top: 1rem; }
         .comments-summary { white-space: pre-line; }
@@ -38,6 +39,11 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="product-hunt-tab" data-bs-toggle="tab" data-bs-target="#product-hunt" type="button" role="tab" aria-controls="product-hunt" aria-selected="false">
                     Product Hunt <span class="badge rounded-pill text-bg-secondary tab-count">{{ product_hunt_products | length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="arxiv-tab" data-bs-toggle="tab" data-bs-target="#arxiv" type="button" role="tab" aria-controls="arxiv" aria-selected="false">
+                    arXiv 金融论文 <span class="badge rounded-pill text-bg-secondary tab-count">{{ arxiv_papers | length }}</span>
                 </button>
             </li>
         </ul>
@@ -92,6 +98,28 @@
                 </article>
                 {% else %}
                 <div class="alert alert-warning">Product Hunt 暂时无法获取，请稍后再试。</div>
+                {% endfor %}
+            </section>
+
+            <section class="tab-pane fade" id="arxiv" role="tabpanel" aria-labelledby="arxiv-tab" tabindex="0">
+                {% for paper in arxiv_papers %}
+                <article class="card news-card arxiv-card">
+                    <div class="card-body">
+                        <h3 class="h5"><a href="{{ paper.url }}" target="_blank" rel="noopener">{{ paper.title }}</a></h3>
+                        <div class="item-meta mb-3">
+                            {{ paper.authors | join(', ') }} · {{ paper.primary_category }} · 提交日期: {{ paper.published }}
+                        </div>
+                        <h4 class="h6">{% if paper.translation_available %}中文摘要{% else %}原文摘要（翻译暂不可用）{% endif %}</h4>
+                        <p>{{ paper.summary_zh }}</p>
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <a href="{{ paper.url }}" target="_blank" rel="noopener" class="small">论文详情</a>
+                            {% if paper.pdf_url %}<a href="{{ paper.pdf_url }}" target="_blank" rel="noopener" class="small">PDF</a>{% endif %}
+                            {% for category in paper.categories %}<span class="badge text-bg-light">{{ category }}</span>{% endfor %}
+                        </div>
+                    </div>
+                </article>
+                {% else %}
+                <div class="alert alert-warning">arXiv 金融论文暂时无法获取，请稍后再试。</div>
                 {% endfor %}
             </section>
         </div>
