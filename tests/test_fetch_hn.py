@@ -11,10 +11,14 @@ os.environ["OPENAI_MODEL"] = "test-model"
 
 # 导入要测试的模块
 from scripts.fetch_hn import (
+    HN_STORY_LIMIT,
     StoryCache,
     _process_html_content,
     clean_html_text,
+    fetch_github_trending,
     get_article_content,
+    fetch_product_hunt,
+    generate_html,
     main,
 )
 
@@ -151,3 +155,89 @@ def test_main_fails_when_no_stories_are_fetched():
     with patch("scripts.fetch_hn.fetch_top_stories", return_value=[]):
         with pytest.raises(RuntimeError, match="未获取到任何故事"):
             main()
+
+
+def test_hacker_news_is_limited_to_30_stories():
+    assert HN_STORY_LIMIT == 30
+
+
+def test_fetch_github_trending():
+    html = """
+    <article class="Box-row">
+      <h2><a href="/octocat/hello-world">octocat   /\n hello-world</a></h2>
+      <p>A friendly repository</p>
+      <span itemprop="programmingLanguage">Python</span>
+      <a href="/octocat/hello-world/stargazers">1,234</a>
+      <a href="/octocat/hello-world/forks">56</a>
+      <span>321 stars today</span>
+    </article>
+    """
+    response = MagicMock(text=html)
+    response.raise_for_status.return_value = None
+
+    with patch("requests.get", return_value=response):
+        repositories = fetch_github_trending(limit=1)
+
+    assert repositories == [
+        {
+            "name": "octocat/hello-world",
+            "url": "https://github.com/octocat/hello-world",
+            "description": "A friendly repository",
+            "language": "Python",
+            "stars": "1,234",
+            "forks": "56",
+            "stars_today": "321 stars today",
+        }
+    ]
+
+
+def test_fetch_product_hunt():
+    feed = """<?xml version="1.0" encoding="UTF-8"?>
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <entry>
+        <title>Useful Product</title>
+        <link rel="alternate" href="https://www.producthunt.com/products/useful" />
+        <published>2026-08-13T10:00:00-07:00</published>
+        <content type="html">&lt;p&gt;It does useful things&lt;/p&gt;</content>
+        <author><name>A Maker</name></author>
+      </entry>
+    </feed>"""
+    response = MagicMock(content=feed.encode())
+    response.raise_for_status.return_value = None
+
+    with patch("requests.get", return_value=response):
+        products = fetch_product_hunt(limit=1)
+
+    assert products == [
+        {
+            "name": "Useful Product",
+            "url": "https://www.producthunt.com/products/useful",
+            "description": "It does useful things",
+            "maker": "A Maker",
+            "published": "2026-08-13",
+        }
+    ]
+
+
+def test_generate_html_renders_source_tabs(tmp_path, monkeypatch):
+    template = os.path.join(os.path.dirname(__file__), "..", "templates", "index.html")
+    templates_dir = tmp_path / "templates"
+    templates_dir.mkdir()
+    (templates_dir / "index.html").write_text(
+        open(template, encoding="utf-8").read(), encoding="utf-8"
+    )
+    monkeypatch.chdir(tmp_path)
+
+    generate_html(
+        [],
+        github_repositories=[{"name": "octocat/hello-world", "url": "https://github.com/octocat/hello-world", "description": "Hello", "language": "Python", "stars": "1", "forks": "0", "stars_today": "1 star today"}],
+        product_hunt_products=[{"name": "Useful Product", "url": "https://example.com", "description": "Useful", "maker": "Maker", "published": "2026-08-13"}],
+    )
+
+    html = (tmp_path / "public" / "index.html").read_text(encoding="utf-8")
+    assert 'id="hacker-news-tab"' in html
+    assert 'id="github-trending-tab"' in html
+    assert 'id="product-hunt-tab"' in html
+    assert "octocat/hello-world" in html
+    assert "Useful Product" in html
+    assert not (tmp_path / "public" / "page").exists()

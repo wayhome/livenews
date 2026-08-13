@@ -3,163 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HackerNews 热门故事摘要 - 第{{ current_page }}页</title>
+    <title>LiveNews 开发者热点</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .story-card {
-            margin-bottom: 2rem;
-            border-left: 4px solid #ff6600;
-        }
-        .story-meta {
-            color: #6c757d;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        .summary-section {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            border-radius: 5px;
-            margin: 1rem 0;
-        }
-        .comments-summary {
-            white-space: pre-line;  /* 保留换行符 */
-        }
-        .bullet-point {
-            margin-left: 1em;
-            position: relative;
-        }
-        .bullet-point::before {
-            content: "•";
-            position: absolute;
-            left: -1em;
-        }
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-        .page-info {
-            margin-bottom: 0.5rem;
-            text-align: center;
-            color: #6c757d;
-        }
+        body { background: #f6f8fa; }
+        .news-card { margin-bottom: 1rem; border: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
+        .hn-card { border-left: 4px solid #ff6600; }
+        .github-card { border-left: 4px solid #24292f; }
+        .product-card { border-left: 4px solid #da552f; }
+        .item-meta { color: #6c757d; font-size: .9rem; }
+        .summary-section { background: #f8f9fa; padding: 1rem; border-radius: .4rem; margin-top: 1rem; }
+        .comments-summary { white-space: pre-line; }
+        .nav-tabs .nav-link { color: #495057; font-weight: 600; }
+        .nav-tabs .nav-link.active { color: #0d6efd; }
+        .tab-count { font-size: .75rem; }
     </style>
 </head>
 <body>
-    <div class="container py-5">
-        <h1 class="mb-4">HackerNews 热门故事摘要</h1>
-        <div class="text-muted mb-4">
-            最后更新时间: {{ update_time }} (北京时间)
-        </div>
+    <main class="container py-5">
+        <h1 class="mb-2">LiveNews 开发者热点</h1>
+        <p class="text-muted mb-4">最后更新时间: {{ update_time }} (北京时间)</p>
 
-        <!-- 分页信息 -->
-        <div class="page-info">
-            第 {{ current_page }}/{{ total_pages }} 页，共 {{ stories | length }} 条
-        </div>
+        <ul class="nav nav-tabs mb-4" id="source-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="hacker-news-tab" data-bs-toggle="tab" data-bs-target="#hacker-news" type="button" role="tab" aria-controls="hacker-news" aria-selected="true">
+                    Hacker News <span class="badge rounded-pill text-bg-secondary tab-count">{{ stories | length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="github-trending-tab" data-bs-toggle="tab" data-bs-target="#github-trending" type="button" role="tab" aria-controls="github-trending" aria-selected="false">
+                    GitHub Trending <span class="badge rounded-pill text-bg-secondary tab-count">{{ github_repositories | length }}</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="product-hunt-tab" data-bs-toggle="tab" data-bs-target="#product-hunt" type="button" role="tab" aria-controls="product-hunt" aria-selected="false">
+                    Product Hunt <span class="badge rounded-pill text-bg-secondary tab-count">{{ product_hunt_products | length }}</span>
+                </button>
+            </li>
+        </ul>
 
-        {% for story in stories %}
-        <div class="card story-card">
-            <div class="card-body">
-                <h3 class="card-title">
-                    <a href="{{ story.url }}" target="_blank">{{ story.title }}</a>
-                </h3>
-                <div class="story-meta">
-                    <span>作者: {{ story.author }}</span> |
-                    <span>评分: {{ story.score }}</span> |
-                    <span>评论数: {{ story.comments_count }}</span> |
-                    <span>发布时间: {{ story.time.strftime('%Y-%m-%d %H:%M') }}</span>
-                </div>
-
-                <div class="summary-section">
-                    <h5>文章摘要</h5>
-                    <p>{{ story.article_summary }}</p>
-                </div>
-
-                <div class="summary-section">
-                    <h5>评论摘要</h5>
-                    <div class="comments-summary">{{ story.comments_summary }}</div>
-                    <div class="mt-2">
-                        <a href="{{ story.comments_url }}" target="_blank" class="text-muted">
-                            <small>查看原始评论区 →</small>
-                        </a>
+        <div class="tab-content" id="source-tabs-content">
+            <section class="tab-pane fade show active" id="hacker-news" role="tabpanel" aria-labelledby="hacker-news-tab" tabindex="0">
+                {% for story in stories %}
+                <article class="card news-card hn-card">
+                    <div class="card-body">
+                        <h3 class="h5"><a href="{{ story.url }}" target="_blank" rel="noopener">{{ story.title }}</a></h3>
+                        <div class="item-meta">
+                            作者: {{ story.author }} · 评分: {{ story.score }} · 评论: {{ story.comments_count }} · {{ story.time.strftime('%Y-%m-%d %H:%M') }}
+                        </div>
+                        <div class="summary-section">
+                            <h4 class="h6">文章摘要</h4>
+                            <p class="mb-0">{{ story.article_summary }}</p>
+                        </div>
+                        <div class="summary-section">
+                            <h4 class="h6">评论摘要</h4>
+                            <div class="comments-summary">{{ story.comments_summary }}</div>
+                            <a href="{{ story.comments_url }}" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </article>
+                {% else %}
+                <div class="alert alert-warning">Hacker News 暂时无法获取。</div>
+                {% endfor %}
+            </section>
+
+            <section class="tab-pane fade" id="github-trending" role="tabpanel" aria-labelledby="github-trending-tab" tabindex="0">
+                {% for repo in github_repositories %}
+                <article class="card news-card github-card">
+                    <div class="card-body">
+                        <h3 class="h5"><a href="{{ repo.url }}" target="_blank" rel="noopener">{{ repo.name }}</a></h3>
+                        <p>{{ repo.description }}</p>
+                        <div class="item-meta">{{ repo.language }} · ⭐ {{ repo.stars }} · Fork {{ repo.forks }} · {{ repo.stars_today }}</div>
+                    </div>
+                </article>
+                {% else %}
+                <div class="alert alert-warning">GitHub Trending 暂时无法获取，请稍后再试。</div>
+                {% endfor %}
+            </section>
+
+            <section class="tab-pane fade" id="product-hunt" role="tabpanel" aria-labelledby="product-hunt-tab" tabindex="0">
+                {% for product in product_hunt_products %}
+                <article class="card news-card product-card">
+                    <div class="card-body">
+                        <h3 class="h5"><a href="{{ product.url }}" target="_blank" rel="noopener">{{ product.name }}</a></h3>
+                        <p>{{ product.description }}</p>
+                        <div class="item-meta">Maker: {{ product.maker }} · 发布日期: {{ product.published }}</div>
+                    </div>
+                </article>
+                {% else %}
+                <div class="alert alert-warning">Product Hunt 暂时无法获取，请稍后再试。</div>
+                {% endfor %}
+            </section>
         </div>
-        {% endfor %}
-
-        <!-- 分页导航 -->
-        <div class="pagination-container">
-            <nav aria-label="分页导航">
-                <ul class="pagination">
-                    {% if has_prev %}
-                    <li class="page-item">
-                        {% if current_page == 2 %}
-                        {% if is_index %}
-                        <a class="page-link" href="index.html" aria-label="上一页">
-                        {% else %}
-                        <a class="page-link" href="../index.html" aria-label="上一页">
-                        {% endif %}
-                        {% else %}
-                        {% if is_index %}
-                        <a class="page-link" href="page/{{ current_page - 1 }}.html" aria-label="上一页">
-                        {% else %}
-                        <a class="page-link" href="{{ current_page - 1 }}.html" aria-label="上一页">
-                        {% endif %}
-                        {% endif %}
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">上一页</span>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="上一页">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">上一页</span>
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    {% for page_num in range(1, total_pages + 1) %}
-                    <li class="page-item {% if page_num == current_page %}active{% endif %}">
-                        {% if page_num == 1 %}
-                        {% if is_index %}
-                        <a class="page-link" href="index.html">1</a>
-                        {% else %}
-                        <a class="page-link" href="../index.html">1</a>
-                        {% endif %}
-                        {% else %}
-                        {% if is_index %}
-                        <a class="page-link" href="page/{{ page_num }}.html">{{ page_num }}</a>
-                        {% else %}
-                        <a class="page-link" href="{{ page_num }}.html">{{ page_num }}</a>
-                        {% endif %}
-                        {% endif %}
-                    </li>
-                    {% endfor %}
-
-                    {% if has_next %}
-                    <li class="page-item">
-                        {% if is_index %}
-                        <a class="page-link" href="page/{{ current_page + 1 }}.html" aria-label="下一页">
-                        {% else %}
-                        <a class="page-link" href="{{ current_page + 1 }}.html" aria-label="下一页">
-                        {% endif %}
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">下一页</span>
-                        </a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" aria-label="下一页">
-                            <span aria-hidden="true">&raquo;</span>
-                            <span class="sr-only">下一页</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,10 @@
 import concurrent.futures
 import json
 import os
+import re
+import shutil
 import time
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from threading import Lock
 
@@ -19,6 +22,13 @@ load_dotenv(override=True)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_BASE = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+
+HN_STORY_LIMIT = 30
+GITHUB_TRENDING_LIMIT = 20
+PRODUCT_HUNT_LIMIT = 20
+REQUEST_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; LiveNews/1.0; +https://github.com/wayhome/livenews)"
+}
 
 # 确保 API 基础 URL 格式正确
 if OPENAI_API_BASE and not (
@@ -213,6 +223,107 @@ def clean_html_text(html_text):
         return html_text
 
 
+def fetch_github_trending(limit=GITHUB_TRENDING_LIMIT):
+    """获取 GitHub 每日 Trending 仓库。"""
+    try:
+        response = requests.get(
+            "https://github.com/trending?since=daily",
+            headers=REQUEST_HEADERS,
+            timeout=20,
+        )
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+        repositories = []
+
+        for article in soup.select("article.Box-row")[:limit]:
+            link = article.select_one("h2 a[href]")
+            if not link:
+                continue
+
+            path = link.get("href", "").strip()
+            name = re.sub(r"\s*/\s*", "/", " ".join(link.stripped_strings))
+            description = article.select_one("p")
+            language = article.select_one('[itemprop="programmingLanguage"]')
+            stars = article.select_one('a[href$="/stargazers"]')
+            forks = article.select_one('a[href$="/forks"]')
+            stars_today = article.find(string=re.compile(r"stars? today"))
+
+            repositories.append(
+                {
+                    "name": name,
+                    "url": f"https://github.com{path}",
+                    "description": (
+                        description.get_text(" ", strip=True)
+                        if description
+                        else "暂无描述"
+                    ),
+                    "language": (
+                        language.get_text(" ", strip=True) if language else "未标注"
+                    ),
+                    "stars": stars.get_text(" ", strip=True) if stars else "0",
+                    "forks": forks.get_text(" ", strip=True) if forks else "0",
+                    "stars_today": (
+                        stars_today.strip() if stars_today else "暂无今日增长数据"
+                    ),
+                }
+            )
+
+        return repositories
+    except Exception as e:
+        print(f"获取 GitHub Trending 时出错: {e}")
+        return []
+
+
+def fetch_product_hunt(limit=PRODUCT_HUNT_LIMIT):
+    """从 Product Hunt 官方 Atom feed 获取热门产品。"""
+    try:
+        response = requests.get(
+            "https://www.producthunt.com/feed",
+            headers=REQUEST_HEADERS,
+            timeout=20,
+        )
+        response.raise_for_status()
+        root = ET.fromstring(response.content)
+        namespace = {"atom": "http://www.w3.org/2005/Atom"}
+        products = []
+
+        for entry in root.findall("atom:entry", namespace)[:limit]:
+            title = entry.findtext("atom:title", default="无标题", namespaces=namespace)
+            author = entry.findtext(
+                "atom:author/atom:name", default="匿名", namespaces=namespace
+            )
+            published = entry.findtext(
+                "atom:published", default="", namespaces=namespace
+            )
+            content = entry.findtext("atom:content", default="", namespaces=namespace)
+            content_soup = BeautifulSoup(content, "html.parser")
+            description = content_soup.find("p")
+            alternate_link = entry.find("atom:link[@rel='alternate']", namespace)
+
+            products.append(
+                {
+                    "name": title.strip(),
+                    "url": (
+                        alternate_link.get("href", "https://www.producthunt.com")
+                        if alternate_link is not None
+                        else "https://www.producthunt.com"
+                    ),
+                    "description": (
+                        description.get_text(" ", strip=True)
+                        if description
+                        else "暂无描述"
+                    ),
+                    "maker": author.strip(),
+                    "published": published[:10],
+                }
+            )
+
+        return products
+    except Exception as e:
+        print(f"获取 Product Hunt 时出错: {e}")
+        return []
+
+
 class StoryCache:
     def __init__(self, cache_file="public/story_cache.json", max_age_hours=24):
         self.cache_file = cache_file
@@ -347,7 +458,7 @@ def fetch_top_stories():
         print("开始获取热门故事...")
         response = requests.get("https://hacker-news.firebaseio.com/v0/topstories.json")
         response.raise_for_status()
-        story_ids = response.json()[:100]  # 获取前100条热门故事
+        story_ids = response.json()[:HN_STORY_LIMIT]
         print(f"成功获取到 {len(story_ids)} 个故事ID")
 
         comments_prompt = """请分析以下评论，总结出主要的不同观点和讨论要点。
@@ -376,7 +487,9 @@ def fetch_top_stories():
         # 定义处理单个故事的函数
         def process_story(story_id, index):
             try:
-                print(f"正在处理第 {index}/100 个故事 (ID: {story_id})...")
+                print(
+                    f"正在处理第 {index}/{len(story_ids)} 个故事 (ID: {story_id})..."
+                )
 
                 # 获取故事数据（无论是否缓存）
                 story = fetch_hn_item(story_id)
@@ -530,60 +643,29 @@ def fetch_top_stories():
         return []
 
 
-def generate_html(stories):
-    """生成 HTML 页面"""
+def generate_html(stories, github_repositories=None, product_hunt_products=None):
+    """生成包含三个来源 Tab 的单页 HTML。"""
     try:
         with open("templates/index.html") as f:
-            template = Template(f.read())
-
-        # 计算页数，每页10条故事
-        stories_per_page = 10
-        total_pages = (
-            len(stories) + stories_per_page - 1
-        ) // stories_per_page  # 向上取整
+            template = Template(f.read(), autoescape=True)
 
         beijing_tz = pytz.timezone("Asia/Shanghai")
         current_time = datetime.now(beijing_tz).strftime("%Y-%m-%d %H:%M")
 
-        # 创建输出目录
         os.makedirs("public", exist_ok=True)
+        old_pages_dir = os.path.join("public", "page")
+        if os.path.isdir(old_pages_dir):
+            shutil.rmtree(old_pages_dir)
 
-        # 生成首页 (第1页)
-        first_page_stories = stories[:stories_per_page]
         html_content = template.render(
-            stories=first_page_stories,
+            stories=stories,
+            github_repositories=github_repositories or [],
+            product_hunt_products=product_hunt_products or [],
             update_time=current_time,
-            current_page=1,
-            total_pages=total_pages,
-            has_next=total_pages > 1,
-            has_prev=False,
-            is_index=True,  # 标记这是首页
         )
         with open("public/index.html", "w", encoding="utf-8") as f:
             f.write(html_content)
-
-        # 生成其他页面
-        for page in range(2, total_pages + 1):
-            start_idx = (page - 1) * stories_per_page
-            end_idx = min(page * stories_per_page, len(stories))
-            page_stories = stories[start_idx:end_idx]
-
-            html_content = template.render(
-                stories=page_stories,
-                update_time=current_time,
-                current_page=page,
-                total_pages=total_pages,
-                has_next=page < total_pages,
-                has_prev=True,
-                is_index=False,  # 标记这不是首页
-            )
-
-            # 创建页面子目录
-            os.makedirs("public/page", exist_ok=True)
-            with open(f"public/page/{page}.html", "w", encoding="utf-8") as f:
-                f.write(html_content)
-
-        print(f"成功生成 {total_pages} 个页面")
+        print("成功生成多来源单页")
     except Exception as e:
         print(f"生成HTML时出错: {e}")
         raise
@@ -595,8 +677,13 @@ def main():
     if not stories:
         raise RuntimeError("未获取到任何故事，请检查网络连接和API状态")
 
+    print("正在获取 GitHub Trending...")
+    github_repositories = fetch_github_trending()
+    print("正在获取 Product Hunt...")
+    product_hunt_products = fetch_product_hunt()
+
     print("正在生成 HTML...")
-    generate_html(stories)
+    generate_html(stories, github_repositories, product_hunt_products)
     if not os.path.isfile("public/index.html") or os.path.getsize(
         "public/index.html"
     ) == 0:

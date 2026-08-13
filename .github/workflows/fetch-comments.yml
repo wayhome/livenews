@@ -1,4 +1,4 @@
-name: Fetch HackerNews Stories
+name: Refresh LiveNews Sources
 
 on:
   schedule:
@@ -16,15 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
-          python-version: "3.12"
+          version: "0.12.3"
+          enable-cache: true
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install the project
+        run: uv sync --locked --no-dev
 
       - name: Create public directory
         run: mkdir -p public
@@ -60,7 +62,7 @@ jobs:
         run: |
           echo "=== 环境检查 ==="
           echo "Python 版本:"
-          python --version
+          uv run --no-dev python --version
 
           # 检查环境变量
           if [ -n "$OPENAI_API_KEY" ]; then
@@ -75,7 +77,7 @@ jobs:
           echo "OPENAI_MODEL: ${OPENAI_MODEL:-使用默认值}"
 
           echo "================"
-          python scripts/fetch_hn.py
+          uv run --no-dev python scripts/fetch_hn.py
 
       - name: Validate generated site
         run: test -s public/index.html
