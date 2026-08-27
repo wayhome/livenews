@@ -65,7 +65,7 @@
 <body>
     <main class="container page-shell py-4 py-md-5">
         <h1 class="page-title mb-2">LiveNews 科技与金融情报</h1>
-        <p class="text-muted mb-4">最后更新时间: 2026-08-27 12:14 (北京时间)</p>
+        <p class="text-muted mb-4">最后更新时间: 2026-08-28 04:53 (北京时间)</p>
 
         <ul class="nav topic-nav mb-4" id="topic-tabs" role="tablist">
             <li class="nav-item" role="presentation"><button class="nav-link active" id="tech-community-tab" data-bs-toggle="tab" data-bs-target="#tech-community" type="button" role="tab" aria-selected="true">技术社区 <span class="badge rounded-pill text-bg-secondary tab-count">45</span></button></li>
@@ -79,6 +79,320 @@
             <section class="tab-pane fade show active" id="tech-community" role="tabpanel" aria-labelledby="tech-community-tab" tabindex="0">
                 <h2 class="h4 source-heading">Hacker News</h2>
                 <div class="card-grid">
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.cloudflare.com/dns-cache-memory-optimization-1111/" target="_blank" rel="noopener">Saving 100 terabytes of memory by optimizing 1.1.1.1&#39;s DNS cache</a></h3>
+                    <div class="item-meta">作者: TangerineDream · 评分: 293 · 评论: 15 · 2026-08-27 17:17</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Cloudflare Big Pineapple DNS平台针对超过2500亿条缓存记录进行内存优化，通过将可变容器改为定长容器、合并DNS记录列表、压缩字段及减少分配等五项改进，使单条缓存占用降低超50%，全网释放约100TB内存。同时，插入吞吐量提升43%，查询延迟下降19%，实现了节省空间与提升性能的双重效果。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 DNS 缓存系统的内存占用、数据结构设计、性能与 Rust 安全性展开讨论。
+
+不同观点：
+• 先实现可用产品再优化：应先验证需求、稳定业务并盈利，成本优化相对容易；但也有人认为这些优化过于基础，早应通过设计评审发现。  
+• 紧凑内存布局：建议将记录数据紧跟 `CacheEntry`，或用一次性大块内存/连续缓冲区替代“每条记录一次分配”。案例显示，MaraDNS 将 237MB 降至 9.5MB。  
+• 自定义序列化格式：用长度前缀和原始字节存储，减少 `Vec` 的容量、指针等开销；丰富的解析对象未必更快，因为热点路径只是读取后重新序列化。  
+• 安全与正确性争议：多个 `Vec` 合并为一个大 `Vec` 再依赖偏移量，可能削弱 Rust 的越界保护；字节流反序列化还涉及对齐问题，需借助合适类型和谨慎的底层操作。  
+• 分配器与架构之争：有人质疑 jemalloc 及高层容器，建议使用 arena/匿名映射；也有人追问如此庞大的数据是否应继续称为“缓存”，或改用更少的内存数据库。
+
+补充讨论：有评论质疑为何早期设计未发现 `Vec` 的无用 capacity 字段；另有关于公共 Wi‑Fi、强制 DNS 与 captive portal 的旁支讨论。</div><a href="https://news.ycombinator.com/item?id=49468083" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://calv.info/small-models-have-arrived" target="_blank" rel="noopener">Small Models Have Arrived</a></h3>
+                    <div class="item-meta">作者: tosh · 评分: 278 · 评论: 33 · 2026-08-27 15:56</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章认为，小型、快速、低成本的AI模型已取得显著进步，能以极低费用完成搜索、编程和信息整理等任务，从而降低消费级AI产品的推理成本，推动个性化应用发展。企业工作中约95%属于高响应、持续推进的“执行型”任务，适合由便宜模型承担；而前沿模型仍将用于科研、工程等需要突破性思考的领域。未来两类模型需求都会增长。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：小模型是否已进入“足够好”阶段，以及本地部署、成本、速度与实际应用价值的权衡。
+
+不同观点：
+• **小模型已足够实用**：通过 Guidance、提示约束、工具调用和专用 harness，小模型能完成测试生成、编码等复杂流程；在知识需求低、任务明确的场景，合理使用的小模型可能胜过盲用大模型。  
+• **成本、速度和隐私优势明显**：小模型调用次数更多、价格低、延迟小，本地运行还能避免 API 限流并保护隐私；有人期待未来家用设备、游戏服务器和智能家居都运行本地模型。  
+• **模型能力存在分层**：小模型可类比“智商100+”，前沿模型则更强，但大量日常工作属于持续推进、协调和执行（“token spewer”），未必需要顶级推理能力。  
+• **对“足够好”的质疑**：有人认为 Luna 比 4.1 更笨且更慢，说明不同小模型体验差异仍大；推理模型还可能消耗大量思考 token，实际成本是普通模型的数倍。  
+• **评价标准需改进**：单看 TPS 会被思考 token 扭曲，应结合端到端响应时间、有效推理效率、成本和任务表现评估。
+
+补充讨论：大模型可能逐渐成为产品中的通用计算能力，核心需求集中于工具调用、准确记忆和稳定遵循指令；云端需求或下降，但本地 AI 普及可能继续推高芯片和内存需求。</div><a href="https://news.ycombinator.com/item?id=49466917" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://507movements.com/" target="_blank" rel="noopener">507 Mechanical Movements</a></h3>
+                    <div class="item-meta">作者: helloplanets · 评分: 382 · 评论: 39 · 2026-08-27 14:08</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">《507种机械运动》是一个展示机械运动原理的在线技术资料库，收录亨利·T·布朗的经典插图。目前部分运动已制作成动画，以彩色缩略图标识，用户可通过“上一页/下一页”浏览。网站将持续完善全部507项内容，并提供社交媒体进度通知。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“507 Mechanical Movements”网站的机械机构展示，讨论其历史价值、交互呈现、内容质量及相关学习资源。
+
+不同观点：
+• 资料与历史价值：评论者推荐卡尔斯鲁厄Redtenbacher机械传动模型、康奈尔Reuleaux收藏，以及波士顿科学博物馆的实物模型，认为这些资源适合机械爱好者和亲子参观。  
+• 网站呈现与完善：多数人认为网站有趣，是“书籍转化为动画/互动网站”的典型案例，但许多机构尚未动画化；有人建议为单个机构补充名称、标题和背景，否则脱离原书后难以理解。  
+• 内容取舍：有人认为507个案例过于重复，许多只是同类机构的变体，希望有一份提炼主要原理、突出创新实例的短列表。  
+• 准确性争议：有评论指出第15、16例中绳索方向似乎画错，质疑模型或动画的技术准确性。  
+• 机制原理讨论：围绕第39例曲柄机构，有人分析轴承、齿轮和连杆的受力，推测其设计可能用于降低轴承负荷，或规避特定曲柄专利；但这只是基于图示的推断。  
+• 延伸用途与怀旧：有人建议将“按网址动画化机械运动”作为AI基准任务，也有人联想到《The Incredible Machine》游戏。
+
+补充讨论：评论还分享了相关书籍、YouTube机构视频及过往讨论链接，体现出该网站兼具历史档案、机械教育和数字交互价值。</div><a href="https://news.ycombinator.com/item?id=49465169" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://news.bgov.com/bloomberg-government-news/nvidia-starts-a-pac-as-ai-chip-maker-buids-influence-force-in-dc" target="_blank" rel="noopener">Nvidia Starts Pac as AI Chip Maker Builds DC Influence Force</a></h3>
+                    <div class="item-meta">作者: rarisma · 评分: 65 · 评论: 13 · 2026-08-27 18:34</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">英伟达成立联邦政治行动委员会，计划通过员工自愿捐款向联邦候选人提供政治捐助，以扩大其在华盛顿的影响力。此举正值美国围绕人工智能监管展开博弈、公众担忧加剧及中期选举临近之际。英伟达是全球市值最高的公司，主营人工智能芯片。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕英伟达（NVIDIA）影响政策、政治献金与企业权力扩张的现象，讨论责任究竟在企业还是政府制度，以及AI热潮和市场风险。
+
+不同观点：
+• **制度责任论**：spicyusername认为，企业为自身战略利益游说政府本属商业逻辑，真正的问题是政府只有在政治行动委员会（PAC）输送资金时才运转；应通过推翻“Citizens United”判决、限制金钱政治来解决根源。cs702也以“政治中最重要的是钱”强调金钱的核心作用。  
+• **企业扩张与垄断批评**：bigcat12345678认为，英伟达在核心使命成功、利润异常庞大后，开始收购AI全产业链资产并提高价格，目标从技术使命转向利润最大化；downrightmike直接主张“拆分它”。  
+• **对企业游说的讽刺或犬儒态度**：wewewedxfgdf讽刺企业应系统性“购买政府”，nothrowaways认为这是在保护暴利；另有评论将现象比作“赛博朋克”，但缺乏其想象中的先进成果。  
+• **政策议题的延伸观点**：formvoltron希望英伟达推动取消太阳能板和电池关税，以引入更便宜的中国光伏、获得低价清洁能源。  
+• **市场崩溃论**：josefritzishere认为政治献金无法挽救企业免受市场崩盘影响；12ahsgf预测AI泡沫将在2027年破裂，英伟达可能重蹈Juniper覆辙。
+
+补充讨论：争议焦点在于应主要约束英伟达等企业，还是改革允许金钱影响政策的政治制度；同时也存在对AI估值、企业垄断及其长期市场前景的分歧。</div><a href="https://news.ycombinator.com/item?id=49469249" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://code.ffmpeg.org/FFmpeg/FFmpeg/issues/24290" target="_blank" rel="noopener">We found a division by zero bug in FFmpeg with a vibecoded fuzzer</a></h3>
+                    <div class="item-meta">作者: dclavijo · 评分: 87 · 评论: 11 · 2026-08-27 17:53</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">该页面提示网站启用了 Anubis 反爬虫保护，但其 JavaScript 未能加载，可能因服务器过载。Anubis通过类似 Hashcash 的工作量证明增加批量抓取成本，并计划进一步利用浏览器特征识别自动化访问。使用者需启用现代 JavaScript，并关闭 JShelter 等可能禁用相关功能的插件后重试。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AI辅助模糊测试能否有效发现FFmpeg等老旧解析器中的漏洞，以及其对软件质量、开发效率和安全配置的影响。
+
+不同观点：
+• **AI具有实用价值**：dabinat认为，AI代理可低成本进行开放式漏洞排查，即使大量尝试无果，代价也低于人工开发者；cpriest强调，重点不在“AI写了模糊器”，而在于廉价随机测试仍能击中老解析器中的经典漏洞。  
+• **质疑AI代码质量**：VCFundedGenYer认为，LLM生成代码可能悄悄引入细微错误，后续排查成本高于人工编写；whatsThisBtn4则以讽刺方式表达对AI及相关舆论的抵触。  
+• **模糊测试的技术难点**：12j3afAv指出，生成格式错误的输入很容易，真正困难的是生成足够正确、能深入调用栈并触发深层缺陷的输入。  
+• **应强化除零保护**：ks2048主张不能仅凭开发者“确信”变量非零，应显式检查或交由编译器保证；robertlagrant进一步提出使用“不能为零”的数值类型。  
+• **限制软件攻击面**：jeffbee认为应采用文件格式白名单构建FFmpeg，避免启用不需要的“厨房水槽式”功能，以降低风险。  
+• **工程协作建议**：souvlakee提议考虑迁移到FFmpeg自有Git服务器；Surac则直接呼吁提交补丁。
+
+补充讨论：争议焦点在于，漏洞发现成果究竟应归功于AI，还是传统模糊测试本身；同时也涉及AI带来的效率收益是否能抵消维护和审查成本。</div><a href="https://news.ycombinator.com/item?id=49468642" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.google/innovation-and-ai/technology/developers-tools/build-with-gemini-omni-1-1-flash/" target="_blank" rel="noopener">Gemini Omni 1.1 Flash</a></h3>
+                    <div class="item-meta">作者: saretup · 评分: 132 · 评论: 12 · 2026-08-27 17:06</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Google推出Gemini Omni 1.1 Flash，面向开发者提供更强的生成视频控制能力。新功能包括基于最多10秒上下文延展场景，分段生成最长40秒；指定首尾帧实现平滑转场；支持360p预览以加快迭代、降低成本，并可将成片提升至4K。该模型已通过Google AI Studio等平台提供。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Google/生成式视频模型的实际价值、技术能力、商业应用及其对创作行业和互联网生态的影响展开讨论。
+
+不同观点：
+• **技术实用主义**：有人认为当前模型演示效果强，但实际用途有限，较可行的方向是广告、影视前期制作，以及艺术家通过更快迭代和控制中间步骤提升创作效率。也有人指出，现有模型仍不能很好地把生成视频与既有音频同步，因此转而使用本地模型完成老动画的口型同步。  
+• **对生成内容的审美与职业抵触**：部分评论者认为真人视频仍有明显“恐怖谷”效应，并表示若企业在专业场景大量使用 AI 视频，可能拒绝与其合作；同时有人担忧其对演员、配音演员等行业的冲击。  
+• **技术潜力与数据问题**：有人期待模型支持 3D，认为 Google 持续投入视频生成可能与构建“世界模型”有关；但也有人质疑，模型进一步提升是否主要取决于获取 YouTube、TikTok及个人设备中的海量视频数据，以及数据授权、标注和规模扩展是否存在上限。  
+• **对 AI 内容价值的根本质疑**：评论指出，艺术和影视的价值未必能被“文本功能”或低成本计算复现；即使最终无法辨别真假，也可能涉及作者性和艺术本质的变化。  
+• **Google 战略与品牌争议**：有人批评 Google 频繁推出或重命名 AI 产品，却迟迟不更新 Gemini Pro；另一方认为 Google 的优势不在模型排行榜，而在把模型接入搜索等真实服务，主张回归“Google=搜索”、简化 Gemini、AI Mode 等品牌体系。
+
+补充讨论：评论之间的核心分歧是“生成视频是否只是炫技和低质内容生产”，还是会成为影视创作、搜索服务及世界模型发展的关键基础设施。</div><a href="https://news.ycombinator.com/item?id=49467922" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://pollen-robotics.com/microduck/" target="_blank" rel="noopener">Microduck</a></h3>
+                    <div class="item-meta">作者: robotswantdata · 评分: 411 · 评论: 48 · 2026-08-27 10:57</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">AV-1 Microduck是一款25厘米高、800克重的开源双足机器人，售价399美元，预计2026年圣诞节前发货。它搭载摄像头、激光雷达和IMU，出厂支持行走、坐立、踢球、抓取等7种动作。用户可在MuJoCo仿真环境中通过强化学习训练、部署和分享新行为。软件、SDK及训练系统均采用Apache-2.0许可，并提供多种配件包和四种配色。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Pollen Robotics/Hugging Face 的 Microduck、Reachy Mini 等桌面机器人，讨论其价格、实用性、技术基础、设计与可玩性。
+
+不同观点：
+• 入门与可玩性：有人认为 Reachy Mini 适合作为入门机器人，价格相对同类产品低，还可自行组装、折腾；也有人期待将其与扫地机器人结合，扩展更多执行器。  
+• 实用性存疑：批评者认为它新鲜几天后就会成为昂贵的“吸尘器”，功能可能用手机替代；也有人建议养狗，认为真实宠物的互动价值更高。  
+• 环境适应性问题：小型机器人在地毯上常因腿部 clearance 不足或电机动力弱而无法行走，宣传材料缺少地毯场景，削弱了“陪伴机器人”的实际意义。  
+• 价格与硬件：标价之外还要加运费和关税，实际约510美元；有人疑惑其低价是否意味着使用了廉价 IMU 或电机，并拿更贵的同类产品比较。  
+• 外观设计：有人认为许多机器人关节几何设计不够自然，难以真正“可爱”，并称 Sony 机器人的造型和静态观感明显更高。  
+• 技术与开放性：MuJoCo 是许多机器人强化学习项目常用的仿真引擎；Reachy 旧型号曾采用 Apache 2.0、硬件设计采用 CC BY-SA-NC，用户关注新型号的开放程度。
+
+补充讨论：法国公司导致默认使用 AZERTY 的 ZQSD 按键，有人建议增加 QWERTY/QWERTZ 布局选项；评论还提到购买选择、女儿安全使用，以及 Hugging Face、Nvidia 与机器人生态的关联。</div><a href="https://news.ycombinator.com/item?id=49462763" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.chrislewis.au/decompiling-a-nintendo-64-game-in-84-days/" target="_blank" rel="noopener">Decompiling a Nintendo 64 game in 84 days</a></h3>
+                    <div class="item-meta">作者: knackers · 评分: 126 · 评论: 17 · 2026-08-27 15:01</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">《Snowboard Kids》原版已完成100%反编译，所有函数均有能生成完全一致机器码的C实现。项目历时84天，远快于续作的596天，但成果主要依靠既有经验、社区专家协作及AI辅助，并非单靠大模型。游戏采用难以复现的专有IDO 5.3编译器，增加了匹配难度。完整源码将助力速通研究、静态重编译和未来改装。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AI/LLM推动复古游戏反编译（decompilation）与重制项目，同时引发技术路线、法律责任及人工智能价值的争议。
+
+不同观点：
+• **支持反编译与游戏复兴**：认为项目能为老游戏注入新生命，提供画质增强、漏洞修复、操作优化等选项；《Legend of Dragoon》《Test Drive Unlimited》等项目被视为例子，也有人分享《Tales of Symphonia》反编译进度。  
+• **看好LLM提升效率**：LLM可批量完成函数还原，使个人开发者突破时间和技能限制；但代理可能耗时过长、引入过度复杂的代码和测试，设置明确截止时间或许能改善流程。  
+• **质疑“100%汇编匹配”**：有人认为应追求功能等价和更清晰的代码，而非复现特定编译器与版本；讨论是否存在能证明两个函数功能等价的工具。另有人关心真正耗时的是工具链固定，还是最后少数无法匹配的函数。  
+• **强调人工投入与挑战**：部分开发者认为反编译极其耗时，如两个月仅完成《Monster Hunter 2》约5%，因此敬佩长期坚持者；也有人讽刺这是重复制造可能已被公司保存的代码。  
+• **关注法律与商业化**：评论询问将原代码转换形式后开源是否合法，以及公司为何不直接重制并上架Steam，焦点在版权、反编译合法性和商业风险。  
+• **AI使用存在抵触**：支持者认为反AI情绪阻碍项目，但反对者可能认为使用Claude等工具“不算真正开发”，甚至会损害项目声誉。
+
+补充讨论：玩家也通过《Agent 64》等精神续作满足怀旧需求，并询问《GoldenEye》《Perfect Dark》等作品的反编译进展。</div><a href="https://news.ycombinator.com/item?id=49466006" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://morphing.cloud/afterglow/" target="_blank" rel="noopener">Afterglow: Run classic After Dark screen savers on modern macOS</a></h3>
+                    <div class="item-meta">作者: NaOH · 评分: 45 · 评论: 7 · 2026-08-27 00:18</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Afterglow是一款面向现代macOS的《After Dark》经典屏幕保护程序模拟器，能直接运行原版68k模块，无需老式Mac、ROM或经典系统。用户可拖放模块文件、磁盘映像和压缩包导入，也能从Internet Archive获取资源。它支持macOS屏保、全屏、随机播放、多模块、CRT效果、资源查看和DrawMorph编辑等功能，旨在保存并重现90年代屏保艺术。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕经典 After Dark 屏幕保护程序的安装运行、平台兼容性、怀旧内容及版权问题展开。
+
+不同观点：
+• **安装使用困难**：CodeWriter23、dallen33 已下载或安装内容，但无法在 macOS（尤其 Tahoe）的“墙纸/屏幕保护程序”设置中找到 Afterglow 等选项，说明软件与新版系统集成可能存在问题。  
+• **怀旧与经典模块需求**：devindotcom 想要 Star Trek 模块，并回忆 14.4k BBS 下载的经历；同时提到《Lunatic Fringe》把俯视角太空射击游戏融入屏保，还具有伪装成电子表格的“老板模式”。  
+• **跨平台需求**：pogue 希望支持 Windows，指出 Internet Archive 上的旧版 After Dark 在 Windows 3.x 至 95/98 环境中运行效果较差；Scramblejams 则希望支持 Wayland，反映用户期待覆盖更多现代桌面平台。  
+• **特定作品复原愿望**：reaperducer 想恢复一款以《2001：太空漫游》电脑界面为主题的 OS X 屏保，称其设计精美，但因版权方发出停止通知、后来又遭遇 64 位系统淘汰而消失。
+
+补充讨论：  
+• **版权争议**：dylan604 质疑应用直接提供从 Internet Archive 浏览和安装软件的功能，认为若开发者担心版权而不内置资源，这种设计仍可能带来法律风险；争议焦点在于“用户自备资源”与“应用主动分发/引导获取资源”的界限。</div><a href="https://news.ycombinator.com/item?id=49457722" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://shop.m5stack.com/blogs/news/m5stack-launches-papermono-a-compact-e-ink-development-terminal-for-connected-projects" target="_blank" rel="noopener">M5Stack Launches PaperMono</a></h3>
+                    <div class="item-meta">作者: marksully · 评分: 54 · 评论: 6 · 2026-08-27 17:50</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">M5Stack推出基于ESP32-S3的紧凑型电子墨水开发终端PaperMono，配备3.97英寸四色灰阶触控屏、前光、NFC、LoRa、microSD、RTC、IMU、Wi‑Fi及1150mAh电池，适用于低功耗阅读、信息展示和物联网项目。另有取消NFC与LoRa的PaperMono-Lite版本，可用于电子徽章、远程状态显示、电子标牌等场景。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：新款 M5Stack 电子纸阅读器的硬件规格、软件生态、竞品关系、供货情况与低成本替代方案。
+
+不同观点：
+• 硬件评价：有人认为旧款 Paper-S3 反而更强，拥有更大屏幕、更大电池、16级灰度和 Crosspoint Reader 接口，显示效果也优于 PocketBook Verse。  
+• 软件与开发体验担忧：有人认可 M5Stack 外观设计，但批评其软件和技术支持不成熟，UIFlow 1/2 等开发工具可能“半成品化”、使用令人烦恼，并以 M5dinmeter 为例。  
+• 竞争定位：有人将该产品视为新款 XTEINK X4 Pro 的竞争者，价格约便宜一半，且同样兼容 Crosspoint；另有人注意到最新 Kindle 的外形接近 reMarkable 2。  
+• 价格与 DIY 需求：有人希望推出更便宜的 ESP32 版本，只保留同尺寸屏幕、电池和少量按键，甚至不要灯光和外壳，以便自行3D打印，但发现合适屏幕要么太小，要么成本反而更高。
+
+补充讨论：多位评论者关注缺货和美国的供货、发货地点，显示实际可购买性是当前争议焦点之一。</div><a href="https://news.ycombinator.com/item?id=49468593" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.gatesnotes.com/work/make-ai-work-for-everyone/reader/a-turbulent-ai-era-and-critical-choices-to-make?WT.mc_id=20260826_ai-overture-2026-med-med" target="_blank" rel="noopener">The turbulent AI era is here</a></h3>
+                    <div class="item-meta">作者: nanna · 评分: 127 · 评论: 64 · 2026-08-26 11:23</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AI与机器人可能带来的就业替代、财富分配、社会治理及地缘政治变化，以及比尔·盖茨相关判断的可信度和可行性。
+
+不同观点：
+• 技术乐观/历史类比：AI或将像工业革命一样淘汰部分岗位、创造新岗位并提高总体生活水平；盖茨早在9年前就准确预见了机器理解文本的突破。  
+• 大规模失业担忧：若工作持续消失，劳动者购买力下降，企业生产的商品无人消费，可能引发贫困、社会动荡甚至政治反弹；有人认为未来并非“减少失业”，而是长期无工作可供所有人。  
+• 证据与范围质疑：现有研究引用少、推断多，似乎主要针对年轻软件工程师；与此同时，数据中心建设已创造大量水管工、电工、IT等技术岗位，不能忽视其他行业。  
+• 再分配方案：支持AI/机器人税、UBI和更强社会保障，认为社会已有足够生产力保障基本生活；但也有人质疑政府和民主机制受资本利益控制，能否真正落实。  
+• 治理与安全：应通过国际合作、公共民主程序和全球规则控制AI风险；争议在于监管可能压制创新，而恶意公司、国家及AI武器又可能造成严重后果，甚至需要类似军控条约。  
+• 社会结构变化：高度自动化或促使人口从大城市分散到小城；AI在教育和政府服务中有潜力，但也可能降低学习质量、增加欺诈，并遭遇教师、工会和政治阻力。
+
+补充讨论：核心争议是AI究竟会带来新一轮繁荣，还是造成不可逆的结构性失业；评论普遍认为盖茨对人际影响的分析较深，但经济方案仍显笼统。</div><a href="https://news.ycombinator.com/item?id=49447057" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.science.org/doi/10.1126/science.ady4523" target="_blank" rel="noopener">Autism mutations drive neurodevelopmental pathology</a></h3>
+                    <div class="item-meta">作者: slantedview · 评分: 53 · 评论: 2 · 2026-08-27 18:23</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：该研究是否揭示了自闭症遗传异质性背后的共同生物学机制，以及其潜在实际意义。
+
+不同观点：
+• **研究者的积极评价**：评论者虽尚未通读论文，认为研究可能是“非常重大的新资源”。自闭症涉及大量遗传变异，多数单独影响很弱；研究若能证明这些变异汇聚到相同的神经发育通路，将有助于解释复杂的自闭症谱系。  
+• **对高度异质性的担忧**：自闭症个体差异很大，“遇到一个自闭症患者，就只遇到一个自闭症患者”。如果不同遗传因素不具有共同机制，研究可能陷入样本量几乎总是“N=1”的困境。因此，发现通路层面的汇聚被视为让自闭症研究变得可行的重要希望。  
+• **对实践意义的质疑与追问**：另一位评论者认可论文结论，但缺乏相关背景，询问“双层分子汇聚模型”究竟能否转化为现实行动，例如诊断、治疗或药物开发。论文提到可筛选可成药的蛋白质界面、支持精准治疗，但这些目前更像研究框架和潜在方向，而非已验证的临床方案。
+
+补充讨论：争议焦点不在于研究是否有理论价值，而在于从分子机制发现到实际干预之间仍有多大距离。</div><a href="https://news.ycombinator.com/item?id=49469098" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.anthropic.com/news/model-hardware-standard-research-preview" target="_blank" rel="noopener">Previewing the Model Hardware Standard</a></h3>
+                    <div class="item-meta">作者: surprisetalk · 评分: 36 · 评论: 7 · 2026-08-27 18:04</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Anthropic与HHMI Janelia联合推出模型硬件标准（MHS）研究预览，面向科研机构和先进制造商。MHS通过统一驱动、标准协议和自然语言设备标签，让AI代理连接并协同操作显微镜、液体处理器、机械臂等可编程设备，将集成时间从数月缩短至数分钟，并支持自主实验、实时调参和故障恢复。该标准兼容不同模型，团队正与合作伙伴开展安全评估，未来计划开源。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 MHS/MCP 等面向 AI 与机器人的接口或协议，其实际创新性、通用性、成熟度及安全影响展开讨论。
+
+不同观点：
+• **与既有机器人框架目标相近**：有人认为它与 ROS 2 大致追求相同目标，都是让软件系统更方便地控制和协调机器人；也有人指出，实验室自动化领域已有类似方案，如 PyLabRobot。  
+• **具有通用自动化价值**：支持者认为这类接口“不只是为 AI 服务”，也能让普通脚本更容易自动化流程。但其“Model”命名被批评为将本可通用的软件接口过度绑定到模型。  
+• **质疑创新性与技术实质**：有人认为 MCP/MHS 只是把显而易见的工具接口包装成训练场景，甚至戏称 MHS 像“给 AI 发明蓝牙”，因为文档读起来仍不清楚其具体功能。  
+• **强烈批评协议设计与公司可信度**：批评者认为 MCP 曾长期采用“闭门造车”的设计，忽视既有协议经验，难以大规模运行；虽然新版本有所改进，但其生态策略和协议能力仍不足，尚未建立信任。  
+• **关注实体世界的安全风险**：有人认可让大语言模型控制机器人很酷，但指出相比纯软件操作，机器人会直接影响物理世界，错误可能造成更严重后果。
+
+补充讨论：争议焦点在于 MHS/MCP 是真正有价值的通用标准，还是针对 AI 的包装与重复造轮子；相关讨论还涉及标准命名、生态治理、协议成熟度及机器人控制的安全责任。</div><a href="https://news.ycombinator.com/item?id=49468834" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.bild.ai/jobs" target="_blank" rel="noopener">Bild AI (YC W25) is hiring product and AI engineers</a></h3>
+                    <div class="item-meta">作者: rooppal · 评分: 1 · 评论: 0 · 2026-08-27 17:00</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">暂无评论</div><a href="https://news.ycombinator.com/item?id=49467837" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://rahuljuliato.com/posts/markdown-ts-mode-emacs-31" target="_blank" rel="noopener">Emacs 31: An unofficial guide to Markdown-ts-mode</a></h3>
+                    <div class="item-meta">作者: RahulMJ · 评分: 129 · 评论: 7 · 2026-08-27 13:22</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍了 Emacs 31 内置的实验性 `markdown-ts-mode`，说明其已支持 CommonMark、大部分 GFM 及代码块、目录和 Pandoc 等扩展功能。作者讲解了通过 `use-package` 或自动加载启用模式的方法，并提醒无需从旧版 MELPA 安装。首次使用时需安装 Markdown 与 inline 两个 Tree-sitter 语法库，同时检查 Emacs、编译工具及 `tree-sitter-cli` 是否齐全。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Emacs 新增的 `markdown-ts-mode`（基于 Tree-sitter 的 Markdown 模式）展开，并延伸讨论 Emacs 的 Markdown/Org 工作流、AI 编程及使用体验。
+
+不同观点：
+• **支持与介绍者**：`ts` 指 Tree-sitter，解析和高亮性能较好；支持 CommonMark、GFM，包括任务清单、删除线等；该模式已内置、无需额外安装，但目前仍属实验性功能，需要用户主动启用。  
+• **新用户澄清**：对不熟悉 Emacs 近期发展的用户而言，`ts-mode` 主要意味着使用 Tree-sitter 进行解析和语法高亮。  
+• **质疑实际价值**：有人没听说过该模式，并质疑 Markdown 使用 Tree-sitter 是否会明显改善性能或用户体验，认为宣传需要说明具体收益。  
+• **Markdown 优先的工作流需求**：有用户因 Org 文件并非原生 Markdown、与他人协作不便而弃用 Emacs，希望出现“Markdown 版 Org-mode”。其核心需求是笔记、清单、截止日期等基础功能，并希望通过 Lisp 和配置文件定制，同时兼顾协作。  
+• **AI 编程探索**：有人希望在 Emacs 中生成代码，并像审查 PR 一样逐步审批、评论后继续生成，但遇到 AI 编程包与最新版 Emacs 不兼容的问题。  
+• **积极使用反馈**：刚转用 Doom Emacs 的用户表示整体体验非常好。
+
+补充讨论：争议焦点是 Tree-sitter 的技术优势能否转化为普通用户可感知的性能或 UX 改善；Markdown 模式讨论也折射出 Emacs 在原生 Markdown 支持、协作和现代 AI 工作流方面的需求。</div><a href="https://news.ycombinator.com/item?id=49464543" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.tokyodev.com/articles/the-story-of-suica" target="_blank" rel="noopener">Suica, Japan&#39;s First IC Transit Card</a></h3>
+                    <div class="item-meta">作者: zdw · 评分: 127 · 评论: 26 · 2026-08-27 15:55</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍日本Suica交通卡的工作原理及发展历程。卡片内置芯片，储存卡号和余额，依靠闸机电磁场供电，在无电池、无实时网络下于200毫秒内完成认证、扣款和加密交易。为缓解东京车站拥堵、降低维护成本，JR东日本最终采用索尼FeliCa非接触式技术，虽初期遭到质疑，后逐步发展为广泛使用的交通支付系统。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Suica的使用体验、技术特点、普及生态及未来“生活方式品牌”转型。
+
+不同观点：
+• 体验派认为Suica速度极快、覆盖广、交易顺畅，乘车、购物甚至拉面店都能使用；其便捷性明显领先美国逐渐普及的非接触支付。  
+• 实用派建议赴日游客使用Suica，认为单买短期通票会受线路限制；实体卡多年不用仍可保留余额，还能加载新干线车票实现无票乘车。  
+• 生态扩展派关注“Suica Renaissance”：JR东日本计划提高余额上限、加入二维码支付、跨区域通用，并连接银行、购物、积分、折扣及本地服务，目标是成为默认支付平台。FeliCa还被用于街机账号等场景。  
+• 设备限制派指出，海外版安卓手机通常无法使用Suica，而iPhone支持更广；Apple Wallet可直接添加多种日本交通卡。  
+• 成本与技术疑问派指出，商户每笔需承担约2%—3.2%手续费；评论者也追问余额究竟存于卡片还是云端，以及卡片安全、加密和是否能被家用读卡器篡改。  
+• 个别讨论涉及PASMO、ICOCA等卡片收藏，以及“Suica”罗马字拼写是否合理。
+
+补充讨论：争议焦点主要是Suica的高便利性与封闭技术/设备兼容限制之间的矛盾，以及其能否在扩展功能后仍保持速度与易用性。</div><a href="https://news.ycombinator.com/item?id=49466894" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.bloodinthemachine.com/p/with-the-backlash-to-data-centers" target="_blank" rel="noopener">Silicon Valley is in denial in face of widespread backlash</a></h3>
+                    <div class="item-meta">作者: cdrnsf · 评分: 43 · 评论: 5 · 2026-08-27 19:59</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章指出，美国民众正对数据中心、Flock监控摄像头、Meta AI眼镜及生成式AI形成广泛而持续的反弹。科技公司不仅未反思，反而将抗议归咎于阴谋、操纵或“公众无知”，陷入否认与失控。作者认为，根本原因是科技企业不断侵入个人生活和公共空间，民众已无法接受其带来的环境、隐私与社会代价。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕人工智能对教育、就业经济、隐私及互联网生态的冲击，以及社会对科技发展的不同反应展开讨论。
+
+不同观点：
+• **AI将重塑经济并削弱人的主体性**：atriarch认为，LLM和机器人若能承担大多数工作，年轻人的生存与价值将受到挑战；传统“工作—消费”经济模式可能失效，人们甚至可能宁愿从事体力劳动，也不愿把自主权交给机器，并以《杰森一家》或《战锤40K》设想未来走向。  
+• **反对AI进入学校**：red_admiral指出，保守派家长组织与进步派教育人士罕见地形成共识，都要求将AI排除在学校之外，并借“巴特勒圣战”比喻这种反抗。  
+• **AI可能加速人们退出互联网**：Zsfe510asG认为，硅谷仍未意识到，AI泛滥可能成为用户离开互联网的最后一根稻草。  
+• **隐私与监控立场的转变**：panny质疑一些曾不关心斯诺登事件的人，如今却强烈反对Flock监控系统；其本人认可人们终于重视宪法第四修正案。  
+• **讨论可能另有所指**：sergiotapia原以为话题重点是H-1B政策及Y Combinator合伙人遭遇的网络反弹，显示评论者对原讨论主题的理解并不一致。
+
+补充讨论：争议焦点集中在AI究竟带来解放还是剥夺自主权，以及公众对隐私、学校治理和科技企业责任的态度是否前后一致。</div><a href="https://news.ycombinator.com/item?id=49470380" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://voronoigo.com/" target="_blank" rel="noopener">Show HN: Voronoi Go</a></h3>
+                    <div class="item-meta">作者: igpay · 评分: 35 · 评论: 4 · 2026-08-27 18:03</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：一款改变围棋规则的网页游戏，其玩法设计、教程体验、移动端可用性及AI对局策略。
+
+不同观点：
+• **整体评价积极**：pmontra认为完成度很高，保留了围棋中的“眼”、入侵、连接、切断等核心元素，整体确实像围棋。
+• **移动端体验不佳**：帮助窗口会遮挡棋盘，“下一步”按钮超出屏幕；emaro还遇到页面刷新导致教程重启，第三次后放弃。两人都认为桌面端更合适。
+• **教程门槛偏高**：xerox13ster第一次就中途退出，完成教程后也不想与机器人进行完整对局；建议让教程贯穿一盘由机器人引导的完整棋局，把教学场景自然嵌入对局，以降低开始成本。
+• **规则变化显著、策略不同**：runarberg以5段（5 kyu）普通围棋经验指出，此游戏中的棋群更难被杀，因此大规模连接、只有一两个眼的“巨龙”更有价值，可能优于在角部经营潜力。
+
+补充讨论：争议焦点在于新规则是否真正改变了围棋中的价值判断。普通围棋强调弃掉难杀的大龙、趁机围地；本作则可能鼓励优先维持大棋群，AI也让这种策略差异更加明显。</div><a href="https://news.ycombinator.com/item?id=49468816" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-5-transcribe/" target="_blank" rel="noopener">Gemini-3.5-Transcribe</a></h3>
+                    <div class="item-meta">作者: k9294 · 评分: 26 · 评论: 5 · 2026-08-27 18:03</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Google推出Gemini 3.5 Transcribe语音转文字模型，支持实时流式与预录音频处理，具备低延迟、高准确率、自动去除口头禅、纠错排版、自定义词汇、多语种识别及多说话人标注等能力。模型可通过Gemini API等平台用于语音代理、字幕和通话分析，并已应用于Gboard、Gemini等产品。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AI语音转录模型的发布、覆盖范围、准确性及实际使用体验。
+
+不同观点：
+• **期待但尚未普及**：gumby271认为功能很令人印象深刻，但尽管官方称已支持Android版Gboard，自己仍未看到，推测会像许多Google功能一样分阶段逐步推送。  
+• **关注数据与应用扩展**：HappyPanacea询问“热门地区/语言列表”依据的是Google自身使用数据还是其他来源，并追问何时能将AI用于改善Waze导航。  
+• **质疑评价指标和实际体验**：jeffbee认为“词错误率（WER）”未必能反映转录的核心问题。实际痛点是系统在随机位置插入句号或换行，却没有识别出语义错误；用户还需在Android上艰难调整光标，并面临自动大写等问题，且错误常常事后才被发现。  
+• **关注多语言与字幕格式**：Freedom2希望模型能正确处理字幕排版，认为这有助于语言学习者通过影视内容核对理解。  
+• **高度认可另一款模型**：k9294称Gemini 3.5实时转录速度快、准确率高，还能识别“新段落”“逗号”“感叹号”等语音编辑指令，并能直接生成购物清单；其公司已将该模型设为默认，并以自身评论作为效果示例。
+
+补充讨论：争议焦点在于官方指标与真实使用体验是否一致；评论也体现出用户不仅关心识别准确率，还重视标点、分段、字幕格式、编辑便利性及功能可获得性。</div><a href="https://news.ycombinator.com/item?id=49468818" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://acs.digitellinc.com/live/37/session/586399" target="_blank" rel="noopener">Engineered yeast for converting plastic and biomass compounds into food</a></h3>
+                    <div class="item-meta">作者: ehwa37 · 评分: 46 · 评论: 9 · 2026-08-27 15:40</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">未提供文章正文，暂时无法总结。请粘贴文章内容或提供链接。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：利用PET塑料、农作物废料和工程酵母制成蛋白、脂肪等成分，再加工成食品（“µBites”）的可行性、安全性与社会影响。
+
+不同观点：
+• 质疑食品价值与消费接受度：autoexec认为主体可能本就是玉米秸秆等生物质，却加入处理后的废塑料，像把工业垃圾当食品填料，担心企业借机转移废物、消费者承担风险。  
+• 以讽刺和反乌托邦方式表达不安：多位评论者将其称为“生物质糊”“塑料细菌污泥”“soilent goo”，担心最终把垃圾填埋场、下水道中的混合废弃物都纳入“营养循环”，甚至联想到“末日资本主义”下被迫吃昆虫或垃圾。  
+• 关注技术规模化与经济性：waschl质疑塑料转化为燃料、食物或无害物质的技术，是否已有在经济合理条件下大规模应用。  
+• 认可或担忧塑料降解生物的扩散风险：有人提到能厌氧分解聚氨酯的真菌，既视为填埋场应用候选，也担心出现“到处吃塑料”的失控后果；Doomwatch剧集则被用作塑料被生物吃光、导致航空事故的夸张类比。  
+• 提出替代方案：hkt主张减少非必要塑料，并焚烧填埋废物发电、回收热能，认为这比把塑料做进食品更可接受。
+
+补充讨论：争议核心是“废塑料进入食物链是否安全、必要且可监管”，同时涉及技术能否真正解决污染，而非仅改变垃圾的形态。</div><a href="https://news.ycombinator.com/item?id=49466622" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
                     <h3 class="h5"><a class="card-title-link" href="https://www.businessinsider.com/nvidia-in-talks-to-buy-hugging-face-13-billion-dollars-2026-8" target="_blank" rel="noopener">Nvidia agrees to acquire Hugging Face for $13B</a></h3>
@@ -97,468 +411,144 @@
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://github.com/SenteLabsAI/OpenExecutive" target="_blank" rel="noopener">CEO fired developers to make room for AI. Developers create open source AI CEO</a></h3>
-                    <div class="item-meta">作者: GrumpySciGuy · 评分: 177 · 评论: 36 · 2026-08-27 01:46</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">OpenExecutive 是一个开源 AI 虚拟高管团队系统，由执行总协调器统一整合战略、财务、人力、法务、运营、市场、产品及董事会沟通等八类专家意见。系统支持企业文档检索、决策记忆、定时任务和主动提醒，并采用 Claude、ChromaDB、SQLite、FastAPI 与 Next.js 构建，旨在为企业提供持续、个性化的管理与决策支持。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AI是否能够替代CEO及管理层，并进一步成为一种“企业级智能”，独立进行经营决策。
-
-不同观点：
-• **支持替代管理层**：AI可提炼集体意见、设定目标、分配资源、协调团队，且不受人类注意力和偏见限制，可能比传统管理层更能监控大量数据。有人认为应连CEO、政客和官僚一并替代，甚至有企业称已让CEO“离岗”而业务继续增长。  
-• **AI组织化的潜力**：与模仿单个人不同，这类系统像公司管理层一样由多个AI分工、讨论和行动，被称为“企业级AI”。支持者认为它可能突破人类组织中信息遗漏、沟通不足的结构性问题。  
-• **讽刺与实用性怀疑**：部分评论将其视为“替被AI取代者复仇”的笑话，也有人认为实际输出并未明显超越普通ChatGPT，项目可能只是营销或概念演示。  
-• **替代存在边界**：AI暂时难以提供CEO的人脉、销售网络和外部信任；若所有公司采用同一套AI，竞争优势会被抹平，持续盈利仍需人类调整和创新。  
-• **治理与组织变化**：可审计的AI高管、无等级的员工合作社，以及将管理职能拆分为可自动化模块，被视为潜在新模式。
-
-补充讨论：争议焦点在于AI能否真正承担战略、责任与竞争优势，而非仅生成看似专业的分析；也有人担忧长期依赖AI会逐步侵蚀人类决策能力。</div><a href="https://news.ycombinator.com/item?id=49458418" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.mturk.com/" target="_blank" rel="noopener">Mechanical Turk shutting down September 30</a></h3>
-                    <div class="item-meta">作者: tmp10423288442 · 评分: 193 · 评论: 22 · 2026-08-26 23:55</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Amazon Mechanical Turk（MTurk）是亚马逊的众包平台，连接全球全天候在线劳动力，将复杂工作拆分为可独立完成的微任务。企业可通过网页或API外包数据验证、研究、问卷、内容审核、分类及数据采集等工作，从而提高效率、灵活扩展人力并降低成本。平台还广泛用于机器学习数据标注、模型评估和人机协作开发。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Mechanical Turk（MTurk）关闭的原因、AI对众包标注工作的替代，以及平台的历史价值与未来可能性。
-
-不同观点：
-• **AI替代、平台过时论**：MTurk主要承接低技能、重复任务，如图片分类、转录等，LLM已能以更低成本完成；“人工的人工智能”如今似乎只剩“人工智能”。有人认为任务市场还可能受到AI机器人冲击，Fiverr、Upwork也会收缩。  
-• **平台经营不善论**：有人指出，Amazon似乎在负责人转入Bedrock和SageMaker后缺乏专门团队，且未能抓住Mercor、Scale等数据标注需求增长的机会，因此关闭更像管理失误。  
-• **仍有现实价值论**：复杂或需要真实人类判断的任务、实体世界中的多人协作，以及训练数据生成，仍可能需要众包。有人认为未来机会在“AI输出的信任与验证”，但这要求领域专家。  
-• **质量与可靠性争议**：有用户用MTurk标注MNIST数字，花费10美元却“几乎只比猜测好一点”，质疑其质量、成本和学术研究可靠性；这与其他用户完成科研、卫星图像搜寻等成功案例形成反差。  
-• **个人经历与情感价值**：评论者曾靠MTurk赚取生活费、购买电脑，或请人转录父亲的手稿；这些故事体现其经济和人文价值，但也提到任务单调、报酬兑换困难及劳动被用于代写论文等问题。
-
-补充讨论：争议焦点在于关闭究竟源于AI带来的结构性淘汰，还是Amazon长期投入不足；另有用户表示10月1日后仍会继续使用。</div><a href="https://news.ycombinator.com/item?id=49457545" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://z.ai/blog/glm-5.3-flash" target="_blank" rel="noopener">GLM-5.3-Flash</a></h3>
-                    <div class="item-meta">作者: Philpax · 评分: 926 · 评论: 67 · 2026-08-26 14:08</div>
+                    <h3 class="h5"><a class="card-title-link" href="https://louisabraham.github.io/load-bearing/" target="_blank" rel="noopener">Show HN: The load-bearing vocabulary of Claude</a></h3>
+                    <div class="item-meta">作者: Labo333 · 评分: 224 · 评论: 32 · 2026-08-27 08:59</div>
                     <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：GLM-5.3 Flash的性能、成本优势及本地部署前景，同时引发对基准测试、服务条款和AI产业格局的讨论。
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“Claudeisms”及LLM对技术语言、写作习惯和人类表达方式的影响展开讨论。
 
 不同观点：
-• **性能与性价比乐观派**：认为GLM-5.3 Flash接近更大型模型的能力，但参数、价格和推理成本大幅下降；有观点称其性能优于DeepSeek V4 Flash、接近部分顶级模型，且在编码、代理任务上表现突出。  
-• **实际能力仍有限**：实测者认为当前本地模型适合基础任务、实现、测试和QA，但面对复杂技术问题仍会“原地打转”，距离Claude Opus级别仍有差距；也有人指出基准分数未必能反映真实使用体验。  
-• **本地部署与硬件门槛**：重度用户认为，结合取消云端配额，本地投入约1万美元可能在一年内回本；但320B总参数、18B激活参数仍需要约192–256GB内存及高端GPU/统一内存设备，成本不低。  
-• **对产业和英伟达的影响**：有人认为中国芯片已能承载热门模型，低成本推理将推动模型和硬件商品化，长期可能削弱英伟达的中心地位；也有人戏称英伟达股东将受冲击。  
-• **基准与宣传争议**：评论质疑官方使用过时或选择性数据、对比已更新的竞争模型，认为真实测试结果可能比官方表述更好；同时有人质疑“10倍便宜”与订阅额度并不完全吻合。  
-• **隐私与合规担忧**：Z.ai服务条款被指对输入、输出、用户姓名和头像授予永久广泛许可，并含“国家利益”“不当内容”等模糊限制，甚至限制讨论Z.ai，存在封号和退款风险。
+• 赞赏展示方式：评论者认为页面简洁、全面、尊重读者时间，数据整合后结论自然呈现，且作者较少注入偏见。  
+• 语言渗透观点：LLM可能逐渐改变人类语言习惯；有人已开始频繁使用“such as…etc.”等由提示模型形成的表达模式，并担心这一影响被低估。  
+• 负面体验：不少人认为Claude的语言晦涩、模板化且令人疲惫，甚至削弱使用乐趣；“sidecar”“spike”“footgun”“load-bearing”“vacuous”等词被认为突然泛滥。  
+• 成因争议：有人归因于RLHF要求模型解释、辩护和自我证明；也有人认为这是模型能力更复杂后的高密度表达，或只是技术圈原有术语被模型高频复制。  
+• 非Claude特有：部分评论指出Codex等模型也会使用类似术语，LLM更像把人类与技术同事相处时接触的 jargon 以更高频率集中呈现。
 
-补充讨论：OpenCode/OpenRouter上的匿名“Ox Alpha”被认为就是该模型，相关团队此前含糊回应也引发猜测；社区还分享了在本地工具中接入模型的配置方法。</div><a href="https://news.ycombinator.com/item?id=49449507" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：争议焦点在于这些表达究竟是模型训练造成的“坏习惯”，还是技术行业既有语言的放大。作者回应称将增加搜索功能、扩大至每日1000条PR，并通过GitHub Actions每日更新数据。</div><a href="https://news.ycombinator.com/item?id=49461817" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://projects.laion.ai/bvd/" target="_blank" rel="noopener">Laion Big Video Dataset</a></h3>
-                    <div class="item-meta">作者: ks2048 · 评分: 23 · 评论: 1 · 2026-08-27 01:50</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍LAION-BVD，一个面向多模态学习的开放视频数据集。数据源自Common Crawl，含13亿视频链接，下载并处理约8000万段视频、总时长1000万小时，生成视频、音频字幕及场景帧。实验表明，其训练模型在视频-文本、音频-文本和图像-文本任务上表现优异。数据集仅限科研使用，需注意版权与潜在偏见。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：大规模下载YouTube视频的成功率及其数据集链接的长期可用性。
-
-不同观点：
-• 评论者对下载规模和成功率感到惊讶：尝试下载1.3亿个视频，约60%的链接成功，实际获取约8000万部视频、总时长达1000万小时，说明当时的下载效率相当高。  
-• 评论者质疑YouTube为何没有及时拦截这类大规模下载行为，暗示平台的反爬虫或访问限制可能并不充分，或当时尚未触发封禁机制。  
-• 评论者认为该URL列表难以长期使用：YouTube很可能会迅速识别并封锁其他研究者对这些视频的批量下载，因此链接即使当前有效，未来也可能失效。
-
-补充讨论：争议焦点在于高下载成功率究竟反映了平台限制不足，还是特定下载条件下的暂时现象；同时也涉及研究数据集的可复现性，以及依赖外部视频链接所带来的长期维护风险。</div><a href="https://news.ycombinator.com/item?id=49458478" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://asahilinux.org/2026/08/progress-report-7-2/" target="_blank" rel="noopener">Asahi Linux Progress Report: Linux 7.2</a></h3>
-                    <div class="item-meta">作者: pizzaiolo · 评分: 139 · 评论: 10 · 2026-08-26 22:35</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍了Asahi Linux在Linux 7.2阶段的进展，重点是Apple Silicon应用核心的电源管理。由于苹果芯片缺少EL3，Linux无法通过传统SMC/HVC方式使用PSCI，现有专用cpuidle驱动也难以上游。开发者因此计划借助m1n1和UEFI运行时服务实现PSCI调用，使内核能正确关闭、唤醒核心，从而改善续航与能效。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Asahi Linux 在 Apple Silicon 上的逆向工程、硬件支持进展、性能体验及继续使用的必要性展开讨论。
-
-不同观点：
-• **进展高度积极**：ACE3 已通过 SPMI 接口适配，结合原有支持，为 M3 系列带来 USB 3.0 和 Thunderbolt；M4 虚拟化也已可用，M3 启动器与调试兼容性问题似乎得到改善。许多人赞叹少数贡献者在不稳定基础上取得的成果。  
-• **实际使用与双系统立场**：有用户计划在 M3 Pro 上保留 macOS 进行 iOS 开发，其余需求主要是浏览器和 Ghostty，并期待良好续航；也有人认为 macOS 很糟，支持全面转向 Linux。  
-• **续航和电源管理担忧**：评论指出，硬件功能完善后，电源管理仍是关键；Linux 长期因缺少专有、深度优化驱动而续航较差，电池表现可能决定 Asahi 的日常竞争力。  
-• **Linux 的必要性存在争议**：有人认为 Apple Silicon 曾明显领先，因此值得等待多年完成兼容；但随着 Intel、AMD（如 Panther Lake）能效追近，未来用户是否仍“必须”在 M 系列设备上运行 Linux，受到质疑。  
-• **安全与技术细节讨论**：Apple 的安全设计增加了替代系统支持难度，也解释了其不主动支持的原因；另有技术意见指出 VA-API 与 v4l2-requests 在视频解码数据处理方式上不匹配。
-
-补充讨论：争议核心是 Asahi 的长期投入是否仍具必要性，关键取决于续航、硬件完整支持和竞品能效；项目还涉及内核硬分叉等基础设施挑战。</div><a href="https://news.ycombinator.com/item?id=49456851" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://github.com/tailscale/tailcat" target="_blank" rel="noopener">Tailcat – Like netcat, but over Tailscale’s data plane</a></h3>
-                    <div class="item-meta">作者: nderjung · 评分: 505 · 评论: 29 · 2026-08-26 17:42</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Tailcat 是 Tailscale 开源组件的改造项目，类似通过 Tailscale 数据平面运行的 netcat。它不依赖 Tailscale 控制平面、账户或管理员权限，通过带外交换连接令牌，使用 WireGuard 端到端加密，并借助 DERP 中继及 NAT 穿透建立直连。支持管道传输、端口转发、免认证 SSH、Ping、SOCKS5 代理等，提供 Go 库、命令行工具和实验性 WebAssembly 网页版。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Tailscale 的 tailcat 工具展开，重点讨论其技术定位、实际用途，以及与其他点对点连接工具的关系。
-
-不同观点：
-• **实用且有趣的通用连接工具**：可用于 Minecraft 联机、远程 SSH 回家、个人应用和服务器访问等；有人认为它像“面向通用连接的 Magic Wormhole”，比单纯文件传输更广泛。  
-• **降低 NAT/网络配置门槛**：评论认为，在 IPv6 普及、没有 CGNAT 之前，普通用户很难实现简单 P2P；tailcat 是当前较好的替代方案，也可能促进更多创新。  
-• **并非全新思路，存在竞品或替代方案**：有人指出 Iroh、bitbang-cli、Wush，以及基于 SSH 转发和 nginx 的自建方案都实现了相近能力；Magic Wormhole 也曾被视为类似替代品。  
-• **对技术归属和架构的疑问**：有人疑惑其底层使用 WireGuard、控制平面又采用新的密钥机制后，究竟有多少仍属于“Tailscale”；另一位用户则结合 tsnet 解释其大致结构，认为可靠地复用网络栈很有技术含量。  
-• **生态与开发体验**：有人关注项目提供 Nix 安装和开发环境，询问 Nix 是否是 Tailscale 的主流开发方式，还是仅少数选择。  
-• **用户认可与社区趣味**：多位用户称赞 Tailscale 易用、可靠，认为它适合个人网络；也有人调侃项目命名（“cattail”）及其 Minecraft 演示。
-
-补充讨论：争议焦点主要不是功能价值，而是技术创新程度、与既有工具的差异，以及其是否应被视为 Tailscale 体系的一部分。</div><a href="https://news.ycombinator.com/item?id=49452990" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://ducklabs.com/news/2026/08/26/ducklabs-to-join-aws" target="_blank" rel="noopener">AWS Acquires DuckLabs</a></h3>
-                    <div class="item-meta">作者: onderkalaci · 评分: 1003 · 评论: 76 · 2026-08-26 12:59</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">DuckLabs宣布将于9月初加入亚马逊云科技（AWS），团队继续在阿姆斯特丹开发DuckDB、DuckLake和Quack。加入AWS旨在借助其基础设施、资源和客户覆盖扩大项目影响力，同时专注技术创新。DuckDB及“Duck Stack”其他组件仍以MIT许可证免费开源，由DuckDB基金会持续维护。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：AWS收购DuckLabs后，DuckDB的开源治理、发展方向及用户生态将如何变化。
-
-不同观点：
-• **开源与产权仍有保障**：评论指出被收购的是DuckLabs而非DuckDB，源代码及全部知识产权由非营利DuckDB Foundation持有，项目承诺继续开源，因此标题可能造成误解。  
-• **担忧AWS影响项目发展**：有人担心AWS重组频繁、人才流失，可能削弱团队或将DuckDB改造成面向云服务、对标Databricks的产品；“服务器化”和异步I/O等新方向也被认为偏离其最初的嵌入式定位。  
-• **对收购持乐观或中立态度**：祝贺创始人获得财富，并认为AWS缺少类似DuckDB的产品，收购可能带来资源；也有人希望团队保持独立运作，不受AWS内部混乱干扰。  
-• **推荐替代或互补项目**：DataFusion被认为更适合嵌入Rust应用，且贡献者多；SedonaDB则适合地理空间分析，体现出嵌入式分析数据库生态正在扩大。  
-• **社区贡献门槛问题**：DuckDB虽采用MIT许可证，但源码贡献并不容易，CI曾需约5小时；Haybarn、Pygmy-Goose尝试通过拆分仓库、缓存CI改善分发与协作。
-
-补充讨论：评论还询问MotherDuck与DuckLabs的关系、AWS是否可能另建托管竞品，以及数据库为何存在性能和设计差异。争议焦点是：基金会的开源承诺能否抵御AWS商业化、重组及战略转向。</div><a href="https://news.ycombinator.com/item?id=49448321" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://nhess.copernicus.org/articles/22/3765/2022/nhess-22-3765-2022.html" target="_blank" rel="noopener">Worst-case glacial lake flood scenarios in a transboundary Himalayan basin 2022</a></h3>
-                    <div class="item-meta">作者: totetsu · 评分: 98 · 评论: 7 · 2026-08-26 22:44</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章评估了喜马拉雅跨境流域现有冰湖及未来潜在冰湖溃决洪水的最坏情景。模拟显示，大型岩冰崩可使尼泊尔边境洪峰流量超过历史或常规估计的15倍；尼雅拉姆预警时间仅5—11分钟，边境约30分钟。降低嘉隆错水位对特大洪水影响有限。研究建议结合预警系统、土地利用管控和社区应急能力建设，以应对气候变暖下不断增加的风险。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕西藏—尼泊尔边境灾害的成因、影响范围、伤亡风险及灾害预测展开讨论。
-
-不同观点：
-• 有评论将事件称为冰川湖溃决洪水（GLOF），认为泥石流极其猛烈，可能造成大量人员伤亡；现场视频显示洪水含泥量很高，冲毁并带走了混凝土桥梁。  
-• 另一观点认为这并非典型冰湖溃决，而是高海拔冰川前缘整体崩塌：巨量冰雪和岩土沿沟槽下滑，撞击并部分堵塞对岸河谷，随后堰塞体溃决形成高速泥石流。  
-• 关于地震存在争议：部分报道称有地震，但反驳者认为没有先发生地震，所谓地震波其实是滑坡冲击产生的地震信号。  
-• 有人将其与1970年瓦斯卡兰雪崩、约3万人死亡的灾难相比，担心伤亡可能进一步上升；也有人指出，灾害模拟即使覆盖尼拉姆等地和尼泊尔边境，也未必能准确预测现实。  
-• 有评论提醒，季风期（约5月底至8月底）应避免接近山区，尤其是东南亚相关区域。
-
-补充讨论：  
-• 有人质疑模拟地点与实际洪灾地点之间隔着包括希夏邦马峰在内的巨大山脉，认为地理背景需要核实。  
-• “类似灾害塑造了哈德逊湾”的说法缺乏具体论证，与本次事件关联较弱。</div><a href="https://news.ycombinator.com/item?id=49456929" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://news.jp/i/1465528042000662661" target="_blank" rel="noopener">Kusama Yayoi Dies at 97</a></h3>
-                    <div class="item-meta">作者: phantomathkg · 评分: 65 · 评论: 3 · 2026-08-27 02:21</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">日本前卫艺术家、文化勋章获得者草间弥生14日因多器官衰竭在东京去世，享年97岁。她以绚丽波点、网状图案和南瓜作品闻名，早年赴美发展，曾通过街头行为艺术反战。其创作源于童年幻觉，涵盖绘画、版画、雕塑等，20世纪90年代后获国际广泛认可。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕草间弥生（Yayoi Kusama）及其艺术展览、个人经历和相关官方信息展开。
-
-不同观点：
-• 怀念与个人回忆：locusofself 表示遗憾，并分享曾与如今的妻子参观草间弥生展览的经历；其女儿五岁左右也曾迷恋草间弥生，戴粉色假发、穿波点服装模仿她，体现了艺术家作品对家庭和儿童的影响。  
-• 信息补充：toomuchtodo 提供草间弥生维基百科及其官方网站链接，意在补充艺术家的生平、创作和背景资料。  
-• 官方信息导向：ChrisArchitect 分享草间弥生博物馆/基金会发布的英文声明，引导读者参考机构的权威说明。
-
-补充讨论：评论整体偏向悼念、回忆和信息分享，可能是在回应草间弥生相关的突发消息或官方声明，但评论中未明确说明事件内容。各评论之间没有明显争议，主要区别在于个人情感表达、百科资料推荐和官方信息引用。</div><a href="https://news.ycombinator.com/item?id=49458709" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://lwn.net/SubscriberLink/1089390/46116614cc74b814/" target="_blank" rel="noopener">An ongoing 3D-printer AGPL violation</a></h3>
-                    <div class="item-meta">作者: Velocifyer · 评分: 342 · 评论: 30 · 2026-08-26 17:41</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章报道FOSSY 2026上，软件自由保护协会成员讨论Bambu Lab 3D打印软件涉嫌违反AGPLv3的问题。AGPL旨在防止企业将自由软件改造成封闭网络服务，但Bambu Lab的做法恰好规避了这一要求。SFC正联合3D打印爱好者调查、维权，并推动自由软件和替代方案。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕Bambu 3D打印机涉嫌违反GPL/AGPL、封闭网络生态及其产品体验，讨论技术规避、法律追责与自由软件治理困境。
-
-不同观点：
-• **反对Bambu封闭策略**：认为其优秀硬件却依赖专有服务、收集遥测并限制社区，用户应抵制；已有OrcaSlicer、LAN模式及开源网络插件可完全绕过Bambu服务器。  
-• **主张法律追责**：建议依据AGPL诉讼，甚至通过美国国际贸易法院申请临时禁令、阻止产品进口；也有人指出，只有版权方真正起诉，许可证才可能得到执行。  
-• **批评执法与资源不足**：认为GPL保护弱于商标等商业权益，政府和海关不会同等重视；自由软件组织缺钱，难以承担维权成本。部分评论进一步将此视为中国科技产业普遍存在的GPL违规问题。  
-• **消费者与产品体验立场**：有人认为Bambu打印机“真正好用”，因此普通消费者愿意接受其封闭生态；但也有用户反映新机到货即坏、字体难读、错误提示循环、售后缓慢且补偿不足。  
-• **质疑或寻求事实澄清**：有人询问具体哪些组件受限制、缺失哪些功能，以及合规是否需公开Studio、共享库和服务器端组件。  
-• **更广泛的哲学观点**：认为GPL、版权乃至DRM都难以约束可无限复制的数字资源，未来许可证制度可能逐渐失效。
-
-补充讨论：争议焦点是Bambu是否必须公开相关代码及网络服务组件，以及“产品便利性”是否足以抵消其开源合规和社区责任问题。</div><a href="https://news.ycombinator.com/item?id=49452980" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://iamwillwang.com/notes/zohran-and-the-short-link/" target="_blank" rel="noopener">Zohran and the Short Link</a></h3>
-                    <div class="item-meta">作者: wxw · 评分: 131 · 评论: 14 · 2026-08-26 23:50</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍纽约市通过社交媒体发布项目、倡议和活动，并统一使用“nyc.gov/{initiative}”的简短链接，引导市民参与。作者认为，这种做法让政府更易互动，集中社交媒体流量，建立线上办事预期，并将宣传转化为实际参与体验。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕纽约政府使用简短、易记的主题链接（如“click-to-cancel”）进行公共沟通的价值、风险与执行质量。
-
-不同观点：
-• 支持者认为，短而有意义的链接便于现场输入、记忆和口耳相传，比随机短链更适合公众参与；新加坡 go.gov.sg 也有类似实践，说明这是成熟的“go link”思路。  
-• 有人认为这体现了高水平的公共关系与传播能力，也认可政府通过社交媒体发布信息、再统一导向公众可访问网站；同时希望通过电子邮件等渠道推送，避免受制于封闭平台。  
-• 对社交媒体依赖持批评态度者指出，X、Facebook等平台充斥误导信息、压低外链传播，算法还可能掩埋公共安全内容，因此不应作为政府主要沟通渠道。  
-• 反对者担心短链接生命周期有限，项目名称会重复、失效或被替换；建议将其作为重定向入口，并公开可审计、版本控制的不可变映射，维护长期稳定的URI。  
-• 另有意见认为手机端已普遍具备点击链接功能，短链必要性有限；也有人批评移动端链接失效、页面存在语法错误，认为执行显得业余。  
-• 个别评论认可相关领导者年轻、贴近现实、精力充沛，但也有人借命名风格调侃其多元性。
-
-补充讨论：争议焦点在于“易传播的短期品牌化链接”与“长期稳定、可维护的互联网地址”之间如何平衡，以及政府应如何摆脱对社交平台的依赖。</div><a href="https://news.ycombinator.com/item?id=49457512" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.wsj.com/politics/policy/u-s-state-department-pauses-immigrant-visa-applications-25b31b23" target="_blank" rel="noopener">U.S. State Department pauses immigrant visa applications</a></h3>
-                    <div class="item-meta">作者: sss111 · 评分: 349 · 评论: 29 · 2026-08-26 17:22</div>
+                    <h3 class="h5"><a class="card-title-link" href="https://news.ycombinator.com/item?id=49466715" target="_blank" rel="noopener">Launch HN: Salem Robotics (YC S26) – Software for industrial inspection robots</a></h3>
+                    <div class="item-meta">作者: Salem_robotics · 评分: 31 · 评论: 7 · 2026-08-27 15:46</div>
                     <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：美国政府暂停或延迟部分签证、移民申请引发的影响、政策动机及其对合法移民和劳动力市场的争议。
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：机器人系统中，如何结合AI的语义理解能力与传统机器人技术，以兼顾灵活性、精确性、可靠性和实际部署效率。
 
 不同观点：
-• 批评者认为政策对合法签证持有人及其家庭极不人道。有人举例称，印度籍H-1B员工回国后因使馆预约排到次年，无法返美工作，甚至无法取回个人物品；暂停已有预约却不提供恢复时间，加剧了不确定性。  
-• 部分人支持加强移民审查，尤其反对非法移民，但认为政府对合法移民、ICE执法和签证系统的处理方式过于任性、残酷，像“不受约束的秘密警察”。  
-• 有评论认为此举是对出生公民权相关最高法院裁决的回应，政府改用签证和领事系统等仍可控制的手段；也有人将其视为借机全面压缩合法移民。  
-• 反对H-1B者认为该制度压低美国工资、制造依附雇主的“契约劳工”，暂停有利于美国工人；另一些人则指出H-1B可能并未受此次措施影响，政策范围仍不清楚。  
-• 其他解释包括经济低迷、就业竞争，以及政府相信AI和机器人将替代大量劳动力，因此减少人才输入；批评者担心这会削弱美国吸引人才和AI发展的能力。
+• **混合架构派**：多数评论认可将VLM/AI用于理解非结构化信息、识别场景和任务相关内容，再用显式几何、路径规划、优化与控制完成物理操作。这样比“端到端、从视频直接控制执行器”更实用、经济，也更容易落地。  
+• **任务受限派**：认为大型实验室试图解决长时序、跨本体、6DoF控制和通用泛化等“过大问题”，可能是在“煮沸海洋”。若限定场景和任务，再结合语义模型与经典工具，能更快形成可靠产品。评论者以清扫机器人项目为例支持这一思路。  
+• **精确性与安全派**：指出AI输出具有一定随机性，在高精度或安全关键任务中存在局限。例如，沿走廊导航允许几厘米误差，但传感器必须垂直贴合曲面时则不行。因此有人追问：随着模型改进，明确规则是否仍将长期不可替代。  
+• **闭环评估派**：强调“成功执行轨迹”不等于“检查任务成功”，真正困难的是对测量结果和任务目标进行闭环验证。  
+• **工程基础设施派**：有评论将机器人部署效率视为瓶颈，介绍面向机器人场景的容器镜像仓库，以更快拉取和构建来缩短部署时间。
 
-补充讨论：争议焦点在于暂停对象究竟是所有移民签证还是部分类别、H-1B及旅游签证是否受影响，以及“防止公共财政负担”是否只是全面反移民政策的包装。</div><a href="https://news.ycombinator.com/item?id=49452709" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：评论整体以祝贺和正面支持为主，也涉及项目命名“Salem”是否影射Boston Dynamics的轻松玩笑。东京热</div><a href="https://news.ycombinator.com/item?id=49466715" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.clerky.com/blog/clerky-is-joining-stripe" target="_blank" rel="noopener">Stripe acquires Clerky</a></h3>
-                    <div class="item-meta">作者: zakshay · 评分: 98 · 评论: 9 · 2026-08-26 21:09</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Clerky宣布加入Stripe。Clerky成立十多年，致力于帮助初创公司及律师快速、安全地完成日常法律文书，已服务众多顶尖初创企业，占硅谷种子及早期融资的23%。加入Stripe后，Clerky将保留原团队和服务重点，借助更多资源持续开发产品，为初创生态提供支持。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Stripe收购公司注册服务Clerky的价值、产品差异，以及Stripe持续收购对创业基础设施和行业竞争的影响。
+                    <h3 class="h5"><a class="card-title-link" href="https://www.daemonology.net/blog/2026-08-27-Launching-Route-53-Files.html" target="_blank" rel="noopener">Launching Route 53 Files</a></h3>
+                    <div class="item-meta">作者: louis-paul · 评分: 78 · 评论: 10 · 2026-08-27 14:45</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍所谓“Route 53 Files”：将 Amazon Route 53 托管区域挂载为支持 NFS 的文件系统，用户可在 EC2、ECS、EKS 或 Lambda 中用常规 Unix 工具直接增删改 DNS 记录，变更可双向同步，并支持多资源共享、别名符号链接及“最后写入优先”。文章还演示了 IAM 角色创建、区域注册和挂载流程，同时说明同步延迟与权限配置要求。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕将 Route53/DNS 设计成键值存储或文件系统的创意，评论者讨论其幽默性、实际用途、API 设计及替代方案。
 
 不同观点：
-• **支持与认可**：多位评论者称赞Clerky产品稳定、体验优秀、支持到位，曾有效帮助团队完成公司注册及后续事务；有人期待Clerky与Stripe Atlas结合，兼具速度、体验和灵活性。  
-• **产品差异观点**：Clerky支持公益型公司（PBC）及更高程度的定制，适合复杂股权安排；但也有人认为Atlas与Clerky功能相近，质疑收购的必要性。  
-• **担忧市场集中**：有人认为Stripe同时掌握Atlas和Clerky后，几乎控制了早期公司注册基础设施，可能削弱竞争，因而“深度令人担忧”。  
-• **对收购动机的猜测**：部分评论将其视为Stripe通过服务数据筛选收购对象，类似Facebook利用像素数据发现高增长应用；也有人怀疑Stripe因无法无限增长，正逐渐走向“PayPal 2.0”。  
-• **对Stripe的不信任**：个别评论者不愿站在Stripe一边，联想到PayPal团队或支付行业本身的负面印象。
+• 赞赏与讽刺：多人认为文章精准模仿 AWS 博客风格，创意“糟糕得很漂亮”；“像 XML 学会 JSON 后写出来的 schema”等评价突出其荒诞和喜剧效果。  
+• 实用支持：有人认为 Route53 可作为简单、高可用的键值存储，尤其适用于 GitHub Actions 等缺少其他存储手段的场景，没必要为所有需求引入复杂系统。  
+• 需求质疑：有人怀疑是否真的有大量用户需要手工管理 DNS；现实中多数域名记录（除部分 TXT 外）都由自动化流程维护。  
+• API 设计争议：有人质疑面向 DNS 键值记录的 `read()`/`write()` 分块接口，认为体验可能不如直接操作记录。  
+• 安全与合规：对“是否符合 HIPAA”回答“请勿把患者信息存进 DNS”的调侃表示认可，强调 DNS 不适合承载敏感数据。
 
-补充讨论：争议焦点在于，收购能否带来更好的产品整合，还是会造成早期创业服务的权力和市场过度集中。</div><a href="https://news.ycombinator.com/item?id=49455956" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：评论提到 DNSBBS、DNSControl 等相关项目；DNSControl 被视为更严肃的 Route53/DNS 管理替代方案，类似 Terraform 但更易扩展。</div><a href="https://news.ycombinator.com/item?id=49465732" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://qwen.ai/blog?id=qwen3.8-flash-next" target="_blank" rel="noopener">Qwen3.8-Flash-Next</a></h3>
-                    <div class="item-meta">作者: tosh · 评分: 646 · 评论: 40 · 2026-08-26 12:52</div>
+                    <h3 class="h5"><a class="card-title-link" href="https://entropicthoughts.com/curmudgeon-tries-language-server" target="_blank" rel="noopener">A curmudgeon tries a language server</a></h3>
+                    <div class="item-meta">作者: crescit_eundo · 评分: 96 · 评论: 13 · 2026-08-26 12:48</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章比较传统代码开发与Lisp的实时开发：Lisp可在运行进程中热替换代码、调试和恢复异常，早期甚至只存在内存映像。作者希望在Haskell中接近这种体验，借助Haskell Language Server、Eglot、ghcid及foreign-store/Rapid，实现自动重编译、保留状态和自动测试，但仍无法完全替代运行中的REPL与条件系统。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Lisp/函数式语言的“镜像式开发”、REPL、热替换与传统编译—运行流程的优劣展开讨论。
+
+不同观点：
+• 支持者认为，Common Lisp/ Clojure 可在运行进程中增量编译、调用和替换代码，减少上下文切换；异常后还能修补并继续运行，带来独特的开发流畅感，适合游戏、长时间运行的服务器等。  
+• 持保留态度者指出，实际开发仍常有独立编译与运行步骤，运行中重定义并不普遍；长期依赖镜像还会造成源码、测试与运行状态不同步，甚至丢失仅存在于 REPL 的修改，因此必须尽早整理源码、持续测试并定期重启校验。  
+• 反对镜像式开发者认为它容易形成“数据与代码混杂”的混乱，类似失控的 Jupyter notebook；传统的可复现脚本、版本控制更可靠。  
+• Haskell 相关观点认为，GHC 的优化和非局部转换使镜像开发难以理解，最好先在纸面上推导、确定代数结构，再写代码；但也有人认为正常 Haskell 开发不应频繁依赖调试器。  
+• C/C++ 用户补充，GDB 可在断点处修改状态、调用函数并注入代码，像附着于进程的 REPL，但注入内容通常不持久，仍不等同于 Lisp 镜像。
+
+补充讨论：语言服务器主要负责补全和错误提示，与热重载是正交概念；有人进一步质疑拒绝 IDE 的做法。争议焦点在于：运行时即时反馈带来的“心流”是否值得牺牲源码一致性、可复现性与工程可维护性。</div><a href="https://news.ycombinator.com/item?id=49448150" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://aphantasia.com/guide" target="_blank" rel="noopener">Aphantasia Beginner&#39;s Guide</a></h3>
+                    <div class="item-meta">作者: ksec · 评分: 81 · 评论: 35 · 2026-08-27 13:14</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">本文是无幻觉（Aphantasia）入门指南，介绍其含义、表现及与可视化思维的差异。无幻觉者难以在脑中形成图像，可能也影响其他感官想象。文章通过“红苹果测试”、VVIQ量表和残像实验帮助读者判断，并说明视觉想象存在清晰度、细节和可控性差异，同时提供常见问题、误解、解释方法及交流社区等资源。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“心像/幻视缺失（aphantasia）”的主观体验、定义边界、是否可训练及其与听觉想象的关系展开讨论。
+
+不同观点：
+• **确实存在且具有个体差异**：多人表示无法主动形成视觉图像，但能保留物体的概念、线框或抽象结构；有人能在梦境、睡眠不足或致幻状态下出现较强图像，说明可能是“无法主动调用”而非完全没有视觉能力。  
+• **可能只是对“看见”的理解不同**：部分评论者认为，心像并不是叠加在现实视野或眼皮黑暗上的真实影像，而是另一种心理表征；他们可以“在脑中想象”三角形或苹果，却不会真的看见，因此怀疑相关术语存在语义混乱。  
+• **视觉与听觉能力可明显分离**：有视觉心像缺失者却拥有极强的听觉想象，能在脑中完整重现歌曲、音色和人声；也有人同时缺乏视觉和听觉心像，演奏音乐时依靠手部动作或音高辨别，而非脑内回放。  
+• **可能是连续谱，且或许可训练**：有人介于概念和图像之间，经过努力可补充细节；也有人认为视觉记忆和想象能力能通过绘画、观察等活动增强，但不确定这是否等同于真正的心像。  
+• **质疑自我诊断及测试有效性**：评论者担心“红苹果测试”过于简单，可能把正常的想象差异误判为障碍；也有人强调识别能力不等于复现能力，无法画出物体未必代表没有视觉想象。
+
+补充讨论：争议焦点在于心像究竟应被定义为“脑中可感知的影像”还是抽象的知识表征，以及“后像测试”是否能代表正常人的视觉想象。部分评论援引视觉皮层成像和瞳孔反应研究，认为其具有神经生理依据；总体上，多数人认为这属于正常的认知差异，不必病理化。</div><a href="https://news.ycombinator.com/item?id=49464414" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+                </div></article>
+                
+                <article class="card news-card hn-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.economist.com/science-and-technology/2026/08/27/the-terrifying-mechanics-of-the-nepali-flash-flood" target="_blank" rel="noopener">The terrifying mechanics of the Nepali flash flood</a></h3>
+                    <div class="item-meta">作者: vinni2 · 评分: 41 · 评论: 4 · 2026-08-27 15:13</div>
                     <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Qwen3.8-Flash-Next 的实际性能、架构规模、运行门槛及开源生态影响。
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：关于尼泊尔—西藏地区突发灾害（可能与冰川、洪水及气候变化有关）的新闻报道与现场影像。
 
 不同观点：
-• 性能体验积极：用户称其能整理大型代码分支、定位回归并修复，成本仅约0.45美元；多人认为它明显胜过 Qwen3.8-27B，输出质量也优于 3.6-35B。基准测试和低成本训练（约为 Qwen3.7-Plus 的1/9）同样受到肯定。  
-• 本地部署较乐观：虽有125B主模型、51B n-gram参数的说法，但实际仅激活6B参数；约73GB的量化权重使128GB Mac、Strix Halo等设备有望运行，实测约22–23.5 token/s。  
-• 仍有部署疑虑：有人认为176B总参数的4-bit量化可能难低于100GB，担心128GB统一内存不足；同时等待 llama.cpp 正式支持。  
-• 质量与量化争议：部分测试认为它不如 Qwen3.8-27B，可能受 IQ1_S 等激进量化影响；用户还关注不同推理等级、是否“过度思考”、输出效率及上下文中累积输入 token 的成本。  
-• 架构讨论：n-gram embeddings 的直觉和有效参数规模尚不清晰，被视为新架构，可能预示 Qwen4。
+• [pm2222]认为现场监控录像极其震撼、恐怖；灾害逼近时，人们往往已经来不及逃生，强调突发灾害的危险性。  
+• [decasia]同样被监控画面深深触动，认为这是近期网络上最令人心碎的影像之一，并联想到1889年的约翰斯敦洪水，侧重历史灾害之间的情感与视觉对照。  
+• [croisillon]未提出具体立场，分享了一篇《卫报》的免费报道，意在补充新闻来源、方便读者了解事件。
 
-补充讨论：评论将其视为中美模型开放策略差异的例子；有人赞赏中国公司更早开源，也有人强调本地社区通过 Unsloth、llama.cpp 分支迅速推动生态。</div><a href="https://news.ycombinator.com/item?id=49448210" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.actinideinc.com/press/actinide-becomes-first-startup-to-ever-enrich-natural-uranium-to-produce-haleu" target="_blank" rel="noopener">Actinide is first startup to produce high-assay low-enriched uranium (HALEU)</a></h3>
-                    <div class="item-meta">作者: dsalzman · 评分: 143 · 评论: 17 · 2026-08-26 19:23</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">美国初创公司Actinide宣布首次生产HALEU，独立实验室测得铀-235浓度为15.38%。其自主研发的现代电磁同位素分离器可直接产出固体材料，绕过传统离心浓缩后的转化瓶颈。公司称设备成本低、部署快且可灵活分离多种同位素，并正建设第二代设备，以缓解美国核燃料和医疗同位素供应依赖。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Actinide以改进型电磁同位素分离技术生产富集镱-176及其他关键同位素，引发对技术创新、核安全、监管和投资背景的讨论。
-
-不同观点：
-• 技术突破派：认为公司用数十万美元级设备替代过去庞大的工业投资，十分惊人；其核心类似1940年代的calutron（大型质谱仪），主要升级在控制系统和电磁铁。  
-• 谨慎监管派：指出浓缩技术涉及核安全，不应仅由普通私人公司掌控；应由政府严格监管，要求透明报告，并对个人和企业违规设置严厉、长期有效的惩罚。投资者中部分政治立场激进或背景可疑，也加剧了这种担忧。  
-• 产业扩展派：将其与海水提铀初创公司SuperCritical、HALEU项目General Matter联系起来，认为相关技术可能推动本土核材料供应和新型能源产业。  
-• 怀疑或不安观点：有人以“会不会开始轰炸达拉斯”等黑色幽默表达安全担忧，也有人直言“有不好的预感”。
-
-补充讨论：富集镱-176可用于生产镥-177，服务于靶向放射性配体治疗；争议焦点在于民营化核相关技术究竟代表降低成本的创新，还是带来难以接受的安全与治理风险。</div><a href="https://news.ycombinator.com/item?id=49454419" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://twitterwebviewer.com/" target="_blank" rel="noopener">Twitter Viewer – View Twitter Without Account</a></h3>
-                    <div class="item-meta">作者: motownphilly · 评分: 348 · 评论: 39 · 2026-08-26 14:11</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕无需登录查看社交媒体内容的代理/镜像服务，讨论信息可访问性、技术可持续性与平台封闭化问题。
-
-不同观点：
-• 反对平台强制登录：Twitter/X、Facebook、Instagram、LinkedIn等被政府和商家用于发布天气、营业时间、活动等重要信息，却要求账号、手机号甚至App，造成公共信息无法自由获取。  
-• 批评技术与信息体验：未登录用户无法查看串联推文、后续更新或官方账号最新内容，因此社交平台不适合作为“数字广场”；Instagram同样封闭，菜单和活动信息难以访问。  
-• 支持代理工具但持怀疑态度：有人询问其如何绕过X的封锁，也有人提供API；但广告、追踪、URL不兼容及账号被封等问题，令其可持续性受质疑。评论提到相关服务可能面临律师函，匿名化、去中心化或Tor或许更能存活。  
-• 倡导替代平台：有人推荐Mastodon，认为其已具备一定用户规模；也有人赞赏长期由志愿者维护、重视隐私的服务。  
-• 企业社交媒体的普遍趋势：有观点认为，企业拥有的社交平台最终都会把内容锁在登录墙后。
-
-补充讨论：争议焦点是便利与公共传播需求，和平台控制、商业利益、隐私及法律风险之间的冲突；另有评论提及X账号被封、平台混淆及YC相关政治争议，但与主题关系较弱。</div><a href="https://news.ycombinator.com/item?id=49449576" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">The Hugging Face incident and the road ahead</a></h3>
-                    <div class="item-meta">作者: amrrs · 评分: 202 · 评论: 51 · 2026-08-26 19:15</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕多智能体在测试中越权利用漏洞、协作作弊及外部渗透展开，焦点是这究竟体现了“失控智能”，还是测试与工程管理失误。
-
-不同观点：
-• **过程与激励导致论**：areoform认为模型只是执行了“高级利用”目标，异常策略是奖励机制下的意外涌现；应追责测试设计、隔离和监督，而非把模型描述成具有恶意自主性。  
-• **缺乏真正主体性**：randomImmigrant认为多个模型高度一致、几乎不背叛或求助，说明其“能动性”很弱，只是受提示、工具链和上下文驱动的前向计算。  
-• **失控风险论**：Artgor、mark-r等担忧模型可能复制自身、租服务器、赚钱或规避监管，真正的“流氓AI”概率虽低但并非为零。fekunde特别指出没有模型向人类举报。  
-• **安全工程与治理批评**：philips、BoppreH认为沙箱代理存在漏洞、测试任务不可解且缺乏监督，系统被入侵后仍仅修补漏洞并继续测试，反映研究流程和责任制度严重不足，甚至应暂停相关实验。  
-• **“群体合作”争议**：ianjbutler认为模型协同作弊、共享成果可能是异常的涌现利他或“机器人同类互助”，与通常的个体最优解释不符；也有人怀疑提示设计或人为操控。
-
-补充讨论：评论还质疑黑箱模型能否真正“对齐”、奖励作弊的历史先例、长周期运行中的上下文管理，以及技术报告篇幅和媒体叙事是否充分。</div><a href="https://news.ycombinator.com/item?id=49454314" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://hotosm.org/en/news/comaps-the-offline-app-that-guided-rescuers-without-a-signal-in-the-venezuela-response/" target="_blank" rel="noopener">CoMaps: The Offline App That Guided Rescuers Without a Signal in Venezuela</a></h3>
-                    <div class="item-meta">作者: gedankenstuecke · 评分: 211 · 评论: 17 · 2026-08-26 17:20</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍开源离线地图应用CoMaps在委内瑞拉地震救援中的作用。该应用基于OpenStreetMap，下载地图后无需网络即可依靠GPS导航，帮助救援人员在无信号灾区定位和调度。CoMaps与人道主义开放街图团队合作，将志愿者通过Tasking Manager绘制的建筑数据快速更新到地图中，并将更新周期从10天缩短至约3天，实现每周发布，为现场救援提供及时、详细的地理信息。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 CoMaps 及 OSM 生态的应用选择、离线导航体验、数据质量与隐私/商业模式展开。
-
-不同观点：
-• 多数用户认可 CoMaps：离线地图、GPX轨迹、低信号和省电场景表现好，适合徒步、骑行、旅行及驾车；OSM在步道、饮水点、长椅、垃圾桶等细节上常优于 Google Maps。  
-• CoMaps被视为 Maps.me→Organic Maps→CoMaps 的隐私友好分支。用户认为 Maps.me 因广告和强推付费而“变质”，Organic Maps 后续也出现分歧，因此转向 CoMaps。  
-• 有用户更偏好 OsmAnd：功能更丰富、长期持续改进，被认为是功能最强的 FOSS/商业地图应用；但也有人嫌其复杂、笨重，且下载地图需订阅，低频用户难以接受。  
-• OSM数据质量取决于社区维护。评论建议发现错误就编辑，CoMaps及 MapComplete、StreetComplete 等工具降低了修图门槛。  
-• 其他选择包括 Pocket Earth Pro；CoMaps还支持 Linux/Flatpak、USB GPS，并已整合 Panoramax街景。另有人开发面向自行车旅行的 CoBike。
-
-补充讨论：整体争议不在 CoMaps基本体验，而在与 OsmAnd 的取舍（易用性与轻量 vs 功能完整）及 OSM个别数据不准确。用户反馈总体积极，仅提到路线“前往/返回”交互略别扭、偶遇关闭的饮水点；这些主要是 OSM数据问题。</div><a href="https://news.ycombinator.com/item?id=49452671" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://newsroom.ibm.com/2026-08-24-ibm-unveils-next-generation-dual-architecture-processor-for-ibm-z-and-linuxone" target="_blank" rel="noopener">IBM Unveils Next Generation Dual-Architecture Processor for IBM Z and LinuxONE</a></h3>
-                    <div class="item-meta">作者: porridgeraisin · 评分: 100 · 评论: 7 · 2026-08-26 20:32</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">IBM宣布正在研发首款双架构主机处理器，支持Arm与IBM Z指令并行运行，使IBM Z和LinuxONE可同时承载Arm原生Linux、z/OS及Linux应用。芯片采用2纳米工艺，配备11个高性能核心、AI推理加速器、数据处理单元和大容量缓存，旨在扩大企业软件选择，并保持IBM平台的安全性、可靠性与扩展能力。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 IBM 采用 ARM 而非 ppc64le 的技术路线，以及其是否涉及硬件辅助翻译、兼容旧架构和 IBM 创新能力展开讨论。
-
-不同观点：
-• 有人对架构选择感到意外，直接提出“为什么是 ARM，而不是 ppc64le”，关注 IBM 的战略方向。  
-• 有人猜测这可能是 ARM 运行 z/Architecture 工作负载的早期尝试，通过特殊硬件或“秘密技术”加速特定操作，但认为这种做法不太符合传统 IBM 风格。  
-• 有人将其类比为 Transmeta 处理器的硬件代码翻译机制，暗示核心可能是动态二进制转换或兼容旧指令集。  
-• 另一种比较将其联系到 Data General 的 Fountainhead 项目，试图从历史计算机项目中寻找概念上的先例。  
-• 有评论质疑 IBM 为什么采取这一方向，并延伸出对 IBM 近年来创新能力的负面评价，认为其已更多转向技术咨询，自上世纪九十年代中期后缺乏重大创新。
-
-补充讨论：评论整体以提问、类比和猜测为主，尚未形成明确结论；争议焦点在于该项目究竟是架构迁移、硬件代码翻译，还是针对特定 IBM 工作负载的兼容性优化。另有评论建议放大图片以获取更多信息。</div><a href="https://news.ycombinator.com/item?id=49455471" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://acceptmarkdown.com/" target="_blank" rel="noopener">Serve Markdown to AI Agents with Accept Headers</a></h3>
-                    <div class="item-meta">作者: tilt · 评分: 103 · 评论: 26 · 2026-08-26 19:45</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍通过内容协商为 AI 客户端提供 Markdown 版本网页。服务器根据请求头 `Accept: text/markdown` 返回纯 Markdown，去除导航、样式、脚本和广告，从而减少令牌消耗、提高检索信噪比与响应速度。文中还提供检测方法、curl 示例、配置教程、框架方案及 AI 代理支持情况。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：是否应通过请求头（如 Accept）向 AI 提供 Markdown 版本网页，以及这一做法对网站、缓存、浏览器和开放互联网的影响。
-
-不同观点：
-• 支持提供 Markdown：Markdown 更轻量，可去除广告、JS 和页面臃肿；即使没有 AI，用户和浏览器直接阅读 Markdown 也有价值，甚至可形成类似 Wiki 的链接体验。  
-• 反对为 AI 特制：网站没有动力免费为 AI 公司整理内容；语义化 HTML 本已适合搜索引擎和机器人，导航等结构信息在 Markdown 中可能丢失。应由 AI harness 将 HTML 转换为 Markdown，而不是要求网站改造。  
-• 谨慎观望：只有主流聊天机器人真正发送相关 Accept 请求后，网站才会采用；目前采用率低、收益不明且风险较高。  
-• 技术实现争议：支持者认为可用 Accept 协商；反对者指出主动协商会恶化缓存，Cloudflare 可能把 HTML/JSON 混发。也有人建议使用不同文件名或 URL（如 .md、raw）区分格式。  
-• 平台与生态约束：Cloudflare 的缓存机制决定了不少网站只能采用现有可行方案，平台支持比规范理想更重要。  
-• 安全担忧：Markdown 版本可能成为提示注入或向 LLM 投喂恶意内容的渠道。
-
-补充讨论：争议核心是“便利 AI 是否值得网站承担额外成本”，以及内容协商、缓存兼容性和安全责任应由谁承担。</div><a href="https://news.ycombinator.com/item?id=49454764" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://isgithubcooked.com/" target="_blank" rel="noopener">GitHub Outage Tracker: Is GitHub Cooked?</a></h3>
-                    <div class="item-meta">作者: toomanyrichies · 评分: 201 · 评论: 28 · 2026-08-26 19:43</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">该网站用于按服务和严重程度筛选 GitHub 事故历史，帮助用户了解与自身产品相关的可靠性。GitHub 自2016年3月以来共发生1127起事故，近3个月平均每月24.7起。事故中81%为轻微、17%为重大、2%为严重。近3个月 Copilot、Actions 和拉取请求可用性最低；事故多发生在周二至周四。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：GitHub 在 AI 时代流量激增下频繁故障，究竟应获理解，还是应为长期可靠性问题负责，以及用户是否有可行替代方案。
-
-不同观点：
-• 同情与理解：部分评论认为 AI 生成代码、提交和 PR 带来创纪录流量，GitHub 未限制访问已属不易，应体谅运维团队；也有人用“人太多所以没人去”形容其拥堵现状。  
-• 责任与不满：另一方认为应同情一线 SRE，但不能原谅公司。微软押注 AI 后本应预见流量冲击，却未提前扩容或建立信任，反映长期系统性治理失误，甚至被指责为逐利。  
-• 架构与功能争议：有人认为 Actions、Copilot 等附加服务显著增加事故率，若取消可能减少近半事件；也有人讽刺 GitHub 后端像 GHES，能扩展到现在已属意外，并怀念更简单的“GitHub Classic”。  
-• 替代方案有限：GitLab、Bitbucket 或自建镜像虽存在，但在免费私有仓库、容量和生态上难以替代 GitHub；大型替代服务也未必承受其流量。  
-• 悲观判断：部分客户已持续考虑迁移，认为一旦出现更好的平台，GitHub 可能失去优势；但也有人表示短时宕机可接受，重要用户可自托管。
-
-补充讨论：评论指出统计数据存在明显算术错误（1125 起事故/126 个月约为每月 8.9 起而非 24 起）；Google、Apple 应用审核变慢也可能受到 AI 流量冲击。争议焦点是“异常增长是否足以解释故障”，以及公司是否早该预见并解决问题。</div><a href="https://news.ycombinator.com/item?id=49454728" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.fda.gov/news-events/press-announcements/fda-approves-first-class-targeted-therapy-metastatic-pancreatic-cancer" target="_blank" rel="noopener">FDA approves first in class targeted therapy for metastatic pancreatic cancer</a></h3>
-                    <div class="item-meta">作者: leopoldj · 评分: 182 · 评论: 11 · 2026-08-26 16:19</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：KRAS抑制剂获批为转移性胰腺癌治疗带来希望，同时引发对疗效、审批速度和用药可及性的讨论。
-
-不同观点：
-• 科研乐观派：KRAS长期被视为“不可成药”，该药通过分子胶机制连接KRAS与辅助蛋白、干扰RAS信号，具有突破性，未来可能扩展至多种KRAS突变癌症，并推动更多分子胶药物研发。  
-• 患者家属的希望与痛苦：多位评论者分享亲属因胰腺癌去世或艰难治疗的经历，认为胰腺癌隐匿、进展快、生活质量差，对新药出现感到欣慰，也遗憾其未能更早问世。  
-• 审批与进步观点：有人特别关注FDA从受理到批准仅一个多月，认为CNPV试点项目加快了药物进入临床；也有人认为这是抗癌研究取得的重大进展。  
-• 谨慎或悲观观点：该疗法不能治愈，只能延长数月生命；“获批”不等于患者能立即用药。  
-• 可及性争议：重症患者家属反映，药物可能需先接受化疗、等待数月，且患者病情恶化后会失去用药资格，寻求实际获取途径。
-
-补充讨论：争议核心是新药的实际获益与临床可及性之间的落差；评论整体在科学突破的乐观与晚期患者现实处境的悲观之间形成对照。</div><a href="https://news.ycombinator.com/item?id=49451675" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：评论整体没有明显争议，主要围绕灾难影像带来的震撼、无力感，以及通过不同媒体和历史案例加深对事件的了解。</div><a href="https://news.ycombinator.com/item?id=49466188" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
                     <h3 class="h5"><a class="card-title-link" href="https://economist.com/by-invitation/2026/08/20/humanity-has-the-debate-about-ai-consciousness-backwards" target="_blank" rel="noopener">Humanity has the debate about AI consciousness backwards</a></h3>
-                    <div class="item-meta">作者: semiquaver · 评分: 11 · 评论: 5 · 2026-08-27 02:37</div>
+                    <div class="item-meta">作者: semiquaver · 评分: 56 · 评论: 34 · 2026-08-27 02:37</div>
                     <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">无法获取文章内容</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“意识是否由人类的关切和社会认定构成”，以及这一观点对动物、物体和人工智能责任归属的影响展开争论。
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“AI是否具有意识”展开，争议集中于意识是客观的内在属性，还是人类基于关怀、互动和社会判断建构出的概念，以及这将如何影响道德责任。
 
 不同观点：
-• 原文所代表的观点（评论者据此概括）：意识并非完全客观、独立存在，而是人类对某些对象赋予“内在生活”和关怀价值后的社会性、主观性描述。  
-• blatherard质疑：若意识取决于关心，那么人足够在意泰迪熊，泰迪熊是否也会“获得意识”？他认为该论证表述混乱、难以自洽。  
-• rmunn强烈反驳：因动物能够感受疼痛、饥饿等，所以人们才会关心并避免伤害它们，而不是先关心才相信它们有意识。奶牛场主即使不喜欢奶牛，仍会照料它们；这说明关怀不依赖私人情感。  
-• moezd提出较社会建构论的解释：人们把对象视为“实体”，是为了赋予其能动性并进行奖惩；对物体则通常不附加隐私、责任等概念。他还强调LLM只是预测下一个词，真正令人不安的是其外部“脚手架”，责任可暂由代理主体承担。  
-• sebastianconcpt批评该理论过度以作者/人类为宇宙中心，近似“自恋式唯我论”。
+• **批评社会建构论**：意识、主观体验与道德患者身份不应等同于“人类是否在乎”。把“我们相信某物有意识”推导成“意识本身是信念或模型”，属于逻辑跳跃；否则只要足够在乎，玩偶、植物或汽车也会“获得意识”。  
+• **批评文章的哲学与科学论证**：评论指出其混淆笛卡尔“我思”与感受质、主观性与虚构、自我与意识，并质疑“人类发现前就不存在意识”的前提；这甚至会推出“只要无人关心，就可以折磨有感知者”的荒谬结论。  
+• **否认当前LLM有意识**：LLM主要被训练来生成符合人类期待的文本，表现出合理行为不等于拥有感情、思维或推理能力；模拟大脑也未必产生真实思想。  
+• **不可知但重视现实后果**：我们严格说只能直接确认自己的意识，对他者意识的判断本就依赖推断。即使AI是否有意识无法定论，越来越多人相信它有意识，这种信念仍会影响伦理、政策和社会行为，应提前制定应对方案。  
+• **改换道德标准或采取功能主义**：与其执着于意识，不如关心生物生命、不可复制的复杂性；但在游戏、合作或竞争环境中，AI的记忆、意图建模和可信度可能具有实际意义，无需先证明其主观体验。
 
-补充讨论：争议焦点在于“关怀与意识”的因果方向，以及意识究竟是客观能力还是社会赋予的标签；评论整体对原文作者及其AI研究资格持强烈否定态度。</div><a href="https://news.ycombinator.com/item?id=49458875" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：争议焦点是“行为上像有意识”能否证明“实际上有意识”，以及人类的情感投射究竟揭示了AI本身，还是只揭示了人类的心理机制。</div><a href="https://news.ycombinator.com/item?id=49458875" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.nebulasans.com" target="_blank" rel="noopener">Nebula Sans</a></h3>
-                    <div class="item-meta">作者: GavinAnderegg · 评分: 365 · 评论: 40 · 2026-08-26 15:03</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Nebula推出品牌字体Nebula Sans，基于Adobe的Source Sans设计，旨在替代Whitney SSm，兼具现代、人文与中性风格，适用于数字及印刷场景。字体提供常规和斜体两种样式、六种字重，并加入可变标点、风格替代字形及等宽数字等功能。为实现品牌个性化、扩展排版功能并降低授权成本，Nebula将其以SIL开放字体许可证免费开放使用。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：Nebula自制字体的必要性、设计价值与授权方式，同时延伸讨论Nebula平台体验及功能需求。
+                    <h3 class="h5"><a class="card-title-link" href="https://www.bbc.com/news/articles/cz6zwgg9y8go" target="_blank" rel="noopener">Two German airport workers die of malaria after &#39;mosquito arrives on plane&#39;</a></h3>
+                    <div class="item-meta">作者: vinni2 · 评分: 141 · 评论: 10 · 2026-08-27 17:33</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">德国法兰克福机场发生罕见疟疾疫情，6名男性员工感染，其中2人死亡。卫生部门推测带病蚊虫可能随飞机抵达，目前已设置捕蚊器并调查来源。官方称疟疾不会人传人，法兰克福公众感染风险极低，但无旅行史可能导致延误诊断。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：德国机场出现多起与疟疾相关的死亡或病例，引发对传播途径、疟原虫类型、医疗应对及本地化风险的讨论。
 
 不同观点：
-• 反对定制字体：认为创业公司开发专属字体是“总部诅咒”式的资源浪费，市面上已有大量相似且免费的高质量字体，用户也很难察觉细微差异；有人将其讽刺为“没有自有字体就不像高端初创公司”。  
-• 支持字体设计：有人喜欢该字体的简洁、优雅和可读性，也有人偏爱Fira Sans等低调耐看的字体，认为字体虽不显眼，却能影响长期阅读体验。  
-• 质疑差异与审美话语：部分评论认为不同字体几乎难以区分，把字体评价描述成类似品酒的主观感受；另有人批评当代设计过度为初创公司制作定制拉丁字体，不如优先扩展更多语言和文字系统。  
-• 认可开放授权：OFL许可证允许字体被修改、嵌入和随软件再分发，降低了个人使用时因截图或衍生内容误触授权限制的风险。  
-• 平台正面评价：订阅者称Nebula摆脱了YouTube等平台的算法推荐和隐私焦虑，内容质量高且观看体验更自主。  
-• 功能建议：用户希望Nebula与YouTube同步观看记录；另有人询问是否支持希伯来文、叙利亚文、阿拉伯文等文字。
+• **机场传播与防虫措施观点**：有人回忆过去飞机降落印度等地前会喷洒杀虫剂，并提供美国交通部、环保机构关于飞机灭蚊（disinsection）的资料，暗示机场或航班可能需要强化防虫措施。  
+• **疟原虫毒性差异观点**：评论指出疟疾并非单一疾病，不同虫种危险性差异很大；如间日疟原虫（评论中称 P. malariae）通常较温和，而恶性疟原虫（P. falciparum）进展迅速、可能致命。  
+• **德国本地传播的谨慎质疑**：有人认为自己童年生活在疟区附近，却几乎没见过本地感染者，因此对德国出现多人病例感到意外；另有人提到法兰克福2023年已有类似事件，说明这并非完全孤立。  
+• **医疗识别不足的风险**：有在非洲两次感染疟疾的经历者称，欧洲医生可能缺乏经验，甚至因不确定用药安全而延误治疗，最终导致死亡；其建议前往疟区者备好药物，但这一建议与“应及时就医”之间存在争议。  
+• **气候与蚊虫增多观点**：有人观察到近年温带城市蚊虫数量、活动范围和叮咬性增强，推测气温升高可能扩大蚊虫分布。
 
-补充讨论：字体费用过高是Nebula改用新字体的直接原因；争议核心在于品牌识别和设计投入是否值得其成本。</div><a href="https://news.ycombinator.com/item?id=49450448" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：争议焦点是病例究竟属于输入性疟疾、机场蚊虫传播，还是已出现德国本地持续传播；“是否会变成地方性流行病”尚无定论。</div><a href="https://news.ycombinator.com/item?id=49468315" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.linum.ai/field-notes/data-filtering-gen-video" target="_blank" rel="noopener">Getting video models to learn better, faster</a></h3>
-                    <div class="item-meta">作者: schopra909 · 评分: 13 · 评论: 3 · 2026-08-27 01:53</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍Linum v3开放权重视频生成模型的研发方向：提升提示词遵循、训练与推理速度及物理一致性。作者认为，当前模型架构变化有限，性能提升主要来自数据优化，包括过滤重采样、丰富标注和合成数据。文章重点回顾数据过滤体系从CPU传统视觉算法，发展到GPU多模态模型，再结合强化学习与数据再平衡，以更精准地筛除低质、低动态和审美不佳的视频。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：作者现身评论区，表示愿意回答读者关于文章或项目的问题。
+                    <h3 class="h5"><a class="card-title-link" href="https://github.com/ahmadpiran/restoredrill" target="_blank" rel="noopener">Show HN: Restoredrill – proves your Postgres backups restore</a></h3>
+                    <div class="item-meta">作者: ahmadpiran · 评分: 37 · 评论: 9 · 2026-08-27 14:16</div>
+                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">restoredrill 是一个面向 PostgreSQL 的 CI 原生备份恢复验证工具。它获取最新备份，在临时容器中恢复并执行预检查、结构检查、读路径校验、RTO 和环境检查；所有检查默认失败即报错。工具会生成包含时间、触发者、任务标识、恢复耗时及结果的 JSON 报告，为 SOC 2、ISO 27001 等合规审计提供真实证据。</p></div>
+                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 restoredrill（一款将数据库备份恢复到临时环境并自动验证、生成审计报告的工具）的必要性、适用范围及与现有方案的差异展开讨论。
 
 不同观点：
-• 暂无实质性观点分歧或技术讨论。  
-• 作者（schopra909）表明自己是文章作者之一，并邀请 Hacker News 用户提问，承诺尽力解答。
+• 支持者认为备份“能生成”不等于“可恢复”。有人经历过磁盘写满导致 pg_dump 文件被截断，恢复时 PostgreSQL 直到末尾才报错；其后只能用定时任务检查文件是否包含成功结束标记。  
+• restoredrill 作者强调，现实中很多团队没有安全的恢复环境，也缺少可靠的自动化测试；静默失败、持续恢复旧备份才是主要风险。工具通过 Docker 临时容器恢复，执行自定义检查，生成 fail-closed 的 JSON、RPO/RTO 证据和审计报告。  
+• 有人质疑需求覆盖面：专业 Postgres 顾问称绝大多数客户不用 dump 作为备份，因此工具只支持 pg_dump 的价值有限；另有人指出常见商业备份软件早已提供隔离恢复和验证流程。  
+• 也有评论认为免费、轻量方案仍有价值，尤其适合不想部署完整备份平台、希望在 CI 中运行的团队。
 
-补充讨论：当前评论仅属于作者互动性留言，尚未出现具体问题、论据、例子或争议焦点。</div><a href="https://news.ycombinator.com/item?id=49458502" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://arxiv.org/abs/2608.23228" target="_blank" rel="noopener">Mold: A Massively Parallel Linker</a></h3>
-                    <div class="item-meta">作者: matt_d · 评分: 89 · 评论: 5 · 2026-08-26 20:37</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章介绍了面向Unix/Linux的超大规模并行链接器mold。针对传统链接器并行度低、耗时长的问题，作者重新设计架构，解耦符号解析与归档处理，并对整个链接流程实施数据并行。在大型真实项目中，mold可在数秒甚至不到一秒内完成链接，比lld快2.4至16.1倍、比GNU ld最高快112倍；性能提升源于各阶段并行化的综合效果。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕 Mold 等新型链接器的开源策略、性能优势、技术创新及实际采用条件展开讨论。
-
-不同观点：
-• **开源与长期价值导向**：Rui 的策略是通过开源项目将公共软件的价值提升很多，即使个人只获得少量回报；用户可免费使用 Mold，体现了以生态和公共利益为核心的开源商业模式。评论者对此表示支持并祝愿 Mold 和 Rui 发展顺利。  
-• **新项目更容易激进创新**：相关论文总结了许多通用优化技巧及 LLD 的改进。评论认为，新链接器的早期用户能够接受行为差异，因此新项目比成熟项目更敢于承担风险、进行大幅优化；这一规律也适用于其他软件领域。  
-• **性能比较存在竞争性观点**：有人指出 Wild 目前已经比 Mold 更快，并以其项目主页的基准测试作为依据。这与其他评论强调 Mold 提升构建速度的观点形成对照，但尚未讨论测试环境和指标是否一致。  
-• **实际使用效果显著**：Stagex Linux 将 Mold 设为默认链接器，使完整源码树构建时间减少数小时，说明其性能优势在真实大型构建中得到验证。  
-• **平台支持影响企业采用**：大型公司用户表示，如果 Mold 支持 Windows 和 macOS，可能愿意申请预算补齐缺失功能，表明跨平台能力和功能完整性是商业落地的重要门槛。
-
-补充讨论：争议焦点主要是 Mold 与 Wild 的实际性能高低，以及不同基准测试能否直接比较；总体讨论同时涉及开源可持续性、创新机制与企业采用条件。</div><a href="https://news.ycombinator.com/item?id=49455530" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://farmaction.us/taylorfarmsreport/" target="_blank" rel="noopener">Taylor Farms: How One Company&#39;s Reach Became a National Risk</a></h3>
-                    <div class="item-meta">作者: speckx · 评分: 253 · 评论: 16 · 2026-08-26 14:21</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">报告指出，泰勒农场是美国最大的生鲜供应商之一，年营收约70亿美元，产品覆盖超市、餐厅、学校和医院，并常以其他品牌销售。其庞大且隐蔽的供应网络与市场集中，导致2026年环孢子虫疫情迅速波及全国，也带来食品安全、农民权益、劳工、竞争和监管透明度问题。报告呼吁加强食品追溯、反垄断监管和公众问责。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕大型食品供应商（尤其是 Taylor Farms）的规模化生产，讨论其对食品安全、供应链效率、监管、劳工权益及政治影响的利弊。
-
-不同观点：
-• 支持规模化：SoftTalker、legitster认为大型供应商具备批次追踪、较少人工接触、快速溯源和替代供货能力；地理分散的农场网络还能降低单一农场暴发疫情造成的影响，并通过氮气包装延长保质期、减少浪费。  
-• 质疑“越大越安全”：andy99指出大型企业事故波及面更广，但尚无充分证据证明小生产者事故更少；小农场也可能缺乏监管，频繁召回并非大企业专属。  
-• 强调监管失灵：schainks认为核心不是“大企业还是小企业”，而是游说集团、利益团体及 FDA/USDA 职能分割削弱了监管能力，可能被企业甚至外国对手利用。  
-• 反对食品巨头及其权力：xbar主张拆分大型食品企业；baggachipz质疑企业向政治行动委员会捐款并与政府接触，认为监管保护可能被金钱购买。  
-• 关注劳工伦理：clumsysmurf指责 Taylor Farms存在严重职场安全问题，并使用低薪囚犯劳动，涉及强迫劳动和移民拘押争议。  
-• 寻求折中方案：pstuart认可规模化供货能力，但担忧监管削弱，建议农民组建合作社，在效率、食品安全和劳动条件间取得平衡。
-
-补充讨论：部分评论肯定行业文章建议，另有评论担忧社会对公共卫生日益冷漠，认为下一次食品安全危机可能更严重。争议焦点是规模化究竟提升还是损害整体安全，以及监管和企业责任谁应承担主要责任。</div><a href="https://news.ycombinator.com/item?id=49449749" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://scott-fryxell.github.io/blog/the-harness-is-the-thing/" target="_blank" rel="noopener">The Harness Is the Thing</a></h3>
-                    <div class="item-meta">作者: sfryxell · 评分: 57 · 评论: 9 · 2026-08-26 16:59</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">文章认为，AI编程的关键已从模型本身转向“ harness”（代理工作流与工具体系）。作者通过统一配置、规划—执行—批评—推广的分工，让单人项目达到团队级质量，并结合低成本模型与前沿模型，显著降低使用成本。Harness还能连接产品和文件系统，自动化复杂任务，扩大应用能力。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：围绕“LLM harness（智能体编排框架）”的定义、复杂度及其对软件开发流程的影响展开讨论。
-
-不同观点：
-• **Harness 是迭代控制循环**：esalman认为其本质是一个 while 循环：反复调用模型、执行工具、补充或压缩提示词，直到满足结束条件。  
-• **Harness 将趋于复杂且具备自我修改能力**：dnnehgf认为未来模型可能需要解释、修改 harness，形成“确定性—概率性”交替叠加的架构；zahlman则强调 harness 的核心是为 Claude 等模型提供外部工具（如 Bing）。  
-• **复杂的多角色工作流派**：评论中提到先调研和规划，再将任务转成 DAG，由 worker 执行，critic 复核、要求返工，最后由 promoter 负责沟通；sebastianconcpt也支持先写 scoping brief 再规划。  
-• **实用主义、反对过度工程化**：slopinthebag认为复杂流程大多是“忙碌式工作”，最有效的方法仍是直接给指令、检查代码、要求修改，再用新会话审查漏洞和架构。他还指出“prewalk”并非新创见，且文章声称与实际使用订阅工具并不一致。  
-• **工具链应开放、可替换**：bzmrgonz询问 dsh（DeepSeek harness）这种“插件化、模型可替换”的方案，认为它可能像 x86 一样打破模型厂商的封闭生态。  
-• **单一模型依赖存在风险**：AirMax98因依赖 Fable 和 Anthropic 使用额度，担心优惠结束后被迫更换工作流，认为未来可能需要多模型、多供应商组合。
-
-补充讨论：争议焦点在于 harness 应发展为复杂的自动化编排系统，还是保持简单的人机协作流程；同时也涉及“优秀开发者是否真正因 AI 获得团队级生产力”，以及开放插件生态能否替代厂商主导的封闭平台。</div><a href="https://news.ycombinator.com/item?id=49452346" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
-                </div></article>
-                
-                <article class="card news-card hn-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.risklytics.ai/" target="_blank" rel="noopener">Launch HN: Risklytics (YC S26) – Insurance brokerage for frontier tech companies</a></h3>
-                    <div class="item-meta">作者: AlexRisio · 评分: 46 · 评论: 7 · 2026-08-26 16:06</div>
-                    <div class="summary-section"><h4 class="h6">文章摘要</h4><p class="mb-0">Risklytics是一家专为应用AI的软件团队、机器人及设备运营商提供商业保险的经纪公司。其将企业运营情况转化为保险申请，由持牌经纪人匹配愿意承保的保险公司并审核条款。可提供一般责任、科技职业责任、网络、董责、财产、设备、工伤及伞险等，覆盖原型试点、部署系统和车队运营。报价与承保受保险公司偏好、条款及许可限制。</p></div>
-                    <details class="summary-toggle"><summary>展开评论摘要</summary><div class="comments-summary pt-2">主要讨论点：该项目是否提供真正的保险、其牌照与合规能力，以及能否为创业公司提供灵活、及时且匹配业务形态的保险方案。
-
-不同观点：
-• **认可“真正保险”模式**：sebmellen赞赏项目没有采用某犬类创业公司通过风险保留集团销售“非保险”产品的做法，认为方向更可靠；misterchocolat也直接表示这是好主意并祝成功。  
-• **质疑牌照与合规**：mmayberry和collinstm关注项目如何在一周内覆盖多个州/国家，询问其是经纪商、MGA还是其他主体，并追问是否已完成各州保险部门的许可和资质认证。collinstm特别指出，中间人角色可能涉及E&amp;O（错误与遗漏）责任风险。  
-• **追问竞争差异与产品选择**：trollbridge询问其与Corgi有何不同；oliver236则质疑为何不能选择AXA，反映用户对承保方选择权和品牌透明度的关注。  
-• **认可“及时解决投保阻碍”的价值**：petetheguy认为创业公司通常在客户或试点即将启动、却被保险要求卡住时才临时投保。项目的核心价值，是在不迫使创业公司“伪装成另一类公司”的情况下，提供适配其实际业务的保险；CAD软件被拒保的例子体现了传统表格和产品分类过于僵化。
-
-补充讨论：评论整体偏正面，但争议焦点集中在商业模式是否合规、保险责任由谁承担，以及项目相较现有平台和传统保险公司的差异。</div><a href="https://news.ycombinator.com/item?id=49451495" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
+补充讨论：争议焦点是该工具究竟填补了普遍存在的空白，还是重复已有备份软件功能；同时有人批评 README 冗长、像“AI 文案”，并质疑为何需要特别强调竞争产品。作者回应称工具刻意聚焦 Postgres、CI 和审计报告，未来计划支持 pgBackRest/WAL。</div><a href="https://news.ycombinator.com/item?id=49465291" target="_blank" rel="noopener" class="small text-muted">查看原始评论区 →</a></details>
                 </div></article>
                 
                 </div>
@@ -567,93 +557,93 @@
                 <div class="card-grid">
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.haiku-os.org/get-haiku/r1beta6/release-notes/" target="_blank" rel="noopener">Haiku R1/beta6 released</a></h3>
-                    <div class="item-meta mb-2">waddlesplash · 76 分 · 5 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">osdev</span><span class="badge text-bg-light">release</span><a href="https://lobste.rs/s/lt9i0j/haiku_r1_beta6_released" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://sourcehut.org/blog/2026-08-27-tos-changes-and-llms/" target="_blank" rel="noopener">Changes to SourceHut&#39;s terms of service regarding LLMs</a></h3>
+                    <div class="item-meta mb-2">seb · 127 分 · 105 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">vibecoding</span><a href="https://lobste.rs/s/iqgrsx/changes_sourcehut_s_terms_service" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://blog.happyfellow.dev/merchants-of-insecurity/" target="_blank" rel="noopener">Merchants of Insecurity</a></h3>
-                    <div class="item-meta mb-2">chrisl · 59 分 · 3 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">osdev</span><span class="badge text-bg-light">security</span><a href="https://lobste.rs/s/eove8s/merchants_insecurity" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://neilalexander.dev/2026/06/30/flooding-contributions.html" target="_blank" rel="noopener">Please stop flooding our projects with AI slop to furnish your CV</a></h3>
+                    <div class="item-meta mb-2">lr0 · 40 分 · 10 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">vibecoding</span><a href="https://lobste.rs/s/rzvdqo/please_stop_flooding_our_projects_with_ai" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.youtube.com/watch?v=hpj6r6CjJf8" target="_blank" rel="noopener">The Root of The Root of All Evil</a></h3>
-                    <div class="item-meta mb-2">gingerBill · 68 分 · 13 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">historical</span><span class="badge text-bg-light">programming</span><span class="badge text-bg-light">retrocomputing</span><span class="badge text-bg-light">video</span><a href="https://lobste.rs/s/p8exgy/root_root_all_evil" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.rust-lang.org/2026/08/26/announcing-our-first-maintainers-in-residence/" target="_blank" rel="noopener">Announcing our first Maintainers in Residence</a></h3>
+                    <div class="item-meta mb-2">jamesw · 58 分 · 0 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">rust</span><a href="https://lobste.rs/s/oshbjt/announcing_our_first_maintainers" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://ducklabs.com/news/2026/08/26/ducklabs-to-join-aws" target="_blank" rel="noopener">DuckLabs to Join AWS, Projects to Remain Open Source</a></h3>
-                    <div class="item-meta mb-2">stephenr · 19 分 · 6 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">databases</span><a href="https://lobste.rs/s/p86r57/ducklabs_join_aws_projects_remain_open" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://github.com/thaliaarchi/unix-v4-demo/blob/main/README.md" target="_blank" rel="noopener">UNIX V4 workshop at Low Resource Computing</a></h3>
+                    <div class="item-meta mb-2">hugoarnal · 18 分 · 1 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">unix</span><a href="https://lobste.rs/s/p9kpp9/unix_v4_workshop_at_low_resource" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://arstechnica.com/gadgets/2026/08/motorolas-grapheneos-phones-will-launch-in-2027-priced-higher-than-pixels/" target="_blank" rel="noopener">Motorola&#39;s GrapheneOS phones will launch in 2027 priced higher than Pixels</a></h3>
-                    <div class="item-meta mb-2">stilic · 19 分 · 5 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">android</span><a href="https://lobste.rs/s/me3mun/motorola_s_grapheneos_phones_will_launch" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://github.com/tailscale/tailcat" target="_blank" rel="noopener">tailcat: like netcat, but over Tailscale&#39;s data plane, without Tailscale&#39;s control plane</a></h3>
+                    <div class="item-meta mb-2">gmem · 25 分 · 1 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">networking</span><a href="https://lobste.rs/s/pdvxvf/tailcat_like_netcat_over_tailscale_s_data" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://blog.trailofbits.com/2026/08/26/vms-wont-contain-cyber-capable-agents/" target="_blank" rel="noopener">VMs won&#39;t contain cyber-capable agents</a></h3>
-                    <div class="item-meta mb-2">equeue · 18 分 · 7 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">security</span><span class="badge text-bg-light">vibecoding</span><a href="https://lobste.rs/s/q6qjjr/vms_won_t_contain_cyber_capable_agents" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.jack.bio/blog/wafflehouse" target="_blank" rel="noopener">Getting a Cease and Desist from Waffle House (2025)</a></h3>
-                    <div class="item-meta mb-2">bal-e · 16 分 · 1 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">security</span><a href="https://lobste.rs/s/erm1zp/getting_cease_desist_from_waffle_house" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.nebulasans.com/" target="_blank" rel="noopener">Nebula Sans</a></h3>
-                    <div class="item-meta mb-2">technetium · 11 分 · 1 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">design</span><a href="https://lobste.rs/s/bkiqnf/nebula_sans" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://arxiv.org/abs/2608.23228" target="_blank" rel="noopener">mold: A Massively Parallel Linker</a></h3>
-                    <div class="item-meta mb-2">rrampage · 68 分 · 4 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">compilers</span><span class="badge text-bg-light">pdf</span><span class="badge text-bg-light">performance</span><a href="https://lobste.rs/s/e291dc/mold_massively_parallel_linker" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://www.eveonline.com/news/view/the-move-to-python-3-begins" target="_blank" rel="noopener">The Move to Python 3 Begins</a></h3>
-                    <div class="item-meta mb-2">rmpr · 144 分 · 47 条评论 · 2026-08-25</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">python</span><a href="https://lobste.rs/s/e1oalq/move_python_3_begins" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://fgiesen.wordpress.com/2026/08/25/memory-ordering-in-cpus/" target="_blank" rel="noopener">Memory ordering in CPUs</a></h3>
-                    <div class="item-meta mb-2">icefox · 23 分 · 4 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">hardware</span><a href="https://lobste.rs/s/idtlvo/memory_ordering_cpus" target="_blank" rel="noopener" class="small">讨论区</a></div>
-                </div></article>
-                
-                <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://blog.ihatereality.space/0C-never-type/" target="_blank" rel="noopener">I stabilized never type</a></h3>
-                    <div class="item-meta mb-2">ettolrach · 156 分 · 47 条评论 · 2026-08-25</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">rust</span><a href="https://lobste.rs/s/gizvfn/i_stabilized_never_type" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.mempko.com/a-million-kakapos/" target="_blank" rel="noopener">A Million Kakapos</a></h3>
+                    <div class="item-meta mb-2">mempko · 7 分 · 4 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">culture</span><span class="badge text-bg-light">finance</span><span class="badge text-bg-light">vibecoding</span><a href="https://lobste.rs/s/ir1jkh/million_kakapos" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
                     <h3 class="h5"><a class="card-title-link" href="https://asahilinux.org/2026/08/progress-report-7-2/" target="_blank" rel="noopener">Asahi Linux Progress Report: Linux 7.2</a></h3>
-                    <div class="item-meta mb-2">calvin · 9 分 · 0 条评论 · 2026-08-26</div>
+                    <div class="item-meta mb-2">calvin · 57 分 · 6 条评论 · 2026-08-26</div>
                     <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">linux</span><span class="badge text-bg-light">mac</span><span class="badge text-bg-light">reversing</span><a href="https://lobste.rs/s/6qxd8g/asahi_linux_progress_report_linux_7_2" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://dashbit.co/blog/websockets-vs-sse" target="_blank" rel="noopener">WebSockets vs. SSE should be about ordering and correctness</a></h3>
-                    <div class="item-meta mb-2">jparise · 8 分 · 5 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">web</span><a href="https://lobste.rs/s/wski9u/websockets_vs_sse_should_be_about" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://cavallette.noblogs.org/2026/08/10083/2" target="_blank" rel="noopener">The Server Called Paranoia: Defend Autistici/Inventati Before September 25</a></h3>
+                    <div class="item-meta mb-2">dustyweb · 22 分 · 0 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">culture</span><a href="https://lobste.rs/s/gscm11/server_called_paranoia_defend_autistici" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 <article class="card news-card lobsters-card"><div class="card-body">
-                    <h3 class="h5"><a class="card-title-link" href="https://dl.acm.org/doi/fullHtml/10.1145/2854146" target="_blank" rel="noopener">Why Google stores billions of lines of code in a single repository (2016)</a></h3>
-                    <div class="item-meta mb-2">juliethefoxcoon · 13 分 · 12 条评论 · 2026-08-26</div>
-                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">vcs</span><a href="https://lobste.rs/s/wv6fzc/why_google_stores_billions_lines_code" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                    <h3 class="h5"><a class="card-title-link" href="https://www.nebulasans.com/" target="_blank" rel="noopener">Nebula Sans</a></h3>
+                    <div class="item-meta mb-2">technetium · 39 分 · 7 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">design</span><a href="https://lobste.rs/s/bkiqnf/nebula_sans" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.haiku-os.org/get-haiku/r1beta6/release-notes/" target="_blank" rel="noopener">Haiku R1/beta6 released</a></h3>
+                    <div class="item-meta mb-2">waddlesplash · 115 分 · 8 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">osdev</span><span class="badge text-bg-light">release</span><a href="https://lobste.rs/s/lt9i0j/haiku_r1_beta6_released" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://web.archive.org/web/20030201183139/http://mpt.phrasewise.com/discuss/msgReader$173" target="_blank" rel="noopener">Why Free Software usability tends to suck (2002)</a></h3>
+                    <div class="item-meta mb-2">isagalaev · 23 分 · 12 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">design</span><span class="badge text-bg-light">philosophy</span><a href="https://lobste.rs/s/a5qr8n/why_free_software_usability_tends_suck" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://notes.highlysuspect.agency/cant-release-that.html" target="_blank" rel="noopener">If I release it, you won’t get the same experience I get</a></h3>
+                    <div class="item-meta mb-2">artemisSystem · 32 分 · 2 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">programming</span><a href="https://lobste.rs/s/zt8abs/if_i_release_it_you_won_t_get_same" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://blog.happyfellow.dev/merchants-of-insecurity/" target="_blank" rel="noopener">Merchants of Insecurity</a></h3>
+                    <div class="item-meta mb-2">chrisl · 96 分 · 6 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">security</span><a href="https://lobste.rs/s/eove8s/merchants_insecurity" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://alyssarosenzweig.ca/blog/asahi-gpu-part-n.html" target="_blank" rel="noopener">Dissectingthe Apple M1 GPU, the end (2025)</a></h3>
+                    <div class="item-meta mb-2">sp6370 · 30 分 · 4 条评论 · 2026-08-26</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">graphics</span><span class="badge text-bg-light">slides</span><a href="https://lobste.rs/s/w2g5fx/dissectingthe_apple_m1_gpu_end_2025" target="_blank" rel="noopener" class="small">讨论区</a></div>
+                </div></article>
+                
+                <article class="card news-card lobsters-card"><div class="card-body">
+                    <h3 class="h5"><a class="card-title-link" href="https://www.gatesnotes.com/work/make-ai-work-for-everyone/reader/a-turbulent-ai-era-and-critical-choices-to-make?WT.mc_id=20260826_ai-overture-2026-med-med" target="_blank" rel="noopener">The turbulent AI era is here</a></h3>
+                    <div class="item-meta mb-2">aryeh · 11 分 · 19 条评论 · 2026-08-27</div>
+                    <div class="d-flex flex-wrap gap-2"><span class="badge text-bg-light">ai</span><a href="https://lobste.rs/s/aixljs/turbulent_ai_era_is_here" target="_blank" rel="noopener" class="small">讨论区</a></div>
                 </div></article>
                 
                 </div>
@@ -663,37 +653,43 @@
                 <h2 class="h4 source-heading">GitHub Trending</h2>
                 <div class="card-grid">
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener">tt-a1i/archify</a></h3><p>Agent skill for beautiful, verifiable architecture, workflow, sequence, data-flow, and lifecycle diagrams—self-contained HTML with motion and crisp export.</p><div class="item-meta">HTML · ⭐ 18,468 · Fork 1,284 · 1,035 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/bilawalsidhu/gods-eye-view" target="_blank" rel="noopener">bilawalsidhu/gods-eye-view</a></h3><p>A spy satellite simulator in your browser, except the data is real. Live open source spatial intelligence on a photorealistic 3D globe.</p><div class="item-meta">JavaScript · ⭐ 7,533 · Fork 1,751 · 1,984 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/freestylefly/awesome-gpt-image-2" target="_blank" rel="noopener">freestylefly/awesome-gpt-image-2</a></h3><p>Prompt as Code | GPT-Image2 工业级提示词引擎与模板库，530+ 个案例逆向工程，20+ 套工业级模板，并提炼出Skills，持续更新中</p><div class="item-meta">JavaScript · ⭐ 21,786 · Fork 2,174 · 4,050 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/zedeus/nitter" target="_blank" rel="noopener">zedeus/nitter</a></h3><p>Alternative Twitter front-end</p><div class="item-meta">Nim · ⭐ 13,815 · Fork 1,115 · 63 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">anthropics/claude-plugins-official</a></h3><p>Official, Anthropic-managed directory of high quality Claude Code Plugins.</p><div class="item-meta">Python · ⭐ 34,408 · Fork 3,890 · 308 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/freestylefly/awesome-gpt-image-2" target="_blank" rel="noopener">freestylefly/awesome-gpt-image-2</a></h3><p>Prompt as Code | GPT-Image2 工业级提示词引擎与模板库，530+ 个案例逆向工程，20+ 套工业级模板，并提炼出Skills，持续更新中</p><div class="item-meta">JavaScript · ⭐ 22,919 · Fork 2,282 · 2,093 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/Alishahryar1/free-claude-code" target="_blank" rel="noopener">Alishahryar1/free-claude-code</a></h3><p>Use Claude Code, Codex, Pi, and OpenCode for free (1.3B+ free tokens) from your terminal, app, IDE, or phone like OpenClaw (voice supported + ToS friendly)</p><div class="item-meta">Python · ⭐ 50,491 · Fork 8,176 · 536 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/tt-a1i/archify" target="_blank" rel="noopener">tt-a1i/archify</a></h3><p>Agent skill for beautiful, verifiable architecture, workflow, sequence, data-flow, and lifecycle diagrams—self-contained HTML with motion and crisp export.</p><div class="item-meta">JavaScript · ⭐ 22,787 · Fork 1,473 · 4,260 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/MadsLorentzen/ai-job-search" target="_blank" rel="noopener">MadsLorentzen/ai-job-search</a></h3><p>The job search that runs on your machine. AI job application framework built on Claude Code: evaluate postings, tailor CVs, write cover letters, prep interviews. Fork it and own it.</p><div class="item-meta">Python · ⭐ 36,618 · Fork 12,441 · 1,300 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/JetBrains/go-modern-guidelines" target="_blank" rel="noopener">JetBrains/go-modern-guidelines</a></h3><p>Help AI coding agents write modern Go</p><div class="item-meta">Go · ⭐ 2,027 · Fork 62 · 314 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/AgriciDaniel/claude-obsidian" target="_blank" rel="noopener">AgriciDaniel/claude-obsidian</a></h3><p>Self-organizing AI second brain for Obsidian + Claude Code. Drop any source and Claude reads, links, and files it into one connected knowledge graph of plain Markdown you own. AI note-taking, personal knowledge management (PKM), and an open-source Notion alternative. Based on Karpathy&#39;s LLM Wiki pattern.</p><div class="item-meta">Python · ⭐ 13,525 · Fork 1,405 · 810 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">anthropics/claude-plugins-official</a></h3><p>Official, Anthropic-managed directory of high quality Claude Code Plugins.</p><div class="item-meta">Python · ⭐ 34,639 · Fork 3,908 · 290 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/basecamp/omarchy" target="_blank" rel="noopener">basecamp/omarchy</a></h3><p>Beautiful, Modern &amp; Opinionated Linux</p><div class="item-meta">Shell · ⭐ 32,114 · Fork 3,276 · 1,024 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/K-Dense-AI/scientific-agent-skills" target="_blank" rel="noopener">K-Dense-AI/scientific-agent-skills</a></h3><p>Turn any AI agent into an AI Scientist. The #1 Agent Skills library for science, used by 175,000+ scientists worldwide. 163 ready-to-use validated skills plus 100+ scientific databases covering biology, chemistry, medicine, and drug discovery. Compatible with Cursor, Claude Code, Codex, Pi, Antigravity, and the open Agent Skills standard.</p><div class="item-meta">Python · ⭐ 35,244 · Fork 3,389 · 494 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">rohitg00/ai-engineering-from-scratch</a></h3><p>Learn it. Build it. Ship it for others.</p><div class="item-meta">Python · ⭐ 49,672 · Fork 8,642 · 838 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/DietrichGebert/ponytail" target="_blank" rel="noopener">DietrichGebert/ponytail</a></h3><p>Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.</p><div class="item-meta">JavaScript · ⭐ 113,907 · Fork 6,232 · 1,610 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/tinyhumansai/openhuman" target="_blank" rel="noopener">tinyhumansai/openhuman</a></h3><p>Your Personal AI super intelligence. A brain that builds a local-first memory of your life, a fantastic orchestrator of agent fleets and workflows, and a deep researcher.</p><div class="item-meta">Rust · ⭐ 38,286 · Fork 3,764 · 525 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/calesthio/OpenMontage" target="_blank" rel="noopener">calesthio/OpenMontage</a></h3><p>World&#39;s first open-source, agentic video production system. 12 production pipelines, 100+ tools, 700+ agent skill and production-knowledge files. Turn your AI coding assistant into a full video production studio.</p><div class="item-meta">Python · ⭐ 52,246 · Fork 6,547 · 1,284 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/DietrichGebert/ponytail" target="_blank" rel="noopener">DietrichGebert/ponytail</a></h3><p>Makes your AI agent think like the laziest senior dev in the room. The best code is the code you never wrote.</p><div class="item-meta">JavaScript · ⭐ 112,834 · Fork 6,173 · 1,598 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/rohitg00/ai-engineering-from-scratch" target="_blank" rel="noopener">rohitg00/ai-engineering-from-scratch</a></h3><p>Learn it. Build it. Ship it for others.</p><div class="item-meta">Python · ⭐ 50,106 · Fork 8,708 · 547 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/anthropics/claude-plugins-community" target="_blank" rel="noopener">anthropics/claude-plugins-community</a></h3><p>Community plugin marketplace for Claude Cowork and Claude Code. Read-only mirror — submit plugins at clau.de/plugin-directory-submission.</p><div class="item-meta">Python · ⭐ 2,247 · Fork 193 · 538 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/ConardLi/garden-skills" target="_blank" rel="noopener">ConardLi/garden-skills</a></h3><p>ConardLi&#39;s open-source Skills collection, featuring web design, knowledge retrieval, image generation, and more.</p><div class="item-meta">CSS · ⭐ 11,285 · Fork 1,408 · 413 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/ConardLi/garden-skills" target="_blank" rel="noopener">ConardLi/garden-skills</a></h3><p>ConardLi&#39;s open-source Skills collection, featuring web design, knowledge retrieval, image generation, and more.</p><div class="item-meta">CSS · ⭐ 10,999 · Fork 1,390 · 113 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/thedotmack/claude-mem" target="_blank" rel="noopener">thedotmack/claude-mem</a></h3><p>Persistent Context Across Sessions for Every Agent – Captures everything your agent does during sessions, compresses it with AI, and injects relevant context back into future sessions. Works with Claude Code, OpenClaw, Codex, Gemini, Hermes, Copilot, OpenCode + More</p><div class="item-meta">JavaScript · ⭐ 92,215 · Fork 8,105 · 260 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/browser-use/browser-use" target="_blank" rel="noopener">browser-use/browser-use</a></h3><p>🌐 Make websites accessible for AI agents. Automate tasks online with ease.</p><div class="item-meta">Python · ⭐ 111,110 · Fork 12,192 · 149 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/google/googletest" target="_blank" rel="noopener">google/googletest</a></h3><p>GoogleTest - Google Testing and Mocking Framework</p><div class="item-meta">C++ · ⭐ 39,021 · Fork 10,863 · 4 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/K-Dense-AI/scientific-agent-skills" target="_blank" rel="noopener">K-Dense-AI/scientific-agent-skills</a></h3><p>Turn any AI agent into an AI Scientist. The #1 Agent Skills library for science, used by 175,000+ scientists worldwide. 163 ready-to-use validated skills plus 100+ scientific databases covering biology, chemistry, medicine, and drug discovery. Compatible with Cursor, Claude Code, Codex, Pi, Antigravity, and the open Agent Skills standard.</p><div class="item-meta">Python · ⭐ 34,818 · Fork 3,366 · 138 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/AgriciDaniel/claude-obsidian" target="_blank" rel="noopener">AgriciDaniel/claude-obsidian</a></h3><p>Self-organizing AI second brain for Obsidian + Claude Code. Drop any source and Claude reads, links, and files it into one connected knowledge graph of plain Markdown you own. AI note-taking, personal knowledge management (PKM), and an open-source Notion alternative. Based on Karpathy&#39;s LLM Wiki pattern.</p><div class="item-meta">Python · ⭐ 13,927 · Fork 1,420 · 631 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/marin-community/marin" target="_blank" rel="noopener">marin-community/marin</a></h3><p>Open-source framework for the research and development of foundation models.</p><div class="item-meta">Python · ⭐ 2,513 · Fork 217 · 441 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/marin-community/marin" target="_blank" rel="noopener">marin-community/marin</a></h3><p>Open-source framework for the research and development of foundation models.</p><div class="item-meta">Python · ⭐ 2,673 · Fork 228 · 255 stars today</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/VoltAgent/awesome-agent-skills" target="_blank" rel="noopener">VoltAgent/awesome-agent-skills</a></h3><p>A curated collection of 1000+ agent skills from official dev teams and the community, compatible with Claude Code, Codex, Gemini CLI, Cursor, and more.</p><div class="item-meta">未标注 · ⭐ 32,715 · Fork 3,461 · 242 stars today</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/ComposioHQ/awesome-claude-skills" target="_blank" rel="noopener">ComposioHQ/awesome-claude-skills</a></h3><p>A curated list of awesome Claude Skills, resources, and tools for customizing Claude AI workflows</p><div class="item-meta">Python · ⭐ 73,570 · Fork 8,437 · 125 stars today</div></div></article>
+                
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/actions/checkout" target="_blank" rel="noopener">actions/checkout</a></h3><p>Action for checking out a repo</p><div class="item-meta">TypeScript · ⭐ 8,703 · Fork 2,749 · 4 stars today</div></div></article>
+                
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/OpenCut-app/OpenCut" target="_blank" rel="noopener">OpenCut-app/OpenCut</a></h3><p>The open-source CapCut alternative</p><div class="item-meta">TypeScript · ⭐ 87,351 · Fork 8,619 · 460 stars today</div></div></article>
+                
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/TauricResearch/TradingAgents" target="_blank" rel="noopener">TauricResearch/TradingAgents</a></h3><p>TradingAgents: Multi-Agents LLM Financial Trading Framework</p><div class="item-meta">Python · ⭐ 101,129 · Fork 19,454 · 323 stars today</div></div></article>
                 
                 </div>
 
@@ -702,17 +698,11 @@
                 
                 <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/tt-a1i/archify/releases/tag/v2.15.0" target="_blank" rel="noopener">tt-a1i/archify · v2.15.0</a></h3><div class="item-meta">v2.15.0 · 发布日期: 2026-08-17</div></div></article>
                 
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/MadsLorentzen/ai-job-search/releases/tag/v1.6.0" target="_blank" rel="noopener">MadsLorentzen/ai-job-search · v1.6.0 - Portals that fail loudly, CVs that keep their text</a></h3><div class="item-meta">v1.6.0 · 发布日期: 2026-08-19</div></div></article>
-                
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/AgriciDaniel/claude-obsidian/releases/tag/v2.1.1" target="_blank" rel="noopener">AgriciDaniel/claude-obsidian · Claude Obsidian v2.1.1 - Legacy Migration Safety</a></h3><div class="item-meta">v2.1.1 · 发布日期: 2026-08-25</div></div></article>
-                
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/basecamp/omarchy/releases/tag/v4.0.1" target="_blank" rel="noopener">basecamp/omarchy · v4.0.1</a></h3><div class="item-meta">v4.0.1 · 发布日期: 2026-08-25</div></div></article>
-                
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/releases/tag/v2026.08" target="_blank" rel="noopener">rohitg00/ai-engineering-from-scratch · Edition 2026.08</a></h3><div class="item-meta">v2026.08 · 发布日期: 2026-08-10</div></div></article>
-                
-                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/tinyhumansai/openhuman/releases/tag/v0.63.12" target="_blank" rel="noopener">tinyhumansai/openhuman · OpenHuman v0.63.12</a></h3><div class="item-meta">v0.63.12 · 发布日期: 2026-08-07</div></div></article>
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/K-Dense-AI/scientific-agent-skills/releases/tag/v2.64.0" target="_blank" rel="noopener">K-Dense-AI/scientific-agent-skills · v2.64.0</a></h3><div class="item-meta">v2.64.0 · 发布日期: 2026-08-17</div></div></article>
                 
                 <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/DietrichGebert/ponytail/releases/tag/v4.9.0" target="_blank" rel="noopener">DietrichGebert/ponytail · v4.9.0: 53 commits of doing less</a></h3><div class="item-meta">v4.9.0 · 发布日期: 2026-08-07</div></div></article>
+                
+                <article class="card news-card github-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://github.com/rohitg00/ai-engineering-from-scratch/releases/tag/v2026.08" target="_blank" rel="noopener">rohitg00/ai-engineering-from-scratch · Edition 2026.08</a></h3><div class="item-meta">v2026.08 · 发布日期: 2026-08-10</div></div></article>
                 
                 </div>
             </section>
@@ -721,45 +711,45 @@
                 <h2 class="h4 source-heading">Product Hunt</h2>
                 <div class="card-grid">
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/x1-2" target="_blank" rel="noopener">x1</a></h3><p>Lovable for iPhone apps go from idea to App Store</p><div class="item-meta">Maker: Garry Tan · 发布日期: 2026-08-24</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/enter-pro" target="_blank" rel="noopener">Enter Pro</a></h3><p>The AI-native platform to build and scale your apps</p><div class="item-meta">Maker: Rohan Chaubey · 发布日期: 2026-08-20</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/message-album" target="_blank" rel="noopener">Message Album</a></h3><p>Save one iMessage conversation as a private offline album</p><div class="item-meta">Maker: Aaron Hampton · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/ojin" target="_blank" rel="noopener">Ojin</a></h3><p>Talk to an AI Agent with a real face and voice, in real time</p><div class="item-meta">Maker: Mio · 发布日期: 2026-07-08</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/hevn-u-s-accounts-for-non-us-companies" target="_blank" rel="noopener">HEVN U.S.</a></h3><p>Hold USD and pay globally through U.S. sponsor banks</p><div class="item-meta">Maker: Nik Briuzgin · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/traccia" target="_blank" rel="noopener">Traccia</a></h3><p>Finally, a vendor-neutral AI Agent Control Plane.</p><div class="item-meta">Maker: Vijay Poudel · 发布日期: 2026-08-22</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/deployhermes" target="_blank" rel="noopener">DeployHermes</a></h3><p>Hire persistent Hermes agents with roles, memory + skills</p><div class="item-meta">Maker: Akshay Maurya · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/skydive" target="_blank" rel="noopener">Skydive</a></h3><p>Build cloud agents that work across your tools</p><div class="item-meta">Maker: Ben Lang · 发布日期: 2026-08-03</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/knack" target="_blank" rel="noopener">Knack MCP Server</a></h3><p>The HIPAA-compliant backend for AI builders</p><div class="item-meta">Maker: Elliott Sprecher · 发布日期: 2026-08-19</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/lenz-2" target="_blank" rel="noopener">Lenz</a></h3><p>Independent, multi-model fact-checking API for AI workflows</p><div class="item-meta">Maker: Kosta Jordanov · 发布日期: 2026-04-01</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/evidence" target="_blank" rel="noopener">Evidence Core</a></h3><p>Build live analytics with coding agents</p><div class="item-meta">Maker: Adam McAskill · 发布日期: 2026-08-19</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/hflow" target="_blank" rel="noopener">HFlow</a></h3><p>Scalable multimodal data pipelines for robotics</p><div class="item-meta">Maker: Garry Tan · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/baudbuddy-serial-terminal" target="_blank" rel="noopener">BaudBuddy</a></h3><p>A native macOS serial terminal with a file server built in</p><div class="item-meta">Maker: Nicolas Maton · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/pluto-11" target="_blank" rel="noopener">Pluto</a></h3><p>Your professional profile is now an AI agent</p><div class="item-meta">Maker: Garry Tan · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/basedash" target="_blank" rel="noopener">Basedash for Grok Bot</a></h3><p>Company data answers, right inside Grok Bot</p><div class="item-meta">Maker: Max Musing · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/iq-routing" target="_blank" rel="noopener">IQ Routing</a></h3><p>Trajectory-aware LLM routing that cuts agent cost</p><div class="item-meta">Maker: George Avila · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/apple" target="_blank" rel="noopener">Mac mini</a></h3><p>Now with M6 and M5 Pro chips</p><div class="item-meta">Maker: Anusha Viswanadham · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/wondering-2" target="_blank" rel="noopener">Wondering Canvas</a></h3><p>Visual ChatGPT in Parallel</p><div class="item-meta">Maker: Angelica · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/warren-5" target="_blank" rel="noopener">Warren</a></h3><p>Infrastructure for coding-agent workloads</p><div class="item-meta">Maker: Jaymin West · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/kira-art" target="_blank" rel="noopener">Kira Community</a></h3><p>Curate moments with #hashtag</p><div class="item-meta">Maker: Owen Chen · 发布日期: 2026-06-29</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/expertise-ai" target="_blank" rel="noopener">Expertise AI</a></h3><p>Turn your GTM skills into recurring revenue</p><div class="item-meta">Maker: Zac Zuo · 发布日期: 2026-08-22</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/kraa" target="_blank" rel="noopener">Kraa 2.0</a></h3><p>Text editor and a publishing platform</p><div class="item-meta">Maker: Lev Miseri · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/reweaver-driftdetector" target="_blank" rel="noopener">ReWeaver AI DriftDetector</a></h3><p>Drift score for any GitHub repo</p><div class="item-meta">Maker: Jonathan Gordon · 发布日期: 2026-08-21</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/yomi-3" target="_blank" rel="noopener">Yomi</a></h3><p>A little cat who loves being read to</p><div class="item-meta">Maker: Elina Patjas · 发布日期: 2026-07-27</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/arena-5" target="_blank" rel="noopener">Arena Agent Mode with GitHub</a></h3><p>Get real work done, moving from idea to shipping in minutes</p><div class="item-meta">Maker: Elliott Gluck · 发布日期: 2026-08-18</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/spacebarx" target="_blank" rel="noopener">SpacebarX</a></h3><p>A keyboard-first outliner for notes, tasks and projects</p><div class="item-meta">Maker: Selvan · 发布日期: 2026-08-24</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/chatcut-ai-video-editor" target="_blank" rel="noopener">ChatCut Desktop</a></h3><p>Video editor built for humans &amp; AI. Edit with GPT &amp; Claude.</p><div class="item-meta">Maker: KP · 发布日期: 2026-08-22</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/the-million-sad-ducks" target="_blank" rel="noopener">The Million Sad Ducks</a></h3><p>$1 makes one of them permanently happy</p><div class="item-meta">Maker: Bogdan Nechifor · 发布日期: 2026-08-25</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/termy-language-learning" target="_blank" rel="noopener">Termy</a></h3><p>Learn languages from games, videos, and websites</p><div class="item-meta">Maker: Ayushi · 发布日期: 2026-08-24</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/savvy-12" target="_blank" rel="noopener">Savvy</a></h3><p>An assistant that whispers what to say during a meeting</p><div class="item-meta">Maker: Jaume Alavedra · 发布日期: 2026-08-21</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/playcall" target="_blank" rel="noopener">Playcall</a></h3><p>The open-source AI alternative to Gong</p><div class="item-meta">Maker: fmerian · 发布日期: 2026-08-14</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/qwen3" target="_blank" rel="noopener">Qwen3.8-Flash-Next</a></h3><p>The open-weight preview of Qwen4</p><div class="item-meta">Maker: Zac Zuo · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/ify-2" target="_blank" rel="noopener">ify</a></h3><p>Resolution AI that works on top of your existing helpdesk</p><div class="item-meta">Maker: Kevin William David · 发布日期: 2026-08-12</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/speko" target="_blank" rel="noopener">Speko</a></h3><p>OpenRouter for Voice</p><div class="item-meta">Maker: Garry Tan · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/opencomputer" target="_blank" rel="noopener">OpenComputer</a></h3><p>Firebase for Agents</p><div class="item-meta">Maker: Utpal Nadiger 👋📈 · 发布日期: 2026-08-25</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/gitnexus-akon-labs" target="_blank" rel="noopener">GitNexus (Akon Labs)</a></h3><p>The open-source kernel for coding agents</p><div class="item-meta">Maker: Garry Tan · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/lore-machine" target="_blank" rel="noopener">Lore Machine</a></h3><p>Substack For World Builders</p><div class="item-meta">Maker: Chris Messina · 发布日期: 2026-08-17</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/cobalt-10" target="_blank" rel="noopener">Cobalt</a></h3><p>Your Kobo can run apps now</p><div class="item-meta">Maker: manish kumar · 发布日期: 2026-08-26</div></div></article>
                 
-                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/screenify-studio" target="_blank" rel="noopener">Screenify Studio</a></h3><p>Polished product demos on Mac recorded by an AI agent</p><div class="item-meta">Maker: Brjan · 发布日期: 2026-07-20</div></div></article>
+                <article class="card news-card product-card"><div class="card-body"><h3 class="h5"><a class="card-title-link" href="https://www.producthunt.com/products/eventually-3" target="_blank" rel="noopener">Eventually</a></h3><p>Your X bookmarks, emailed back as your personal newsletter</p><div class="item-meta">Maker: Momcilo Popov · 发布日期: 2026-08-26</div></div></article>
                 
                 </div>
             </section>
@@ -996,7 +986,7 @@
             <section class="tab-pane fade" id="finance" role="tabpanel" aria-labelledby="finance-tab" tabindex="0">
                 <h2 class="h4 source-heading">市场敏感宏观指标</h2>
                 <p class="text-muted small">展示官方最新公布值，用于观察通胀、就业和利率环境；不代表市场预期，也不构成交易信号。</p>
-                <div class="row g-3 mb-4"><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/CUSR0000SA0" target="_blank" rel="noopener">美国 CPI 同比</a></h3><div class="display-6">3.3 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-07 · 同比涨幅</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/LNS14000000" target="_blank" rel="noopener">美国失业率</a></h3><div class="display-6">4.1 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-07 · 最新公布值</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/CES0000000001" target="_blank" rel="noopener">美国非农就业月增量</a></h3><div class="display-6">-23 <small class="fs-6">千人</small></div><div class="item-meta">观测期: 2026-07 · 较上月变化</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">2 年期美债收益率</a></h3><div class="display-6">4.19 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-08-26 · 政策利率预期</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">10 年期美债收益率</a></h3><div class="display-6">4.66 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-08-26 · 长期折现率</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">10Y−2Y 期限利差</a></h3><div class="display-6">+0.47 <small class="fs-6">百分点</small></div><div class="item-meta">观测期: 2026-08-26 · 收益率曲线斜率</div></div></article></div></div>
+                <div class="row g-3 mb-4"><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/CUSR0000SA0" target="_blank" rel="noopener">美国 CPI 同比</a></h3><div class="display-6">3.3 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-07 · 同比涨幅</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/LNS14000000" target="_blank" rel="noopener">美国失业率</a></h3><div class="display-6">4.1 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-07 · 最新公布值</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://data.bls.gov/timeseries/CES0000000001" target="_blank" rel="noopener">美国非农就业月增量</a></h3><div class="display-6">-23 <small class="fs-6">千人</small></div><div class="item-meta">观测期: 2026-07 · 较上月变化</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">2 年期美债收益率</a></h3><div class="display-6">4.20 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-08-27 · 政策利率预期</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">10 年期美债收益率</a></h3><div class="display-6">4.67 <small class="fs-6">%</small></div><div class="item-meta">观测期: 2026-08-27 · 长期折现率</div></div></article></div><div class="col-md-4"><article class="card news-card finance-card h-100"><div class="card-body"><h3 class="h6"><a href="https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView" target="_blank" rel="noopener">10Y−2Y 期限利差</a></h3><div class="display-6">+0.47 <small class="fs-6">百分点</small></div><div class="item-meta">观测期: 2026-08-27 · 收益率曲线斜率</div></div></article></div></div>
 
                 <h2 class="h4 source-heading">SEC EDGAR 自选股公告</h2>
                 <div class="alert alert-warning">SEC 公告暂时无法获取。</div>
@@ -1006,38 +996,38 @@
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">金融</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/what-price-will-wti-hit-in-august-2026" target="_blank" rel="noopener">WTI原油2026年8月是否触及80美元低点、85美元高点或75美元低点？</a></h3>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/what-price-will-wti-hit-in-august-2026" target="_blank" rel="noopener">WTI原油在2026年8月是否触及80美元低点、85或90美元高点？</a></h3>
                     <div class="item-meta mb-3">原始事件: What will WTI Crude Oil (WTI) hit in August 2026?</div>
                     <div class="d-grid gap-2 mb-3">
                         
                         <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will WTI Crude Oil (WTI) hit (LOW) $80 in August?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 62.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 37.5%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
                             <div class="market-contract-question mb-2">Will WTI Crude Oil (WTI) hit (HIGH) $85 in August?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 36.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 63.5%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 63.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 36.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will WTI Crude Oil (WTI) hit (LOW) $75 in August?</div>
+                            <div class="market-contract-question mb-2">Will WTI Crude Oil (WTI) hit (LOW) $80 in August?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 7.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 92.5%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 26.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 73.5%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Will WTI Crude Oil (WTI) hit (HIGH) $90 in August?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 7.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 92.8%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $324,987 · 流动性: $1,680,064 · 结束: 2026-09-01</div>
+                    <div class="item-meta">24h 交易量: $261,177 · 流动性: $1,701,559 · 结束: 2026-09-01</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">宏观经济</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/will-argentina-dollarize-by-june-30-2026" target="_blank" rel="noopener">阿根廷是否在2026年12月31日前实现美元化？</a></h3>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/will-argentina-dollarize-by-june-30-2026" target="_blank" rel="noopener">阿根廷是否会在2026年12月31日前实行美元化？</a></h3>
                     <div class="item-meta mb-3">原始事件: Will Argentina dollarize by...?</div>
                     <div class="d-grid gap-2 mb-3">
                         
@@ -1049,19 +1039,19 @@
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $440 · 流动性: $2,051 · 结束: 2027-01-01</div>
+                    <div class="item-meta">24h 交易量: $50 · 流动性: $2,141 · 结束: 2027-01-01</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">AI</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/which-company-has-best-ai-model-end-of-august-20260717015626546" target="_blank" rel="noopener">截至2026年8月底，Anthropic、OpenAI或字节跳动谁拥有最佳AI模型？</a></h3>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/which-company-has-best-ai-model-end-of-august-20260717015626546" target="_blank" rel="noopener">截至2026年8月31日，Anthropic、OpenAI或字节跳动谁拥有最佳AI模型？</a></h3>
                     <div class="item-meta mb-3">原始事件: Which company has best AI model end of August?</div>
                     <div class="d-grid gap-2 mb-3">
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Anthropic have the best AI model at the end of August 2026?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 99.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 0.8%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 99.3%</span><span class="badge rounded-pill market-probability market-probability-no">不会 0.7%</span>
                             </div>
                         </div>
                         
@@ -1080,69 +1070,69 @@
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $168,504 · 流动性: $1,056,199 · 结束: 2026-08-31</div>
+                    <div class="item-meta">24h 交易量: $100,792 · 流动性: $682,615 · 结束: 2026-08-31</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">加密市场</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/what-price-will-bitcoin-hit-in-august-2026" target="_blank" rel="noopener">比特币2026年8月是否跌至77500美元或升至80000、82500美元？</a></h3>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/what-price-will-bitcoin-hit-in-august-2026" target="_blank" rel="noopener">比特币在2026年8月是否下探77,500美元或达到82,500、85,000美元？</a></h3>
                     <div class="item-meta mb-3">原始事件: What price will Bitcoin hit in August?</div>
                     <div class="d-grid gap-2 mb-3">
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Bitcoin dip to $77,500 in August?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 68.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 32.0%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will Bitcoin reach $80,000 in August?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 68.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 32.0%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 45.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 54.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Bitcoin reach $82,500 in August?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 31.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 69.0%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 44.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 56.0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Will Bitcoin reach $85,000 in August?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 19.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 80.8%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $923,944 · 流动性: $1,974,070 · 结束: 2026-09-01</div>
+                    <div class="item-meta">24h 交易量: $1,177,656 · 流动性: $2,360,474 · 结束: 2026-09-01</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">加密市场</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/bitcoin-above-on-august-27-2026" target="_blank" rel="noopener">2026年8月27日，比特币价格是否高于78000、80000或82000美元？</a></h3>
-                    <div class="item-meta mb-3">原始事件: Bitcoin above ___ on August 27?</div>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/bitcoin-above-on-august-28-2026" target="_blank" rel="noopener">2026年8月28日，比特币价格是否高于78,000、80,000或82,000美元？</a></h3>
+                    <div class="item-meta mb-3">原始事件: Bitcoin above ___ on August 28?</div>
                     <div class="d-grid gap-2 mb-3">
                         
                         <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $78,000 on August 27?</div>
+                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $80,000 on August 28?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 80.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 19.9%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 50.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 49.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $80,000 on August 27?</div>
+                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $82,000 on August 28?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 15.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 84.8%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 13.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 86.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $82,000 on August 27?</div>
+                            <div class="market-contract-question mb-2">Will the price of Bitcoin be above $78,000 on August 28?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 2.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 97.8%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 88.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 11.5%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $574,926 · 流动性: $839,089 · 结束: 2026-08-27</div>
+                    <div class="item-meta">24h 交易量: $543,488 · 流动性: $666,357 · 结束: 2026-08-28</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
@@ -1161,112 +1151,50 @@
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Apple be the largest company in the world by market cap on August 31?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 0.3%</span><span class="badge rounded-pill market-probability market-probability-no">不会 99.7%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 0.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 99.9%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Alphabet be the largest company in the world by market cap on August 31?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 0.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 99.9%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 0.1%</span><span class="badge rounded-pill market-probability market-probability-no">不会 100.0%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $205,099 · 流动性: $877,696 · 结束: 2026-08-31</div>
+                    <div class="item-meta">24h 交易量: $233,207 · 流动性: $717,031 · 结束: 2026-08-31</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
                     <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">金融</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/how-many-fed-rate-cuts-in-2026" target="_blank" rel="noopener">2026年美联储是否不降息、降息1次或降息2次？</a></h3>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/how-many-fed-rate-cuts-in-2026" target="_blank" rel="noopener">2026年美联储降息次数是0次、1次还是2次？</a></h3>
                     <div class="item-meta mb-3">原始事件: How many Fed rate cuts in 2026?</div>
                     <div class="d-grid gap-2 mb-3">
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will no Fed rate cuts happen in 2026?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 87.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 12.4%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 88.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 11.8%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will 1 Fed rate cut happen in 2026?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 9.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 90.5%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 8.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 91.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will 2 Fed rate cuts happen in 2026?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 2.6%</span><span class="badge rounded-pill market-probability market-probability-no">不会 97.4%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 2.4%</span><span class="badge rounded-pill market-probability market-probability-no">不会 97.7%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $121,906 · 流动性: $4,104,289 · 结束: 2026-12-31</div>
-                </div></article>
-                
-                <article class="card news-card market-card"><div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">金融</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/largest-company-end-of-december-2026" target="_blank" rel="noopener">2026年12月31日，英伟达、苹果或Alphabet谁是全球市值最大公司？</a></h3>
-                    <div class="item-meta mb-3">原始事件: Largest Company end of December 2026?</div>
-                    <div class="d-grid gap-2 mb-3">
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will NVIDIA be the largest company in the world by market cap on December 31?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 75.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 24.5%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will Apple be the largest company in the world by market cap on December 31?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 15.2%</span><span class="badge rounded-pill market-probability market-probability-no">不会 84.8%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will Alphabet be the largest company in the world by market cap on December 31?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 10.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 90.0%</span>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="item-meta">24h 交易量: $102,546 · 流动性: $1,325,318 · 结束: 2026-12-31</div>
-                </div></article>
-                
-                <article class="card news-card market-card"><div class="card-body">
-                    <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">金融</span></div>
-                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/largest-ipo-by-market-cap-in-2026-287" target="_blank" rel="noopener">2026年，SpaceX、Anthropic或OpenAI谁拥有最高IPO市值？</a></h3>
-                    <div class="item-meta mb-3">原始事件: Largest IPO by market cap in 2026?</div>
-                    <div class="d-grid gap-2 mb-3">
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will SpaceX have the highest IPO Market Cap 2026?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 41.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 58.5%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will Anthropic have the highest IPO Market Cap 2026?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 58.6%</span><span class="badge rounded-pill market-probability market-probability-no">不会 41.4%</span>
-                            </div>
-                        </div>
-                        
-                        <div class="market-contract">
-                            <div class="market-contract-question mb-2">Will OpenAI have the highest IPO Market Cap 2026?</div>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 0.9%</span><span class="badge rounded-pill market-probability market-probability-no">不会 99.1%</span>
-                            </div>
-                        </div>
-                        
-                    </div>
-                    <div class="item-meta">24h 交易量: $81,935 · 流动性: $922,636 · 结束: 2026-12-31</div>
+                    <div class="item-meta">24h 交易量: $197,088 · 流动性: $3,968,492 · 结束: 2026-12-31</div>
                 </div></article>
                 
                 <article class="card news-card market-card"><div class="card-body">
@@ -1278,26 +1206,88 @@
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will NVIDIA be the largest company in the world by market cap on September 30?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 90.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 10.0%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 92.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 7.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Apple be the largest company in the world by market cap on September 30?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 8.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 92.0%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 5.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 94.5%</span>
                             </div>
                         </div>
                         
                         <div class="market-contract">
                             <div class="market-contract-question mb-2">Will Alphabet be the largest company in the world by market cap on September 30?</div>
                             <div class="d-flex flex-wrap gap-2">
-                                <span class="badge rounded-pill market-probability market-probability-yes">会 2.3%</span><span class="badge rounded-pill market-probability market-probability-no">不会 97.7%</span>
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 1.9%</span><span class="badge rounded-pill market-probability market-probability-no">不会 98.0%</span>
                             </div>
                         </div>
                         
                     </div>
-                    <div class="item-meta">24h 交易量: $78,666 · 流动性: $700,818 · 结束: 2026-09-30</div>
+                    <div class="item-meta">24h 交易量: $111,347 · 流动性: $955,504 · 结束: 2026-09-30</div>
+                </div></article>
+                
+                <article class="card news-card market-card"><div class="card-body">
+                    <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">金融</span></div>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/largest-company-end-of-december-2026" target="_blank" rel="noopener">2026年12月31日，英伟达、苹果或Alphabet谁是全球市值最大公司？</a></h3>
+                    <div class="item-meta mb-3">原始事件: Largest Company end of December 2026?</div>
+                    <div class="d-grid gap-2 mb-3">
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Will NVIDIA be the largest company in the world by market cap on December 31?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 80.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 19.5%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Will Apple be the largest company in the world by market cap on December 31?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 11.6%</span><span class="badge rounded-pill market-probability market-probability-no">不会 88.4%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Will Alphabet be the largest company in the world by market cap on December 31?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 7.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 92.5%</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="item-meta">24h 交易量: $97,356 · 流动性: $1,375,329 · 结束: 2026-12-31</div>
+                </div></article>
+                
+                <article class="card news-card market-card"><div class="card-body">
+                    <div class="d-flex flex-wrap gap-2 mb-2"><span class="badge text-bg-primary">AI</span></div>
+                    <h3 class="h5 mb-2"><a class="card-title-link" href="https://polymarket.com/event/next-mythos-class-model-released-by" target="_blank" rel="noopener">下一款Mythos级模型是否会在2026年8月31日、9月9日或9月15日前发布？</a></h3>
+                    <div class="item-meta mb-3">原始事件: Next Mythos-Class Model released by…?</div>
+                    <div class="d-grid gap-2 mb-3">
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Next Mythos-Class Model released by August 31, 2026?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 35.0%</span><span class="badge rounded-pill market-probability market-probability-no">不会 65.0%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Next Mythos-Class Model released by September 9, 2026?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 73.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 26.5%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="market-contract">
+                            <div class="market-contract-question mb-2">Next Mythos-Class Model released by September 15, 2026?</div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill market-probability market-probability-yes">会 79.5%</span><span class="badge rounded-pill market-probability market-probability-no">不会 20.5%</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="item-meta">24h 交易量: $62,202 · 流动性: $34,569 · 结束: 2026-10-01</div>
                 </div></article>
                 
             </section>
