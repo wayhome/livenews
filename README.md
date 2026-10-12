@@ -27,9 +27,12 @@
    - `OPENAI_API_BASE`: 可选，自定义 OpenAI API 地址（默认为官方API）
    - `OPENAI_MODEL`: 可选，使用的模型名称（默认为 gpt-3.5-turbo）
    - Actions Variable `SEC_USER_AGENT`: 建议设为 `应用名 联系邮箱`，便于 SEC 识别访问方
-3. 启用 GitHub Pages（设置为 gh-pages 分支）
+3. 在 Settings -> Pages -> Build and deployment 中将 Source 设置为 `GitHub Actions`
 4. 确保 Actions 权限已开启
-5. 访问 `https://<你的用户名>.github.io/<仓库名>` 查看结果
+5. 在 Actions 中手动运行 `Refresh LiveNews Sources`，首次生成并部署网站
+6. 访问 `https://<你的用户名>.github.io/<仓库名>` 查看结果
+
+部署使用 GitHub Pages Artifact，不再向 `gh-pages` 分支提交生成文件。新闻和论文翻译缓存继续由 Actions Cache 保存，网站产物只包含生成的 HTML。迁移不会自动清理已有的 `gh-pages` 历史，旧分支需另行清理才能减少完整克隆的体积。
 
 ## 本地开发
 
